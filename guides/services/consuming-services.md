@@ -888,6 +888,13 @@ You need additional logic, if remote entities are in the game. The following tab
 | Remote: Expand local                                                  | `/service/risks/Suppliers?$expand=risks` | Delegate query w/o expand to remote service and implement expand. |
 | Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
 
+
+#### Support Analytical Queries in Java {.java}
+| **Request**                                                           | **Example**                              | **Implementation**                                                |
+| --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
+| Remote: Analytical queries                                            | `/service/risks/Suppliers?$apply=...`    | Delegate query to remote service                                  |
+
+
 #### Transient Access vs. Replication
 
 > This chapter shows only techniques for transient access.
