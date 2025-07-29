@@ -889,7 +889,10 @@ You need additional logic, if remote entities are in the game. The following tab
 | Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
 
 
-#### Support Analytical Queries in Java {.java}
+##### Support Analytical Queries in Java {.java}
+
+CAP Java provides an out-of-the-box Support for remote analytical queries.
+
 | **Request**                                                           | **Example**                              | **Implementation**                                                |
 | --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
 | Remote: Analytical queries                                            | `/service/risks/Suppliers?$apply=...`    | Delegate query to remote service                                  |
