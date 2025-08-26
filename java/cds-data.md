@@ -473,24 +473,7 @@ The name of the CDS element referred to by a getter or setter, is defined throug
 
 ### Generated Accessor Interfaces {#generated-accessor-interfaces}
 
-For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./cqn-services/persistence-services#staticmodel). The generated accessor interfaces allow for hybrid access and easy serialization to JSON.
-
-By default, the accessor interfaces provide the setter and getter methods inspired by the JavaBeans specification.
-
-Following example uses accessor interfaces that have been generated with the default (JavaBeans) style:
-
-```java
-    Authors author = Authors.create();
-    author.setName("Emily Brontë");
-
-    Books book = Books.create();
-    book.setAuthor(author);
-    book.setTitle("Wuthering Heights");
-```
-
-Alternatively, you can generate accessor interfaces in _fluent style_. In this mode, the getter methods are named after the property names. To enable fluent chaining, the setter methods return the accessor interface itself.
-
-Following is an example of the fluent style:
+For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
 ```java
    Authors author = Authors.create().name("Emily Brontë");
@@ -504,6 +487,8 @@ Once, when starting a project, decide on the style of the interfaces that is bes
 The way the interfaces are generated determines only how data is accessed by custom code. It does not affect how the data is represented in memory and handled by the CAP Java runtime.
 
 Moreover, it doesn't change the way how event contexts and entities, delivered by CAP, look like. Such interfaces from CAP are always modelled in the default JavaBeans style.
+
+See more in [Configuring Code Generation for Typed Access](/java/developing-applications/building#codegen-config) for advanced options. {.learn-more}
 
 #### Renaming Elements in Java
 
