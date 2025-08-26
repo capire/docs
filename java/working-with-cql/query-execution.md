@@ -81,7 +81,7 @@ CqnDelete delete = Delete.from("bookshop.Books").byParams("ID");
 Map<String, Object> paramSet1 = singletonMap("ID", 101);
 Map<String, Object> paramSet1 = singletonMap("ID", 102);
 
-CdsResult<?> result = service.run(query, asList(paramSet1, paramSet2));
+Result result = service.run(delete, asList(paramSet1, paramSet2));
 long deletedRows = result.rowCount();
 ```
 
