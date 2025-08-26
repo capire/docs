@@ -483,6 +483,10 @@ Other options in this goal enable or disable certain features that change the wa
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
 
+- [`linkedInterfaces`]
+	
+	This switch extends the generated interfaces so they support typed query results of type `CdsResult<T>`.
+
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
 in your application that needs to be fixed.
