@@ -34,7 +34,7 @@ class AdminService extends require('@sap/cds').ApplicationService { /* … */ }
 Instead, import `@sap/cds` separately, as shown in the other examples.
 
 ### Using Methods as Handler
-Using a misbehaving class method as handler implementation will also not be detected, even if it is located in service implementation class iteself:
+Using a misbehaving class method as handler implementation will also not be detected, even if it is located in service implementation class itself:
 
 ```js
 const cds = require('@sap/cds')
