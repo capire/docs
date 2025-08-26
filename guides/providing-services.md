@@ -443,7 +443,7 @@ entity Author : cuid {
 The default searchable elements of `Books` are `title` and `author.name`.
 
 ::: warning
-Do not use both `@cds.search` and `@Common.Text` annotations on the same entity, unless `@cds.search` is used only to exclude fields. If both are present and `@cds.search` includes fields, the `@Common.Text` annotation will be ignored.
+`@cds.search` takes precedence over `@Common.Text`. As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in an including mode (that is, not exclusively for excluding properties).
 :::
 
 #### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
