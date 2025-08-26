@@ -426,11 +426,11 @@ Searches all elements of type `String` excluding the element `isbn`, which leave
 You can explicitly annotate calculated elements to make them searchable, even though they aren't searchable by default. The virtual elements won't be searchable even if they're explicitly annotated.
 :::
 
-#### The `@Common.Text` Annotation 
+#### The `@Common.Text` Annotation
 
 If an entity has an element annotated with the `@Common.Text` annotation, then the property that holds the display text is added to the list of searchable elements (see exception below).
 
-For example, with the following modeling, the list of searchable elements of `Books` are `title` and `author.name`:
+For example, with the following model, the list of searchable elements for `Books` is `title` and `author.name`:
 
 ```cds
 entity Books : cuid {
@@ -444,12 +444,12 @@ entity Author : cuid {
 ```
 
 ::: warning
-`@cds.search` takes precedence over `@Common.Text`. As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in an including mode (that is, not exclusively for excluding properties).
+`@cds.search` takes precedence over `@Common.Text`. As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in including mode (that is, not exclusively for excluding properties).
 :::
 
 To illustrate the above:
-- `@cds.search: { title: false }` on `Books` would only exclude properties such that `author.name` would still be searched
-- `@cds.search: { title }` on `Books` defines an include list such that `author.name` is not searched as, in this mode, `@cds.search` is expected to include all that shall be searched → `@cds.search: { title, author.name }`
+- `@cds.search: { title: false }` on `Books` would only exclude properties, so `author.name` would still be searched.
+- `@cds.search: { title }` on `Books` defines an include list, so `author.name` is not searched. In this mode, `@cds.search` is expected to include all properties that should be searched. Hence, `author.name` would need to be added to `@cds.search` itself: `@cds.search: { title, author.name }`.
 
 #### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
 
