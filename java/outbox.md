@@ -18,6 +18,8 @@ status: released
 Usually the emit of messages should be delayed until the main transaction succeeded, otherwise recipients also receive messages in case of a rollback.
 To solve this problem, a transactional outbox can be used to defer the emit of messages until the success of the current transaction.
 
+The outbox is typically not used directly, but rather through the [messaging service](../java/messaging), the [AuditLog service](../java/auditlog) or to [outbox CAP service events](#outboxing-cap-service-events).
+
 ## In-Memory Outbox (Default) { #in-memory}
 
 The in-memory outbox is used per default and the messages are emitted when the current transaction is successful. Until then, messages are kept in memory.
@@ -59,8 +61,8 @@ Alternatively, you can add `using from '@sap/cds/srv/outbox';` to your base mode
 
 If enabled, CAP Java provides two persistent outbox services by default:
 
--  `DefaultOutboxOrdered` - is used by default by messaging services
--  `DefaultOutboxUnordered` - is used by default by the AuditLog service
+-  `DefaultOutboxOrdered` - is used by default by [messaging services](../java/messaging)
+-  `DefaultOutboxUnordered` - is used by default by the [AuditLog service](../java/auditlog)
 
 The default configuration for both outboxes can be overridden using the `cds.outbox.services` section, for example in the _application.yaml_:
 ::: code-group
