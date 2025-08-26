@@ -738,6 +738,10 @@ Since the SELECT query implements the async iterator protocol, you can also use 
 for await (const book of SELECT.from(Books)) { ... }
 ```
 
+:::warning Streaming APIs only implemented by Database Services
+As of now, `SELECT.foreach()` and `SELECT.pipeline()` are only supported by `cds.DatabaseService`. `cds.RemoteService` does not support the streaming APIs yet.
+:::
+
 ## INSERT {.class}
 
 Fluent API to construct [CQN INSERT](../cds/cqn#insert) query objects in a [CQL](../cds/cql)/SQL-like style. In contrast to SQL, though, the clauses can be arrayed in arbitrary order.
