@@ -1,7 +1,7 @@
 const cds = require('@sap/cds')
 
 module.exports = class AdminService extends cds.ApplicationService { async init() {
-        this.after('READ', 'Books', async (req) => {
+        this.after('READ', 'Books', async () => {
             // local variable only, no state shared between handlers
             const books = await cds.run(SELECT.from('Books'))  // [!code highlight]
             return books

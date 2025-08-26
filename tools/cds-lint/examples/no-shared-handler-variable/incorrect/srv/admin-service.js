@@ -4,7 +4,7 @@ let lastCreatedBook
 let lastReadBooks
 
 module.exports = class AdminService extends cds.ApplicationService { async init() {
-        this.after('READ', 'Books', async (req) => {
+        this.after('READ', 'Books', async () => {
             // variable from surrounding scope, state is shared between handler calls
             lastReadBooks = await cds.run(SELECT.from('Books'))  // [!code error]
             return lastReadBooks

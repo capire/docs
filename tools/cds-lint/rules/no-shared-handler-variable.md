@@ -12,8 +12,15 @@ status: released
 
 Discourages sharing state between handlers using variables from parent scopes, as this can lead to data leakage between tenants.
 This rule automatically checks handler registrations inside classes that extend `cds.ApplicationService`.
+
 To enable this check for functions declared outside such classes, add a type annotation.
-Any function annotated with `@type {import('@sap/cds').CRUDEventHandler.Before}`, `@type {import('@sap/cds').CRUDEventHandler.On}`, or `@type {import('@sap/cds').CRUDEventHandler.After}` will also be checked by this rule.
+Any function annotated with
+
+- `@type {import('@sap/cds').CRUDEventHandler.Before}`,
+- `@type {import('@sap/cds').CRUDEventHandler.On}`,
+- or `@type {import('@sap/cds').CRUDEventHandler.After}`
+
+will also be checked by this rule.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
