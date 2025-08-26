@@ -15,7 +15,7 @@
 # [no-dollar-prefixed-names](no-dollar-prefixed-names)
 # [no-java-keywords](no-java-keywords)
 # [no-join-on-draft](no-join-on-draft)
-# [no-shared-handler-variables](no-shared-handler-variables)
+# [no-shared-handler-variable](no-shared-handler-variable)
 # [sql-cast-suggestion](sql-cast-suggestion)
 # [sql-null-comparison](sql-null-comparison)
 # [start-elements-lowercase](start-elements-lowercase)
