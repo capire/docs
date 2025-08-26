@@ -10,7 +10,7 @@ status: released
 
 ## Rule Details
 
-This rule helps you avoid importing artifacts generated for one service (e.g., service X) into the implementation of another service (e.g., service Y) when using cds-typer. Keeping service boundaries clear makes your codebase easier to maintain and understand.
+This rule helps you avoid importing artifacts generated for one service into the implementation of another service when using cds-typer. Keeping service boundaries clear makes your codebase easier to maintain and understand.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.

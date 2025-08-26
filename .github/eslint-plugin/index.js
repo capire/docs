@@ -2,8 +2,10 @@
 
 // eslint plugin rule utility
 // ============================
+// node index.js generate-menu
 // generates the _menu.md file to make sure all rules are included.
-// Also generates a stub markdown file for a new rule.
+// node index.js generate-js-stub <rule-name>
+// generates a stub markdown file for a new JS rule with name <rule-name>.
 
 import * as fs from 'node:fs'
 import * as path from 'node:path'
@@ -72,7 +74,7 @@ function main (argv) {
         case 'generate-menu':
             generateMenuMarkdown();
             break;
-        case 'generate-stub':
+        case 'generate-js-stub':
             generateJsRuleStub(argv[1]);
             generateMenuMarkdown();
             break;

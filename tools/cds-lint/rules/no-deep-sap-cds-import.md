@@ -11,7 +11,7 @@ status: released
 ## Rule Details
 
 You should only import from the top-level `@sap/cds` package. Accessing internal modules or sub-paths is unsafe, as these are not part of the official public API and may change or be removed without notice.
-Note that there are very few files that are exempt from that guideline, which will not be marked as error by this rule.
+There are a few exceptions to this rule, which will not be reported as errors.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
