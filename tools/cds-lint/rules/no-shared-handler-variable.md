@@ -26,12 +26,16 @@ will also be checked by this rule.
 ## Caveats
 The following code styles are not checked by this rule as of today:
 
-### Inline Extension
+### Inline Import + Extension
+The following example imports `@sap/cds` within the `extends` clause of the service implementation.
 ```js
 class AdminService extends require('@sap/cds').ApplicationService { /* … */ }
 ```
+Instead, import `@sap/cds` separately, as shown in the other examples.
 
 ### Using Methods as Handler
+Using a misbehaving class method as handler implementation will also not be detected, even if it is located in service implementation class iteself:
+
 ```js
 const cds = require('@sap/cds')
 
@@ -43,12 +47,14 @@ class AdminService extends cds.ApplicationService {
   }
 }
 ```
+Use a function instead.
 
 ### Other Service-Implementation Styles Than Classes
+Only classes extending `cds.ApplicationService` are checked as part of this rule, to avoid triggering too many false positives. So all other implementation styles will not trigger this rule:
 ```js
 cds.services['AdminService'].on('READ', 'Books', () => {})
 ```
-or any of the old implementation patterns for services besides classes, like using `cds.service.impl`.
+(or any of the old implementation patterns for services besides classes, like using `cds.service.impl`.)
 
 
 #### Version
