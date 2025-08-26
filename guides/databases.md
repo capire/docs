@@ -69,7 +69,7 @@ The afore-mentioned packages use `cds-plugin` techniques to automatically config
 {"cds":{
   "requires": {
     "db": {
-      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": "memory" } },
+      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": ":memory:" } },
       "[production]": { "kind": "hana", "impl": "@cap-js/hana", "deploy-format": "hdbtable" }
     }
   }

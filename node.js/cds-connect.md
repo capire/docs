@@ -384,8 +384,123 @@ Here are a few examples:
 </tbody>
 </table>
 
+If the `vcap` configuration contains multiple properties such as `name`, `label`, `tags`, `plan`, all properties have to match the corresponding VCAP_SERVICE attributes:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr >
+<td >
 
 
+```json
+{
+  "cds": {
+    "requires": {
+      "hana": {
+        "vcap": { 
+          "label": "hana", 
+          "plan": "standard", 
+          "name": "myHana", 
+          "tags": "database" 
+        }
+      }
+    }
+  }
+}
+```
+</td>
+<td >
+
+```json
+{
+  "VCAP_SERVICES": {
+    "hana": [{
+      "label": "hana",
+      "plan": "standard",
+      "name": "myHana",
+      "tags": ["database"]
+    }]
+  }
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
+CAP services often come with a default `vcap` configuration. In rare cases, the default configuration has to be deactivated which can be achieved by explicitly setting the service property `vcap.<property>` to `false`:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr >
+<td >
+
+
+```json
+{
+  "cds": {
+    "requires": {
+      "hana": {
+        "vcap": { 
+          "label": false,  
+          "name": "myHana", 
+          "tags": "database" 
+        }
+      }
+    }
+  }
+}
+```
+</td>
+<td >
+
+```json
+{
+  "VCAP_SERVICES": {
+    "myHana-binding": [{
+      "label": "not-hana",
+      "plan": "standard",
+      "name": "myHana",
+      "tags": ["database"]
+    }]
+  }
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
+::: tip To see the default configuration of a CAP service, use:
+
+```js
+cds env get requires.<servicename>
+```
+:::
 
 ### In Kubernetes / Kyma { #in-kubernetes-kyma}
 

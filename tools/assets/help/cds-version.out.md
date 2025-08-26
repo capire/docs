@@ -2,7 +2,7 @@
 <pre class="log">
 > cds version
 
-<em>@sap/cds</em>: 9.2.0
+<em>@sap/cds</em>: 9.2.1
 <em>@sap/cds-dk</em>: undefined
 <em>@sap/cds-compiler</em>: 6.2.2
 <em>@sap/cds-dk (global)</em>: 9.2.0

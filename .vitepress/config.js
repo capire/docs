@@ -43,10 +43,10 @@ const config = defineConfig({
     logo: '/cap-logo.svg',
     outline: [2,3],
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/cap-js/docs' }
+      { icon: 'github', link: 'https://github.com/capire/docs' }
     ],
     editLink: {
-      pattern: 'https://github.com/cap-js/docs/edit/main/:path'
+      pattern: 'https://github.com/capire/docs/edit/main/:path'
     },
     footer: {
       message: `

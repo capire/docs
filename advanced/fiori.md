@@ -466,11 +466,37 @@ POST /odata/v4/AdminService/Books(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActi
 Content-Type: application/json
 
 {}
-
+```
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
 ### Validating Drafts
+
+With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
+- The UI displays error messages for annotation-based validations (such as `@mandatory` or `@assert...`) while editing drafts.
+- You can register [custom validations](#custom-validations) to the `PATCH` event and write (error) messages. The draft choreography ensures the invalid value still persists.
+- Messages remain visible in the UI, even after editing other fields.
+- The UI automatically loads messages when reopening a previously edited draft.
+CAP generates side-effect annotations in the EDMX to instruct UI5 to fetch state messages after every `PATCH` request. To control side-effect annotations more precisely, override or disable them per entity:
+
+  ```cds
+  // Setting `null` disables the side-effect annotation for always fetching messages.
+  annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
+  ```
+
+For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](/guides/security/data-protection-privacy#dpp-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
+
+::: warning Requires Schema Update
+This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.
+:::
+
+::: warning Requires OData V4 and UI5 version >=1.135.0
+State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.135.0. OData V2 does not support this annotation.
+:::
+To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
+
+
+#### Custom Validations
 
 You can add [custom handlers](../guides/providing-services#custom-logic) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
 

@@ -4,7 +4,7 @@
 
 | your-project           | &lt;Add your repository here&gt;              |
 | ---------------------- | --------------------------------------- |
-| @sap/cds               | 9.2.0                                   |
+| @sap/cds               | 9.2.1                                   |
 | @sap/cds-dk            | -- missing --                           |
 | @sap/cds-compiler      | 6.2.2                                   |
 | @sap/cds-dk (global)   | 9.2.0                                   |

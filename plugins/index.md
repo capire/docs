@@ -373,7 +373,7 @@ Available for:
 
 ## SAP Cloud Application Event Hub {#event-hub}
 
-The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
+The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-cloud-application-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
 
 ```js
 const S4Bupa = await cds.connect.to ('API_BUSINESS_PARTNER')
