@@ -22,6 +22,35 @@ Any function annotated with
 
 will also be checked by this rule.
 
+
+## Caveats
+The following code styles are not checked by this rule as of today:
+
+### Inline Extension
+```js
+class AdminService extends require('@sap/cds').ApplicationService { /* … */ }
+```
+
+### Using Methods as Handler
+```js
+const cds = require('@sap/cds')
+
+class AdminService extends cds.ApplicationService {
+  badHandler () { /* bad things going on in here */ }
+
+  init () {
+    this.on('READ', 'Books', this.badHandler)
+  }
+}
+```
+
+### Other Service-Implementation Styles Than Classes
+```js
+cds.services['AdminService'].on('READ', 'Books', () => {})
+```
+or any of the old implementation patterns for services besides classes, like using `cds.service.impl`.
+
+
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
