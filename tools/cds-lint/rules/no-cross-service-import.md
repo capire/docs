@@ -21,12 +21,12 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 Here, the imported entity belongs to `AdminService` and is used within the implementation of `AdminService` itself—this is the recommended approach:
 ::: code-group
-<<< ../examples/no-cross-service-import/correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< ../examples/no-cross-service-import/correct/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]
 :::
 <PlaygroundBadge
   name="no-cross-service-import"
   kind="correct"
-  :files="['srv/admin-service.js']"
+  :files="['srv/AdminService.js']"
 />
 
 ### ❌ &nbsp; Incorrect example
@@ -34,10 +34,10 @@ Here, the imported entity belongs to `AdminService` and is used within the imple
 In this case, an entity from `CatalogService` is imported into the implementation of `AdminService`. This cross-service import is discouraged, as it can lead to confusion and maintenance issues:
 
 ::: code-group
-<<< ../examples/no-cross-service-import/incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< ../examples/no-cross-service-import/incorrect/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]
 :::
 <PlaygroundBadge
   name="no-cross-service-import"
   kind="incorrect"
-  :files="['srv/admin-service.js']"
+  :files="['srv/AdminService.js']"
 />
