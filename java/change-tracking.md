@@ -275,15 +275,15 @@ Each entry in the `Changes` entity contains the following information:
 
 By default, changes remain in your database even when their entities are deleted.
 
-If you want to delete changelogs together with your entities, your **domain entity** must be extended with `changelog.changeTracked` aspect.
+If you want to delete changelogs together with your entities, your **domain entity** must be extended with the `changelog.changeTracked` aspect.
 
-To enable deletion of changes per entity, annotate domain entity like this:
+To enable the deletion of changes per entity, annotate your domain entity like this:
 
 ```cds
 annotate model.Books.changes:change with @cascade: { delete };
 ```
 
-To enable this for all entities in the model, add the following annotation to your model:
+To enable deletion of changes for all entities in the model, add the following annotation to your model:
 
 ```cds
 annotate sap.changelog.ChangeLink:change with @cascade: { delete };
