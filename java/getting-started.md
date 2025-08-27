@@ -42,7 +42,7 @@ This section describes the prerequisites and tools to build a CAP application lo
 
 1. Install the CDS tools (`cds-dk`) by following the steps in the central *[Getting Started](../get-started/#setup)* guide.
 
-2. Install a Java VM. At least, Java 17 is required. For example, [download](https://github.com/SAP/SapMachine/releases/latest) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 17.
+2. Install a Java VM. Java 17 is the minimum requirement, but we recommend using Java 21. For example, [download](https://github.com/SAP/SapMachine/releases) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 21.
 
 3. [Install Apache Maven](https://maven.apache.org/download.cgi) (at least version 3.6.3 is required).
 

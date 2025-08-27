@@ -199,8 +199,7 @@ Available for:
 
 
 
-## SAP Document Management Service {#sdm}
-{#@cap-js/sdm}
+## SAP Document Management Service {#@cap-js/sdm}
 
 The SAP Document Management Service  plugin lets you easily store attachments (documents) in an [SAP Document Management service Repository](https://help.sap.com/docs/document-management-service).
 
@@ -357,6 +356,7 @@ You can get the ORD document in multiple ways, see the readme of the plugin.
 Available for:
 
 [![Link to the repository for cap-js ORD](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ord)
+[![Java](../assets/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://javadoc.io/doc/com.sap.cds/cds-feature-ord/latest/index.html)
 
 
 ## CAP Operator for Kubernetes {#cap-operator-plugin}
@@ -373,7 +373,7 @@ Available for:
 
 ## SAP Cloud Application Event Hub {#event-hub}
 
-The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
+The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-cloud-application-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
 
 ```js
 const S4Bupa = await cds.connect.to ('API_BUSINESS_PARTNER')
@@ -390,8 +390,7 @@ Available for:
 [![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-event-hub#readme)
 
 
-## SAP Integration Suite, Advanced Event Mesh <Beta /> 
-{#advanced-event-mesh}
+## SAP Integration Suite, Advanced Event Mesh <Beta /> {#advanced-event-mesh}
 
 [SAP Integration Suite, advanced event mesh](https://www.sap.com/products/technology-platform/integration-suite/advanced-event-mesh.html) allows you to, amongst others, integrate non-SAP systems into your event-driven architecture.
 

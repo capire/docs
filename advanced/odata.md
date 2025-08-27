@@ -1099,49 +1099,6 @@ GET /Order(10)/books?
 This query groups the 500 most expensive books by author name and determines the price of the most expensive book per author.
 
 
-### Hierarchical Transformations
-
-Provide support for hierarchy attribute calculation and navigation, and allow the execution of typical hierarchy operations directly on relational data.
-
-| Transformation                                | Description                                                      | Node.js |        Java        |
-|-----------------------------------------------|------------------------------------------------------------------|:-------:|:------------------:|
-| `com.sap.vocabularies.Hierarchy.v1.TopLevels` | generate a hierarchy based on recursive parent-child source data |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-| `ancestors`                                   | return all ancestors of a set of start nodes in a hierarchy      |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-| `descendants`                                 | return all descendants of a set of start nodes in a hierarchy    |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-
-- <sup>(1)</sup> Beta feature, API may change
-
-Generic implementation is supported on the following databases:
-
-|   | SAP HANA | H2 | PostgreSQL | SQLite |
-|---|---|---|---|---|
-| CAP Java | ✓ | ✓ | | |
-| CAP Node.js | ✓ |  |✓ |✓ |
-
-:::info
-The source elements of the entity defining the recursive parent-child relation are identified by a naming convention or aliases `node_id` and `parent_id`.
-For more refer to [SAP HANA Hierarchy Developer Guide](https://help.sap.com/docs/SAP_HANA_PLATFORM/4f9859d273254e04af6ab3e9ea3af286/f29c70e984254a6f8df76ad84e78f123.html?locale=en-US&version=2.0.05)
-:::
-
-#### `com.sap.vocabularies.Hierarchy.v1.TopLevels`
-
-The [`TopLevels` transformation](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Hierarchy.xml) produces the hierarchical result based on recursive parent-child relationship:
-
-```http
-GET /SalesOrganizations?$apply=
-     com.sap.vocabularies.Hierarchy.v1.TopLevels(..., NodeProperty='ID', Levels=2)
-```
-#### `ancestors` and `descendants`
-
-The [`ancestors` and `descendants` transformations](https://docs.oasis-open.org/odata/odata-data-aggregation-ext/v4.0/cs03/odata-data-aggregation-ext-v4.0-cs03.html#Transformationsancestorsanddescendants) compute the subset of a given recursive hierarchy, which contains all nodes that are ancestors or descendants of a start nodes set. Its output is the ancestors or descendants set correspondingly.
-
-```http
-GET SalesOrganizations?$apply=
-    descendants(..., ID, filter(ID eq 'US'), keep start)
-   /ancestors(..., ID, filter(contains(Name, 'New York')), keep start)
-```
-
-
 ### Aggregation Methods
 
 | Aggregation Method | Description                      | Node.js | Java  |

@@ -822,7 +822,7 @@ In our example, let's assume our `saas-registry` is configured in the _mta.yaml_
     service: saas-registry
     service-plan: application
     config:
-      appName: bookshop-${org}-${space} // [!code focus]
+      appName: bookshop-${org}-${space} # [!code focus]
 ```
 
 Let's also assume we've deployed to our app to Cloud Foundry org `myOrg` and space `mySpace`. This would be the full command to create a route for the subaccount with subdomain `subscriber1`:

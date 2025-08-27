@@ -743,31 +743,15 @@ Additionally, the welcomeFile is important for deployed Vue UIs as they obtain C
 
 ### Deploy
 
-To build, deploy, and undeploy easily, add these `npm` scripts:
+Before deploying you need to log in to Cloud Foundry: `cf login --sso`
 
-::: code-group
-```json [package.json]
-  "scripts": {
-    "build": "mbt build -t gen --mtar mta.tar", // [!code ++]
-    "deploy": "cf deploy gen/mta.tar", // [!code ++]
-    "undeploy": "cf undeploy capire.samples --delete-services --delete-service-keys" // [!code ++]
-  }
+Start the deployment and build process:
+
 ```
-:::
-
-Before deploying you need to log in to Cloud Foundry.
-
-Build the apps locally:
-
-```shell
-npm run build
+cds up
 ```
 
-Deploy the built artifacts to Cloud Foundry:
-
-```shell
-npm run deploy
-```
+[Learn more about `cds up`.](./to-cf#build-and-deploy){.learn-more}
 
 Once the app is deployed, you can get the url of the approuter via
 

@@ -294,9 +294,13 @@ Application "bookshop" started and available at
 […]
 ```
 
-You can use this URL to access the approuter as the entry point of your application.
+You can use this URL to access the App Router as the entry point of your application.
 
-For **multitenant applications**, you have to subscribe a tenant first. The application is accessible via a tenant-specific URL after subscription.
+For **multitenant applications**, you have to subscribe a tenant first. The application is accessible via a tenant-specific App Router URL after subscription.
+
+::: info SaaS Extensibility
+Share the generic App-Router URL with SaaS consumers for logging in as extension developers using `cds login` or other [extensibility-related commands](../extensibility/customization#prep-as-operator).
+:::
 
 ::: tip No index page and SAP Fiori preview in the cloud
 The default index page and [SAP Fiori preview](../../advanced/fiori#sap-fiori-preview), that you are used to seeing during local development, are only meant for the development profile and not available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through on of the [user interface options](#add-ui) outlined before.

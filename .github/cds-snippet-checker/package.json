@@ -6,7 +6,7 @@
   "main": "check-cds-snippets.js",
   "author": "SAP SE (https://www.sap.com)",
   "license": "SEE LICENSE IN LICENSE",
-  "repository": "cap-js/docs",
+  "repository": "capire/docs",
   "homepage": "https://cap.cloud.sap/",
   "scripts": {
     "check": "node check-cds-snippets.js"

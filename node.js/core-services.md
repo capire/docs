@@ -1065,18 +1065,14 @@ function foreach(
 
 Executes the statement and processes the result set row by row. Use this API instead of [`cds.run`](#srv-run-query) if you expect large result sets. Then they're processed in a streaming-like fashion instead of materializing the full result set in memory before processing.
 
-> Please note that this API is not yet implemented by any common `cds.Service` subclass (that is, `cds.DatabaseService`). Hence, the full result set is currently materialized in memory.
+> As of now, this API is only implemented by `cds.DatabaseService`. For all other subclasses, the full result set is currently materialized in memory.
 
-_**Common Usages:**_
+_**Common Usage:**_
 
 ```js
 cds.foreach (SELECT.from('Foo'), each => console.log(each))
-cds.foreach ('Foo', each => console.log(each))
 ```
 {.indent}
-
-> As depicted in the second line, a plain entity name can be used for the `entity` argument in which case it's expanded to a `SELECT * from ...`.
-
 
 
 ## REST-style API

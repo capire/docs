@@ -69,7 +69,7 @@ The afore-mentioned packages use `cds-plugin` techniques to automatically config
 {"cds":{
   "requires": {
     "db": {
-      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": "memory" } },
+      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": ":memory:" } },
       "[production]": { "kind": "hana", "impl": "@cap-js/hana", "deploy-format": "hdbtable" }
     }
   }
@@ -805,7 +805,7 @@ entity LocalizedTemporalData {
   key record_ID : UUID; // technical primary key
   parent    : Association to Data;
   locale    : String;
-  validFrom : Date;  
+  validFrom : Date;
   validTo : Date;
 }
 ```
@@ -920,7 +920,6 @@ Instead, they protect the integrity of your data in the database layer against p
 :::
 
 ## Standard Database Functions
-{ #functions-mappings-for-runtime-queries }
 
 A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way, and translated to the best-possible native SQL functions or polyfills during runtime (currently only Node.js) and for your CDL files.
 
@@ -965,19 +964,19 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
 #### String Functions
 
 - `concat(x, y, ...)`
-  Concatenates the given strings or numbers.
+  Concatenates the given strings or numbers `x`, `y`, ....
 
 - `trim(x)`
-  Removes leading and trailing whitespaces.
+  Removes leading and trailing whitespaces from `x`.
 
 - `contains(x, y)`
-  Checks whether `y` is contained in `x` (case-sensitive).
+  Checks whether `x` contains `y` (case-sensitive).
 
 - `startswith(x, y)`
-  Checks whether `y` starts with `x` (case-sensitive).
+  Checks whether `x` starts with `y` (case-sensitive).
 
 - `endswith(x, y)`
-  Checks whether `y` ends with `x` (case-sensitive).
+  Checks whether `x` ends with `y` (case-sensitive).
 
 - `matchespattern(x, y)`
   Checks whether `x` matches the regular expression `y`.

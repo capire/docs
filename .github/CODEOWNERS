@@ -1,9 +1,9 @@
 # This files defines code ownership.
 
 # General content
-* @renejeglinsky
-node.js/ @smahati
-java/ @smahati
+* @smahati
+# node.js/ @smahati
+# java/ @smahati
 
 # Infra
 .github/    @chgeo @swaldmann

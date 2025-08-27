@@ -25,7 +25,7 @@
 <strong>EXAMPLES</strong>
     <em>cds repl</em> --run bookshop
     <em>cds repl</em> --run .
-    <em>cds repl</em> --use cds.ql
+    <em>cds repl</em> --use ql
 
 <strong>SEE ALSO</strong>
     <em>cds eval</em>  to evaluate and execute JavaScript.

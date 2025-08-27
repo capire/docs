@@ -249,6 +249,8 @@ The `ModelProviderService`, which is used for toggling features, is implemented 
 
 An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default it's added to a subfolder *mtx/sidecar* within your main project, containing just a *package.json* file:
 
+<div class="impl node">
+
 ::: code-group
 
 ```json [mtx/sidecar/package.json]
@@ -266,6 +268,34 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 ```
 
 :::
+
+</div>
+
+
+<div class="impl java">
+
+::: code-group
+
+```json [mtx/sidecar/package.json]
+{
+  "name": "mtx-sidecar", "version": "0.0.0",
+  "dependencies": {
+    "@sap/cds": "^9",
+    "@sap/cds-mtxs": "^3",
+    "express": "^4"
+  },
+  "cds": {
+    "profiles": [
+      "mtx-sidecar",
+      "java"
+    ]
+  }
+}
+```
+
+:::
+
+</div>
 
 [Learn more about setting up **MTX sidecars**.](../multitenancy/mtxs#sidecars){.learn-more}
 

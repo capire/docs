@@ -13,6 +13,10 @@ status: released
 
 The following chapter describes the [`cds-typer` package](https://www.npmjs.com/package/@cap-js/cds-typer) in detail using the [bookshop sample](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop) as a running example.
 
+::: tip
+If you are planning to use cds-typer in a TypeScript project, you should read the [setup guide for CDS with TypeScript](../node.js/typescript) first. Otherwise you can use cds-typer also in JavaScript projects as described in the following.
+:::
+
 ## Quickstart using VS Code {#cds-typer-vscode}
 
 1. In your project's root, execute `cds add typer`.

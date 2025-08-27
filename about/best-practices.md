@@ -668,8 +668,7 @@ Yet, **both are agnostic** to wire protocols or ['UI widgetry'](https://wiki.c2.
 
 ![Hexagonal architecture and DDD (Domain Driven Design)](https://www.happycoders.eu/wp-content/uploads/2023/01/hexagonal-architecture-ddd-domain-driven-design-600x484.png){.zoom75}
 
-#### Entities ⇒ Core Domain Model
-{#core-domain-model}
+#### Entities ⇒ Core Domain Model {#core-domain-model}
 
 Your core domain model is largely covered by CDS-declared entities, enriched with invariant assertions, which are deployed to databases and automatically served by generic service providers out of the box. Even enterprise aspects like common code lists, localized data, or temporal data are simple to add and served out of the box as well.
 

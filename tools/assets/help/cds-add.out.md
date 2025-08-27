@@ -12,39 +12,41 @@
       <em>completion</em>                   - shell completion for cds commands
       <em>esm</em>                          - ESM-compatible Node.js project
       <em>typer</em>                        - type generation for CDS models
-      <em>typescript</em>                   - add minimum configuration for a bare TypeScript project
-      <em>extension</em>                    - Extension project
-      <em>tiny-sample</em>                  - add minimal sample files
-      <em>sample</em>                       - add sample files including Fiori UI
-      <em>handler</em>                      - handler stubs for service entities, actions and functions
+      <em>typescript</em>                   - minimum configuration for a bare TypeScript project
+      <em>extension</em>                    - extension project
       <em>mta</em>                          - Cloud Foundry deployment using mta.yaml
       <em>cf-manifest</em>                  - Cloud Foundry deployment using manifest files
       <em>helm</em>                         - Kyma deployment using Helm charts
       <em>helm-unified-runtime</em>         - Kyma deployment using Unified Runtime Helm charts
       <em>containerize</em>                 - containerization using ctz CLI
-      <em>multitenancy</em>                 - schema-based multitenancy support
-      <em>toggles</em>                      - allow dynamically toggled features
-      <em>extensibility</em>                - tenant-specific model extensibility
-      <em>side-by-side-extensibility</em>   - logic extensibility via extension points
-      <em>mtx</em>                          - multitenancy + toggles + extensibility
+      <em>kyma</em>                         - helm + containerize
+      <em>tiny-sample</em>                  - minimal sample files
+      <em>sample</em>                       - sample files including Fiori UI
+      <em>handler</em>                      - handler stubs for service entities, actions and functions
+      <em>test</em>                         - tests for services
       <em>xsuaa</em>                        - authentication via XSUAA
       <em>ias</em>                          - authentication via IAS
       <em>ams</em>                          - authorization via AMS
       <em>hana</em>                         - database support for SAP HANA
       <em>postgres</em>                     - database support for PostgreSQL
       <em>sqlite</em>                       - database support for SQLite
-      <em>h2</em>                           - database support for H2
       <em>liquibase</em>                    - database migration using Liquibase
       <em>redis</em>                        - SAP BTP Redis, Hyperscaler Option
-      <em>attachments</em>                  - SAP BTP Object Store Service
-      <em>malware-scanner</em>              - SAP Malware Scanning Service
+      <em>h2</em>                           - database support for H2
+      <em>multitenancy</em>                 - schema-based multitenancy support
+      <em>toggles</em>                      - allow dynamically toggled features
+      <em>extensibility</em>                - tenant-specific model extensibility
+      <em>side-by-side-extensibility</em>   - logic extensibility via extension points
+      <em>mtx</em>                          - multitenancy + toggles + extensibility
+      <em>approuter</em>                    - dynamic routing using @sap/approuter
       <em>local-messaging</em>              - messaging via local event bus
       <em>file-based-messaging</em>         - messaging via file system
       <em>enterprise-messaging</em>         - messaging via SAP Enterprise Messaging
       <em>enterprise-messaging-shared</em>  - messaging via shared SAP Enterprise Messaging
       <em>redis-messaging</em>              - messaging via Redis
       <em>kafka</em>                        - messaging via Apache Kafka
-      <em>approuter</em>                    - dynamic routing using @sap/approuter
+      <em>attachments</em>                  - SAP BTP Object Store Service
+      <em>malware-scanner</em>              - SAP BTP Malware Scanning Service
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
@@ -56,7 +58,8 @@
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
-      <em>pipeline</em>                     - CI/CD pipeline integration
+      <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
+      <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
 
 <strong>OPTIONS</strong>
     <em>--for | -4</em> &lt;profile&gt;
@@ -191,6 +194,19 @@
         Print the generated requests to the console instead of writing them to a file.
 
 
+    <em>cds add test</em>
+
+      --filter | -f
+
+        Filter for services or entities or actions matching the given pattern. If it contains meta
+        characters like '^' or '*', it is treated as a regular expression,
+        otherwise as an include pattern, i.e /.*pattern.*/i
+
+      --out | -o
+
+        Custom output directory. For Node.js, the default is 'test'.
+
+
     <em>cds add xsuaa</em>
 
       --plan
@@ -199,13 +215,15 @@
 
 
 <strong>EXAMPLES</strong>
-    <em>cds add</em> sample
-    <em>cds add</em> multitenancy,hana,xsuaa --for production
-    <em>cds add</em> data --filter my.namespace.MyEntity
-    <em>cds add</em> mta
-    <em>cds add</em> helm
-
+  <em>cds add</em> sample
+  <em>cds add</em> multitenancy,hana,xsuaa
+  <em>cds add</em> data --filter my.namespace.MyEntity
+  <em>cds add</em> mta
+  <em>cds add</em> helm
 
 <strong>SEE ALSO</strong>
   <em>cds init</em>
+
+<strong>SUMMARY</strong>
+  <em>cds add</em> &lt;feature | comma-separated list of features&gt;
 </pre>

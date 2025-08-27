@@ -62,7 +62,7 @@ Keywords are *case-insensitive*, but are most commonly used in lowercase notatio
 
 Identifiers are *case-significant*, that is, `Foo` and `foo` would identify different things.
 
-Identifiers have to comply to `/[$A-Za-z_]\w*/` or be enclosed in `![`...`]` like that:
+Identifiers have to comply to `/^[$A-Za-z_]\w*$/` or be enclosed in `![`...`]` like that:
 
 ```cds
 type ![Delimited Identifier] : String;
@@ -322,7 +322,7 @@ cds.compile(..., { docs: true })
 
 ::: tip Doc comments are automatically enabled in CAP Java.
 In CAP Java, doc comments are automatically enabled by the [CDS Maven Plugin](../java/developing-applications/building#cds-maven-plugin).
-In generated interfaces they are [converted to corresponding Javadoc comments](../java/assets/cds-maven-plugin-site/generate-mojo.html#documentation).
+In generated interfaces they are [converted to corresponding Javadoc comments](../java/assets/cds-maven-plugin-site/generate-mojo.html#documentation){target="_blank"}.
 :::
 
 When generating output for deployment to SAP HANA, the first paragraph of a doc comment is translated
@@ -376,7 +376,7 @@ define entity Employees {
 {#types}
 
 You can declare custom types to reuse later on, for example, for elements in entity definitions.
-Custom-defined types can be simple, that is derived from one of the predefined types, structure types or [Associations](#associations).
+Custom-defined types can be simple, that is derived from one of the predefined types, structured types or [Associations](#associations).
 
 ```cds
 define type User : String(111);
@@ -2085,8 +2085,7 @@ service CatalogService {
 
 Bound actions and functions have a binding parameter that is usually implicit.
 It can also be modeled explicitly: the first parameter of a bound action or function is treated as binding parameter,
-if it's typed by `[many] $self`. Use Explicit Binding to control the naming of the binding parameter. Use the
-keyword `many` to indicate that the action or function is bound to a collection of instances rather than to a single one.
+if it's typed with `$self` or `many $self`. Use the keyword [`many`](#arrayed-types) to indicate that the action or function is bound to a collection of instances rather than to a single one. Also use the binding parameter to control its name.
 
 ```cds
 service CatalogService {
