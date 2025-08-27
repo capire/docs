@@ -311,6 +311,22 @@ Each entry in the `Changes` entity contains the following information:
 - The data type of the changed attribute.
 - The technical path from the root entity to the tracked target entity.
 
+By default, changes remain in your database even when their entities are deleted.
+
+If you want to delete changelogs together with your entities, your **domain entity** must be extended with the `changelog.changeTracked` aspect.
+
+To enable the deletion of changes per entity, annotate your domain entity like this:
+
+```cds
+annotate model.Books.changes:change with @cascade: { delete };
+```
+
+To enable deletion of changes for all entities in the model, add the following annotation to your model:
+
+```cds
+annotate sap.changelog.ChangeLink:change with @cascade: { delete };
+```
+
 ## Detection of Changes
 
 The change tracking intercepts the modifying CQL statements (`Insert`, `Upsert`, `Update`, and `Delete`) and
