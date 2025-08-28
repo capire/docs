@@ -38,8 +38,8 @@ Before we start, you'll need a **CAP-based [multitenant SaaS application](../mul
 You can download the ready-to-use [Orders Management application](https://github.com/capire/orders):
 
 ```sh
-git clone https://github.com/SAP-samples/cloud-cap-samples
-cd cloud-cap-samples/orders
+git clone https://github.com/capire/orders
+cd orders
 cds add multitenancy
 ```
 

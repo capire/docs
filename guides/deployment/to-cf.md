@@ -42,11 +42,11 @@ cd bookshop
 
 ::: details Alternatively, download or clone the sample repository
 
-Exercise the following steps in the `bookshop` subfolder of the [`cloud-cap-samples`](https://github.com/sap-samples/cloud-cap-samples) repo:
+Exercise the following steps in the `bookshop` sample of the [`capire`](https://github.com/sap-samples/cloud-cap-samples) org:
 
 ```sh
-git clone https://github.com/sap-samples/cloud-cap-samples samples
-cd samples/bookshop
+git clone https://github.com/capire/bookshop
+cd bookshop
 ```
 
 :::

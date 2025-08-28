@@ -21,7 +21,7 @@ npm add -D @cap-js/cds-test
 ```
 
 ::: tip Examples
-Find examples in [*cap/samples*](https://github.com/sap-samples/cloud-cap-samples/tree/main/test) and in the [*SFlight sample*](https://github.com/SAP-samples/cap-sflight/tree/main/test).
+Find examples in [*capire/samples*](https://github.com/capire/samples/tree/main/tests) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
 :::
 
 
