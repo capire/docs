@@ -53,7 +53,11 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 :::
 
+## Maintenance
 
+The database services are validated against the latest maintained QRC version of SAP HANA Cloud. It's not guaranteed that outdated versions are fully functional with the latest database services.
+
+[See the official SAP HANA Cloud documentation for their maintenance strategy.](https://help.sap.com/docs/HANA_CLOUD_CN/1f64fe39189f4176bf659e737d62222a/6ced4d164e234b74aa9bea82435ce9a8.html){.learn-more}
 
 
 ## Running `cds build`
