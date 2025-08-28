@@ -47,7 +47,7 @@ In the next example, the reserved SQL keyword `new` is used as an element name, 
   kind="incorrect"
   :rules="{'@sap/cds/no-java-keywords': ['warn', 'show']}"
   :files="['db/schema.cds']"
-  :packages="{'devDependencies': { '@cap-js/sqlite': '^1' } }"
+  :packages="{'devDependencies': { '@cap-js/sqlite': '^2' } }"
 />
 
 ## Version

@@ -16,18 +16,14 @@ import { data } from '../examples/examples.data.ts';
 const configFileName = "eslint.config.js";
 const packageJsonFileName = "package.json";
 
-const defaultConfig: string = `import cds from '@sap/eslint-plugin-cds'
+const defaultConfig: string = `import cds from '@sap/cds/eslint.config.mjs'
+import cdsPlugin from '@sap/eslint-plugin-cds'
 
 export default [
-  cds.configs.recommended,
-  {
-    plugins: {
-      '@sap/cds': cds
-    },
-    rules: {
-      // ...cds.configs.recommended.rules,
-    }
-  }
+  ...cds.recommended,
+  cdsPlugin.configs.js.all,
+  cdsPlugin.configs.recommended,
+  // %RULES%
 ]
 `
 
@@ -50,11 +46,11 @@ function link(name: Props['name'] = "", kind: Props['kind'], rules?: Props['rule
       rulesList.push(`"${key}": ${JSON.stringify(value)}`);
     }
     sources[configFileName] = defaultConfig.replace(
-      /\/\/\s*...cds.configs.recommended.rules,/,
-      `// ...cds.configs.recommended.rules,\n      ${rulesList.join(',\n')}`
+      /\/\/ %RULES%/,
+      `{\n    rules: {\n      ${rulesList.join(',\n')}\n    }\n  }`
     );
   } else{
-    sources[configFileName] = defaultConfig;
+    sources[configFileName] = defaultConfig.replace(/\/\/ %RULES%/, '');
   }
   if (packages) {
     json = merge(defaultPackageJson, packages);
