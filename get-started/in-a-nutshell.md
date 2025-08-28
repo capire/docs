@@ -518,7 +518,7 @@ CAP provides out-of-the-box support for SAP Fiori UIs, for example, with respect
 ### Vue.js UIs {#vue .impl .node}
 
 Besides Fiori UIs, CAP services can be consumed from any UI frontends using standard AJAX requests.
-For example, you can [find a simple Vue.js app in **cap/samples**](https://github.com/capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to [the `CatalogService` API we defined above](#services). {.impl .node}
+For example, you can [find a simple Vue.js app in the GitHub repo](https://github.com/capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to [the `CatalogService` API we defined above](#services). {.impl .node}
 
 ![Shows the famous bookshop catalog service in a simple Vue.js UI.](assets/vue-app.png){style="margin:0" .impl .node .adapt}
 
@@ -547,7 +547,7 @@ bookshop/
 └─ ...
 ```
 
-[See these files also in **cap/samples**/bookshop/srv folder.](https://github.com/capire/bookshop/tree/main/srv){.learn-more}
+[See these files also in the GitHub repo.](https://github.com/capire/bookshop/tree/main/srv){.learn-more}
 [Learn more about providing service implementations **in Node.js**.](../node.js/core-services#implementing-services){.learn-more .impl .node}
 [Learn also **how to do that in Java** using Event Handler Classes.](../java/event-handlers/#handlerclasses){.learn-more .impl .java}
 
