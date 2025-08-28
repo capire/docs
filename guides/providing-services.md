@@ -1400,17 +1400,14 @@ Client doesn't.
 - In the Node.js Runtime, all binary strings are converted into binary data according to SAP HANA property types.
 To disable this default behavior, you can set the environment variable <Config>cds.hana.base64_to_buffer: false</Config>.
 
-# Best Practices
 
 
+## Best Practices
 
-## Single-Purposed Services
-{.best-practice}
-
+### Single-Purposed Services
 
 We strongly recommend designing your services for single use cases.
 Services in CAP are cheap, so there's no need to save on them.
-
 
 #### **DON'T:**{.bad} Single Services Exposing All Entities 1:1
 
@@ -1465,7 +1462,7 @@ These services serve different use cases and are tailored for each.
 Note, for example, that we intentionally don't expose the `Authors` entity
 to end users.
 
-## Late-Cut Microservices {.best-practice}
+### Late-Cut Microservices
 
 Compared to Microservices, CAP services are 'Nano'. As shown in the previous sections, you should design your application as a set of loosely coupled, single-purposed services, which can all be served embedded in a single-server process at first (that is, a monolith).
 
