@@ -261,7 +261,7 @@ The built-in CORS middleware can be enabled explicitly with <Config>cds.server.c
 
 ### Toggle Generic Index Page
 
-The default generic _index.html_ page is not served if `NODE_ENV` is set to `production`. Set <Config>cds.server.index: true</Config> to restore the generic index page in production.
+The default generic _index.html_ page is not served if `NODE_ENV` is set to `production`. Set <Config>cds.server.index: true</Config> to activate explicitly (not recommended for production).
 
 [See the **Generic *index.html*** page in action.](../get-started/in-a-nutshell.md#generic-index-html) {.learn-more}
 
