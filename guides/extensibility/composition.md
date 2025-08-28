@@ -186,7 +186,7 @@ Everything outside of your models is ignored.
 
 ### Via `using from` Directives
 
-Use the definitions from imported models through [`using` directives](../../cds/cdl#model-imports) as usual. For example, like in [@capire/bookstore](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/srv/mashup.cds#L28-L30), simply add all:
+Use the definitions from imported models through [`using` directives](../../cds/cdl#model-imports) as usual. For example, like in [@capire/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.cds#L28-L30), simply add all:
 
 ::: code-group
 ```cds [bookstore/srv/mashup.cds]
@@ -264,7 +264,7 @@ You can freely use all definitions from the imported models in the same way as y
 
 You can even extend imported definitions, for example, add elements to imported entities, or add/override annotations, without limitations.
 
-Here's an example from the [@capire/bookstore](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/srv/mashup.cds#L11-L16):
+Here's an example from the [@capire/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.cds#L11-L16):
 
 ::: code-group
 ```cds [bookstore/srv/mashup.cds]

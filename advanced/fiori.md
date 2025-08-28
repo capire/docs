@@ -401,7 +401,7 @@ To enable draft for an entity exposed by a service, simply annotate it with `@od
 annotate AdminService.Books with @odata.draft.enabled;
 ```
 
-[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/app/admin-books/fiori-service.cds#L79){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L79){.learn-more}
 
 ::: warning
 You can't project from draft-enabled entities, as annotations are propagated. Either _enable_ the draft for the projection and not the original entity or _disable_ the draft on the projection using `@odata.draft.enabled: null`.
@@ -429,9 +429,9 @@ Adding the annotation `@fiori.draft.enabled` won't work if the corresponding `_t
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](../assets/draft-for-localized-data.png){style="margin:0"}
 
-[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/app/admin-books/fiori-service.cds#L78){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
 
-If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/app/admin-books/fiori-service.cds#L104) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
+If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L104) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
 
 ### Draft Choreography: How Draft Editing Works
 

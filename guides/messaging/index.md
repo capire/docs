@@ -175,7 +175,7 @@ Simply use `srv.emit()` to emit events, and let the CAP framework care for wire 
 
 ### Receiving Events
 
-Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/capire/bookstore/blob/1fd04f29840c81a8cc3072589bc411af85c7c7f6/srv/mashup.js#L49-L52)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
+Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/capire/bookstore/blob/main/srv/mashup.js#L49-L52)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
 
 ```js
   // Update Books' average ratings when ReviewsService signals updated reviews
