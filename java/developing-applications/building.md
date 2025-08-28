@@ -400,7 +400,7 @@ Each time your application is built, these interfaces are regenerated. By defaul
 
 ### Typed Results
 
-Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated query builder interfaces to the data accessor interfaces for queries with [typed results](../../releases/aug25#typed-results).
+Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
 
 ### Package for Generated Code
 

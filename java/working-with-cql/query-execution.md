@@ -719,7 +719,7 @@ Map<String, String> titleToDescription =
 
 For the entities defined in the data model, CAP Java SDK can generate interfaces for you through [a Maven plugin](../cqn-services/persistence-services#staticmodel).
 
-When setting `linkedInterfaces` to `true` in the CDS Maven Plugin's `generate` goal, [query builder interfaces](../working-with-cql/query-api#concepts) and [data accessor interfaces](../cds-data#typed-access) are linked. This enables automatically typed results when executing a `Select` or `Update` statement, avoiding the need to explicitly pass the data accessor interface class to methods like `single(Entity.class)`, `listOf(Entity.class)` or `streamOf(Entity.class)`.
+When setting [linkedInterfaces](../developing-applications/building#typed-results) to `true` in the CDS Maven Plugin's `generate` goal, [query builder interfaces](../working-with-cql/query-api#concepts) and [data accessor interfaces](../cds-data#typed-access) are linked. This enables automatically typed results when executing a `Select` or `Update` statement, avoiding the need to explicitly pass the data accessor interface class to methods like `single(Entity.class)`, `listOf(Entity.class)` or `streamOf(Entity.class)`.
 
 ```java
 import static cds.gen.catalogservice.CatalogService_.BOOKS;
