@@ -396,7 +396,7 @@ this.on ('READ', Books, req => {
 })
 ```
 
-The additional `options` argument can be used to specify content disposition headers in case of [custom streaming (beta)](best-practices#custom-streaming-beta). 
+The optional second argument `options` can be used to specify content disposition headers in case of [custom streaming (beta)](best-practices#custom-streaming-beta). 
 
 ### req. reject ({ ... }) {.method #req-reject}
 
