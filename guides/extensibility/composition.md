@@ -201,7 +201,7 @@ The `cds` compiler finds the imported content in `node_modules` when processing 
 
 ### Using _index.cds_ Entry Points {#index-cds}
 
-The above `using from` statements assume that the imported packages provide _index.cds_ in their roots as [public entry points](#entry-points), which they do. For example see [@capire/bookshop/index.cds](https://github.com/capire/bookshop/blob/721a52904521df772ace81fb468340575b54765a/index.cds):
+The above `using from` statements assume that the imported packages provide _index.cds_ in their roots as [public entry points](#entry-points), which they do. For example see [@capire/bookshop/index.cds](https://github.com/capire/bookshop/blob/main/index.cds):
 
 ::: code-group
 ```cds [bookshop/index.cds]

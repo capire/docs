@@ -32,7 +32,7 @@ entity Books {
 }
 ```
 
-[Find this source also in **capire/bookshop**.](https://github.com/capire/bookshop/blob/721a52904521df772ace81fb468340575b54765a/db/schema.cds#L4-L8){ .learn-more}
+[Find this source also in **capire/bookshop**.](https://github.com/capire/bookshop/blob/main/db/schema.cds#L4-L8){ .learn-more}
 
 ::: warning _Restriction_
 If you want to use the `localized` modifier, the entity's keys must not be associations.
