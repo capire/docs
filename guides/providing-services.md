@@ -817,7 +817,7 @@ entity Foo {
 ```
 #### ... with open intervals
 
-By default, specified `[min,max]` ranges are interpreted as closed intervals, that means, the performed checks are `min ≤ input ≤ max`. You can also specify open intervals by wrapping the *min* and/or *max* values into parenthesis like that:
+By default, specified `[min,max]` ranges are interpreted as closed intervals, that means, the performed checks are `min ≤ input ≤ max`. You can also specify open intervals by wrapping the *min* and/or *max* values into parentheses like that:
 
 <!-- cds-mode: ignore; duplicate annotations -->
 ```cds
@@ -831,7 +831,7 @@ In addition, you can use an underscore `_` to represent *Infinity* like that:
 @assert.range: [(0),_]  // positive numbers only, _ means +Infinity here
 @assert.range: [_,(0)]  // negative number only, _ means -Infinity here
 ```
->  Basically values wrapped in parentheses _`(x)`_ can be read as _excluding `x`_ for *min* or *max*. Note that the underscore `_` doesn't have to be wrapped into parenthesis, as by definition no number can be equal to *Infinity* .
+>  Basically values wrapped in parentheses _`(x)`_ can be read as _excluding `x`_ for *min* or *max*. Note that the underscore `_` doesn't have to be wrapped into parentheses, as by definition no number can be equal to *Infinity* .
 
 Support for open intervals and infinity is available for CAP Node.js since `@sap/cds` version **8.5** and in CAP Java since version **3.5.0**.
 
