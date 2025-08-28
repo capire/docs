@@ -49,7 +49,7 @@ You can then delegate reading of active entities, for example to a remote S/4 sy
 
 ```java
 @On(entity = MyRemoteDraftEnabledEntity_.CDS_NAME)
-public CdsResult<?> delegateToS4(ActiveReadEventContext context) {
+public Result delegateToS4(ActiveReadEventContext context) {
     return remoteS4.run(context.getCqn());
 }
 ```

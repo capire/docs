@@ -447,7 +447,7 @@ The return value of an event can be set by returning a value in an event handler
 
 ```java
 @On(entity = Books_.CDS_NAME)
-public CdsResult<?> readBooks(CdsReadEventContext context) {
+public Result readBooks(CdsReadEventContext context) {
     return db.run(context.getCqn());
 }
 ```
