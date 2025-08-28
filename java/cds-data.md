@@ -1358,13 +1358,13 @@ Using a custom `On` handler makes sense if you want to prevent that the default 
 
 ```java
 @On(event = CqnService.EVENT_UPDATE)
-public CdsResult<?> processCoverImage(CdsUpdateEventContext context, List<Books> books) {
+public CdsResult<Books> processCoverImage(CdsUpdateEventContext context, List<Books> books) {
 	books.forEach(book -> {
 		book.setCoverImage(new CoverImagePreProcessor(book.getCoverImage()));
 	});
 
 	// example for invoking some CQN-based service
-	return service.run(Update.entity(Books_.CDS_NAME).entries(books));
+	return service.run(Update.entity(Books_.class).entries(books));
 }
 ```
 
