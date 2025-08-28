@@ -292,7 +292,7 @@ For example:
 Captures the full canonicalized path information of incoming requests with navigation.
 For requests without navigation, `req.path` is identical to [`req.target.name`](#target) (or [`req.entity`](#entity), which is a shortcut for that).
 
-Examples based on [cap/samples/bookshop AdminService](https://github.com/sap-samples/cloud-cap-samples/tree/master/bookshop/srv/admin-service.cds):
+Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/bookshop/blob/main/srv/admin-service.cds):
 
 | OData Request     | `req.path`                | `req.target.name`    |
 |-------------------|---------------------------|----------------------|

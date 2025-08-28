@@ -110,9 +110,6 @@ After you completed the [*Initial Setup*](./), you jumpstart a project as follow
 
    :::
 
-
-
-
 ## Capture Domain Models
 
 
@@ -398,7 +395,6 @@ cds add data --records 10
 ```
 [Find the full set of options here.](../tools/cds-cli.md#data){.learn-more}
 :::
-
 
 <span class="impl node">
 
