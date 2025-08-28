@@ -693,6 +693,23 @@ For instance, this is true for [authorizations](#secure-authorization) or applic
 It's recommended to ensure security settings by automated integration tests.
 :::
 
+CAP provides some features that are suitable for development only such as 
+- Index Page
+- Mock Users
+- Developer Dashboard (Java only)
+
+These features are deactivated in the production profile by default.
+
+::: warning 
+**Do not manually enable features for production that are disabled by the production profile**, as this could introduce serious security vulnerabilities.
+:::
+
+[Learn more about production profiles in Java](../../java/developing-applications/configuring#production-profile){.learn-more}
+[Learn more about production profiles in Node.js](../../node.js/cds-env#profiles){.learn-more}
+
+
+
+
 
 ### Fail Securely { #fail-securely }
 <!-- #SEC-239 -->
