@@ -492,7 +492,7 @@ The rules regarding Timestamps apply to all comparison operators: `=`, `<`, `>`,
 
 ### Improved Performance {.node}
 
-The combination of the above-mentioned improvements commonly leads to significant performance improvements. For example, displaying the list page of Travels in [cap/sflight](https://github.com/SAP-samples/cap-sflight) took **>250ms** in the past, and **~15ms** now.
+The combination of the above-mentioned improvements commonly leads to significant performance improvements. For example, displaying the list page of Travels in [capire/xtravels](https://github.com/capire/xtravels) took **>250ms** in the past, and **~15ms** now.
 
 
 
