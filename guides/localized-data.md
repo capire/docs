@@ -13,7 +13,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 Localized data refers to the maintenance of different translations of textual data and automatically fetching the translations matching the users' preferred language, with per-row fallback to default languages, if the required translations aren't available. Language codes are in ISO 639-1 format.
 
-> Find a **working sample** at <https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop>.
+> Find a **working sample** at <https://github.com/capire/bookshop>.
 
 [[toc]]
 
@@ -32,7 +32,7 @@ entity Books {
 }
 ```
 
-[Find this source also in **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/blob/ea6e27481071a765dfd701ddb239ed89b92bf426/bookshop/db/schema.cds#L4-L7){ .learn-more}
+[Find this source also in **capire/bookshop**.](https://github.com/capire/bookshop/blob/main/db/schema.cds#L4-L8){ .learn-more}
 
 ::: warning _Restriction_
 If you want to use the `localized` modifier, the entity's keys must not be associations.

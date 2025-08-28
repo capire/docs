@@ -117,7 +117,7 @@ service CatalogService @(path:'/browse') {
 
 [Learn more about **CQL** the language used for `projections`.](../cds/cql){.learn-more}
 [See also: Prefer Single-Purposed Services!](#single-purposed-services){.learn-more}
- [Find above sources in **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop/srv/cat-service.cds){ .learn-more}
+[Find above sources in **capire/bookshop**.](https://github.com/capire/bookshop/blob/main/srv/cat-service.cds){ .learn-more}
 
 
 ### Auto-Exposed Entities

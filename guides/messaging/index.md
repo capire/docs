@@ -109,14 +109,14 @@ Emitters of event messages are decoupled from the receivers and don't need to kn
 
 The following explanations walk us through a books review example from cap/samples:
 
-* **[@capire/bookshop](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop)** provides the well-known basic bookshop app.
-* **[@capire/reviews](https://github.com/sap-samples/cloud-cap-samples/tree/main/reviews)** provides an independent service to manage reviews.
-* **[@capire/bookstore](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore)** combines both into a composite application.
+* **[@capire/bookshop](https://github.com/capire/bookshop)** provides the well-known basic bookshop app.
+* **[@capire/reviews](https://github.com/capire/reviews)** provides an independent service to manage reviews.
+* **[@capire/bookstore](https://github.com/capire/bookstore)** combines both into a composite application.
 
 ![This graphic is explained in the accompanying text.](assets/cap-samples.drawio.svg)
 
 ::: tip
-Follow the instructions in [*cap/samples/readme*](https://github.com/SAP-samples/cloud-cap-samples#readme) for getting the samples and exercising the following steps.
+Follow the instructions in [*cap/samples/readme*](https://github.com/capire) for getting the samples and exercising the following steps.
 :::
 
 ### Declaring Events in CDS
@@ -175,11 +175,13 @@ Simply use `srv.emit()` to emit events, and let the CAP framework care for wire 
 
 ### Receiving Events
 
-Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/SAP-samples/cloud-cap-samples/blob/30764b261b6bf95854df59f54a8818a4ceedd462/bookstore/srv/mashup.js#L39-L47)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
+Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/capire/bookstore/blob/main/srv/mashup.js#L49-L52)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
 
 ```js
-  // Update Books' average ratings when reviews are updated
-  ReviewsService.on ('reviewed', (msg) => {
+  // Update Books' average ratings when ReviewsService signals updated reviews
+  ReviewsService.on ('AverageRatings.Changed', (msg) => {
+    console.debug ('> received:', msg.event, msg.data)
+    const { subject, count, rating } = msg.dataReviewsService.on ('reviewed', (msg) => {
     const { subject, count, rating } = msg.data
     // ...
   })
@@ -281,7 +283,7 @@ For quick tests during development, CAP provides a simple file-based messaging s
 
 [Learn more about `cds.env` profiles.](../../node.js/cds-env#profiles){.learn-more}
 
-In our samples, you find that in [@capire/reviews/package.json](https://github.com/SAP-samples/cloud-cap-samples/blob/main/reviews/package.json) as well as [@capire/bookstore/package.json](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/package.json), which you'll run in the next step as separate processes.
+In our samples, you find that in [@capire/reviews/package.json](https://github.com/capire/reviews/blob/main/package.json) as well as [@capire/bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json), which you'll run in the next step as separate processes.
 
 
 ### 2. Start the `reviews` Service and `bookstore` Separately
