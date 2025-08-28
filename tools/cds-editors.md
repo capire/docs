@@ -116,8 +116,9 @@ Restart the server when you did changes to your code using the *Debug* views res
 
 ## IntelliJ
 
-The [SAP CDS Language Support](https://github.com/cap-js/cds-intellij) plugin for IntelliJ IDEs provides syntax highlighting, code completion, formatting, and more.
-It supports free and commercial IntelliJ IDEs including IntelliJ IDEA Community, IDEA Ultimate and WebStorm.
+[SAP CDS Language Support](https://plugins.jetbrains.com/plugin/25209-sap-cds-language-support) for IntelliJ provides syntax highlighting, code completion, formatting, navigation, hover documentation, workspace symbol search, and more.
+
+The plugin supports free and commercial IntelliJ IDEs including IntelliJ IDEA Community, IDEA Ultimate and WebStorm.
 
 ![Screenshot showing an example of code completion in IntelliJ.](https://raw.githubusercontent.com/cap-js/cds-intellij/9dab0d1984e79b74074a820fe97ee6f9fb53cab7/.assets/code_completion.png){ .ignore-dark style="width:450px"}
 
