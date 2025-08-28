@@ -17,6 +17,28 @@ Build Your First App with CAP {.subtitle}
 
 
 
+::: details Optionally clone sample from GitHub ...
+
+The sections below describe a hands-on walkthrough, in which you'd create a new project and fill it with content step by step. Alternatively, you can fast forward and get the final sample content from GitHub as follows:
+
+::: code-group
+
+```sh [Node.js]
+git clone https://github.com/capire/bookshop
+cd bookshop
+npm install
+```
+
+```sh [Java]
+git clone https://github.com/sap-samples/cloud-cap-samples-java bookshop
+```
+
+Note: When comparing the code from the repo in GitHub to the snippets given in the sections below you will recognise additions showcasing enhanced features. So, what you find in there is a superset of what we describe in this getting started guide.
+
+:::
+
+
+
 ## Jumpstart a Project {#jumpstart}
 
 
@@ -88,28 +110,6 @@ After you completed the [*Initial Setup*](./), you jumpstart a project as follow
 
    :::
 
-
-::: details Optionally clone sample from GitHub ...
-
-The sections below describe a hands-on walkthrough, in which you'd create a new project and fill it with content step by step. Alternatively, you can get the final sample content from GitHub as follows:
-
-::: code-group
-
-```sh [Node.js]
-git clone https://github.com/capire/bookshop
-cd bookshop
-```
-
-```sh [Java]
-git clone https://github.com/sap-samples/cloud-cap-samples-java bookshop
-```
-
-Note: When comparing the code from the *cap/samples* on GitHub to the snippets given in the sections below you will recognise additions showcasing enhanced features. So, what you find in there is a superset of what we describe in this getting started guide.
-
-:::
-
-
-
 ## Capture Domain Models
 
 
@@ -148,7 +148,7 @@ entity Genres : sap.common.CodeList { // [!code focus]
 ```
 :::
 
-*Find this source also in `capire/bookshop` [for Node.js](https://github.com/capire/bookshop/blob/main/db/schema.cds), and [for Java](https://github.com/SAP-samples/cloud-cap-samples-java/blob/main/db/books.cds)*{ .learn-more}
+_Find this source also in the GitHub repos [for Node.js](https://github.com/capire/bookshop/tree/main/db/schema.cds), and [for Java](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/db/books.cds)_{ .learn-more}
 [Learn more about **Domain Modeling**.](../guides/domain-modeling){ .learn-more}
 [Learn more about **CDS Modeling Languages**.](../cds/){ .learn-more}
 
@@ -160,7 +160,7 @@ entity Genres : sap.common.CodeList { // [!code focus]
 As soon as you save the *schema.cds* file, the still running `cds watch` reacts immediately with new output like this:
 
 ```log
-[cds] - connect to db > sqlite { database: ':memory:' }
+[cds] - connect to db > sqlite { url: ':memory:' }
 /> successfully deployed to in-memory database.
 ```
 
@@ -246,7 +246,7 @@ service CatalogService @(path:'/browse') { // [!code focus]
 ```
 :::
 
-*Find this source also on GitHub [for Node.js](https://github.com/capire/bookshop/tree/main/srv), and [for Java](https://github.com/SAP-samples/cloud-cap-samples-java/tree/main/srv)*{.learn-more}
+*Find this source also on GitHub [for Node.js](https://github.com/capire/bookshop/tree/main/srv), and [for Java](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/srv)*{.learn-more}
 
 [Learn more about **Defining Services**.](../guides/providing-services){ .learn-more}
 
@@ -259,13 +259,20 @@ service CatalogService @(path:'/browse') { // [!code focus]
 This time `cds watch` reacted with additional output like this:
 
 ```log
-[cds] - serving AdminService { at: '/odata/v4/admin' }
-[cds] - serving CatalogService { at: '/browse' }
-
+[cds] - serving AdminService {
+  at: [ '/admin' ],
+  decl: 'srv/admin-service.cds:2',
+  impl: 'srv/admin-service.js'
+}
+[cds] - serving CatalogService {
+  at: [ '/browse', '/rest/catalog', '/hcql/catalog' ],
+  decl: 'srv/cat-service.cds:4',
+  impl: 'srv/cat-service.js'
+}
 [cds] - server listening on { url: 'http://localhost:4004' }
 ```
 
-As you can see, the two service definitions have been compiled and generic service providers have been constructed to serve requests on the listed endpoints _/odata/v4/admin_ and _/browse_.
+As you can see, the two service definitions have been compiled and generic service providers have been constructed to serve OData requests on the listed endpoints _/admin_ and _/browse_.
 
 </span>
 
@@ -377,7 +384,7 @@ ID,name
 ::: details `cds add data` can help you with the file and record generation
 Create empty CSV files with header lines only:
 
-```sh 
+```sh
 cds add data
 ```
 
@@ -389,23 +396,19 @@ cds add data --records 10
 [Find the full set of options here.](../tools/cds-cli.md#data){.learn-more}
 :::
 
-[Find a full set of `.csv` files in **capire/bookshop**.](https://github.com/capire/bookshop/tree/main/db/data){ .learn-more target="_blank"}
-
 <span class="impl node">
 
 After you've added these files, `cds watch` restarts the server with output, telling us that the files have been detected and their content has been loaded into the database automatically:
 
 ```log
 [cds] - connect to db > sqlite { url: ':memory:' }
-  > init from db/init.js
-  > init from db/data/sap.capire.bookshop-Genres.csv
-  > init from db/data/sap.capire.bookshop-Books.texts.csv
-  > init from db/data/sap.capire.bookshop-Books.csv
-  > init from db/data/sap.capire.bookshop-Authors.csv
+ > init from db/init.js
+ > init from db/data/sap.capire.bookshop-Authors.csv
+ > init from db/data/sap.capire.bookshop-Books.csv
+ > init from db/data/sap.capire.bookshop-Books_texts.csv
+ > init from db/data/sap.capire.bookshop-Genres.csv
 /> successfully deployed to in-memory database.
 ```
-
-> Note: This is the output when you're using the [bookshop sample](https://github.com/capire/bookshop). It's less if you've followed the manual steps here.
 
 </span>
 
@@ -511,7 +514,7 @@ CAP provides out-of-the-box support for SAP Fiori UIs, for example, with respect
 ### Vue.js UIs {#vue .impl .node}
 
 Besides Fiori UIs, CAP services can be consumed from any UI frontends using standard AJAX requests.
-For example, you can [find a simple Vue.js app in **capire/bookshop**](https://github.com//capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to [the `CatalogService` API we defined above](#services). {.impl .node}
+For example, you can [find a simple Vue.js app in the GitHub repo](https://github.com/capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to [the `CatalogService` API we defined above](#services). {.impl .node}
 
 ![Shows the famous bookshop catalog service in a simple Vue.js UI.](assets/vue-app.png){style="margin:0" .impl .node .adapt}
 
@@ -540,7 +543,7 @@ bookshop/
 └─ ...
 ```
 
-[See these files also in **capire/bookshop** in the _srv_ folder.](https://github.com//capire/bookshop/tree/main/srv){.learn-more}
+[See these files also in the GitHub repo.](https://github.com/capire/bookshop/tree/main/srv){.learn-more}
 [Learn more about providing service implementations **in Node.js**.](../node.js/core-services#implementing-services){.learn-more .impl .node}
 [Learn also **how to do that in Java** using Event Handler Classes.](../java/event-handlers/#handlerclasses){.learn-more .impl .java}
 
@@ -765,8 +768,8 @@ public class SubmitOrderHandler implements EventHandler {
 
 </span>
 
-[Find this source also in **capire/bookshop**.](https://github.com//capire/bookshop/tree/main/srv/cat-service.js){ .learn-more .impl .node target="_blank"}
-[Find this source also in **cap/samples**.](https://github.com/SAP-samples/cloud-cap-samples-java/blob/main/srv/src/main/java/my/bookshop/handlers/CatalogServiceHandler.java#L166){ .impl .java .learn-more target="_blank"}
+[Find this source also in the GitHub repo.](https://github.com/capire/bookshop/tree/main/srv/cat-service.js){ .learn-more .impl .node target="_blank"}
+[Find this source also in the GitHub repo.](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/srv/src/main/java/my/bookshop/handlers/CatalogServiceHandler.java#L166){ .impl .java .learn-more target="_blank"}
 [Learn more about **connecting to services** using `cds.connect`.](../node.js/cds-connect){ .learn-more .impl .node}
 [Learn more about **connecting to services** using `@Autowired`, `com.sap.cds.ql`, etc.](../java/services){.learn-more .impl .java}
 [Learn more about **reading and writing data** using `cds.ql`.](../node.js/cds-ql){ .learn-more .impl .node}
