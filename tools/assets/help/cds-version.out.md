@@ -5,7 +5,7 @@
 <em>@sap/cds</em>: 9.2.1
 <em>@sap/cds-dk</em>: undefined
 <em>@sap/cds-compiler</em>: 6.2.2
-<em>@sap/cds-dk (global)</em>: 9.2.0
+<em>@sap/cds-dk (global)</em>: 9.2.1
 <em>@sap/cds-fiori</em>: 2.0.1
 <em>@sap/cds-mtxs</em>: 3.2.0
 <em>@cap-js/asyncapi</em>: 1.0.3
