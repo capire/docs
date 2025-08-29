@@ -258,6 +258,44 @@ must be read-only and shouldn't be writable via OData requests.
 The change log is extended with the texts coming from your entities' `@title` annotation and the element. Otherwise, the change log contains only the technical names of the entities and the elements.
 Titles are translated, if they're annotated as translatable. See [Externalizing Texts Bundles](../guides/i18n#localization-i18n) for more information.
 
+You can customize the standard UI on the entity itself:
+
+```cds
+annotate Bookshop.Books.changes with @(UI: {
+    PresentationVariant: {
+        Visualizations: ['@UI.LineItem'],
+        RequestAtLeast: [change.targetEntity],
+        SortOrder: [{
+            Property: change.createdAt,
+            Descending: true
+        }]
+    },
+    LineItem: [...],
+});
+```
+
+Or on the `ChangeLink` entity so that it changed for all entities:
+
+```cds
+annotate sap.changelog.ChangeLink with @(UI: {
+    PresentationVariant: {
+        Visualizations: ['@UI.LineItem'],
+        RequestAtLeast: [change.targetEntity],
+        SortOrder: [{
+            Property: change.createdAt,
+            Descending: true
+        }]
+    },
+    LineItem: [...],
+});
+```
+
+You can also customize individual fields by annotating them directly, as follows:
+
+```cds
+annotate Bookshop.Books.changes:up_ with @UI.Hidden;
+```
+
 ## How Changes are Stored
 
 The namespace `sap.changelog` defines an entity `Changes` that reflects each change, so the changes are stored in a flat table for all entities together.

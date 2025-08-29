@@ -668,8 +668,7 @@ Yet, **both are agnostic** to wire protocols or ['UI widgetry'](https://wiki.c2.
 
 ![Hexagonal architecture and DDD (Domain Driven Design)](https://www.happycoders.eu/wp-content/uploads/2023/01/hexagonal-architecture-ddd-domain-driven-design-600x484.png){.zoom75}
 
-#### Entities ⇒ Core Domain Model
-{#core-domain-model}
+#### Entities ⇒ Core Domain Model {#core-domain-model}
 
 Your core domain model is largely covered by CDS-declared entities, enriched with invariant assertions, which are deployed to databases and automatically served by generic service providers out of the box. Even enterprise aspects like common code lists, localized data, or temporal data are simple to add and served out of the box as well.
 
@@ -774,7 +773,7 @@ This would extend the common reuse type `managed` obtained from `@sap/cds/common
 
 As introduced in the section on [*Event Listeners*](#event-listeners) above, everyone can add event handlers to every service. Similar to aspect-oriented modeling, this allows to extend reuse services.
 
-For example, assumed you're using a reuse package that provides a service to manage reviews, as show-cased in the [*cap/samples* *reviews*](https://github.com/sap-samples/cloud-cap-samples/tree/main/reviews) package. And whenever a new review is added you want to do something in addition. To accomplish this, simply add a respective event handler to the reuse service like so:
+For example, assuming you're using a reuse package that provides a service to manage reviews, as show-cased in the [*capire/reviews*](https://github.com/capire/reviews) package. And whenever a new review is added you want to do something in addition. To accomplish this, simply add a respective event handler to the reuse service like so:
 
 ```js
 const ReviewsService = await cds.connect.to('ReviewsService')

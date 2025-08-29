@@ -43,10 +43,10 @@ const config = defineConfig({
     logo: '/cap-logo.svg',
     outline: [2,3],
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/cap-js/docs' }
+      { icon: 'github', link: 'https://github.com/capire/docs' }
     ],
     editLink: {
-      pattern: 'https://github.com/cap-js/docs/edit/main/:path'
+      pattern: 'https://github.com/capire/docs/edit/main/:path'
     },
     footer: {
       message: `
@@ -106,8 +106,8 @@ config.rewrites = rewrites
 // Add custom capire info to the theme config
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.1.1',
-    java_cds4j: '4.1.1'
+    java_services: '4.2.0',
+    java_cds4j: '4.2.0'
   },
   gotoLinks: []
 }
@@ -200,7 +200,9 @@ import { promises as fs } from 'node:fs'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(siteURL.href)
   sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')
-  await fs.writeFile(path.resolve(outDir, 'robots.txt'), `Sitemap: ${sitemapURL}\n`)
+  console.debug('✓ writing robots.txt with sitemap URL', sitemapURL.href) // eslint-disable-line no-console
+  const robots = (await fs.readFile(path.resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
+  await fs.writeFile(path.join(outDir, 'robots.txt'), robots)
 
   // disabled by default to avoid online fetches during local build
   if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {

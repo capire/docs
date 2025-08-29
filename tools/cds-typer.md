@@ -11,7 +11,11 @@ status: released
 
 # CDS Typer {#cds-typer}
 
-The following chapter describes the [`cds-typer` package](https://www.npmjs.com/package/@cap-js/cds-typer) in detail using the [bookshop sample](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop) as a running example.
+The following chapter describes the [`cds-typer` package](https://www.npmjs.com/package/@cap-js/cds-typer) in detail using the [bookshop sample](https://github.com/capire/bookshop) as a running example.
+
+::: tip
+If you are planning to use cds-typer in a TypeScript project, you should read the [setup guide for CDS with TypeScript](../node.js/typescript) first. Otherwise you can use cds-typer also in JavaScript projects as described in the following.
+:::
 
 ## Quickstart using VS Code {#cds-typer-vscode}
 
@@ -426,7 +430,7 @@ You could import these types by using absolute paths, but there is a more conven
 
 Adding type support via `cds add typer` includes configuring [subpath imports](https://nodejs.org/api/packages.html#subpath-imports). The facet adds a mapping of `#cds-models/` to the default path your model's types are assumed to be generated to (_\<project root\>/@cds-models/_). If you are generating your types to another path and want to use subpath imports, you will have to adjust this setting in your _package.json_ **and** _jsconfig.json_/ _tsconfig.json_ accordingly.
 
-Consider [the bookshop sample](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop) with the following structure with types already generated into _@cds-models_:
+Consider [the bookshop sample](https://github.com/capire/bookshop) with the following structure with types already generated into _@cds-models_:
 
 ```zsh
 bookshop/
@@ -443,7 +447,7 @@ bookshop/
 └── ...
 ```
 
-The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/srv/cat-service.js):
+The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/capire/bookshop/tree/main/srv/cat-service.js):
 
 ```js
 // srv/cat-service.js

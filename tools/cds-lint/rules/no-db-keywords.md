@@ -46,7 +46,7 @@ In the next example, the reserved SQL keyword `Order` is used as an entity name,
   kind="incorrect"
   :rules="{'@sap/cds/no-db-keywords': ['warn', 'show']}"
   :files="['db/schema.cds']"
-  :packages="{'devDependencies': { '@cap-js/sqlite': '^1' } }"
+  :packages="{'devDependencies': { '@cap-js/sqlite': '^2' } }"
 />
 
 ## Version

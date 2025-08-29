@@ -16,38 +16,25 @@ import { data } from '../examples/examples.data.ts';
 const configFileName = "eslint.config.js";
 const packageJsonFileName = "package.json";
 
-const defaultConfig: string = `import cds from '@sap/eslint-plugin-cds'
+const defaultConfig: string = `import cds from '@sap/cds/eslint.config.mjs'
+import cdsPlugin from '@sap/eslint-plugin-cds'
 
 export default [
-  cds.configs.recommended,
-  {
-    plugins: {
-      '@sap/cds': cds
-    },
-    rules: {
-      // ...cds.configs.recommended.rules,
-    }
-  }
+  ...cds.recommended,
+  cdsPlugin.configs.js.all,
+  cdsPlugin.configs.recommended,
+  // %RULES%
 ]
 `
 
 const defaultPackageJson = JSON.parse(data['package.json']);
 
-function mergeJSONs(target: any, add: any) {
-    const isObject = (obj: unknown) => typeof obj === 'object';
-    Object.entries(add).forEach(([key, addVal]) => {
-        const targetVal = target[key];
-        if (targetVal && isObject(targetVal) && isObject(addVal)) {
-            if ((Array.isArray(targetVal) && Array.isArray(addVal))) {
-                targetVal.push(...addVal);
-                return;
-            }
-            mergeJSONs(targetVal, addVal);
-        } else {
-            target[key] = addVal;
-        }
-    });
-    return target;
+const is_object = x => typeof x === 'object' && x !== null && !Array.isArray(x)
+function merge (o:any,...xs:any) {
+  let v:any; for (let x of xs) for (let k in x)
+    if (k === '__proto__' || k === 'constructor') continue //> avoid prototype pollution
+    else o[k] = is_object(v=x[k]) ? merge(o[k]??={},v) : v
+  return o
 }
 
 function link(name: Props['name'] = "", kind: Props['kind'], rules?: Props['rules'], files?: Props['files'], packages?: Props['packages'] ): string {
@@ -59,14 +46,14 @@ function link(name: Props['name'] = "", kind: Props['kind'], rules?: Props['rule
       rulesList.push(`"${key}": ${JSON.stringify(value)}`);
     }
     sources[configFileName] = defaultConfig.replace(
-      /\/\/\s*...cds.configs.recommended.rules,/,
-      `// ...cds.configs.recommended.rules,\n      ${rulesList.join(',\n')}`
+      /\/\/ %RULES%/,
+      `{\n    rules: {\n      ${rulesList.join(',\n')}\n    }\n  }`
     );
   } else{
-    sources[configFileName] = defaultConfig;
+    sources[configFileName] = defaultConfig.replace(/\/\/ %RULES%/, '');
   }
   if (packages) {
-    json = mergeJSONs(defaultPackageJson, packages);
+    json = merge(defaultPackageJson, packages);
   } else {
     json = defaultPackageJson;
   }

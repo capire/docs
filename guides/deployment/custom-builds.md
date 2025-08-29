@@ -15,18 +15,19 @@ status: released
 
 ## Build Configurations {#build-config}
 
-`cds build` executes _build tasks_ on your project folders to prepare them for deployment. Build tasks compile source files (typically CDS sources) and create the required artifacts, for example, EDMX files, SAP HANA design-time artifacts, and so on. By default, `cds build` dynamically determines the build tasks from the CDS configuration and from the project context. See [build task properties](#build-task-properties) for a concrete list of the different build task types.
+`cds build` runs _build tasks_ on your project folders to prepare them for deployment. Build tasks compile _source files_ (typically CDS sources) and create required artifacts, for example, EDMX files or SAP HANA design-time artifacts.
 
-The CDS model folders and files used by `cds build` are determined as follows:
+Build tasks are derived from the CDS configuration and project context. By default, CDS models are resolved from these sources:
 
-- Known root folders, by [default](../../get-started/#project-structure) the folders _db/, srv/, app/_,  can also be configured by [`folders.db`, `folders.srv`, `folders.app`](../../get-started/#project-structure).
-- The _src_ folder configured for the individual build task.
-- If [feature toggles](../extensibility/feature-toggles#enable-feature-toggles) are enabled: subfolders of the folder _fts_.
-- CDS Model folders and files defined by the [required services](../../node.js/cds-env#services) of your project. This also includes models used by required built-in CDS services, like [persistent queue](../../node.js/queue#persistent-queue) or [MTX related services](../multitenancy/mtxs#mtx-services-reference).
+- _db/_, _srv/_, _app/_ — [default root folders](../../get-started/#project-structure)
+- _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
+- CDS model folders and files defined by [required services](../../node.js/cds-env#services), including built-in ones
+  - Examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
+- Explicit `src` folder configured in the build task
 
-Feature toggle folders and required built-in service models will also be added if user defined models have already been configured as [_model_ option](#build-task-properties) in your build tasks.
+Feature toggle folders and required built-in service models will also be added if user-defined models have been configured as a [`model` option](#build-task-properties) in your build tasks.
 
-[Learn more about the calculation of the concrete list of CDS models.](../../node.js/cds-compile#cds-resolve){.learn-more}
+[Learn more about `cds.resolve`](../../node.js/cds-compile#cds-resolve){.learn-more}
 
 ::: tip If custom build tasks are configured, those properties have precedence
 For example, you want to configure the _src_ folder and add the default models. To achieve this, do not define the _model_ option in your build task:
@@ -49,7 +50,7 @@ For example, you want to configure the _src_ folder and add the default models. 
 ```
 
 
- That way, the model paths will still be dynamically determined, but the _src_ folder is taken from the build task configuration. So you benefit from the automatic determination of models, for example, when adding a new external services, or when CAP is changing any built-in service configuration values.
+ This way, the model paths will still be dynamically determined, but the _src_ folder is taken from the build task configuration. You still benefit from the automatic determination of models – for example when adding a new external services or when CAP is changing any built-in service defaults.
 :::
 
 To control which tasks `cds build` executes, you can add them as part of your [project configuration](../../node.js/cds-env#project-settings) in _package.json_ or _.cdsrc.json_, as outlined [in the following chapter](#build-task-properties).
@@ -76,40 +77,40 @@ The following build tasks represent the default configuration dynamically determ
 
 :::
 
-::: tip
-The executed build tasks are logged to the command line. You can use them as a blue print – copy & paste them into your CDS configuration and adapt them to your needs. See also the command line help for further details using `cds build --help`.
+::: tip The executed build tasks are logged to the command line
+You can use them as a blue print – copy & paste them into your CDS configuration and adapt them to your needs.
 :::
 
-The `for` property defines the executed build task type. Currently supported types are:
 
-- `hana`: Creates a deployment layout for the SAP HANA Development Infrastructure (HDI) if an [SAP HANA database](../databases-hana#configure-hana) has been configured.
-- `nodejs` (deprecated: `node-cf`): Creates a deployment layout using a self-contained folder _./gen_ for Node.js apps.
-- `java` (deprecated: `java-cf`): Creates a deployment layout for Java apps.
-- `mtx`: Creates a deployment layout for Node.js applications using multitenancy, feature toggles, extensibility or a combination of these _without_ sidecar architecture.<br>
-    In this scenario the required services are implemented by the Node.js application itself which is the default for Node.js.
-- `mtx-sidecar`: Creates a deployment layout for Java or Node.js projects using multitenancy, feature toggles, extensibility or a combination of these _with_ sidecar architecture.<br>
-  Java projects have to use a sidecar architecture. For Node.js this is optional, but allows for better scalability in multitenant scenarios.
+The `for` property defines the executed build task type creating its part of the deployment layout. Currently supported types are:
 
-  [Learn more about **Multitenant Saas Application Deployment**](./to-cf){.learn-more}
-- `mtx-extension`: Creates a deployment layout (_extension.tgz_ file) for an MTX extension project, which is required for extension activation using `cds push`. Extension point restrictions defined by the SaaS app provider are validated by default. If any restriction is violated the build aborts and the errors are logged.<br>
-  The build task is created by default for projects that have `"cds": { "extends": "\<SaaS app name\>" }` configured in their _package.json_.
+<style lang="scss" scoped>
+th { min-width: 160px; }
+</style>
 
-  [Learn more about **Extending and Customizing SaaS Solutions**](../extensibility/customization){.learn-more}
-- Additional types may be supported by build plugin contributions.
+| Property         | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| `hana`           | SAP HANA Development Infrastructure (HDI) artifacts<br><br>[Learn more about **configuring SAP HANA**](../databases-hana#configure-hana){.learn-more} |
+| `nodejs`         | Node.js applications |
+| `java`           | Java applications |
+| `mtx-sidecar`    | [MTX](../multitenancy/mtxs)-enabled projects _with_ sidecar architecture.<br><br>[Learn more about **Multitenant Saas Application Deployment**](./to-cf){.learn-more} |
+| `mtx`            | MTX-enabled projects _without_ sidecar architecture (Node.js only). Required services are served by the Node.js application itself. |
+| `mtx-extension`         | MTX extension project (_extension.tgz_), which is required for extension activation using `cds push`. Extension point restrictions defined by the SaaS app provider are validated by default. If any restriction is violated the build aborts and the errors are logged.<br><br>The build task is created by default for projects that have `"cds": { "extends": "\<SaaS app name\>" }` configured in their _package.json_.<br><br>[Learn more about **Extending and Customizing SaaS Solutions**](../extensibility/customization){.learn-more} |
 
-  [Learn more about **Running Build Plugins**](#run-the-plugin){.learn-more}
+Additional types may be supported by build plugin contributions.
+
+#### Customization
 
 Build tasks can be customized using the following properties:
 
-- `src`: Source folder of the module that is about to be build.
-- `dest`: Optional destination of the modules builds, relative to the enclosing project. The _src_ folder is used by default.
-- `options`: Sets the options according to the target technology.<br>
-  - `model`: It has type _string_ or _array of string_. The given list of folders or individual _.cds_ file names is resolved based on the current working dir or the project folder passed to cds build. CDS built-in models (prefix _@sap/cds*_) are added by default to the user-defined list of models.
-
-  [Learn more about **Core Data Services (CDS)**](../../cds/){.learn-more}
+| Property  | Description                                                                                                                                                                                                                     |
+|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `src`     | Source folder of module to be built.                                                                                                                                  |
+| `dest`    | Optional destination of the module's build destination, relative to the enclosing project. The _src_ folder is used by default. |
+| `options` | `model`: _string_ or _array of string_<br><br>The given list of folders or individual _.cds_ file names is resolved based on the current working directory or project folder passed to `cds build`.<br><br>CDS built-in models (prefix _@sap/cds*_) are added by default to the user-defined list of models. |
 
 **Note:**
-Alternatively you can execute build tasks and pass the described arguments from command line. See also `cds build --help` for further details.
+Alternatively you can execute build tasks and pass the described arguments to the command line. See also `cds build --help` for further details.
 
 ### Build Target Folder {#build-target-folder}
 
@@ -178,13 +179,11 @@ Packaging of the tarball content is based on the rules of the [`npm pack`](https
 Java projects use the project's root folder _./_ as build target folder by default.<br>
 This causes `cds build` to create the build output below the individual source folders. For example, _db/src/gen_ contains the build output for the _db/_ folder. No source files are copied to _db/src/gen_ because they're assumed to be deployed from their original location, the _db/_ folder itself.
 
-## Implement a Build Plugin {#custom-build-plugins}
+## Implement a Build Plugin <Since version="7.5.0" of="@sap/cds-dk" /> {#custom-build-plugins}
 
 CDS already offers build plugins to create deployment layouts for the most use cases. However, you will find cases where these plugins are not enough and you have to develop your own. This section shows how such a build plugin can be implemented and how it can be used in projects.
 
 Build plugins are run by `cds build` to generate the required deployment artifacts. Build tasks hold the actual project specific configuration. The task's `for` property value has to match the build plugin ID.
-
-**Note:** Minimum version 7.5.0 of `@sap/cds-dk` and `@sap/cds` needs to be installed.
 
 The following description uses the [postgres build plugin](https://github.com/cap-js/cds-dbs/blob/55e511471743c0445d41e8297f5530abe167a270/postgres/cds-plugin.js#L9-L48) as reference implementation. It combines runtime and design-time integration in a single plugin `@cap-js/postgres`.
 
@@ -244,9 +243,7 @@ The compiled CSN model can be accessed using the asynchronous methods `model()` 
 - To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to-xyz), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
 - Use [`cds.reflect`](../../node.js/cds-reflect) to access advanced query and filter functionality on the CDS model.
 
-#### Add build task type to cds schema
-
-**Note:** Minimum version `7.6.0` of `@sap/cds-dk` and `@sap/cds` needs to be installed.
+#### Add build task type to cds schema <Since version="7.6.0" of="@sap/cds-dk" />
 
 In addition you can also add a new build task type provided by your plugin. This build task type will then be part of code completion suggestions for `package.json` and `.cdsrc.json` files.
 
@@ -261,7 +258,7 @@ The `cds.build.Plugin` class provides methods for copying or writing contents to
 ```js [postgres/lib/build.js]
 await this.copy(path.join(this.task.src, 'package.json')).to('package.json');
 await this.write({
-  dependencies: { '@sap/cds': '^7', '@cap-js/postgres': '^1' },
+  dependencies: { '@sap/cds': '^9', '@cap-js/postgres': '^2' },
   scripts: { start: 'cds-deploy' }
 }).to('package.json');
 ```
@@ -321,3 +318,31 @@ cds build --for postgres
 ```
 
 > See also the command line help for further details using `cds build --help`.
+
+## Test-Run Built Projects Locally {#test-run}
+
+<div class="impl node">
+
+The artifacts deployed to the various cloud platforms are generated in the `gen/srv/` folder. So, to test the application as it runs on the cloud start your application from the `gen/srv/` folder:
+
+```sh
+cds build       # to create the build results, followed by either:
+
+cd gen/srv && npx cds-serve
+# or:
+cd gen/srv && npm start
+# or:
+npx cds-serve -p gen/srv
+```
+
+</div>
+
+<div class="impl java">
+
+Use the regular command to [start a Java application](../../java/getting-started#build-and-run):
+
+```sh
+mvn spring-boot:run
+```
+
+</div>

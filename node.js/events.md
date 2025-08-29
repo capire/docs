@@ -292,7 +292,7 @@ For example:
 Captures the full canonicalized path information of incoming requests with navigation.
 For requests without navigation, `req.path` is identical to [`req.target.name`](#target) (or [`req.entity`](#entity), which is a shortcut for that).
 
-Examples based on [cap/samples/bookshop AdminService](https://github.com/sap-samples/cloud-cap-samples/tree/master/bookshop/srv/admin-service.cds):
+Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/bookshop/blob/main/srv/admin-service.cds):
 
 | OData Request     | `req.path`                | `req.target.name`    |
 |-------------------|---------------------------|----------------------|
@@ -347,17 +347,36 @@ For bound custom operations, `req.query` contains the query to the entity on whi
 
 ### . subject {.property}
 
-Acts as a pointer to one or more instances targeted by the request.
-It can be used as input for [cds.ql](cds-ql) as follows:
+Acts as a pointer to the instances targeted by the request.
+For example for the equivalents of inbound requests addressing _single rows_ like these:
 
 ```js
-SELECT.one.from(req.subject)   //> returns single object
-SELECT.from(req.subject)      //> returns one or many in array
-UPDATE(req.subject)          //> updates one or many
-DELETE(req.subject)         //> deletes one or many
+AdminService.read(Books,201)
+AdminService.update(Books,201).with({...})
+AdminService.delete(Books,201)
 ```
 
-It's available for CRUD events and bound actions.
+... `req.subject` would always look like that: 
+
+```js
+req.subject //> ...
+{ ref: [{
+  id: 'AdminService.Books', // == req.target.name
+  where: [ { ref: [ 'ID' ] }, '=', { val: 201 } ]
+}]}
+```
+
+... which allows it to be used in custom handlers of each inbound request to easily read or write this very target row using  [cds.ql](cds-ql) as follows:
+
+```js
+SELECT.from(req.subject)  //> returns the single target row
+UPDATE(req.subject)...    //> updates the single target row
+DELETEfrom(req.subject)   //> deletes the single target row
+```
+
+> [!warning] 
+> You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
+> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple row_**.
 
 
 

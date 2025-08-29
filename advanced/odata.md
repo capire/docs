@@ -542,11 +542,20 @@ The second example is for a (record type) term in the [Communication vocabulary]
 ```
 
 
-### Expressions <Beta /> { #expression-annotations }
+### Expressions { #expression-annotations }
 
 If the value of an OData annotation is an [expression](../cds/cdl#expressions-as-annotation-values),
 the OData backend provides improved handling of references and automatic mapping from
 CDS expression syntax to OData expression syntax.
+
+One of the main use cases for such dynamic expressions is SAP Fiori. Examples:
+```cds
+@UI.Hidden: (status <> 'visible')
+@UI.CreateHidden : (to_Travel.TravelStatus.code != #Open)
+```
+
+Note that SAP Fiori supports dynamic expressions only for
+[specific annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
 
 #### Flattening
 
@@ -672,12 +681,54 @@ Instead of relying on this copy mechanism, you can also explicitly annotate a fo
 annotate Books:author.ID with @Common.Text: ($self.author.name);  // here $self is necessary
 ```
 
-::: warning Restriction concerning the foreign key elements of managed associations
+A path that addresses a key element in the target of a managed association is always rewritten
+to address the local foreign key element.
 
-In an expression-valued annotation, it is not possible to reference the foreign key element
-of a managed association.
+Example:
+```cds
+service S {
+  entity Travels {
+    key id : Integer;
+    status : Association to TravelStatus;
+  };
+  entity TravelStatus {
+    key code : String(1) enum {Open = 'O'; Accepted = 'A'; Canceled = 'X'; };
+  }
+  @UI.CreateHidden : (travel.status.code != #Open) // [!code highlight]
+  entity Bookings {
+    key id : Integer;
+    travel : Association to Travels;
+  }
+}
+```
 
-:::
+Resulting OData API:
+```xml
+<Schema Namespace="S">
+  <!-- ... -->
+  <EntityType Name="Travels">
+    <!-- ... -->
+    <NavigationProperty Name="status" Type="S.TravelStatus"/>
+    <Property Name="status_code" Type="Edm.String" MaxLength="1"/> <!-- [!code highlight] -->
+  </EntityType>
+  <EntityType Name="TravelStatus">
+    <!-- ... -->
+  </EntityType>
+  <EntityType Name="Bookings">
+    <!-- ... -->
+    <NavigationProperty Name="travel" Type="S.Travels"/>
+  </EntityType>
+  <Annotations Target="S.Bookings">
+    <Annotation Term="UI.CreateHidden">
+      <Ne>
+        <Path>travel/status_code</Path> <!-- [!code highlight] -->
+        <String>O</String>
+      </Ne>
+    </Annotation>
+  </Annotations>
+</Schema>
+```
+
 
 #### Expression Translation
 
@@ -873,10 +924,19 @@ In any case, the resulting EDMX is:
 </Annotation>
 ```
 
-### Dynamic Expressions { #dynamic-expressions}
+### EDM JSON Expression Syntax { #dynamic-expressions}
 
-OData supports dynamic expressions in annotations.
-For OData annotations you can use the "edm-json inline mechanism" by providing a [dynamic expression](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#_Toc38466479) as defined
+::: tip Use CDS expression syntax
+
+Use the EDM JSON expression syntax only as fallback mechanism.
+Whenever possible, use [expression-like annotation values](#expression-annotations) instead.
+For the example below, simply write `@UI.Hidden: (status <> 'visible')`.
+
+:::
+
+In case you want to have an expression as value for an OData annotation that cannot be
+written as a [CDS expression ](#expression-annotations), 
+you can use the "edm-json inline mechanism" by providing an [EDM JSON expression](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#_Toc38466479) as defined
 in the [JSON representation of the OData Common Schema Language](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html) enclosed in `{ $edmJson: { ... }}`.
 
 Note that here the CDS syntax for string literals with single quotes (`'foo'`) applies,
@@ -900,19 +960,6 @@ is translated to:
   </Ne>
 </Annotation>
 ```
-
-One of the main use cases for such dynamic expressions is SAP Fiori,
-but note that SAP Fiori supports dynamic expressions only for
-[specific annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
-
-::: tip Use expression-like annotation values
-
-Instead of writing annotations directly with EDM JSON syntax,
-try using [expression-like annotation values](#expression-annotations), which
-are automatically translated. For the example above you would
-simply write `@UI.Hidden: (status <> 'visible')`.
-
-:::
 
 
 ### `sap:` Annotations
@@ -1097,49 +1144,6 @@ GET /Order(10)/books?
 ```
 
 This query groups the 500 most expensive books by author name and determines the price of the most expensive book per author.
-
-
-### Hierarchical Transformations
-
-Provide support for hierarchy attribute calculation and navigation, and allow the execution of typical hierarchy operations directly on relational data.
-
-| Transformation                                | Description                                                      | Node.js |        Java        |
-|-----------------------------------------------|------------------------------------------------------------------|:-------:|:------------------:|
-| `com.sap.vocabularies.Hierarchy.v1.TopLevels` | generate a hierarchy based on recursive parent-child source data |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-| `ancestors`                                   | return all ancestors of a set of start nodes in a hierarchy      |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-| `descendants`                                 | return all descendants of a set of start nodes in a hierarchy    |  <X/><sup>(1)</sup>  | <X/><sup>(1)</sup> |
-
-- <sup>(1)</sup> Beta feature, API may change
-
-Generic implementation is supported on the following databases:
-
-|   | SAP HANA | H2 | PostgreSQL | SQLite |
-|---|---|---|---|---|
-| CAP Java | ✓ | ✓ | | |
-| CAP Node.js | ✓ |  |✓ |✓ |
-
-:::info
-The source elements of the entity defining the recursive parent-child relation are identified by a naming convention or aliases `node_id` and `parent_id`.
-For more refer to [SAP HANA Hierarchy Developer Guide](https://help.sap.com/docs/SAP_HANA_PLATFORM/4f9859d273254e04af6ab3e9ea3af286/f29c70e984254a6f8df76ad84e78f123.html?locale=en-US&version=2.0.05)
-:::
-
-#### `com.sap.vocabularies.Hierarchy.v1.TopLevels`
-
-The [`TopLevels` transformation](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Hierarchy.xml) produces the hierarchical result based on recursive parent-child relationship:
-
-```http
-GET /SalesOrganizations?$apply=
-     com.sap.vocabularies.Hierarchy.v1.TopLevels(..., NodeProperty='ID', Levels=2)
-```
-#### `ancestors` and `descendants`
-
-The [`ancestors` and `descendants` transformations](https://docs.oasis-open.org/odata/odata-data-aggregation-ext/v4.0/cs03/odata-data-aggregation-ext-v4.0-cs03.html#Transformationsancestorsanddescendants) compute the subset of a given recursive hierarchy, which contains all nodes that are ancestors or descendants of a start nodes set. Its output is the ancestors or descendants set correspondingly.
-
-```http
-GET SalesOrganizations?$apply=
-    descendants(..., ID, filter(ID eq 'US'), keep start)
-   /ancestors(..., ID, filter(contains(Name, 'New York')), keep start)
-```
 
 
 ### Aggregation Methods

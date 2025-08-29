@@ -305,8 +305,7 @@ cds:
 
 Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/#event-hub).
 
-#### Configuring SAP Integration Suite, Advanced Event Mesh Support <Beta />: 
-{ #configuring-advanced-event-mesh-support}
+#### Configuring SAP Integration Suite, Advanced Event Mesh Support <Beta />: { #configuring-advanced-event-mesh-support}
 
 ::: code-group
 ```xml [srv/pom.xml]
@@ -831,8 +830,7 @@ When using SAP Event Mesh, the placeholder `$namespace` can be used to dynamical
 Besides these kinds of topic manipulations, additional topic manipulations might occur, depending on the used message broker or the chosen format of the event message.
 
 
-### Messages Representation
-{#enhanced-messages-representation}
+### Messages Representation {#messages-representation}
 
 Messages are provided as two separate `Map` objects, representing data and headers. This enables handling of message headers, like `cloudevents` headers, separately from the message data itself. If using a message broker that supports native headers, for example Kafka, the headers are separated from the business data in the message broker. For message brokers that don't natively support headers, headers and data are merged into a combined structure by following the rule `{...headers, data: data}`.
 

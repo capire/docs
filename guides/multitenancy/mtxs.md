@@ -1155,6 +1155,31 @@ Requests are implicitly asynchronous when `status_callback` is set.
 
 ##### Example Usage
 
+<br>
+
+##### Subscription
+
+A subscription for a tenant `t1` with a specific database ID:
+
+```http
+PUT /-/cds/saas-provisioning/tenant/t1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "subscribedTenantId": "t1",
+  "eventType": "CREATE",
+  "_": {
+    "hdi": {
+      "create": {
+        "database_id": "<SAP HANA Cloud instance ID>"
+      }
+    }
+  }
+}
+```
+
+##### Upgrade
+
 With `@sap/hdi-deploy` [parameters](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/deployment-options-in-hdi) `trace` and `version`:
 
 ```http

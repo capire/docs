@@ -67,13 +67,16 @@ It corresponds to `$user` in [`@restrict` annotations](../guides/security/author
 User-related attributes, for example, from JWT tokens
 These correspond to `$user.<x>` in [`@restrict` annotations](../guides/security/authorization) of your CDS models {.indent}
 
-### . tokenInfo {#user-token-info .property}
+### . authInfo? {#user-auth-info .property}
 
-Parsed JWT token info provided by `@sap/xssec`.
+Optional generic container for authentication-related information.
+For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
 
-<div id="xssec-tokeninfo-reference" />
+> **Note:** The availability of this API depends on the implementation of the respective authentication middleware.
 
-> **Note:** This API is only available for authentication kinds based on `@sap/xssec`.
+::: warning
+The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
+:::
 
 
 
@@ -298,7 +301,7 @@ In contrast to [mocked authentication](#mocked), no default users are automatica
 
 This is the default strategy used in production. User identity, as well as assigned roles and user attributes, are provided at runtime, by a bound instance of the ['User Account and Authentication'](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/419ae2ef1ddd49dca9eb65af2d67c6ec.html) service (UAA). This is done in form of a JWT token in the `Authorization` header of incoming HTTP requests.
 
-This authentication strategy also adds [`cds.context.user.tokenInfo`](#user-token-info).
+This authentication strategy also adds [`cds.context.user.authInfo`](#user-auth-info).
 
 **Prerequisites:** You need to add [@sap/xssec](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/54513272339246049bf438a03a8095e4.html#loio54513272339246049bf438a03a8095e4__section_atx_2vt_vt) to your project:
 ```sh
@@ -348,7 +351,7 @@ npm add @sap/xssec
 
 This is an additional authentication strategy using the [Identity Authentication Service](https://help.sap.com/docs/IDENTITY_AUTHENTICATION) (IAS) that can be used in production. User identity and user attributes are provided at runtime, by a bound instance of the IAS service. This is done in form of a JWT token in the `Authorization` header of incoming HTTP requests.
 
-This authentication strategy also adds [`cds.context.user.tokenInfo`](#user-token-info).
+This authentication strategy also adds [`cds.context.user.authInfo`](#user-auth-info).
 
 To allow forwarding to remote services, JWT tokens issued by IAS service don't contain authorization information. In particular, no scopes are included. Closing this gap is up to you as application developer.
 
@@ -391,6 +394,31 @@ The default behavior can be overwritten using additional configuration as follow
 ```
 
 Please see [`@sap/xssec` documentation](https://www.npmjs.com/package/@sap/xssec) for more details.
+
+#### XSUAA Fallback
+
+To ease your migration from XSUAA-based to IAS-based authentication, the `ias` strategy automatically supports tokens issued by XSUAA when you provide the necessary credentials at `cds.env.requires.xsuaa.credentials`. 
+
+For standard bindings, add `xsuaa` to the list of required services as follows:
+
+```json
+"requires": {
+  "auth": "ias", //> as above
+  "xsuaa": true
+}
+```
+
+In case additional configuration is necessary, you can also provide an object:
+
+```json
+"requires": {
+  "xsuaa": {
+    "config": { // passed to @sap/xssec as is
+      [...]
+    }
+  }
+}
+```
 
 ### Custom Authentication { #custom }
 
@@ -440,11 +468,36 @@ export default function custom_auth(req: Req, res: Response, next: NextFunction)
 [If you want to customize the user ID, please also have a look at this example.](/node.js/cds-serve#customization-of-cds-context-user){.learn-more}
 
 
-## Authentication Enforced in Production
+## Authentication in Production
+
+### Enforced by Default
 
 In a productive scenario with an authentication strategy configured, for example the default `jwt`, all CAP service endpoints are authenticated by default, regardless of the authorization model. That is, all services without `@restrict` or `@requires` implicitly get `@requires: 'authenticated-user'`.
 
 This can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mocked) explicitly in production.
+
+### Cached by Default
+
+`@sap/xssec^4.8` provides a way to improve latency on subsequent requests with the same token by introducing two caches for CPU-intensive operations:
+- **Signature cache**: This cache handles the cryptographic signature validation of a JWT token.
+- **Token decode cache**: This cache manages the base64-decoding of a JWT token.
+
+Both caches are enabled by default.
+
+The _signature cache_ can be configured or deactivated via <Config keyOnly>cds.requires.auth.config</Config> (which is passed through to `@sap/xssec`).
+
+[Learn more about signature cache and its configuration.](https://www.npmjs.com/package/@sap/xssec#signature-cache)[.learn-more]
+
+The _token decode cache_, on the other hand, can only be configured programmatically during bootstrapping, for example in a [custom `server.js`](cds-server#custom-server-js) file, as follows:
+```js
+require('@sap/xssec').Token.enableDecodeCache(config?)
+```
+and deactivated via
+```js
+require('@sap/xssec').Token.decodeCache = false
+```
+
+[Learn more about caching CPU intensive operations in `@sap/xssec`](https://www.npmjs.com/package/@sap/xssec#caching-cpu-intensive-operations){.learn-more}
 
 
 ## XSUAA in Hybrid Setup {#xsuaa-setup}

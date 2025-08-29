@@ -37,29 +37,29 @@ By applying CAP's techniques for reuse, composition, and integration, you can ad
 5. **Customizing SaaS Solutions** — Customers, who are subscribers of SaaS solutions, can apply the same techniques to adapt SaaS solutions to their needs. They can use prebuilt extension or business data packages, or create their own custom-defined ones.
 
 
-### Examples from [cap/samples](https://github.com/sap-samples/cloud-cap-samples)
+### Examples from [sample repositories](https://github.com/capire)
 
-In the following sections, we frequently refer to examples from [cap/samples](https://github.com/sap-samples/cloud-cap-samples):
+In the following sections, we frequently refer to examples from the [capire org](https://github.com/capire):
 
 ![The screenshot is explained in the following text.](assets/cap-samples.drawio.svg)
 
 
-- **[@capire/bookshop](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop)** provides a basic bookshop app and **reuse services** .
-- **[@capire/common](https://github.com/sap-samples/cloud-cap-samples/tree/main/common)** is a **prebuilt extension** and **business data** package for *Countries*, *Currencies*, and *Languages*.
-- **[@capire/reviews](https://github.com/sap-samples/cloud-cap-samples/tree/main/reviews)** provides an independent **reuse service**.
-- **[@capire/orders](https://github.com/sap-samples/cloud-cap-samples/tree/main/orders)** provides another independent **reuse service**.
-- **[@capire/bookstore](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore)** combines all of the above into a **composite application**.
+- **[@capire/bookshop](https://github.com/capire/bookshop)** provides a basic bookshop app and **reuse services** .
+- **[@capire/common](https://github.com/capire/common)** is a **prebuilt extension** and **business data** package for *Countries*, *Currencies*, and *Languages*.
+- **[@capire/reviews](https://github.com/capire/reviews)** provides an independent **reuse service**.
+- **[@capire/orders](https://github.com/capire/orders)** provides another independent **reuse service**.
+- **[@capire/bookstore](https://github.com/capire/bookstore)** combines all of the above into a **composite application**.
 
 
 ### Preparation for Exercises
 
 If you want to exercise the code snippets in following sections, do the following:
 
-**1)** &nbsp; Get cap/samples:
+**1)** &nbsp; Get capire/bookstore:
 
 ```sh
-git clone https://github.com/sap-samples/cloud-cap-samples samples
-cd samples
+git clone https://github.com/capire/bookstore
+cd bookstore
 npm install
 ```
 
@@ -186,11 +186,13 @@ Everything outside of your models is ignored.
 
 ### Via `using from` Directives
 
-Use the definitions from imported models through [`using` directives](../../cds/cdl#model-imports) as usual. For example, like in [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/srv/mashup.cds), simply add all:
+Use the definitions from imported models through [`using` directives](../../cds/cdl#model-imports) as usual. For example, like in [@capire/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.cds#L28-L30), simply add all:
 
 ::: code-group
 ```cds [bookstore/srv/mashup.cds]
-using from '@capire/bookshop';
+// Ensure models from all imported packages are loaded
+using from '@capire/orders/app/fiori';
+using from '@capire/data-viewer';
 using from '@capire/common';
 ```
 :::
@@ -199,7 +201,7 @@ The `cds` compiler finds the imported content in `node_modules` when processing 
 
 ### Using _index.cds_ Entry Points {#index-cds}
 
-The above `using from` statements assume that the imported packages provide _index.cds_ in their roots as [public entry points](#entry-points), which they do. For example see [@capire/bookshop/index.cds](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookshop/index.cds):
+The above `using from` statements assume that the imported packages provide _index.cds_ in their roots as [public entry points](#entry-points), which they do. For example see [@capire/bookshop/index.cds](https://github.com/capire/bookshop/blob/main/index.cds):
 
 ::: code-group
 ```cds [bookshop/index.cds]
@@ -262,18 +264,18 @@ You can freely use all definitions from the imported models in the same way as y
 
 You can even extend imported definitions, for example, add elements to imported entities, or add/override annotations, without limitations.
 
-Here's an example from the [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/srv/mashup.cds):
+Here's an example from the [@capire/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.cds#L11-L16):
 
 ::: code-group
 ```cds [bookstore/srv/mashup.cds]
-using { sap.capire.bookshop.Books } from '@capire/bookshop';
-using { ReviewsService.Reviews } from '@capire/reviews';
-
 // Extend Books with access to Reviews and average ratings
+using { sap.capire.reviews.api.ReviewsService as reviews } from '@capire/reviews';
+using { sap.capire.bookshop.Books } from '@capire/bookshop';
 extend Books with {
-  reviews : Composition of many Reviews on reviews.subject = $self.ID;
-  rating  : Decimal;
+  rating  : type of reviews.AverageRatings:rating; // average rating
+  numberOfReviews : Integer @title : '{i18n>NumberOfReviews}';
 }
+
 ```
 :::
 
@@ -342,11 +344,10 @@ You can provide your own implementation in the same way, as you do for your own 
 
 If imported packages provide UIs, you can also serve them as part of your app — for example, using standard [express.js](https://expressjs.com) middleware means in Node.js.
 
-The *@capire/bookstore* app has this [in its `server.js`](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/server.js) to serve [the Vue.js app imported with *@capire/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookshop/app/vue) using the `app.serve(<endpoint>).from(<source>)` method:
+The *@capire/bookstore* app has this [in its `srv/mashup.js`](https://github.com/capire/bookstore/blob/c44d97bc00d4c56f5dff02f820011b25db8312e4/srv/mashup.js#L4-L9) to serve [the Vue.js app imported with *@capire/bookshop*](https://github.com/capire/bookshop/tree/main/app/vue) using the `app.serve(<endpoint>).from(<source>)` method:
 
 ::: code-group
-```js [bookstore/server.js]
-const express = require('express')
+```js [srv/mashup.js]
 const cds = require('@sap/cds')
 
 // Add routes to UIs from imported packages
@@ -379,15 +380,16 @@ Instead of embedding and serving imported services as part of your application, 
 
 This is described in the [Import Reuse Packages section](#import)  &rarr; for example using `npm add`.
 
-Here's the effect of this step in [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/package.json):
+Here's the effect of this step in [@capire/bookstore](https://github.com/capire/bookstore/blob/main/package.json):
 
 ::: code-group
 ```json [bookstore/package.json]
   "dependencies": {
-    "@capire/bookshop": "^1.0.0",
-    "@capire/reviews": "^1.0.0",
-    "@capire/orders": "^1.0.0",
-    "@capire/common": "^1.0.0",
+    "@capire/bookshop": "*",
+    "@capire/reviews": "*",
+    "@capire/orders": "*",
+    "@capire/common": "*",
+    "@capire/data-viewer": "*",
     ...
   },
 ```
@@ -395,7 +397,7 @@ Here's the effect of this step in [@capire/bookstore](https://github.com/SAP-sam
 
 ### Configuring Required Services
 
-To configure required remote services in Node.js, simply add the respective entries to the [`cds.requires` config option](../../node.js/cds-env). You can see an example in [@capire/bookstore/package.json](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/package.json), which integrates [@capire/reviews](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/reviews) and [@capire/orders](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/orders) as remote service:
+To configure required remote services in Node.js, simply add the respective entries to the [`cds.requires` config option](../../node.js/cds-env). You can see an example in [@capire/bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json), which integrates [@capire/reviews](https://github.com/capire/reviews) and [@capire/orders](https://github.com/capire/orders) as remote service:
 
 ::: code-group
 ```json [bookstore/package.json]
@@ -418,19 +420,19 @@ To configure required remote services in Node.js, simply add the respective entr
 
 Because models of integrated services only serve as imported APIs, you're restricted with respect to how you can use the models of services to integrate with. For example, only adding fields is possible, or cross-service navigation and expands.
 
-Yet, there are options to make some of these work programmatically. This is explained in the [next section](#delegating-calls) based on the integration of [@capire/reviews](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/reviews) in [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore).
+Yet, there are options to make some of these work programmatically. This is explained in the [next section](#delegating-calls) based on the integration of [@capire/reviews](https://github.com/capire/reviews) in [@capire/bookstore](https://github.com/capire/bookstore).
 
 
 
 ### Delegating Calls to Remote Services { #delegating-calls}
 
-Let's start from the following use case: The bookshop app exposed through [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore) will allow end users to see the top 10 book reviews in the details page.
+Let's start from the following use case: The bookshop app exposed through [@capire/bookstore](https://github.com/capire/bookstore) will allow end users to see the top 10 book reviews in the details page.
 
 To avoid [CORS issues](https://developer.mozilla.org/de/docs/Web/HTTP/CORS), the request from the UI goes to the main `CatalogService` serving the end user's UI and is delegated from that to the remote `ReviewsService`, as shown in this sequence diagram:
 
  ![This TAM graphic shows how the requests are routed between services.](assets/delegate-requests.drawio.svg)
 
-And this is how we do that in [@cap/bookstore](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/srv/mashup.js):
+And this is how we do that in [@cap/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.js):
 
 ::: code-group
 ```js [bookstore/srv/mashup.js]
@@ -439,7 +441,7 @@ const ReviewsService = await cds.connect.to ('ReviewsService')
 CatalogService.prepend (srv => srv.on ('READ', 'Books/reviews', (req) => {
   console.debug ('> delegating request to ReviewsService')
   const [id] = req.params, { columns, limit } = req.query.SELECT
-  return ReviewsService.tx(req).read ('Reviews',columns).limit(limit).where({subject:String(id)})
+  return ReviewsService.read ('Reviews',columns).limit(limit).where({subject:String(id)})
 }))
 ```
 :::
@@ -454,7 +456,7 @@ Let's look at that step by step:
 
 ### Running with Mocked Remote Services {#mocking-required-services}
 
-If you start [@capire/bookstore](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore) locally with `cds watch`, all [required services](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/package.json#L15-L22) are automatically mocked, as you can see in the log output when the server starts:
+If you start [@capire/bookstore](https://github.com/capire/bookstore) locally with `cds watch`, all [required services](https://github.com/capire/bookstore/blob/main/package.json#L26-L36) are automatically mocked, as you can see in the log output when the server starts:
 
 ```log
 [cds] - serving AdminService { at: '/admin', impl: 'bookshop/srv/admin-service.js' }
@@ -480,7 +482,7 @@ GET http://localhost:4004/browse/Books/201?
 
 As a next step, following CAP's [Grow-as-you-go](../../about/#grow-as-you-go) philosophy, we can run the services as separate processes to test the remote integration, but still locally in a low-complexity setup. We use the [_automatic binding by `cds watch`_](#bindings-via-cds-watch) as follows:
 
-1. Start the three servers separately, each in a separate shell (from within the root folder in your cloned _[cap/samples]( https://github.com/sap-samples/cloud-cap-samples)_ project):
+1. Start the three servers separately, each in a separate shell (from within the root folder in your cloned projects):
     ```sh
     cds watch orders --port 4006
     ```
@@ -506,7 +508,7 @@ As a next step, following CAP's [Grow-as-you-go](../../about/#grow-as-you-go) ph
     &$top=3
     ```
 
-    > You can find a script for this in [@capire/bookstore/test/requests.http](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/test/requests.http).
+    > You can find a script for this in [@capire/bookstore/test/requests.http](https://github.com/capire/bookstore/blob/main/test/requests.http).
 
 
 
