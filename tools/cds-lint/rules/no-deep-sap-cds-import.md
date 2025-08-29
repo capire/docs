@@ -10,8 +10,8 @@ status: released
 
 ## Rule Details
 
-You should only import from the top-level `@sap/cds` package. Accessing internal modules or sub-paths is unsafe, as these are not part of the official public API and may change or be removed without notice.
-There are a few exceptions to this rule, which will not be reported as errors.
+Import only from the top-level `@sap/cds` package. Accessing internal modules or sub-paths is unsafe because these are not part of the official public API and may change or be removed without notice.
+A few exceptions to this rule will not be reported as errors.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
@@ -20,7 +20,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ### ✅ &nbsp; Correct example
 
-The following example imports `@sap/cds`:
+This example imports `@sap/cds`:
 
 ::: code-group
 <<< ../examples/no-deep-sap-cds-import/correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]

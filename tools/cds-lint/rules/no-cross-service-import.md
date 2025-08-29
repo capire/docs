@@ -10,7 +10,7 @@ status: released
 
 ## Rule Details
 
-This rule helps you avoid importing artifacts generated for one service into the implementation of another service when using cds-typer. Keeping service boundaries clear makes your codebase easier to maintain and understand.
+This rule prevents importing artifacts generated for one service into another service's implementation when using cds-typer. Clear service boundaries make your codebase easier to maintain and understand.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
@@ -19,7 +19,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ### ✅ &nbsp; Correct example
 
-Here, the imported entity belongs to `AdminService` and is used within the implementation of `AdminService` itself—this is the recommended approach:
+The imported entity belongs to `AdminService` and is used within the implementation of `AdminService` itself. This is the recommended approach:
 ::: code-group
 <<< ../examples/no-cross-service-import/correct/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]
 :::
@@ -31,7 +31,7 @@ Here, the imported entity belongs to `AdminService` and is used within the imple
 
 ### ❌ &nbsp; Incorrect example
 
-In this case, an entity from `CatalogService` is imported into the implementation of `AdminService`. This cross-service import is discouraged, as it can lead to confusion and maintenance issues:
+An entity from `CatalogService` is imported into the implementation of `AdminService`. This cross-service import is discouraged because it can lead to confusion and maintenance issues:
 
 ::: code-group
 <<< ../examples/no-cross-service-import/incorrect/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]

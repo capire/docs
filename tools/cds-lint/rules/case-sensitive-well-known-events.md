@@ -10,7 +10,7 @@ status: released
 
 ## Rule Details
 
-Points out registrations to events that are likely well-known event names that have to be written in all-caps.
+This rule identifies registrations to events that are likely well-known event names that must be written in all caps.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
@@ -19,7 +19,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ### ✅ &nbsp; Correct example
 
-The following example shows the correctly capitalised event name `READ`:
+The following example shows the correctly capitalized event name `READ`:
 
 ::: code-group
 <<< ../examples/case-sensitive-well-known-events/correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
@@ -32,7 +32,7 @@ The following example shows the correctly capitalised event name `READ`:
 
 ### ❌ &nbsp; Incorrect example
 
-In this example we see a registration to an event `Read`, which is likely supposed to be `READ` and can therefore lead to unexpected behaviour, as event names in CAP are case sensitive:
+This example shows a registration to an event `Read`, which should likely be `READ`. This can lead to unexpected behavior because event names in CAP are case sensitive:
 ::: code-group
 <<< ../examples/case-sensitive-well-known-events/incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
 :::
