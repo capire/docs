@@ -300,7 +300,7 @@ To propagate the parent context, create an instance of `RequestContextRunner` in
 
 ```java
 RequestContextRunner runner = runtime.requestContext();
-Future<Result> result = Executors.newSingleThreadExecutor().submit(() -> {
+Future<CdsResult<Books>> result = Executors.newSingleThreadExecutor().submit(() -> {
 	return runner.run(threadContext -> {
 		return persistenceService.run(Select.from(Books_.class));
 	});

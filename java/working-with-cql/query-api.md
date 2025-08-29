@@ -1623,7 +1623,7 @@ BETWEEN
 
 #### `IN` Predicate
 
-The `IN` predicate tests if a value is equal to any value in a given list. 
+The `IN` predicate tests if a value is equal to any value in a given list.
 
 The following example, filters for books written by Poe or Hemingway:
 

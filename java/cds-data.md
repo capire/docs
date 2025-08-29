@@ -219,7 +219,7 @@ In CAP Java data is represented in maps. To simplify data access in custom code,
 
 ![This graphic is explained in the accompanying text.](./assets/accessor.drawio.svg)
 
-The `Row`s of a [query result](./working-with-cql/query-execution#result) as well as the [generated accessor interfaces](#generated-accessor-interfaces) already extend `CdsData`. Using the helper class [Struct](#struct) you can extend any `Map<String, Object>` with the CdsData `interface`:
+The rows of a [query result](./working-with-cql/query-execution#result) as well as the [generated accessor interfaces](#generated-accessor-interfaces) already extend `CdsData`. Using the helper class [Struct](#struct) you can access any `Map<String, Object>` with the CdsData `interface`:
 
 ```java
 Map<String, Object> map = new HashMap<>();
@@ -307,7 +307,7 @@ You can use the functions, `CQL.cosineSimilarity` or `CQL.l2Distance` (Euclidean
 ```Java
 CqnVector v = CQL.vector(embedding);
 
-Result similarBooks = service.run(Select.from(BOOKS).where(b ->
+CdsResult<Books> similarBooks = service.run(Select.from(BOOKS).where(b ->
   CQL.cosineSimilarity(b.embedding(), v).gt(0.9))
 );
 ```
@@ -322,7 +322,7 @@ CqnSelect query = Select.from(BOOKS)
   .where(b -> b.ID().ne(bookId).and(similarity.gt(0.9)))
   .orderBy(b -> b.get("similarity").desc());
 
-Result similarBooks = db.run(select, CdsVector.of(embedding));
+Result similarBooks = db.run(query, CdsVector.of(embedding));
 ```
 
 In CDS QL queries, elements of type `cds.Vector` are not included in select _all_ queries. They must be explicitly added to the select list:
@@ -894,8 +894,8 @@ diff.process(newImage, oldImage, type);
 ```
 
 ```java
-Result newImage = service.run(Select.from(...));
-Result oldImage = service.run(Select.from(...));
+CdsResult<?> newImage = service.run(Select.from(...));
+CdsResult<?> oldImage = service.run(Select.from(...));
 
 diff.process(newImage, oldImage, newImage.rowType());
 ```
@@ -1358,13 +1358,13 @@ Using a custom `On` handler makes sense if you want to prevent that the default 
 
 ```java
 @On(event = CqnService.EVENT_UPDATE)
-public Result processCoverImage(CdsUpdateEventContext context, List<Books> books) {
+public CdsResult<Books> processCoverImage(CdsUpdateEventContext context, List<Books> books) {
 	books.forEach(book -> {
 		book.setCoverImage(new CoverImagePreProcessor(book.getCoverImage()));
 	});
 
 	// example for invoking some CQN-based service
-	return service.run(Update.entity(Books_.CDS_NAME).entries(books));
+	return service.run(Update.entity(Books_.class).entries(books));
 }
 ```
 
