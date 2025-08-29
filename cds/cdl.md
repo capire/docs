@@ -1384,7 +1384,7 @@ Propagation of annotations can be stopped via value `null`, for example, `@anno:
 :::
 
 
-### Expressions as Annotation Values <Beta /> {#expressions-as-annotation-values}
+### Expressions as Annotation Values {#expressions-as-annotation-values}
 
 In order to use an expression as an annotation value, it must be enclosed in parentheses:
 ```cds
@@ -1481,7 +1481,7 @@ and a value written as expression `@aValueExpr: ( 11 )`, respectively.
 If the annotation value is an expression, it is sometimes necessary to adapt references inside the expression
 during propagation, for example, when a referenced element is renamed in a projection.
 The compiler automatically takes care of the necessary rewriting. When a reference in an annotation expression
-is rewritten, the `=` property is set to `true`.
+is rewritten, the `=` property is adapted accordingly if the expression is a single reference, otherwise it is set to `true`.
 
 Example:
 ```cds
@@ -1530,9 +1530,9 @@ rewritten to `@Common.Text: (descr)`.
 
 ::: info
 
-There are situations where automatic rewriting doesn't work, resulting in the compiler error
+There may be situations where automatic rewriting doesn't work, resulting in the compiler error
 [`anno-missing-rewrite`](https://cap.cloud.sap/docs/cds/compiler/messages#anno-missing-rewrite).
-Some of these situations are going to be addressed in upcoming releases.
+In these cases you can overwrite the annotation with the correct expression in the new location.
 
 :::
 
