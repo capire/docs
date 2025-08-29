@@ -550,7 +550,7 @@ CDS expression syntax to OData expression syntax.
 
 One of the main use cases for such dynamic expressions is SAP Fiori. Examples:
 ```cds
-@UI.Hidden: (status <> 'visible')`
+@UI.Hidden: (status <> 'visible')
 @UI.CreateHidden : (to_Travel.TravelStatus.code != #Open)
 ```
 
