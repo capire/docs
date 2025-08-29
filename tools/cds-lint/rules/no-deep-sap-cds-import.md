@@ -20,7 +20,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ### ✅ &nbsp; Correct example
 
-This example imports `@sap/cds`:
+The following example imports `@sap/cds`:
 
 ::: code-group
 <<< ../examples/no-deep-sap-cds-import/correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]

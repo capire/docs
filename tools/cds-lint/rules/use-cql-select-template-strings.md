@@ -10,7 +10,7 @@ status: released
 
 ## Rule Details
 
-Discourage use of <code>SELECT(\`...\`)</code>, which allows [SQL injection attacks](../../../node.js/cds-ql#avoiding-sql-injection), in favour of <code>SELECT \`...\`</code>.
+Discourages use of <code>SELECT(\`...\`)</code>, which allows [SQL injection attacks](../../../node.js/cds-ql#avoiding-sql-injection), in favor of <code>SELECT \`...\`</code>.
 
 #### Version
 This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
@@ -32,9 +32,7 @@ In the following example, the `where` clause is a proper tagged template literal
 
 ### ❌ &nbsp; Incorrect example
 
-In the following example, the `where` clause is *not* a proper tagged template literal as it's enclosed by parentheses.
-In consequence,  the `req.data.name` expression *cannot* be validated but is added as is to the SELECT statement.
-This is prone to SQL injection attacks.
+In the following example, the `where` clause is *not* a proper tagged template literal as it's enclosed by parentheses. In consequence, the `req.data.name` expression *cannot* be validated but is added as is to the SELECT statement. This is prone to SQL injection attacks.
 
 ::: code-group
 <<< ../examples/use-cql-select-template-strings/incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]

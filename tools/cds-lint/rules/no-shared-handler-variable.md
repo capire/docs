@@ -10,8 +10,7 @@ status: released
 
 ## Rule Details
 
-Discourages sharing state between handlers using variables from parent scopes, as this can lead to data leakage between tenants.
-This rule automatically checks handler registrations inside classes that extend `cds.ApplicationService`.
+Discourages sharing state between handlers using variables from parent scopes because this can lead to data leakage between tenants. This rule automatically checks handler registrations inside classes that extend `cds.ApplicationService`.
 
 To enable this check for functions declared outside such classes, add a type annotation.
 Any function annotated with
