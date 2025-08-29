@@ -121,7 +121,7 @@ Follow the instructions in [*cap/samples/readme*](https://github.com/capire) for
 
 ### Declaring Events in CDS
 
-Package `@capire/reviews` essentially provides a `ReviewsService`, [declared like that](https://github.com/sap-samples/cloud-cap-samples/blob/main/reviews/srv/reviews-service.cds):
+Package `@capire/reviews` essentially provides a `ReviewsService`, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-service.cds):
 
 ```cds
 service ReviewsService {
@@ -151,7 +151,7 @@ As you can read from the definitions, the service's synchronous API allows to cr
 
 ### Emitting Events
 
-Find the code to emit events in *[@capire/reviews/srv/reviews-service.js](https://github.com/SAP-samples/cloud-cap-samples/blob/139d9574950d1a5ead475c7b47deb174418500e4/reviews/srv/reviews-service.js#L12-L20)*:
+Find the code to emit events in *[@capire/reviews/srv/reviews-service.js](https://github.com/capire/reviews/tree/main/srv/reviews-service.js#L12-L20)*:
 
 ```js
 class ReviewsService extends cds.ApplicationService { async init() {

@@ -61,7 +61,7 @@ To ensure `cds.env`, and hence all plugins, are loaded from the test's target fo
 ### Testing Service APIs
 
 
-As `cds.test()` launches the server in the current process, you can access all services programmatically using the respective [Node.js Service APIs](core-services). Here's an example for that taken from [*cap/samples*](https://github.com/SAP-samples/cloud-cap-samples/blob/a8345122ea5e32f4316fe8faef9448b53bd097d4/test/consuming-services.test.js#L2):
+As `cds.test()` launches the server in the current process, you can access all services programmatically using the respective [Node.js Service APIs](core-services). Here's an example for that:
 
 
 ```js
