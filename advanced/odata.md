@@ -694,7 +694,7 @@ service S {
   entity TravelStatus {
     key code : String(1) enum {Open = 'O'; Accepted = 'A'; Canceled = 'X'; };
   }
-  @UI.CreateHidden : (travel.status.code != #Open) <!-- [!code highlight] -->
+  @UI.CreateHidden : (travel.status.code != #Open) // [!code highlight]
   entity Bookings {
     key id : Integer;
     travel : Association to Travels;
