@@ -193,7 +193,7 @@ CAP Java projects can be edited best in a Java IDE. Leaving CDS support aside yo
 
 * [SAP Business Application Studio](/tools/cds-editors#bas) is a cloud-based IDE with minimal local requirements and footprint. It comes pre packaged with all tools, libraries and extensions that are needed to develop CAP applications.
 * [Visual Studio Code](/tools/cds-editors#vscode) is a free and very wide-spread code editor and IDE which can be extended with Java and CDS support. It offers first class CDS language support and solid Java support for many development scenarios.
-* [IntelliJ Idea Ultimate](/tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
+* [IntelliJ IDEA](/tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
 
 
 #### Source Path Configuration and CDS build
