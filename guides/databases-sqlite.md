@@ -317,7 +317,7 @@ The following is an overview of advanced features supported by the new database 
 
 ### Path Expressions & Filters {.node}
 
-The new database service provides **full support** for all kinds of [path expressions](../cds/cql#path-expressions), including [infix filters](../cds/cql#with-infix-filters) and [exists predicates](../cds/cql#exists-predicate). For example, you can try this out with *[cap/samples](https://github.com/sap-samples/cloud-cap-samples)* as follows:
+The new database service provides **full support** for all kinds of [path expressions](../cds/cql#path-expressions), including [infix filters](../cds/cql#with-infix-filters) and [exists predicates](../cds/cql#exists-predicate). For example, you can try this out with *[@capire/samples](https://github.com/capire/samples)* as follows:
 
 ```js
 // $ cds repl --profile better-sqlite

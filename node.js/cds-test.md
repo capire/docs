@@ -585,7 +585,7 @@ describe(() => { cds.test(...) })
 
 ## Using `cds.test` in REPL
 
-You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/sap-samples/cloud-cap-samples):
+You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/capire/samples):
 
 ```sh
 [cap/samples] cds repl

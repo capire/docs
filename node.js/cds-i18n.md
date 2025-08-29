@@ -261,7 +261,7 @@ msg.for('OUT_OF_RANGE', {val:0,min:1,max:11}) //> 0 is not in range 1..11
 
 #### Looking up labels for CSN definitions
 
-You can alternatively pass in a CSN definition instead of an i18n key to look up the localized UI label for that an entity or element. For example, try this in `cds repl` from within the [*cap/samples* root folder](https://github.com/sap-samples/cloud-cap-samples): {.indent}
+You can alternatively pass in a CSN definition instead of an i18n key to look up the localized UI label for that an entity or element. For example, try this in `cds repl` from within the [*cap/samples* root folder](https://github.com/capire/samples): {.indent}
 
 ```js
 [dev] cds repl
@@ -344,8 +344,7 @@ Instances of this class are used through [`I18nBundle.files`](#files) to fetch a
 
 By default fetches i18n folders and files from the [neighborhood](#from-models-neighborhood) of a given model's sources, by default using `cds.model`.
 
-
-For example, try this in `cds repl` run from the project root of *[cap/samples](https://github.com/sap-samples/cloud-cap-samples)*:
+For example, try this in `cds repl` run from the project root of *[cap/samples](https://github.com/capire/samples)*:
 
 ```js
 [dev] cds repl
@@ -459,7 +458,7 @@ In effect i18n folders and hence files are fetched from the neighborhood of the 
 
 #### 1. Starting from the current model's `$sources`
 
-For example given these model sources from [cap/samples](https://github.com/sap-samples/cloud-cap-samples):
+For example given these model sources from [cap/samples](https://github.com/capire/samples):
 
 ```js
 [dev] cds repl
