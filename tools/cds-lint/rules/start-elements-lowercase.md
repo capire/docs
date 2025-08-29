@@ -34,7 +34,7 @@ In the following example, the rule is satisfied because the element name `title`
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the rule will report a warning, because the element name `Title` starts with an uppercase letter:
+This example shows the rule reporting a warning because the element name `Title` starts with an uppercase letter:
 
 ::: code-group
 <<< ../examples/start-elements-lowercase/incorrect/db/schema.cds#snippet{ts:line-numbers} [db/schema.cds]

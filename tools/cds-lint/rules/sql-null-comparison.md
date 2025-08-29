@@ -15,8 +15,7 @@ status: released
 ## Rule Details
 
 
-Comparing values against `null` in views is a common pitfall in SQL.
-This rules helps find places where incorrect SQL comparisons are used and proposes to use `IS NULL` or `IS NOT NULL` instead.
+Comparing values against `null` in views is a common pitfall in SQL. This rule helps find places where incorrect SQL comparisons are used and proposes using `IS NULL` or `IS NOT NULL` instead.
 
 ## Examples
 
@@ -36,7 +35,7 @@ In the following example, the rule is satisfied because `null` comparison is val
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the rule reports a warning, because the comparison `= null` is not correct:
+This example shows the rule reporting a warning because the comparison `= null` is not correct:
 
 ::: code-group
 <<< ../examples/sql-null-comparison/incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [db/schema.cds]

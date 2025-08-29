@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-Some annotations such as `@requires` or `@readonly` are just convenience shortcuts for `@restrict`. In actions and services with unrestricted events, it is recommended to use `@requires` instead of `@restrict.to`, which this rule enforces.
+Some annotations such as `@requires` or `@readonly` are convenience shortcuts for `@restrict`. In actions and services with unrestricted events, it is recommended to use `@requires` instead of `@restrict.to`, which this rule enforces.
 
 ## Examples
 

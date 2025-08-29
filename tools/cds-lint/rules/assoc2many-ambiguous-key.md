@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-In general an [association/composition to/of `MANY`](../../../cds/cdl#to-many-associations) that targets an entity without `ON` condition is not allowed (as it is an `n:1` relationship). Here, one should always specify an `ON` condition following the canonical expression pattern `<assoc>.<backlink> = $self`. The backlink can be any managed to-one association on the many side pointing back to the one side.
+An [association/composition to/of `MANY`](../../../cds/cdl#to-many-associations) that targets an entity without an `ON` condition is not allowed because it is an `n:1` relationship. Always specify an `ON` condition following the canonical expression pattern `<assoc>.<backlink> = $self`. The backlink can be any managed to-one association on the many side pointing back to the one side.
 
 ## Examples
 
@@ -34,7 +34,7 @@ In the following example, we define a unique association from `Authors` to `Book
 
 #### ❌ &nbsp; Incorrect example
 
-If we extend this example by creating a view `AuthorView` with a key `ID` and the element `bookIDs` without an `ON` condition, the rule is triggered since the key is no longer unique and `bookIDs` leads to multiple entries:
+If you extend this example by creating a view `AuthorView` with a key `ID` and the element `bookIDs` without an `ON` condition, the rule is triggered because the key is no longer unique and `bookIDs` leads to multiple entries:
 
 ::: code-group
 <<< ../examples/assoc2many-ambiguous-key/incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]

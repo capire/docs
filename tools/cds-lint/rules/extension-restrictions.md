@@ -14,10 +14,7 @@ status: released
 
 ## Rule Details
 
-CAP provides intrinsic extensibility, which means all your entities and services are extensible by default.
-Your SaaS app becomes the base app for extensions by your customers, and your data model the base model. Normally,
-you'll want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so.
-This rule ensures that extensions do not violate any restrictions set by the extended SaaS app.
+CAP provides intrinsic extensibility, which means all your entities and services are extensible by default. Your SaaS app becomes the base app for extensions by your customers, and your data model becomes the base model. Normally, you want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so. This rule ensures that extensions do not violate any restrictions set by the extended SaaS app.
 
 ## Examples
 

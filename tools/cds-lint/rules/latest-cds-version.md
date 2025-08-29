@@ -14,8 +14,7 @@ status: released
 
 ## Rule Details
 
-It's recommended to always use the latest version of `@sap/cds` to benefit from the latest features and bug fixes.
-This rule checks whether the latest `@sap/cds` version is being used and reports back in case a newer version is available.
+It is recommended to always use the latest version of `@sap/cds` to benefit from the latest features and bug fixes. This rule checks whether the latest `@sap/cds` version is being used and reports back in case a newer version is available.
 
 ## Examples
 
