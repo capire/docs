@@ -41,22 +41,18 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed } from `@sap/cds/common`;
-aspect entity : managed { key ID: Integer }
+using { managed, cuid } from `@sap/cds/common`;
+aspect primary : managed, cuid {}
 
-entity Books : entity {
+entity Books : primary {
   title  : String;
   author : Association to Authors;
 }
 
-entity Authors : entity {
+entity Authors : primary {
   name   : String;
 }
 ```
-
-::: details Noteworthy...
-In the example above `entity` shows up as a keyword, as well as an identifier of an aspect declaration and references to that.
-:::
 
 Keywords are *case-insensitive*, but are most commonly used in lowercase notation.
 
@@ -69,7 +65,7 @@ type ![Delimited Identifier] : String;
 ```
 
 ::: warning Avoid using delimited identifiers
-Delimited identifiers in general, but in particular non-ASCII characters, or keywords as identifiers should be avoided as much as possible, for reasons of interoperability.
+Delimited identifiers in general, but in particular non-ASCII characters, should be avoided as much as possible, for reasons of interoperability.
 :::
 
 
