@@ -166,7 +166,7 @@ You can use CSV files to fill your database with initial data - see [Location of
 
 <div class="impl node">
 
-For example, in our [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop/db/data) application, we do so for *Books*, *Authors*, and *Genres* as follows:
+For example, in our [*capire/bookshop*](https://github.com/capire/bookshop/tree/main/db/data) application, we do so for *Books*, *Authors*, and *Genres* as follows:
 
 ```zsh
 bookshop/
@@ -427,7 +427,7 @@ When you've created a CAP Java application with `cds init --java` or with CAP Ja
 ### Using `cds compile`
 
 
-For example, given these CDS models (derived from [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop)):
+For example, given these CDS models (derived from [*capire/bookshop*](https://github.com/capire/bookshop)):
 
 ::: code-group
 
@@ -1191,5 +1191,4 @@ Once you have 2 non-HANA local databases, you need to have 2 distinct database c
 
 </div>
 
-CAP samples demonstrate this in [cap/samples/fiori](https://github.com/SAP-samples/cloud-cap-samples/commit/65c8c82f745e0097fab6ca8164a2ede8400da803). <br>
-There's also a [code tour](https://github.com/SAP-samples/cloud-cap-samples#code-tours) available for that.
+CAP samples demonstrate this in [cap/samples/fiori](https://github.com/SAP-samples/cloud-cap-samples/commit/65c8c82f745e0097fab6ca8164a2ede8400da803).

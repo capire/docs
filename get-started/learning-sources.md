@@ -117,7 +117,7 @@ A reference sample application for CAP and the SAP BTP Developer Guide.
 ### CAP SFlight {.github}
 
 > [![]()](https://github.com/sap-samples/cap-sflight){.java}
-> [![]()](https://github.com/sap-samples/cap-sflight){.node}
+> [![]()](https://github.com/capire/xtravels){.node}
 
 This sample is a CAP adaptation of the popular [SFLIGHT](https://blog.sap-press.com/what-is-sflight-and-the-flight-and-booking-data-model-for-abap) sample app in ABAP. It's a great source for how to add SAP **Fiori** applications to a CAP project, including adding UI test suites on various stacks.
 

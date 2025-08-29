@@ -97,7 +97,7 @@ Shortcuts to corresponding i18n [config options](#config). {.indent}
 
 ### `.messages` {.property}
 
-The I18n bundle used for runtime messages, for example, for translated validation errors, such as `ASSERT_RANGE` or `ASSERT_FORMAT`. Translations are loaded from properties with base name `messages`, like that in the [*bookstore* sample](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/_i18n): {.indent}
+The I18n bundle used for runtime messages, for example, for translated validation errors, such as `ASSERT_RANGE` or `ASSERT_FORMAT`. Translations are loaded from properties with base name `messages`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/
@@ -114,7 +114,7 @@ cap/samples/bookshop/
 
 ### `.labels` {.property}
 
-The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/_i18n): {.indent}
+The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/
