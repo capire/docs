@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-To define authorizations on a fine-grained level, the `@restrict` annotation allows you to add all kinds of restrictions that are based on static user roles, the request operation, and instance filters. The building block of such a restriction is a single privilege. This rule checks that the privileges defined in `@restrict` have properly spelled `to`, `grant`, and `where` keys.
+To define authorizations on a fine-grained level, the `@restrict` annotation allows you to add all kinds of restrictions based on static user roles, the request operation, and instance filters. The building block of such a restriction is a single privilege. This rule checks that the privileges defined in `@restrict` have properly spelled `to`, `grant`, and `where` keys.
 
 ## Examples
 
@@ -34,7 +34,7 @@ In the following example, the `@restrict` annotation on `CatalogService.ListOfBo
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the `@restrict` annotation on `CatalogService.ListOfBooks` has typos in the `grant` key (`grants` instead of `grant`), the `to` key (`too` instead of `to`), and the `where` key (`were` instead of `where`) and the rule will report them as a warning:
+This example shows the `@restrict` annotation on `CatalogService.ListOfBooks` with typos in the `grant` key (`grants` instead of `grant`), the `to` key (`too` instead of `to`), and the `where` key (`were` instead of `where`) and the rule will report them as a warning:
 
 ::: code-group
 <<< ../examples/auth-valid-restrict-keys/incorrect/srv/cat-service.cds#snippet{ts:line-numbers} [srv/cat-service.cds]

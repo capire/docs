@@ -14,9 +14,9 @@ status: released
 
 ## Rule Details
 
-Restrictions can be defined on different types of CDS resources, but there are some limitations with regard to supported privileges (see [limitations](../../../guides/security/authorization#supported-combinations-with-cds-resources)).
+Restrictions can be defined on different types of CDS resources, but there are some limitations regarding supported privileges (see [limitations](../../../guides/security/authorization#supported-combinations-with-cds-resources)).
 
-Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same is true for functions. This rule ensures that `@restrict.grant` on service level and for bound/unbound actions and functions is limited to `grant: '*'`.
+Unsupported privilege properties are ignored by the runtime. For bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same is true for functions. This rule ensures that `@restrict.grant` on service level and for bound/unbound actions and functions is limited to `grant: '*'`.
 
 ## Examples
 
@@ -36,8 +36,7 @@ Let's consider the following example with the `CatalogService` where the functio
 
 #### ❌ &nbsp; Incorrect example
 
-If we were to slightly modify the above example and use `grant: ['WRITE']` in the privilege of the function, the rule would be
-triggered to inform us that the value of `grant` is limited to `'*'`:
+If you modify the above example and use `grant: ['WRITE']` in the privilege of the function, the rule would be triggered to inform you that the value of `grant` is limited to `'*'`:
 
 ::: code-group
 <<< ../examples/auth-restrict-grant-service/incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
