@@ -447,7 +447,7 @@ bookshop/
 └── ...
 ```
 
-The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/srv/cat-service.js):
+The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/capire/bookshop/tree/main/srv/cat-service.js):
 
 ```js
 // srv/cat-service.js
