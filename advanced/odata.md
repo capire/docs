@@ -102,7 +102,7 @@ Content-Type: application/json
 }
 ```
 
-The system executes PATCH requests with delta payload using batch delete and [upsert](../java/working-with-cql/query-api#bulk-upsert) statements. These requests are more efficient than OData [batch requests](https://docs.oasis-open.org/odata/odata/v4.01/csprd02/part1-protocol/odata-v4.01-csprd02-part1-protocol.html#sec_BatchRequests).
+The system executes PATCH requests with a delta payload using batch delete and [upsert](../java/working-with-cql/query-api#bulk-upsert) statements. These requests are more efficient than OData [batch requests](https://docs.oasis-open.org/odata/odata/v4.01/csprd02/part1-protocol/odata-v4.01-csprd02-part1-protocol.html#sec_BatchRequests).
 
 Use PATCH on entity collections to upload mass data using a dedicated service secured with [role-based authorization](../guides/security/authorization#requires). Enable delta updates explicitly by annotating the entity with
 
@@ -122,7 +122,7 @@ Limitations:
 
 ## Mapping of CDS Types { #type-mapping}
 
-The table below lists [CDS's built-in types](../cds/types) and their mapping to the OData EDM type system.
+The following table lists [CDS's built-in types](../cds/types) and their mapping to the OData EDM type system.
 
 | CDS Type       | OData V4                                  |
 | -------------- | ---------------------------------------   |
@@ -144,7 +144,7 @@ The table below lists [CDS's built-in types](../cds/types) and their mapping to 
 | `Binary`       | _Edm.Binary_                              |
 | `LargeBinary`  | _Edm.Binary_                              |
 | `LargeString`  | _Edm.String_                              |
-| `Map`          | represented as empty, open complex type   |
+| `Map`          | represented as an empty, open complex type   |
 | `Vector`       | not supported <sup>(2)</sup>              |
 
 > <sup>(1)</sup> Mapping can be changed with, for example, `@odata.Type='Edm.String'`
@@ -187,7 +187,7 @@ entity Books {
 ```
 
 ::: warning
-This annotation affects the client-side facing API only. No automatic data modification occurs behind the scenes, such as rounding, truncation, or conversion. You must perform all required modifications on the data stream so that the values match their type in the API.
+This annotation affects the client-side facing API only. No automatic data modification occurs behind the scenes, such as rounding, truncation, or conversion. You must perform all the required modifications on the data stream so that the values match their type in the API.
 If you don't do the required conversions, you can "cast" any scalar CDS type into any incompatible EDM type:
 
 ```cds
@@ -272,8 +272,8 @@ For each annotated target definition in CSN, the rules for restructuring from CS
 
 1. Annotations with a single-identifier key are skipped (as OData annotations always have a `@Vocabulary.Term...` key signature).
 2. All individual annotations with the same `@<Vocabulary.Term>` prefix are collected.
-3. If there is only one annotation without a suffix, &rarr; that one is a scalar or array value of an OData term.
-4. If there are more annotations with suffix key parts &rarr; it's a record value for the OData term.
+3. If there's only one annotation without a suffix, &rarr; that one is a scalar or array value of an OData term.
+4. If there are more annotations with suffix key parts →, it's a record value for the OData term.
 
 
 ### Qualified Annotations
@@ -355,7 +355,7 @@ All three expressions result in the following rendering:
 
 > Note: The `@Some` annotation isn't a valid term definition. The following example illustrates the rendering of record values.
 
-The system maps record-like source structures to `<Record>` nodes in EDMX, with primitive types translated analogously to the above:
+The system maps record-like source structures to `<Record>` nodes in EDMX, with primitive types translated analogously to what was mentioned earlier:
 
 ```cds
 @Some.Record: {
@@ -563,7 +563,7 @@ to these references, and they are translated to the flat model.
 
 ::: tip
 
-Although CAP supports structured types and elements, we recommend to use them only
+Although CAP supports structured types and elements, we recommend using them only
 if they bring a real benefit. In general, you should keep your models as flat as possible.
 
 :::
@@ -732,7 +732,7 @@ If the expression you provide as an annotation value is more complex than just a
 
 ::: info
 
-While the flattening of references described in the section above is applied to all
+While the flattening of references described in the preceding section is applied to all
 annotations, the syntactic translation of expressions is only done for annotations
 defined in one of the [OData vocabularies](#vocabularies).
 
@@ -849,7 +849,7 @@ converted into the corresponding EDM primitive type.
 
 CAP only provides a syntactic translation. It is up to each client
 whether an expression value is supported for a particular annotation.
-See for example [SAP Fiori Elements' list of supported annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
+See, for example,  [SAP Fiori Elements' list of supported annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
 
 :::
 
@@ -922,9 +922,9 @@ In any case, the resulting EDMX is:
 
 ::: tip Use CDS expression syntax
 
-Use the EDM JSON expression syntax only as fallback mechanism.
+Use the EDM JSON expression syntax only as a fallback mechanism.
 Whenever possible, use [expression-like annotation values](#expression-annotations) instead.
-For the example below, simply write `@UI.Hidden: (status <> 'visible')`.
+For the following example, simply write `@UI.Hidden: (status <> 'visible')`.
 
 :::
 
@@ -1062,9 +1062,9 @@ The annotation is added to the OData API, as well as the mandatory reference to 
 ```
 
 The compiler evaluates neither annotation values nor the URI.
-It is your responsibility to make the URI accessible if required.
+It is your responsibility to make the URI accessible if necessary.
 Unlike for the standard vocabularies listed above, the compiler has no access to the content of
-the vocabulary, so the values are translated completely generically.
+the vocabulary, so the values are translated generically.
 
 
 ## Data Aggregation
@@ -1186,7 +1186,7 @@ GET /Books?$apply=aggregate(stock with sum as stock) HTTP/1.1
 
 #### Currencies and Units of Measure
 
-If a property represents a monetary amount, it may have a related property that indicates the amount's *currency code*. Analogously, a property representing a measured quantity can be related to a *unit of measure*. To indicate that a property is a currency code or a unit of measure it can be annotated with the [Semantics Annotations](https://help.sap.com/docs/SAP_NETWEAVER_750/cc0c305d2fab47bd808adcad3ca7ee9d/fbcd3a59a94148f6adad80b9c97304ff.html) `@Semantics.currencyCode` or `@Semantics.unitOfMeasure`.
+If a property represents a monetary amount, it may have a related property that indicates the amount's *currency code*. Analogously, a property representing a measured quantity can be related to a *unit of measure*. To indicate that a property is a currency code or a unit of measure, it can be annotated with the [Semantics Annotations](https://help.sap.com/docs/SAP_NETWEAVER_750/cc0c305d2fab47bd808adcad3ca7ee9d/fbcd3a59a94148f6adad80b9c97304ff.html) `@Semantics.currencyCode` or `@Semantics.unitOfMeasure`.
 The aggregation method (typically, sum) is specified with the `@Aggregation.default` annotation.
 
 ```cds
@@ -1290,7 +1290,7 @@ Dynamic properties are not persisted in the underlying data source automatically
 
 #### Simple Types
 
-The simple values of deserialized JSON payload can be of type: `String`, `Boolean`, `Number` or simply an `Object` for `null` values.
+The simple values of a deserialized JSON payload can be of type: `String`, `Boolean`, `Number` or simply an `Object` for `null` values.
 
 |JSON                     | Java Type of the `value`       |
 |-------------------------|--------------------------------|
@@ -1338,7 +1338,7 @@ service Sue {
 
 ### Requesting Singletons
 
-As mentioned above, you can access singletons without specifying keys in the request URL. They can contain navigation properties, and other entities can include singletons as their navigation properties as well. The `$expand` query option is also supported.
+As mentioned earlier, you can access singletons without specifying keys in the request URL. They can contain navigation properties, and other entities can include singletons as their navigation properties as well. The `$expand` query option is also supported.
 
 ```http
 GET …/MySingleton
