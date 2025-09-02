@@ -126,7 +126,7 @@ Prefix the module path in `impl` with `./` to refer to a file relative to your p
 
 ### cds.requires.<i>\<srv\></i>`.kind`
 
-As service configurations inherit from each other along `kind` chains, we can refer to default configurations shipped with `@sap/cds`, as you commonly see that in our [_cap/samples_](https://github.com/sap-samples/cloud-cap-samples), like so:
+As service configurations inherit from each other along `kind` chains, we can refer to default configurations shipped with `@sap/cds`, as you commonly see that in our [_cap/samples_](https://github.com/capire/samples), like so:
 
 ```json
 "cds": { "requires": {
@@ -409,11 +409,11 @@ If the `vcap` configuration contains multiple properties such as `name`, `label`
   "cds": {
     "requires": {
       "hana": {
-        "vcap": { 
-          "label": "hana", 
-          "plan": "standard", 
-          "name": "myHana", 
-          "tags": "database" 
+        "vcap": {
+          "label": "hana",
+          "plan": "standard",
+          "name": "myHana",
+          "tags": "database"
         }
       }
     }
@@ -465,10 +465,10 @@ CAP services often come with a default `vcap` configuration. In rare cases, the 
   "cds": {
     "requires": {
       "hana": {
-        "vcap": { 
-          "label": false,  
-          "name": "myHana", 
-          "tags": "database" 
+        "vcap": {
+          "label": false,
+          "name": "myHana",
+          "tags": "database"
         }
       }
     }
