@@ -2096,7 +2096,21 @@ service CatalogService {
 
 Explicitly modelled binding parameters are ignored for OData V2.
 
+#### Returning Media Data Streams { #actions-returning-media}
 
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](/guides/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+
+```cds
+service CatalogService {
+  @Core.MediaType: 'image/png'  @Core.ContentDisposition.Filename: 'image.png'  @Core.ContentDisposition.Type: 'attachment'
+  type png : LargeBinary;
+
+  entity Products as projection on data.Products { ... }
+    actions {
+      function image() returns png;
+    }
+}
+```
 
 ### Custom-Defined Events {#events}
 
