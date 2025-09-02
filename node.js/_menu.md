@@ -32,6 +32,7 @@
   ## [Class cds. MessagingService](messaging)
   ## [Class cds. DatabaseService](databases)
   ## [Serving Fiori UIs](fiori)
+  ## [Integrate with UCL](../../node.js/ucl)
 
 # [cds. Events](events)
 

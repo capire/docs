@@ -8,11 +8,7 @@ status: released
 <style scoped>
   /* expand this extra wide table on big screens */
   @media screen and (min-width: 1600px) {
-    table {
-      min-width: fit-content;
-      width: max-content;
-      position: relative; z-index: 10; /* make the wide table flow over the aside section on the right */
-    }
+    table { width: max-content; }
   }
 </style>
 
@@ -112,7 +108,7 @@ service CatalogService {
 
 ## Extensions { #extensions}
 
-`@AsyncAPI.Extensions` can be used to provide arbitrary extensions. 
+`@AsyncAPI.Extensions` can be used to provide arbitrary extensions.
 If a specific annotation exists for a given extension, it takes precedence over the definition using @AsyncAPI.Extensions.
 For example, if both `@AsyncAPI.ShortText` and `@AsyncAPI.Extensions: { ![sap-shortText]: 'baz' }` are provided, the value from `@AsyncAPI.ShortText` will override the one defined in @AsyncAPI.Extensions.
 

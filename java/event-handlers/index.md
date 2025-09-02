@@ -14,7 +14,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 This section describes how to register event handlers on services. In CAP everything that happens at runtime is an [event](../../about/best-practices#events) that is sent to a [service](../../about/best-practices#services).
-With event handlers the processing of these events can be extended or overridden. Event handlers can be used to handle CRUD events, implement actions and functions and to handle asynchronous events from a messaging service.
+With event handlers, the processing of these events can be extended or overridden. Event handlers can be used to handle CRUD events, implement actions and functions, and to handle asynchronous events from a messaging service.
 
 ## Introduction to Event Handlers
 
@@ -22,11 +22,11 @@ CAP allows you to register event handlers for [events](../../about/best-practice
 Event handlers enable you to add custom business logic to your application by either extending the processing of an event, or by completely overriding its default implementation.
 
 ::: tip
-Event handlers are a powerful means to extend CAP. Did you know, that most of the built-in features provided by CAP are implemented using event handlers?
+Event handlers are a powerful means to extend CAP. Did you know that most of the built-in features provided by CAP are implemented using event handlers?
 :::
 
 Common events are the CRUD events (`CREATE`, `READ`, `UPDATE`, `DELETE`), which are handled by the different kinds of [CQN-based services](../cqn-services/#cdsservices).
-These events are most typically triggered, when an HTTP-based protocol adapter (for example OData V4) executes a CQN statement on an Application Service to fulfill the HTTP request.
+These events are most typically triggered when an HTTP-based protocol adapter (for example OData V4) executes a CQN statement on an Application Service to fulfill the HTTP request.
 The CAP Java SDK provides a lot of built-in event handlers (also known as [Generic Providers](../../guides/providing-services)) that handle CRUD operations out of the box and implement the handling of many CDS annotations.
 Applications most commonly use event handlers on CRUD events to _extend_ the event processing by using the [`Before`](#before) and [`After`](#after) phase.
 
@@ -34,8 +34,8 @@ Applications most commonly use event handlers on CRUD events to _extend_ the eve
 Therefore, to implement the business logic of an action or function, you need to register event handlers as well.
 Event handlers that implement the core processing of an event should be registered using the [`On`](#on) phase.
 
-Events in CAP can have parameters and - in case they are synchronous - a return value. The CAP Java SDK uses [Event Contexts](#eventcontext) to provide a type-safe way to access parameters and return values.
-In the case of CRUD events the corresponding Event Contexts provide for example access to the CQN statement. Event Contexts can be easily obtained in an event handler.
+Events in CAP can have parameters and - in case they're synchronous - a return value. The CAP Java SDK uses [Event Contexts](#eventcontext) to provide a type-safe way to access parameters and return values.
+In the case of CRUD events the corresponding Event Contexts provide, for example, access to the CQN statement. Event Contexts can be easily obtained in an event handler.
 
 ## Event Phases { #phases}
 
@@ -71,7 +71,7 @@ The `On` phase is completed when one of the following conditions applies:
 - A handler throws an exception. In this case, event processing is terminated immediately.
 
 In case of synchronous events, if after the `On` phase, no handler completed the event processing, it's considered an error and the event processing is aborted with an exception.
-However when registering an `On` handler for an asynchronous event it is not recommended to complete the event processing, as other handlers might not get notified of the event anymore.
+However, when registering an `On` handler for an asynchronous event it is not recommended to complete the event processing, as other handlers might not get notified of the event anymore.
 In that case CAP ensures to auto-complete the event, once all `On` handlers have been executed.
 
 ### After { #after}
@@ -108,12 +108,12 @@ srv.emit(context); // process event
 Object result = context.get("result");
 ```
 
-Using the `get` and `put` methods has several drawbacks: The API is neither type-safe nor is it clear what the correct keys for different event parameters are.
-To solve these issues it is possible to overlay the general Event Context with an event-specific Event Context, which provides typed getters and setters for the parameters of a specific event.
-For each event that the CAP Java SDK provides out-of-the-box (for example the [CRUD events](../cqn-services/application-services#crudevents)) a corresponding Event Context is provided.
+Using the `get` and `put` methods has several drawbacks: The API is not type-safe and it's not clear what the correct keys for different event parameters are.
+To solve these issues, it is possible to overlay the general Event Context with an event-specific Event Context, which provides typed getters and setters for the parameters of a specific event.
+For each event that the CAP Java SDK provides out of the box (for example the [CRUD events](../cqn-services/application-services#crudevents)) a corresponding Event Context is provided.
 
 Let's have a look at an example. The [CdsReadEventContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/CdsReadEventContext.html) interface is the `READ` event-specific Event Context.
-As one of the parameters of the `READ` event is a [CqnSelect](../../cds/cqn#select) it provides a `CqnSelect getCqn()` method. The return value of a `READ` event is a [Result](../working-with-cql/query-execution#result).
+As one of the parameters of the `READ` event is a [CqnSelect](../../cds/cqn#select), it provides a `CqnSelect getCqn()` method. The return value of a `READ` event is a [Result](../working-with-cql/query-execution#result).
 The context therefore also provides a `Result getResult()` and a `setResult(Result r)` method. You can use the `as` method provided by the general Event Context to overlay it:
 
 ```java
@@ -124,7 +124,7 @@ Result result = context.getResult();
 ```
 
 The getter and setter methods, still operate on the simple get/put API shown in the previous example. They just provide a type-safe layer on top of it.
-The `as` method makes use of Java Proxies behind the scenes. Therefore, an interface definition is all that is required to enable this functionality.
+The `as` method uses Java Proxies behind the scenes. Therefore, an interface definition is all that is required to enable this functionality.
 
 ::: tip
 Use these event-specific type-safe Event Context interfaces whenever possible.
@@ -219,12 +219,12 @@ public class AdminServiceHandler implements EventHandler {
 :::
 
 - The annotation `@Component` instructs Spring Boot to create a bean instance from this class.
-- The `EventHandler` marker interface is required for CAP to identify the class as an event hander class among all beans and scan it for event handler methods.
-- The optional `@ServiceName` annotation can be used to specify the default service, which event handlers are registered on. It is possible to override this value for specific event handler methods.
+- The `EventHandler` marker interface is required for CAP to identify the class as an event handler class among all beans and scan it for event handler methods.
+- The optional `@ServiceName` annotation can be used to specify the default service, which event handlers are registered on. It's possible to override this value for specific event handler methods.
 
 ::: tip
 The CAP Java SDK Maven Plugin generates interfaces for services in the CDS model. These interfaces provide String constants with the fully qualified name of the service.
-In case the service name is based on the CDS model it is recommended to use these constants with the `@ServiceName` annotation.
+If the service name is based on the CDS model, it's recommended to use these constants with the `@ServiceName` annotation.
 :::
 
 It is possible to specify multiple service names. Event handlers are registered on all of these services.
@@ -252,10 +252,10 @@ Each of these annotations can define the following attributes:
 - `serviceType`: The type of services the event handler is registered on, for example, `ApplicationService.class`. Can be used together with `service = "*"` to register an event handler on all services of a certain type.
 
 - `event`: The events the event handler is registered on. The event handler is invoked in case any of the events specified matches the current event. Use `*` to match any event.
-  It's optional, if the event can be inferred through a [Event Context argument](#contextarguments) in the handler signature.
+  It's optional, if the event can be inferred through an [Event Context argument](#contextarguments) in the handler signature.
 
-- `entity`: The target entities the event handler is registered on. The event handler is invoked in case any of the entities specified matches the current entity. Use `*` to match any entity.
-  It's optional, if the entity can be inferred through a [POJO-based argument](#pojoarguments) in the handler signature. If no value is specified or can be inferred it defaults to `*`.
+- `entity`: The target entities that the event handler is registered on. The event handler is invoked in case any of the entities specified matches the current entity. Use `*` to match any entity.
+  It's optional, if the entity can be inferred through a [POJO-based argument](#pojoarguments) in the handler signature. If no value is specified or can be inferred, it defaults to `*`.
 
 ::: tip
 The interfaces of different service types provide String constants for the events they support (see for example the [CqnService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/CqnService.html)).
@@ -278,7 +278,7 @@ It is recommended to use these constants with the `event` or `entity` attributes
 
 ## Event Handler Method Signatures { #handlersignature}
 
-The most basic signature of an event handler method is `public void process(EventContext context)`. However event-specific Event Context and entity data arguments and certain return values are supported as well and can be freely combined.
+The most basic signature of an event handler method is `public void process(EventContext context)`. However, event-specific Event Context and entity data arguments and return values are supported as well and can be freely combined.
 It is even valid for event handler methods to have no arguments at all. Handler methods don't necessarily have to be public methods. They can also be methods with protected, private, or package visibility.
 
 ### Event Context Arguments { #contextarguments}
@@ -291,7 +291,7 @@ An event handler can get access to the general `EventContext` by simply declarin
 public void readBooks(EventContext context) { }
 ```
 
-It is also possible to directly refer to event-specific Event Context interfaces in your arguments. In that case the general Event Context is automatically overlayed with the event-specific one:
+It is also possible to directly refer to event-specific Event Context interfaces in your arguments. In that case the general Event Context is automatically overlaid with the event-specific one:
 
 ```java
 @Before(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME)
@@ -311,7 +311,7 @@ The mapping between an Event Context interface and an event, is based on the `@E
 :::
 
 In case an event handler is registered on multiple events only the general Event Context argument can be used.
-At runtime, the corresponding event-specific Event Context can be overlayed explicitly, if access to event-specific parameters is required:
+At runtime, the corresponding event-specific Event Context can be overlaid explicitly, if access to event-specific parameters is required:
 
 ```java
 @Before(event = { CqnService.EVENT_CREATE, CqnService.EVENT_UPDATE }, entity = Books_.CDS_NAME)
@@ -326,11 +326,9 @@ public void changeBooks(EventContext context) {
 }
 ```
 
-
-
 ### Entity Data Arguments { #pojoarguments}
 
-When adding business logic to an Application Service event handlers most commonly need to access entity data.
+When adding business logic to an Application Service, event handlers most commonly need to access entity data.
 Entity data can be directly accessed in the event handler method, by using an argument of type `CdsData`:
 
 ```java
@@ -368,17 +366,17 @@ Entity data arguments only work on [CRUD events](../cqn-services/application-ser
 
 The origin from which the entity data is provided depends on the phase of the event processing.
 During the `Before` and `On` phase it is obtained from the CQN statement. The CQN statement contains the entity data that was provided by the service client.
-However during the `After` phase the entity data is obtained from the `Result` object, which is provided as the return value of the event to the service client.
+However, during the `After` phase the entity data is obtained from the `Result` object, which is provided as the return value of the event to the service client.
 Some CQN statements such as for example `CqnSelect`, which is used with `READ` events, don't allow to carry data. In these cases entity data arguments are set to `null`.
 
-There are different flavours of entity data arguments. Besides using `List<Books>` it is also possible to use `Stream<Books>`:
+There are different flavors of entity data arguments. Besides using `List<Books>`, it's also possible to use `Stream<Books>`:
 
 ```java
 @Before(event = { CqnService.EVENT_CREATE, CqnService.EVENT_UPDATE })
 public void changeBooks(Stream<Books> books) { }
 ```
 
-It is also possible to use non-collection-based entity arguments, such as `Books`. However if multiple data rows are available at runtime an exception will be thrown in that case:
+It is also possible to use non-collection-based entity arguments, such as `Books`. However, if multiple data rows are available at runtime an exception will be thrown in that case:
 
 ```java
 @Before(event = { CqnService.EVENT_CREATE, CqnService.EVENT_UPDATE })
@@ -391,6 +389,58 @@ During the `Before` and `On` phase changes affect the data carried by the CQN st
 During the `After` phase changes affect the return value of the event.
 :::
 
+### Entity Reference Arguments
+
+You can get an entity reference reflecting the reference of the currently processed CQN statement, by declaring a corresponding argument in your method signature.
+
+```java
+@After(event = CqnService.EVENT_UPDATE, entity = Books_.CDS_NAME)
+public void changedBook(CqnStructuredTypeRef ref) { }
+```
+
+The CAP Java SDK Maven Plugin can generate query builder interfaces for entities defined in the CDS model. These interfaces allow you to build [type-safe queries](../working-with-cql/query-api#concepts) and can be used in arguments as well:
+
+```java
+@After(event = CqnService.EVENT_UPDATE, entity = Books_.CDS_NAME)
+public void changedBook(Books_ ref) { }
+```
+
+If an entity reference argument is used, CAP can infer the entity for the event handler registration from the entity reference argument:
+
+```java
+@After(event = CqnService.EVENT_UPDATE)
+public void changedBook(Books_ ref) { }
+```
+
+::: tip Mapping uses `@CdsName` annotation
+The mapping between a query builder interface and an entity is based on the `@CdsName` annotation of the query builder interface.
+:::
+
+Entity data arguments work on all events that operate with a `CqnStatement`. This is the case for all CRUD events and custom bound actions or functions.
+
+You can directly use these references to build further queries in your event handlers:
+
+```java
+@After(event = CqnService.EVENT_UPDATE)
+public void changedBook(Books_ ref) {
+  var select = Select.from(ref).columns(b -> b.title());
+}
+```
+
+### Service Arguments { #servicearguments }
+
+The CAP Java SDK Maven Plugin can [generate service interfaces](../cqn-services/application-services#trigger-action-or-function) for services defined in the CDS model.
+
+To easily access these generated application-specific interfaces, you can declare corresponding arguments in your method signature.
+The same approach works for generic interfaces like `CqnService` or `DraftService`.
+
+The service instances that can be provided to the event handler are always the service instances that are processing the event.
+
+```java
+@After(event = CqnService.EVENT_UPDATE)
+public void changedBook(Books book, AdminService service) { }
+```
+
 ### Return Values
 
 The return value of an event can be set by returning a value in an event handler method:
@@ -402,10 +452,10 @@ public Result readBooks(CdsReadEventContext context) {
 }
 ```
 
-In case an event handler method of the `Before` or `On` phase has a return value it automatically [completes the event processing](#eventcompletion), once it is executed.
+In case an event handler method of the `Before` or `On` phase has a return value it automatically [completes the event processing](#eventcompletion), once it's executed.
 Event handler methods of the `After` phase that have a return value, replace the return value of the event.
 
-Only return values that extend `Iterable<? extends Map<String, Object>>` are supported. The `Result` object or a list of entity data (for example `List<Books>`) fulfill this requirement.
+For [CRUD events](../cqn-services/application-services#crudevents) and [draft-specific CRUD events](../fiori-drafts#draftevents), return values that extend `Iterable<? extends Map<String, Object>>` are supported. The `Result` and `CdsResult<?>` interfaces or a list of entity data (for example `List<Books>`) fulfill this requirement.
 
 ```java
 @On(entity = Books_.CDS_NAME)
@@ -416,11 +466,26 @@ public List<Books> readBooks(CdsReadEventContext context) {
 }
 ```
 
-Event handler methods with return values only work on [CRUD events](../cqn-services/application-services#crudevents) of [CQN-based services](../cqn-services/#cdsservices) or the [draft-specific CRUD events](../fiori-drafts#draftevents) provided by Draft Services.
-
 ::: tip
-To learn how to build your own Result objects, have a look at the [Result Builder API](../cqn-services/application-services#result-builder)
+To learn how to build your own Result objects, have a look at [Result Handling](../cqn-services/application-services#result-handling)
 :::
+
+For custom actions or functions, you can directly return the return value of the corresponding action or function in your event handler:
+
+Given the following CDS model:
+```cds
+service World {
+  function hello() returns String;
+}
+```
+
+The event handler can directly return a `String`, which corresponds to the return type of the `hello` function:
+```java
+@On(event = "hello")
+public String hello() {
+  return "Hello World";
+}
+```
 
 ### Ordering of Event Handler Methods
 

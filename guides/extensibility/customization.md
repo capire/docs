@@ -35,11 +35,11 @@ Before we start, you'll need a **CAP-based [multitenant SaaS application](../mul
 
 <!-- REVISIT: Use cds init bookshop --add sample instead -->
 ::: tip Jumpstart
-You can download the ready-to-use [Orders Management application](https://github.com/SAP-samples/cloud-cap-samples/tree/main/orders):
+You can download the ready-to-use [Orders Management application](https://github.com/capire/orders):
 
 ```sh
-git clone https://github.com/SAP-samples/cloud-cap-samples
-cd cloud-cap-samples/orders
+git clone https://github.com/capire/orders
+cd orders
 cds add multitenancy
 ```
 
@@ -83,8 +83,8 @@ npm add @sap/cds-mtxs
   "version": "1.0.0",
   "dependencies": {
     "@capire/common": "*",
-    "@sap/cds": ">=5",
-    "@sap/cds-mtxs": "^1"
+    "@sap/cds": ">=9",
+    "@sap/cds-mtxs": "^3"
   },
   "cds": {
     "requires": {

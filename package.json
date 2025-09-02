@@ -1,6 +1,6 @@
 {
-  "name": "@cap-js/docs",
-  "version": "1.5.0",
+  "name": "@capire/docs",
+  "version": "1.6.0",
   "description": "Capire on VitePress",
   "type": "module",
   "scripts": {
@@ -14,12 +14,12 @@
   },
   "author": "SAP SE (https://www.sap.com)",
   "license": "SEE LICENSE IN LICENSE",
-  "repository": "cap-js/docs",
+  "repository": "capire/docs",
   "homepage": "https://cap.cloud.sap/",
   "devDependencies": {
     "@cap-js/cds-typer": "^0",
     "@cap-js/cds-types": "^0",
-    "@sap/cds": "^8",
+    "@sap/cds": "^9",
     "@shikijs/vitepress-twoslash": "^2.0.0",
     "@types/adm-zip": ">=0.5.0",
     "@types/express": "^4.17.21",

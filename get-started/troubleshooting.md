@@ -524,8 +524,7 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 
 <div id="hana-ips" />
 
-#### Deployment fails — _... build plugin for file suffix "hdbmigrationtable" [8210015]_
-{#missingPlugin}
+#### Deployment fails — _... build plugin for file suffix "hdbmigrationtable" [8210015]_ {#missingPlugin}
 
 |  | Explanation |
 | --- | ---- |
@@ -788,5 +787,17 @@ For SAP HANA deployment errors see [The HANA section](#how-do-i-resolve-deployme
 
 Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems.
 When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
+
+### tar: Error is not recoverable: exiting now
+
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) you can try installing the `tar` library for better compatibility with Windows systems.
+
+Add it to your `devDependencies` like so:
+
+```sh
+npm add -D tar
+```
+
+> On macOS and Linux, the built-in implementation will continue to be used.
 
 <div id="end" />

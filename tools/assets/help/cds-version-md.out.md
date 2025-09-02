@@ -4,15 +4,16 @@
 
 | your-project           | &lt;Add your repository here&gt;              |
 | ---------------------- | --------------------------------------- |
-| @cap-js/asyncapi       | 1.0.3                                   |
-| @cap-js/cds-types      | 0.11.0                                  |
-| @cap-js/db-service     | 2.1.2                                   |
-| @cap-js/openapi        | 1.2.3                                   |
-| @cap-js/sqlite         | 2.0.1                                   |
-| @sap/cds               | 9.0.4                                   |
-| @sap/cds-compiler      | 6.0.14                                  |
-| @sap/cds-dk (global)   | 9.0.6                                   |
+| @sap/cds               | 9.2.1                                   |
+| @sap/cds-dk            | -- missing --                           |
+| @sap/cds-compiler      | 6.2.2                                   |
+| @sap/cds-dk (global)   | 9.2.1                                   |
 | @sap/cds-fiori         | 2.0.1                                   |
-| @sap/cds-mtxs          | 3.0.1                                   |
-| Node.js                | v22.16.0                                |
+| @sap/cds-mtxs          | 3.2.0                                   |
+| @cap-js/asyncapi       | 1.0.3                                   |
+| @cap-js/cds-types      | 0.13.0                                  |
+| @cap-js/db-service     | 2.3.0                                   |
+| @cap-js/openapi        | 1.2.3                                   |
+| @cap-js/sqlite         | 2.0.2                                   |
+| Node.js                | v22.18.0                                |
 </pre>

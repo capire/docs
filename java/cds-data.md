@@ -219,7 +219,7 @@ In CAP Java data is represented in maps. To simplify data access in custom code,
 
 ![This graphic is explained in the accompanying text.](./assets/accessor.drawio.svg)
 
-The `Row`s of a [query result](./working-with-cql/query-execution#result) as well as the [generated accessor interfaces](#generated-accessor-interfaces) already extend `CdsData`. Using the helper class [Struct](#struct) you can extend any `Map<String, Object>` with the CdsData `interface`:
+The rows of a [query result](./working-with-cql/query-execution#result) as well as the [generated accessor interfaces](#generated-accessor-interfaces) already extend `CdsData`. Using the helper class [Struct](#struct) you can access any `Map<String, Object>` with the CdsData `interface`:
 
 ```java
 Map<String, Object> map = new HashMap<>();
@@ -307,7 +307,7 @@ You can use the functions, `CQL.cosineSimilarity` or `CQL.l2Distance` (Euclidean
 ```Java
 CqnVector v = CQL.vector(embedding);
 
-Result similarBooks = service.run(Select.from(BOOKS).where(b ->
+CdsResult<Books> similarBooks = service.run(Select.from(BOOKS).where(b ->
   CQL.cosineSimilarity(b.embedding(), v).gt(0.9))
 );
 ```
@@ -322,7 +322,7 @@ CqnSelect query = Select.from(BOOKS)
   .where(b -> b.ID().ne(bookId).and(similarity.gt(0.9)))
   .orderBy(b -> b.get("similarity").desc());
 
-Result similarBooks = db.run(select, CdsVector.of(embedding));
+Result similarBooks = db.run(query, CdsVector.of(embedding));
 ```
 
 In CDS QL queries, elements of type `cds.Vector` are not included in select _all_ queries. They must be explicitly added to the select list:
@@ -473,37 +473,22 @@ The name of the CDS element referred to by a getter or setter, is defined throug
 
 ### Generated Accessor Interfaces {#generated-accessor-interfaces}
 
-For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./cqn-services/persistence-services#staticmodel). The generated accessor interfaces allow for hybrid access and easy serialization to JSON.
-
-By default, the accessor interfaces provide the setter and getter methods inspired by the JavaBeans specification.
-
-Following example uses accessor interfaces that have been generated with the default (JavaBeans) style:
-
-```java
-    Authors author = Authors.create();
-    author.setName("Emily Brontë");
-
-    Books book = Books.create();
-    book.setAuthor(author);
-    book.setTitle("Wuthering Heights");
-```
-
-Alternatively, you can generate accessor interfaces in _fluent style_. In this mode, the getter methods are named after the property names. To enable fluent chaining, the setter methods return the accessor interface itself.
-
-Following is an example of the fluent style:
+For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
 ```java
    Authors author = Authors.create().name("Emily Brontë");
    Books.create().author(author).title("Wuthering Heights");
 ```
 
-The generation mode is configured by the property [`<methodStyle>`](./assets/cds-maven-plugin-site/generate-mojo.html#methodstyle) of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+The generation mode is configured by the property [`<methodStyle>`](./assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
 
 Once, when starting a project, decide on the style of the interfaces that is best for your team and project. We recommend the default JavaBeans style.
 
 The way the interfaces are generated determines only how data is accessed by custom code. It does not affect how the data is represented in memory and handled by the CAP Java runtime.
 
 Moreover, it doesn't change the way how event contexts and entities, delivered by CAP, look like. Such interfaces from CAP are always modelled in the default JavaBeans style.
+
+See more in [Configuring Code Generation for Typed Access](/java/developing-applications/building#codegen-config) for advanced options. {.learn-more}
 
 #### Renaming Elements in Java
 
@@ -909,8 +894,8 @@ diff.process(newImage, oldImage, type);
 ```
 
 ```java
-Result newImage = service.run(Select.from(...));
-Result oldImage = service.run(Select.from(...));
+CdsResult<?> newImage = service.run(Select.from(...));
+CdsResult<?> oldImage = service.run(Select.from(...));
 
 diff.process(newImage, oldImage, newImage.rowType());
 ```
@@ -1373,13 +1358,13 @@ Using a custom `On` handler makes sense if you want to prevent that the default 
 
 ```java
 @On(event = CqnService.EVENT_UPDATE)
-public Result processCoverImage(CdsUpdateEventContext context, List<Books> books) {
+public CdsResult<Books> processCoverImage(CdsUpdateEventContext context, List<Books> books) {
 	books.forEach(book -> {
 		book.setCoverImage(new CoverImagePreProcessor(book.getCoverImage()));
 	});
 
 	// example for invoking some CQN-based service
-	return service.run(Update.entity(Books_.CDS_NAME).entries(books));
+	return service.run(Update.entity(Books_.class).entries(books));
 }
 ```
 

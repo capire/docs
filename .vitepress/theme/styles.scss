@@ -112,6 +112,20 @@ main {
       padding-left: 2.5em;
     }
 
+    // Custom list styles for nested items
+    ul {
+      list-style-type: disc; // First level: filled circle
+      
+      ul {
+        list-style-type: circle; // Second level: empty circle
+        
+        
+        ul {
+          list-style-type: square; // Third level: square
+        }
+      }
+    }
+
     .step-by-step {
       ol {
         counter-reset: my-counter;

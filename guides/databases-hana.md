@@ -1,11 +1,8 @@
 ---
 status: released
-impl-variants: true
 ---
 
 # Using SAP HANA Cloud for Production
-
-<ImplVariantsHint />
 
 [[toc]]
 
@@ -20,18 +17,34 @@ CAP isn't validated with other variants of SAP HANA, like "SAP HANA Database as 
 
 ## Setup & Configuration
 
-<div class="impl node">
+To use SAP HANA Cloud for production, add a dependency to the _package.json_ for Node.js or to the _pom.xml_ for a CAP Java application:
 
-Run this to use SAP HANA Cloud for production:
-
-```sh
+::: code-group
+```sh [Shell/Bash]
 npm add @cap-js/hana
 ```
+
+```xml [pom.xml]
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-feature-hana</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+:::
 
 ::: details Using other SAP HANA drivers...
 
 Package `@cap-js/hana` uses the [`hdb`](https://www.npmjs.com/package/hdb) driver by default. You can override that by running [`npm add @sap/hana-client`](https://www.npmjs.com/package/@sap/hana-client), thereby adding it to your package dependencies, which then takes precedence over the default driver.
 
+:::
+
+:::details In CAP Java ...
+The [modules](../java/developing-applications/building#standard-modules) `cds-starter-cloudfoundry` and `cds-starter-k8s` include `cds-feature-hana`.
+
+The datasource for SAP HANA is then auto-configured based on available service bindings of type *service-manager* and *hana*.
+
+[Learn more about the configuration of an SAP HANA Cloud Database](../java/cqn-services/persistence-services#sap-hana){ .learn-more}
 :::
 
 ::: tip Prefer `cds add`
@@ -40,38 +53,12 @@ Package `@cap-js/hana` uses the [`hdb`](https://www.npmjs.com/package/hdb) drive
 
 :::
 
-</div>
-
-<div class="impl java">
-
-To use SAP HANA Cloud, [configure a module](../java/developing-applications/building#standard-modules), which includes the feature `cds-feature-hana`.
-For example, add a Maven runtime dependency to the `cds-feature-hana` feature:
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-feature-hana</artifactId>
-  <scope>runtime</scope>
-</dependency>
-```
-
-::: tip
-
-The [modules](../java/developing-applications/building#standard-modules) `cds-starter-cloudfoundry` and `cds-starter-k8s` include `cds-feature-hana`.
-
-:::
-
-The datasource for HANA is then auto-configured based on available service bindings of type *service-manager* and *hana*.
-
-[Learn more about the configuration of an SAP HANA Cloud Database](../java/cqn-services/persistence-services#sap-hana){ .learn-more}
-
-</div>
 
 
 
 ## Running `cds build`
 
-Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [cap/samples/bookshop](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop):
+Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
 
 ```sh
 cds build --for hana
@@ -266,40 +253,85 @@ The HANA Service provides dedicated support for native SAP HANA features as foll
 
 ### Vector Embeddings { #vector-embeddings }
 
-Vector embeddings are numerical representations that capture important features and semantics of unstructured data - such as text, images, or audio. This representation makes vector embeddings of similar data have high similarity and low distance to each other. These properties of vector embeddings facilitate tasks like similarity search, anomaly detection, recommendations and Retrieval Augmented Generation (RAG). Vector embeddings from a vector datastore such as the [SAP HANA Cloud Vector Engine](https://community.sap.com/t5/technology-blogs-by-sap/sap-hana-cloud-s-vector-engine-announcement/ba-p/13577010) can help get better generative AI (GenAI) results. This is achieved when the embeddings are used as context to the large language models (LLMs) prompts.
+Vector embeddings let you add semantic search, recommendations, and generative AI features to your CAP application. Embeddings are numeric arrays that represent the meaning of unstructured data (text, images, etc.), making it possible to compare and search for items that are semantically related to each other or a user query.
 
-Typically vector embeddings are computed using an **embedding model**. The embedding model is specifically designed to capture important features and semantics of a specific type of data, it also determines the dimensionality of the vector embedding space. Unified consumption of embedding models and LLMs across different vendors and open source models is provided via the [SAP Generative AI Hub](https://community.sap.com/t5/technology-blogs-by-sap/how-sap-s-generative-ai-hub-facilitates-embedded-trustworthy-and-reliable/ba-p/13596153).
+#### Choose an Embedding Model
 
-In CAP, vector embeddings are stored in elements of type [cds.Vector](../cds/types):
+Choose an embedding model that fits your use case and data (for example english or multilingual text). The model determines the number of dimensions of the resulting output vector. Check the documentation of the respective embedding model for details.
 
-```cds
-entity Books : cuid { // [!code focus]
-  title         : String(111);
-  description   : LargeString;  // [!code focus]
-  embedding     : Vector(1536); // vector space w/ 1536 dimensions // [!code focus]
-} // [!code focus]
-```
+Use the [SAP Generative AI Hub](https://community.sap.com/t5/technology-blogs-by-sap/how-sap-s-generative-ai-hub-facilitates-embedded-trustworthy-and-reliable/ba-p/13596153) for unified consumption of embedding models and LLMs across different vendors and open source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
 
-At runtime, you can compute the similarity and distance of vectors in the SAP HANA vector store using the `cosineSimilarity` and `l2Distance` (Euclidean distance) functions in queries:
+#### Add Embeddings to Your CDS Model
+Use the `cds.Vector` type in your CDS model to store embeddings on SAP HANA Cloud. Set the dimension to match your embedding model (for example, 1536 embedding dimensions for OpenAI *text-embedding-3-small*).
 
-::: code-group
-```js [Node.js]
-let embedding; // vector embedding as string '[0.3,0.7,0.1,...]';
+   ```cds
+   entity Books : cuid {
+     title       : String(111);
+     description : LargeString;
+     embedding   : Vector(1536); // adjust dimensions to embedding model
+   }
+   ```
 
-let similarBooks = await SELECT.from('Books')
-  .where`cosine_similarity(embedding, to_real_vector(${embedding})) > 0.9`
-```
+#### Generate Embeddings
+Use an embedding model to convert your data (for example, book descriptions) into vectors. The [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) makes it easy to call SAP AI Core services to generate these embeddings.
 
-```java [Java]
-// Vector embedding of text, for example, from SAP GenAI Hub or via LangChain4j
-float[] embedding = embeddingModel.embed(bookDescription).content().vector();
-
-Result similarBooks = service.run(Select.from(BOOKS).where(b ->
-  CQL.cosineSimilarity(b.embedding(), CQL.vector(embedding)).gt(0.9)));
+:::details Example using SAP Cloud SDK for AI
+```Java
+var aiClient = OpenAiClient.forModel(OpenAiModel.TEXT_EMBEDDING_3_SMALL);
+var response = aiClient.embedding(
+   new OpenAiEmbeddingRequest(List.of(book.getDescription())));
+book.setEmbedding(CdsVector.of(response.getEmbeddingVectors().get(0)));
 ```
 :::
 
+#### Query for Similarity
+At runtime, use SAP HANA's built-in vector functions to search for similar items. For example, find books with embeddings similar to a user question:
+
+::: code-group
+```Java [Java]
+// Compute embedding for user question
+var request = new OpenAiEmbeddingRequest(List.of("How to use vector embeddings in CAP?"));
+CdsVector userQuestion = CdsVector.of(
+ aiClient.embedding(request).getEmbeddingVectors().get(0));
+// Compute similarity between user question and book embeddings
+var similarity = CQL.cosineSimilarity( // computed on SAP HANA
+  CQL.get(Books.EMBEDDING), userQuestion);
+// Find Books related to user question ordered by similarity
+hana.run(Select.from(BOOKS).limit(10)
+.columns(b -> b.ID(), b -> b.title(),
+		 b -> similarity.as("similarity"))
+.orderBy(b -> b.get("similarity").desc()));
+```
+
+```js [Node.js]
+const response = await new AzureOpenAiEmbeddingClient(
+ 'text-embedding-3-small'
+).run({
+ input: 'How to use vector embeddings in CAP?'
+});
+const questionEmbedding = response.getEmbedding();
+let similarBooks = await SELECT.from('Books')
+  .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.9`;
+```
+
+:::
+
+:::tip
+Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
+:::
+
+:::tip SAP Cloud SDK for AI
+Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access to embedding models and large language models (LLMs) from [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core).
+:::
+
+
+[Learn more about the SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) {.learn-more}
+
 [Learn more about Vector Embeddings in CAP Java](../java/cds-data#vector-embeddings) {.learn-more}
+
+[Learn more about the SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
+
+
 
 
 ### Geospatial Functions

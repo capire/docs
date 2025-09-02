@@ -17,8 +17,7 @@ One of the key [CAP design principles](../../about/#open-and-opinionated) is to 
 Giving a clear guidance for cutting-edge technologies on the one hand and still keeping the door wide open for custom choice on the other hand, demands a highly flexible CAP Java runtime stack.
 The [modular architecture](#modular_architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack_configuration) based on standard or custom modules.
 
-## Modular Stack Architecture
-{ #modular_architecture}
+## Modular Stack Architecture { #modular_architecture}
 
 ### Overview
 
@@ -343,8 +342,7 @@ It supports the following command-line options:
 | `-Dpersistence=[true\|false]` | Specify whether persistence is enabled (`true`) or disabled (`false`). Defaults to `true`. |
 | `-DcdsdkVersion=<a valid cds-dk version>` | Sets the provided cds-dk version in the project. If not specified, the default of CAP Java is used. |
 
-## Building Projects with Maven
-{ #maven-build-options }
+## Building Projects with Maven { #maven-build-options }
 
 You can build and run your application by means of the following Maven command:
 
@@ -378,7 +376,152 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 [Learn more about configuration and `cds.env`](../../node.js/cds-env){.learn-more}
 
 
-### Using a Local cds-dk
+## Code Generation for Typed Access {#codegen-config}
+
+The [interfaces for typed access](../cds-data#generated-accessor-interfaces) are generated at each build
+by the [`cds:generate`](/java/assets/cds-maven-plugin-site/generate-mojo.html) goal of the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html).
+
+You configure this goal just like any other Maven plugin via its configuration options via your application's POM. For example:
+
+```xml [pom.xml]
+<execution>
+    <id>cds.generate</id>
+    <goals>
+        <goal>generate</goal>
+    </goals>
+    <configuration>
+        <basePackage>cds.gen</basePackage>
+        ...
+    </configuration>
+</execution>
+```
+
+Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control. 
+
+### Typed Results
+
+Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+
+### Package for Generated Code
+
+The option [`basePackage`](/java/assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
+
+### Filter for CDS Entities
+
+By default, the complete model of your application is generated including all imported or re-used models.
+You can use options [`includes`](/java/assets/cds-maven-plugin-site/generate-mojo.html#includes) and [`excludes`](/java/assets/cds-maven-plugin-site/generate-mojo.html#excludes) to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
+
+These options use patterns that are applied on the fully qualified names of the entities in CDS models. For example, the pattern `my.bookshop.*` will cover all definitions with namespace `my.bookshop` and the pattern `my.bookshop.**` will cover all definitions with fully qualified name starting with `my.bookshop`.
+
+:::warning Cross-namespace references are not resolved
+Options `includes` and `excludes` are simple filters. If included parts of your model reference types from the excluded area, the resulting code will not compile.
+:::
+
+### Style of Interfaces
+
+By default, the accessor interfaces provide the setter and getter methods inspired by the JavaBeans specification. In this style, getter and setter method names are prefixed with `get` and `set`:
+
+
+```java
+    Authors author = Authors.create();
+    author.setName("Emily Brontë");
+
+    Books book = Books.create();
+    book.setAuthor(author);
+    book.setTitle("Wuthering Heights");
+```
+
+Alternatively, you can generate accessor interfaces in _fluent style_. In this mode, the getter methods are named after the property names. To enable fluent chaining, the setter methods return the accessor interface itself:
+
+
+```java
+   Authors author = Authors.create().name("Emily Brontë");
+   Books.create().author(author).title("Wuthering Heights");
+```
+
+The generation mode is configured by the option [`methodStyle`](/java/assets/cds-maven-plugin-site/generate-mojo.html#methodStyle). The selected style affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+
+Once, when starting a project, decide on the style of the interfaces that is best for your team and project.
+
+The way the interfaces are generated only determines how data is accessed by custom code. It does not affect how the data is represented in memory and handled by the CAP Java runtime.
+
+Moreover, it doesn't change the way how event contexts, delivered by CAP, look like. Such interfaces from CAP are always modelled in the default JavaBeans style.
+
+### Code Generation Features
+
+Other options in this goal enable or disable certain features that change the way generated code looks in a certain aspect. These changes can be incompatible with the existing code and require manual adaptation.
+
+- [`strictSetters`](/java/assets/cds-maven-plugin-site/generate-mojo.html#strictSetters)
+
+  This switch changes the signature of the setter methods in typed access interfaces so that they require concrete type instead of generic `Map` interface.
+  For example:
+
+  ```java
+  void setManager(Map<String, ?> manager); // [!code --]
+  void setManager(Manager manager); // [!code ++]
+  ```
+
+  It does not introduce any additional type checks at runtime, the correctness of the assignment is checked only at the time of compilation.
+
+- [`interfacesForAspects`](/java/assets/cds-maven-plugin-site/generate-mojo.html#interfacesForAspects)
+
+  If your entity is modelled with the [composition of aspects](/cds/cdl#with-named-targets), the generated interfaces always reference original aspect as type for setters and getters.
+  When this switch is enabled, the code generator uses the type generated by the compiler instead of the type of the aspect itself and will include methods to fetch keys, for example.
+
+  :::warning Limitations
+  This is supported only for the named aspects (inline targets are not supported) and does not respect all possible options how such entities might be exposed by services.
+  :::
+
+- [`betterNames`](/java/assets/cds-maven-plugin-site/generate-mojo.html#betterNames)
+
+  CDS models from external sources might include elements that have some special characters in their names or include elements that clash with Java keywords. Such cases always can be solved with the [renaming features](/java/cds-data#renaming-elements-in-java) provided by code generator, but in case of large models, this is tedious.
+  When this switch is enabled, characters `/` and `$` behave as a separators for the name during case conversions, similar to `_` and `.`. For example, `GET_MATERIAL` yields `GetMaterial` (or `getMaterial` for attributes and methods). The same now applies for the names with `/`, for example, name `/DMO/GET_MATERIAL` will be converted to `DmoGetMaterial`.
+  
+  The following conversions are applied:  
+    - Names from CDS model that are Java keywords are suffixed with `_`.
+    - Names from CDS model that use characters that are not valid as Java identifiers, are replaced by `_`. This, however, might lead to a conflicts between names that yield the same name in Java.
+    - Leading `_` will remain in the name after conversions. This supports conventions where an association and its foreign key have names like `_assoc` and `assoc`.
+  These conversions no longer influence the splitting.
+
+- [`cqnServiceGetters`](/java/assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
+
+  The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
+
+:::warning Check migration guides!
+In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
+in your application that needs to be fixed.
+:::
+
+See [Maven Plugin Documentation](/java/assets/cds-maven-plugin-site/generate-mojo.html) for actual status of deprecation and switches that are not described here. {.learn-more}
+
+### Annotation Detail Level
+
+The option [`annotationDetailLevel`](/java/assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel) lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
+
+Following levels of the details are available:
+- `MINIMAL` (default) - only the annotation is added, no additional information is added.
+
+   ```java
+    @CdsName("service.Entity")
+    @Generated("cds-maven-plugin")
+    public interface Entity extends CdsData {  }
+   ```
+
+- `FULL` - annotation contains the timestamp of the generation.
+
+  ```java
+  @CdsName("service.Entity")
+  @Generated(
+      value = "cds-maven-plugin",
+      date = "9999-12-31T23:59:59.999999Z",
+      comments = ""
+  )
+  public interface Entity extends CdsData {  }
+  ```
+
+- `NONE` - no `@Generated` annotation is added. This is not recommended.
+
+## Using a Local cds-dk
 
 Starting with version 3.6.0 of the `cds-services-archetype`, the default setup of a newly created CAP Java project has changed. The `@sap/cds-dk` is maintained as a `devDependency` in `package.json` and installed with an `npm ci` during the Maven build.
 The `install-cdsdk` goal is no longer used to install the `@sap/cds-dk` locally and it's also marked as deprecated. The version of the `@sap/cds-dk` is no longer maintained in _pom.xml_, it's configured in the _package.json_:
@@ -395,8 +538,7 @@ A `package-lock.json` is also created during project creation with the `cds-serv
 For multitenant applications, ensure that the `@sap/cds-dk` version in the sidecar is in sync.
 :::
 
-#### Migrate From Goal `install-cdsdk` to `npm ci` 
-{ #migration-install-cdsdk }
+#### Migrate From Goal `install-cdsdk` to `npm ci` { #migration-install-cdsdk }
 
 To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach, the following steps are required:
 

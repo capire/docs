@@ -245,7 +245,7 @@ You can specify winston custom options to that method [as documented for `winsto
 
 ```js
 cds.log.Logger = cds.log.winstonLogger({
-  format: winston.format.simple()
+  format: winston.format.simple(),
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({

@@ -42,7 +42,7 @@ This section describes the prerequisites and tools to build a CAP application lo
 
 1. Install the CDS tools (`cds-dk`) by following the steps in the central *[Getting Started](../get-started/#setup)* guide.
 
-2. Install a Java VM. At least, Java 17 is required. For example, [download](https://github.com/SAP/SapMachine/releases/latest) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 17.
+2. Install a Java VM. Java 17 is the minimum requirement, but we recommend using Java 21. For example, [download](https://github.com/SAP/SapMachine/releases) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 21.
 
 3. [Install Apache Maven](https://maven.apache.org/download.cgi) (at least version 3.6.3 is required).
 
@@ -193,7 +193,7 @@ CAP Java projects can be edited best in a Java IDE. Leaving CDS support aside yo
 
 * [SAP Business Application Studio](/tools/cds-editors#bas) is a cloud-based IDE with minimal local requirements and footprint. It comes pre packaged with all tools, libraries and extensions that are needed to develop CAP applications.
 * [Visual Studio Code](/tools/cds-editors#vscode) is a free and very wide-spread code editor and IDE which can be extended with Java and CDS support. It offers first class CDS language support and solid Java support for many development scenarios.
-* [IntelliJ Idea Ultimate](/tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
+* [IntelliJ IDEA](/tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
 
 
 #### Source Path Configuration and CDS build

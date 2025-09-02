@@ -39,7 +39,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
 
    ```sh
    git init
-   git submodule add https://github.com/capire/bookstore 
+   git submodule add https://github.com/capire/bookstore
    git submodule add https://github.com/capire/reviews
    git submodule add https://github.com/capire/orders
    git submodule add https://github.com/capire/common
@@ -53,7 +53,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
    node_modules
    gen
    ```
-   > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/sap-samples/cloud-cap-samples)*,  so we can exercise the subsequent steps in there...
+   > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
 
 3. Test-drive locally:
    ```sh
@@ -71,7 +71,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
    Each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
 
    [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
-   
+
 
 ::: details The project structure
 
@@ -148,7 +148,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
    ```
    :::
 
-   > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points. 
+   > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
 ::: details Try it out
 
@@ -159,10 +159,10 @@ cd shared-db
 ```
 
 ```sh
-cds db -2 sql
+cds compile db -2 sql
 ```
 ```sh
-cds db -2 hana
+cds compile db -2 hana
 ```
 
 ```sh
@@ -176,7 +176,7 @@ cds build --for hana
 cd ..
 ```
 
-> Note: As we can see in the output for `cds deploy` and `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files. 
+> Note: As we can see in the output for `cds deploy` and `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files.
 :::
 
 ::: details Other project structures
@@ -208,7 +208,7 @@ This section is about how to deploy all 3+1 projects at once with a common _mta.
 
 ![component diagram with synchronous and event communication for orders](./assets/microservices/bookstore.excalidraw.svg)
 
-[cap-samples](https://github.com/SAP-samples/cloud-cap-samples?tab=readme-ov-file#welcome-to-capsamples) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+[@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
 ### Deployment Descriptor
 
@@ -403,7 +403,7 @@ Add the admin role
 ::: details Configure each app for cloud readiness
 Add NPM dependency `@sap/xssec`:
 
-```shell  
+```shell
 npm i @sap/xssec --workspace bookstore
 npm i @sap/xssec --workspace orders
 npm i @sap/xssec --workspace reviews
@@ -743,31 +743,15 @@ Additionally, the welcomeFile is important for deployed Vue UIs as they obtain C
 
 ### Deploy
 
-To build, deploy, and undeploy easily, add these `npm` scripts:
+Before deploying you need to log in to Cloud Foundry: `cf login --sso`
 
-::: code-group
-```json [package.json]
-  "scripts": {
-    "build": "mbt build -t gen --mtar mta.tar", // [!code ++]
-    "deploy": "cf deploy gen/mta.tar", // [!code ++]
-    "undeploy": "cf undeploy capire.samples --delete-services --delete-service-keys" // [!code ++]
-  }
+Start the deployment and build process:
+
 ```
-:::
-
-Before deploying you need to log in to Cloud Foundry.
-
-Build the apps locally:
-
-```shell
-npm run build
+cds up
 ```
 
-Deploy the built artifacts to Cloud Foundry:
-
-```shell
-npm run deploy
-```
+[Learn more about `cds up`.](./to-cf#build-and-deploy){.learn-more}
 
 Once the app is deployed, you can get the url of the approuter via
 
@@ -1040,7 +1024,7 @@ In the bookstore example, while reviews may be down, orders may still be possibl
 
 This benefit is null for apps with synchronous dependencies on each other. If A depends on synchronous calls to B, then if B is down, A is down as well.
 
-### Multiple Deployment Units 
+### Multiple Deployment Units
 
 With multiple apps, you can still deploy them together as one unit, for example as part of a multitarget application archive.
 Once an application grows bigger, this takes a significant amount of time.

@@ -14,7 +14,7 @@ status: released
 
 Below you can find all rules of the `@sap/eslint-plugin-cds` ESLint plugin.
 
-They are grouped by categories [Model Validation](#model-validation) and [Environment](#environment) to help you understand their purpose.
+They are grouped by categories [Model Validation](#model-validation), [JavaScript](#javascript), and [Environment](#environment) to help you understand their purpose.
 
 Your standard CDS project configuration turns on a subset of these rules by default, namely the *recommended*
 (&nbsp;✅&nbsp;) rules to ensure basic standards are met.
@@ -42,3 +42,10 @@ These are only run via the command line and are not available in the editor as t
 pinpointed to any particular file.
 
 <RulesRefTable category="Environment"/>
+
+
+## JavaScript
+
+JavaScript rules are designed to catch bad practices and common mistakes when implementing custom JavaScript handlers in CDS projects. These rules help ensure code quality, maintainability, and adherence to best practices when extending CDS with JavaScript logic.
+
+<RulesRefTable category="Javascript"/>

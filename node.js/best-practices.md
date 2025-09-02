@@ -18,7 +18,7 @@ From generic Node.js best practices like dependency management and error handlin
 Projects using CAP need to manage dependencies to the respective tools and libraries in their _package.json_ and/or _pom.xml_ respectively. Follow the guidelines to make sure that you consume the latest fixes and avoid vulnerabilities and version incompatibilities. These guidelines apply to you as a _consumer_ of reuse packages as well as a _provider_ of such reuse packages.
 
 
-### Always Use the _Latest Minor_ Releases &rarr; for Example, `^7.2.0` {#use-caret }
+### Always Use the _Latest Minor_ Releases → for Example, `^7.2.0` {#use-caret }
 
 This applies to both, *@sap* packages as well as open source ones. It ensures your projects receive the latest features and important fixes during development. It also leverages [NPM's dedupe](https://docs.npmjs.com/cli/dedupe.html) to make sure bundles have a minimal footprint.
 
@@ -26,7 +26,7 @@ Example:
 
 ```json
 "dependencies": {
-  "@sap/cds": "^5.5.0",
+  "@sap/cds": "^9.1.0",
   "@sap/some-reuse-package": "^1.1.0",
   "express": "^4.17.0"
 }
@@ -399,7 +399,7 @@ Alternatively, the return type can be annotated directly in the declarations of 
 function csvExport () returns @Core.MediaType LargeBinary;
 ```
 
-When returning custom media data, content information can be configured as part of the handlers `result` object. 
+When returning custom media data, content information can be configured as part of the handlers `result` object.
 
 When calling [`req.reply`](events#req-reply-results) in handlers, you can include options with an instance of [stream.Readable](https://nodejs.org/api/stream.html#class-streamreadable) to specify the [content disposition headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition). In the following example, the options are specified in the `stream.Readable` instance named `myReadable` :
 
@@ -457,7 +457,7 @@ srv.on('unboundAction', (req) => {
 If no content information is provided in one of the ways listed above, the Node.js runtime will fall back to using content information found in annotations or as a last resort, try to assume defaults from context.
 
 :::warning Limited feature-set in REST
-For [`protocol: rest`](cds-serve#cds-protocols) stream responses are only available for operations. 
+For [`protocol: rest`](cds-serve#cds-protocols) stream responses are only available for operations.
 :::
 
 ## Custom $count { #custom-count }
@@ -474,7 +474,7 @@ srv.on('READ', 'Books', function (req) {
 
   const resultSet = [ ... ]
 
-  // request contains $count=true 
+  // request contains $count=true
   if (req.query.SELECT.count === true) resultSet.$count = 100
 
   return resultSet

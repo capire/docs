@@ -46,16 +46,6 @@ These types are used to define the structure of entities and services, and are m
 | `Map` | Mapped to *NCLOB* for HANA. | *JSON* type |
 | `Vector` (`dimension `) | Requires SAP HANA Cloud QRC 1/2024, or later |  _REAL_VECTOR_  |
 
-```cds
-entity Books {
-  key ID : UUID;
-  title  : String(111);
-  stock  : Integer;
-  price  : Price;
-}
-type Price : Decimal;
-```
-
 These types are used to define the structure of entities and services, and are mapped to respective database types when the model is deployed.
 
 > <sup>(1)</sup> Concrete mappings to specific databases may differ.

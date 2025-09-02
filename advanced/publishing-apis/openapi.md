@@ -5,6 +5,14 @@ synopsis: >
 status: released
 ---
 
+<style scoped>
+  /* expand this extra wide table on big screens */
+  @media screen and (min-width: 1600px) {
+    table { width: max-content; }
+  }
+</style>
+
+
 # Publishing to OpenAPI
 
 You can convert CDS models to the [OpenAPI Specification](https://www.openapis.org), a widely adopted API description standard.

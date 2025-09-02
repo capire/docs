@@ -65,7 +65,7 @@ cds add multitenancy
    ```jsonc
    {
       "dependencies": {
-         "@sap/cds-mtxs": "^2"
+         "@sap/cds-mtxs": "^3"
       },
    }
    ```
@@ -92,13 +92,16 @@ cds add multitenancy
      "name": "bookshop-mtx",
      "dependencies": {
        "@cap-js/hana": "^2",
-       "@sap/cds": "^8",
-       "@sap/cds-mtxs": "^2",
+       "@sap/cds": "^9",
+       "@sap/cds-mtxs": "^3",
        "@sap/xssec": "^4",
        "express": "^4"
      },
      "devDependencies": {
-       "@cap-js/sqlite": "^1"
+       "@cap-js/sqlite": "^2"
+     },
+     "engines": {
+       "node": ">=20"
      },
      "scripts": {
        "start": "cds-serve"
@@ -164,13 +167,13 @@ cds add multitenancy
      "name": "bookshop-mtx",
      "dependencies": {
        "@cap-js/hana": "^2",
-       "@sap/cds": "^8",
-       "@sap/cds-mtxs": "^2",
+       "@sap/cds": "^9",
+       "@sap/cds-mtxs": "^3",
        "@sap/xssec": "^4",
        "express": "^4"
      },
      "devDependencies": {
-       "@cap-js/sqlite": "^1"
+       "@cap-js/sqlite": "^2"
      },
      "scripts": {
        "start": "cds-serve",
@@ -376,7 +379,7 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
    In addition, we can see a `t0` tenant being deployed, which is used by the MTX services for book-keeping tasks.
 
    ```log
-   [cds|t0] - loaded model from 1 file(s):
+   [cds] - loaded model from 1 file(s):
 
      ../../db/t0.cds
 
@@ -819,7 +822,7 @@ In our example, let's assume our `saas-registry` is configured in the _mta.yaml_
     service: saas-registry
     service-plan: application
     config:
-      appName: bookshop-${org}-${space} // [!code focus]
+      appName: bookshop-${org}-${space} # [!code focus]
 ```
 
 Let's also assume we've deployed to our app to Cloud Foundry org `myOrg` and space `mySpace`. This would be the full command to create a route for the subaccount with subdomain `subscriber1`:

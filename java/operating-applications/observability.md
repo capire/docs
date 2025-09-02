@@ -241,7 +241,7 @@ In case you've configured `cf-java-logging-support` as described in [Logging Ser
 
 - Generation of IDs in non-HTTP contexts
 - Thread propagation through [Request Contexts](../event-handlers/request-contexts#threading-requestcontext)
-- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy-classic#mtx-sidecar-server))
+- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy#setup-overview))
 
 By default, the ID is accepted and forwarded via HTTP header `X-CorrelationID`. If you want to accept `X-Correlation-Id` header in incoming requests alternatively,
 follow the instructions given in the guide [Instrumenting Servlets](https://github.com/SAP/cf-java-logging-support/wiki/Instrumenting-Servlets#correlation-id).
