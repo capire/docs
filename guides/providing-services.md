@@ -443,8 +443,8 @@ entity Author : cuid {
 }
 ```
 
-::: warning
-`@cds.search` takes precedence over `@Common.Text`. As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in including mode (that is, not exclusively for excluding properties).
+::: warning `@cds.search` takes precedence over `@Common.Text`
+As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in including mode. Only if you exclusively exclude properties using `@cds-search`, the `@Common.Text` is kept.
 :::
 
 To illustrate the above:
