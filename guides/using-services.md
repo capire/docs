@@ -895,7 +895,7 @@ You need additional logic, if remote entities are in the game. The following tab
 
 ##### Support Analytical Queries in Java {.java}
 
-CAP Java provides an out-of-the-box support for remote analytical queries.
+CAP Java provides out-of-the-box support for remote analytical queries.
 
 | **Request**                                                           | **Example**                              | **Implementation**                                                |
 | --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
