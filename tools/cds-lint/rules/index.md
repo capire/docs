@@ -14,7 +14,7 @@ status: released
 
 Below you can find all rules of the `@sap/eslint-plugin-cds` ESLint plugin.
 
-They are grouped by categories [Model Validation](#model-validation) and [Environment](#environment) to help you understand their purpose.
+They are grouped by categories [Model Validation](#model-validation), [JavaScript](#javascript), and [Environment](#environment) to help you understand their purpose.
 
 Your standard CDS project configuration turns on a subset of these rules by default, namely the *recommended*
 (&nbsp;✅&nbsp;) rules to ensure basic standards are met.

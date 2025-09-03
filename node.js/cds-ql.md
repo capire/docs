@@ -711,9 +711,36 @@ SELECT ... .hints ('IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)')
 SELECT ... .hints (['IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)'])
 ```
 
+### pipeline() {.method}
+
+Returns the data from the database as a raw stream.
 
 
+```js
+SELECT ... .pipeline ()
+SELECT ... .pipeline (cds.context.http.res)
+```
 
+> Please note that the after handlers don't have effect if this stream is piped to the HTTP response.
+
+### foreach() {.method}
+
+Creates an object stream and calls the provided callback for each object.
+
+
+```js
+await SELECT.from(Books).foreach ((book) => { ... })
+```
+
+Since the SELECT query implements the async iterator protocol, you can also use it with `for await`.
+
+```js
+for await (const book of SELECT.from(Books)) { ... }
+```
+
+:::warning Streaming APIs only implemented by Database Services
+As of now, `SELECT.foreach()` and `SELECT.pipeline()` are only supported by `cds.DatabaseService`. `cds.RemoteService` does not support the streaming APIs yet.
+:::
 
 ## INSERT {.class}
 

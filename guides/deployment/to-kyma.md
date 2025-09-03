@@ -510,7 +510,7 @@ helm install bookshop ./chart \
 <service name>:
   # Exactly one of these must be specified
   serviceInstanceName: my-service # within Helm chart
-  serviceInstanceFullName: my-service-full-name # using absolute name
+  serviceInstanceFullname: my-service-full-name # using absolute name
   # Additional parameters
   parameters:
     key: val

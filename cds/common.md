@@ -205,7 +205,7 @@ The following definitions are within namespace `sap.common`...
 
 ### Aspect `CodeList`
 
-This is the base definition for the three code list entities in _@sap/cds/common_. It can also be used for your own code lists.
+This is the base definition for the code list entities in _@sap/cds/common_. It can also be used for your own code lists.
 
 ```cds
 aspect sap.common.CodeList {

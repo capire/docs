@@ -132,6 +132,14 @@ You can disable these translated error messages by setting [<Config java>cds.err
 ### Provide custom error messages
 
 By default, CAP Java provides error messages in several languages. If an error message or translation isn't sufficient for an application, it can be overwritten with a custom error message. Applications can provide the new error message under the respective error code in the application's `messages.properties` resource bundle under `src/main/resources`.
+
+::: code-group
+```properties [message.properties]
+# Custom message for @mandatory
+409003 = Please enter a value
+```
+:::
+
 To know which error codes and messages are available by default, you can have a look at the Java enumeration `com.sap.cds.services.utils.CdsErrorStatuses` with your favorite IDE. This enumeration shows all available error codes and messages that are used by the CAP Java runtime.
 
 ## Target

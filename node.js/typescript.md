@@ -147,6 +147,18 @@ A dedicated build task for `cds build` is provided as part of the `cds-typer` pa
 
 [Learn more about integrating it into your build process.](../tools/cds-typer#integrate-into-your-build-process){.learn-more}
 
+## Running Built Projects Locally
+
+The artifacts deployed to the various cloud platforms are generated in the `gen/srv/` folder. So, to test the application as it runs on the cloud start your application from the `gen/srv/` folder:
+
+
+```sh
+cds build     # to create the js files
+cd gen/srv && npm start
+```
+
+[Learn more on running a project from build results.](../guides/deployment/custom-builds#test-run){.learn-more}
+
 ## TypeScript APIs in `@sap/cds` <Since version="8.0.0" of="@sap/cds" />
 
 The package `@cap-js/cds-types` contains all TypeScript declarations for `@sap/cds` APIs. These declarations are used automatically when you write TypeScript files, but also enable IntelliSense and type checking for standard JavaScript development in Visual Studio Code. Just add the `@cap-js/cds-types` package to your project as follows:

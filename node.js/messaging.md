@@ -428,8 +428,7 @@ Use this if you want to communicate using [SAP Cloud Application Event Hub](http
 The integration with SAP Cloud Application Event Hub is provided using the plugin [`@cap-js/event-broker`](https://github.com/cap-js/event-broker).
 Please see the plugin's [setup guide](https://github.com/cap-js/event-broker/blob/main/README.md#setup) for more details.
 
-### SAP Integration Suite, Advanced Event Mesh <Beta /> 
-{ #advanced-event-mesh }
+### SAP Integration Suite, Advanced Event Mesh <Beta />  { #advanced-event-mesh }
 
 `kind`: `advanced-event-mesh`
 

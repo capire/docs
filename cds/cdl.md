@@ -41,35 +41,31 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed } from `@sap/cds/common`;
-aspect entity : managed { key ID: Integer }
+using { managed, cuid } from `@sap/cds/common`;
+aspect primary : managed, cuid {}
 
-entity Books : entity {
+entity Books : primary {
   title  : String;
   author : Association to Authors;
 }
 
-entity Authors : entity {
+entity Authors : primary {
   name   : String;
 }
 ```
-
-::: details Noteworthy...
-In the example above `entity` shows up as a keyword, as well as an identifier of an aspect declaration and references to that.
-:::
 
 Keywords are *case-insensitive*, but are most commonly used in lowercase notation.
 
 Identifiers are *case-significant*, that is, `Foo` and `foo` would identify different things.
 
-Identifiers have to comply to `/[$A-Za-z_]\w*/` or be enclosed in `![`...`]` like that:
+Identifiers have to comply to `/^[$A-Za-z_]\w*$/` or be enclosed in `![`...`]` like that:
 
 ```cds
 type ![Delimited Identifier] : String;
 ```
 
 ::: warning Avoid using delimited identifiers
-Delimited identifiers in general, but in particular non-ASCII characters, or keywords as identifiers should be avoided as much as possible, for reasons of interoperability.
+Delimited identifiers in general, but in particular non-ASCII characters, should be avoided as much as possible, for reasons of interoperability.
 :::
 
 
@@ -1384,7 +1380,7 @@ Propagation of annotations can be stopped via value `null`, for example, `@anno:
 :::
 
 
-### Expressions as Annotation Values <Beta /> {#expressions-as-annotation-values}
+### Expressions as Annotation Values {#expressions-as-annotation-values}
 
 In order to use an expression as an annotation value, it must be enclosed in parentheses:
 ```cds
@@ -1481,7 +1477,7 @@ and a value written as expression `@aValueExpr: ( 11 )`, respectively.
 If the annotation value is an expression, it is sometimes necessary to adapt references inside the expression
 during propagation, for example, when a referenced element is renamed in a projection.
 The compiler automatically takes care of the necessary rewriting. When a reference in an annotation expression
-is rewritten, the `=` property is set to `true`.
+is rewritten, the `=` property is adapted accordingly if the expression is a single reference, otherwise it is set to `true`.
 
 Example:
 ```cds
@@ -1530,9 +1526,9 @@ rewritten to `@Common.Text: (descr)`.
 
 ::: info
 
-There are situations where automatic rewriting doesn't work, resulting in the compiler error
+There may be situations where automatic rewriting doesn't work, resulting in the compiler error
 [`anno-missing-rewrite`](https://cap.cloud.sap/docs/cds/compiler/messages#anno-missing-rewrite).
-Some of these situations are going to be addressed in upcoming releases.
+In these cases you can overwrite the annotation with the correct expression in the new location.
 
 :::
 
@@ -2085,8 +2081,7 @@ service CatalogService {
 
 Bound actions and functions have a binding parameter that is usually implicit.
 It can also be modeled explicitly: the first parameter of a bound action or function is treated as binding parameter,
-if it's typed by `[many] $self`. Use Explicit Binding to control the naming of the binding parameter. Use the
-keyword `many` to indicate that the action or function is bound to a collection of instances rather than to a single one.
+if it's typed with `$self` or `many $self`. Use the keyword [`many`](#arrayed-types) to indicate that the action or function is bound to a collection of instances rather than to a single one. Also use the binding parameter to control its name.
 
 ```cds
 service CatalogService {
@@ -2101,7 +2096,21 @@ service CatalogService {
 
 Explicitly modelled binding parameters are ignored for OData V2.
 
+#### Returning Media Data Streams { #actions-returning-media}
 
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](/guides/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+
+```cds
+service CatalogService {
+  @Core.MediaType: 'image/png'  @Core.ContentDisposition.Filename: 'image.png'  @Core.ContentDisposition.Type: 'attachment'
+  type png : LargeBinary;
+
+  entity Products as projection on data.Products { ... }
+    actions {
+      function image() returns png;
+    }
+}
+```
 
 ### Custom-Defined Events {#events}
 

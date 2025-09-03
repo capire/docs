@@ -8,7 +8,7 @@ let data: Record<string, string> = {};
 
 export default {
   // Watch files in <rule>/<type>/
-  watch: ['./**/*.cds', './**/*.csv', './**/*.json'],
+  watch: ['./**/*.cds', './**/*.csv', './**/*.json', './**/*.js'],
   load(watchedFiles: string[]) {
     watchedFiles.forEach((file) => {
       if (__filename.includes(file) || file.match(/@cds-models/)) return

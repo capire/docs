@@ -81,12 +81,12 @@ CqnDelete delete = Delete.from("bookshop.Books").byParams("ID");
 Map<String, Object> paramSet1 = singletonMap("ID", 101);
 Map<String, Object> paramSet1 = singletonMap("ID", 102);
 
-Result result = service.run(query, asList(paramSet1, paramSet2));
+Result result = service.run(delete, asList(paramSet1, paramSet2));
 long deletedRows = result.rowCount();
 ```
 
-From the result of a batch update/delete the total number of updated/deleted rows can be determined by [rowCount()](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/Result.html#rowCount--), and [rowCount(batchIndex)](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/Result.html#rowCount-int-) returns the number of updated/deleted rows for a specific parameter set of the batch.
-The number of batches can be retrieved via the [batchCount()](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/Result.html#batchCount--) method. Batch updates also return the update data.
+From the result of a batch update/delete the total number of updated/deleted rows can be determined by [rowCount()](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#rowCount--), and [rowCount(batchIndex)](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#rowCount-int-) returns the number of updated/deleted rows for a specific parameter set of the batch.
+The number of batches can be retrieved via the [batchCount()](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#batchCount--) method. Batch updates also return the update data.
 
 The maximum batch size for update and delete can be configured via `cds.sql.max-batch-size` and has a default of 1000.
 
@@ -145,7 +145,7 @@ Result updateResult = service.run(update);
 
 The update `Result` contains the data that is written by the statement execution. Additionally to the given data, it may contain values generated for [managed data](../../guides/domain-modeling#managed-data) and foreign key values.
 
-The [row count](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/Result.html#rowCount()) of the update `Result` indicates how many rows where updated during the statement execution:
+The [row count](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#rowCount()) of the update `CdsResult` indicates how many rows where updated during the statement execution:
 
 
 ```java
@@ -282,6 +282,10 @@ UPDATE entity OrderView2
 - [Deep write](./query-execution#deep-insert-upsert) via (aliased) compositions (*lineItems*) is supported if there are corresponding compositions (*items*) in the underlying entity definition. Deep write via compositions that are only defined in the view (for example via [mixins](../../cds/cql#association-definitions)) is not supported and the data is ignored.
 - [Path expressions](../../cds/cql#path-expressions) over compositions *of one* (*header.status*) are writable. For [inserts](./query-api#insert), the view must expose all *not null* elements of the target entity and the data must include values for all of them. In the example above, the order header must have a generated key to support inserting new orders with a value for *headerStatus*.
 
+    ::: warning Handling Compositions and Aliased Paths in Projections
+    For projections that include *to-one* compositions (*header*) and aliased paths over these compositions (*headerStatus*), write structured data using the composition and make the aliased path [@readonly](../../guides/providing-services#readonly). Do not use data for the aliased path along with structured data for the composition in the same statement.
+    :::
+
     ::: warning Path Expressions over Associations
     Path expressions navigating *associations* (*header.customer.name*) are [not writable](#cascading-over-associations) by default. To avoid issues on write, annotate them with [@readonly](../../guides/providing-services#readonly).
     :::
@@ -321,7 +325,7 @@ To add or update CDS views without redeploying the database schema, annotate the
 
 Runtime views must be simple [projections](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
 
-CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve). 
+CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
 
 ::: details Changing the runtime view mode
 To globally set the runtime view mode, use the property `cds.sql.runtimeView.mode` with value `cte` (the default) or `resolve` in the *application.yml*. To set the mode for a specific runtime view, annotate it with `@cds.java.runtimeView.mode: cte|resolve`.
@@ -394,7 +398,7 @@ On PostgreSQL, some [pessimistic locking](#pessimistic-locking) queries on runti
 
 ### Draft Queries on Views { #draft-views }
 
-When draft-enabling a CDS view, the CDS Compiler creates a corresponding draft persistence table for this view. [Draft activate](../fiori-drafts#editing-drafts) updates the active entity via the view. 
+When draft-enabling a CDS view, the CDS Compiler creates a corresponding draft persistence table for this view. [Draft activate](../fiori-drafts#editing-drafts) updates the active entity via the view.
 
 That means:
 <br>
@@ -414,7 +418,7 @@ Draft-enabling runtime views is only supported in [*CTE*](#rtview-cte) mode and 
 
 ### Views on Remote Services
 
-When delegating queries between Application Services and Remote Services, statements are resolved to the targeted service's entity definition by the CAP Java runtime. 
+When delegating queries between Application Services and Remote Services, statements are resolved to the targeted service's entity definition by the CAP Java runtime.
 
 For read, the CDS views are resolved similar to the runtime view [resolve](#rtview-resolve) mode. For write operations, views targeting *remote OData* services must fulfill the following:
 
@@ -471,7 +475,7 @@ if (rs.rowCount() == 0) {
 In the previous example, an `Order` is updated. The update is protected with a specified ETag value (the expected last modification timestamp). The update is executed only if the expectation is met.
 
 ::: warning Application has to check the result
-No exception is thrown if an ETag validation does not match. Instead, the execution of the update (or delete) succeeds but doesn't apply any changes. Ensure that the application checks the `rowCount` of the `Result` and implement your error handling. If the value of `rowCount` is 0, that indicates that no row was updated (or deleted).
+No exception is thrown if an ETag validation does not match. Instead, the execution of the update (or delete) succeeds but doesn't apply any changes. Ensure that the application checks the `rowCount` of the `CdsResult` and implement your error handling. If the value of `rowCount` is 0, that indicates that no row was updated (or deleted).
 :::
 
 
@@ -527,7 +531,7 @@ List<Order> orders = db.run(select).listOf(Order.class);
 
 orders.forEach(o -> o.setStatus("cancelled"));
 
-Result rs = db.execute(Update.entity(ORDER).entries(orders));
+CdsResult<Order> rs = db.execute(Update.entity(ORDER).entries(orders));
 
 for(int i = 0; i < orders.size(); i++) if (rs.rowCount(i) == 0) {
     // order does not exist or was modified concurrently
@@ -609,14 +613,15 @@ CAP Java doesn't have a dedicated API to execute native SQL Statements. However,
 
 ## Query Result Processing { #result}
 
-The result of a query is abstracted by the `Result` interface, which is an iterable of `Row`. A `Row` is a `Map<String, Object>` with additional convenience methods and extends [CdsData](../cds-data#cds-data).
+The result of a query is abstracted by the `CdsResult` interface, which is an iterable of [CdsData](../cds-data#cds-data) or its more specific [generated accessor interfaces](../cds-data#typed-access).
+`CdsData` itself is a `Map<String, Object>` with additional convenience methods.
 
-You can iterate over a `Result`:
+You can iterate over a `CdsResult`:
 
 ```java
-Result result = ...
+CdsResult<?> result = ...
 
-for (Row row : result) {
+for (CdsData row : result) {
   System.out.println(row.get("title"));
 }
 ```
@@ -624,7 +629,7 @@ for (Row row : result) {
 Or process it with the [Stream API](https://docs.oracle.com/javase/8/docs/api/?java/util/stream/Stream.html):
 
 ```java
-Result result = ...
+CdsResult<?> result = ...
 
 result.forEach(r -> System.out.println(r.get("title")));
 
@@ -634,26 +639,30 @@ result.stream().map(r -> r.get("title")).forEach(System.out::println);
 If your query is expected to return exactly one row, you can access it with the `single` method:
 
 ```java
-Result result = ...
+CdsResult<?> result = ...
 
-Row row = result.single();
+CdsData row = result.single();
 ```
 
-If it returns a result, like a `find by id` would, you can obtain it using `first`:
+::: tip
+Set application property `cds.errors.preferServiceException` to ensure `single()` throws an appropriate 404 exception in case no row is found.
+:::
+
+You can also obtain the first row using `first`:
 
 ```java
-Result result = ...
+CdsResult<?> result = ...
 
-Optional<Row> row = result.first();
+Optional<CdsData> row = result.first();
 row.ifPresent(r -> System.out.println(r.get("title")));
 ```
 
-The `Row`'s `getPath` method supports paths to simplify extracting values from nested maps. This also simplifies extracting values from results with to-one expands using the generic accessor. Paths with collection-valued segments and infix filters are not supported.
+The `CdsData`'s `getPath` method supports paths to simplify extracting values from nested maps. This also simplifies extracting values from results with to-one expands using the generic accessor. Paths with collection-valued segments and infix filters are not supported.
 
 ```java
 CqnSelect select = Select.from(BOOKS).columns(
      b -> b.title(), b -> b.author().expand()).byId(101);
-Row book = dataStore.execute(select).single();
+CdsData book = dataStore.execute(select).single();
 
 String author = book.getPath("author.name");
 ```
@@ -690,8 +699,8 @@ interface Book {
   Integer getStock();
 }
 
-Row row = ...
-Book book = row.as(Book.class);
+CdsResult<?> result = service.run(query);
+Book book = result.single(Book.class);
 
 String title = book.getTitle();
 Integer stock = book.getStock();
@@ -700,7 +709,7 @@ Integer stock = book.getStock();
 Interfaces can also be used to get a typed list or stream over the result:
 
 ```java
-Result result = ...
+CdsResult<?> result = ...
 
 List<Book> books = result.listOf(Book.class);
 
@@ -710,6 +719,19 @@ Map<String, String> titleToDescription =
 
 For the entities defined in the data model, CAP Java SDK can generate interfaces for you through [a Maven plugin](../cqn-services/persistence-services#staticmodel).
 
+When setting [linkedInterfaces](../developing-applications/building#typed-results) to `true` in the CDS Maven Plugin's `generate` goal, [query builder interfaces](../working-with-cql/query-api#concepts) and [data accessor interfaces](../cds-data#typed-access) are linked. This enables automatically typed results when executing a `Select` or `Update` statement, avoiding the need to explicitly pass the data accessor interface class to methods like `single(Entity.class)`, `listOf(Entity.class)` or `streamOf(Entity.class)`.
+
+```java
+import static cds.gen.catalogservice.CatalogService_.BOOKS;
+
+var select = Select.from(BOOKS).byId(4711); // use var or Select<Books_>
+CdsResult<Books> result = service.run(select);
+Books book = result.single();
+```
+
+::: tip
+Avoid using `CqnSelect` or `CqnUpdate` for typed query declarations, but prefer `var` to allow the Java compiler to retain the entity query type, linking to the data accessor interface: `var result = service.run(select);`
+:::
 
 ### Entity References {#entity-refs}
 
@@ -757,7 +779,7 @@ CqnDelete d = Delete.from(joyce.address())
 
 ### Introspecting the Row Type
 
-The `rowType` method allows to introspect the element names and types of a query's `Result`. It returns a `CdsStructuredType` describing the result in terms of the [Reflection API](../reflection-api):
+The `rowType` method allows to introspect the element names and types of a query's `CdsResult`. It returns a `CdsStructuredType` describing the result in terms of the [Reflection API](../reflection-api):
 
 ```java
 CqnSelect query = Select.from(AUTHOR)

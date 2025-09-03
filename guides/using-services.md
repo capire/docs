@@ -51,7 +51,7 @@ For outbound remote service consumption, the following features are supported:
 ### Tutorials and Examples
 | Example                                                                                                                            | Description                                                                               |
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [Capire Bookshop (Fiori)](https://github.com/sap-samples/cloud-cap-samples/tree/main/fiori)                                                                                           | Example, Node.js, CAP-to-CAP                                                              |
+| [Capire Bookstore (Fiori)](https://github.com/capire/bookstore/tree/main/app)                                                                                           | Example, Node.js, CAP-to-CAP                                                              |
 | [Example Application (Node.js)](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui)       | Complete application from the end-to-end Tutorial                                         |
 | [Example Application (Java)](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui-java)     | Complete application from the end-to-end Tutorial                                         |
 | [Incident Management (Node.js)](https://github.com/SAP-samples/btp-developer-guide-cap/tree/main/documentation/remote-service)    | Using a mock server or S/4 on Cloud Foundry or Kyma
@@ -132,7 +132,7 @@ cds compile srv -s OrdersService -2 edmx -o dest/
 :::
 
 
-[You can try it with the orders sample in cap/samples.](https://github.com/SAP-samples/cloud-cap-samples/tree/master/orders){.learn-more}
+[You can try it with the orders sample in **capire/orders**.](https://github.com/capire/orders){.learn-more}
 
 By default, CAP works with OData V4 and the EDMX export is in this protocol version as well. The `cds compile` command offers options for other OData versions and flavors, call `cds help compile` for more information.
 ::: warning Don't just copy the CDS file for a remote CAP service
