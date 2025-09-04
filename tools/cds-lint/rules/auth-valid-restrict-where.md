@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-The `where` property of a [`@restrict`](/guides/security/authorization#restrict-annotation) privilege defines a filter expression that restricts the access on an instance level (optional). This rule checks that the values of `@restrict.where` are valid, that is, the filter expression must be a valid expression that compiles without any errors.
+The `where` property of a [`@restrict`](/guides/security/authorization#restrict-annotation) privilege defines a filter expression that restricts access on an instance level (optional). This rule checks that the values of `@restrict.where` are valid, that is, the filter expression must be a valid expression that compiles without any errors.
 
 ## Examples
 
@@ -34,7 +34,7 @@ In the following example, the `@restrict` privilege is defined with a valid `whe
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the `@restrict` privilege is defined with an invalid `where` property `CreatedBy === $user`. Since this is not a valid filter expression according to the CDS compiler, the rule reports a warning:
+This example shows the `@restrict` privilege defined with an invalid `where` property `CreatedBy === $user`. Since this is not a valid filter expression according to the CDS compiler, the rule reports a warning:
 
 ::: code-group
 <<< ../examples/auth-valid-restrict-where/incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]

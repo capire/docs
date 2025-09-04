@@ -34,7 +34,7 @@ In the following example, no draft-enabled entities are used in the service `Cat
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the service `CatalogService` uses a draft-enabled entity and makes use of `JOIN`, which violates the rule:
+This example shows the service `CatalogService` using a draft-enabled entity and making use of `JOIN`, which violates the rule:
 
 ::: code-group
 <<< ../examples/no-join-on-draft/incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]

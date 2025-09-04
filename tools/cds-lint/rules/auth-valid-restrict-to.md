@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-The `to` property of a `@restrict` privilege defines one or more [user roles](../../../guides/security/authorization#roles) or [pseudo roles](../../../guides/security/authorization#pseudo-roles) that the privilege applies to. This rule checks that the values of `@restrict.to` are valid, that is, roles cannot be missing, misspelled and that roles including `any` should be simplified to just `any`.
+The `to` property of a `@restrict` privilege defines one or more [user roles](../../../guides/security/authorization#roles) or [pseudo roles](../../../guides/security/authorization#pseudo-roles) that the privilege applies to. This rule checks that the values of `@restrict.to` are valid, that is, roles cannot be missing or misspelled and that roles including `any` should be simplified to just `any`.
 
 ## Examples
 
@@ -34,7 +34,7 @@ The following example shows a correct usage of the `@restrict.to` annotation, wh
 
 #### ❌ &nbsp; Incorrect example
 
-The next example shows the `@restrict.to` annotation being left empty, which is a violation of this rule and a warning is raised:
+This example shows the `@restrict.to` annotation being left empty, which is a violation of this rule and a warning is raised:
 
 ::: code-group
 <<< ../examples/auth-valid-restrict-to/incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]

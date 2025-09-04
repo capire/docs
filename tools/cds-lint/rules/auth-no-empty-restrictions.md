@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-The [`@requires` annotation](../../../guides/security/authorization#requires) is a convenience shortcut for `@restrict`. You can use it to control which rule a user needs to have in order to access a given resource. Leaving this field empty is dangerous as it leads to unrestricted access to that service which is a security risk.
+The [`@requires` annotation](../../../guides/security/authorization#requires) is a convenience shortcut for `@restrict`. You can use it to control which rule a user needs to access a given resource. Leaving this field empty is dangerous because it leads to unrestricted access to that service, which is a security risk.
 
 ## Examples
 
@@ -34,8 +34,7 @@ In the following example, the `AdminService` is correctly setup with `@requires`
 
 #### ❌ &nbsp; Incorrect example
 
-If we were to replace the `admin` role by an empty string or provide an empty role array as shown in the next example,
-we now have unrestricted access to that service, which the rule makes us aware of:
+If you replace the `admin` role with an empty string or provide an empty role array as shown in the next example, you now have unrestricted access to that service, which the rule makes you aware of:
 
 ::: code-group
 <<< ../examples/auth-no-empty-restrictions/incorrect/srv/admin-service.cds#snippet{cds:line-numbers} [srv/admin-service.cds]
