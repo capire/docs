@@ -740,8 +740,98 @@ The `max-age` is the elapsed time since the response was generated on the origin
 Cache Control feature is currently supported on the Java runtime only.
 :::
 
-<div id="client-side-validations" />
 
-<div id="fiori-compat" />
+## Hierarchical Tree Views
 
-<div id="reserved-words" />
+Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee a as direct report or manager.
+
+A generic implementation is supported on the following databases for the respective CAP runtimes:
+
+| Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
+|-------------|----------|----|------------|--------|
+| CAP Java    | ✓        | ✓ | ✓          |        |
+| CAP Node.js | ✓        |    |✓          |✓       |
+
+
+### Configuration
+
+Given the following domain model:
+
+```cds
+namespace my.bookshop;
+
+entity Genres { //...
+  parent : Association to Genres;
+}
+```
+
+and its projection on service level
+
+```cds
+service AdminService {
+  entity Genres as projection on my.bookshop.Genres;
+}
+```
+
+#### Annotate/extend the entity in the service as follows:
+
+```cds
+// declare a hierarchy with the qualifier "GenresHierarchy"
+annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy : {
+  NodeProperty             : ID,    // identifies a node, usually the key
+  ParentNavigationProperty : parent // navigates to a node's parent
+};
+
+extend AdminService.Genres with @(
+  // The computed properties expected by Fiori to be present in hierarchy entities
+  Hierarchy.RecursiveHierarchy #GenresHierarchy : {
+    LimitedDescendantCount : LimitedDescendantCount,
+    DistanceFromRoot       : DistanceFromRoot,
+    DrillState             : DrillState,
+    LimitedRank            : LimitedRank
+  },
+  // Disallow filtering on these properties from Fiori UIs
+  Capabilities.FilterRestrictions.NonFilterableProperties: [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+  // Disallow sorting on these properties from Fiori UIs
+  Capabilities.SortRestrictions.NonSortableProperties    : [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+) columns { // Ensure we can query these columns from the database
+  null as LimitedDescendantCount : Int16,
+  null as DistanceFromRoot       : Int16,
+  null as DrillState             : String,
+  null as LimitedRank            : Int16
+};
+```
+
+> Note: hierarchy qualifier should be chosen as: <br>
+> `<entity name in service>Hierarchy`
+
+#### Configure the TreeTable in UI5's _manifest.json_
+
+```jsonc
+  "sap.ui5": { ...
+    "routing": { ...
+      "targets": { ...
+        "GenresList": { ...
+          "options": {
+            "settings": { ...
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
+                    "type": "TreeTable" // [!code focus]
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+    },
+```
+
+> Note: use the `hierarchyQualifier` declared above
+
