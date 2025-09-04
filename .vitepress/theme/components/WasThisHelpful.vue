@@ -44,7 +44,7 @@
 
     <p class="more-feedback" v-if="feedbackSelected">
       More to say?
-      <a href="https://github.com/cap-js/docs/issues" target="_blank">
+      <a href="https://github.com/capire/docs/issues" target="_blank">
         Report an issue.
       </a>
     </p>

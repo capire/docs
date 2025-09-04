@@ -318,3 +318,31 @@ cds build --for postgres
 ```
 
 > See also the command line help for further details using `cds build --help`.
+
+## Test-Run Built Projects Locally {#test-run}
+
+<div class="impl node">
+
+The artifacts deployed to the various cloud platforms are generated in the `gen/srv/` folder. So, to test the application as it runs on the cloud start your application from the `gen/srv/` folder:
+
+```sh
+cds build       # to create the build results, followed by either:
+
+cd gen/srv && npx cds-serve
+# or:
+cd gen/srv && npm start
+# or:
+npx cds-serve -p gen/srv
+```
+
+</div>
+
+<div class="impl java">
+
+Use the regular command to [start a Java application](../../java/getting-started#build-and-run):
+
+```sh
+mvn spring-boot:run
+```
+
+</div>

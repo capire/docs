@@ -15,8 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 [[toc]]
 
 
-## Intro: Core Concepts
-{#introduction}
+## Intro: Core Concepts {#introduction}
 
 The following sections give a brief overview of CAP's core concepts.
 
@@ -118,7 +117,7 @@ service CatalogService @(path:'/browse') {
 
 [Learn more about **CQL** the language used for `projections`.](../cds/cql){.learn-more}
 [See also: Prefer Single-Purposed Services!](#single-purposed-services){.learn-more}
- [Find above sources in **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop/srv/cat-service.cds){ .learn-more}
+[Find above sources in **capire/bookshop**.](https://github.com/capire/bookshop/blob/main/srv/cat-service.cds){ .learn-more}
 
 
 ### Auto-Exposed Entities
@@ -161,8 +160,7 @@ The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide a wealt
 In effect, a service definition [as introduced above](#service-definitions) is all we need to run a full-fledged server out of the box. The need for coding reduces to real custom logic specific to a project's domain &rarr; section [Custom Logic](#custom-logic) picks that up.
 
 
-### Serving CRUD Requests
-{#serving-crud}
+### Serving CRUD Requests {#serving-crud}
 
 The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide generic handlers, which automatically serve all CRUD requests to entities for CDS-modelled services on top of a default [primary database](databases).
 
@@ -396,10 +394,6 @@ Searches the `title` element only.
 
 ##### Extend Search to *Associated* Entities
 
-::: warning Node.js: Only w/ streamlined database services
-For Node.js projects, this feature is only available with the [streamlined `@cap-js/` database services](../releases/archive/2024/jun24#new-database-services-ga) (default with `@sap/cds` >= 8)
-:::
-
 ```cds
 @cds.search: { author }
 entity Books { ... }
@@ -431,6 +425,31 @@ Searches all elements of type `String` excluding the element `isbn`, which leave
 ::: tip
 You can explicitly annotate calculated elements to make them searchable, even though they aren't searchable by default. The virtual elements won't be searchable even if they're explicitly annotated.
 :::
+
+#### The `@Common.Text` Annotation
+
+If an entity has an element annotated with the `@Common.Text` annotation, then the property that holds the display text is added to the list of searchable elements (see exception below).
+
+For example, with the following model, the list of searchable elements for `Books` is `title` and `author.name`:
+
+```cds
+entity Books : cuid {
+  title  : String;
+  @Common.Text : author.name
+  author : Association to Author;
+}
+entity Author : cuid {
+  name : String;
+}
+```
+
+::: warning `@cds.search` takes precedence over `@Common.Text`
+As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in including mode. Only if you exclusively exclude properties using `@cds-search`, the `@Common.Text` is kept.
+:::
+
+To illustrate the above:
+- `@cds.search: { title: false }` on `Books` would only exclude properties, so `author.name` would still be searched.
+- `@cds.search: { title }` on `Books` defines an include list, so `author.name` is not searched. In this mode, `@cds.search` is expected to include all properties that should be searched. Hence, `author.name` would need to be added to `@cds.search` itself: `@cds.search: { title, author.name }`.
 
 #### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
 
@@ -823,7 +842,7 @@ entity Foo {
 ```
 #### ... with open intervals
 
-By default, specified `[min,max]` ranges are interpreted as closed intervals, that means, the performed checks are `min ≤ input ≤ max`. You can also specify open intervals by wrapping the *min* and/or *max* values into parenthesis like that:
+By default, specified `[min,max]` ranges are interpreted as closed intervals, that means, the performed checks are `min ≤ input ≤ max`. You can also specify open intervals by wrapping the *min* and/or *max* values into parentheses like that:
 
 <!-- cds-mode: ignore; duplicate annotations -->
 ```cds
@@ -837,7 +856,7 @@ In addition, you can use an underscore `_` to represent *Infinity* like that:
 @assert.range: [(0),_]  // positive numbers only, _ means +Infinity here
 @assert.range: [_,(0)]  // negative number only, _ means -Infinity here
 ```
->  Basically values wrapped in parentheses _`(x)`_ can be read as _excluding `x`_ for *min* or *max*. Note that the underscore `_` doesn't have to be wrapped into parenthesis, as by definition no number can be equal to *Infinity* .
+>  Basically values wrapped in parentheses _`(x)`_ can be read as _excluding `x`_ for *min* or *max*. Note that the underscore `_` doesn't have to be wrapped into parentheses, as by definition no number can be equal to *Infinity* .
 
 Support for open intervals and infinity is available for CAP Node.js since `@sap/cds` version **8.5** and in CAP Java since version **3.5.0**.
 
