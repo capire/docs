@@ -6,8 +6,8 @@ status: released
 
 # Connecting to Required Services
 
-Services frequently consume other services, which could be **local** services served by the same process, or **external** services, for example consumed through OData.
-The latter include **database** services. In all cases use `cds.connect` to connect to such services, for example, from your:
+Services frequently consume other services, which could be **local** services served by the same process, or **external** services, for example, consumed through OData.
+The latter include **database** services. In all cases, use `cds.connect` to connect to such services, for example, from your:
 
 
 [[toc]]
@@ -25,7 +25,7 @@ Use `cds.connect.to()` to connect to services configured in a project's `cds.req
 const ReviewsService = await cds.connect.to('ReviewsService')
 ```
 
-The method returns a _Promise_ resolving to a _[Service](../cds/cdl#services)_ instance which acts as a client proxy to the service's API, allowing you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, e.g.:
+The method returns a _Promise_ that resolves to a _[Service](../cds/cdl#services)_ instance, which acts as a client proxy to the service's API. This allows you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, for example:
 
 ```js
 let reviews = await ReviewsService.read ('Reviews')
@@ -44,9 +44,9 @@ async function cds.connect.to (
 ) : Promise<Service>
 ```
 
-Argument `name` is used to look up connect options from [configured services](#cds-env-requires), which are defined in the `cds.requires` section of your _package.json_ or _.cdsrc.json_ or _.yaml_ files.
+The `name` argument is used to look up connection options from [configured services](#cds-env-requires), which are defined in the `cds.requires` section of your _package.json_ or _.cdsrc.json_ or _.yaml_ files.
 
-Argument `options` also allows to pass additional options such as `credentials` programmatically, and thus create services without configurations and [service bindings](#service-bindings), for example, you could connect to a local SQLite database in your tests like this:
+The `options` argument also allows you to pass additional options such as `credentials` programmatically, and thus create services without configurations and [service bindings](#service-bindings). For example, you could connect to a local SQLite database in your tests like this:
 
 ```js
 const db2 = await cds.connect.to ({
@@ -57,21 +57,21 @@ const db2 = await cds.connect.to ({
 
 ### cds. services {#cds-connect-caching .property}
 
-When connecting to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve) are registered with [`cds.services`](cds-facade#cds-services) as well, a connect finds and returns them as local service connections.
+When you connect to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve) are registered with [`cds.services`](cds-facade#cds-services) as well, a connection finds and returns them as local service connections.
 
-You can also access cached service instance like this:
+You can also access cached service instances like this:
 
 ```js
 const { ReviewsService } = cds.services
 ```
 
-> Note: If _ad-hoc_ options are provided, the instance is not cached.
+> **Note**: If _ad-hoc_ options are provided, the instance isn't cached.
 
 
 
 ## Configuring Required Services {#cds-env-requires }
 
-To configure required remote services in Node.js, simply add respective entries to the `cds.requires` sections in your _package.json_ or in _.cdsrc.json_ or _.yaml_. These configurations are constructed as follows:
+To configure required remote services in Node.js, add respective entries to the `cds.requires` sections in your _package.json_ or in _.cdsrc.json_ or _.yaml_. These configurations are constructed as follows:
 
 ::: code-group
 
@@ -97,16 +97,16 @@ cds:
       credentials:
         url: db.sqlite
     ReviewsService:
-      kind: odata,
+      kind: odata
       model: @capire/reviews
     OrdersService:
-      kind: odata,
+      kind: odata
       model: @capire/orders
 ```
 
 :::
 
-Entries in this section tell the service loader to not serve that service as part of your application, but expects a service binding at runtime in order to connect to the external service provider. The options are as follows:
+Entries in this section tell the service loader to not serve that service as part of your application, but expect a service binding at runtime to connect to the external service provider. The options are as follows:
 
 
 ### cds.requires.<i>\<srv\></i>`.impl`
@@ -121,12 +121,12 @@ Service implementations are ultimately configured in `cds.requires` like that:
 ```
 
 Given that configuration, `cds.connect.to('some-service')` would load the specific service implementation from `some/node/module/path`.
-Prefix the module path in `impl` with `./` to refer to a file relative to your project root.
+Prefix the module path in `impl` with `./` to refer to a file that's relative to your project root.
 
 
 ### cds.requires.<i>\<srv\></i>`.kind`
 
-As service configurations inherit from each other along `kind` chains, we can refer to default configurations shipped with `@sap/cds`, as you commonly see that in our [_cap/samples_](https://github.com/capire/samples), like so:
+As service configurations inherit from each other along `kind` chains, you can refer to default configurations that are shipped with `@sap/cds`, as you commonly see in our [_cap/samples_](https://github.com/capire/samples), like so:
 
 ```json
 "cds": { "requires": {
@@ -154,7 +154,7 @@ Given that configuration, `cds.connect.to('db')` would load the generic service 
 
 ### cds.requires.<i>\<srv\></i>`.model`
 
-Specify (imported) models for remote services in this property. This allows the service runtime to reflect on the external API and add generic features. The value can be either a single string referring to a CDS model source, resolved as absolute node module, or relative to the project root, or an array of such.
+Specify (imported) models for remote services in this property. This allows the service runtime to reflect on the external API and add generic features. The value can be either a single string that refers to a CDS model source, resolved as an absolute node module, or relative to the project root, or an array of such strings.
 
 ```json
 "cds": { "requires": {
@@ -167,7 +167,7 @@ Upon [bootstrapping](./cds-serve), all these required models will be loaded and 
 
 ### cds.requires.<i>\<srv\></i>`.service`
 
-If you specify a model, then a service definition for your required service must be included in that model. By default, the name of the service that is checked for is the name of the required service. This can be overwritten by setting `service` inside the required service configuration.
+If you specify a model, then a service definition for your required service must be included in that model. By default, the name of the service that's checked for is the name of the required service. You can override this by setting `service` inside the required service configuration.
 
 ```json
 "cds": { "requires": {
@@ -175,7 +175,7 @@ If you specify a model, then a service definition for your required service must
 }}
 ```
 
-The example specifies `service: 'BusinessPartnerService'`, which results in a check for a service called `BusinessPartnerService` instead of `remote-service` in the model loaded from `some/imported/model`.
+The example specifies `service: 'BusinessPartnerService'`, which results in a check for a service called `BusinessPartnerService` instead of `remote-service` in the model that's loaded from `some/imported/model`.
 
 
 
@@ -198,10 +198,10 @@ A service binding connects an application with a cloud service. For that, the cl
 
 ### cds.requires.<i>\<srv\></i>.credentials
 
-All service binding information goes into this property. It's filled from the process environment when starting server processes, managed by deployment environments. Service bindings provide the details about how to reach a required service at runtime, that is, providing requisite credentials, most prominently the target service's `url`.
+All service binding information goes into this property. It's filled from the process environment when you start server processes, which is managed by deployment environments. Service bindings provide the details about how to reach a required service at runtime, that is, providing requisite credentials, most prominently the target service's `url`.
 
 
-You specify the credentials to be used for a service by using one of the following:
+You specify the credentials to be used for a service by using one of these options:
 
 - Process environment variables
 - Command line options
@@ -216,7 +216,7 @@ cds.requires.remote-service.credentials = { "url":"http://...", ... }
 ```
 
 ::: warning ❗ Never add secrets or passwords to _package.json_ or _.cdsrc.json_!
-General rule of thumb: `.credentials` are always filled (and overridden) from process environment on process start.
+General rule of thumb: `.credentials` are always filled (and overridden) from the process environment on process start.
 :::
 
 
@@ -231,8 +231,8 @@ The CAP Node.js runtime expects to find the service bindings in `cds.env.require
    ```json
    "cds": {
      "requires": {
-       "ReviewsService": {...},
-      }
+       "ReviewsService": {...}
+     }
    }
    ```
 
@@ -242,7 +242,7 @@ The CAP Node.js runtime expects to find the service bindings in `cds.env.require
    const { ReviewsService } = cds.env.requires
    ```
 
-3. Service Bindings essentially fill in `credentials` to these entries.
+3. Service bindings essentially fill in `credentials` to these entries.
 
    ```js
    const { ReviewsService } = cds.env.requires
@@ -251,7 +251,7 @@ The CAP Node.js runtime expects to find the service bindings in `cds.env.require
    }
    ```
 
-The latter is appropriate in test suites. In productive code, you never provide credentials in a hard-coded way. Instead, use one of the options presented in the following sections.
+The latter is appropriate in test suites. In productive code, you never provide credentials in a hard-coded way. Instead, use one of the options that are presented in the sections that follow.
 
 
 
@@ -272,17 +272,17 @@ Cloud Foundry uses auto configuration of service credentials through the `VCAP_S
 
 #### Through `VCAP_SERVICES` env var {#vcap_services}
 
-When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables, which is JSON-stringified array containing credentials for multiple services. The entries are matched to the entries in `cds.requires` as follows, in order of precedence:
+When you deploy to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables, which is a JSON-stringified array that contains credentials for multiple services. The entries are matched to the entries in `cds.requires` as follows, in order of precedence:
 
 1. The service's `name` is matched against the `name` property of `VCAP_SERVICE` entries
 2. The service's `name` is matched against the `binding_name` property
 3. The service's `name` is matched against entries in the `tags` array
 4. The service's `kind` is matched against entries in the `tags` array
 5. The service's `kind` is matched against the `label` property, for example, 'hana'
-6. The service's `kind` is matched against the `type` property (The type property is only relevant for [servicebinding.io](https://servicebinding.io) bindings)
+6. The service's `kind` is matched against the `type` property (The `type` property is only relevant for [servicebinding.io](https://servicebinding.io) bindings)
 7. The service's `vcap.name` is matched against the `name` property
 
-All the config properties found in the first matched entry will be copied into the <Config>cds.requires.\<srv\>.credentials</Config> property.
+All the configuration properties that are found in the first matched entry will be copied into the <Config>cds.requires.\<srv\>.credentials</Config> property.
 
 Here are a few examples:
 
@@ -384,7 +384,7 @@ Here are a few examples:
 </tbody>
 </table>
 
-If the `vcap` configuration contains multiple properties such as `name`, `label`, `tags`, `plan`, all properties have to match the corresponding VCAP_SERVICE attributes:
+If the `vcap` configuration contains multiple properties such as `name`, `label`, `tags`, and `plan`, all properties have to match the corresponding VCAP_SERVICE attributes:
 
 <style scoped>
   .no-stripes tr:nth-child(2n) {
@@ -440,7 +440,7 @@ If the `vcap` configuration contains multiple properties such as `name`, `label`
 </tbody>
 </table>
 
-CAP services often come with a default `vcap` configuration. In rare cases, the default configuration has to be deactivated which can be achieved by explicitly setting the service property `vcap.<property>` to `false`:
+CAP services often come with a default `vcap` configuration. In rare cases, you have to deactivate the default configuration, which can be achieved by explicitly setting the service property `vcap.<property>` to `false`:
 
 <style scoped>
   .no-stripes tr:nth-child(2n) {
@@ -564,7 +564,7 @@ CAP services receive their credentials from these bindings [as if they were prov
 
 #### Through environment variables {#env-service-bindings}
 
-All values of a secret can be added as environment variables to a pod. A prefix can be prepended to each of the environment variables. To inject the values from the secret in the right place of your CDS configuration, you use the configuration path to the `credentials` object of the service as the prefix:
+All values of a secret can be added as environment variables to a pod. You can prepend a prefix to each of the environment variables. To inject the values from the secret in the right place of your CDS configuration, you use the configuration path to the `credentials` object of the service as the prefix:
 
 `cds_requires_<your service>_credentials_`
 
@@ -584,7 +584,7 @@ Please pay attention to the underscore ("`_`") character at the end of the prefi
 ```
 
 ::: warning
-For the _configuration path_, you **must** use the underscore ("`_`") character as delimiter. CAP supports dot ("`.`") as well, but Kubernetes won't recognize variables using dots. Your _service name_ **mustn't** contain underscores.
+For the _configuration path_, you **must** use the underscore ("`_`") character as a delimiter. CAP supports the dot ("`.`") as well, but Kubernetes won't recognize variables using dots. Your _service name_ **mustn't** contain underscores.
 :::
 
 
@@ -598,7 +598,7 @@ Put the service credentials into a path that is constructed like this:
 
 `<configuration root>/requires/<your service>/credentials`
 
-Each file will be added to the configuration with its name as the property name and the content as the value. If you have a deep credential structure, you can add further sub directories or put the content in a file as a JSON array or object.
+Each file will be added to the configuration with its name as the property name and the content as the value. If you have a deep credential structure, you can add further subdirectories or put the content in a file as a JSON array or object.
 
 For Kubernetes, you can create a volume with the content of a secret and mount it on your container.
 
@@ -624,9 +624,9 @@ For Kubernetes, you can create a volume with the content of a secret and mount i
 
 #### Provide Service Bindings (`VCAP_SERVICES`) {#provide-service-bindings}
 
-If your application runs in a different environment than Cloud Foundry, the `VCAP_SERVICES` env variable is not available. But it may be needed by some libraries, for example the SAP Cloud SDK.
+If your application runs in a different environment than Cloud Foundry, the `VCAP_SERVICES` environment variable isn't available. But it may be needed by some libraries, for example, the SAP Cloud SDK.
 
-By enabling the CDS feature `features.emulate_vcap_services`, the `VCAP_SERVICES` env variable will be populated from your configured services.
+By enabling the CDS feature `features.emulate_vcap_services`, the `VCAP_SERVICES` environment variable will be populated from your configured services.
 
 For example, you can enable it in the _package.json_ file for your production profile:
 
@@ -646,7 +646,7 @@ For example, you can enable it in the _package.json_ file for your production pr
 This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](../releases/schedule#yearly-major-releases).
 :::
 
-Each service that has credentials and a `vcap.label` property is put into the `VCAP_SERVICES` env variable. All properties from the service's `vcap` object will be taken over to the service binding.
+Each service that has credentials and a `vcap.label` property is put into the `VCAP_SERVICES` environment variable. All properties from the service's `vcap` object will be taken over to the service binding.
 
 The `vcap.label` property is pre-configured for some services used by CAP.
 
@@ -720,7 +720,7 @@ cds_requires_myservice_credentials_user=test-user
 cds_requires_myservice_credentials_password=test-password
 ```
 
-The resulting `VCAP_SERVICES` env variable looks like this:
+The resulting `VCAP_SERVICES` environment variable looks like this:
 
 ```json
 {
@@ -766,7 +766,7 @@ Make sure that the _.cdsrc-private.json_ file is not checked into your project.
 
 ### Through `process.env` Variables {#bindings-via-process-env}
 
-You could pass credentials as process environment variables, for example in ad-hoc tests from the command line:
+You could pass credentials as process environment variables, for example, in ad-hoc tests from the command line:
 
 ```sh
 export cds_requires_ReviewsService_credentials_url=http://localhost:4005/reviews
@@ -790,6 +790,195 @@ cds.requires.db.credentials.database = sqlite.db
 
 ## Importing Service APIs
 
+When you work with external services, you often need to import their API definitions to enable proper type checking, code completion, and service integration. CAP supports importing service APIs from various sources.
+
+### Importing from External Models
+
+You can import external service APIs by specifying the model location in your service configuration:
+
+```json
+{
+  "cds": {
+    "requires": {
+      "API_BUSINESS_PARTNER": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_BUSINESS_PARTNER"
+      }
+    }
+  }
+}
+```
+
+This configuration tells CAP to:
+1. Look for the service definition in the specified model path
+2. Import the API metadata for type checking and validation
+3. Enable service connectivity based on the specified kind
+
+### Using CDS Import Command
+
+You can use the CDS command-line interface to import external service definitions:
+
+```bash
+cds import <service-url>/metadata
+```
+
+This command:
+- Downloads the service metadata
+- Converts it to CDS format
+- Saves it in your project's _srv/external/_ directory
+- Updates your _package.json_ with the required service configuration
+
+### Creating Projections on External Entities
+
+Once you've imported an external service, you can create local projections to adapt the external API to your needs:
+
+```cds
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+
+entity Suppliers as projection on bupa.A_BusinessPartner {
+  key BusinessPartner as ID,
+  BusinessPartnerFullName as fullName,
+  BusinessPartnerIsBlocked as isBlocked
+}
+```
+
+This approach:
+- Encapsulates the external API
+- Provides a clean interface for your application
+- Allows you to rename fields and select only needed properties
+- Decouples your local model from changes in the external service
+
+### TypeScript Support
+
+When using TypeScript, imported services automatically provide type definitions, enabling:
+- IntelliSense and code completion
+- Compile-time type checking
+- Better development experience
+
+```typescript
+import { API_BUSINESS_PARTNER } from './external/API_BUSINESS_PARTNER';
+
+const result = await API_BUSINESS_PARTNER.read('A_BusinessPartner');
+// result is properly typed based on the imported API
+```
 
 
 ## Mocking Required Services
+
+During development and testing, you often need to mock external services to avoid dependencies on external systems. CAP provides several mechanisms for service mocking.
+
+### Local Development Mocking
+
+For local development, you can use mock implementations that simulate external service behavior without requiring actual connectivity.
+
+#### Mock Data Files
+
+Create CSV files with mock data for external entities:
+
+```csv
+BusinessPartner;BusinessPartnerFullName;BusinessPartnerIsBlocked
+1004155;Williams Electric Drives;false
+1004161;Smith Batteries Ltd;false
+1004100;Johnson Automotive Supplies;true
+```
+
+Place these files in your project's _db/data/_ directory, following the naming convention:
+- `<namespace>-<entity>.csv`
+- For example: `API_BUSINESS_PARTNER-A_BusinessPartner.csv`
+
+#### Configuration for Mocking
+
+You can configure services to use mock implementations in development:
+
+```json
+{
+  "cds": {
+    "requires": {
+      "API_BUSINESS_PARTNER": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_BUSINESS_PARTNER",
+        "[development]": {
+          "kind": "sqlite",
+          "credentials": {
+            "url": ":memory:"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+This configuration:
+- Uses the real OData service in production
+- Switches to SQLite with mock data in development
+- Provides a seamless development experience
+
+### Test Mocking
+
+For unit tests, you can mock services programmatically:
+
+```javascript
+const cds = require('@sap/cds');
+
+// Mock a service in tests
+const mockService = {
+  read: jest.fn().mockResolvedValue([
+    { ID: '1', name: 'Test Entity' }
+  ]),
+  create: jest.fn().mockResolvedValue({ ID: '2', name: 'Created Entity' })
+};
+
+// Replace the real service with the mock
+cds.services['ExternalService'] = mockService;
+```
+
+### Hybrid Testing
+
+For integration testing, you can use _.cdsrc-private.json_ to bind to actual cloud services while keeping sensitive credentials out of your repository:
+
+```json
+{
+  "requires": {
+    "API_BUSINESS_PARTNER": {
+      "credentials": {
+        "url": "https://actual-service-url.com",
+        "authentication": "BasicAuthentication",
+        "username": "test-user",
+        "password": "test-password"
+      }
+    }
+  }
+}
+```
+
+### Mock Authentication
+
+During development, you can use mocked authentication to simulate different user scenarios:
+
+```json
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "mocked",
+        "users": {
+          "admin": { "roles": ["admin"] },
+          "user": { "roles": ["user"] },
+          "guest": { "roles": [] }
+        }
+      }
+    }
+  }
+}
+```
+
+This allows you to test different authorization scenarios without setting up a complete authentication infrastructure.
+
+### Best Practices for Mocking
+
+1. **Use realistic mock data** that represents actual production scenarios
+2. **Keep mock configurations separate** from production configurations
+3. **Test both mocked and real services** to ensure compatibility
+4. **Version your mock data** alongside your application code
+5. **Document mock scenarios** for team members and future reference
