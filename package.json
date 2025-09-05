@@ -27,7 +27,7 @@
     "adm-zip": "^0.5.10",
     "cspell": "^9.0.0",
     "eslint": "^9.0.0",
-    "eslint-plugin-vue": "^9.11.0",
+    "eslint-plugin-vue": "^10.0.0",
     "fflate": "^0.8.2",
     "gray-matter": "^4.0.3",
     "markdownlint-cli": ">=0.35.0",
