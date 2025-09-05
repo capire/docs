@@ -88,7 +88,7 @@ cds.fiori.draft_lock_timeout=30min
 ```
 
 You can set the property to one of the following:
-- number of hours like `'1h'` 
+- number of hours like `'1h'`
 - number of minutes like `'10min'`
 - number of milliseconds like `1000`
 
