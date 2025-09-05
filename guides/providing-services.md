@@ -402,7 +402,15 @@ entity Books { ... }
 entity Authors { ... }
 ```
 
-Searches all elements of the `Books` entity, as well as all searchable elements of the associated `Authors` entity. Which elements of the associated entity are searchable is determined by the `@cds.search` annotation on the associated entity. So, from `Authors`, all elements of type `String` are searched but `biography` is excluded.
+When searching the `Books`entity all searchable elements of the associated `Authors` entity are included in the search.
+
+::: warning
+The default searchable elements of `Books` are overwritten by the explicitly provided elements in the `@cds.search` annotation.
+If you'd want to search e.g. the `Books:title` as well, you'd have have to include the `Books:title` next to `author` explicitly.
+:::
+
+Which elements of the associated entity are searchable is determined by the `@cds.search` annotation on the associated entity.
+For `Authors`, all elements of type `String` are searched but `biography` is excluded.
 
 ##### Extend to Individual Elements in Associated Entities
 
