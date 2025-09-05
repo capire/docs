@@ -25,21 +25,43 @@ Lean draft is a new approach which makes it easier to differentiate between draf
 
 ### Handlers Registration {#draft-support}
 
-Class `ApplicationService` provides built-in support for Fiori Draft. All CRUD events are supported for both, active and draft entities.
+Class `ApplicationService` provides built-in support for Fiori Draft.
 Please note that draft-enabled entities must follow a specific draft choreography.
 
-The examples are provided for `.on` handlers, but the same is true for `.before` and `.after` handlers.
+You can add your logic to the draft-specific events as follows:
 
   ```js
-  // only active entities
-  srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity', /*...*/)
-  // only draft entities
-  srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity.drafts', /*...*/)
+  // When a new draft is created
+  srv.on('NEW', 'MyEntity.drafts', /*...*/)
+
+  // When a draft is discarded
+  srv.on('CANCEL', 'MyEntity.drafts', /*...*/)
+
+  // When a new draft is created from an active instance
+  srv.on('EDIT', 'MyEntity', /*...*/)
+
+  // When the draft entity is saved
+  srv.on('SAVE', 'MyEntity.drafts', /*...*/)
+
+  // When the active entity is changed, also when bypassing the draft
+  srv.on('SAVE', 'MyEntity', /*...*/)
+
   // bound action/function on active entity
   srv.on('boundActionOrFunction', 'MyEntity', /*...*/)
+
   // bound action/function on draft entity
   srv.on('boundActionOrFunction', 'MyEntity.drafts', /*...*/)
   ```
+
+- The `CANCEL` event is triggered when you cancel the draft. In this case, the draft entity is deleted and the active entity isn't changed.
+- The `EDIT` event is triggered when you start editing an active entity. As a result `MyEntity.drafts` is created.
+- The `SAVE` event is just a shortcut for `['UPDATE', 'CREATE']` on an active entity. For drafts, this event is called when the user saves the draft.
+
+:::warning Generic handlers should be executed
+When overriding `on` handlers, call `next()` to ensure that the built-in draft logic is executed. Otherwise, the draft flow will be broken.
+:::
+
+The examples are provided for `.on` handlers, but the same is true for `.before` and `.after` handlers.
 
 It's also possible to use the array variant to register a handler for both entities, for example: `srv.on('boundActionOrFunction', ['MyEntity', 'MyEntity.drafts'], /*...*/)`.
 
@@ -47,22 +69,15 @@ It's also possible to use the array variant to register a handler for both entit
 If a bound action/function modifies an active entity instance, custom handlers need to take care that a draft entity doesn't exist, otherwise all changes are overridden when saving the draft.
 :::
 
-Additionally, you can add your logic to the draft-specific events as follows:
+All CRUD events are supported for both, active and draft entities.
 
   ```js
-  // When a new draft is created
-  srv.on('NEW', 'MyEntity.drafts', /*...*/)
-  // When a draft is discarded
-  srv.on('CANCEL', 'MyEntity.drafts', /*...*/)
-  // When a new draft is created from an active instance
-  srv.on('EDIT', 'MyEntity', /*...*/)
-  // When the active entity is changed
-  srv.on('SAVE', 'MyEntity', /*...*/)
-  ```
+  // only active entities
+  srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity', /*...*/)
 
-- The `CANCEL` event is triggered when you cancel the draft. In this case, the draft entity is deleted and the active entity isn't changed.
-- The `EDIT` event is triggered when you start editing an active entity. As a result `MyEntity.drafts` is created.
-- The `SAVE` event is just a shortcut for `['UPDATE', 'CREATE']` on an active entity. This event is also triggered when you press the `SAVE` button in UI after finishing editing your draft. Note, that composition children of the active entity will also be updated or created.
+  // only draft entities
+  srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity.drafts', /*...*/)
+  ```
 
 ### Draft Locks
 
