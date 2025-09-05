@@ -53,6 +53,8 @@ You can add your logic to the draft-specific events as follows:
   srv.on('boundActionOrFunction', 'MyEntity.drafts', /*...*/)
   ```
 
+The examples are provided for `.on` handlers, but the same is true for `.before` and `.after` handlers.
+
 - The `CANCEL` event is triggered when you cancel the draft. In this case, the draft entity is deleted and the active entity isn't changed.
 - The `EDIT` event is triggered when you start editing an active entity. As a result `MyEntity.drafts` is created.
 - The `SAVE` event is just a shortcut for `['UPDATE', 'CREATE']` on an active entity. For drafts, this event is called when the user saves the draft.
@@ -61,7 +63,6 @@ You can add your logic to the draft-specific events as follows:
 When overriding `on` handlers, call `next()` to ensure that the built-in draft logic is executed. Otherwise, the draft flow will be broken.
 :::
 
-The examples are provided for `.on` handlers, but the same is true for `.before` and `.after` handlers.
 
 It's also possible to use the array variant to register a handler for both entities, for example: `srv.on('boundActionOrFunction', ['MyEntity', 'MyEntity.drafts'], /*...*/)`.
 
