@@ -1629,6 +1629,18 @@
     },
     {
       "header": true,
+      "name": "cds.sql.toOnePath",
+      "doc": "Configuration properties for to-one path expressions."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.toOnePath.mode",
+      "type": "String",
+      "default": "always-join",
+      "doc": "Sets the to-one path mode. Possible values are: `always-join` (default) and `optimize`. In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
+    },
+    {
+      "header": true,
       "name": "cds.auditLog",
       "doc": "Properties for AuditLog configuration. *"
     },
