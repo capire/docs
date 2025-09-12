@@ -35,7 +35,7 @@ In the following example, the rule is satisfied because the entity name `Books` 
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the rule reports a warning, because the entity name `books` starts with a lowercase letter:
+This example shows the rule reporting a warning because the entity name `books` starts with a lowercase letter:
 
 ::: code-group
 <<< ../examples/start-entities-uppercase/incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]

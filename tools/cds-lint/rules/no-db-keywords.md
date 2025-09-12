@@ -14,8 +14,7 @@ status: released
 
 ## Rule Details
 
-The CDS compiler and CAP runtimes provide smart quoting for reserved words in SQLite so that they can still be used in most situations.
-But in general reserved words cannot be used as identifiers and this rule warns you if you use any of the [reserved SQL keywords](https://www.sqlite.org/lang_keywords.html).
+The CDS compiler and CAP runtimes provide smart quoting for reserved words in SQLite so they can still be used in most situations. But in general reserved words cannot be used as identifiers and this rule warns you if you use any of the [reserved SQL keywords](https://www.sqlite.org/lang_keywords.html).
 
 ## Examples
 
@@ -36,7 +35,7 @@ In the following example, none of the reserved SQL keywords are used as identifi
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the reserved SQL keyword `Order` is used as an entity name, so the rule will raise a warning:
+This example shows the reserved SQL keyword `Order` used as an entity name, so the rule will raise a warning:
 <!-- TODO: Remove devDependency as soon as rule fix is released -->
 ::: code-group
 <<< ../examples/no-db-keywords/incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
