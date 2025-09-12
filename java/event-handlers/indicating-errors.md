@@ -70,6 +70,10 @@ Writing the messages into explicitly modeled messages properties isn't yet suppo
 
 SAP Fiori uses these messages to display detailed information on the UI. The style how a message appears on the UI depends on the severity of the message.
 
+::: warning Avoid Injection Vulnerabilities
+Ensure proper validation of the message text and URL if they contain values ​​from user input.
+:::
+
 ### Throwing a ServiceException from Error Messages { #throwing-a-serviceexception-from-messages}
 
 It is also possible to throw a [ServiceException](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceException.html) from error messages. This can, for example, be useful to cancel a request after collecting multiple validation errors. The individual validation checks will collect error messages in the `Messages` API. After the validation checks have been run, you call the `throwIfError()` method. Only if error messages have been collected, this method cancels the request with a [ServiceException](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceException.html):
