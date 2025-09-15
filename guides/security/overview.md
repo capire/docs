@@ -5,11 +5,71 @@ status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
-# Platform Security
+# Overview
 
 {{ $frontmatter.synopsis }}
 
 [[toc]]
+
+
+## Key Concepts { #key-concepts }
+
+- diagram
+
+### Built on Best of Breed { #key-concept-platform-services }
+
+CAP does not deal with user login flows, password and credential management, user sessions, or any cryptographic logic - **and applications should not have to do it at all!**
+Instead, **CAP seamlessly integrates with bullet-proven [platform services](#platform-compliance)** that handle these critical security topics centrally. 
+This approach not only simplifies the implementation but also enhances security by leveraging robust, well-tested mechanisms provided by the platform.
+By leveraging platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
+
+Most notably, authentication is covered by [platform's identity services](#identity-service). 
+Likewise, TLS termination is offered by the [platform](#platform-environment).
+
+
+### Pluggable Building Blocks { #key-concept-decoupled-authn }
+
+CAP divides the different tasks related to security into separate and independent building blocks:
+- [Authentication (inbound)](#inbound-authentication )
+- [User representation and propagation](#user-representation)
+- [Authorization](#authorization)
+- [Authentication (outbound)](#outbound-authentication)
+
+**By separating these concerns**, CAP ensures that each security function can be configured and customized independently without affecting other parts of the system, providing maximum flexibility.
+
+For example, authentication can be delegated to a separate ingress component, while authorization remains within the application service close to the data.
+
+
+### Secure by Default { #key-concept-secure-by-default }
+
+CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code to adapt accordingly.
+CAP's autoconfiguration feature significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are under safe control**. 
+
+For instance, endpoints of deployed CAP applications are authenticated automatically, thus providing a secure baseline.
+Making endpoints public requires manual configuration either in the CAP model or in the middleware. 
+
+
+### Customizable { #key-concept-pluggable }
+
+Due to the plugin-based architecture, **CAP allows standard functions to be modified as required or, if necessary, completely replaced**.
+This flexibility is crucial for scenarios where the default methods do not fully meet the requirements of the application.
+Moreover, this integration helps to easily incorporate non-CAP and even non-BTP services, thereby providing a flexible and interoperable environment. 
+
+For instance, it is possible to define specific endpoints with a custom authentication strategy. 
+Likewise, the CAP representation of the request user can be overruled to match additional, application-specific requirements.
+
+
+### Decoupled from Business Logic  { #key-concept-decoupled-coding }
+
+As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any adaptions. 
+This safeguards business logic being independent from platform services which are frequently subject to security hardening initiatives.
+As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
+
+For instance, CAP allows performing outbound service calls via Remote Services while handling authentication under the hood completely. 
+This abstraction layer ensures developers not having to worry about the details of authentication. 
+
+
+
 
 
 ## Platform Compliance { #platform-compliance }
