@@ -1378,13 +1378,13 @@ Content-Type: image/png
 
 One option is to delete the complete entity, including all media data:
 
-```cds
+```http
 DELETE ../Books(201)
 ```
 
 Alternatively, you can delete a media data element individually:
 
-```cds
+```http
 DELETE ../Books(201)/image
 ```
 
