@@ -76,8 +76,10 @@
 
 ## [Security](guides/security/)
 
-  ### [CDS-based Authorization](guides/security/authorization)
-  ### [Platform Security](guides/security/overview)
+  ### [Overhiew](guides/security/overview)
+  ### [Authentication](guides/security/authentication)
+  ### [User Representation](guides/security/cap-users)
+  ### [Authorization](guides/security/authorization)
   ### [Security Aspects](guides/security/aspects)
   ### [Data Protection & Privacy](guides/security/data-protection-privacy)
   ### [Product Standard Compliance](../guides/security/product-standards)
