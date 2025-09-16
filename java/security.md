@@ -32,8 +32,9 @@ For Web services, authentication is about controlling _who_ is using the service
 
 Hence both, authentication and authorization, are essential for application security:
 * [Authentication](#authentication) describes how to configure authentication.
-* [Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
 * [Authorization](#auth) is about resource access control.
+
+[Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
 
 ::: warning
 Without security configured, CDS services are exposed to public. Proper configuration of authentication __and__ authorization is required to secure your CAP application.
@@ -41,13 +42,13 @@ Without security configured, CDS services are exposed to public. Proper configur
 
 ## Authentication { #authentication}
 
-Authentication rejects and limits the resource impact of user requests with invalid authentication. Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level.
+Authentication rejects user requests with invalid authentication and limits the possible resource impact. 
 
-In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
-By default, it supports standard BTP platform identity services [out of the box](#xsuaa-ias):
+Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
+By default, it supports the standard BTP platform identity services [out of the box](#xsuaa-ias):
 
 - [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
-- [SAP Authorization and Trust Management Service] (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
+- [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
 
 Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well. 
 Local development and testing can be done easily with built-in [mock user](#mock-users) support.
@@ -92,7 +93,7 @@ When authenticating incoming requests with IAS, the Proof-Of-Possession is activ
 You can disable the Proof-Of-Possession enforcement in your CAP Java application by setting the property `sap.spring.security.identity.prooftoken` to `false` in the `application.yaml` file.
 
 :::tip
-CAP Java requires AppRouter to be configured with mTLS in case of IAS authentication (`forwardAuthCertificates: true`).
+CAP Java requires an AppRouter to be configured with mTLS in case of IAS authentication (`forwardAuthCertificates: true`).
 :::
 
 
