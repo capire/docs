@@ -50,7 +50,7 @@ This is one reason why it's not an integral part of the CAP runtime and needs to
 In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
 By default, it supports standard BTP platform identity services [out of the box](#xsuaa-ias):
 
-- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - prefered solution integrating endpoints cross SAP-systems
+- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
 - [SAP Authorization and Trust Management Service] (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
 
 which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well. 
