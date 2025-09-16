@@ -422,7 +422,6 @@ definitions using the `projection on` syntax.
 You can use nested projections or aliases as known from entity projections.
 Only the effective signature of the projection is relevant.
 
-<!-- cds-mode: upcoming -->
 ```cds
 type CustomerData : projection on Customer {
   name.firstName, // select from structures
