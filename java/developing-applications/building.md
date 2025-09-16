@@ -528,7 +528,7 @@ The `install-cdsdk` goal is no longer used to install the `@sap/cds-dk` locally 
 ```json
 {
   "devDependencies" : {
-    "@sap/cds-dk" : "^8.5.1",
+    "@sap/cds-dk" : "^9",
   }
 }
 ```
