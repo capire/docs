@@ -28,14 +28,11 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 ## Overview
 
-With respect to web services, authentication is the act of proving the validity of user claims passed with the request. 
-This typically comprises verifying the user's identity, tenant, and additional claims like granted roles. 
-Briefly, authentication controls _who_ is using the service. In contrast, authorization makes sure that the user has the required privileges to access the requested resources.
-Hence, authorization is about controlling _which_ resources the user is allowed to handle.
+For Web services, authentication is about controlling _who_ is using the service. It typically involves verifying the user's identity, tenant, and validating claims like granted roles. In contrast, authorization makes sure that the user has the required privileges to access the requested resources. Hence, authorization is about controlling _what_ the user is allowed to handle.
 
 Hence both, authentication and authorization, are essential for application security:
 * [Authentication](#authentication) describes how to configure authentication.
-* [Connecting to IAS Services](#outbound-auth) shows how to authenticate outbound calls.
+* [Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
 * [Authorization](#auth) is about resource access control.
 
 ::: warning
@@ -44,20 +41,19 @@ Without security configured, CDS services are exposed to public. Proper configur
 
 ## Authentication { #authentication}
 
-User requests with invalid authentication need to be rejected as soon as possible, to limit the resource impact to a minimum. 
-Authentication is one of the first steps when processing a request. 
-This is one reason why it's not an integral part of the CAP runtime and needs to be configured on application framework level. 
+Authentication rejects and limits the resource impact of user requests with invalid authentication. Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level.
+
 In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
 By default, it supports standard BTP platform identity services [out of the box](#xsuaa-ias):
 
 - [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
 - [SAP Authorization and Trust Management Service] (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
 
-which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well. 
+Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well. 
 Local development and testing can be done easily with built-in [mock user](#mock-users) support.
 
 ### Configure XSUAA and IAS Authentication { #xsuaa-ias}
-To enable your application for XSUAA or IAS-authentication we recommend to use the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle, which covers all required dependencies.
+To enable your application for XSUAA or IAS-authentication, we recommend using the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle, which covers all required dependencies.
 
 :::details Individual Dependencies
 These are the individual dependencies that can be explicitly added in the `pom.xml` file of your service:
@@ -363,7 +359,7 @@ The mock user `Alice` is assigned to the mock tenant `CrazyCars` for which the f
 
 ## Connecting to IAS Services { #outbound-auth }
 
-CAP Java supports consumption of IAS-based services of various kinds:
+CAP Java supports the consumption of IAS-based services of various kinds:
 
 * [Internal Services](#internal-app) bound to the same IAS instance of the provider application.
 * [External IAS](#app-to-app) applications consumed by providing a destination.
@@ -371,7 +367,7 @@ CAP Java supports consumption of IAS-based services of various kinds:
 
 ![The TAM graphic is explained in the accompanying text.](./assets/java-ias.png){width="800px" }
 
-Regardless the kind of service, CAP provides a unified integration as Remote Service as described in the [documentation](/java/cqn-services/remote-services#remote-odata-services).
+Regardless of the kind of service, CAP provides a unified integration as Remote Service as described in the [documentation](/java/cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
 ### Internal Services (same IAS) {#internal-app}
@@ -380,10 +376,10 @@ Basic communication setup and user propagation is addressed under the hood, for 
 
 ### External Services (IAS App-to-App)  {#app-to-app}
 
-CAP Java supports technical communication with any IAS-based service deployed to a SAP Cloud landscape. User propagation is supported.
-For connection setup, it makes use of [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications).
+CAP Java supports technical communication with any IAS-based service deployed to an SAP Cloud landscape. User propagation is supported.
+For connection setup, it uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications).
 
-The CAP Java application as IAS server needs to
+The CAP Java application as an IAS server needs to:
 
 1. Configure [IAS authentication](/java/security#xsuaa-ias).
 2. Expose an API in the IAS service instance.
@@ -418,16 +414,16 @@ The CAP Java application as IAS server needs to
 
 
 ::: tip
-The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successfull authentication.
+The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication.
 :::
 
 ::: warning 
-Avoid mixing CAP roles for technical clients without user propagation on the one hand and named business users on the other hand.
+Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead, expose dedicated CDS services to technical clients which are not accessible to business users and vice verse.
+Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
 :::
 
-To setup a connection to such an IAS service, the client requires to do:
+To set up a connection to such an IAS service, the client requires to do:
 
 1. Create an IAS instance that consumes the required API.
 
@@ -462,12 +458,12 @@ To setup a connection to such an IAS service, the client requires to do:
 
     :::
 
-To activate the App-2-App connection as *subscriber*, you need to
+To activate the App-2-App connection as a *subscriber*, you need to:
 
 1. Create an IAS application dependency in the IAS tenant pointing to the server's exposed API (Cloud Identity Service UI: [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)).
 
 2. Create a dedicated [destination](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/access-destinations-editor) provided by the subscriber that points to the application.
-   The prepared destination needs to have
+   The prepared destination needs:
     * The URL pointing to the IAS-endpoint of the application.
     * Authentication type `NoAuthentication`.
     * Attribute `cloudsdk.ias-dependency-name` with the name of the created IAS application dependency.
@@ -529,7 +525,7 @@ The CAP consumer application (client) needs to:
 
 1. Create and bind the provided service from the marketplace.
 
-    ::: details Create and bind service instance
+    ::: details Create and bind service instance.
     ```sh
     cf create-service review-service review-api review-service-instance
     cf bind-service review-service-instance --binding-name review-service-binding
@@ -575,13 +571,13 @@ The CAP consumer application (client) needs to:
 [Learn more about simplified Remote Service configuration with bindings](../cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
 
 ::: tip
-The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successfull authentication.
+The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
 :::
 
 ::: warning 
-Avoid mixing CAP roles for technical clients without user propagation on the one hand and named business users on the other hand.
+Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead, expose dedicated CDS services to technical clients which are not accessible to business users and vica verse.
+Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
 :::
 
 ## Authorization { #auth}
