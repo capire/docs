@@ -424,7 +424,7 @@ The API identifiers exposed by the IAS instance in list `provided-apis` are gran
 ::: warning 
 Avoid mixing CAP roles for technical clients without user propagation on the one hand and named business users on the other hand.
 
-Instead, expose dedicated CDS services to technical clients which are not accessible to business users and vica verse.
+Instead, expose dedicated CDS services to technical clients which are not accessible to business users and vice verse.
 :::
 
 To setup a connection to such an IAS service, the client requires to do:
