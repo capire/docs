@@ -115,7 +115,6 @@ Using the persistent queue, the to-be-emitted message is stored in a database ta
     "queue": {
       "kind": "persistent-queue",
       "maxAttempts": 20,
-      "parallel": true,
       "chunkSize": 10,
       "storeLastError": true,
       "legacyLocking": true,
@@ -128,8 +127,7 @@ Using the persistent queue, the to-be-emitted message is stored in a database ta
 The optional parameters are:
 
 - `maxAttempts` (default `20`): The number of unsuccessful emits until the message is considered unprocessable. The message will remain in the database table!
-- `parallel` (default `true`): Specifies if messages are sent in parallel (faster, but the order isn't guaranteed).
-- `chunkSize` (default `10`): The number of messages that are read from the database table in one go. Only applies for `parallel !== false`.
+- `chunkSize` (default `10`): The number of messages that are read from the database table in one go.
 - `storeLastError` (default `true`): Specifies whether error information of the last failed emit is stored in the tasks table.
 - `legacyLocking` (default `true`): If set to `false`, database locks are only used to set the status of the message to `processing` to prevent long-kept database locks. Although this is the recommended approach, it is incompatible with task runners still on `@sap/cds^8`.
 - `timeout` (default `"1h"`): The time after which a message with `status === "processing"` is considered to be abandoned and eligable to be processed again. Only for `legacyLocking === false`.
