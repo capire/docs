@@ -457,7 +457,7 @@ To illustrate the above:
 
 Fuzzy search is a fault-tolerant search feature of SAP HANA Cloud, which returns records even if the search term contains additional characters, is missing characters, or has typographical errors.
 
-You can configure the fuzziness in the range [0.0, 1.0]. The value 1.0 enforces exact search.
+You can configure the fuzziness in the range [0.0, 1.0].
 
 - Java: <Config java keyOnly>cds.sql.hana.search.fuzzinessThreshold = 0.8</Config>
 - Node.js:<Config keyOnly>cds.hana.fuzzy = 0.7</Config><sup>(1)</sup>
@@ -1145,7 +1145,7 @@ Event handlers for actions or functions are very similar to those for CRUD event
 **Method-style Implementations** in Node.js, you can alternatively implement actions and functions using conventional JavaScript methods with subclasses of `cds.Service`:
 
 ```js
-module.exports = class Sue extends cds.Service {
+module.exports = class Sue extends cds.ApplicationService {
   sum(x,y) { return x+y }
   add(x,to) { return stocks[to] += x }
   stock(id) { return stocks[id] }
