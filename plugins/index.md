@@ -168,7 +168,8 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin provides out-of-the-box support for attachment handling. On Node.js, attachments are stored on AWS S/3 through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store), whereas Java stores attachments on the SAP HANA database. To use it, simply add a composition of the predefined aspect `Attachments` like so:
+The Attachments plugin provides out-of-the-box support for attachment handling. On Node.js, attachments are stored on AWS S/3 through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). For Java:  When using the package [`cds-feature-attachments-oss`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments-oss), depending on your cloud environment, attachments are stored on AWS S/3, Microsoft Azure, or the Google object store through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). When using the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments), attachments are stored on the SAP HANA database.
+To use the Attachments plugin, simply add a composition of the predefined aspect `Attachments` like so:
 
 ```cds
 using { Attachments } from '@cap-js/attachments';
@@ -222,6 +223,7 @@ Features:
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
 - **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multi-tenancy support, allowing for efficient management of multiple tenants without additional configuration.
+- **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
 Outlook:
 - **Support for Versioned Repository**: Ensure better document control and historical tracking with native support for versioned repositories, enabling you to manage document revisions effectively.
