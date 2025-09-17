@@ -30,7 +30,7 @@ The _task queue_ feature can be disabled globally via <Config>cds.requires.queue
 ### cds. queued (srv) {.method}
 
 ```tsx
-function cds.queued ( srv: Service, options? ) => QueuedService
+function cds.queued ( srv: Service ) => QueuedService
 ```
 
 Programmatically, you can get the queued service as follows:
@@ -45,18 +45,6 @@ await qd_srv.send('someEvent', { some: 'message' }) // asynchronous
 
 ::: tip `await` needed
 You still need to `await` these operations because they're asynchronous. In case of a persistent queue, which is the default, messages are stored in the database, within the current transaction.
-:::
-
-The `cds.queued` function can also be called with optional configuration options.
-
-```js
-const qd_srv = cds.queued(srv, { maxAttempts: 5 })
-```
-
-> The persistent queue can only be used if it is not disabled globally via `cds.requires.queue = false`, as it requires a dedicated database table.
-
-::: warning One-time configuration
-Once you queued a service, you cannot override its configuration options again.
 :::
 
 For backwards compatibility, `cds.outboxed(srv)` works as a synonym.
@@ -89,9 +77,7 @@ You can configure the outbox behavior by specifying the `outboxed` option in you
   "requires": {
     "yourService": {
       "kind": "odata",
-      "outboxed": {
-        "maxAttempts": 5
-      }
+      "outboxed": true
     }
   }
 }
@@ -115,7 +101,6 @@ Using the persistent queue, the to-be-emitted message is stored in a database ta
     "queue": {
       "kind": "persistent-queue",
       "maxAttempts": 20,
-      "chunkSize": 10,
       "storeLastError": true,
       "legacyLocking": true,
       "timeout": "1h"
@@ -127,7 +112,6 @@ Using the persistent queue, the to-be-emitted message is stored in a database ta
 The optional parameters are:
 
 - `maxAttempts` (default `20`): The number of unsuccessful emits until the message is considered unprocessable. The message will remain in the database table!
-- `chunkSize` (default `10`): The number of messages that are read from the database table in one go.
 - `storeLastError` (default `true`): Specifies whether error information of the last failed emit is stored in the tasks table.
 - `legacyLocking` (default `true`): If set to `false`, database locks are only used to set the status of the message to `processing` to prevent long-kept database locks. Although this is the recommended approach, it is incompatible with task runners still on `@sap/cds^8`.
 - `timeout` (default `"1h"`): The time after which a message with `status === "processing"` is considered to be abandoned and eligable to be processed again. Only for `legacyLocking === false`.
