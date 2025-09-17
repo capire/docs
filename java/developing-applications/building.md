@@ -398,6 +398,10 @@ You configure this goal just like any other Maven plugin via its configuration o
 
 Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control. 
 
+### Typed Results
+
+Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+
 ### Package for Generated Code
 
 The option [`basePackage`](/java/assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
@@ -482,10 +486,6 @@ Other options in this goal enable or disable certain features that change the wa
 - [`cqnServiceGetters`](/java/assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
-
-- [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces)
-	
-	This switch extends the generated interfaces so they support typed query results of type `CdsResult<T>`.
 
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
