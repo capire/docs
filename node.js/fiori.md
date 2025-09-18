@@ -57,7 +57,7 @@ The examples are provided for `.on` handlers, but the same is true for `.before`
 
 - The `CANCEL` event is triggered when you cancel the draft. In this case, the draft entity is deleted and the active entity isn't changed.
 - The `EDIT` event is triggered when you start editing an active entity. As a result `MyEntity.drafts` is created.
-- The `SAVE` event is just a shortcut for `['UPDATE', 'CREATE']` on an active entity. For drafts, this event is called when the user saves the draft.
+- The `SAVE` event is triggered when you activate the draft, which results in either a `CREATE` or an `UPDATE` on the active entity depending on whether an active entity previously existed or not (or, in other words, the respective draft was created via `NEW` or `EDIT`). For convenience, you can also register `SAVE` on active entities, in which case it acts a shortcut for `['UPDATE', 'CREATE']`. This allows you to streamline handlers for saving drafts and modifying actives in bypass draft scenarios.
 
 :::warning Generic handlers should be executed
 When overriding `on` handlers, call `next()` to ensure that the built-in draft logic is executed. Otherwise, the draft flow will be broken.
