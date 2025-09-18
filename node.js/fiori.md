@@ -25,14 +25,14 @@ Draft-enabled entities have corresponding CSN entities for drafts:
 
 ```js
 const { MyEntity } = srv.entities
-MyEntity.drafts // points to model.definitions['MyEntity.drafts']
+MyEntity.drafts // points to model.definitions[MyEntity.drafts]
 ```
 
 In event handlers, the `target` is resolved before the handler execution and points to either the active or draft entity:
 
 ```js
-srv.on('READ', 'MyEntity.drafts', (req, next) => {
-  assert.equal(req.target.name, 'MyEntity.drafts')
+srv.on('READ', MyEntity.drafts, (req, next) => {
+  assert.equal(req.target.name, MyEntity.drafts)
   return next()
 })
 ```
@@ -52,11 +52,11 @@ In addition to the standard CRUD events, draft-specific events are provided on d
 ### `NEW`
 
 ```js
-srv.before('NEW', 'MyEntity.drafts', req => {
+srv.before('NEW', MyEntity.drafts, req => {
   req.data.ID = uuid()
 }))
-srv.after('EDIT', 'MyEntity.drafts', /*...*/)
-srv.on('NEW', 'MyEntity.drafts', /*...*/)
+srv.after('EDIT', MyEntity.drafts, /*...*/)
+srv.on('NEW', MyEntity.drafts, /*...*/)
 ```
 
 The `NEW` event is triggered when the user created a new draft.
@@ -67,23 +67,30 @@ You can modify the initial draft data in a `before` handler.
 ### `EDIT`
 
 ```js
-srv.before('EDIT', 'MyEntity', /*...*/)
-srv.after('EDIT', 'MyEntity', /*...*/)
-srv.on('EDIT', 'MyEntity', /*...*/)
+srv.before('EDIT', MyEntity, /*...*/)
+srv.after('EDIT', MyEntity, /*...*/)
+srv.on('EDIT', MyEntity, /*...*/)
 ```
 
 The `EDIT` event is triggered when the user starts editing an active entity.
 As a result, a new entry to `MyEntity.drafts` is created.
 
-> [!note]
-> For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
+For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
+
+You can also register handlers on the standard `CREATE` events for draft entities, which would be called whenever a new draft is created, be it via `NEW` or `EDIT`, like so:
+
+```js
+srv.before('CREATE', MyEntity.drafts, /*...*/)
+srv.after('CREATE', MyEntity.drafts, /*...*/)
+srv.on('CREATE', MyEntity.drafts, /*...*/)
+```
 
 
 ### `DISCARD`
 
 ```js
-srv.before('DISCARD', 'MyEntity.drafts', /*...*/)
-srv.on('DISCARD', 'MyEntity.drafts', /*...*/)
+srv.before('DISCARD', MyEntity.drafts, /*...*/)
+srv.on('DISCARD', MyEntity.drafts, /*...*/)
 ```
 
 The `DISCARD` event is triggered when the user discards a draft started before.
@@ -93,9 +100,9 @@ In this case, the draft entity is deleted and the active entity isn't changed.
 ### `PATCH`
 
 ```js
-srv.before('PATCH', 'MyEntity.drafts', /*...*/)
-srv.after('PATCH', 'MyEntity.drafts', /*...*/)
-srv.on('PATCH', 'MyEntity.drafts', /*...*/)
+srv.before('PATCH', MyEntity.drafts, /*...*/)
+srv.after('PATCH', MyEntity.drafts, /*...*/)
+srv.on('PATCH', MyEntity.drafts, /*...*/)
 ```
 
 The `PATCH` event is triggered whenever the user edits a field in a draft.
@@ -105,9 +112,9 @@ It's actually an alias for the standard CRUD `UPDATE` event.
 ### `SAVE`
 
 ```js
-srv.before('SAVE', 'MyEntity.drafts', /*...*/)
-srv.after('SAVE', 'MyEntity.drafts', /*...*/)
-srv.on('SAVE', 'MyEntity.drafts', /*...*/)
+srv.before('SAVE', MyEntity.drafts, /*...*/)
+srv.after('SAVE', MyEntity.drafts, /*...*/)
+srv.on('SAVE', MyEntity.drafts, /*...*/)
 ```
 
 The `SAVE` event is triggered when the user saves / activates a draft. This results in either a CREATE or an UPDATE on the active entity depending on whether the draft was created via `NEW` or `EDIT`.
