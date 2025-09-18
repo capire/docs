@@ -772,6 +772,10 @@ cds up --to k8s
 
 :::
 
+:::tip
+- tips about initial scaling to avoid service-manager problems
+:::
+
 ### Subscribe
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
@@ -979,6 +983,8 @@ cds watch --profile dev
 ```
 
 :::
+
+<div id="hana-tms" />
 
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
