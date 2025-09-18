@@ -586,7 +586,7 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 
 For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
 Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
-As a prerequiste, the CAP service needs to know the clientId of the reuse service's IAS application which should be part of the binding exposed to the CAP service.
+As a prerequisite*, the CAP service needs to know the clientId of the reuse service's IAS application which should be part of the binding exposed to the CAP service.
 
 ::: details Sample Code for Authorization of Callbacks
 
