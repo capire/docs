@@ -223,6 +223,7 @@ Features:
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
 - **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multi-tenancy support, allowing for efficient management of multiple tenants without additional configuration.
+- **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
 Outlook:
 - **Support for Versioned Repository**: Ensure better document control and historical tracking with native support for versioned repositories, enabling you to manage document revisions effectively.
