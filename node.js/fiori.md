@@ -43,7 +43,7 @@ You can add your logic to the draft-specific events as follows:
   // When the draft entity is saved
   srv.on('SAVE', 'MyEntity.drafts', /*...*/)
 
-  // When the active entity is changed, also when bypassing the draft
+  // When the active entity is changed (e.g., when bypassing the draft)
   srv.on('SAVE', 'MyEntity', /*...*/)
 
   // bound action/function on active entity
