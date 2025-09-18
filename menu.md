@@ -78,7 +78,7 @@
 
   ### [Overhiew](guides/security/overview)
   ### [Authentication](guides/security/authentication)
-  ### [User Representation](guides/security/cap-users)
+  ### [Users](guides/security/cap-users)
   ### [Authorization](guides/security/authorization)
   ### [Security Aspects](guides/security/aspects)
   ### [Data Protection & Privacy](guides/security/data-protection-privacy)
