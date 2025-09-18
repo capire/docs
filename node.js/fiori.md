@@ -76,7 +76,7 @@ All CRUD events are supported for both, active and draft entities.
   // for active entities
   srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity', /*...*/)
 
-  // only draft entities
+  // for draft entities
   srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity.drafts', /*...*/)
   ```
 
