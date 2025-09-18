@@ -110,7 +110,24 @@ All technical clients that have access to the application's XSUAA or IAS service
 :::
 
 
+## Tracing { #user-tracing }
 
+<div class="impl java">
+
+DEBUG level by default
+
+logging.level.com.sap.cds.security.authentication: DEBUG
+
+```sh
+MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
+```
+
+Never in production!
+</div>
+
+<div class="impl node">
+TODO
+</div>
 
 ## Modifying Users { #modifying-users }
   - UserProvider  
@@ -156,6 +173,16 @@ Here a combination of `user_name` and `origin` mapped to `$user` might be a feas
 ::: warning Be very careful when redefining `$user`
 The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. Also consider data protection and privacy regulations when storing user data.
 :::
+
+
+### IAS  { #ias-auth }
+  - role definition / assignment AMS
+  
+
+### XSUAA Authentication { #xsuaa-auth }
+  - role definition / assignment
+  - Define Reuse Service
+
 
 ## Programmatic Enforcement { #enforcement}
 

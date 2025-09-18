@@ -26,7 +26,7 @@ Most notably, authentication is covered by [platform's identity services](#ident
 Likewise, TLS termination is offered by the [platform](#platform-environment).
 
 
-### Pluggable Building Blocks { #key-concept-decoupled-authn }
+### Pluggable Building Blocks { #key-concept-pluggable }
 
 CAP divides the different tasks related to security into separate and independent building blocks:
 - [Authentication (inbound)](#inbound-authentication )
@@ -48,7 +48,7 @@ For instance, endpoints of deployed CAP applications are authenticated automatic
 Making endpoints public requires manual configuration either in the CAP model or in the middleware. 
 
 
-### Customizable { #key-concept-pluggable }
+### Customizable { #key-concept-customizable }
 
 Due to the plugin-based architecture, **CAP allows standard functions to be modified as required or, if necessary, completely replaced**.
 This flexibility is crucial for scenarios where the default methods do not fully meet the requirements of the application.
