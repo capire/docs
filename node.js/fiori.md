@@ -73,7 +73,7 @@ If a bound action/function modifies an active entity instance, custom handlers n
 All CRUD events are supported for both, active and draft entities.
 
   ```js
-  // only active entities
+  // for active entities
   srv.on(['CREATE', 'READ', 'UPDATE', 'DELETE'], 'MyEntity', /*...*/)
 
   // only draft entities
