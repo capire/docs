@@ -772,10 +772,6 @@ cds up --to k8s
 
 :::
 
-:::tip
-- tips about initial scaling to avoid service-manager problems
-:::
-
 ### Subscribe
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
