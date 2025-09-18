@@ -49,7 +49,7 @@ Manual filtering on draft-related properties is not allowed, only certain draft 
 In addition to the standard CRUD events, draft-specific events are provided on draft entities, which allows to register handles to specific events in the lifecycle of a draft, as outlined in the following subsections.
 
 
-### `NEW` Draft
+### `NEW`
 
 ```js
 srv.before('NEW', 'MyEntity.drafts', req => {
@@ -64,7 +64,7 @@ As a result `MyEntity.drafts` is created in the database.
 You can modify the initial draft data in a `before` handler.
 
 
-### `EDIT` Draft
+### `EDIT`
 
 ```js
 srv.before('EDIT', 'MyEntity', /*...*/)
@@ -79,7 +79,7 @@ As a result, a new entry to `MyEntity.drafts` is created.
 > For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
 
 
-### `DISCARD` Draft
+### `DISCARD`
 
 ```js
 srv.before('DISCARD', 'MyEntity.drafts', /*...*/)
@@ -90,7 +90,7 @@ The `DISCARD` event is triggered when the user discards a draft started before.
 In this case, the draft entity is deleted and the active entity isn't changed.
 
 
-### `PATCH` Draft
+### `PATCH`
 
 ```js
 srv.before('PATCH', 'MyEntity.drafts', /*...*/)
@@ -102,7 +102,7 @@ The `PATCH` event is triggered whenever the user edits a field in a draft.
 It's actually an alias for the standard CRUD `UPDATE` event.
 
 
-### `SAVE` Draft
+### `SAVE`
 
 ```js
 srv.before('SAVE', 'MyEntity.drafts', /*...*/)
