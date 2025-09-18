@@ -371,7 +371,6 @@ CAP Java supports the consumption of IAS-based services of various kinds:
 Regardless of the kind of service, CAP provides a unified integration as Remote Service as described in the [documentation](/java/cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
-### Internal Services (same IAS) {#internal-app}
 
 
 
