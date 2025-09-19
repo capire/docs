@@ -339,6 +339,7 @@ cds.db = await cds.connect.to('db')
 
 ```ts
 function cds.error (
+  code?    : number  
   message  : string | object,
   details? : object
   caller?  : function
