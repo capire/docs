@@ -772,6 +772,13 @@ cds up --to k8s
 
 :::
 
+:::tip
+To avoid potential race conditions during the initial creation of the MTXS Metadata Container `t0`, it is recommended to do the
+initials deployment with only one instance of the MTXS Sidecar.<br>
+As alternative, you can run command `cds-mtx upgrade t0` before, e. g. as [cf hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks).
+:::
+
+
 ### Subscribe
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
