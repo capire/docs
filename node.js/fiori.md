@@ -46,7 +46,7 @@ Manual filtering on draft-related properties is not allowed, only certain draft 
 
 ## Draft-specific Events
 
-In addition to the standard CRUD events, draft-specific events are provided on draft entities, which allows to register handles to specific events in the lifecycle of a draft, as outlined in the following subsections.
+In addition to the standard CRUD events, draft entities provide draft-specific events in the lifecycle of a draft, as outlined in the following subsections.
 
 
 ### `NEW`
