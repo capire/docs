@@ -70,7 +70,7 @@ Writing the messages into explicitly modeled messages properties isn't yet suppo
 
 SAP Fiori uses these messages to display detailed information on the UI. The style how a message appears on the UI depends on the severity of the message.
 
-::: warning Avoid Injection Vulnerabilities
+::: warning User Input & Injection Vulnerabilities
 Ensure proper validation of the message text and URL if they contain values ​​from user input.
 :::
 
