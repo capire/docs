@@ -362,13 +362,14 @@ The mock user `Alice` is assigned to the mock tenant `CrazyCars` for which the f
 
 CAP Java supports the consumption of IAS-based services of various kinds:
 
-* [Internal Services](#internal-app) bound to the same IAS instance of the provider application.
+<!-- * [Internal Services](#internal-app) bound to the same IAS instance of the provider application. -->
+
 * [External IAS](#app-to-app) applications consumed by providing a destination.
 * [BTP reuse services](#ias-reuse) consumed via service binding.
 
 ![The TAM graphic is explained in the accompanying text.](./assets/java-ias.png){width="800px" }
 
-Regardless of the kind of service, CAP provides a unified integration as Remote Service as described in the [documentation](/java/cqn-services/remote-services#remote-odata-services).
+Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
 
@@ -379,7 +380,9 @@ Basic communication setup and user propagation is addressed under the hood, for 
 CAP Java supports technical communication with any IAS-based service deployed to an SAP Cloud landscape. User propagation is supported.
 For connection setup, it uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications).
 
-The CAP Java application as an IAS server needs to:
+#### Provider Application
+
+The CAP Java application as a _provider app_ needs to:
 
 1. Configure [IAS authentication](/java/security#xsuaa-ias).
 2. Expose an API in the IAS service instance.
@@ -413,17 +416,19 @@ The CAP Java application as an IAS server needs to:
     :::
 
 
-::: tip
+::: tip API as CAP role
 The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication.
 :::
 
-::: warning 
+::: warning Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
 
 Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
 :::
 
-To set up a connection to such an IAS service, the client requires to do:
+#### Consumer Application
+
+To set up a connection to such an IAS service, the _consumer app_ requires to do:
 
 1. Create an IAS instance that consumes the required API.
 
@@ -458,7 +463,7 @@ To set up a connection to such an IAS service, the client requires to do:
 
     :::
 
-To activate the App-2-App connection as a *subscriber*, you need to:
+To activate the App-2-App connection as a *consumer*, you need to:
 
 1. Create an IAS application dependency in the IAS tenant pointing to the server's exposed API (Cloud Identity Service UI: [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)).
 
@@ -468,9 +473,7 @@ To activate the App-2-App connection as a *subscriber*, you need to:
     * Authentication type `NoAuthentication`.
     * Attribute `cloudsdk.ias-dependency-name` with the name of the created IAS application dependency.
 
-::: tip
-Automated integration between two IAS services can be orchestrated via [UCL formation](../java/integrating-applications/ucl#unified-customer-landscape-ucl).
-:::
+<div id="orchint" />
 
 
 
@@ -481,14 +484,14 @@ Automated integration between two IAS services can be orchestrated via [UCL form
 
 ### BTP Reuse Services {#ias-reuse}
 
-IAS-based BTP reuse service can be created and consumed with CAP Java even more easily.
+IAS-based BTP reuse services can be created/consumed with CAP Java even more easily.
 
-The CAP reuse service (server) needs to:
+The CAP reuse service (provider) needs to:
 
 1. Configure [IAS authentication](/java/security#xsuaa-ias).
 2. Bind an IAS instance that exposes services and service plans.
 
-    ::: details Sample IAS instance for server
+    ::: details Sample IAS instance for provider
 
     ```yaml
     - name: server-identity
@@ -568,16 +571,16 @@ The CAP consumer application (client) needs to:
 
 4. Use CQN queries to consume the reuse service (optional)
 
-[Learn more about simplified Remote Service configuration with bindings](../cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
+[Learn more about simplified Remote Service configuration with bindings](/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
 
-::: tip
+::: tip Service plan name as CAP role
 The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
 :::
 
-::: warning 
+::: warning  Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
+Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice versa.
 :::
 
 ## Authorization { #auth}
