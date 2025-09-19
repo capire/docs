@@ -620,6 +620,52 @@ Note, that the propagated annotation `@cds.java.name` creates attribute and meth
 This feature requires version 8.2.0 of the [CDS Command Line Interface](/tools/cds-cli).
 :::
 
+#### Excluding Elements
+
+You can exclude elements from accessor interfaces with the annotation `@cds.java.ignore`. 
+
+For example, you can exclude an element from the entity like this: 
+
+```cds
+namespace my.bookshop;
+
+entity Books {
+  key ID : Integer;
+  title  : localized String;
+  stock  : Integer;
+  @cds.java.ignore
+  ignored : String;
+}
+```
+
+This will yield an interface that has no methods for the attribute `ignored`.
+
+On the service level, you can exclude elements from projections as well as operations and their arguments like this:
+
+```cds
+service CatalogService {
+  entity Books as
+    projection on my.Books {
+      ID,
+      @cds.java.ignore title,
+      stock,
+      ignored
+    }
+    actions {
+      @cds.java.ignore action act(@cds.java.ignore arg: String);
+      function                func(arg: String, @cds.java.ignore ignored: String) returns String;
+    }
+}
+```
+
+This annotation propagates across projections and they also omit the ignored elements. This can be overridden with the following annotation: 
+
+```cds
+annotate Books:ignored with @cds.java.ignore: false;
+```
+
+If you want to exclude set of entities, prefer [filters](/java/developing-applications/building#filter-for-cds-entities) for code generator.
+
 #### Entity Inheritance in Java
 
 In CDS models it is allowed to extend a definition (for example, of an entity) with one or more named [aspects](../cds/cdl#aspects). The aspect allows to define elements or annotations that are common to all extending definitions in one place.
