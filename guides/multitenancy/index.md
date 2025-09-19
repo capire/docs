@@ -772,6 +772,12 @@ cds up --to k8s
 
 :::
 
+:::tip
+To avoid potential race conditions during the initial creation of the MTXS Metadata Container `t0`, it is recommended to do the
+initials deployment with only one instance of the MTXS Sidecar.
+:::
+
+
 ### Subscribe
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
