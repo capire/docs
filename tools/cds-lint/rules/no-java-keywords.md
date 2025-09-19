@@ -14,9 +14,7 @@ status: released
 
 ## Rule Details
 
-The CAP Java code generation bases its class and method names on CDS entities.
-If reserved Java keywords are used as CDS identifiers, the code generation or compilation may fail.
-This rule helps identify such identifiers early on and suggest to use the `@cds.java.name` annotation.
+The CAP Java code generation bases its class and method names on CDS entities. If reserved Java keywords are used as CDS identifiers, the code generation or compilation may fail. This rule helps identify such identifiers early on and suggests using the `@cds.java.name` annotation.
 
 ## Examples
 
@@ -37,7 +35,7 @@ In the following example, use of the reserved Java keyword as identifiers is fix
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the reserved SQL keyword `new` is used as an element name, so the rule will raise a warning:
+This example shows the reserved SQL keyword `new` used as an element name, so the rule will raise a warning:
 
 ::: code-group
 <<< ../examples/no-java-keywords/incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]

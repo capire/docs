@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-With compiler v2, appending a type declaration to a column expression in a view's query doesn't generate a cast in SQL anymore, as that created conflicts with various database-specific behaviors. This rule ensures that such casts are added explicitly by suggesting possible missing SQL casts.
+With compiler v2, appending a type declaration to a column expression in a view's query doesn't generate a cast in SQL anymore because that created conflicts with various database-specific behaviors. This rule ensures that such casts are added explicitly by suggesting possible missing SQL casts.
 
 ## Examples
 
@@ -34,7 +34,7 @@ In the following example, the entity `ListOfBooks` contains explicit casts for e
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, the rule will be triggered for elements `name1` and `name2` because they require explicit casts:
+This example shows the rule triggered for elements `name1` and `name2` because they require explicit casts:
 
 ::: code-group
 <<< ../examples/sql-cast-suggestion/incorrect/db/schema.cds#snippet{ts:line-numbers} [db/schema.cds]

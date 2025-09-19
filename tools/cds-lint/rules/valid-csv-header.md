@@ -40,7 +40,7 @@ The following example shows a correct CSV file header that matches the column na
 
 #### ❌ &nbsp; Incorrect example
 
-In the next example, there's a typo in the header of the CSV file. The column name `title` is misspelled as `tile`, so the rule reports a warning:
+This example shows a typo in the header of the CSV file. The column name `title` is misspelled as `tile`, so the rule reports a warning:
 
 ::: code-group
 <<< ../examples/valid-csv-header/incorrect/db/data/sap.capire.bookshop-Books.csv#snippet{csv:line-numbers{1}} [db/data/sap.capire.bookshop-Books.csv]
