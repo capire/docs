@@ -372,8 +372,9 @@ CAP Java supports the consumption of IAS-based services of various kinds:
 Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
+### Internal Services {#internal-app}
 
-
+For communication between adjacent CAP applications, i.e. CAP applications which are bound to the same identity instance, simplified configuration as explained [here](../java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
 
 ### External Services (IAS App-to-App)  {#app-to-app}
 
@@ -582,6 +583,27 @@ Use different CAP roles for technical clients without user propagation and for n
 
 Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice versa.
 :::
+
+
+#### How to Authorize Callbacks
+
+For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
+Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
+As a prerequisite*, the CAP service needs to know the clientId of the reuse service's IAS application which should be part of the binding exposed to the CAP service.
+
+::: details Sample Code for Authorization of Callbacks
+
+```java
+private void authorizeCallback() {
+		UserInfo userInfo = runtime.getProvidedUserInfo();
+		String azp = (String) userInfo.getAdditionalAttributes().get("azp");
+		if(!userInfo.isSystemUser() || azp == null || !azp.equals(clientId)) {
+			throw new ErrorStatusException(ErrorStatuses.FORBIDDEN);
+		}
+	}
+```
+:::
+
 
 ## Authorization { #auth}
 
