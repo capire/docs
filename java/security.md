@@ -537,7 +537,7 @@ The CAP consumer application (client) needs to:
     ::: details Create and bind service instance.
     ```sh
     cf create-service review-service review-api review-service-instance
-    cf bind-service review-service-instance --binding-name review-service-binding
+    cf bind-service <your-app-name> review-service-instance --binding-name review-service-binding
     ```
     :::
 
