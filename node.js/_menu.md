@@ -31,8 +31,6 @@
   ## [Class cds. RemoteService](remote-services)
   ## [Class cds. MessagingService](messaging)
   ## [Class cds. DatabaseService](databases)
-  ## [Serving Fiori UIs](fiori)
-  ## [Integrate with UCL](../../node.js/ucl)
 
 # [cds. Events](events)
 
@@ -57,9 +55,11 @@
 # [cds. env](cds-env)
 # [cds. utils](cds-utils)
 
+# [Serving Fiori UIs](fiori)
 # [Transactions](cds-tx)
 # [Security](authentication)
 # [Plugins](cds-plugins)
 # [Testing](cds-test)
 # [TypeScript](typescript)
 # [Best Practices](best-practices)
+# [Integrate with UCL](ucl)
