@@ -362,8 +362,7 @@ The mock user `Alice` is assigned to the mock tenant `CrazyCars` for which the f
 
 CAP Java supports the consumption of IAS-based services of various kinds:
 
-<!-- * [Internal Services](#internal-app) bound to the same IAS instance of the provider application. -->
-
+* [Internal Services](#internal-app) bound to the same IAS instance of the provider application.
 * [External IAS](#app-to-app) applications consumed by providing a destination.
 * [BTP reuse services](#ias-reuse) consumed via service binding.
 
@@ -374,7 +373,7 @@ Basic communication setup and user propagation is addressed under the hood, for 
 
 ### Internal Services {#internal-app}
 
-For communication between adjacent CAP applications, i.e. CAP applications which are bound to the same identity instance, simplified configuration as explained [here](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
+For communication between adjacent CAP applications, these are CAP applications which are bound to the same identity instance, simplified configuration is explained in [Binding to a Service with Shared Identity](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
 
 ### External Services (IAS App-to-App)  {#app-to-app}
 
@@ -388,7 +387,9 @@ The CAP Java application as a _provider app_ needs to:
 1. Configure [IAS authentication](/java/security#xsuaa-ias).
 2. Expose an API in the IAS service instance.
 
-    ::: details Sample IAS instance of server
+    ::: details Sample IAS instance of provider (mta.yaml)
+
+    Add this to your `mta.yaml` resources section:
 
     ```yaml
     - name: server-identity
@@ -433,7 +434,9 @@ To set up a connection to such an IAS service, the _consumer app_ requires to do
 
 1. Create an IAS instance that consumes the required API.
 
-    ::: details Sample IAS instance for client
+    ::: details Sample IAS instance for client (mta.yaml)
+
+    Add this to your `mta.yaml` resources section:
 
     ```yaml
     - name: client-identity
@@ -466,13 +469,15 @@ To set up a connection to such an IAS service, the _consumer app_ requires to do
 
 To activate the App-2-App connection as a *consumer*, you need to:
 
-1. Create an IAS application dependency in the IAS tenant pointing to the server's exposed API (Cloud Identity Service UI: [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)).
+1. Create an IAS application dependency in the IAS tenant:
+    - Open the Cloud Identity Services admin console
+    - Navigate to [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)
+    - Create a new dependency pointing to your provider application's API
 
-2. Create a dedicated [destination](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/access-destinations-editor) provided by the subscriber that points to the application.
-   The prepared destination needs:
+2. Create a dedicated [destination](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/access-destinations-editor) with the following configuration:
     * The URL pointing to the IAS-endpoint of the application.
     * Authentication type `NoAuthentication`.
-    * Attribute `cloudsdk.ias-dependency-name` with the name of the created IAS application dependency.
+    * Attribute `cloudsdk.ias-dependency-name` with the name of the created IAS application dependency in Step 1.
 
 <div id="orchint" />
 
