@@ -299,8 +299,6 @@ towards your IAS tenant to use it as identity provider for applications in your 
 - ensure your development environment is [prepared for deploying]( https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF, 
 in particular you require a session targeting to a CF space in the test subaccount with IAS trust (test with `cf target`).
 
-#### Adding IAS
-
 In the project's root folder execute
 
 ```sh
@@ -313,13 +311,15 @@ to make your application ready for deployment to CF.
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and hence adds all dependencies required for authentication transitively.
 :::
 
-Afterwards, command
+#### Adding IAS
+
+Now the application is ready to for adding IAS-support by executing
 
 ```sh
 cds add ias
 ```
 
-adds a service instance named `bookshop-srv` of type `identity` (plan: `application`) to the deyployment and binds the CAP service to it.
+which automatically adds a service instance named `bookshop-srv` of type `identity` (plan: `application`) and binds the CAP application to it.
 
 ::: details Generated deployment descriptor for IAS instance and binding
 ```yaml [mta.yaml]
@@ -345,14 +345,23 @@ resources:
 ```
 :::
 
+Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a unique client (multiple bindings are allowed). 
+CAP applications can have at most one binding to an IAS instance.
+
 Following properties apply:
 
-| Property          | Artefact            | Description         |
+| Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
-| `credential-type` |  binding   | `X509_GENERATED` activates mTLS communication with IAS.       |
-| `app-identifier` |  binding   | Unique identifier for the application in IAS   |
-| `display-name` |  instance   | Human-readable name for the application as it appears in the IAS admin UI  |
-| `tenant-mode` |  instance   | Specifies application mode: `dedicated` for single tenant (default), `shared` for multiple subscriber tenants (SAAS)  |
+| `name` |  instance   | Name for the IAS application - unique in the tenant  |
+| `display-name` |  instance   | Human-readable name for the IAS application as it appears in the Console UI for IAS admins |
+| `multi-tenant` |  instance   | Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)  |
+| `credential-type` |  binding   | `X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application       |
+| `app-identifier` |  binding   | Ensures stable subject in generated certificate (required for credential rotation)  |
+
+
+[Lean more about IAS service instance and binding creation options](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
+<div id="learn-more-IAS-instances-bindings" />
+
 
 Now let's pack and deploy the application with
 ```sh
@@ -362,14 +371,15 @@ cds up
 and wait until the application is up and running (you can test with `cf apps` or alternatively in BTP Cockpit).
 
 In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
-you should now also see the deplyoed IAS application in `Applications & Ressources` -> `Applications`, section `Bundled Applications` (display name `bookshop`, subtitle is the technical id of the service instance). 
+you should now also see the deployed IAS application in `Applications & Ressources` -> `Applications`, section `Bundled Applications` (display name `bookshop`, subtitle is the guid of the service instance as listed in `cf service bookshop-auth`).
+In the Console you can manage the IAS application and, for instance, configure the authentication strategy.
 
 ::: tip
 In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows direct navigation to the IAS application in the admin console.
 :::
 
 
-Find the following trace in the application log as feedback for IAS authentication in action:
+Find the following trace in the application log as confirmation for IAS authentication in action:
 <div class="java">
 
 ```sh
@@ -378,27 +388,136 @@ IdentityConfiguration: Loaded feature 'IdentityUserInfoProvider' (IAS: bookshop-
 
 </div>
 
+At startup, the CAP runtime checks the available bindings and activates IAS authentication accordingly. 
+**Hence, the local setup without IAS binding is still working**.
+
+
 ::: tip
-The CAP runtime checks the available bindings at startup and activates IAS authentication accordingly. The local setup with mock users still works as before.
+IAS enforces mTLS, so you need platform-level TLS termination, which is provided von CF via `cert.*` domains. 
+The validated certificate is forwarded via HTTP header `X-Forwarded-Client-Cert` to the CAP endpoint.
+:::
+
+::: details Application routes with `cert.*`-domain
+```yaml
+modules:
+  - name: bookshop-srv
+    type: java
+    path: srv
+    parameters:
+      routes:
+        - route: "${default-url}"
+        - route: "${default-host}.cert.${default-domain}"
+```      
+:::  
+
+::: warning
+On SAP BTP Kyma Runtime, you might require to adapt configuration parameter <Config java>`cds.security.authentication.clientCertificateHeader`</Config> according to the component of your choice terminating TLS.
 :::
 
 
-#### Testing IAS
+#### Testing IAS on CLI Level
 
+Due to the autoconfiguration in CAP, all CAP endpoints should be authenticated and expect valid ID tokens generated for the IAS application.
+Sending the test request 
 ```sh
 curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
 ```
 
-HTTP/1.1 401 Unauthorized
+as anonymous user without a token results in a `401 Unauthorized` as expected.
+
+Now we want to fetch a token to prepare a fully authenticated test request. 
+As first step we add a new client for the IAS application by creating an appropriate service key:
+
+```sh
+cf create-service-key bookshop-auth bookshop-auth-key -c '{"credential-type": "X509_GENERATED"}'
+```
+
+The setup now looks like scetched in the diagram:
+
+![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.svg){width="400px"}
+
+::: details How to retrieve service key credentials
+
+```sh
+cf service-key bookshop-auth bookshop-auth-key
+```
+
+```sh
+{
+  "credentials": {
+      [...]
+    "certificate": "-----BEGIN CERTIFICATE----- [...] -----END CERTIFICATE-----",
+    "clientid": "2a92c297-8603-4157-9aa9-ca7585821979",
+    "credential-type": "X509_GENERATED",
+    "key": "-----BEGIN RSA PRIVATE KEY----- [...] -----END RSA PRIVATE KEY-----",
+    "url": "https://avpxtt84j.accounts400.ondemand.com",
+    [...]
+  }
+}
+```
+
+:::
+
+::: warning
+❗ Never share service key credentials or tokens ❗
+:::
+
+From the credentials, you need to prepare local files containing the certificates which are required for both, mTLS with IAS and the CAP service. 
+
+::: details How to prepare client X.509 certificate files
+
+Copy the public X.509-certificate in property `certifiacte` into a file `cert-raw.pem` and `key` into a file `key-raw.pem`, accordingly.
+Both files need to be post-processed to transform the single-line represnatation into a standard multi-line representation:
+
+```sh
+awk '{gsub(/\\n/,"\n")}1' <file-raw>.pem > <file>.pem
+```
+Finally, ensure correct format of both files with
+```sh
+openssl x509 -in <file>.pem -text -noout
+```
+These manual steps might be replaced by tooling support in future.
+:::
+
+The fetch a token on behalf of the technical tenant user, the request needs to provide the **client certificate** being send to `/oauth2/token` endpoint of IAS service with URI given in `url` property of the binding:
+
+```sh
+curl --cert cert.pem --key key.pem \
+  --data "grant_type=client_credentials&client_id=<clientid>" \
+  https://<url>/oauth2/token
+```
+
+The request returns with a valid IAS token which will pass authentication in the CAP application:
+```sh
+{"access_token":"[...]","token_type":"Bearer","expires_in":3600}
+```
+
+The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
+
+```sh
+curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.cert.<landscape-domain>/odata/v4/CatalogService/Books
+```
 
 
-service key
+Relaxing mTLS during Development
 
-curl mit cert
+
+
+
+#### Testing IAS on UI Level
 
 cds add approuter
 
 The AppRouter allows UI-sessions to interact with the application for initial testing.
+
+Cleaning up
+
+Don't forget to delete the service key
+```sh
+cf delete-service-key bookshop-auth bookshop-auth-key
+```
+
 
 
 
