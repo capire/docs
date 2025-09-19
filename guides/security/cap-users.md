@@ -177,6 +177,8 @@ The user name is frequently stored with business data (for example, `managed` as
 
 ### IAS  { #ias-auth }
   - role definition / assignment AMS
+
+  Neue AMS CAP Doku https://sap.github.io/cloud-identity-developer-guide/CAP/Basics.html
   
 
 ### XSUAA Authentication { #xsuaa-auth }
