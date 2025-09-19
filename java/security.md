@@ -572,7 +572,7 @@ The CAP consumer application (client) needs to:
 
 4. Use CQN queries to consume the reuse service (optional)
 
-[Learn more about simplified Remote Service configuration with bindings](/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
+[Learn more about simplified Remote Service configuration with bindings](/java/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
 
 ::: tip Service plan name as CAP role
 The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
