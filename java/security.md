@@ -206,7 +206,7 @@ public class ActuatorSecurityConfig {
     return http
       .securityMatcher(AntPathRequestMatcher.antMatcher("/actuator/**"))
       .httpBasic(Customizer.withDefaults())
-      .authenticationProvider(/* basic auth users with PasswordEncoder * /)
+      .authenticationProvider(/* basic auth users with PasswordEncoder */)
       .authorizeHttpRequests(r -> r.anyRequest().authenticated())
       .build();
   }
@@ -374,7 +374,7 @@ Basic communication setup and user propagation is addressed under the hood, for 
 
 ### Internal Services {#internal-app}
 
-For communication between adjacent CAP applications, i.e. CAP applications which are bound to the same identity instance, simplified configuration as explained [here](../java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
+For communication between adjacent CAP applications, i.e. CAP applications which are bound to the same identity instance, simplified configuration as explained [here](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
 
 ### External Services (IAS App-to-App)  {#app-to-app}
 
