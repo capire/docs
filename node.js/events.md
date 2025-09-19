@@ -548,7 +548,7 @@ req.warn ('Some warning message')
 
 The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (e.g. `sap-messages`), instead of the response body.
 
-::: warning Avoid Injection Vulnerabilities
+::: warning User Input & Injection Vulnerabilities
 Ensure proper validation of the message text if it contains values ​​from user input.
 :::
 
