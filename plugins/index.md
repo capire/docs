@@ -4,7 +4,7 @@ status: released
 
 # CAP Plugins & Enhancements
 
-This curated list showcases plugins available for the SAP Cloud Application Programming Model (CAP). These plugins provide seamless integration with SAP BTP services, SAP products, and third-party technologies, extending CAP's capabilities with minimal setup requirements.
+Showcase of SAP Cloud Application Programming Model (CAP) plugins that provide seamless integration with SAP BTP services, SAP products, and third-party technologies which extend CAP's capabilities with minimal setup requirements.
 
 ::: tip Maintained by CAP and SAP
 The `@cap-js`-scoped plugins are developed and maintained through close collaboration between CAP development teams and other SAP development teams, ensuring high quality and reliability.
