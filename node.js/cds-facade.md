@@ -183,7 +183,7 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 ### cds. entities {.property}
 
-Is a shortcut to `cds.db.entities`. Used as a function, you can [specify a namespace](/node.js/cds-reflect#entities).
+Is a shortcut to `cds.model.entities`. Used as a function, you can [specify a namespace](/node.js/cds-reflect#entities).
 
 ### cds. env {.property}
 
@@ -339,7 +339,7 @@ cds.db = await cds.connect.to('db')
 
 ```ts
 function cds.error (
-  code?    : number  
+  status?  : number  
   message  : string | object,
   details? : object
   caller?  : function
