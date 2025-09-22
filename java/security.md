@@ -153,10 +153,10 @@ If you want to explicitly change the automatic security configuration, you can a
 ```java
 @Configuration
 @EnableWebSecurity
-@Order(1) // needs to have higher priority than CAP security config
 public class AppSecurityConfig {
 
   @Bean
+  @Order(1) // needs to have higher priority than CAP security config
   public SecurityFilterChain appFilterChain(HttpSecurity http) throws Exception {
     return http
       .securityMatcher(AntPathRequestMatcher.antMatcher("/public/**"))
@@ -181,10 +181,10 @@ Another typical example is the configuration of [Spring Actuators](https://docs.
 ```java
 @Configuration
 @EnableWebSecurity
-@Order(1)
 public class ActuatorSecurityConfig {
 
   @Bean
+  @Order(1)
   public SecurityFilterChain actuatorFilterChain(HttpSecurity http) throws Exception {
     return http
       .securityMatcher(AntPathRequestMatcher.antMatcher("/actuator/**"))
