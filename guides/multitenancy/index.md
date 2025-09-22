@@ -773,9 +773,9 @@ cds up --to k8s
 :::
 
 :::tip
-To avoid potential race conditions during the initial creation of the MTXS Metadata Container `t0`, it is recommended to do the
-initials deployment with only one instance of the MTXS Sidecar.<br>
-As alternative, you can run command `cds-mtx upgrade t0` before, e. g. as [cf hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks).
+To prevent potential conflicts during the initial creation of the MTXS Metadata Container `t0`, it is recommended to perform the 
+initial deployment with only one instance of the MTXS Sidecar.<br>
+As an alternative, you can run the command `cds-mtx upgrade t0` beforehand, such as in a [cf hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks).
 :::
 
 
