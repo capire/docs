@@ -664,7 +664,7 @@ This annotation propagates across projections and they also omit the ignored ele
 annotate Books:ignored with @cds.java.ignore: false;
 ```
 
-If you want to exclude set of entities, prefer [filters](/java/developing-applications/building#filter-for-cds-entities) for code generator.
+If you want to exclude a set of entities, prefer [filters](/java/developing-applications/building#filter-for-cds-entities) for the code generator.
 
 #### Entity Inheritance in Java
 
