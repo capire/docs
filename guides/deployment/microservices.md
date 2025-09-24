@@ -35,6 +35,8 @@ This guide describes a way to manage development and deployment via *[monorepos]
    echo "{\"name\":\"@capire/samples\",\"workspaces\":[\"*\"]}" > package.json
    ```
 
+<div class="impl node">
+
 2. Add the previously mentioned projects as `git` submodules:
 
    ```sh
@@ -48,12 +50,34 @@ This guide describes a way to manage development and deployment via *[monorepos]
    git submodule update --init
    ```
 
+</div>
+
+<div class="impl java">
+
+2. Add the previously mentioned projects as `git` submodules:
+
+   ```sh
+   git init
+   git submodule add https://github.com/capire/bookstore-java
+   git submodule add https://github.com/capire/reviews-java
+   git submodule add https://github.com/capire/orders-java
+   git submodule add https://github.com/capire/common-java
+   git submodule add https://github.com/capire/bookshop-java
+   git submodule add https://github.com/capire/data-viewer-java
+   git submodule update --init
+   ```
+
+</div>
+
    Add a _.gitignore_ file with the following content:
    ```txt
    node_modules
    gen
    ```
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
+
+
+<div class="impl node">
 
 3. Test-drive locally:
    ```sh
@@ -64,13 +88,24 @@ This guide describes a way to manage development and deployment via *[monorepos]
    cds w bookshop
    ```
 
-   ```sh
-   cds w bookstore
-   ```
-
    Each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
 
    [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
+
+</div>
+
+<div class="impl java">
+
+3. Test-drive locally:
+   ```sh
+   npm install
+   ```
+
+   ```sh
+   cd bookstore && npm start
+   ```
+
+</div>
 
 
 ::: details The project structure
@@ -208,7 +243,17 @@ This section is about how to deploy all 3+1 projects at once with a common _mta.
 
 ![component diagram with synchronous and event communication for orders](./assets/microservices/bookstore.excalidraw.svg)
 
+<div class="impl node">
+
 [@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+
+</div>
+
+<div class="impl java">
+
+<font color=red size=+2>TODO</font> [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+
+</div>
 
 ### Deployment Descriptor
 
@@ -258,6 +303,7 @@ build-parameters:
 ```
 :::
 
+<div class="impl node">
 
 ::: info `cds build --ws`
 If the CDS models of every NPM workspace contained in the monorepo should be considered, then instead of creating this `shared-db` folder, you can also use:
@@ -269,8 +315,12 @@ The `--ws` aggregates all models in the NPM workspaces.
 In this walkthrough, we only include a subset of the CDS models in the deployment.
 :::
 
+</div>
+
+<div class="impl node">
 
 ::: details Configure each app for cloud readiness
+
 The preceding steps only added configuration to the workspace root.
 
 Additionally add database configuration to each module that we want to deploy - bookstore, orders, and reviews:
@@ -280,10 +330,24 @@ npm i @cap-js/hana --workspace bookstore
 npm i @cap-js/hana --workspace orders
 npm i @cap-js/hana --workspace reviews
 ```
+
 :::
 
+</div>
+
+<div class="impl java">
+
+::: details Configure each app for cloud readiness
+
+For each project add the **cds-starter-cloudfoundry** [starter bundle](https://cap.cloud.sap/docs/java/developing-applications/building#starter-bundles).
+
+:::
+
+</div>
 
 ### Applications
+
+<div class="impl node">
 
 Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
 
@@ -347,7 +411,90 @@ modules:
 ```
 :::
 
-Add build commands for each module to be deployed:
+</div>
+
+<div class="impl java">
+
+Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
+
+::: code-group
+```yaml [mta.yaml]
+modules:
+
+  - name: bookstore-srv # [!code focus]
+    type: java
+    path: bookstore/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud,sandbox
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
+      JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+    provides: # [!code focus]
+      - name: bookstore-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+
+  - name: orders-srv # [!code focus]
+    type: java
+    path: orders/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
+    provides: # [!code focus]
+      - name: orders-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+
+  - name: reviews-srv # [!code focus]
+    type: java
+    path: reviews/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
+    provides: # [!code focus]
+      - name: reviews-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+...
+```
+:::
+
+</div>
+
+<div class="impl node">
+
+Add build commands for each module to be prepared for deployment:
 
 ::: code-group
 ```yaml [mta.yaml]
@@ -366,6 +513,8 @@ build-parameters:
 ::: info --ws-pack
 Note that we use the *--ws-pack* option for some modules. It's important for node modules referencing other repository-local node modules.
 :::
+
+</div>
 
 
 ### Authentication
@@ -400,6 +549,8 @@ Add the admin role
 ```
 :::
 
+<div class="impl node">
+
 ::: details Configure each app for cloud readiness
 Add NPM dependency `@sap/xssec`:
 
@@ -410,9 +561,13 @@ npm i @sap/xssec --workspace reviews
 ```
 :::
 
+</div>
+
 ### Messaging
 
 The messaging service is used to organize asynchronous communication between the CAP services.
+
+<div class="impl node">
 
 ```shell
 cds add enterprise-messaging
@@ -499,6 +654,69 @@ Enable messaging for the modules that use it:
 
 :::
 
+</div>
+
+<div class="impl java">
+
+Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the *emname* and *namespace* properties, as these will be parameterized dynamically in the mta.yaml file:
+
+::: code-group
+```json [event-mesh.json]
+{
+  "version": "1.1.0",
+  "emname": "samples-emname", // [!code --]
+  "version": "1.1.0",
+  "namespace": "default/samples/1", // [!code --]
+  "options": {
+    "management": true,
+    "messagingrest": true,
+    "messaging": true
+  },
+  "rules": {
+    "topicRules": {
+      "publishFilter": [
+        "*"
+      ],
+      "subscribeFilter": [
+        "*"
+      ]
+    },
+    "queueRules": {
+      "publishFilter": [
+        "*"
+      ],
+      "subscribeFilter": [
+        "*"
+      ]
+    }
+  },
+  "authorities": [
+    "$ACCEPT_GRANTED_AUTHORITIES"
+  ]
+}
+```
+:::
+
+Add messaging resource in mta.yaml with parametrized *emname* and *namespace* properties:
+
+::: code-group
+```yaml [mta.yaml]
+resources:
+  - name: samples-messaging
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: enterprise-messaging
+      service-plan: default
+      path: ./event-mesh.json
+      config: # [!code ++]
+        emname: bookstore-${org}-${space}  # [!code ++]
+        namespace: cap/samples/${space}    # [!code ++]
+```
+:::
+
+
+</div>
+
 
 ### Destinations
 
@@ -550,6 +768,8 @@ modules:
 
 Use the destinations in the bookstore application:
 
+<div class="impl node">
+
 ::: code-group
 ```yaml [mta.yaml]
 modules:
@@ -561,6 +781,35 @@ modules:
 ```
 :::
 
+</div>
+
+<div class="impl java">
+
+::: code-group
+```yaml [bookstore/srv/src/main/resources/application.yaml]
+cds:
+  odataV4.endpoint.path: /
+  messaging.services:
+    samples-messaging:
+      kind: enterprise-messaging
+  remote.services: # [!code ++]
+    OrdersService: # [!code ++]
+      type: "odata-v4" # [!code ++]
+      http: # [!code ++]
+        suffix: "/odata/v4" # [!code ++]
+      destination: # [!code ++]
+        name: "orders-dest" # [!code ++]
+    ReviewsService: # [!code ++]
+      type: "odata-v4" # [!code ++]
+      destination: # [!code ++]
+        name: "reviews-dest" # [!code ++]
+```
+:::
+
+</div>
+
+<div class="impl node">
+
 ::: details Configure each app for cloud readiness
 
 Add `@sap-cloud-sdk/http-client` and `@sap-cloud-sdk/resilience` for each module utilizing the destinations:
@@ -570,6 +819,19 @@ npm i @sap-cloud-sdk/http-client --workspace bookstore
 npm i @sap-cloud-sdk/resilience --workspace bookstore
 ```
 :::
+
+</div>
+
+
+<div class="impl java">
+
+::: details Configure each app for cloud readiness
+
+Add dependency to the **cds-feature-remote-odata** [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules)
+
+:::
+
+</div>
 
 ### Approuter
 
