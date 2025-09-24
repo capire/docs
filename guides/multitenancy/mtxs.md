@@ -685,14 +685,15 @@ The _ModelProviderService_ serves model variants, which may include tenant-speci
 - `in-sidecar` — provides defaults for usage in sidecars
 - `from-sidecar` — shortcut for `{ "kind": "rest" }`
 
-### `getCsn` _(tenant, toggles) → CSN_
+### `getCsn` _(tenant, toggles) → CSN_ {#modelprovider-get-csn}
 
 Returns the application's effective CSN document for the given tenant + feature toggles vector. CAP runtimes call that method to obtain the effective models to serve.
 
-| Arguments |  Description                                                |
-| --------- | ----------------------------------------------------------- |
-| `tenant`  | A string identifying the tenant                             |
-| `toggles` | An array listing toggled features; `['*']` for all features |
+| Arguments   |  Description                                                |
+| ----------- | ----------------------------------------------------------- |
+| `tenant`    | A string identifying the tenant                             |
+| `toggles`   | An array listing toggled features; `['*']` for all features |
+| `activated` | <Beta/>  `false` to include also extension drafts, default is `true` |
 
 #### Example Usage {#example-get-csn }
 
@@ -893,6 +894,11 @@ Content-Type: application/json
 
 Creates a new tenant-specific extension.
 
+Extensions can be created as draft. In that case, the extensions need to be activate using action [`activate`](#activate-extension-draft) to get visible for everyone.
+
+To get the full model including draft extensions, the [Model Provider Service](#modelprovider-get-csn) has to be called accordingly.
+
+
 #### HTTP Request Options
 
 | Request Header        |  Example Value                                         | Description  |
@@ -911,6 +917,7 @@ Creates a new tenant-specific extension.
 | **Body**
 | `csn` | Array of extension CDL or CSN to apply |
 | `i18n` | Texts and translations |
+| `status` | <beta/> Activation status ( `1` for draft, `2` for active, default is `2`) |
 
 </div>
 
@@ -1012,6 +1019,9 @@ Deletes a tenant-specific extension.
 | **Parameters** | Description |
 | - | - |
 | `ID`  | String uniquely identifying the extension |
+| - | - |
+| **Query parameters** | Description |
+| `status` | `status` of the deletion. `2` for active deletion (default), `1` for deletion as draft |
 
 </div>
 
@@ -1020,11 +1030,19 @@ Deletes a tenant-specific extension.
 #### Example Usage
 
 ```http [Request]
-DELETE /-/cds/extensibility/Extensions/isbn-extension HTTP/1.1
+DELETE /-/cds/extensibility/Extensions/isbn-extension?status=1 HTTP/1.1
 Content-Type: application/json
 ```
 
-The request can also be triggered asynchronously by setting the `Prefer: respond-async` header.
+Using query parameter `?status=1`, the extension with `ID` `isbn-extension` is deleted as draft. If the extension exists as draft, the draft will be discarded (similar to [discard](#discard-id)).
+If the extension is active, the deletion is stored as draft and requires an [activation](#activate-extension-draft) to be deployed to the database.
+
+::: warning Deployment of extension deletions
+The deployment of extension deletions only works for the SAP HANA Database, it it is configured accordingly.
+
+:::
+
+The `DELETE` request can also be triggered asynchronously by setting the `Prefer: respond-async` header.
 You can use the URL returned in the `Location` response header to poll the job status.
 
 In addition, you can poll the status for individual tenants using its individual task ID:
@@ -1043,6 +1061,93 @@ The response is similar to the following:
 ```
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
+
+### `validate` _(ID)_ _→ { errors: [], messages: [] }_ <beta/>
+
+Validates extension draft `ID`. The validation checks the syntax and the permissions of an extension.
+
+Returns errors and messages in case if the validation fails.
+
+#### Request Format
+
+| **Parameters** | Description |
+| - | - |
+| `ID`  | String uniquely identifying the extension |
+
+
+#### Example Usage
+
+```http [Request]
+POST /-/cds/extensibility/validate
+Content-Type: application/json
+Authorization: Basic carol:
+
+{
+  "ID": "isbn-extension"
+}
+```
+
+### `activate` _(ID, level, options) → Jobs_  <beta/> {#activate-extension-draft}
+
+Activates extension draft `ID` and makes it publicly visible.
+
+#### HTTP Request Options
+
+| Request Header        |  Example Value                                         | Description  |
+| ----------------      | -------------------------------------------------------|--------------|
+| `prefer`              | `respond-async`                                        | Trigger asynchronous extension activation |
+
+
+<div class="cols-2">
+
+<div>
+
+#### Request Format
+
+| **Parameters** | Description |
+| - | - |
+| `ID`  | String uniquely identifying the extension |
+| `status` (optional) | Target activation level, `1` or `2`, default is `2`, `1` is a no-op currently |
+| `options` (optional) | Various options, including deployment options (similar to [upgrade in SaasProvisioningService](#upgrade-options) ) |
+
+</div>
+
+</div>
+
+#### Example Usage
+
+```http [Request]
+POST /-/cds/extensibility/activate
+Content-Type: application/json
+Authorization: Basic carol:
+
+{
+  "ID": "isbn-extension"
+}
+```
+
+### `discard` _(ID)_ <beta/>
+
+Discards extension draft `ID`.
+
+#### Request Format
+
+| **Parameters** | Description |
+| - | - |
+| `ID`  | String uniquely identifying the extension |
+
+
+#### Example Usage
+
+```http [Request]
+POST /-/cds/extensibility/discard
+Content-Type: application/json
+Authorization: Basic carol:
+
+{
+  "ID": "isbn-extension"
+}
+```
 
 ## DeploymentService
 
@@ -1313,7 +1418,7 @@ Returns configured SAP BTP SaaS Provisioning service dependencies.
 
 [Learn how to configure SaaS dependencies](./#saas-dependencies){.learn-more}
 
-### `upgrade` _[tenants] → Jobs_
+### `upgrade` _[tenants] → Jobs_ {#upgrade-options}
 
 Use the `upgrade` endpoint to upgrade tenant base models.
 
