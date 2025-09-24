@@ -200,9 +200,17 @@ If you intend to deploy user interface applications, you also need to set up the
 cds add portal
 ```
 
-#### Option B: SAP Build Work Zone, Standard Edition <Beta />
+#### Option B: SAP BTP Application Frontend <Beta />
 
-For **single-tenant applications**, you can use [SAP Build Work Zone, Standard Edition](https://discovery-center.cloud.sap/serviceCatalog/sap-build-work-zone-standard-edition):
+For **single-tenant applications**, you can use the new [SAP BTP Application Frontend](https://help.sap.com/docs/application-frontend-service) service:
+
+```sh
+cds add app-front
+```
+
+#### Option C: SAP Build Work Zone, Standard Edition <Beta />
+
+In addition, for **single-tenant applications**, you can use [SAP Build Work Zone, Standard Edition](https://discovery-center.cloud.sap/serviceCatalog/sap-build-work-zone-standard-edition):
 
 ```sh
 cds add workzone
