@@ -6,7 +6,7 @@
 | ---------------------- | --------------------------------------- |
 | @sap/cds               | 9.3.1                                   |
 | @sap/cds-dk            | -- missing --                           |
-| @sap/cds-compiler      | 6.3.4                                   |
+| @sap/cds-compiler      | 6.3.6                                   |
 | @sap/cds-dk (global)   | 9.3.2                                   |
 | @sap/cds-fiori         | 2.0.1                                   |
 | @sap/cds-mtxs          | 3.3.1                                   |
