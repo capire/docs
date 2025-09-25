@@ -344,11 +344,10 @@ You can provide your own implementation in the same way, as you do for your own 
 
 If imported packages provide UIs, you can also serve them as part of your app — for example, using standard [express.js](https://expressjs.com) middleware means in Node.js.
 
-The *@capire/bookstore* app has this [in its `server.js`](https://github.com/SAP-samples/cloud-cap-samples/blob/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookstore/server.js) to serve [the Vue.js app imported with *@capire/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/7b7686cb29aa835e17a95829c56dc3285e6e23b5/bookshop/app/vue) using the `app.serve(<endpoint>).from(<source>)` method:
+The *@capire/bookstore* app has this [in its `srv/mashup.js`](https://github.com/capire/bookstore/blob/c44d97bc00d4c56f5dff02f820011b25db8312e4/srv/mashup.js#L4-L9) to serve [the Vue.js app imported with *@capire/bookshop*](https://github.com/capire/bookshop/tree/main/app/vue) using the `app.serve(<endpoint>).from(<source>)` method:
 
 ::: code-group
-```js [bookstore/server.js]
-const express = require('express')
+```js [srv/mashup.js]
 const cds = require('@sap/cds')
 
 // Add routes to UIs from imported packages

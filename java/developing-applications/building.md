@@ -398,6 +398,10 @@ You configure this goal just like any other Maven plugin via its configuration o
 
 Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control. 
 
+### Typed Results
+
+Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+
 ### Package for Generated Code
 
 The option [`basePackage`](/java/assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
@@ -524,7 +528,7 @@ The `install-cdsdk` goal is no longer used to install the `@sap/cds-dk` locally 
 ```json
 {
   "devDependencies" : {
-    "@sap/cds-dk" : "^8.5.1",
+    "@sap/cds-dk" : "^9",
   }
 }
 ```

@@ -100,7 +100,7 @@ In here, we collected several interesting sample projects for you. Not all of th
 ### Bookshop by capire {.github}
 
 > [![]()](https://github.com/sap-samples/cloud-cap-samples-java){.java}
-> [![]()](https://github.com/sap-samples/cloud-cap-samples){.node}
+> [![]()](https://github.com/capire/bookshop){.node}
 
 The bookshop sample is our original sample provided by the CAP team and featured in the [getting started guides](../get-started/in-a-nutshell).
 It's available in both Node.js and Java. The Node.js variant contains additional samples besides bookshop that demonstrate various features of CAP.

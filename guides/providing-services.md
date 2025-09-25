@@ -426,6 +426,31 @@ Searches all elements of type `String` excluding the element `isbn`, which leave
 You can explicitly annotate calculated elements to make them searchable, even though they aren't searchable by default. The virtual elements won't be searchable even if they're explicitly annotated.
 :::
 
+#### The `@Common.Text` Annotation
+
+If an entity has an element annotated with the `@Common.Text` annotation, then the property that holds the display text is added to the list of searchable elements (see exception below).
+
+For example, with the following model, the list of searchable elements for `Books` is `title` and `author.name`:
+
+```cds
+entity Books : cuid {
+  title  : String;
+  @Common.Text : author.name
+  author : Association to Author;
+}
+entity Author : cuid {
+  name : String;
+}
+```
+
+::: warning `@cds.search` takes precedence over `@Common.Text`
+As a result, `@Common.Text` is ignored as soon as `@cds.search` defines anything in including mode. Only if you exclusively exclude properties using `@cds-search`, the `@Common.Text` is kept.
+:::
+
+To illustrate the above:
+- `@cds.search: { title: false }` on `Books` would only exclude properties, so `author.name` would still be searched.
+- `@cds.search: { title }` on `Books` defines an include list, so `author.name` is not searched. In this mode, `@cds.search` is expected to include all properties that should be searched. Hence, `author.name` would need to be added to `@cds.search` itself: `@cds.search: { title, author.name }`.
+
 #### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
 
 > Prerequisite: For CAP Java, you need to run in [`HEX` optimization mode](../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
@@ -1353,13 +1378,13 @@ Content-Type: image/png
 
 One option is to delete the complete entity, including all media data:
 
-```cds
+```http
 DELETE ../Books(201)
 ```
 
 Alternatively, you can delete a media data element individually:
 
-```cds
+```http
 DELETE ../Books(201)/image
 ```
 
