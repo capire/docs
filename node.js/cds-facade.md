@@ -308,7 +308,7 @@ cds.app = require('express')()
 ```
 
 :::warning
-The CAP Node.js runtime supports express.js versions 4 and 5.
+The CAP Node.js runtime supports express.js versions 4 and 5 (beta).
 However, some other (transitive) dependencies of your project may still rely on express.js version 4.
 In this case, you must not upgrade.
 :::
