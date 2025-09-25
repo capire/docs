@@ -6,39 +6,40 @@ status: released
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
 </script>
 
-# $RULE_NAME
+# no-deep-sap-cds-import
 
 ## Rule Details
 
-DETAILS
+Import only from the top-level `@sap/cds` package. Accessing internal modules or sub-paths is unsafe because these are not part of the official public API and may change or be removed without notice.
+A few exceptions to this rule will not be reported as errors.
 
 #### Version
-This rule was introduced in `@sap/eslint-plugin-cds x.y.z`.
+This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ## Examples
 
 ### ✅ &nbsp; Correct example
 
-DESCRIPTION OF CORRECT EXAMPLE
+The following example imports `@sap/cds`:
 
 ::: code-group
 <<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
-  name="$RULE_NAME"
+  name="no-deep-sap-cds-import"
   kind="correct"
   :files="['srv/admin-service.js']"
 />
 
 ### ❌ &nbsp; Incorrect example
 
-DESCRIPTION OF INCORRECT EXAMPLE
+This example incorrectly performs a deep import of a file within `@sap/cds`:
 
 ::: code-group
 <<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
-  name="$RULE_NAME"
+  name="no-deep-sap-cds-import"
   kind="incorrect"
   :files="['srv/admin-service.js']"
 />
