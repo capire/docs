@@ -10,19 +10,15 @@
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 
-const RULES_BASE_PATH = path.join('tools', 'cds-lint', 'rules');
-const EXAMPLES_BASE_PATH = path.join('tools', 'cds-lint', 'examples');
+const RULES_BASE_PATH    = path.join(import.meta.dirname, '../../tools/cds-lint/rules');
+const EXAMPLES_BASE_PATH = RULES_BASE_PATH
 const MENU_FILE_NAME = '_menu.md';
 
 /**
  * Get a list of all rule description files.
  * @returns {string[]} An array of rule description file names.
  */
-const getRuleDescriptionFiles = () =>
-    fs.readdirSync(RULES_BASE_PATH)
-        .filter(file => file.endsWith('.md'))
-        .filter(file => !['index.md', MENU_FILE_NAME].includes(file))
-        .sort()
+const getRuleDescriptionFiles = () => fs.globSync(path.join(RULES_BASE_PATH, '*/index.md')).sort()
 
 /**
  * Generates the menu markdown file
@@ -33,12 +29,13 @@ const getRuleDescriptionFiles = () =>
 function generateMenuMarkdown () {
     const rules = getRuleDescriptionFiles();
     const menu = rules.map(rule => {
-        const clean = rule.replace('.md', '');
-        return `# [${clean}](${clean})`
+        const folderPath = path.posix.dirname(path.relative(RULES_BASE_PATH, rule));
+        const name = path.basename(folderPath);
+        return `# [${name}](${folderPath}/)`
     }).join('\n');
-    const menuFilePath = path.join(RULES_BASE_PATH, '_menu.md')
+    const menuFilePath = path.join(RULES_BASE_PATH, MENU_FILE_NAME)
     fs.writeFileSync(menuFilePath, menu);
-    console.info(`generated menu to ${menuFilePath}`)
+    console.info(`generated menu to ${path.relative(process.cwd(), menuFilePath)}`);
 }
 
 /**
@@ -52,11 +49,12 @@ function generateJsRuleStub (ruleName) {
         console.error('Please provide a rule name, e.g. "no-shared-handler-variables" as second argument');
         process.exit(1);
     }
-    const stubFilePath = path.join(RULES_BASE_PATH, ruleName + '.md');
+    const stubFilePath = path.join(RULES_BASE_PATH, ruleName, 'index.md');
     if (fs.existsSync(stubFilePath)) {
         console.error(`file ${stubFilePath} already exists, will not overwrite`);
         process.exit(2);
     }
+    fs.mkdirSync(path.dirname(stubFilePath), { recursive: true });
     const stub = fs.readFileSync(path.join(import.meta.dirname, 'js-rule-stub.md'), 'utf-8').replaceAll('$RULE_NAME', ruleName);
     fs.writeFileSync(stubFilePath, stub);
     console.info(`generated stub to ${stubFilePath}`);
