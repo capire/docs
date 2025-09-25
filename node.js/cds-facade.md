@@ -301,11 +301,17 @@ cds.model = await cds.load('*')
 
 ### cds. app {.property}
 
-The [express.js Application object](https://expressjs.com/de/4x/api.html#app) constructed during bootstrapping. Several framework operations use that to add express handlers or middlewares. It is initialised in built-in `server.js` like so:
+The [express.js Application object](https://expressjs.com/en/api.html#app) constructed during bootstrapping. Several framework operations use that to add express handlers or middlewares. It is initialised in built-in `server.js` like so:
 
 ```js
 cds.app = require('express')()
 ```
+
+:::warning
+The CAP Node.js runtime supports express.js versions 4 and 5.
+However, some other (transitive) dependencies of your project may still rely on express.js version 4.
+In this case, you must not upgrade.
+:::
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
