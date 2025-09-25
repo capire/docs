@@ -1,5 +1,5 @@
-const cdsService = require('@sap/cds/service')  // [!code error]
+const ApplicationService = require('@sap/cds/srv/app-service')  // [!code error] path is no API!
 
-module.exports = class AdminService extends cdsService.ApplicationService {
+module.exports = class AdminService extends ApplicationService {
   // …
 }
