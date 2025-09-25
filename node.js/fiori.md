@@ -55,7 +55,7 @@ In addition to the standard CRUD events, draft entities provide draft-specific e
 srv.before('NEW', MyEntity.drafts, req => {
   req.data.ID = uuid()
 }))
-srv.after('EDIT', MyEntity.drafts, /*...*/)
+srv.after('NEW', MyEntity.drafts, /*...*/)
 srv.on('NEW', MyEntity.drafts, /*...*/)
 ```
 
@@ -96,6 +96,8 @@ srv.on('DISCARD', MyEntity.drafts, /*...*/)
 The `DISCARD` event is triggered when the user discards a draft started before.
 In this case, the draft entity is deleted and the active entity isn't changed.
 
+`CANCEL`, as a synonym for `DISCARD`, works as well.
+
 
 ### `PATCH`
 
@@ -124,7 +126,6 @@ The `SAVE` event is triggered when the user saves / activates a draft. This resu
 
 
 ### Custom Actions
-
 
 Custom bound actions and functions defined for draft-enabled entities are also inherited by the draft entities.
 This allows you to implement different logic depending on whether the action/function is called on the active or draft entity, like so:
@@ -158,6 +159,7 @@ You can set the property to one of the following:
 If the `draft_lock_timeout` has been reached, every user can delete other users' drafts to create an own draft. There can't be two drafts at the same time on the same entity.
 :::
 
+
 ## Draft Timeouts
 
 Inactive drafts are deleted automatically after the default timeout of 30 days. You can configure or deactivate this timeout by the following configuration:
@@ -181,6 +183,7 @@ You can set the property to one of the following:
 ::: info Technical background
 It can occur that inactive drafts are still in the database after the configured timeout. The deletion is implemented as a side effect of creating new drafts and there's no periodic job that does the garbage collection.
 :::
+
 
 ## Bypassing Drafts
 Creating or modifying active instances directly is possible without creating drafts. This comes in handy when technical services without a UI interact with each other.
