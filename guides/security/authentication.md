@@ -296,7 +296,7 @@ Before working with IAS on CF, you need to
 - [establish trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
 towards your IAS tenant to use it as identity provider for applications in your subaccount.
 
-- ensure your development environment is [prepared for deploying]( https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF, 
+- ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF, 
 in particular you require a session targeting to a CF space in the test subaccount with IAS trust (test with `cf target`).
 
 In the project's root folder execute
@@ -436,7 +436,7 @@ The setup now looks like scetched in the diagram:
 
 ![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.svg){width="400px"}
 
-::: details How to retrieve service key credentials
+::: details How to create and retrieve service key credentials
 
 ```sh
 cf service-key bookshop-auth bookshop-auth-key
@@ -476,16 +476,32 @@ Finally, ensure correct format of both files with
 ```sh
 openssl x509 -in <file>.pem -text -noout
 ```
-These manual steps might be replaced by tooling support in future.
+All the steps can be executed in a single script as shown in the [example](./assets/fetch-ias-certs.sh).
 :::
 
 The fetch a token on behalf of the technical tenant user, the request needs to provide the **client certificate** being send to `/oauth2/token` endpoint of IAS service with URI given in `url` property of the binding:
 
-```sh
+::: code-group
+
+```sh [Token for technical user]
 curl --cert cert.pem --key key.pem \
-  --data "grant_type=client_credentials&client_id=<clientid>" \
+  -d "grant_type=client_credentials"\
+  -d "client_id"=<clientid>" \
   https://<url>/oauth2/token
 ```
+
+```sh [Token for named user]
+curl --cert cert.pem --key key.pem \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=password" \
+  -d "client_id=<clientid>" \
+  -d "username=<user>" \
+  -d "password=<URL-encoded pwd>" \
+  -X POST https://<url>/oauth2/token
+```
+
+:::
+
 
 The request returns with a valid IAS token which will pass authentication in the CAP application:
 ```sh
@@ -500,7 +516,8 @@ curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
 ```
 
 
-Relaxing mTLS during Development
+Reasons for failed token Request:
+- 
 
 
 
