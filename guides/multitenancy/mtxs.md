@@ -1137,13 +1137,6 @@ The following annotations are blocked by default
 @cds.search
 ```
 
-Some of the annotation are allowed with preconditions.
-@mandatory
-@readonly
-@assert.range
-@assert.notNull
-
-
 Annotations can, at your own risk, be allowed by adding
 ```jsonc
 "cds.xt.ExtensibilityService": {
@@ -1159,7 +1152,7 @@ Annotations can, at your own risk, be allowed by adding
       ]
   }
 ```
-except `@cds.persistence.journal` if it is applied to base entities.
+except for annotation `@cds.persistence.journal` if it is applied as extension to base entities.
 
 #### Restrict Unbound Entities
 
@@ -1175,20 +1168,19 @@ For example
     }
   ]
 ```
+
 Only allows one unbound entity with namespace `my.new`.<br>
 As a special case, you can also block any unbound entities:
-``jsonc
+```jsonc
 "cds.xt.ExtensibilityService": {
   "extension-allowlist": [
     {
-      // at most 1 new entities for namepace my.new
+      // no new entities for all namespaces
       "for": ["*"],
       "new-entities": 0
     }
   ]
 ```
-
-
 
 ## DeploymentService
 
