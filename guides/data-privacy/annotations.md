@@ -144,6 +144,7 @@ Use this annotation to identify data subject's unique key, or a reference to it.
 - Each `@PersonalData` entity needs to identify a  the `DataSubjectID` element.
 - For entities with `DataSubject` semantics, this is typically the primary key.
 - For entities with `DataSubjectDetails` or `Other`  semantics, this is usually an association to the data subject.
+- Fields marked as `DataSubjectID` should use [`not null`](https://cap.cloud.sap/docs/guides/databases#not-null) to guarantee a value is present at all times
 
 Hence, we annotate our model as follows:
 
