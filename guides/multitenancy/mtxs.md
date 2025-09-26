@@ -810,6 +810,8 @@ See the [list of possible `kind` values](../../cds/csn#def-properties).{.learn-m
 - `fields` lists the fields that are allowed to be extended. If the list is omitted, all fields can be extended.
 - `new-entities` specifies the maximum number of entities that can be added to a service.
 
+[Check Extension Restrictions for more details.](#extension-restriction){.learn-more}
+
 ### GET `Extensions/<ID>` _→ [{ ID, csn, timestamp }]_ {#get-extensions}
 
 Returns a list of all tenant-specific extensions.
@@ -1043,6 +1045,106 @@ The response is similar to the following:
 ```
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
+
+### Extension Restriction
+
+You can restrict how your application model can be extended by a SaaS Customer.
+This section covers the restrictions that you can add via the `extension-allowlist`.
+
+> As soon as an `extension-allowlist` is present, extensions are forbidden, except those that are listed.
+
+Using `"for": ["*"]` allows to apply rules to all entities and services.
+
+:::info
+When using `cds push`, the extension project is automatically built. The Build already checks most of the
+restrictions locally. But some restrictions can only be checked when the extension is uploaded, e. g.
+extension limit violations across multiple extension projects.
+:::
+
+#### Restrict Service Extensions
+
+By adding services to the `extension-allowlist`, services are enabled for extensions by Saas Customers.
+In addition, you can restrict the number of bound entities by setting a number for "new-entites".
+
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 2 new entities in CatalogService
+      "for": ["CatalogService"],
+      "new-entities": 2
+    }
+  ]
+```
+
+#### Restrict Entities and Fields
+
+Entities can be extended with additional fields and also modifications of existing fields. Both kinds of extensions
+can be restricted.
+- `new-fields` specifies the maximum number of fields that can be added.
+- `fields` lists the fields that are allowed to be extended. If the list is omitted, all fields can be extended.
+
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 2 new fields in entities from the my.bookshop namespace
+      "for": ["my.bookshop"],
+      "new-fields": 2,
+      // allow extensions for field "description" only
+      "fields": ["description"]
+    },
+    {
+      // at most 1 new fields in my.bookshop.Authors
+      "for": ["my.bookshop.Authors"],
+      "new-fields": 1
+    }
+  ]
+}
+```
+This restriction allows two new fields for all entities in namespace `my.bookshop` but only one new field
+in entity `my.bookshop.Authors`.<br>
+The `field` restriction allows
+```cds
+extend my.bookshop.Books:description with (length: 2000);
+```
+but not, for example
+```cds
+extend my.bookshop.Books:title with (length: 200);
+```
+
+#### Restrict / Enable Annotations
+
+TODO list annotations allowed and forbidden by default
+
+#### Restrict Unbound Entities
+
+You can also restrict unbound entities via its namespace.<br>
+For example
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 1 new entities for namepace my.new
+      "for": ["my.new"],
+      "new-entities": 1
+    }
+  ]
+```
+Only allows one unbound entity with namespace `my.new`.<br>
+As a special case, you can also block any unbound entities:
+``jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 1 new entities for namepace my.new
+      "for": ["*"],
+      "new-entities": 0
+    }
+  ]
+```
+
+
 
 ## DeploymentService
 
