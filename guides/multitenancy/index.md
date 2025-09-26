@@ -772,10 +772,10 @@ cds up --to k8s
 
 :::
 
-:::tip
-To prevent potential conflicts during the initial creation of the MTXS Metadata Container `t0`, it is recommended to perform the 
-initial deployment with only one instance of the MTXS Sidecar.<br>
-As an alternative, you can run the command `cds-mtx upgrade t0` beforehand, such as in a [cf hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks).
+:::tip Ensure a unique metadata container
+To prevent potential conflicts during the initial creation of the MTXS metadata container (`t0`), it is recommended to perform the initial deployment with only one instance of the MTXS sidecar.
+
+Alternatively, you can run `cds-mtx upgrade t0` beforehand, such as in a [Cloud Foundry hook](#run-as-cloud-foundry-hook).
 :::
 
 
