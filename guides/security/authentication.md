@@ -439,11 +439,12 @@ cf create-service-key bookshop-auth bookshop-auth-key \
 
 The overall setup with local CLI client and the Cloud services is scetched in the diagram:
 
-![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.svg){width="400px"}
+![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
 
-As IAS requires mTLS-protected channels, **client certificates are mandatory** for both of the following requests:
-1. Token request to IAS in order to fetch a valid IAS token.
-2. Business request to the CAP application presenting the token.
+As IAS requires mTLS-protected channels, **client certificates are mandatory** for all of the following requests:
+- Token request to IAS in order to fetch a valid IAS token (1)
+- Business request to the CAP application presenting the token (2)
+- Initial proof token request to IAS - not required for all business requests (3)
 
 The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
 
@@ -593,11 +594,106 @@ The same is true for the logout flow.
 ### XSUAA Authentication { #xsuaa-auth }
   - setup cds add xsuaa
   
+### Hybrid Authentication
+
+TBD
 
 ### Custom Authentication { #custom-auth }
-  - Service mesh 
-  - DWC Integration (internal)
-  - pointer to hooks and properties
+
+**By default, CAP authenticates all endpoints of the microservice**, including the endpoints which are not served by CAP itself.
+This is the safe baseline on which minor customization steps can be applied on top.
+
+There are multiple scenarios for which customization might be required:
+1. Endpoints for none-business requests often require specific authentication methods (e.g. health check, techincal services)
+2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio)
+3. The application needs to integrate with a 3rd party authentication service
+
+![Endpoints with different authentication strategy](./assets/custom-auth.svg){width="450px"}
+
+- For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
+- For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
+- For custom endpoints that should have any different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
+- In case the authentiaction is delegated to a different component, just [deactivate](#fully-auth) CAP authentication and replace by any suitable strategy.
+
+#### Model-Driven Authentication { #model-auth }
+
+**The auto-configuration authenticates all service endpoints found in the CDS model by default**. 
+
+Model endpoints that should be public can be explicitly annotated with [pseudo-role](../guides/security/authorization#pseudo-roles) `any`:
+
+```cds
+service BooksService @(requires: 'any') {
+  @readonly entity Books @(requires: 'any') {...}
+  entity Reviews {...}
+  entity Orders @(requires: 'Customer') {...}
+}
+```
+
+| Path                      | Authenticated ?  |
+|:--------------------------|:----------------:|
+| `/BooksService`           |      <X/>       |
+| `/BooksService/$metadata` |      <X/>       |
+| `/BooksService/Books`     |      <X/>       |
+| `/BooksService/Reviews`   |       <Y/>       |
+| `/BooksService/Orders`    |       <Y/>       |
+
+::: tip
+In multitenant applications, anonymous requests to public endpoints are missing the tenant information and hence this gap needs to be filled by custom code.
+:::
+
+[Learn more about authentication options in CAP Java with Spring Boot](../guides/java/security#spring-boot){.learn-more}
+
+
+#### Partially Overrule Authentication { #partially-auth }
+
+If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
+
+```java
+@Configuration
+@EnableWebSecurity
+public class CustomSecurityConfig {
+
+  @Bean
+  @Order(1) // needs to have higher priority than CAP security config
+  public SecurityFilterChain customFilterChain(HttpSecurity http) throws Exception {
+    return http
+      .securityMatcher(AntPathRequestMatcher.antMatcher("/public/**"))
+      .csrf(c -> c.disable()) // don't insist on csrf tokens in put, post etc.
+      .authorizeHttpRequests(r -> r.anyRequest().permitAll())
+      .build();
+  }
+
+}
+```
+Due to the custom configuration, all URLs matching `/public/**` are opened for public access in this example.
+
+Make sure your custom configuration has higher priority than the CAP's default security configuration by decorating the bean with a low order. 
+
+::: warning _❗ Warning_ <!--  -->
+Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
+:::
+
+[Learn more about custom security configuraitons in CAP Java with Spring Boot](../guides/java/security#custom-spring-security-config){.learn-more}
+
+#### Fully Overrule Authentication { #fully-auth }
+
+In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protercted by a secure channel:
+
+![Service Mesh with Ingress Gateway](./assets/ingress-auth.svg){width="500px"}
+
+In architectures like this, the CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
+
+::: tip
+User propagation should be done by forwarding the request token in `Authorization`-header accordingly.
+This will make standard CAP authorization work properly.
+:::
+
+::: warning
+If you switch off CAP authentication, make sure that the internal communication channels are secured by infrastructure.
+:::
+
+DWC Integration (internal)
+
 
 
 
@@ -629,26 +725,14 @@ service InternalService {
 - Via Destination (S/4)
 
 
-## Critical Pitfalls
-- Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
-  This means that unless additional security measures are implemented, external clients can potentially reach these endpoints directly. 
-  It is important to note that the AppRouter component does not function as a comprehensive envoy proxy that routes and secures all incoming traffic. 
-  Instead, AppRouter only handles requests for specific routes or applications it is configured for, leaving other endpoints exposed if not explicitly protected. 
-  **Therefore, it is crucial to configure appropriate authentication and authorization mechanisms to safeguard all endpoints and prevent unauthorized access from the public internet**.
+## Pitfalls
+- **Dont' miss to configure security middleware.**
+  Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
+  Without security middleware configured, CDS services are exposed to public. 
 
-- Clients might have tokens (authenticated-user -> pretty open for all kinds of users!!)
+- **Don't rely on AppRouter authentication**. Approuter as frontend proxy does not shield the backend from incoming traffic. Hence, the backend needs to be secured independently.
 
-- Don't mix business roles vs. technical roles vs. provider roles 
+- **Don't deviate from security defaults**. Only when absolute necessary, only experts should take the decision to add modifications or even replace parts of the standard authentication mechanisms. 
+  
+- **Don't miss to add authentication tests** to ensure properly setup security configuration in your deployed application that rejects unauthenticated requests."
 
-- Don't deviate from security defaults
-
-- Don't miss to add authentication tests
-
-- Don't authenticate manually
-
-- Don't code against concrete user claims (e.g. XSUAAUserInfo)
-
-::: warning
-Without security middleware configured, CDS services are exposed to public. 
-Basic configuration of an authentication strategy is mandatory to protect your CAP application.
-:::
