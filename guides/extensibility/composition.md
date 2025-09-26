@@ -134,7 +134,7 @@ Add the dependency to the reuse package to your `pom.xml`:
 :::
 
 As Maven dependencies are - in contrast to `npm` packages - downloaded into a global cache, you need to make the artifacts from the reuse package available in your project locally.
-The CDS Maven Plugin provides a simple goal named `resolve`, that performs this task for you and extracts reuse packages into the `target/cds/` folder of the Maven project.
+The CDS Maven Plugin provides a simple goal named `resolve`, that performs this task for you and extracts reuse packages into the `target/cds/` folder of the CAP project.
 Include this goal into the `pom.xml`, if not already present:
 
 ::: code-group

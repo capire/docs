@@ -4,7 +4,7 @@
 
 <em>@sap/cds</em>: 9.3.1
 <em>@sap/cds-dk</em>: undefined
-<em>@sap/cds-compiler</em>: 6.3.4
+<em>@sap/cds-compiler</em>: 6.3.6
 <em>@sap/cds-dk (global)</em>: 9.3.2
 <em>@sap/cds-fiori</em>: 2.0.1
 <em>@sap/cds-mtxs</em>: 3.3.1

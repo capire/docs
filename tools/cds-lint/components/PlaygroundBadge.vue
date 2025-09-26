@@ -11,7 +11,7 @@ interface Props {
 withDefaults(defineProps<Props>(), { nolink: false })
 import { compress, prettyStringify } from './eslint-online-playground/utils';
 // @ts-ignore
-import { data } from '../examples/examples.data.ts';
+import { data } from '../rules/examples.data.ts';
 
 const configFileName = "eslint.config.js";
 const packageJsonFileName = "package.json";
@@ -29,7 +29,7 @@ export default [
 
 const defaultPackageJson = JSON.parse(data['package.json']);
 
-const is_object = x => typeof x === 'object' && x !== null && !Array.isArray(x)
+const is_object = (x:any) => typeof x === 'object' && x !== null && !Array.isArray(x)
 function merge (o:any,...xs:any) {
   let v:any; for (let x of xs) for (let k in x)
     if (k === '__proto__' || k === 'constructor') continue //> avoid prototype pollution

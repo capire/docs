@@ -987,6 +987,8 @@ cds watch --profile dev
 
 :::
 
+<div id="hana-tms" />
+
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
 

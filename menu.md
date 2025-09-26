@@ -98,16 +98,16 @@
   ### [Custom Builds](guides/deployment/custom-builds)
   ### [Health Checks](guides/deployment/health-checks)
 
-## [Multitenancy](../guides/multitenancy/)
+## [Multitenancy](guides/multitenancy/)
 
-  ### [MTX Reference](../guides/multitenancy/mtxs)
-  ### [MTX Migration](../guides/multitenancy/old-mtx-migration)
+  ### [MTX Reference](guides/multitenancy/mtxs)
+  ### [MTX Migration](guides/multitenancy/old-mtx-migration)
 
-## [Extensibility](../guides/extensibility/)
+## [Extensibility](guides/extensibility/)
 
-  ### [Extend SaaS Apps](../guides/extensibility/customization)
-  ### [Feature Toggles](../guides/extensibility/feature-toggles)
-  ### [Reuse & Compose](../guides/extensibility/composition)
+  ### [Extend SaaS Apps](guides/extensibility/customization)
+  ### [Feature Toggles](guides/extensibility/feature-toggles)
+  ### [Reuse & Compose](guides/extensibility/composition)
 
 ## [Performance](advanced/performance-modeling)
 
