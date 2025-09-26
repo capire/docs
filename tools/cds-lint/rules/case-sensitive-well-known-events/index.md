@@ -6,39 +6,38 @@ status: released
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
 </script>
 
-# $RULE_NAME
+# case-sensitive-well-known-events
 
 ## Rule Details
 
-DETAILS
+This rule identifies registrations to events that are likely well-known event names that must be written in all caps.
 
 #### Version
-This rule was introduced in `@sap/eslint-plugin-cds x.y.z`.
+This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 ## Examples
 
 ### ✅ &nbsp; Correct example
 
-DESCRIPTION OF CORRECT EXAMPLE
+The following example shows the correctly capitalized event name `READ`:
 
 ::: code-group
 <<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
-  name="$RULE_NAME"
+  name="case-sensitive-well-known-events"
   kind="correct"
   :files="['srv/admin-service.js']"
 />
 
 ### ❌ &nbsp; Incorrect example
 
-DESCRIPTION OF INCORRECT EXAMPLE
-
+This example shows a registration to an event `Read`, which should likely be `READ`. This can lead to unexpected behavior because event names in CAP are case sensitive:
 ::: code-group
 <<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
-  name="$RULE_NAME"
+  name="case-sensitive-well-known-events"
   kind="incorrect"
   :files="['srv/admin-service.js']"
 />
