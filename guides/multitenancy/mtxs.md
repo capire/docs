@@ -1116,7 +1116,7 @@ extend my.bookshop.Books:title with (length: 200);
 #### Restrict / Enable Annotations
 
 The following annotations are blocked by default
-```
+```txt
 @restrict
 @requires
 @readonly
