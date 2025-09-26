@@ -1115,7 +1115,51 @@ extend my.bookshop.Books:title with (length: 200);
 
 #### Restrict / Enable Annotations
 
-TODO list annotations allowed and forbidden by default
+The following annotations are blocked by default
+```cds
+@restrict
+@requires
+@readonly
+@mandatory
+@assert.*
+@cds.persistence.*
+@sql.append
+@sql.prepend
+
+@path
+@impl
+@cds.autoexpose
+@cds.api.ignore
+@odata.etag
+@cds.query.limit
+@cds.localized
+@cds.valid.*
+@cds.search
+```
+
+Some of the annotation are allowed with preconditions.
+@mandatory
+@readonly
+@assert.range
+@assert.notNull
+
+
+Annotations can, at your own risk, be allowed by adding
+```jsonc
+"cds.xt.ExtensibilityService": {
+      "extension-allowlist": [
+        {
+          "for": ["my.bookshop.Books"],
+          "annotations": ["@mandatory", "@cds.api.ignore"]
+        },
+        {
+          "for": ["my.bookshop.Authors:placeOfBirth"],
+          "annotations": ["@mandatory"]
+        }
+      ]
+  }
+```
+except `@cds.persistence.journal` if it is applied to base entities.
 
 #### Restrict Unbound Entities
 
