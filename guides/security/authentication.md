@@ -52,7 +52,7 @@ CAP applications can run IAS and XSUAA in hybrid mode to support a smooth migrat
 In none-production profile, by default, CAP creates a security configuration which accepts _mock users_.
 As this authentication strategy is a built-in feature which does not require any platform service, it is perfect for **unit testing and local development scenarios**.
 
-Setup a simple sample application:
+Setup and start a simple sample application:
 
 <div class="impl java">
 
@@ -61,8 +61,8 @@ cds init bookshop --java --add sample && cd ./bookshop
 mvn spring-boot:run
 ```
 
-::: warning
-CAP Java requires (transitive) dependency to `spring-boot-starter-security` to add middleware for authentication. 
+::: tip
+CAP Java requires (transitive) dependency to `spring-boot-starter-security` to enable authentication middleware support. 
 Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
 :::
 
@@ -200,15 +200,11 @@ cds:
 </div>
 
 In the mock user configuration you are free to specify:
-- name (mandatory)
-- credentials
-- tenant
-- CAP roles
-- CAP attributes
+- name (mandatory) and tenant
+- CAP roles (including pseudo-roles) and attributes affecting authorization
 - additional attributes
-- pseudo roles
 - [feature toggles](../guides/extensibility/feature-toggles#feature-toggles)
-which influence processing of the request including authorization step.
+which influence request processing.
 
 To verify the properties in a user request with a dedicated mock user, activate [user tracing](../cap-users#user-tracing) and send the same request on behalf of `viewer-user`.
 In the application log you should find information about the resolved user after successful authentication:
@@ -370,15 +366,6 @@ cds up
 
 and wait until the application is up and running which you can test with `cf apps` or in BTP Cockpit, alternatively.
 
-In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
-you should now also see the deployed IAS application in `Applications & Ressources` -> `Applications`, section `Bundled Applications` (display name `bookshop`, subtitle is the guid of the service instance as listed in `cf service bookshop-auth`).
-In the Console you can manage the IAS application and, for instance, configure the authentication strategy.
-
-::: tip
-In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
-:::
-
-
 The following trace in the application log confirms the activated IAS authentication:
 <div class="java">
 
@@ -389,13 +376,9 @@ The following trace in the application log confirms the activated IAS authentica
 </div>
 
 At startup, the CAP runtime checks the available bindings and activates IAS authentication accordingly. 
-**Hence, the local setup without IAS binding is still working**.
+**Hence, the local setup without an IAS binding in the environment is still working**.
 
-
-::: tip
-IAS enforces mTLS, so you need platform-level TLS termination, which is provided von CF via `cert.*` domains. 
-The validated certificate is forwarded via HTTP header `X-Forwarded-Client-Cert` to the CAP endpoint.
-:::
+For mTLS support which is mandatory for IAS, the CAP application has a second route configured with the `cert.*` domain.
 
 ::: details Application routes with `cert.*`-domain
 ```yaml
@@ -410,8 +393,29 @@ modules:
 ```      
 :::  
 
+::: tip
+Platform-level TLS termination is provided on CF out of the box via `cert.*`-domains. 
+By default, the validated certificate is forwarded via HTTP header `X-Forwarded-Client-Cert` to the CAP endpoint.
+:::
+
 ::: warning
-On SAP BTP Kyma Runtime, you might require to adapt configuration parameter <Config java>`cds.security.authentication.clientCertificateHeader`</Config> according to the component of your choice terminating TLS.
+On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config java>`cds.security.authentication.clientCertificateHeader`</Config> to match the header used by the component terminating TLS you configured.
+:::
+
+
+#### Administrative Console for IAS { #ias-admin }
+
+In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
+you should can see and manage the deployed IAS application. You need an user with administrative provileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
+
+In the Console you can manage the IAS tenant and the IAS applications, e.g. 
+- create (test) users in `Users & Authorizations` -> `User Management`
+- deactivate users
+- configure the authentication strategy (password policies, MFA etc.) in `Applications & Ressources` -> `Applications` (IAS instances listed with their disply-name)
+- inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
+
+::: tip
+In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
 :::
 
 
@@ -437,9 +441,9 @@ The overall setup with local CLI client and the Cloud services is scetched in th
 
 ![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.svg){width="400px"}
 
-As IAS requires mTLS-protected channels, **client certificates are mandatory** when we follow a two-step approach:
-1. Send a token request to IAS in order to fetch a valid IAS token.
-2. Send a business request to the CAP application presenting the token.
+As IAS requires mTLS-protected channels, **client certificates are mandatory** for both of the following requests:
+1. Token request to IAS in order to fetch a valid IAS token.
+2. Business request to the CAP application presenting the token.
 
 The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
 
@@ -466,7 +470,7 @@ cf service-key bookshop-auth bookshop-auth-key
 :::
 
 ::: warning
-❗ Never share service key credentials or tokens ❗
+❗ **Never share service keys or tokens** ❗
 :::
 
 From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request. 
@@ -532,19 +536,17 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 
 In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
 
-By executing
-
 ```sh
 cds add approuter
 ```
 
-the deployment is enhanced by the additional AppRouter component which is already configured for IAS usage.
-The setup is scetched in the diagram:
+adds the additional AppRouter to the deployment which is already prepared for IAS.
+The resulting setup is scetched in the diagram:
 
 ![UI-level Testing of IAS Endpoints](./assets/ias-ui-setup.svg){width="500px"}
 
 To be able to fetch the token, the AppRouter needs a binding to the IAS instance as well.
-In addition, property `forwardAuthCertificates` needs to be `true` for the mTLS connection with the service backend located at the route with the cert-domain.
+In addition, property `forwardAuthCertificates` needs to be `true` to support the mTLS connection with the service backend which is called by the route with the cert-domain.
 
 ::: details AppRouter component with IAS binding
 ```yaml
@@ -566,8 +568,9 @@ In addition, property `forwardAuthCertificates` needs to be `true` for the mTLS 
 ```
 :::
 
-Also note that IAS needs to know valid redirect URIs for the login and logout flow, respectively.
-Both are served by the AppRouter out-of-the-box.
+As the login flow is based on an HTTP redirect between the CAP application and IAS login page,
+IAS needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
 ```yaml
@@ -584,11 +587,6 @@ Both are served by the AppRouter out-of-the-box.
             - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html            
 ```
 :::
-
-
-Troubleshooting:
-
-c.s.c.s.t.validation.ValidationResults : Token signature can not be validated because JWKS could not be fetched: Proof token was not found
 
 
 
