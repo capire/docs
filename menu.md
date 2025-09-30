@@ -80,6 +80,7 @@
   ### [Authentication](guides/security/authentication)
   ### [Users](guides/security/cap-users)
   ### [Authorization](guides/security/authorization)
+  ### [Remote Authentication](guides/security/remote-authentication)
   ### [Security Aspects](guides/security/aspects)
   ### [Data Protection & Privacy](guides/security/data-protection-privacy)
   ### [Product Standard Compliance](../guides/security/product-standards)
