@@ -2,17 +2,17 @@
 <pre class="log">
 > cds version --markdown
 
-| your-project           | &lt;Add your repository here&gt;              |
+| your-project           | https://github.com/&lt;your/repo&gt;          |
 | ---------------------- | --------------------------------------- |
+| @sap/cds               | 9.3.1                                   |
+| @sap/cds-dk            | -- missing --                           |
+| @sap/cds-compiler      | 6.3.6                                   |
+| @sap/cds-dk (global)   | 9.3.2                                   |
+| @sap/cds-fiori         | 2.0.1                                   |
+| @sap/cds-mtxs          | 3.3.1                                   |
 | @cap-js/asyncapi       | 1.0.3                                   |
-| @cap-js/cds-types      | 0.13.0                                  |
-| @cap-js/db-service     | 2.2.0                                   |
+| @cap-js/db-service     | 2.4.0                                   |
 | @cap-js/openapi        | 1.2.3                                   |
 | @cap-js/sqlite         | 2.0.2                                   |
-| @sap/cds               | 9.1.0                                   |
-| @sap/cds-compiler      | 6.1.0                                   |
-| @sap/cds-dk (global)   | 9.1.1                                   |
-| @sap/cds-fiori         | 2.0.1                                   |
-| @sap/cds-mtxs          | 3.1.0                                   |
-| Node.js                | v22.17.0                                |
+| Node.js                | v22.19.0                                |
 </pre>

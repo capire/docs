@@ -168,7 +168,8 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin provides out-of-the-box support for attachment handling. On Node.js, attachments are stored on AWS S/3 through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store), whereas Java stores attachments on the SAP HANA database. To use it, simply add a composition of the predefined aspect `Attachments` like so:
+The Attachments plugin provides out-of-the-box support for attachment handling. On Node.js, attachments are stored on AWS S/3 through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). For Java:  When using the package [`cds-feature-attachments-oss`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments-oss), depending on your cloud environment, attachments are stored on AWS S/3, Microsoft Azure, or the Google object store through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). When using the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments), attachments are stored on the SAP HANA database.
+To use the Attachments plugin, simply add a composition of the predefined aspect `Attachments` like so:
 
 ```cds
 using { Attachments } from '@cap-js/attachments';
@@ -199,8 +200,7 @@ Available for:
 
 
 
-## SAP Document Management Service {#sdm}
-{#@cap-js/sdm}
+## SAP Document Management Service {#@cap-js/sdm}
 
 The SAP Document Management Service  plugin lets you easily store attachments (documents) in an [SAP Document Management service Repository](https://help.sap.com/docs/document-management-service).
 
@@ -223,6 +223,7 @@ Features:
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
 - **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multi-tenancy support, allowing for efficient management of multiple tenants without additional configuration.
+- **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
 Outlook:
 - **Support for Versioned Repository**: Ensure better document control and historical tracking with native support for versioned repositories, enabling you to manage document revisions effectively.
@@ -357,6 +358,7 @@ You can get the ORD document in multiple ways, see the readme of the plugin.
 Available for:
 
 [![Link to the repository for cap-js ORD](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ord)
+[![Java](../assets/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://javadoc.io/doc/com.sap.cds/cds-feature-ord/latest/index.html)
 
 
 ## CAP Operator for Kubernetes {#cap-operator-plugin}
@@ -373,7 +375,7 @@ Available for:
 
 ## SAP Cloud Application Event Hub {#event-hub}
 
-The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
+The plugin provides out-of-the-box support for consuming events from [SAP Cloud Application Event Hub](https://discovery-center.cloud.sap/serviceCatalog/sap-cloud-application-event-hub) -- for example emitted by SAP S/4HANA Cloud -- in stand-alone CAP applications.
 
 ```js
 const S4Bupa = await cds.connect.to ('API_BUSINESS_PARTNER')
@@ -390,8 +392,7 @@ Available for:
 [![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-event-hub#readme)
 
 
-## SAP Integration Suite, Advanced Event Mesh <Beta /> 
-{#advanced-event-mesh}
+## SAP Integration Suite, Advanced Event Mesh <Beta /> {#advanced-event-mesh}
 
 [SAP Integration Suite, advanced event mesh](https://www.sap.com/products/technology-platform/integration-suite/advanced-event-mesh.html) allows you to, amongst others, integrate non-SAP systems into your event-driven architecture.
 

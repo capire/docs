@@ -5,7 +5,7 @@ synopsis: >
 status: released
 ---
 
-<style >
+<style scoped>
   /* expand this extra wide table on big screens */
   @media screen and (min-width: 1600px) {
     table { width: max-content; }

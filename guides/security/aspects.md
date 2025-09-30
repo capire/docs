@@ -512,7 +512,7 @@ Since OS resource allocations are distributed over the entire request, DoS-preve
 The used web server frameworks such as [Spring/Tomcat](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.server) or [Express](https://expressjs.com/) start with reasonable default limits, for example:
 - Maximum size of the HTTP request header.
 - Maximum size of the HTTP request body.
-- Maximum queue length for incoming connection requests
+- Maximum queue length for incoming connection requests.
 - Maximum number of connections that the server accepts and processes at any given time.
 - Connection timeout.
 Additional size limits and timeouts (request timeout) are established by the reverse proxy components, API Gateway and Application Router.
@@ -528,16 +528,47 @@ The total number of request of OData batches can be limited by application confi
 
 <div class="impl java">
 
-Settings <Config java>cds.odataV4.batch.maxRequests</Config> resp. <Config java>cds.odataV2.batch.maxRequests</Config> specify the corresponding limits.
+To limit the _amount of queries_ per OData `$batch`, use <Config java>cds.odataV4.batch.maxRequests</Config> or. <Config java>cds.odataV2.batch.maxRequests</Config> 
+
+To prevent clients from _requesting too much data_, you can define restrictions on `$expands` for your entities: 
+
+- Prevent any expands from the entity:
+  - `@Capabilities.ExpandRestrictions.Expandable: false` 
+- Restrict expands for certain properties:
+  - `@Capabilities.ExpandRestrictions.NonExpandableProperties: [...]` 
+- Set maximum allowed depth of an `$expand` from this entity:
+  - `@Capabilities.ExpandRestrictions.MaxLevels: ...`  
+  - Or you can set an **application-wide limit** with <Config java>cds.query.restrictions.expand.maxLevels = \<max depth\></Config> that applies to all entities. Value `-1` indicates absence of limit.
+
+:::warning
+These restrictions are enforced on 'READ' events on [Application services](/java/cqn-services/#application-services).
+:::
+
+Good candidates for expand restrictions are associations to the same type (for example, when your entity represents a tree or a hierarchy<sup>1</sup>), backlink associations of compositions, or many-to-many associations.
+
+> <sup>1</sup>Hierarchical requests from the UI5 tree table do not use expand and are not affected by expand restriction.
+
+To restrict clients to filter (or not to filter) the data, you can define restrictions on `$filter`:
+
+- Prevent filtering on the entity:
+  -  `@Capabilities.FilterRestrictions.Filterable: false`
+- Indicate that clients must send requests with `$filter`:
+  - `@Capabilities.FilterRestrictions.RequiresFilter: true`
+- Indicate that `$filter` must contain certain properties:
+  - `@Capabilities.FilterRestrictions.RequiredProperties: [...]`
+- Indicate that certain properties are non-filterable:
+  - `@Capabilities.FilterRestrictions.NonFilterableProperties: [...]`
 
 </div>
 
+<div class="impl node">
+
 ::: warning
 ❗ CAP applications have to limit the amount of `$expands` per request in a custom handler.
-Also the maximum amount of requests per `$batch` request need to be configured as follows:
-- Node.js: <Config>cds.odata.batch_limit = \<max_requests\></Config>
-- Java: <Config java>cds.odataV4.batch.maxRequests = \<max_requests\></Config>
+Also, the maximum amount of requests per `$batch` request need to be configured with <Config>cds.odata.batch_limit = \<max_requests\></Config>
 :::
+
+</div>
 
 ::: tip
 Design your CDS services exposed to web adapters on need-to-know basis. Be especially careful when exposing associations.
@@ -661,6 +692,23 @@ For instance, this is true for [authorizations](#secure-authorization) or applic
 ::: tip
 It's recommended to ensure security settings by automated integration tests.
 :::
+
+CAP provides some features that are suitable for development only such as 
+- Index Page
+- Mock Users
+- Developer Dashboard (Java only)
+
+These features are deactivated in the production profile by default.
+
+::: warning 
+**Do not manually enable features for production that are disabled by the production profile**, as this could introduce serious security vulnerabilities.
+:::
+
+[Learn more about production profiles in Java](../../java/developing-applications/configuring#production-profile){.learn-more}
+[Learn more about production profiles in Node.js](../../node.js/cds-env#profiles){.learn-more}
+
+
+
 
 
 ### Fail Securely { #fail-securely }
