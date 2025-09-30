@@ -9,9 +9,13 @@ status: released
 
 [SAP HANA Cloud](https://www.sap.com/products/technology-platform/hana.html) is supported as the CAP standard database and recommended for productive use with full support for schema evolution and multitenancy.
 
-::: warning
+::: warning Validation strategy
 
 CAP isn't validated with other variants of SAP HANA, like "SAP HANA Database as a Service" or "SAP HANA (on premise)".
+
+The database services are validated against the latest maintained QRC version of SAP HANA Cloud. It's not guaranteed that outdated versions are fully functional with the latest database services.
+
+[See the official SAP HANA Cloud documentation for their maintenance strategy.](https://help.sap.com/docs/HANA_CLOUD_CN/1f64fe39189f4176bf659e737d62222a/6ced4d164e234b74aa9bea82435ce9a8.html){.learn-more}
 
 :::
 
@@ -52,9 +56,6 @@ The datasource for SAP HANA is then auto-configured based on available service b
 ... as documented in the [deployment guide](deployment/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
 
 :::
-
-
-
 
 ## Running `cds build`
 
