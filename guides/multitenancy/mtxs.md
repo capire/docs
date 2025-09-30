@@ -1414,6 +1414,38 @@ The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` a
 
 <span id="sms-provisioning-service" />
 
+### MTXS Sidecar Communication Flow
+
+The following sequence diagram illustrates the interaction between the main application, MTX sidecar, and external services during tenant operations:
+
+```mermaid
+sequenceDiagram
+    participant App as CAP Application
+    participant Sidecar as MTX Sidecar
+    participant SMS as Subscription Manager
+    participant DB as Database Service
+    participant Auth as Auth Service
+    
+    SMS->>+Sidecar: POST /tenant/{id} (Subscribe)
+    Note right of SMS: Tenant subscription request
+    
+    Sidecar->>+DB: Create HDI Container
+    DB-->>-Sidecar: Container Created
+    
+    Sidecar->>+DB: Deploy Schema Extensions
+    DB-->>-Sidecar: Deployment Complete
+    
+    Sidecar->>+Auth: Setup Tenant Authentication
+    Auth-->>-Sidecar: Auth Configured
+    
+    Sidecar->>+App: Tenant Provisioned Event
+    App-->>-Sidecar: Event Processed
+    
+    Sidecar-->>-SMS: 201 Created (Tenant Ready)
+    
+    Note over App,SMS: Tenant is now operational
+```
+
 ## [Old MTX Reference](old-mtx-apis) {.toc-redirect}
 
 [See Reference docs for former 'old' MTX Services.](old-mtx-apis){.learn-more}

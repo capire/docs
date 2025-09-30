@@ -1074,3 +1074,139 @@ Adding data only for the missing columns doesn't work when using SAP HANA as a d
 :::
 
 <span id="afterAddingData" />
+
+Here is a sequence diagram that illustrates the draft creation and activation flow:
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant ExtensionApp as OData Service
+    participant Database
+
+    Client->>+ExtensionApp: POST /orders/x_Customers (Payload)
+    Note right of Client: 1. Create a new customer draft
+    ExtensionApp->>+Database: INSERT into Customers_drafts
+    Database-->>-ExtensionApp: Confirm insertion
+    ExtensionApp-->>-Client: 201 Created (Draft Record)
+
+    Client->>+ExtensionApp: POST /orders/x_Customers(...)/draftActivate
+    Note right of Client: 2. Activate the draft
+    ExtensionApp->>+Database: INSERT into Customers from drafts table
+    Database-->>-ExtensionApp: Confirm insertion
+    ExtensionApp->>+Database: DELETE from Customers_drafts
+    Database-->>-ExtensionApp: Confirm deletion
+    ExtensionApp-->>-Client: 200 OK (Active Record)
+```
+
+### Extensibility Data Model
+
+The following entity relationship diagram shows how custom extensions relate to the base data model:
+
+```mermaid
+erDiagram
+    Orders ||--o{ Customers : "has customer"
+    Customers ||--|| x_Customers : "extends"
+    Orders ||--o{ x_SalesRegion : "assigned to region"
+    x_Customers ||--o{ x_SalesRegion : "belongs to region"
+    
+    Orders {
+        UUID ID PK
+        Timestamp createdAt
+        String createdBy
+        UUID customer_ID FK
+        String regionCode FK
+    }
+    
+    Customers {
+        UUID ID PK
+        String email
+        String firstName
+        String lastName
+        Timestamp createdAt
+        String createdBy
+    }
+    
+    x_Customers {
+        UUID ID PK "Same as Customers.ID"
+        String creditCardNo
+        Date dateOfBirth
+        String status "platinum, gold, silver"
+        Integer creditScore
+        String regionCode FK
+    }
+    
+    x_SalesRegion {
+        String regionCode PK
+        String name
+        String description
+        Boolean isActive
+    }
+```
+
+This diagram illustrates the key extensibility patterns:
+- **Extension entities** (`x_Customers`) share the same primary key as base entities (`Customers`)
+- **New entities** (`x_SalesRegion`) can be referenced by both base and extension entities
+- **Foreign key relationships** maintain referential integrity across the extended model
+
+### Extensibility Class Structure
+
+This class diagram provides a structural view of the extensibility patterns, showing inheritance and composition relationships:
+
+```mermaid
+classDiagram
+    namespace BaseModel {
+        class Orders {
+            +UUID ID
+            +Timestamp createdAt
+            +String createdBy
+            +UUID customer_ID
+            +String regionCode
+            +getCustomer()
+            +getRegion()
+        }
+        
+        class Customers {
+            +UUID ID
+            +String email
+            +String firstName  
+            +String lastName
+            +Timestamp createdAt
+            +String createdBy
+            +getFullName()
+            +isActive()
+        }
+    }
+    
+    namespace Extensions {
+        class x_Customers {
+            +UUID ID
+            +String creditCardNo
+            +Date dateOfBirth
+            +String status
+            +Integer creditScore
+            +String regionCode
+            +calculateAge()
+            +updateCreditScore()
+        }
+        
+        class x_SalesRegion {
+            +String regionCode
+            +String name
+            +String description
+            +Boolean isActive
+            +getCustomers()
+            +activate()
+            +deactivate()
+        }
+    }
+    
+    Orders ||--o{ Customers : "customer"
+    Customers ||--|| x_Customers : "extends"
+    Orders ||--o{ x_SalesRegion : "region"
+    x_Customers ||--o{ x_SalesRegion : "region"
+```
+
+Key aspects of this extensibility pattern:
+- **Shared Identity**: `x_Customers` uses the same primary key as `Customers`
+- **Composition over Inheritance**: Extensions complement rather than replace base functionality
+- **Cross-references**: New entities can be referenced by both base and extension entities
