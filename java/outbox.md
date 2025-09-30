@@ -165,8 +165,8 @@ And finally, if for some reason you don't want to use a version check for a part
 
 ### Outbox for Shared DB
 
-By default, CAP Java does not support shared database use cases, as this can lead to unexpected behavior when different isolated services use the same outboxes.
-Since CAP automatically creates two outboxes — **DefaultOutboxOrdered** and **DefaultOutboxUnordered** — these would otherwise be shared across all services.
+Currently, CAP Java does not yet support microservices with shared database out of the box, as this can lead to unexpected behavior when different isolated services use the same outboxes.
+Since CAP automatically creates two outboxes with a static name — **DefaultOutboxOrdered** and **DefaultOutboxUnordered** — these would be shared across all services which introduces conflicts.
 
 To avoid this, you can apply a manual workaround by customizing the outbox configuration and isolating them via distinct namespaces for each service.
 
