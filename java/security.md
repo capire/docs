@@ -167,7 +167,7 @@ Please note that the authentication mode has no impact on the *authorization* be
 If you want to explicitly change the automatic security configuration, you can add an _additional_ Spring security configuration on top that overrides the default configuration by CAP.
 This can be useful, for instance, if an alternative authentication method is required for *specific endpoints* of your application.
 
-As the default security configurations provided by CAP act as a last line of defense and handle any request by default you need to ensure to give your custom security configurations a lower order (higher precedence), by specifying the `@Order` annotation at the `SecurityFilterChain` bean method, for example with value `1`:
+As the default security configurations provided by CAP act as the last line of defense and handle any request by default, you need to ensure that your custom security configurations have higher precedence. At the `SecurityFilterChain` bean method,  set the `@Order` annotation with a lower numeric value, for example `1`:
 
 ```java
 @Configuration
