@@ -54,7 +54,7 @@ In addition to the standard CRUD events, draft entities provide draft-specific e
 ```js
 srv.before('NEW', MyEntity.drafts, req => {
   req.data.ID = uuid()
-}))
+})
 srv.after('NEW', MyEntity.drafts, /*...*/)
 srv.on('NEW', MyEntity.drafts, /*...*/)
 ```
