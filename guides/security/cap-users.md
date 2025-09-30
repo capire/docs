@@ -19,90 +19,102 @@ status: released
 </style>
 
 
-# User Representation { #user-representation }
+# Users { #users }
 
-A successfull authentication in CAP results in an object representation of the request user determined by the concrete user logged in.
-It contains [basic information](#claims) about the user including name, ID, tenant and additional claims such as roles or assigned attribute values.
-This user abstraction is basis for _model-driven_ [CDS authorization](../guides/security/authorization), [managed data](../guides/domain-modeling#managed-data) as well as for [custom authorization enforcement](../guides/security/authorization#enforcement).
-Referring to the key concepts, the abstraction serves to decouple authorization and business logic from pluggable authentication strategy.
+A successfull authentication results in an CAP [user representation](#claims) reflecting the request user in an uniform way.
+Referring to the key concepts, the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategy.
+It contains static information about the user such as name, ID and tenant. Moreover it contains additional claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
+
+Dynamic assignments of roles to users can be done by 
+- [Authorization Management Service (AMS)](#ams-roles) in case of [IAS authentication](./authentication#ias-auth).
+- [XS User Authentication and Authorization Service (XSUAA)](#xsuaa-roles) in case of [XSUAA authentication](./authentication#xsuaa-auth).
+
+In addition, CAP users provide an API for [programmatic]( #developing-with-users ) processing and customization.
 
 [[toc]]
 
-## User Claims { #claims }
+## User Representation { #claims }
 
-After successful authentication, a CAP user is represented by the following properties:
+After successful authentication, a CAP user is mainly represented by the following properties:
 
-- Unique (logon) _name_ identifying the user. Unnamed, technical users have a fixed name such as `system` or `anonymous`.
-- _Tenant_ for multitenant applications.
-- _Roles_ that the user has been granted by an administrator (see [User Roles](#roles)) or that are derived by the authentication level (see [Pseudo Roles](#pseudo-roles)).
-- _Attributes_ that the user has been assigned by an user administrator.
+- **_Logon name_** identifying the user uniquly
+- **_Tenant_** describes the tenant of the user (subscriber or provider) which implies the CDS model and business data container.
+- **_Roles_** the user has been assigned by an user administrator (business [user roles](#roles)) or roles which are derived by the authentication level ([pseudo roles](#pseudo-roles)).
+- **_Attributes_** the user has been assigned e.g. for instance-based authorization.
 
-In the CDS model, some of the user properties can be referenced with the `$user` prefix:
 
-| User Property                 | Reference           |
-|-------------------------------|---------------------|
-| Name                          | `$user`             |
-| Attribute (name \<attribute>) | `$user.<attribute>` |
+### User Types
 
-> A single user attribute can have several different values. For instance, the `$user.language` attribute can contain `['DE','FR']`.
+CAP users can be classified in multiple dimensions:
 
-## User Roles { #roles}
+**Business users vs. technical users:** 
+- Business users reflect named end users which do some login name to interact with the system.
+- Technical users act on behalf of a whole tenant on a technical API level.
 
-As a basis for access control, you can design CAP roles that are application specific and that are assigned to users at application runtime.
-A role should reflect _how_ a user can interact with the application and rather not describe a fine-grained event on technical level.
+**Authenticated users vs. anonymous users**
+- Authenticated users have passed (optional) authentication successfully by presenting a claim (e.g. a token).
+- Anonymous users are not identifyable users, i.e. they havn't presented any claim for authentication.
 
+**Provider vs. subscriber tenant**
+- The provider tenants comprises all users of the application owner which usually have no business access to multi-tenant applications.
+- A subscriber tenant comprises all users of an application customer.
+
+|                  | Business users | Technical users
+|-------------------|----------------|---
+| Provider Tenant   |         -     | x 
+| Subscriber Tenant |         x      | x 
+
+::: tip
+Apart from anonymous users, all users have a unique tenant.
+Single-tenant applications deal with the provider tenant users only.
+:::
+
+- switch
+- typical tasks
+
+### Roles { #roles}
+
+As a basis for access control, you can design application specific CAP roles which are assigned to users at application runtime.
+**A CAP role should reflect _how_ a user can interact with the application at an operational level**, rather than a fine-grained event at a purely technical level.
+
+```cds
 annotate Issues with @(restrict: [
     { grant: ['READ','WRITE'],
       to: 'ReportIssues',
       where: ($user = CreatedBy) },
     { grant: ['READ'],
-      to: 'ReviewIssues' },
-    { grant: '*',
-      to: 'ManageIssues' }
+      to: 'ReviewIssues' }
 ]);
+```
 
-
-For instance, the role `Vendor` could describe access rules for users who are allowed to read sales articles and update sales figures, a `ProcurementManager` have full access to sales articles. 
+For instance, the role `ReportIssues` allows to work with the `Issues` created by the own user, whereas a user with role `ReviewIssues` is only allowed to read `Issues` of any user.
 
 CAP roles represent basic building blocks for authorization rules that are defined by the application developers who have in-depth domain knowledge.
 Independently from that, user administrators combine CAP roles in higher-level policies and assign to business users in the platform's central authorization management solution.
 
 ::: tip
-CDS-based authorization deliberately refrains from using technical concepts, such as _scopes_ as in _OAuth_, in favor of user roles, which are closer to the technical domain of business applications.
+CDS-based authorization deliberately refrains from using technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the technical domain of business applications.
 :::
 
-## Pseudo Roles { #pseudo-roles}
+#### Pseudo Roles { #pseudo-roles}
+ 
+It's frequently required to define access rules that aren't based on an application-specific user role, but rather on the _technical authentication level_ of the request. 
+For instance, a service should be accessible only for technical users, with or without user propagation. 
+Such roles are called pseudo roles as they aren't assigned by user administrators, but are added by the runtime automatically on succcessful authentication, reflecting the technical level:
 
+| Pseudo Role                 | User Type | Technical Indicator | User Name
+|-----------------------------|---------------------|---------------|---------------|
+| `authenticated-user`        | n/a  | Successful authentication |  - derived from the token - |
+| `any`        | n/a      | n/a   | - derived from the token if available or `anonymous` - |
+| `system-user` | Technical                   | Client credential flow | `system` |
+| `internal-user` | Technical        | Client credential flow with same identity instance | 
 
-  - pseudo roles ? 
-  - public users
-  - business users
-  - technical users
-  - provider vs. business tenant
+The pseudo-role `system-user` allows you to separate access by business users from _technical_ clients. 
+Note that this role does not distinguish between any technical clients sending requests to the API.
 
-  
-It's frequently required to define access rules that aren't based on an application-specific user role, but rather on the _authentication level_ of the request. For instance, a service could be accessible not only for identified, but also for anonymous (for example, unauthenticated) users. Such roles are called pseudo roles as they aren't assigned by user administrators, but are added at runtime automatically.
-
-The following predefined pseudo roles are currently supported by CAP:
-
-* `authenticated-user` refers to named or unnamed users who have presented a valid authentication claim such as a logon token.
-* [`system-user` denotes an unnamed user used for technical communication.](#system-user)
-* [`internal-user` is dedicated to distinguish application internal communication.](#internal-user)
-* `any` refers to all users including anonymous ones (that means, public access without authentication).
-
-### system-user
-The pseudo role `system-user` allows you to separate access by _technical_ users from access by _business_ users. Note that the technical user can come from a SaaS or the PaaS tenant. Such technical user requests typically run in a _privileged_ mode without any restrictions on an instance level. For example, an action that implements a data replication into another system needs to access all entities of subscribed SaaS tenants and can’t be exposed to any business user. Note that `system-user` also implies `authenticated-user`.
-
-::: tip
-For XSUAA or IAS authentication, the request user is attached with the pseudo role `system-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` for a trusted client application.
-:::
-
-### internal-user
-Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](/guides/security/overview#application-zone).
-
-::: tip
-For XSUAA or IAS authentication, the request user is attached with the pseudo role `internal-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` on basis of the **identical** XSUAA or IAS service instance.
-:::
+Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant on technical level. 
+In contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. 
+Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](./overview#application-zone).
 
 ::: warning
 All technical clients that have access to the application's XSUAA or IAS service instance can call your service endpoints as `internal-user`.
@@ -110,95 +122,23 @@ All technical clients that have access to the application's XSUAA or IAS service
 :::
 
 
-## Tracing { #user-tracing }
+### Model References
 
-<div class="impl java">
+The resulting object representaiton of the user is attached to the current request context and has an impact on the request flow for instance with regards to
+- [authorizations](./authorization#restrictions)
+- [enriching business data](../guides/domain-modeling#managed-data) with user data
+- setting [DB session variables](../guides/db-feature-comparison#session-variables)
 
-DEBUG level by default
+In the CDS model, some of the user properties can be referenced in annotations or static views:
 
-logging.level.com.sap.cds.security.authentication: DEBUG
-
-```sh
-MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
-```
-
-Never in production!
-</div>
-
-<div class="impl node">
-TODO
-</div>
-
-## Modifying Users { #modifying-users }
-  - UserProvider  
+| User Property                 | CDS Model Reference | CDS Artifact       |
+|-------------------------------|---------------------|--------------------|
+| Name                          | `$user`             | annotations and static views |
+| Attribute                     | `$user.<attribute>` | [@restrict](./authorization#user-attrs) |
+| Role                          | `<role>`            | [@requires](./authorization#requires) and [@restrict.to](./authorization#restrict-annotation) |
 
 
-  
-
-## Propagating Users { #propagating-users }
-	- request internal
-	- tenant switch
-	- privileged mode
-	- original authentication claim
-	- asynchronous -> implicit to technical user
-
-
-
-
-## User Claims { #user-claims}
-
-
-
-
-### Mapping User Claims
-
-Depending on the configured [authentication](#prerequisite-authentication) strategy, CAP derives a *default set* of user claims containing the user's name, tenant and attributes:
-
-| CAP User Property   | XSUAA JWT Property               | IAS JWT Property        |
-|---------------------|----------------------------------|-------------------------|
-| `$user`             | `user_name`                      | `sub`                   |
-| `$user.tenant`      | `zid`                            | `zone_uuid`             |
-| `$user.<attribute>` | `xs.user.attributes.<attribute>` | All non-meta attributes |
-
-::: tip
-CAP does not make any assumptions on the presented claims given in the token. String values are copied as they are.
-:::
-
-In most cases, CAP's default mapping will match your requirements, but CAP also allows you to customize the mapping according to specific needs. For instance, `user_name` in XSUAA tokens is generally not unique if several customer IdPs are connected to the underlying identity service.
-Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you implement in a custom adaptation. Similarly, attribute values can be normalized and prepared for [instance-based authorization](#instance-based-auth). Find details and examples how to programmatically redefine the user mapping here:
-
-- [Set up Authentication in Node.js.](/node.js/authentication)
-- [Custom Authentication in Java.](/java/security#custom-authentication)
-
-::: warning Be very careful when redefining `$user`
-The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. Also consider data protection and privacy regulations when storing user data.
-:::
-
-
-### IAS  { #ias-auth }
-  - role definition / assignment AMS
-
-  Neue AMS CAP Doku https://sap.github.io/cloud-identity-developer-guide/CAP/Basics.html
-  
-
-### XSUAA Authentication { #xsuaa-auth }
-  - role definition / assignment
-  - Define Reuse Service
-
-
-## Programmatic Enforcement { #enforcement}
-
-The service provider frameworks **automatically enforce** restrictions in generic handlers. They evaluate the annotations in the CDS models and, for example:
-
-* Reject incoming requests if static restrictions aren't met.
-* Add corresponding filters to queries for instance-based authorization, etc.
-
-If generic enforcement doesn't fit your needs, you can override or adapt it with **programmatic enforcement** in custom handlers:
-
-- [Authorization Enforcement in Node.js](/node.js/authentication#enforcement)
-- [Enforcement API & Custom Handlers in Java](/java/security#enforcement-api)
-
-## Role Assignments with IAS and AMS
+## Role Assignment with AMS { #ams-roles }
 
 The Authorization Management Service (AMS) as part of SAP Cloud Identity Services (SCI) provides libraries and services for developers of cloud business applications to declare, enforce and manage instance based authorization checks. When used together with CAP the AMS  "Policies” can contain the CAP roles as well as additional filter criteria for instance based authorizations that can be defined in the CAP model. transformed to AMS policies and later on refined by customers user and authorization administrators in the SCI administration console and assigned to business users.
 
@@ -219,18 +159,35 @@ For example, SAP Task Center you want to consume an XSUAA-based service that req
 [Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
 
 
-## Role Assignments with XSUAA { #xsuaa-configuration}
 
-Information about roles and attributes has to be made available to the UAA platform service. This information enables the respective JWT tokens to be constructed and sent with the requests for authenticated users. In particular, the following happens automatically behind-the-scenes upon build:
+Neue AMS CAP Doku https://sap.github.io/cloud-identity-developer-guide/CAP/Basics.html
 
 
-### 1. Roles and Attributes Are Filled into the XSUAA Configuration
+
+## Role Assignment with XSUAA { xsuaa-roles }
+
+Information about roles and attributes can be made available to the UAA platform service. 
+This information enables the respective JWT tokens to be constructed and sent with the requests for authenticated users. 
+In particular, the following happens automatically behind-the-scenes upon build:
+
+
+### Generate Security Descriptor 
 
 Derive scopes, attributes, and role templates from the CDS model:
 
+<div class="impl java">
+
+```sh
+cds add xsuaa
+```
+
+</div>
+
+<div class="impl node">
 ```sh
 cds add xsuaa --for production
 ```
+</div>
 
 This generates an _xs-security.json_ file:
 
@@ -268,9 +225,7 @@ Roles modeled in CDS may contain characters considered invalid by the XSUAA serv
 
 If you modify the _xs-security.json_ manually, make sure that the scope names in the file exactly match the role names in the CDS model, as these scope names will be checked at runtime.
 
-### 2. XSUAA Configuration Is Completed and Published
-
-#### Through MTA Build
+### Publish Security Descriptor
 
 If there's no _mta.yaml_ present, run this command:
 
@@ -306,38 +261,90 @@ Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_
 
 [Learn more about **building and deploying MTA applications**.](/guides/deployment/){ .learn-more}
 
-### 3. Assembling Roles and Assigning Roles to Users
+### Assign Roles in SAP BTP Cockpit
 
-This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](/node.js/authentication#auth-in-cockpit) for more details. If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
+This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](/node.js/authentication#auth-in-cockpit) for more details. 
+If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. 
+For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
 In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.
 
 
-### 4. Scopes Are Narrowed to Local Roles
 
-Based on this, the JWT token for an administrator contains a scope `my.app.admin`. From within service implementations of `my.app` you can reference the scope:
+## Developing with CAP Users { #developing-with-users }
 
-```js
-req.user.is ("admin")
+
+### Programmatic Reflection { #reflection  }
+
+UserInfo
+
+req.user
+req.tenant
+
+The service provider frameworks **automatically enforce** restrictions in generic handlers. They evaluate the annotations in the CDS models and, for example:
+
+* Reject incoming requests if static restrictions aren't met.
+* Add corresponding filters to queries for instance-based authorization, etc.
+
+If generic enforcement doesn't fit your needs, you can override or adapt it with **programmatic enforcement** in custom handlers:
+
+- [Authorization Enforcement in Node.js](/node.js/authentication#enforcement)
+- [Enforcement API & Custom Handlers in Java](/java/security#enforcement-api)
+
+
+### Modifying Users { #modifying-users }
+  - UserProvider  
+
+
+Depending on the configured [authentication](#prerequisite-authentication) strategy, CAP derives a *default set* of user claims containing the user's name, tenant and attributes:
+
+| CAP User Property   | XSUAA JWT Property               | IAS JWT Property        |
+|---------------------|----------------------------------|-------------------------|
+| `$user`             | `user_name`                      | `sub`                   |
+| `$user.tenant`      | `zid`                            | `zone_uuid`             |
+| `$user.<attribute>` | `xs.user.attributes.<attribute>` | All non-meta attributes |
+
+::: tip
+CAP does not make any assumptions on the presented claims given in the token. String values are copied as they are.
+:::
+
+In most cases, CAP's default mapping will match your requirements, but CAP also allows you to customize the mapping according to specific needs. For instance, `user_name` in XSUAA tokens is generally not unique if several customer IdPs are connected to the underlying identity service.
+Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you implement in a custom adaptation. Similarly, attribute values can be normalized and prepared for [instance-based authorization](#instance-based-auth). Find details and examples how to programmatically redefine the user mapping here:
+
+- [Set up Authentication in Node.js.](/node.js/authentication)
+- [Custom Authentication in Java.](/java/security#custom-authentication)
+
+::: warning Be very careful when redefining `$user`
+The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. Also consider data protection and privacy regulations when storing user data.
+:::
+
+
+### Propagating Users { #propagating-users }
+	- request internal
+	- tenant switch
+	- privileged mode
+	- original authentication claim
+	- asynchronous -> implicit to technical user
+
+### Tracing { #user-tracing }
+
+<div class="impl java">
+
+DEBUG level by default
+
+logging.level.com.sap.cds.security.authentication: DEBUG
+
+```sh
+MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
-... and, if necessary, from others by:
 
-```js
-req.user.is ("my.app.admin")
-```
+Never in production!
+</div>
 
-<br>
-
-> See the following sections for more details:
-- [Developing Security Artifacts in SAP BTP](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/419ae2ef1ddd49dca9eb65af2d67c6ec.html)
-- [Maintaining Application Security in XS Advanced](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/35d910ee7c7a445a950b6aad989a5a26.html)
+<div class="impl node">
+TODO
+</div>
 
 
-Find detailed instructions for setting up authentication in these runtime-specific guides:
+## Ptifalls
 
-- [Set up authentication in Node.js.](/node.js/authentication)
-- [Set up authentication in Java.](/java/security#authentication)
-
-
-In _productive_ environment with security middleware activated, **all protocol adapter endpoints are authenticated by default**<sup>1</sup>, even if no [restrictions](#restrictions) are configured. Multi-tenant SaaS-applications require authentication to provide tenant isolation out of the box. In case there is the business need to expose open endpoints for anonymous users, it's required to take extra measures depending on runtime and security middleware capabilities.
-
-> <sup>1</sup> Starting with CAP Node.js 6.0.0 resp. CAP Java 1.25.0. _In previous versions endpoints without restrictions are public in single-tenant applications_.
+- asynchronous business requests
