@@ -1048,10 +1048,11 @@ The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` a
 
 ### Extension Restriction
 
-You can restrict how your application model can be extended by a SaaS Customer.
-This section covers the restrictions that you can add via the `extension-allowlist`.
+You can restrict what parts of the application model can be extended by the SaaS Customer.
+This section lists the restrictions that you can define via the `extension-allowlist`.
 
-> As soon as an `extension-allowlist` is present, extensions are forbidden, except those that are listed.
+> As soon as an `extension-allowlist` is present, extensions are forbidden, except those that are listed
+in the `extension-allowlist`.
 
 Using `"for": ["*"]` allows to apply rules to all entities and services.
 
@@ -1082,7 +1083,7 @@ In addition, you can restrict the number of bound entities by setting a number f
 Entities can be extended with additional fields and also modifications of existing fields. Both kinds of extensions
 can be restricted.
 - `new-fields` specifies the maximum number of fields that can be added.
-- `fields` lists the fields that are allowed to be extended. If the list is omitted, all fields can be extended.
+- `fields` lists existing fields that are allowed to be extended. If the list is omitted, all fields can be extended.
 
 ```jsonc
 "cds.xt.ExtensibilityService": {
@@ -1115,7 +1116,7 @@ extend my.bookshop.Books:title with (length: 200);
 
 #### Restrict / Enable Annotations
 
-The following annotations are blocked by default
+The following annotations are blocked by default because they affect the persistence or security.
 ```txt
 @restrict
 @requires
@@ -1125,7 +1126,6 @@ The following annotations are blocked by default
 @cds.persistence.*
 @sql.append
 @sql.prepend
-
 @path
 @impl
 @cds.autoexpose
@@ -1137,7 +1137,7 @@ The following annotations are blocked by default
 @cds.search
 ```
 
-Annotations can, at your own risk, be allowed by adding
+You can, at your own risk, add exceptions for Annotations.
 ```jsonc
 "cds.xt.ExtensibilityService": {
       "extension-allowlist": [
