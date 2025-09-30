@@ -1156,7 +1156,7 @@ except for annotation `@cds.persistence.journal` if it is applied as extension t
 
 #### Restrict Unbound Entities
 
-You can also restrict unbound entities via its namespace.<br>
+You can also restrict unbound entities via their namespace.<br>
 For example
 ```jsonc
 "cds.xt.ExtensibilityService": {
