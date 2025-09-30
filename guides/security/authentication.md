@@ -19,19 +19,16 @@ status: released
 </style>
 
 
-# Authentication
+# Authentication { #authentication }
 
-In essence, [inbound authentication](#inbound-authentication) verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
+In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
 Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
-
-CAP applications making use of remote services of any type need to have a proper [outbound authentication](#outbound-authentication) in place as well.
+CAP applications making use of remote services of any type need to have a proper [remote authentication](#remote-authentication) in place as well.
 
 
 [[toc]]
 
-
-## Inbound Authentication { #inbound-authentication }
 
 According to key concept [Pluggable Building Blocks](key-concept-pluggable), the authentication method can be configured freely. 
 CAP [leverages platform services](#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
@@ -40,14 +37,11 @@ CAP [leverages platform services](#key-concept-platform-services) to provide pro
 
 - For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services:  
   - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fleged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
-  - [XS User and Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
-
-::: tip
-CAP applications can run IAS and XSUAA in hybrid mode to support a smooth migration from XSUAA to IAS.
-:::
+  - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
+  - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-authentication) to support a smooth migration from XSUAA to IAS.
 
 
-### Mock User Authentication { #mock-user-auth }
+## Mock User Authentication { #mock-user-auth }
 
 In none-production profile, by default, CAP creates a security configuration which accepts _mock users_.
 As this authentication strategy is a built-in feature which does not require any platform service, it is perfect for **unit testing and local development scenarios**.
@@ -124,7 +118,7 @@ Mock users are deactivated in production profile by default ❗
 
 
 
-#### Preconfigured Mock Users { #preconfigured-mock-users }
+### Preconfigured Mock Users { #preconfigured-mock-users }
 
 For convenience, the runtime creates default mock users reflecting typical types of users suitable for test combinations, e.g. privileged users passing all security checks or restricted users which just pass authentication only.
 The predefined users are merged with mock users [defined by the application](#custom-mock-users). 
@@ -138,7 +132,7 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 [Learn more about predefined mock users in CAP Node.js](../node.js/authentication#mock-users){.learn-more}
 
 
-#### Customization { #custom-mock-users }
+### Customization { #custom-mock-users }
 
 You can define custom mock users to perfectly simulate different types of [end users]((../cap-users#user-representation)) that will interact with your application at production time.
 Hence, you can use the mock users to test authorization rules and custom handlers transparently from the actual context.
@@ -227,7 +221,7 @@ TODO
 [Learn more about custom mock users in CAP Node.js](../node.js/authentication#mocked){.learn-more}
 
 
-#### Automated Testing { #mock-user-testing }
+### Automated Testing { #mock-user-testing }
 
 Mock users provide an ideal foundation for automated **unit tests, which are essential for ensuring application security**.
 The flexibility in defining various kinds of mock users and the seamless integration into testing code significantly lowers the burden to cover all relevant test combinations.
@@ -272,7 +266,7 @@ await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 
 [Learn more about testing in CAP Node.js](../node.js/cds-test#testing-with-cds-test){.learn-more}
 
 
-### IAS Authentication { #ias-auth }
+## IAS Authentication { #ias-auth }
 
 [SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management which provides
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
@@ -283,7 +277,7 @@ await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 
 IAS authentication is at best configured and tested in the Cloud, hence we're going to enhance the sample with a deyloyment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
-#### Get Ready with IAS
+### Get Ready with IAS
 
 Before working with IAS on CF, you need to
 
@@ -307,7 +301,7 @@ to make your application ready for deployment to CF, initially.
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and hence adds all dependencies required for security transitively.
 :::
 
-#### Adding IAS
+### Adding IAS
 
 Now the application is ready to for adding IAS-support by executing
 
@@ -403,7 +397,7 @@ On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config
 :::
 
 
-#### Administrative Console for IAS { #ias-admin }
+### Administrative Console for IAS { #ias-admin }
 
 In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
 you should can see and manage the deployed IAS application. You need an user with administrative provileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
@@ -419,7 +413,7 @@ In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows d
 :::
 
 
-#### Testing IAS on CLI Level
+### Testing IAS on CLI Level
 
 Due to the autoconfiguration in CAP, all CAP endpoints should be authenticated and expect valid ID tokens generated for the IAS application.
 Sending the test request 
@@ -533,7 +527,7 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 ```
 
 
-#### Testing IAS on UI Level
+### Testing IAS on UI Level
 
 In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
 
@@ -591,31 +585,33 @@ The same is true for the logout flow.
 
 
 
-### XSUAA Authentication { #xsuaa-auth }
+## XSUAA Authentication { #xsuaa-auth }
   - setup cds add xsuaa
   
-### Hybrid Authentication
+## Hybrid Authentication { hybrid-authentication }
 
 TBD
 
-### Custom Authentication { #custom-auth }
+## Custom Authentication { #custom-auth }
 
+::: tip
 **By default, CAP authenticates all endpoints of the microservice**, including the endpoints which are not served by CAP itself.
 This is the safe baseline on which minor customization steps can be applied on top.
+:::
 
-There are multiple scenarios for which customization might be required:
-1. Endpoints for none-business requests often require specific authentication methods (e.g. health check, techincal services)
-2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio)
-3. The application needs to integrate with a 3rd party authentication service
+There are multiple reasons why customization might be required:
+1. Endpoints for none-business requests often require specific authentication methods (e.g. health check, techincal services).
+2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
+3. The application needs to integrate with a 3rd party authentication service.
 
-![Endpoints with different authentication strategy](./assets/custom-auth.svg){width="450px"}
+![Endpoints with different authentication strategy](./assets/custom-auth.svg){width="430px"}
 
 - For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
 - For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
 - For custom endpoints that should have any different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
 - In case the authentiaction is delegated to a different component, just [deactivate](#fully-auth) CAP authentication and replace by any suitable strategy.
 
-#### Model-Driven Authentication { #model-auth }
+### Model-Driven Authentication { #model-auth }
 
 **The auto-configuration authenticates all service endpoints found in the CDS model by default**. 
 
@@ -631,8 +627,7 @@ service BooksService @(requires: 'any') {
 
 | Path                      | Authenticated ?  |
 |:--------------------------|:----------------:|
-| `/BooksService`           |      <X/>       |
-| `/BooksService/$metadata` |      <X/>       |
+| `/BooksService` and `/BooksService/$metadata`          |      <X/>       |
 | `/BooksService/Books`     |      <X/>       |
 | `/BooksService/Reviews`   |       <Y/>       |
 | `/BooksService/Orders`    |       <Y/>       |
@@ -644,7 +639,7 @@ In multitenant applications, anonymous requests to public endpoints are missing 
 [Learn more about authentication options in CAP Java with Spring Boot](../guides/java/security#spring-boot){.learn-more}
 
 
-#### Partially Overrule Authentication { #partially-auth }
+### Partially Overrule Authentication { #partially-auth }
 
 If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
 
@@ -675,7 +670,7 @@ Be cautious with the configuration of the `HttpSecurity` instance in your custom
 
 [Learn more about custom security configuraitons in CAP Java with Spring Boot](../guides/java/security#custom-spring-security-config){.learn-more}
 
-#### Fully Overrule Authentication { #fully-auth }
+### Fully Overrule Authentication { #fully-auth }
 
 In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protercted by a secure channel:
 
@@ -689,7 +684,7 @@ This will make standard CAP authorization work properly.
 :::
 
 ::: warning
-If you switch off CAP authentication, make sure that the internal communication channels are secured by infrastructure.
+If you switch off CAP authentication, make sure that the internal communication channels are secured by the given infrastructure.
 :::
 
 DWC Integration (internal)
@@ -697,35 +692,7 @@ DWC Integration (internal)
 
 
 
-## Outbound Authentication { #outbound-authentication }
-
-### Local Services
-
-Local CDS services which are meant for *internal* usage only can be easily consumed by in-process function calls.
-They shouldn't be exposed via protocol adapters at all. 
-In order to prevent access from external clients, annotate those services with `@protocol: 'none'`:
-
-```cds
-@protocol: 'none'
-service InternalService {
-  ...
-}
-```
-`InternalService` is not handled by protocol adapters and can only receive events sent by in-process handlers.
-
-### Application-Internal Services
-- internal-user (IAS + XSUAA)
-
-### BTP Reuse Services
-- IAS 
-- XSUAA
-
-### External Services
-- IAS App-2-App
-- Via Destination (S/4)
-
-
-## Pitfalls
+# Pitfalls
 - **Dont' miss to configure security middleware.**
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
   Without security middleware configured, CDS services are exposed to public. 
