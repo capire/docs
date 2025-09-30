@@ -335,7 +335,7 @@ It supports the following command-line options:
 | `-Dpackage=<a valid Java package>` | The Java package for your project's classes. Defaults to `${groupId}.${artifactId}`. |
 | `-DincludeModel=true` | Adds a minimalistic sample CDS model to the project. |
 | `-DincludeIntegrationTest=true` | Adds an integration test module to the project. |
-| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. If not specified, the default is `v4`|
+| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. Defaults to `v4`|
 | `-DtargetPlatform=cloudfoundry` | Adds CloudFoundry target platform support to the project. |
 | `-DinMemoryDatabase=[h2\|sqlite]` | Specify which in-memory database is used for local testing. If not specified, the default value is `h2`. |
 | `-DjdkVersion=[17\|21\|25]` | Specifies the target JDK version. If not specified, the default value is `21`. |
