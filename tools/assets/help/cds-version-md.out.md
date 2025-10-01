@@ -11,8 +11,8 @@
 | @sap/cds-fiori         | 2.0.1                                   |
 | @sap/cds-mtxs          | 3.3.1                                   |
 | @cap-js/asyncapi       | 1.0.3                                   |
-| @cap-js/db-service     | 2.4.0                                   |
+| @cap-js/db-service     | 2.5.1                                   |
 | @cap-js/openapi        | 1.2.3                                   |
-| @cap-js/sqlite         | 2.0.2                                   |
+| @cap-js/sqlite         | 2.0.3                                   |
 | Node.js                | v22.19.0                                |
 </pre>
