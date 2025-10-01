@@ -88,26 +88,26 @@
   ### [Personal Data Management](guides/data-privacy/pdm)
   ### [Data Retention Management](guides/data-privacy/drm)
 
-## [Deployment](../guides/deployment/)
+## [Deployment](guides/deployment/)
 
-  ### [Deploy to Cloud Foundry](../guides/deployment/to-cf)
-  ### [Deploy to Kyma/K8s](../guides/deployment/to-kyma)
-  ### [Microservices with CAP](../guides/deployment/microservices)
-  ### [Deploy with Confidence](../guides/deployment/dwc)
-  ### [Deploy with CI/CD](../guides/deployment/cicd)
-  ### [Custom Builds](../guides/deployment/custom-builds)
-  ### [Health Checks](../guides/deployment/health-checks)
+  ### [Deploy to Cloud Foundry](guides/deployment/to-cf)
+  ### [Deploy to Kyma/K8s](guides/deployment/to-kyma)
+  ### [Microservices with CAP](guides/deployment/microservices)
+  ### [Deploy with Confidence](guides/deployment/dwc)
+  ### [Deploy with CI/CD](guides/deployment/cicd)
+  ### [Custom Builds](guides/deployment/custom-builds)
+  ### [Health Checks](guides/deployment/health-checks)
 
-## [Multitenancy](../guides/multitenancy/)
+## [Multitenancy](guides/multitenancy/)
 
-  ### [MTX Reference](../guides/multitenancy/mtxs)
-  ### [MTX Migration](../guides/multitenancy/old-mtx-migration)
+  ### [MTX Reference](guides/multitenancy/mtxs)
+  ### [MTX Migration](guides/multitenancy/old-mtx-migration)
 
-## [Extensibility](../guides/extensibility/)
+## [Extensibility](guides/extensibility/)
 
-  ### [Extend SaaS Apps](../guides/extensibility/customization)
-  ### [Feature Toggles](../guides/extensibility/feature-toggles)
-  ### [Reuse & Compose](../guides/extensibility/composition)
+  ### [Extend SaaS Apps](guides/extensibility/customization)
+  ### [Feature Toggles](guides/extensibility/feature-toggles)
+  ### [Reuse & Compose](guides/extensibility/composition)
 
 ## [Performance](advanced/performance-modeling)
 
