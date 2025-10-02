@@ -810,7 +810,7 @@ See the [list of possible `kind` values](../../cds/csn#def-properties).{.learn-m
 - `fields` lists the fields that are allowed to be extended. If the list is omitted, all fields can be extended.
 - `new-entities` specifies the maximum number of entities that can be added to a service.
 
-[Check Extension Restrictions for more details.](#extension-restriction){.learn-more}
+[Check Extension Restrictions for more details.](#extension-restrictions){.learn-more}
 
 ### GET `Extensions/<ID>` _→ [{ ID, csn, timestamp }]_ {#get-extensions}
 
