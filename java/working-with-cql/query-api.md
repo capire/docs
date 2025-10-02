@@ -621,6 +621,66 @@ Select.from("bookshop.Books")
               b.get("title").startsWith("Wuth")));
 ```
 
+
+### Aggregating <Beta /> { #aggregating }
+
+Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
+
+::: tip
+Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a collection.
+:::
+
+#### min
+
+Find the minimum value of an element in a collection.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items()
+       .filter(i -> i.amount().gt(0)) // optional filter
+       .min(i -> i.amount()).as("minAmount")
+);
+```
+
+This query selects each order’s id and the minimum item amount greater than 0 as "minAmount".
+
+#### max
+
+Find the maximum value of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().max(i -> i.amount()).gt(100));
+```
+
+This query selects all orders where the maximum item amount is greater than 100.
+
+#### sum
+
+Calculate the total of a numeric element across related entities.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items().sum(i -> i.amount()).as("totalAmount")
+);
+```
+
+This query selects each order’s id and the sum of its item amounts as "totalAmount".
+
+#### count
+
+Count non-null values of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().count(i -> i.discount()).gt(0));
+```
+
+This query selects all orders where at least one item has a discount.
+
+
 ### Grouping
 
 The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
