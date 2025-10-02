@@ -62,6 +62,7 @@
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
+      <em>ui5</em>                          - SAP UI5 integration
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
