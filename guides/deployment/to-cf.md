@@ -194,7 +194,7 @@ Two deployment options are available:
 
 #### Option A: SAP Cloud Portal
 
-If you intend to deploy user interface applications, you also need to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+If you intend to deploy **multi-tenant** user interface applications, you also need to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
 
 ```sh
 cds add portal
@@ -202,21 +202,11 @@ cds add portal
 
 #### Option B: SAP BTP Application Frontend <Beta />
 
-For **single-tenant applications**, you can use the new [SAP BTP Application Frontend](https://help.sap.com/docs/application-frontend-service) service:
+For **single-tenant** applications, you can use the new [SAP BTP Application Frontend](https://help.sap.com/docs/application-frontend-service) service:
 
 ```sh
 cds add app-front
 ```
-
-#### Option C: SAP Build Work Zone, Standard Edition <Beta />
-
-In addition, for **single-tenant applications**, you can use [SAP Build Work Zone, Standard Edition](https://discovery-center.cloud.sap/serviceCatalog/sap-build-work-zone-standard-edition):
-
-```sh
-cds add workzone
-```
-
-**Important:** This also requires you to set up SAP Build Work Zone, Standard Edition [according to the SAP Learning tutorial](https://developers.sap.com/tutorials/spa-configure-workzone.html).
 
 ### 6. Optional: Multitenancy { #add-multitenancy }
 
