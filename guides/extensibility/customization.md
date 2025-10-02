@@ -139,7 +139,7 @@ This enforces the following restrictions:
 - Only entities in namespace `sap.capire.orders` can be extended, with a maximum 2 new fields allowed.
 - Only the `OrdersService` can be extended, with a maximum of 2 new entities allowed.
 
-[Learn more about extension restrictions.](../multitenancy/mtxs##extension-restriction){.learn-more}
+[Learn more about extension restrictions.](../multitenancy/mtxs#extension-restrictions){.learn-more}
 
 ### 3. Provide Template Projects {#templates}
 

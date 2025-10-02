@@ -1046,26 +1046,24 @@ The response is similar to the following:
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
 
-### Extension Restriction
+### Extension Restrictions
 
-You can restrict what parts of the application model can be extended by the SaaS Customer.
+You can restrict what parts of the application model can be extended by the SaaS customer.
 This section lists the restrictions that you can define via the `extension-allowlist`.
 
-> As soon as an `extension-allowlist` is present, extensions are forbidden, except those that are listed
-in the `extension-allowlist`.
+> If an `extension-allowlist` is defined, only extensions in that list are allowed.
 
 Using `"for": ["*"]` allows to apply rules to all entities and services.
 
-:::info
-When using `cds push`, the extension project is automatically built. The Build already checks most of the
-restrictions locally. But some restrictions can only be checked when the extension is uploaded, e. g.
-extension limit violations across multiple extension projects.
+:::info Most checks happen at design time
+`cds push` automatically builds the extension project, checking most restrictions locally.
+Some checks can only be performed at runtime, for example extension limit violations across multiple projects.
 :::
 
 #### Restrict Service Extensions
 
-By adding services to the `extension-allowlist`, services are enabled for extensions by Saas Customers.
-In addition, you can restrict the number of bound entities by setting a number for "new-entites".
+By adding services to the `extension-allowlist`, services are enabled for extensions by Saas customers.
+In addition, you can restrict the number of bound entities by setting a limit for "new-entites".
 
 ```jsonc
 "cds.xt.ExtensibilityService": {
@@ -1104,7 +1102,8 @@ can be restricted.
 }
 ```
 This restriction allows two new fields for all entities in namespace `my.bookshop` but only one new field
-in entity `my.bookshop.Authors`.<br>
+in entity `my.bookshop.Authors`.
+
 The `field` restriction allows
 ```cds
 extend my.bookshop.Books:description with (length: 2000);
@@ -1137,7 +1136,7 @@ The following annotations are blocked by default because they affect the persist
 @cds.search
 ```
 
-You can, at your own risk, add exceptions for Annotations.
+You can, at your own risk, add exceptions for annotations.
 ```jsonc
 "cds.xt.ExtensibilityService": {
       "extension-allowlist": [
@@ -1152,11 +1151,12 @@ You can, at your own risk, add exceptions for Annotations.
       ]
   }
 ```
-except for annotation `@cds.persistence.journal` if it is applied as extension to base entities.
+> Exception: `@cds.persistence.journal` cannot be applied as an extension to base entities.
 
 #### Restrict Unbound Entities
 
-You can also restrict unbound entities via their namespace.<br>
+You can also restrict unbound entities via their namespace.
+
 For example
 ```jsonc
 "cds.xt.ExtensibilityService": {
@@ -1168,8 +1168,8 @@ For example
     }
   ]
 ```
+only allows one unbound entity with namespace `my.new`.
 
-Only allows one unbound entity with namespace `my.new`.<br>
 As a special case, you can also block any unbound entities:
 ```jsonc
 "cds.xt.ExtensibilityService": {
