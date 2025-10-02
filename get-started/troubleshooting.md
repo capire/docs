@@ -626,8 +626,7 @@ Now you can build the archive with:
 mbt build -t gen --mtar mta.tar -e less.mtaext
 ```
 
-::: warning
-This approach is only recommended
+::: warning This approach is only recommended...
 - For test deployments during _development_.  For _production_ deployments,  self-contained archives are preferrable.
 - If all your dependencies are available in _public_ registries like npmjs.org or Maven Central.  Dependencies from _corporate_ registries are not resolvable in this mode.
 :::
@@ -768,7 +767,13 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 
     :::
 
+### Why do I get a "Cannot GET /"?
 
+For security reasons, the index page shown in local development is **not served in production** by default.
+
+If you try to access your backend URL you will therefore see a "Cannot GET /".
+
+Only if absolutely required, you can enable this page in your deployment using <Config>cds.fiori.preview:true</Config>.
 
 ## CAP on Kyma
 
