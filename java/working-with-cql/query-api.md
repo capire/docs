@@ -624,6 +624,10 @@ Select.from("bookshop.Books")
 
 ### Aggregating { #aggregating }
 
+#### Aggregation Functions { #aggregation-functions }
+
+Use [aggregation functions](/guides/databases#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the *where* clause to filter based on aggregated values.
+
 #### Aggregating over Associations <Beta /> { #aggregating-associations }
 
 Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
