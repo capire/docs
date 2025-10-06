@@ -622,7 +622,9 @@ Select.from("bookshop.Books")
 ```
 
 
-### Aggregating <Beta /> { #aggregating }
+### Aggregating { #aggregating }
+
+#### Aggregating over Associations <Beta /> { #aggregating-associations }
 
 Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
 
@@ -681,7 +683,7 @@ Select.from(ORDERS)
 This query selects all orders where at least one item has a discount.
 
 
-### Grouping
+#### Grouping
 
 The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
 
@@ -695,7 +697,7 @@ Let's assume the following dataset for our examples:
 |103 |Hugo  |
 |104 |Smith |
 
-#### Group By
+##### Group By
 
 The `groupBy` clause groups by one or more elements and usually involves aggregate [functions](query-api#scalar-functions), such as `count`, `countDistinct`, `sum`, `max`, `avg`, and so on. It returns one row for each group.
 
@@ -718,7 +720,7 @@ If we execute the query on our dataset, we get the following result:
 |Hugo  |1    |
 
 
-#### Having
+##### Having
 
 To filter the [grouped](#group-by) result, `having` is used. Both, `having` and `where`, filter the result before `group by` is applied and can be used in the same query.
 
