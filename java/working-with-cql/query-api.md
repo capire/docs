@@ -624,7 +624,7 @@ Select.from("bookshop.Books")
 
 ### Aggregating <Beta /> { #aggregating }
 
-Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
+Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
 
 ::: tip
 Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a collection.
