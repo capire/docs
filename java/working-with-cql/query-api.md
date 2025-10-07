@@ -1409,6 +1409,10 @@ Scalar functions are values that are calculated from other values. This calculat
       .where(e -> e.get("name").substring(2).eq("ter"));
     ```
 
+* Concat
+
+  See [`Concat`](#string-expressions) String Expression
+
 #### Case-When-Then Expressions
 
 Use a case expression to compute a value based on the evaluation of conditions. The following query converts the stock of Books into a textual representation as 'stockLevel':
