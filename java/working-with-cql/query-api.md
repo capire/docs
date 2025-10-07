@@ -1420,6 +1420,17 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
+#### String Expressions
+
+* Concat
+
+    Function `concat` creates a string expression to concatenate a specified value to this value.
+
+    ```java
+    // SELECT from Author {name || ' - the Author' as full_name : String}
+    Select.from(AUTHOR)
+      .columns(a -> a.name().concat(" - the Author").as("author_name"));
+    ```
 
 #### Arithmetic Expressions
 
