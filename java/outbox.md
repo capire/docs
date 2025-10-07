@@ -163,7 +163,7 @@ To be sure that the deployment version has been set correctly, you can find a lo
 
 And finally, if for some reason you don't want to use a version check for a particular outbox collector, you can switch it off via the outbox configuration [<Config java filesOnly>cds.outbox.services.MyCustomOutbox.checkVersion: false</Config>](../java/developing-applications/properties#cds-outbox-services-<key>-checkVersion).
 
-### Outbox for Shared DB
+### Outbox for Shared Databases
 
 Currently, CAP Java does not yet support microservices with shared database out of the box, as this can lead to unexpected behavior when different isolated services use the same outboxes.
 Since CAP automatically creates two outboxes with a static name — **DefaultOutboxOrdered** and **DefaultOutboxUnordered** — these would be shared across all services which introduces conflicts.
