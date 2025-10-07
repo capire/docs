@@ -77,9 +77,9 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --add sample`.
 
 
-### From [cap/samples](https://github.com/sap-samples/cloud-cap-samples)
+### From [Capire Samples](https://github.com/capire)
 
-For example, you can copy the [SAP Fiori apps from cap/samples](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/app) as a template and modify the content as appropriate.
+For example, you can copy the [SAP Fiori apps from capire/bookshop](https://github.com/capire/bookstore/tree/main/app) as a template and modify the content as appropriate.
 
 
 ### From [Incidents Sample](https://github.com/SAP-samples/fiori-elements-incident-management/tree/sampleSolution)
@@ -113,7 +113,7 @@ annotate CatalogService.Books with @(
 ```
 
 
-[Find this source and many more in **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/app){.learn-more target="_blank"}
+[Find this source and many more in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more target="_blank"}
 [Learn more about **OData Annotations in CDS**.](./odata#annotations){.learn-more}
 
 
@@ -134,7 +134,7 @@ While CDS in principle allows you to add such annotations everywhere in your mod
 ...
 ```
 
-[See this also in **cap/samples/fiori**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/services.cds){.learn-more}
+[See this also in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/services.cds){.learn-more}
 
 **Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../guides/domain-modeling#domain-driven-design) and [Separation of Concerns](../guides/domain-modeling#separation-of-concerns).
 
@@ -388,7 +388,7 @@ SAP Fiori supports edit sessions with draft states stored on the server, so user
 
 [For details and guidelines, see **SAP Fiori Design Guidelines for Draft**.](https://experience.sap.com/fiori-design-web/draft-handling/){.learn-more}
 
-[Find a working end-to-end version in **cap/samples/fiori**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/fiori){.learn-more}
+[Find a working end-to-end version in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more}
 
 [For details about the draft flow in SAP Fiori elements, see **SAP Fiori elements > Draft Handling**](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d){.learn-more}
 
@@ -401,7 +401,7 @@ To enable draft for an entity exposed by a service, simply annotate it with `@od
 annotate AdminService.Books with @odata.draft.enabled;
 ```
 
-[See it live in **cap/samples**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L94){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L79){.learn-more}
 
 ::: warning
 You can't project from draft-enabled entities, as annotations are propagated. Either _enable_ the draft for the projection and not the original entity or _disable_ the draft on the projection using `@odata.draft.enabled: null`.
@@ -429,9 +429,9 @@ Adding the annotation `@fiori.draft.enabled` won't work if the corresponding `_t
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](../assets/draft-for-localized-data.png){style="margin:0"}
 
-[See it live in **cap/samples**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L93){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
 
-If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L116) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
+If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L104) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
 
 ### Draft Choreography: How Draft Editing Works
 
@@ -466,11 +466,37 @@ POST /odata/v4/AdminService/Books(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActi
 Content-Type: application/json
 
 {}
-
+```
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
 ### Validating Drafts
+
+With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
+- The UI displays error messages for annotation-based validations (such as `@mandatory` or `@assert...`) while editing drafts.
+- You can register [custom validations](#custom-validations) to the `PATCH` event and write (error) messages. The draft choreography ensures the invalid value still persists.
+- Messages remain visible in the UI, even after editing other fields.
+- The UI automatically loads messages when reopening a previously edited draft.
+CAP generates side-effect annotations in the EDMX to instruct UI5 to fetch state messages after every `PATCH` request. To control side-effect annotations more precisely, override or disable them per entity:
+
+  ```cds
+  // Setting `null` disables the side-effect annotation for always fetching messages.
+  annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
+  ```
+
+For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](/guides/security/data-protection-privacy#dpp-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
+
+::: warning Requires Schema Update
+This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.
+:::
+
+::: warning Requires OData V4 and UI5 version >=1.135.0
+State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.135.0. OData V2 does not support this annotation.
+:::
+To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
+
+
+#### Custom Validations
 
 You can add [custom handlers](../guides/providing-services#custom-logic) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
 
@@ -596,7 +622,7 @@ entity Books { //...
 }
 ```
 
-[Find this also in our **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop/db/schema.cds){.learn-more}
+[Find this also in our **capire/bookstore**.](https://github.com/capire/bookshop/blob/main/db/schema.cds){.learn-more}
 
 Still, all SAP Fiori UIs, on all services exposing `Books`, will automatically receive Value Help for currencies. You can also benefit from that when [deriving your project-specific code list entities from **sap.common.CodeList**](../cds/common#adding-own-code-lists).
 

@@ -9,9 +9,13 @@ status: released
 
 [SAP HANA Cloud](https://www.sap.com/products/technology-platform/hana.html) is supported as the CAP standard database and recommended for productive use with full support for schema evolution and multitenancy.
 
-::: warning
+::: warning Validation strategy
 
 CAP isn't validated with other variants of SAP HANA, like "SAP HANA Database as a Service" or "SAP HANA (on premise)".
+
+The database services are validated against the latest maintained QRC version of SAP HANA Cloud. It's not guaranteed that outdated versions are fully functional with the latest database services.
+
+[See the official SAP HANA Cloud documentation for their maintenance strategy.](https://help.sap.com/docs/HANA_CLOUD_CN/1f64fe39189f4176bf659e737d62222a/6ced4d164e234b74aa9bea82435ce9a8.html){.learn-more}
 
 :::
 
@@ -53,12 +57,9 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 :::
 
-
-
-
 ## Running `cds build`
 
-Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [cap/samples/bookshop](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop):
+Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
 
 ```sh
 cds build --for hana

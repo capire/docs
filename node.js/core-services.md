@@ -17,7 +17,7 @@ A CAP application mainly consists of the services it provides to clients. Such *
 
 #### CDS-Modeling *Provided* Services
 
-For example, a simplified all-in-one variant of [*cap/samples/bookshop/srv/cat-service.cds*](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/srv/cat-service.cds):
+For example, a simplified all-in-one variant of [*capire/bookshop/srv/cat-service.cds*](https://github.com/capire/bookshop/blob/main/srv/cat-service.cds):
 
 ```cds
 using { User, sap.capire.bookshop as my } from '../db/schema';
@@ -107,7 +107,7 @@ By default `cds.serve` creates an instance of `cds.ApplicationService` for each 
 
 #### In sibling `.js` files, next to `.cds` sources
 
-The easiest way to add custom service implementations is to simply place a `.js` file with the same name next to the `.cds` file containing the respective service definition. For example, as in [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/):
+The easiest way to add custom service implementations is to simply place a `.js` file with the same name next to the `.cds` file containing the respective service definition. For example, as in [*cap/samples/bookshop*](https://github.com/capire/bookshop):
 
 ```zsh
 bookshop/
@@ -1065,7 +1065,7 @@ function foreach(
 
 Executes the statement and processes the result set row by row. Use this API instead of [`cds.run`](#srv-run-query) if you expect large result sets. Then they're processed in a streaming-like fashion instead of materializing the full result set in memory before processing.
 
-> Please note that this API is only implemented by `cds.DatabaseService`. For all other subclasses, the full result set is currently materialized in memory.
+> As of now, this API is only implemented by `cds.DatabaseService`. For all other subclasses, the full result set is currently materialized in memory.
 
 _**Common Usage:**_
 

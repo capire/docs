@@ -455,7 +455,7 @@ public Result readBooks(CdsReadEventContext context) {
 In case an event handler method of the `Before` or `On` phase has a return value it automatically [completes the event processing](#eventcompletion), once it's executed.
 Event handler methods of the `After` phase that have a return value, replace the return value of the event.
 
-For [CRUD events](../cqn-services/application-services#crudevents) and [draft-specific CRUD events](../fiori-drafts#draftevents), return values that extend `Iterable<? extends Map<String, Object>>` are supported. The `Result` object or a list of entity data (for example `List<Books>`) fulfill this requirement.
+For [CRUD events](../cqn-services/application-services#crudevents) and [draft-specific CRUD events](../fiori-drafts#draftevents), return values that extend `Iterable<? extends Map<String, Object>>` are supported. The `Result` and `CdsResult<?>` interfaces or a list of entity data (for example `List<Books>`) fulfill this requirement.
 
 ```java
 @On(entity = Books_.CDS_NAME)
