@@ -622,11 +622,76 @@ Select.from("bookshop.Books")
 ```
 
 
-### Aggregating { #aggregating }
+### Aggregating Data { #aggregating }
+
+You can aggregate data in two ways:
+
+- **Aggregate the current entity:** Use [aggregate functions](#aggregation-functions) like `sum` in the columns clause of your `Select` statement, usually together with [groupBy](#group-by), to summarize or group data.
+
+- **Aggregate associated entities:** Use dedicated aggregation methods to calculate values over to-many associations directly in your queries. See [Aggregating over Associations](#aggregating-associations).
+
 
 #### Aggregation Functions { #aggregation-functions }
 
-Use [aggregation functions](/guides/databases#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the *where* clause to filter based on aggregated values.
+Use [aggregation functions](/guides/databases#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+
+
+#### Grouping { #grouping }
+
+The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
+
+Let's assume the following dataset for our examples:
+
+|ID  |NAME  |
+|----|------|
+|100 |Smith |
+|101 |Miller|
+|102 |Smith |
+|103 |Hugo  |
+|104 |Smith |
+
+##### Group By { #group-by }
+
+The `groupBy` clause groups by one or more elements and usually involves aggregate [functions](query-api#scalar-functions), such as `count`, `countDistinct`, `sum`, `max`, `avg`, and so on. It returns one row for each group.
+
+In the following example, we select the authors' name and, using the aggregate function `count`, determine how many authors with the same name exist in `bookshop.Authors`.
+
+```java
+import com.sap.cds.ql.CQL;
+
+Select.from("bookshop.Authors")
+	.columns(c -> c.get("name"), c -> CQL.count(c.get("name")).as("count"))
+	.groupBy(g -> g.get("name"));
+```
+
+If we execute the query on our dataset, we get the following result:
+
+|name  |count|
+|------|-----|
+|Smith |3    |
+|Miller|1    |
+|Hugo  |1    |
+
+
+##### Having { #having }
+
+To filter the [grouped](#group-by) result, `having` is used. Both, `having` and `where`, filter the result before `group by` is applied and can be used in the same query.
+
+The following example selects authors where count is higher than 2:
+
+```java
+Select.from("bookshop.Authors")
+    .columns(c -> c.get("name"), c -> func("count", c.get("name")).as("count"))
+    .groupBy(c -> c.get("name"))
+    .having(c -> func("count", c.get("name")).gt(2));
+```
+
+If we execute the query on our dataset, we get the following result:
+
+|name  |count|
+|------|-----|
+|Smith |3    |
+
 
 #### Aggregating over Associations <Beta /> { #aggregating-associations }
 
@@ -685,63 +750,6 @@ Select.from(ORDERS)
 ```
 
 This query selects all orders where at least one item has a discount.
-
-
-#### Grouping
-
-The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
-
-Let's assume the following dataset for our examples:
-
-|ID  |NAME  |
-|----|------|
-|100 |Smith |
-|101 |Miller|
-|102 |Smith |
-|103 |Hugo  |
-|104 |Smith |
-
-##### Group By
-
-The `groupBy` clause groups by one or more elements and usually involves aggregate [functions](query-api#scalar-functions), such as `count`, `countDistinct`, `sum`, `max`, `avg`, and so on. It returns one row for each group.
-
-In the following example, we select the authors' name and, using the aggregate function `count`, determine how many authors with the same name exist in `bookshop.Authors`.
-
-```java
-import com.sap.cds.ql.CQL;
-
-Select.from("bookshop.Authors")
-	.columns(c -> c.get("name"), c -> CQL.count(c.get("name")).as("count"))
-	.groupBy(g -> g.get("name"));
-```
-
-If we execute the query on our dataset, we get the following result:
-
-|name  |count|
-|------|-----|
-|Smith |3    |
-|Miller|1    |
-|Hugo  |1    |
-
-
-##### Having
-
-To filter the [grouped](#group-by) result, `having` is used. Both, `having` and `where`, filter the result before `group by` is applied and can be used in the same query.
-
-The following example selects authors where count is higher than 2:
-
-```java
-Select.from("bookshop.Authors")
-    .columns(c -> c.get("name"), c -> func("count", c.get("name")).as("count"))
-    .groupBy(c -> c.get("name"))
-    .having(c -> func("count", c.get("name")).gt(2));
-```
-
-If we execute the query on our dataset, we get the following result:
-
-|name  |count|
-|------|-----|
-|Smith |3    |
 
 
 ### Ordering and Pagination
