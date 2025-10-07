@@ -1431,7 +1431,7 @@ Select.from(BOOKS).columns(
     Function `concat` creates a string expression to concatenate a specified value to this value.
 
     ```java
-    // SELECT from Author {name || ' - the Author' as full_name : String}
+    // SELECT from Author {name || ' - the Author' as author_name : String}
     Select.from(AUTHOR)
       .columns(a -> a.name().concat(" - the Author").as("author_name"));
     ```
