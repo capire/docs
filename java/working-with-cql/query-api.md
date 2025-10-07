@@ -636,7 +636,7 @@ Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimu
 Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
 :::
 
-#### min
+##### min
 
 Find the minimum value of an element in a collection.
 
@@ -651,7 +651,7 @@ Select.from(ORDERS).columns(
 
 This query selects each order’s id and the minimum item amount greater than 0 as "minAmount".
 
-#### max
+##### max
 
 Find the maximum value of an element in a collection.
 
@@ -662,7 +662,7 @@ Select.from(ORDERS)
 
 This query selects all orders where the maximum item amount is greater than 100.
 
-#### sum
+##### sum
 
 Calculate the total of a numeric element across related entities.
 
@@ -675,7 +675,7 @@ Select.from(ORDERS).columns(
 
 This query selects each order's id and the total order amount (sum of amount times price) as "orderTotal".
 
-#### count
+##### count
 
 Count non-null values of an element in a collection.
 
