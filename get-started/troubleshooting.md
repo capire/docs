@@ -770,7 +770,9 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 ### Why do I get a _404 Cannot GET /_ error?
 
 For security reasons, the **index page is not served in production** by default in both [Node.js](../node.js/cds-server#toggle-generic-index-page) and [Java](../java/developing-applications/configuring#production-profile).
+
 If you try to access your backend URL, you will therefore see a _404 Cannot GET /_ error.
+This also means you **cannot use the `/` path as a health status indicator**.  See the [Health Checks guide](../guides/deployment/health-checks) for the correct paths.
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment using <Config>cds.server.index:true</Config> (Node.js) or [<Config java>cds.indexPage.enabled:true</Config>](../java/developing-applications/properties#cds-indexPage) (Java).
 
