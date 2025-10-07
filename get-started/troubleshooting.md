@@ -626,7 +626,7 @@ Now you can build the archive with:
 mbt build -t gen --mtar mta.tar -e less.mtaext
 ```
 
-::: warning This approach is only recommended...
+::: warning Not recommended for production deployments
 - For test deployments during _development_.  For _production_ deployments,  self-contained archives are preferrable.
 - If all your dependencies are available in _public_ registries like npmjs.org or Maven Central.  Dependencies from _corporate_ registries are not resolvable in this mode.
 :::
