@@ -633,7 +633,7 @@ Use [aggregation functions](/guides/databases#aggregate-functions) to calculate 
 Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
 
 ::: tip
-Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a collection.
+Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
 :::
 
 #### min
@@ -669,11 +669,11 @@ Calculate the total of a numeric element across related entities.
 ```java
 Select.from(ORDERS).columns(
     o -> o.id(),
-    o -> o.items().sum(i -> i.amount()).as("totalAmount")
+    o -> o.items().sum(i -> i.amount().times(i.price())).as("orderTotal")
 );
 ```
 
-This query selects each order’s id and the sum of its item amounts as "totalAmount".
+This query selects each order's id and the total order amount (sum of amount times price) as "orderTotal".
 
 #### count
 
