@@ -168,7 +168,13 @@ And finally, if for some reason you don't want to use a version check for a part
 Currently, CAP Java does not yet support microservices with shared database out of the box, as this can lead to unexpected behavior when different isolated services use the same outboxes.
 Since CAP automatically creates two outboxes with a static name — **DefaultOutboxOrdered** and **DefaultOutboxUnordered** — these would be shared across all services which introduces conflicts.
 
-To avoid this, you can apply a manual workaround by customizing the outbox configuration and isolating them via distinct namespaces for each service.
+To avoid this, you can apply a manual workaround as follows:
+
+ 1. Customize the outbox configuration and isolating them via distinct namespaces for each service.
+ 2. Adapt the Audit Log outbox configuration.
+ 3. Adapt the messaging outbox configuration per service.
+ 
+ These steps are described in the following sections.
 
 #### Deactivate Default Outboxes
 
@@ -180,8 +186,8 @@ cds:
     services:
       # deactivate default outboxes
       DefaultOutboxUnordered.enabled: false
-      DefaultOutboxOrdered.enebled: false
-      # custom outboxes with uniqie names
+      DefaultOutboxOrdered.enabled: false
+      # custom outboxes with unique names
       Service1CustomOutboxOrdered:
         maxAttempts: 10
         storeLastError: true
@@ -211,11 +217,11 @@ Next, adapt the messaging configuration of **every** messaging service in the ap
 ```yaml
 cds:
   messaging:
-    - MessagingService1:
-      outbox.name: Service1CustomOutboxOrdered
-    - MessagingService2:
-      outbox.name: Service1CustomOutboxOrdered
-      ...
+    services:
+      MessagingService1:
+        outbox.name: Service1CustomOutboxOrdered
+      MessagingService2:
+        outbox.name: Service1CustomOutboxOrdered
 ```
 
 
