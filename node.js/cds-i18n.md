@@ -674,11 +674,11 @@ Ensure you correctly understand how the config option `cds.i18n.folders` work be
 These are the current i18n entries for [`cds.i18n.messages`](#messages) used by the CAP runtime, which you can provide own translations for in your app-specific `_i18n/messages_<locale>.properties` files:
 
 ```properties
-MULTIPLE_ERRORS = Multiple errors occurred. Please see the details for more information.
-ASSERT_FORMAT = Value "{0}" is not in specified format "{1}"
-ASSERT_RANGE = Value {0} is not in specified range [{1}, {2}]
-ASSERT_ENUM = Value {0} is invalid according to enum declaration {{1}}
-ASSERT_NOT_NULL = Value is required
+MULTIPLE_ERRORS = Multiple errors occurred, see details below.
+ASSERT_FORMAT = Enter a value matching the pattern {1}.
+ASSERT_RANGE = Enter a value between {1} and {2}.
+ASSERT_ENUM = Enter one of the allowed values: {1}.
+ASSERT_MANDATORY = Provide the missing value.
 ```
 
 In addition the following HTTP status codes can be translated:
