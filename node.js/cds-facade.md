@@ -301,7 +301,7 @@ cds.model = await cds.load('*')
 
 ### cds. app {.property}
 
-The [express.js Application object](https://expressjs.com/en/api.html#app) constructed during bootstrapping. Several framework operations use that to add express handlers or middlewares. It is initialised in built-in `server.js` like so:
+The [express.js Application object](https://expressjs.com/en/api.html#app) is constructed during bootstrapping. Several framework operations use it to add express handlers or middlewares. It's initialized in the built-in `server.js` file:
 
 ```js
 cds.app = require('express')()
