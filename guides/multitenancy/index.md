@@ -127,7 +127,7 @@ cds add multitenancy
    ```jsonc
    {
      "profiles": [
-       "mtx-sidecar",
+       "with-mtx-sidecar",
        "java"
      ],
      "requires": {
