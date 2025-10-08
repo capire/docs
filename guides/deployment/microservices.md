@@ -658,7 +658,7 @@ Enable messaging for the modules that use it:
 
 <div class="impl java">
 
-Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the *emname* and *namespace* properties, as these will be parameterized dynamically in the mta.yaml file:
+Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the `emname` and `namespace` properties, as these will be parameterized dynamically in the mta.yaml file:
 
 ::: code-group
 ```json [event-mesh.json]
@@ -697,7 +697,7 @@ Create a new file named event-mesh.json to store the configuration for enterpris
 ```
 :::
 
-Add messaging resource in mta.yaml with parametrized *emname* and *namespace* properties:
+Add messaging resource in mta.yaml with parametrized `emname` and `namespace` properties:
 
 ::: code-group
 ```yaml [mta.yaml]
