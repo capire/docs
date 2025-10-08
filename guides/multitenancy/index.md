@@ -1070,6 +1070,89 @@ Alternatively, overriding the [`dependencies`](./mtxs#get-dependencies) handler 
 
 <div id="subscriptiondashboard" />
 
+### Tenant Subscription Flow
+
+The following diagram shows the complete tenant subscription and provisioning process:
+
+```mermaid
+flowchart TD
+    A[Tenant Subscribe Request] --> B{Service Type?}
+    B -->|SaaS Registry| C[SaaS Provisioning]
+    B -->|SMS| D[SMS Provisioning]
+    
+    C --> E[Create HDI Container]
+    D --> F[Create HANA Tenant]
+    
+    E --> G[Deploy Database Schema]
+    F --> G
+    
+    G --> H[Initialize Tenant Data]
+    H --> I[Configure Security]
+    I --> J[Activate Subscription]
+    J --> K[Tenant Ready]
+    
+    K --> L[Tenant Operations]
+    L --> M{Unsubscribe?}
+    M -->|No| L
+    M -->|Yes| N[Cleanup Resources]
+    N --> O[Remove HDI Container/HANA Tenant]
+    O --> P[Delete Subscription]
+    P --> Q[End]
+    
+    style K fill:#90EE90,stroke:#4CAF50,color:#000
+    style A fill:#EFF4F9,stroke:#427CAC,color:#333
+    style B fill:#91C8F6,stroke:#427CAC,color:#333
+    style C fill:#427CAC,stroke:#3F5161,color:#FFF
+    style D fill:#427CAC,stroke:#3F5161,color:#FFF
+    style E fill:#EFF4F9,stroke:#427CAC,color:#333
+    style F fill:#EFF4F9,stroke:#427CAC,color:#333
+    style G fill:#91C8F6,stroke:#427CAC,color:#333
+    style H fill:#FAFAFA,stroke:#BFBFBF,color:#333
+    style I fill:#FAFAFA,stroke:#BFBFBF,color:#333
+    style J fill:#91C8F6,stroke:#427CAC,color:#333
+    style L fill:#FAFAFA,stroke:#BFBFBF,color:#333
+    style M fill:#BFBFBF,stroke:#666666,color:#333
+    style N fill:#E5E5E5,stroke:#666666,color:#333
+    style O fill:#E5E5E5,stroke:#666666,color:#333
+    style P fill:#E5E5E5,stroke:#666666,color:#333
+    style Q fill:#CCCCCC,stroke:#666666,color:#333
+```
+
+### Tenant Onboarding Experience
+
+This user journey flowchart maps the complete tenant onboarding experience from initial subscription to productive usage:
+
+```mermaid
+flowchart TD
+    A[Tenant Requests Subscription] --> B[Provider Reviews Request]
+    B --> C[Subscription Approved]
+    C --> D[Tenant Receives Access]
+    
+    D --> E[First Login]
+    E --> F[Configure Basic Settings]
+    F --> G[Setup Authentication]
+    
+    G --> H[Create User Accounts]
+    H --> I[Assign Roles & Permissions]
+    I --> J[Send User Invitations]
+    
+    J --> K[Import Initial Data]
+    K --> L[Test Core Functions]
+    L --> M[Production Ready]
+    M --> N[Active Usage]
+    
+    style A fill:#e3f2fd,stroke:#1976d2,color:#000
+    style C fill:#c8e6c9,stroke:#4caf50,color:#000
+    style M fill:#c8e6c9,stroke:#4caf50,color:#000
+    style N fill:#4caf50,stroke:#2e7d32,color:#fff
+    
+    classDef adminTask fill:#fff3e0,stroke:#ff9800,color:#000
+    classDef userTask fill:#fce4ec,stroke:#e91e63,color:#000
+    
+    class B,F,G,H,I,J adminTask
+    class E,K,L userTask
+```
+
 ## Add Custom Handlers
 
 MTX services are implemented as standard CAP services, so you can register for events just as you would for any application service.
