@@ -381,7 +381,7 @@ For example, run the CLI wrapper `cds minify` in *cap/samples/bookshop*:
   ••• <em>User </em>
   ••• <em>sap.capire.bookshop.Authors </em>
   •••• <em>managed </em>
-... more
+  ... more
 
  Skip:
 
