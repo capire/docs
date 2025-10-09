@@ -42,7 +42,7 @@ Without security configured, CDS services are exposed to public. Proper configur
 
 ## Authentication { #authentication}
 
-Authentication rejects user requests with invalid authentication and limits the possible resource impact. 
+Authentication rejects user requests with invalid authentication and limits the possible resource impact.
 
 Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
 By default, it supports the standard BTP platform identity services [out of the box](#xsuaa-ias):
@@ -50,7 +50,7 @@ By default, it supports the standard BTP platform identity services [out of the 
 - [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
 - [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
 
-Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well. 
+Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well.
 Local development and testing can be done easily with built-in [mock user](#mock-users) support.
 
 ### Configure XSUAA and IAS Authentication { #xsuaa-ias}
@@ -164,15 +164,18 @@ Please note that the authentication mode has no impact on the *authorization* be
 
 #### Customizing Spring Boot Security Configuration { #custom-spring-security-config}
 
-If you want to explicitly change the automatic security configuration, you can add an _additional_ Spring security configuration on top that overrides the default configuration by CAP. This can be useful, for instance, if an alternative authentication method is required for *specific endpoints* of your application.
+If you want to explicitly change the automatic security configuration, you can add an _additional_ Spring security configuration on top that overrides the default configuration by CAP.
+This can be useful, for instance, if an alternative authentication method is required for *specific endpoints* of your application.
+
+As the default security configurations provided by CAP act as the last line of defense and handle any request by default, you need to ensure that your custom security configurations have higher precedence. At the `SecurityFilterChain` bean method,  set the `@Order` annotation with a lower numeric value, for example `1`:
 
 ```java
 @Configuration
 @EnableWebSecurity
-@Order(1) // needs to have higher priority than CAP security config
 public class AppSecurityConfig {
 
   @Bean
+  @Order(1) // needs to have higher priority than CAP security config
   public SecurityFilterChain appFilterChain(HttpSecurity http) throws Exception {
     return http
       .securityMatcher(AntPathRequestMatcher.antMatcher("/public/**"))
@@ -184,9 +187,6 @@ public class AppSecurityConfig {
 }
 ```
 Due to the custom configuration, all URLs matching `/public/**` are opened for public access.
-::: tip
-The Spring `SecurityFilterChain` requires CAP Java SDK [1.27.x](../releases/archive/2022/aug22#minimum-spring-boot-version-2-7-x) or later. Older versions need to use the deprecated `WebSecurityConfigurerAdapter`.
-:::
 
 ::: warning _❗ Warning_ <!--  -->
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
@@ -197,11 +197,11 @@ Another typical example is the configuration of [Spring Actuators](https://docs.
 ```java
 @Configuration
 @EnableWebSecurity
-@Order(1)
 public class ActuatorSecurityConfig {
 
   @Bean
-  public SecurityFilterChain actuatorFilterChain(HttpSecurity http) 
+  @Order(1)
+  public SecurityFilterChain actuatorFilterChain(HttpSecurity http)
       throws Exception {
     return http
       .securityMatcher(AntPathRequestMatcher.antMatcher("/actuator/**"))
@@ -213,6 +213,8 @@ public class ActuatorSecurityConfig {
 
 }
 ```
+
+In case you want to write your own custom security configuration that acts as a last line of defense and handles any request you need to disable the CAP security configurations by setting <Config java>cds.security.authentication.authConfig.enabled: false</Config>, as Spring Security forbids registering multiple security configurations with an any request security matcher.
 
 ### Custom Authentication { #custom-authentication}
 
@@ -238,7 +240,7 @@ public class CustomUserInfoProvider implements UserInfoProvider {
             }
         }
         if (userInfo != null) {
-           /* any modification of the resolved user goes here: */ 
+           /* any modification of the resolved user goes here: */
            XsuaaUserInfo xsuaaUserInfo = userInfo.as(XsuaaUserInfo.class);
            userInfo.setName(xsuaaUserInfo.getEmail() + "/" +
                             xsuaaUserInfo.getOrigin()); // normalizes name
@@ -625,7 +627,7 @@ In addition to standard authorization, CAP Java provides additional out of the b
 
 ### Deep Authorization { #deep-auth}
 
-Queries to Application Services are not only authorized by the target entity which has a `@restrict` or `@requires` annotation, but also for all __associated entities__ that are used in the statement. 
+Queries to Application Services are not only authorized by the target entity which has a `@restrict` or `@requires` annotation, but also for all __associated entities__ that are used in the statement.
 __Compositions__ are neither checked nor extended with additional filters.
 For instance, consider the following model:
 
@@ -643,15 +645,15 @@ entity Orders {
 }
 ```
 
-For the following OData request `GET Orders(ID='1')/items?$expand=book`, authorizations for `Orders` and for `Books` are checked. 
-If the entity `Books` has a `where` clause for [instance-based authorization](/java/security#instance-based-auth), 
+For the following OData request `GET Orders(ID='1')/items?$expand=book`, authorizations for `Orders` and for `Books` are checked.
+If the entity `Books` has a `where` clause for [instance-based authorization](/java/security#instance-based-auth),
 it will be added as a filter to the sub-request with the expand.
 
-Custom CQL statements submitted to the [Application Service](/java/cqn-services/application-services) instances 
+Custom CQL statements submitted to the [Application Service](/java/cqn-services/application-services) instances
 are also authorized by the same rules including the path expressions and subqueries used in them.
 
-For example, the following statement checks role-based authorizations for both `Orders` and `Books`, 
-because the association to `Books` is used in the select list. 
+For example, the following statement checks role-based authorizations for both `Orders` and `Books`,
+because the association to `Books` is used in the select list.
 
 ```java
 Select.from(Orders_.class,
@@ -675,15 +677,15 @@ Be careful when you modify or extend the statements in custom handlers.
 Make sure you keep the filters for authorization.
 :::
 
-Starting with CAP Java `4.0`, deep authorization is on by default. 
+Starting with CAP Java `4.0`, deep authorization is on by default.
 It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
 
 [Learn more about `@restrict.where` in the instance-based authorization guide.](/guides/security/authorization#instance-based-auth){.learn-more}
 
 ### Forbidden on Rejected Entity Selection { #reject-403 }
 
-Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation), 
-are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**. 
+Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
+are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
 Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
 
 To allow the UI to distinguish between *not found* and *forbidden*, CAP Java can detect this situation and rejects`PATCH` and `DELETE` requests to single entities with forbidden accordingly.

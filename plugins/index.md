@@ -392,7 +392,7 @@ Available for:
 [![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-event-hub#readme)
 
 
-## SAP Integration Suite, Advanced Event Mesh <Beta /> {#advanced-event-mesh}
+## SAP Integration Suite, Advanced Event Mesh {#advanced-event-mesh}
 
 [SAP Integration Suite, advanced event mesh](https://www.sap.com/products/technology-platform/integration-suite/advanced-event-mesh.html) allows you to, amongst others, integrate non-SAP systems into your event-driven architecture.
 

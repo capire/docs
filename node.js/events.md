@@ -548,6 +548,9 @@ req.warn ('Some warning message')
 
 The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (e.g. `sap-messages`), instead of the response body.
 
+::: warning User Input & Injection Vulnerabilities
+Ensure proper validation of the message text if it contains values ​​from user input.
+:::
 
 
 ## Error Responses
@@ -609,3 +612,21 @@ Content-Type: application/json
 > In production, error responses should never disclose internal information that could be exploited by attackers. To ensure that, all errors with a `5xx` status code are returned to the client with only the respective generic message (example: `500 Internal Server Error`).
 >
 > In very rare cases, you might want to return 5xx errors with a meaningful message to the client. This can be achieved with `err.$sanitize = false`. Use that option with care!
+
+
+## Translations for Validation Errors
+
+For the following annotations/error codes, the runtime provides default translations:
+
+| Annotation              | Error Code                      |
+|-------------------------|---------------------------------|
+| `@mandatory`            | ASSERT_MANDATORY<sup>(1)</sup> |
+| `@assert.range`         | ASSERT_RANGE                    |
+| `@assert.range` on enum | ASSERT_ENUM                     |
+| `@assert.format`        | ASSERT_FORMAT                   |
+| `@assert.target`        | ASSERT_TARGET                   |
+
+<sup>(1)</sup> Falls back to error code `ASSERT_NOT_NULL` if provided in custom translations.
+
+These can be overridden by the known technique of providing [custom i18n messages](cds-i18n#localized-messages).
+

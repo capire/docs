@@ -4,13 +4,13 @@
 
 <em>@sap/cds</em>: 9.3.1
 <em>@sap/cds-dk</em>: undefined
-<em>@sap/cds-compiler</em>: 6.3.4
+<em>@sap/cds-compiler</em>: 6.3.6
 <em>@sap/cds-dk (global)</em>: 9.3.2
 <em>@sap/cds-fiori</em>: 2.0.1
 <em>@sap/cds-mtxs</em>: 3.3.1
 <em>@cap-js/asyncapi</em>: 1.0.3
-<em>@cap-js/db-service</em>: 2.4.0
+<em>@cap-js/db-service</em>: 2.5.1
 <em>@cap-js/openapi</em>: 1.2.3
-<em>@cap-js/sqlite</em>: 2.0.2
-<em>Node.js</em>: v22.19.0
+<em>@cap-js/sqlite</em>: 2.0.3
+<em>Node.js</em>: v22.20.0
 </pre>
