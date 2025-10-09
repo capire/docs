@@ -342,11 +342,11 @@ Following properties apply:
 
 | Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
-| `name` |  instance   | Name for the IAS application - unique in the tenant  |
-| `display-name` |  instance   | Human-readable name for the IAS application as it appears in the Console UI for IAS admins |
-| `multi-tenant` |  instance   | Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)  |
-| `credential-type` |  binding   | `X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application       |
-| `app-identifier` |  binding   | Ensures stable subject in generated certificate (required for credential rotation)  |
+| `name` |  instance   | _Name for the IAS application - unique in the tenant_  |
+| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS admins_ |
+| `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
+| `credential-type` |  _binding_   | _`X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application_       |
+| `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
 
 
 [Lean more about IAS service instance and binding creation options](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
