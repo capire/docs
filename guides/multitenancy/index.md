@@ -175,12 +175,18 @@ cds add multitenancy
      "devDependencies": {
        "@cap-js/sqlite": "^2"
      },
+     "engines": {
+       "node": ">=20"
+     },
      "scripts": {
        "start": "cds-serve",
        "build": "cds build ../.. --for mtx-sidecar --production && npm ci --prefix gen"
      },
      "cds": {
-       "profile": "mtx-sidecar"
+       "profiles": [
+         "mtx-sidecar",
+         "java"
+       ]
      }
    }
    ```
