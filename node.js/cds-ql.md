@@ -704,29 +704,36 @@ If a queried record is already exclusively locked by another transaction, the `.
 
 Passes hints to the database query optimizer that can influence the execution plan. The hints can be passed as individual arguments or as an array.
 
-
 ```js
 SELECT ... .hints ('IGNORE_PLAN_CACHE')
 SELECT ... .hints ('IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)')
 SELECT ... .hints (['IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)'])
 ```
 
+
 ### pipeline() {.method}
 
-Returns the data from the database as a raw stream.
-
+Pipes the data from the database into the given writable stream.
 
 ```js
-SELECT ... .pipeline ()
 SELECT ... .pipeline (cds.context.http.res)
 ```
 
 > Please note that the after handlers don't have effect if this stream is piped to the HTTP response.
 
+
+### stream() {.method}
+
+Returns the data from the database as a raw stream.
+
+```js
+SELECT ... .stream ()
+```
+
+
 ### foreach() {.method}
 
 Creates an object stream and calls the provided callback for each object.
-
 
 ```js
 await SELECT.from(Books).foreach ((book) => { ... })
@@ -737,6 +744,12 @@ Since the SELECT query implements the async iterator protocol, you can also use 
 ```js
 for await (const book of SELECT.from(Books)) { ... }
 ```
+
+:::warning Streaming APIs only implemented by Database Services
+As of now, `SELECT.foreach()` and `SELECT.pipeline()` are only supported by `cds.DatabaseService`. `cds.RemoteService` does not support the streaming APIs yet.
+:::
+
+
 
 ## INSERT {.class}
 

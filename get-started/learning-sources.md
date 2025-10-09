@@ -100,7 +100,7 @@ In here, we collected several interesting sample projects for you. Not all of th
 ### Bookshop by capire {.github}
 
 > [![]()](https://github.com/sap-samples/cloud-cap-samples-java){.java}
-> [![]()](https://github.com/sap-samples/cloud-cap-samples){.node}
+> [![]()](https://github.com/capire/bookshop){.node}
 
 The bookshop sample is our original sample provided by the CAP team and featured in the [getting started guides](../get-started/in-a-nutshell).
 It's available in both Node.js and Java. The Node.js variant contains additional samples besides bookshop that demonstrate various features of CAP.
@@ -117,7 +117,7 @@ A reference sample application for CAP and the SAP BTP Developer Guide.
 ### CAP SFlight {.github}
 
 > [![]()](https://github.com/sap-samples/cap-sflight){.java}
-> [![]()](https://github.com/sap-samples/cap-sflight){.node}
+> [![]()](https://github.com/capire/xtravels){.node}
 
 This sample is a CAP adaptation of the popular [SFLIGHT](https://blog.sap-press.com/what-is-sflight-and-the-flight-and-booking-data-model-for-abap) sample app in ABAP. It's a great source for how to add SAP **Fiori** applications to a CAP project, including adding UI test suites on various stacks.
 

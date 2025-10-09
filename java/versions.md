@@ -33,9 +33,9 @@ New features are announced in the [CAP Release notes](/releases/).
 Find detailed information about versions and release in the [CAP release schedule](../releases/schedule#cap-java).
 
 ::: warning Consume latest versions
-We strongly recommend to consume the latest minor version on a monthly basis to keep future migration efforts as small as possible.
+We strongly recommend to **consume the latest minor version on a monthly basis** to keep future migration efforts as small as possible.
 
-Likewise, we strongly recommend to consume the latest patch version as soon as possible to receive critical bug fixes.
+Likewise, we strongly recommend to **consume the latest patch version as soon as possible** to receive critical bug fixes including security patches.
 :::
 
 ### Active Version { #active-version }
@@ -66,7 +66,7 @@ The following table lists these minimum versions for various common dependencies
 | Dependency | Minimum Version | Recommended Version |
 | --- | --- | --- |
 | JDK | 17 | 21 |
-| Maven | 3.6.3 | 3.9.9 |
+| Maven | 3.8.8 | 3.9.9 |
 | @sap/cds-dk | 8 | latest |
 | @sap/cds-compiler | 5 | latest |
 | Spring Boot | 3.0 | latest |
@@ -80,7 +80,7 @@ The following table lists these minimum versions for various common dependencies
 | Dependency | Minimum Version | Recommended Version |
 | --- | --- | --- |
 | JDK | 17 | 21 |
-| Maven | 3.6.3 | 3.9.9 |
+| Maven | 3.8.8 | 3.9.9 |
 | @sap/cds-dk | 7 | latest |
 | @sap/cds-compiler | 4 | latest |
 | Spring Boot | 3.0 | latest |

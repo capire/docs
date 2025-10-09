@@ -1409,6 +1409,10 @@ Scalar functions are values that are calculated from other values. This calculat
       .where(e -> e.get("name").substring(2).eq("ter"));
     ```
 
+* Concat
+
+  See [`Concat`](#string-expressions) String Expression
+
 #### Case-When-Then Expressions
 
 Use a case expression to compute a value based on the evaluation of conditions. The following query converts the stock of Books into a textual representation as 'stockLevel':
@@ -1420,6 +1424,17 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
+#### String Expressions
+
+* Concat
+
+    Function `concat` creates a string expression to concatenate a specified value to this value.
+
+    ```java
+    // SELECT from Author {name || ' - the Author' as author_name : String}
+    Select.from(AUTHOR)
+      .columns(a -> a.name().concat(" - the Author").as("author_name"));
+    ```
 
 #### Arithmetic Expressions
 
@@ -1623,7 +1638,7 @@ BETWEEN
 
 #### `IN` Predicate
 
-The `IN` predicate tests if a value is equal to any value in a given list. 
+The `IN` predicate tests if a value is equal to any value in a given list.
 
 The following example, filters for books written by Poe or Hemingway:
 
