@@ -35,12 +35,24 @@ In addition, CAP users provide an API for [programmatic]( #developing-with-users
 
 ## User Representation { #claims }
 
-After successful authentication, a CAP user is mainly represented by the following properties:
+After _successful_ authentication, a CAP user is mainly represented by the following properties:
 
 - **_Logon name_** identifying the user uniquly
 - **_Tenant_** describes the tenant of the user (subscriber or provider) which implies the CDS model and business data container.
 - **_Roles_** the user has been assigned by an user administrator (business [user roles](#roles)) or roles which are derived by the authentication level ([pseudo roles](#pseudo-roles)).
 - **_Attributes_** the user has been assigned e.g. for instance-based authorization.
+
+<div class="impl java">
+
+The user information is reflected in the `UserInfo` object [attached to the request](#reflection).
+
+</div>
+
+<div class="impl node">
+
+The user information is reflected in `req.user` and `req.tenant` [attached to the request](#reflection).
+
+</div>
 
 
 ### User Types
@@ -48,29 +60,39 @@ After successful authentication, a CAP user is mainly represented by the followi
 CAP users can be classified in multiple dimensions:
 
 **Business users vs. technical users:** 
-- Business users reflect named end users which do some login name to interact with the system.
-- Technical users act on behalf of a whole tenant on a technical API level.
+- Business users represent identified end users who log in to interact with the system.
+- Technical users operate on behalf of an entire tenant at a technical API level.
 
 **Authenticated users vs. anonymous users**
-- Authenticated users have passed (optional) authentication successfully by presenting a claim (e.g. a token).
-- Anonymous users are not identifyable users, i.e. they havn't presented any claim for authentication.
+- Authenticated users have successfully completed authentication by presenting a claim (e.g., a token).
+- Anonymous users are unidentifiable, as they have not presented any claim for endpoints with optional authentication.
 
 **Provider vs. subscriber tenant**
-- The provider tenants comprises all users of the application owner which usually have no business access to multi-tenant applications.
-- A subscriber tenant comprises all users of an application customer.
+- The provider tenant includes all users of the application owner.
+- A subscriber tenant includes all users of an application customer.
 
-|                  | Business users | Technical users
+
+Typically, the provider tenant is not subscribed to a multi-tenant application and therefore has no business users.
+In contrast, for a single-tenant application, there is no subscriber tenant, and the provider tenant includes all business users.
+
+| MT Application    | Business users | Technical users
 |-------------------|----------------|---
-| Provider Tenant   |         -     | x 
-| Subscriber Tenant |         x      | x 
+| Provider Tenant   |         -     | <Y/>
+| Subscriber Tenant |         <Y/>      | <Y/> 
 
 ::: tip
 Apart from anonymous users, all users have a unique tenant.
-Single-tenant applications deal with the provider tenant users only.
 :::
 
-- switch
-- typical tasks
+The user types are designed to support various flows, such as:
+- UI requests are executed on behalf of a business user interacting with the CAP backend service.
+- During the processing of a business request, the backend utilizes platform services on behalf of the technical user of the subscriber tenant.
+- An asynchronously received message processes data on behalf of the technical user of a subscriber tenant.
+- A background task operates on behalf of the technical provider tenant."
+- ...
+
+Find more details about how to [switch the user context](#switching-users) during request processing.
+
 
 ### Roles { #roles}
 
@@ -83,7 +105,9 @@ annotate Issues with @(restrict: [
       to: 'ReportIssues',
       where: ($user = CreatedBy) },
     { grant: ['READ'],
-      to: 'ReviewIssues' }
+      to: 'ReviewIssues' },
+    { grant: ['READ', 'WRITE'], 
+      to: 'ManageIssues' }
 ]);
 ```
 
@@ -104,10 +128,10 @@ Such roles are called pseudo roles as they aren't assigned by user administrator
 
 | Pseudo Role                 | User Type | Technical Indicator | User Name
 |-----------------------------|---------------------|---------------|---------------|
-| `authenticated-user`        | n/a  | Successful authentication |  - derived from the token - |
-| `any`        | n/a      | n/a   | - derived from the token if available or `anonymous` - |
-| `system-user` | Technical                   | Client credential flow | `system` |
-| `internal-user` | Technical        | Client credential flow with same identity instance | 
+| `authenticated-user`        | <Na/>  | _successful authentication_ |  _derived from the token_ |
+| `any`        | <Na/>      | <Na/>   | _derived from the token if available or `anonymous`_ |
+| `system-user` | _technical_                   | _client credential flow_ | `system` |
+| `internal-user` | _technical_        | _client credential flow with same identity instance_ | 
 
 The pseudo-role `system-user` allows you to separate access by business users from _technical_ clients. 
 Note that this role does not distinguish between any technical clients sending requests to the API.
@@ -138,33 +162,375 @@ In the CDS model, some of the user properties can be referenced in annotations o
 | Role                          | `<role>`            | [@requires](./authorization#requires) and [@restrict.to](./authorization#restrict-annotation) |
 
 
-## Role Assignment with AMS { #ams-roles }
+## Role Assignment with AMS { #roles-assignment-ams }
 
-The Authorization Management Service (AMS) as part of SAP Cloud Identity Services (SCI) provides libraries and services for developers of cloud business applications to declare, enforce and manage instance based authorization checks. When used together with CAP the AMS  "Policies” can contain the CAP roles as well as additional filter criteria for instance based authorizations that can be defined in the CAP model. transformed to AMS policies and later on refined by customers user and authorization administrators in the SCI administration console and assigned to business users.
+CAP applications that use the [Identity Authentication Service (IAS)](https://help.sap.com/docs/identity-authentication) for authentication also leverage the [Authorization Management Service (AMS)](https://help.sap.com/docs/cloud-identity-services/authorization-management-service) to provide comprehensive authorization. Similar to IAS, AMS is part of the [SAP Cloud Identity Services (SCI)](https://help.sap.com/docs/cloud-identity-services).
 
-### Use AMS as Authorization Management System on SAP BTP
+Why is AMS required? Unlike tokens issued by XSUAA, IAS tokens only contain static user information and cannot directly provide CAP roles.
+AMS acts as a central service to define access policies that include CAP roles and additional filter criteria for instance-based authorizations in CAP applications.
+_Business users_, technically identified by the IAS ID token, can have AMS policies assigned by user administrators.
 
-SAP BTP is currently replacing the authorization management done with XSUAA by an integrated solution with AMS. AMS is integrated into SAP Cloud Identity (SCI), which will offer authentication, authorization, user provisioning and management in one place.
+::: tip
+Authorizations for technical users should not be adressed by AMS policies.
+:::
 
-For newly build applications the usage of AMS is generally recommended. The only constraint that comes with the usage of AMS is that customers need to copy their users to the Identity Directory Service as the central place to manage users for SAP BTP applications. This is also the general SAP strategy to simplify user management in the future.
+The integration with AMS is provided as an easy-to-use plugin for CAP applications.
+At the time of the request, the AMS policies assigned to the request user are evaluated by the CAP AMS plugin, and the CAP roles and filters are applied to the request context accordingly, as illustrated in the diagram:
 
-### Case For XSUAA
+![The graphic is explained in the following text.](./assets/ams.png){width="500px" }
 
-There is one use case where currently an XSUAA based authorization management is preferable: When XSUAA based services to be consumed by a CAP application come with their own business user roles and thus make user role assignment in the SAP Cloud Cockpit necessary. This will be resolved in the future when the authorization management will be fully based on the SCI Admin console.
+The interaction between the CAP application and AMS (via plugin) is as follows:
 
-For example, SAP Task Center you want to consume an XSUAA-based service that requires own end user role. Apart from this, most services should be technical services that do not require an own authorization management that is not yet integrated in AMS.
+1. IAS-Authentication is performed independently as a pre-step.
+2. The plugin injects **user roles and filters** according to AMS policies assigned to the current request user.
+3. CAP performs the authorization on the basis of the CDS authorization model and the injected user claims.
+
+
+### Adding AMS
+
+**AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
+
+To enhance your project with AMS, you can make use of CDS CLI tooling:
+
+```sh
+cds add ams
+```
+
+This automatically adds required configuration for AMS, taking into account the concrete application context (tenant mode and runtime environment etc.).
+If required, it also runs the new `cds add ias` command to configure the project for IAS authentication.
+
+::: details See dependencies added
+
+::: code-group
+```xml [pom.xml]
+<properties>
+  <sap.cloud.security.ams.version>3.7.0</sap.cloud.security.ams.version> <!-- [!code ++] -->
+</properties>
+```
+
+```xml [srv/pom.xml - dependencies]
+<dependencies>
+  <dependency>  <!-- [!code ++:10] -->
+    <groupId>com.sap.cloud.security.ams.client</groupId>
+    <artifactId>jakarta-ams</artifactId>
+    <version>${sap.cloud.security.ams.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>com.sap.cloud.security.ams.client</groupId>
+    <artifactId>cap-ams-support</artifactId>
+    <version>${sap.cloud.security.ams.version}</version>
+  </dependency>
+</dependencies>
+```
+
+```xml [srv/pom.xml - plugins]
+<plugins>
+  <plugin>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-maven-plugin</artifactId>
+    <executions>
+      <execution>
+        <id>cds.build</id>
+        <goals>
+          <goal>cds</goal>
+        </goals>
+        <configuration>
+          <commands>
+          [...]
+            <command>build --for ams</command> <!-- [!code ++:1] -->
+          </commands>
+        </configuration>
+    </execution>
+    </plugin>
+  <plugin>  <!-- [!code ++:19] -->
+    <groupId>com.sap.cloud.security.ams.client</groupId>
+    <artifactId>dcl-compiler-plugin</artifactId>
+    <version>${sap.cloud.security.ams.version}</version>
+    <executions>
+      <execution>
+        <id>compile</id>
+        <goals>
+          <goal>compile</goal>
+        </goals>
+        <configuration>
+          <sourceDirectory>${project.basedir}/src/main/resources/ams</sourceDirectory>
+          <dcn>true</dcn>
+          <dcnParameter>pretty</dcnParameter>
+          <compileTestToDcn>true</compileTestToDcn>
+        </configuration>
+      </execution>
+    </executions>
+  </plugin>
+</plugins>
+```
+
+:::
+
+These libraries integrate into the CAP framework to handle incoming requests. 
+Based on the user's assigned [policies](#generate-policies), the user's roles are determined and written to the [UserInfo](./security#enforcement-api) object. 
+The framework then authorizes the request as usual based on the user's roles.
+
+::: details Node.js plugin `@sap/ams` added to the project
+
+```json [package.json]
+{
+  "devDependencies": {
+    "@sap/ams": "^3"
+  }
+}
+```
+
+:::
+
+The `@sap/ams` plugin provides multiple build-time features:
+
+- Validate `ams.attributes` annotations for type coherence against the AMS schema.
+- Generate policies from the CDS model during the build using a [custom build task](../guides/deployment/custom-builds#custom-build-plugins).
+- Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
+
+
+Read more about AMS <span id="internallinks"/>
+
+
+### Prepare CDS Model
+
+On the level of application domain, you can declaratively introduce access rules in the CDS model, enabling higher-level interaction flows with the entire application domain:
+ - a [CAP role for AMS](#roles-for-ams) can span multiple domain services and entities, providing a holistic perspective on _how a user interacts with the domain data_.
+ - a [CAP attribute for AMS](#attributes-for-ams) is typically cross-sectional and hence is defined on a domain-global level.
+
+The CDS model is fully decoupled from AMS policies which are defined on business level on top by external administrators.
+Hence, the **rules in the CAP model act as basic building blocks for higher-level businness rules** and therefore should have appropriate granularity.
+
+
+#### CAP Roles for AMS { #roles-for-ams }
+
+You can define CAP roles in the CDS model as [described before](#roles).
+
+::: tip
+A CAP role describes a **conceptual role on technical domain level** defined by application developers.
+In contrast, an AMS policy reflects a coarser-grained **business role on application level** defined by user administrators.
+:::
+
+For instance, you can enhance the bookshop sample by replacing the `admin` role with more fine-grained CAP roles:
+
+```cds
+service AdminService @(requires: ['ManageAuthors', 'ManageBooks']) {
+
+  entity Books @(restrict: [
+    { grant: ['READ'], to: 'ManageAuthors' },
+    { grant: ['READ', 'WRITE'], to: 'ManageBooks' } ])
+  as projection on my.Books;
+
+  entity Authors @(restrict: [
+    { grant: ['READ', 'WRITE'], to: 'ManageAuthors' },
+    { grant: ['READ'], to: 'ManageBooks' } ])
+  as projection on my.Authors;
+}
+```
+
+Role `ManageBooks` allows an user to mange books _for the authors already in sale_, auch as offering new books.
+In contrast, users with `ManageAuthors` are allowed to decide which authors' books should be offered, but they do not define the range of books.
+Both CAP roles are ready to be used in higher-level [AMS policies](#policies).
+
+::: tip
+You can simply reuse existing CAP roles for AMS. There is no need to modify the CDS model.
+:::
+
+[Learn more about role-based authorizations in CAP](./authorization#restrictions){.learn-more}
+
+
+#### CAP Attributes for AMS { #attributes-for-ams }
+
+Attributes for AMS offer user administrators an additional layer of flexibility to partition domain entities into smaller, more manageable units for access control.
+The domain attributes, which are exposed to user administrators for defining custom filter conditions, must be predefined by the application developer in the CDS model using the `@ams` annotation.
+
+For example, the instances of entity `Books` can be classified by the associated genre. 
+Hence, `genre.name` appears to be a suitable  AMS attribute value, exposed under the name `Genre`:
+
+```cds
+annotate AdminService.Books with @ams.attributes: {
+  Genre: (genre.name)
+};
+```
+
+In general, the `@ams` annotation operates on the entity level.
+The value of the AMS attribute needs to point to a single-value property of the target entity (paths are supported).
+It is highly recommended to make use of a compiler expression in order to ensure validity of the value reference.
+
+
+::: tip
+Choose attributes exposed to AMS carefully.
+The attribute should have cross-sectional sematic in the domain.
+:::
+
+As such attributes are usually shared by multiple entities, it is convenient to add the `@ams`-annotation on level of a shared aspect as scetched here:
+
+```cds
+aspect withGenre @ams.attributes: { Genre: (genre.name) } {
+    genre : Association to Genres;
+}
+
+entity Books : withGenre { ... }
+```
+
+The detailed syntax of `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
+```cds
+annotate AdminService.Books with @ams.attributes.genre: {
+  attribute: 'Genre', element: (genre.name)
+};
+```
+
+
+### Prepare Policies { #policies }
+
+CAP roles and attribute filters cannot be directly assigned to business users.
+Instead, the application defines AMS base policies that include CAP roles and attributes, allowing user administrators to assign them to users or create custom policies based on them.
+
+:::tip
+AMS policies represent the business-level roles of end users interacting with the application.
+Often, they reflect real-world jobs or functions.
+:::
+
+After the application is built, check the *srv/src/main/resources/ams* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
+
+::: code-group
+
+``` [srv/src/main/resources]
+└─ ams
+   ├─ cap
+   │  └─ basePolicies.dcl
+   └─ schema.dcl
+```
+
+:::
+
+The generated policies are a good starting point to add manual modifications.
+
+The generated DCL-schema contains all AMS attributes exposed for filtering and does not need to be refined:
+
+```yaml [/ams/schema.dcl]
+SCHEMA {
+ Genre : String
+}
+```
+
+In contrast, the generated policies are usually subject to change.
+For example, you can rename the policies to reflect appropriate job functions for the bookstore and adjust the referenced CAP roles as needed:
+
+```yaml [/ams/cap/basePolicies.dcl]
+POLICY StockManager {
+  ASSIGN ROLE ManageBooks WHERE Genre IS NOT RESTRICTED;
+}
+
+POLICY ContentManager {
+  ASSIGN ROLE ManageAuthors;
+  ASSIGN ROLE ManageBooks;
+}
+```
+
+In contrast to a `StockManager` who is responsible for the books offering, a `ContentManager` makes the author selection, in addition.
+Optionally, CAP role `ManageBooks` for `StockManager` might be restricted to specific genres by applying filters prepared in customized policies.
+As a `ContentManager` there is no genre-based restriction based on genres is prepared.
+
+
+[Learn more about AMS policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/configuring-authorization-policies){.learn-more}
+
+
+### Local Testing
+
+Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (custom) policies to mock users and run local tests:
+
+```yaml
+cds:
+  security:
+    mock:
+      users:
+        content-manager: // [!code ++]
+          policies: // [!code ++]
+            - cap.ContentManager // [!code ++]
+        stock-manager: // [!code ++]
+          policies: // [!code ++]
+            - cap.StockManager // [!code ++]
+```
+
+This is also very helpful in unit test scenarios.
+
+:::tip
+Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
+:::
+
+Now (re)start the application with
+
+```sh
+mvn spring-boot:run
+```
+
+and verify in the UI (`http://localhost:8080`) that the access rules apply as implied by the assigned policies:
+- `content-manager` and `stock-manager` have full _read_ access to `Books` and `Authors` in the `AdminService`.
+- `content-manager` can edit `Books` and `Authors`.
+- `stock-manager` can only edit `Books`.
+
+
+
+
+
+```sh
+c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
+```
+
+ogging:
+    level:
+        com.sap.cloud.security.ams: DEBUG
+        com.sap.cloud.security.ams.dcl.capsupport: DEBUG
+
+/cap
+   - basePolicies.dcl
+/generated
+  - basePolicies.dcl
+/local
+  - testPolicies.dcl
+
+
+
+
+### Cloud Deployment { #ams-deployment }
+
+Policies are typically deployed to the AMS server whenever the application is deployed. Afterwards, those policies can be assigned to users in the Administration Console of the IAS tenant, for example, to grant a role to a user. Using the AMS plugins (`cds add ams`), the configuration of the deployment artifacts is done automatically.
+
+::: details Prerequisites on SAP BTP
+
+- [Get your SAP Cloud Identity Service tenant.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant)
+- [Establish Trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication) towards your SAP Cloud Identity Service tenant to use it as identity provider for applications in your subaccount.
+
+:::
+
+Follow the [Deploy to Cloud Foundry guide](../guides/deployment/to-cf), to prepare your project for deployment. Here's a shortcut:
+
+```sh
+cds add hana,approuter,mta,ams
+
+```
+
+After successful deployment, you need to [Assign Authorization Policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/assign-authorization-policies).
+
+
+::: details Assign users to AMS policies
+
+![Screenshot showing the AMS Policy Assignment](assets/ams-assignment.png)
+
+:::
 
 
 <!-- [Learn more about using IAS and AMS with CAP Java.](/java/ams){.learn-more} -->
 [Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
-
-
-
 Neue AMS CAP Doku https://sap.github.io/cloud-identity-developer-guide/CAP/Basics.html
 
+https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html
+https://sap.github.io/cloud-identity-developer-guide/Authorization/GettingStarted.html
 
 
-## Role Assignment with XSUAA { xsuaa-roles }
+
+## Role Assignment with XSUAA { #xsuaa-roles }
 
 Information about roles and attributes can be made available to the UAA platform service. 
 This information enables the respective JWT tokens to be constructed and sent with the requests for authenticated users. 
@@ -318,12 +684,13 @@ The user name is frequently stored with business data (for example, `managed` as
 :::
 
 
-### Propagating Users { #propagating-users }
+### Switching and Propagating Users { #switching-users }
 	- request internal
 	- tenant switch
 	- privileged mode
 	- original authentication claim
 	- asynchronous -> implicit to technical user
+  - technical -> buisiness not possible
 
 ### Tracing { #user-tracing }
 
@@ -348,3 +715,6 @@ TODO
 ## Ptifalls
 
 - asynchronous business requests
+- wrong granularity of CAP/AMS roles
+- no cross-sectional attributes
+- mixing business roles with technical
