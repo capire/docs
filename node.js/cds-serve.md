@@ -208,7 +208,7 @@ srv/cat-service.js   #> service implementation used by default
 For each service served at a certain protocol, the framework registers a configurable set of express middlewares by default like so:
 
 ```js
-app.use (cds.middlewares.before, protocol_adapter)
+app.use (cds.middlewares.before, protocol_adapter, cds.middlewares.after)
 ```
 
 The standard set of middlewares uses the following order:
@@ -221,6 +221,16 @@ cds.middlewares.before = [
   ctx_model(), // fills in cds.context.model, in case of extensibility
 ]
 ```
+
+```js
+cds.middlewares.after = [
+  cds_error_handler(), // provides final error handling
+]
+```
+
+::: tip Custom error middleware before `cds_error_handler`
+To invoke a custom error middleware successfully, you must register it _before_ the built-in `cds_error_handler`. You can achieve that, for example, by adding the middleware using `cds.middlewares.after.unshift()`.
+:::
 
 ::: warning _Be aware of the interdependencies of middlewares_ <!--  -->
 _ctx_model_ requires that _cds.context_ middleware has run before.
