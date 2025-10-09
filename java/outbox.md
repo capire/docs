@@ -163,6 +163,73 @@ To be sure that the deployment version has been set correctly, you can find a lo
 
 And finally, if for some reason you don't want to use a version check for a particular outbox collector, you can switch it off via the outbox configuration [<Config java filesOnly>cds.outbox.services.MyCustomOutbox.checkVersion: false</Config>](../java/developing-applications/properties#cds-outbox-services-<key>-checkVersion).
 
+### Outbox for Shared Databases
+
+Currently, CAP Java does not yet support microservices with shared database out of the box, as this can lead to unexpected behavior when different isolated services use the same outboxes.
+Since CAP automatically creates two outboxes with a static name — **DefaultOutboxOrdered** and **DefaultOutboxUnordered** — these would be shared across all services which introduces conflicts.
+
+To avoid this, you can apply a manual workaround as follows:
+
+ 1. Customize the outbox configuration and isolating them via distinct namespaces for each service.
+ 2. Adapt the Audit Log outbox configuration.
+ 3. Adapt the messaging outbox configuration per service.
+ 
+ These steps are described in the following sections.
+
+#### Deactivate Default Outboxes
+
+First, deactivate the two default outboxes and create custom outboxes with configurations tailored to your needs.
+
+```yaml
+cds:
+  outbox:
+    services:
+      # deactivate default outboxes
+      DefaultOutboxUnordered.enabled: false
+      DefaultOutboxOrdered.enabled: false
+      # custom outboxes with unique names
+      Service1CustomOutboxOrdered:
+        maxAttempts: 10
+        storeLastError: true
+        ordered: true
+      Service1CustomOutboxUnordered:
+        maxAttempts: 10
+        storeLastError: true
+        ordered: false
+
+```
+
+#### Adapt Audit Log Configuration
+
+The **DefaultOutboxUnordered** outbox is automatically used for audit logging. Therefore, you must update the audit log configuration to point to the custom one.
+
+```yaml
+cds:
+  ...
+  auditlog:
+    outbox.name: Service1CustomOutboxUnordered
+```
+
+#### Adapt Messaging Configuration
+
+Next, adapt the messaging configuration of **every** messaging service in the application so that they use the custom-defined outboxes.
+
+```yaml
+cds:
+  messaging:
+    services:
+      MessagingService1:
+        outbox.name: Service1CustomOutboxOrdered
+      MessagingService2:
+        outbox.name: Service1CustomOutboxOrdered
+```
+
+
+::: tip Important Note
+It is crucial to **deactivate** the default outboxes, and	ensure **unique outbox namespaces** in order to achieve proper isolation between services in a shared DB scenario.
+:::
+  
+
 ## Outboxing CAP Service Events
 
 Outbox services support outboxing of arbitrary CAP services. A typical use case is to outbox remote OData
