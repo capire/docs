@@ -363,24 +363,40 @@ Minifies a given CSN model by removing all unused<sup>1</sup> types and aspects,
 let csn = await cds.load('*').then(cds.minify)
 ```
 
-Using `cds.minify()` is particularly relevant, when reuse models are in the game. For example, this applies to [`@sap/cds/common`](../cds/common). In there, all code list entities like *Countries*, *Currencies* and *Languages* are tagged with `@cds.persistence.skip:'if-unused'`. For example, run this in *cap/samples/bookshop*:
+Using `cds.minify()` is particularly relevant, when reuse models are in the game. For example, this applies to [`@sap/cds/common`](../cds/common). In there, all code list entities like *Countries*, *Currencies* and *Languages* are tagged with `@cds.persistence.skip:'if-unused'`.
+
+For example, run the CLI wrapper `cds minify` in *cap/samples/bookshop*:
 
 ```sh
-[bookshop] DEBUG=minify cds -e "cds.load('*').then(cds.minify)"
+[bookshop] cds minify "*" --dry
 ```
-... would generate this output, informing which definitions got skipped:
-```sh
-[minify] - skipping type Language
-[minify] - skipping type Country
-[minify] - skipping context sap.common
-[minify] - skipping entity sap.common.Languages
-[minify] - skipping entity sap.common.Countries
-[minify] - skipping aspect cuid
-[minify] - skipping aspect temporal
-[minify] - skipping aspect extensible
-[minify] - skipping entity sap.common.Languages.texts
-[minify] - skipping entity sap.common.Countries.texts
-```
+... which generates this output, informing which definitions got retained and skipped:
+
+<pre class="log">
+ Keep:
+
+  • <em>AdminService </em>
+  • <em>AdminService.Books </em>
+  •• <em>sap.capire.bookshop.Books </em>
+  ••• <em>User </em>
+  ••• <em>sap.capire.bookshop.Authors </em>
+  •••• <em>managed </em>
+... more
+
+ Skip:
+
+<i>   - Language </i>
+<i>   - Country </i>
+<i>   - Timezone </i>
+<i>   - sap.common </i>
+<i>   - sap.common.Countries </i>
+<i>   - sap.common.Timezones </i>
+<i>   - cuid </i>
+<i>   - temporal </i>
+<i>   - sap.common.Countries.texts </i>
+<i>   - sap.common.Timezones.texts </i>
+</pre>
+
 
 <sup>1</sup> Unused in that context means, not reachable from roots services and — non-skipped — entities in the model.
 
