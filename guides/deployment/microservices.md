@@ -35,11 +35,10 @@ This guide describes a way to manage development and deployment via *[monorepos]
    echo "{\"name\":\"@capire/samples\",\"workspaces\":[\"*\"]}" > package.json
    ```
 
-<div class="impl node">
-
 2. Add the previously mentioned projects as `git` submodules:
 
-   ```sh
+   ::: code-group
+   ```sh [Node.js]
    git init
    git submodule add https://github.com/capire/bookstore
    git submodule add https://github.com/capire/reviews
@@ -49,14 +48,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
    git submodule add https://github.com/capire/data-viewer
    git submodule update --init
    ```
-
-</div>
-
-<div class="impl java">
-
-2. Add the previously mentioned projects as `git` submodules:
-
-   ```sh
+   ```sh [Java]
    git init
    git submodule add https://github.com/capire/bookstore-java
    git submodule add https://github.com/capire/reviews-java
@@ -66,8 +58,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
    git submodule add https://github.com/capire/data-viewer-java
    git submodule update --init
    ```
-
-</div>
+   :::
 
    Add a _.gitignore_ file with the following content:
    ```txt
@@ -77,46 +68,42 @@ This guide describes a way to manage development and deployment via *[monorepos]
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
 
 
-<div class="impl node">
-
 3. Test-drive locally:
-   ```sh
+   
+   ::: code-group
+   ```sh [Node.js]
    npm install
-   ```
-
-   ```sh
    cds w bookshop
    ```
-
-   Each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
-
-   [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
-
-</div>
-
-<div class="impl java">
-
-3. Test-drive locally:
-   ```sh
+   ```sh [Java]
    npm install
-   ```
-
-   ```sh
    cd bookstore && npm start
    ```
+   :::
 
-</div>
+   In Node.js, each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
+
+   [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
 
 
 ::: details The project structure
 
 The project structure used here is as follows:
 
-```txt
+::: code-group
+```txt [Node.js]
 <PROJECT-ROOT>/
 ├─ bookstore/
 ├─ orders/
 ├─ reviews/
+├─ ...
+└─ package.json
+```
+```txt [Java]
+<PROJECT-ROOT>/
+├─ bookstore-java/
+├─ orders-java/
+├─ reviews-java/
 ├─ ...
 └─ package.json
 ```
@@ -243,17 +230,9 @@ This section is about how to deploy all 3+1 projects at once with a common _mta.
 
 ![component diagram with synchronous and event communication for orders](./assets/microservices/bookstore.excalidraw.svg)
 
-<div class="impl node">
+For Node.js, [@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
-[@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
-
-</div>
-
-<div class="impl java">
-
-<font color=red size=+2>TODO</font> [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
-
-</div>
+<font color=red size=+2>TODO</font> For CAP Java, [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
 ### Deployment Descriptor
 
@@ -303,9 +282,7 @@ build-parameters:
 ```
 :::
 
-<div class="impl node">
-
-::: info `cds build --ws`
+::: info `cds build --ws` with Node.js
 If the CDS models of every NPM workspace contained in the monorepo should be considered, then instead of creating this `shared-db` folder, you can also use:
 ```shell
 cds build --for hana --production --ws
@@ -315,11 +292,7 @@ The `--ws` aggregates all models in the NPM workspaces.
 In this walkthrough, we only include a subset of the CDS models in the deployment.
 :::
 
-</div>
-
-<div class="impl node">
-
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
 
 The preceding steps only added configuration to the workspace root.
 
@@ -333,26 +306,18 @@ npm i @cap-js/hana --workspace reviews
 
 :::
 
-</div>
-
-<div class="impl java">
-
-::: details Configure each app for cloud readiness
+::: details CAP Java: Configure each app for cloud readiness
 
 For each project add the **cds-starter-cloudfoundry** [starter bundle](https://cap.cloud.sap/docs/java/developing-applications/building#starter-bundles).
 
 :::
 
-</div>
-
 ### Applications
-
-<div class="impl node">
 
 Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
 
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 modules:
   - name: bookstore-srv # [!code focus]
     type: nodejs
@@ -409,16 +374,7 @@ modules:
       - name: samples-destination
 ...
 ```
-:::
-
-</div>
-
-<div class="impl java">
-
-Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
-
-::: code-group
-```yaml [mta.yaml]
+```yaml [Java (mta.yaml)]
 modules:
 
   - name: bookstore-srv # [!code focus]
@@ -490,11 +446,7 @@ modules:
 ```
 :::
 
-</div>
-
-<div class="impl node">
-
-Add build commands for each module to be prepared for deployment:
+In Node.js, add build commands for each module to be prepared for deployment:
 
 ::: code-group
 ```yaml [mta.yaml]
@@ -513,9 +465,6 @@ build-parameters:
 ::: info --ws-pack
 Note that we use the *--ws-pack* option for some modules. It's important for node modules referencing other repository-local node modules.
 :::
-
-</div>
-
 
 ### Authentication
 
@@ -549,9 +498,7 @@ Add the admin role
 ```
 :::
 
-<div class="impl node">
-
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
 Add NPM dependency `@sap/xssec`:
 
 ```shell
@@ -561,13 +508,11 @@ npm i @sap/xssec --workspace reviews
 ```
 :::
 
-</div>
-
 ### Messaging
 
 The messaging service is used to organize asynchronous communication between the CAP services.
 
-<div class="impl node">
+#### In Node.js
 
 ```shell
 cds add enterprise-messaging
@@ -654,9 +599,7 @@ Enable messaging for the modules that use it:
 
 :::
 
-</div>
-
-<div class="impl java">
+#### In CAP Java
 
 Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the `emname` and `namespace` properties, as these will be parameterized dynamically in the mta.yaml file:
 
@@ -714,10 +657,6 @@ resources:
 ```
 :::
 
-
-</div>
-
-
 ### Destinations
 
 Add [destination configuration](https://cap.cloud.sap/docs/guides/using-services#using-destinations) for connectivity between the apps:
@@ -768,10 +707,8 @@ modules:
 
 Use the destinations in the bookstore application:
 
-<div class="impl node">
-
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 modules:
   - name: bookstore-srv
     ...
@@ -779,14 +716,7 @@ modules:
       cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/reviews"} # [!code ++]
       cds_requires_OrdersService_credentials: {"destination": "orders-dest","path": "/odata/v4/orders"} # [!code ++]
 ```
-:::
-
-</div>
-
-<div class="impl java">
-
-::: code-group
-```yaml [bookstore/srv/src/main/resources/application.yaml]
+```yaml [Java (bookstore/srv/src/main/resources/application.yaml)]
 cds:
   odataV4.endpoint.path: /
   messaging.services:
@@ -806,11 +736,7 @@ cds:
 ```
 :::
 
-</div>
-
-<div class="impl node">
-
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
 
 Add `@sap-cloud-sdk/http-client` and `@sap-cloud-sdk/resilience` for each module utilizing the destinations:
 
@@ -820,18 +746,11 @@ npm i @sap-cloud-sdk/resilience --workspace bookstore
 ```
 :::
 
-</div>
-
-
-<div class="impl java">
-
-::: details Configure each app for cloud readiness
+::: details CAP Java: Configure each app for cloud readiness
 
 Add dependency to the **cds-feature-remote-odata** [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules)
 
 :::
-
-</div>
 
 ### Approuter
 
