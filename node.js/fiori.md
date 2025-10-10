@@ -90,6 +90,7 @@ srv.on('CREATE', MyEntity.drafts, /*...*/)
 
 ```js
 srv.before('DISCARD', MyEntity.drafts, /*...*/)
+srv.after('DISCARD', MyEntity.drafts, /*...*/)
 srv.on('DISCARD', MyEntity.drafts, /*...*/)
 ```
 
