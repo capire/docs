@@ -141,9 +141,10 @@ annotate my.Customers with @PersonalData: {
 
 Use this annotation to identify data subject's unique key, or a reference to it. References are commonly associations or foreign keys in subject details entities, or related ones, referring to a subject entity.
 
-- Each `@PersonalData` entity needs to identify a  the `DataSubjectID` element.
+- Each `@PersonalData` entity needs to identify a `DataSubjectID` element.
 - For entities with `DataSubject` semantics, this is typically the primary key.
 - For entities with `DataSubjectDetails` or `Other`  semantics, this is usually an association to the data subject.
+- Fields marked as `DataSubjectID` should use [`not null`](../databases#not-null) to guarantee a value is present at all times.
 
 Hence, we annotate our model as follows:
 
