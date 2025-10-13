@@ -1190,7 +1190,7 @@ which is equivalent to:
 GET /Books?$apply=aggregate(stock with sum as stock) HTTP/1.1
 ```
 
-#### Currencies and Units of Measure {.java}
+#### Currencies and Units of Measure
 
 If a property represents a monetary amount, it may have a related property that indicates the amount's *currency code*. Analogously, a property representing a measured quantity can be related to a *unit of measure*. To indicate that a property is a currency code or a unit of measure, it can be annotated with the [Semantics Annotations](https://help.sap.com/docs/SAP_NETWEAVER_750/cc0c305d2fab47bd808adcad3ca7ee9d/fbcd3a59a94148f6adad80b9c97304ff.html) `@Semantics.currencyCode` or `@Semantics.unitOfMeasure`.
 The aggregation method (typically, sum) is specified with the `@Aggregation.default` annotation.
