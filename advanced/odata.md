@@ -26,7 +26,7 @@ status: released
 
 ## Feature Overview { #overview}
 
-OData is an OASIS standard, which essentially enhances plain REST with standardized system query options like `$select`, `$expand`, `$filter`, etc. Find a rough overview of the feature coverage in the following table:
+OData is an OASIS standard that enhances plain REST with standardized system query options like `$select`, `$expand`, `$filter`, and others. The following table provides an overview of the feature coverage:
 
 | Query Options  | Remarks                                   | Node.js    | Java    |
 |----------------|-------------------------------------------|:------------:|:---------:|
@@ -75,7 +75,7 @@ System query options can also be applied to an [expanded navigation property](ht
 ## PATCH Entity Collection with Mass Data (Java) { #odata-patch-collection }
 
 With OData v4, you can [update a collection of entities](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_UpdateaCollectionofEntities) with a _single_ PATCH request.
-The resource path of the request targets the entity collection and the body of the request is given as a [delta payload](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_DeltaPayloads):
+The request targets the entity collection in the resource path and provides the request body as a [delta payload](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_DeltaPayloads):
 
 ```js
 PATCH /CatalogService/Books
@@ -102,9 +102,9 @@ Content-Type: application/json
 }
 ```
 
-PATCH requests with delta payload are executed using batch delete and [upsert](../java/working-with-cql/query-api#bulk-upsert) statements, and are more efficient than OData [batch requests](https://docs.oasis-open.org/odata/odata/v4.01/csprd02/part1-protocol/odata-v4.01-csprd02-part1-protocol.html#sec_BatchRequests).
+The system executes PATCH requests with a delta payload using batch delete and [upsert](../java/working-with-cql/query-api#bulk-upsert) statements. These requests are more efficient than OData [batch requests](https://docs.oasis-open.org/odata/odata/v4.01/csprd02/part1-protocol/odata-v4.01-csprd02-part1-protocol.html#sec_BatchRequests).
 
-Use PATCH on entity collections for uploading mass data using a dedicated service, which is secured using [role-based authorization](../guides/security/authorization#requires). Delta updates must be explicitly enabled by annotating the entity with
+Use PATCH on entity collections to upload mass data using a dedicated service secured with [role-based authorization](../guides/security/authorization#requires). Enable delta updates explicitly by annotating the entity with
 
 ```cds
 @Capabilities.UpdateRestrictions.DeltaUpdateSupported
@@ -112,8 +112,8 @@ Use PATCH on entity collections for uploading mass data using a dedicated servic
 
 Limitations:
  * Conflict detection via [ETags](../guides/providing-services#etag) is not supported.
- * [Draft flow](../java/fiori-drafts#bypassing-draft-flow) is bypassed, `IsActiveEntity` has to be `true`.
- * [Draft locks](../java/fiori-drafts#draft-lock) are ignored, active entities are updated or deleted w/o canceling drafts.
+ * The system bypasses [draft flow](../java/fiori-drafts#bypassing-draft-flow). `IsActiveEntity` must be `true`.
+ * The system ignores [draft locks](../java/fiori-drafts#draft-lock). Active entities are updated or deleted without canceling drafts.
  * [Added and deleted links](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_IteminaDeltaPayloadResponse) are not supported.
  * The header `Prefer=representation` is not yet supported.
  * The `continue-on-error` preference is not yet supported.
@@ -122,7 +122,7 @@ Limitations:
 
 ## Mapping of CDS Types { #type-mapping}
 
-The table below lists [CDS's built-in types](../cds/types) and their mapping to the OData EDM type system.
+The following table lists [CDS's built-in types](../cds/types) and their mapping to the OData EDM type system.
 
 | CDS Type       | OData V4                                  |
 | -------------- | ---------------------------------------   |
@@ -144,7 +144,7 @@ The table below lists [CDS's built-in types](../cds/types) and their mapping to 
 | `Binary`       | _Edm.Binary_                              |
 | `LargeBinary`  | _Edm.Binary_                              |
 | `LargeString`  | _Edm.String_                              |
-| `Map`          | represented as empty, open complex type   |
+| `Map`          | represented as an empty, open complex type   |
 | `Vector`       | not supported <sup>(2)</sup>              |
 
 > <sup>(1)</sup> Mapping can be changed with, for example, `@odata.Type='Edm.String'`
@@ -162,12 +162,11 @@ OData V2 has the following differences:
 
 ### Overriding Type Mapping { #override-type-mapping}
 
-Override standard type mappings using the annotation `@odata.Type` first, and then additionally define `@odata {MaxLength, Precision, Scale, SRID}`.
+Use the annotation `@odata.Type` first to override standard type mappings, then additionally define `@odata {MaxLength, Precision, Scale, SRID}`.
 
 `@odata.Type` is effective on scalar CDS types only and the value must be a valid OData (EDM) primitive type for the specified protocol version. Unknown types and non-matching facets are silently ignored. No further value constraint checks are applied.
 
-They allow, for example, to produce additional OData EDM types which are not available in the standard type mapping. This is done during
-the import of external service APIs, see [Using Services](../guides/using-services#external-service-api).
+These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../guides/using-services#external-service-api).
 
 ```cds
 entity Foo {
@@ -177,9 +176,8 @@ entity Foo {
 };
 ```
 
-Another prominent use case is the CDS type `UUID`, which maps to `Edm.Guid` by default. However, the OData standard
-puts up restrictive rules for _Edm.Guid_ values - for example, only hyphenated strings are allowed - which can conflict with existing data.
-Therefore, you can override the default mapping as follows:
+Another prominent use case is the CDS type `UUID`, which maps to `Edm.Guid` by default. However, the OData standard imposes restrictive rules for _Edm.Guid_ values. For example, only hyphenated strings are allowed, which can conflict with existing data.
+You can override the default mapping as follows:
 
 ```cds
 entity Books {
@@ -189,8 +187,8 @@ entity Books {
 ```
 
 ::: warning
-This annotation affects the client side facing API only. There's no automatic data modification of any kind behind the scenes, like rounding, truncation, conversion, and so on. It's your responsibility to perform all required modifications on the data stream such that the values match their type in the API.
-If you are not doing the required conversions, you can "cast" any scalar CDS type into any incompatible EDM type:
+This annotation affects the client-side facing API only. No automatic data modification occurs behind the scenes, such as rounding, truncation, or conversion. You must perform all the required modifications on the data stream so that the values match their type in the API.
+If you don't do the required conversions, you can "cast" any scalar CDS type into any incompatible EDM type:
 
 ```cds
 entity Foo {
@@ -206,19 +204,18 @@ This translates into the following OData API contract:
 <Property Name="str" Type="Edm.Decimal" Scale="floating" DefaultValue="17.4"/>
 ```
 
-The client can now rightfully expect that float numbers are transmitted but in reality the values are still strings.
+The client can now rightfully expect float numbers to be transmitted, but in reality the values are still strings.
 :::
 
 
 ## OData Annotations { #annotations}
 
-The following sections explain how to add OData annotations to CDS models and how they're mapped to EDMX outputs.
-Only annotations defined in the vocabularies mentioned in section [Annotation Vocabularies](#vocabularies) are
-considered in the translation.
+The following sections explain how to add OData annotations to CDS models and how to map them to EDMX outputs.
+The translation considers only annotations defined in the vocabularies mentioned in [Annotation Vocabularies](#vocabularies).
 
 ### Terms and Properties
 
-OData defines a strict two-fold key structure composed of `@<Vocabulary>.<Term>` and all annotations are always specified as a _Term_ with either a primitive value, a record value, or collection values. The properties themselves may, in turn, be primitives, records, or collections.
+OData defines a strict two-fold key structure composed of `@<Vocabulary>.<Term>`. All annotations are always specified as a _Term_ with either a primitive value, a record value, or collection values. The properties themselves may, in turn, be primitives, records, or collections.
 
 #### Example
 
@@ -275,13 +272,13 @@ For each annotated target definition in CSN, the rules for restructuring from CS
 
 1. Annotations with a single-identifier key are skipped (as OData annotations always have a `@Vocabulary.Term...` key signature).
 2. All individual annotations with the same `@<Vocabulary.Term>` prefix are collected.
-3. If there is only one annotation without a suffix, &rarr; that one is a scalar or array value of an OData term.
-4. If there are more annotations with suffix key parts &rarr; it's a record value for the OData term.
+3. If there's only one annotation without a suffix, &rarr; that one is a scalar or array value of an OData term.
+4. If there are more annotations with suffix key parts →, it's a record value for the OData term.
 
 
 ### Qualified Annotations
 
-OData foresees [qualified annotations](https://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Toc453752511), which essentially allow to specify different values for a given property. CDS syntax for annotations was extended to also allow appending OData-style qualifiers after a `#` sign to an annotation key, but always only as the last component of a key in the syntax.
+OData provides [qualified annotations](https://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Toc453752511), which allow you to specify different values for a given property. CDS syntax for annotations was extended to allow appending OData-style qualifiers after a `#` sign to an annotation key, but always only as the last component of a key in the syntax.
 
 For example, this is supported:
 
@@ -313,14 +310,14 @@ and would render as follows in CSN:
 }
 ```
 
-Note that there's no interpretation and no special handling for these qualifiers in CDS. You have to write and apply them in exactly the same way as your chosen OData vocabularies specify them.
+CDS provides no interpretation and no special handling for these qualifiers. You must write and apply them exactly as your chosen OData vocabularies specify them.
 
 
 ### Primitives
 
 > Note: The `@Some` annotation isn't a valid term definition. The following example illustrates the rendering of primitive values.
 
-Primitive annotation values, meaning Strings, Numbers, `true`, and `false` are mapped to corresponding OData annotations as follows:
+The system maps primitive annotation values (Strings, Numbers, `true`, and `false`) to corresponding OData annotations as follows:
 
 ```cds
 @Some.Boolean: true
@@ -358,7 +355,7 @@ All three expressions result in the following rendering:
 
 > Note: The `@Some` annotation isn't a valid term definition. The following example illustrates the rendering of record values.
 
-Record-like source structures are mapped to `<Record>` nodes in EDMX, with primitive types translated analogously to the above:
+The system maps record-like source structures to `<Record>` nodes in EDMX, with primitive types translated analogously to what was mentioned earlier:
 
 ```cds
 @Some.Record: {
@@ -438,7 +435,7 @@ To overwrite the default, use an explicit `$Type` like shown previously.
 
 > Note: The `@Some` annotation isn't a valid term definition. The following example illustrates the rendering of collection values.
 
-Arrays are mapped to `<Collection>` nodes in EDMX and if primitives show up as direct elements of the array, these elements are wrapped into individual primitive child nodes of the resulting collection as is. The rules for records and collections are applied recursively:
+The system maps arrays to `<Collection>` nodes in EDMX. If primitives appear as direct elements of the array, these elements are wrapped into individual primitive child nodes of the resulting collection as is. The system applies the rules for records and collections recursively:
 
 ```cds
 @Some.Collection: [
@@ -467,7 +464,7 @@ Arrays are mapped to `<Collection>` nodes in EDMX and if primitives show up as d
 
 > Note: The `@Some` annotation isn't a valid term definition. The following example illustrates the rendering of reference values.
 
-References in CDS annotations are mapped to `Path` properties or nested `<Path>` elements, respectively:
+The system maps references in CDS annotations to `Path` properties or nested `<Path>` elements, respectively:
 
 ```cds
 @Some.Term: My.Reference
@@ -512,7 +509,7 @@ Use a [dynamic expression](#dynamic-expressions) if the generic mapping can't pr
 
 ### Enumeration Values
 
-Enumeration symbols are mapped to corresponding `EnumMember` properties in OData.
+The system maps enumeration symbols to corresponding `EnumMember` properties in OData.
 
 Here are a couple of examples of enumeration values and the annotations that are generated. The first example is for a term in the
 [Common vocabulary](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Common.md):
@@ -542,11 +539,20 @@ The second example is for a (record type) term in the [Communication vocabulary]
 ```
 
 
-### Expressions <Beta /> { #expression-annotations }
+### Expressions { #expression-annotations }
 
 If the value of an OData annotation is an [expression](../cds/cdl#expressions-as-annotation-values),
 the OData backend provides improved handling of references and automatic mapping from
 CDS expression syntax to OData expression syntax.
+
+One of the main use cases for such dynamic expressions is SAP Fiori. Examples:
+```cds
+@UI.Hidden: (status <> 'visible')
+@UI.CreateHidden : (to_Travel.TravelStatus.code != #Open)
+```
+
+Note that SAP Fiori supports dynamic expressions only for
+[specific annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
 
 #### Flattening
 
@@ -557,7 +563,7 @@ to these references, and they are translated to the flat model.
 
 ::: tip
 
-Although CAP supports structured types and elements, we recommend to use them only
+Although CAP supports structured types and elements, we recommend using them only
 if they bring a real benefit. In general, you should keep your models as flat as possible.
 
 :::
@@ -635,8 +641,8 @@ The CDS path `f.struc.y` is translated to the OData path `f/struc_y`:
 
 #### Managed Associations
 
-The OData backend translates managed associations into unmanaged ones plus explicit foreign key elements.
-During this translation, annotations assigned to the managed association are copied to the respective foreign key elements.
+The OData backend translates managed associations into unmanaged associations plus explicit foreign key elements.
+During this translation, the system copies annotations assigned to the managed association to the respective foreign key elements.
 
 Example:
 ```cds
@@ -672,21 +678,61 @@ Instead of relying on this copy mechanism, you can also explicitly annotate a fo
 annotate Books:author.ID with @Common.Text: ($self.author.name);  // here $self is necessary
 ```
 
-::: warning Restriction concerning the foreign key elements of managed associations
+The system always rewrites a path that addresses a key element in the target of a managed association to address the local foreign key element.
 
-In an expression-valued annotation, it is not possible to reference the foreign key element
-of a managed association.
+Example:
+```cds
+service S {
+  entity Travels {
+    key id : Integer;
+    status : Association to TravelStatus;
+  };
+  entity TravelStatus {
+    key code : String(1) enum {Open = 'O'; Accepted = 'A'; Canceled = 'X'; };
+  }
+  @UI.CreateHidden : (travel.status.code != #Open) // [!code highlight]
+  entity Bookings {
+    key id : Integer;
+    travel : Association to Travels;
+  }
+}
+```
 
-:::
+Resulting OData API:
+```xml
+<Schema Namespace="S">
+  <!-- ... -->
+  <EntityType Name="Travels">
+    <!-- ... -->
+    <NavigationProperty Name="status" Type="S.TravelStatus"/>
+    <Property Name="status_code" Type="Edm.String" MaxLength="1"/> <!-- [!code highlight] -->
+  </EntityType>
+  <EntityType Name="TravelStatus">
+    <!-- ... -->
+  </EntityType>
+  <EntityType Name="Bookings">
+    <!-- ... -->
+    <NavigationProperty Name="travel" Type="S.Travels"/>
+  </EntityType>
+  <Annotations Target="S.Bookings">
+    <Annotation Term="UI.CreateHidden">
+      <Ne>
+        <Path>travel/status_code</Path> <!-- [!code highlight] -->
+        <String>O</String>
+      </Ne>
+    </Annotation>
+  </Annotations>
+</Schema>
+```
+
 
 #### Expression Translation
 
-If the expression provided as annotation value is more complex than just a reference,
-the OData backend translates CDS expressions to the corresponding OData expression syntax and rejects those expressions that are not applicable in an OData API.
+If the expression you provide as an annotation value is more complex than just a reference, the OData backend translates CDS expressions to the corresponding OData expression syntax. The backend rejects expressions that are not applicable in an OData API.
 
 ::: info
 
-While the flattening of references described in the section above is applied to all
+While the flattening of references described in the preceding section is applied to all
 annotations, the syntactic translation of expressions is only done for annotations
 defined in one of the [OData vocabularies](#vocabularies).
 
@@ -718,8 +764,7 @@ Example:
 </Annotation>
 ```
 
-Such expressions can for example be used
-for [some Fiori UI annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048):
+You can use such expressions, for example, for [some Fiori UI annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048):
 
 ```cds
 service S {
@@ -804,7 +849,7 @@ converted into the corresponding EDM primitive type.
 
 CAP only provides a syntactic translation. It is up to each client
 whether an expression value is supported for a particular annotation.
-See for example [SAP Fiori Elements' list of supported annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
+See, for example,  [SAP Fiori Elements' list of supported annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
 
 :::
 
@@ -815,7 +860,7 @@ obtained via the automatic translation of a CDS expression.
 ### Annotating Annotations { #annotating-annotations}
 
 OData can annotate annotations. This often occurs in combination with enums like `UI.Importance` and `UI.TextArrangement`.
-CDS has no corresponding language feature. For OData annotations, nesting can be achieved in the following way:
+CDS has no corresponding language feature. For OData annotations, you can achieve nesting in the following way:
 * To annotate a Record, add an additional element to the CDS source structure. The name of this element is the full name of the annotation, including the `@`. See `@UI.Importance` in the following example.
 * To annotate a single value or a Collection, add a parallel annotation that has the nested annotation name appended to the outer annotation name. See `@UI.Criticality` and `@UI.TextArrangement` in the following example.
 
@@ -873,10 +918,19 @@ In any case, the resulting EDMX is:
 </Annotation>
 ```
 
-### Dynamic Expressions { #dynamic-expressions}
+### EDM JSON Expression Syntax { #dynamic-expressions}
 
-OData supports dynamic expressions in annotations.
-For OData annotations you can use the "edm-json inline mechanism" by providing a [dynamic expression](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#_Toc38466479) as defined
+::: tip Use CDS expression syntax
+
+Use the EDM JSON expression syntax only as a fallback mechanism.
+Whenever possible, use [expression-like annotation values](#expression-annotations) instead.
+For the following example, simply write `@UI.Hidden: (status <> 'visible')`.
+
+:::
+
+In case you want to have an expression as value for an OData annotation that cannot be
+written as a [CDS expression ](#expression-annotations), 
+you can use the "edm-json inline mechanism" by providing an [EDM JSON expression](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#_Toc38466479) as defined
 in the [JSON representation of the OData Common Schema Language](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html) enclosed in `{ $edmJson: { ... }}`.
 
 Note that here the CDS syntax for string literals with single quotes (`'foo'`) applies,
@@ -901,29 +955,14 @@ is translated to:
 </Annotation>
 ```
 
-One of the main use cases for such dynamic expressions is SAP Fiori,
-but note that SAP Fiori supports dynamic expressions only for
-[specific annotations](https://ui5.sap.com/#/topic/0e7b890677c240b8ba65f8e8d417c048).
-
-::: tip Use expression-like annotation values
-
-Instead of writing annotations directly with EDM JSON syntax,
-try using [expression-like annotation values](#expression-annotations), which
-are automatically translated. For the example above you would
-simply write `@UI.Hidden: (status <> 'visible')`.
-
-:::
-
 
 ### `sap:` Annotations
 
-In general, back ends and SAP Fiori UIs understand or even expect OData V4 annotations. You should use those rather than the OData V2 SAP extensions.
+In general, back ends and SAP Fiori UIs understand or expect OData V4 annotations. You should use those rather than the OData V2 SAP extensions.
 
 <div id="translate-odata" />
 
-If necessary, CDS automatically translates OData V4 annotations to
-OData V2 SAP extensions when invoked with `v2` as the OData version.
-This means that you shouldn't have to deal with this at all.
+If necessary, CDS automatically translates OData V4 annotations to OData V2 SAP extensions when you invoke it with `v2` as the OData version. This means you shouldn't need to deal with this at all.
 
 Nevertheless, in case you need to do so, you can add `sap:...` attribute-style annotations as follows:
 
@@ -1023,9 +1062,9 @@ The annotation is added to the OData API, as well as the mandatory reference to 
 ```
 
 The compiler evaluates neither annotation values nor the URI.
-It is your responsibility to make the URI accessible if required.
+It is your responsibility to make the URI accessible if necessary.
 Unlike for the standard vocabularies listed above, the compiler has no access to the content of
-the vocabulary, so the values are translated completely generically.
+the vocabulary, so the values are translated generically.
 
 
 ## Data Aggregation
@@ -1044,7 +1083,7 @@ GET /Orders(10)/books?
     top(3)
 ```
 
-This request operates on the books of the order with ID 10. First it filters out the books from the year 2000 to an intermediate result set. The intermediate result set is then grouped by author name and the price is averaged. Finally, the result set is sorted by title and only the top 3 entries are retained.
+This request operates on the books of the order with ID 10. First, it filters out the books from the year 2000 to create an intermediate result set. The system then groups the intermediate result set by author name and averages the price. Finally, the system sorts the result set by title and retains only the top three entries.
 
 ::: warning
 If the `groupby` transformation only includes a subset of the entity keys, the result order might be unstable.
@@ -1083,7 +1122,7 @@ GET /Books?$apply=
         groupby((year), aggregate($count as countPerYear)))
 ```
 
-This request filters all books, keeping only books by Bram Stroker. From these books, `concat` calculates (1) the total count of books *and* (2) the count of books per year. The result is heterogeneous.
+This request filters all books, keeping only books by Bram Stroker. From these books, `concat` calculates (1) the total count of books _and_ (2) the count of books per year. The result is heterogeneous.
 
 The `concat` transformation must be the last of the apply pipeline. If `concat` is used, then `$apply` can't be used in combination with other system query options.
 
@@ -1152,7 +1191,7 @@ GET /Books?$apply=aggregate(stock with sum as stock) HTTP/1.1
 
 #### Currencies and Units of Measure {.java}
 
-If a property represents a monetary amount, it may have a related property that indicates the amount's *currency code*. Analogously, a property representing a measured quantity can be related to a *unit of measure*. To indicate that a property is a currency code or a unit of measure it can be annotated with the [Semantics Annotations](https://help.sap.com/docs/SAP_NETWEAVER_750/cc0c305d2fab47bd808adcad3ca7ee9d/fbcd3a59a94148f6adad80b9c97304ff.html) `@Semantics.currencyCode` or `@Semantics.unitOfMeasure`.
+If a property represents a monetary amount, it may have a related property that indicates the amount's *currency code*. Analogously, a property representing a measured quantity can be related to a *unit of measure*. To indicate that a property is a currency code or a unit of measure, it can be annotated with the [Semantics Annotations](https://help.sap.com/docs/SAP_NETWEAVER_750/cc0c305d2fab47bd808adcad3ca7ee9d/fbcd3a59a94148f6adad80b9c97304ff.html) `@Semantics.currencyCode` or `@Semantics.unitOfMeasure`.
 The aggregation method (typically, sum) is specified with the `@Aggregation.default` annotation.
 
 ```cds
@@ -1192,7 +1231,7 @@ A custom aggregate for a currency code or unit of measure should also be exposed
 
 ## Open Types
 
-An entity type or a complex type may be declared as _open_, allowing clients to add properties dynamically to instances of the type by specifying uniquely named property values in the payload used to insert or update an instance of the type. To indicate that the entity or complex type is open, the corresponding type must be annotated with `@open`:
+An entity type or a complex type may be declared as _open_, which allows clients to add properties dynamically to instances of the type. Clients do this by specifying uniquely named property values in the payload used to insert or update an instance of the type. To indicate that the entity or complex type is open, annotate the corresponding type with `@open`:
 
 
 ```cds
@@ -1204,7 +1243,7 @@ service CatalogService {
 }
 ```
 
-The cds build for OData v4 will render the entity type `Book` in `edmx` with the [`OpenType` attribute](https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_OpenEntityType) set to `true`:
+The _cds build_ for OData v4 renders the entity type `Book` in `edmx` with the [`OpenType` attribute](https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_OpenEntityType) set to `true`:
 
 ```xml
 <EntityType Name="Book" OpenType="true"> // [!code focus]
@@ -1215,7 +1254,7 @@ The cds build for OData v4 will render the entity type `Book` in `edmx` with the
 </EntityType>
 ```
 
-The entity `Book` is open, allowing the client to enrich the entity with additional properties.
+The entity `Book` is open, which allows the client to enrich the entity with additional properties.
 
 Example 1:
 
@@ -1246,7 +1285,7 @@ The following payload for `Order` is allowed:
 
 `{"guid": 1, "book": {"id": 2, "title": "Tow Sawyer"}}`
 
-Note that type `Order` itself is not open thus doesn't allow dynamic properties, in contrast to type `Book`.
+Note that type `Order` itself is not open, so it doesn't allow dynamic properties, in contrast to type `Book`.
 
 ::: warning
 Dynamic properties are not persisted in the underlying data source automatically and must be handled completely by custom code.
@@ -1256,7 +1295,7 @@ Dynamic properties are not persisted in the underlying data source automatically
 
 #### Simple Types
 
-The simple values of deserialized JSON payload can be of type: `String`, `Boolean`, `Number` or simply an `Object` for `null` values.
+The simple values of a deserialized JSON payload can be of type: `String`, `Boolean`, `Number` or simply an `Object` for `null` values.
 
 |JSON                     | Java Type of the `value`       |
 |-------------------------|--------------------------------|
@@ -1279,9 +1318,9 @@ The complex and structured types are deserialized to `java.util.Map`, whereas co
 
 ## Singletons
 
-A singleton is a special one-element entity introduced in OData V4. It can be addressed directly by its name from the service root without specifying the entity's keys.
+A singleton is a special one-element entity introduced in OData V4. You can address it directly by its name from the service root without specifying the entity's keys.
 
-Annotate an entity with `@odata.singleton` or `@odata.singleton.nullable`, to use it as a singleton within a service, for example:
+Annotate an entity with `@odata.singleton` or `@odata.singleton.nullable` to use it as a singleton within a service, for example:
 
 ```cds
 service Sue {
@@ -1293,7 +1332,7 @@ service Sue {
 }
 ```
 
-It can also be defined as an ordered `SELECT` from another entity:
+You can also define it as an ordered `SELECT` from another entity:
 
 ```cds
 service Sue {
@@ -1304,7 +1343,7 @@ service Sue {
 
 ### Requesting Singletons
 
-As mentioned above, singletons are accessed without specifying keys in the request URL. They can contain navigation properties, and other entities can include singletons as their navigation properties as well. The `$expand` query option is also supported.
+As mentioned earlier, you can access singletons without specifying keys in the request URL. They can contain navigation properties, and other entities can include singletons as their navigation properties as well. The `$expand` query option is also supported.
 
 ```http
 GET …/MySingleton
@@ -1315,7 +1354,7 @@ GET …/MySingleton?$expand=assoc
 
 ### Updating Singletons
 
-The following request updates a prop property of a singleton MySingleton:
+The following request updates a _prop_ property of a singleton _MySingleton_:
 
 ```http
 PATCH/PUT …/MySingleton
@@ -1324,22 +1363,22 @@ PATCH/PUT …/MySingleton
 
 ### Deleting Singletons
 
-A `DELETE` request to a singleton is possible only if a singleton is annotated with `@odata.singleton.nullable`. An attempt to delete a singleton annotated with `@odata.singleton` will result in an error.
+A `DELETE` request to a singleton is possible only if you annotate a singleton with `@odata.singleton.nullable`. An attempt to delete a singleton annotated with `@odata.singleton` results in an error.
 
 ### Creating Singletons
 
-Since singletons  represent a one-element entity, a `POST` request is not supported.
+Since singletons represent a one-element entity, the system doesn't support a `POST` request.
 
 <div id ="api-flavors" />
 
 ## V2 Support
 
-While CAP defaults to OData V4, the latest protocol version, older projects may need to fallback to OData V2, for example, to keep using existing V2-based UIs.
+While CAP defaults to OData V4, the latest protocol version, older projects may need to fall back to OData V2, for example, to keep using existing V2-based UIs.
 
 
 ::: warning
 
-OData V2 is deprecated. Use OData V2 only if you need to support existing UIs or if you need to use specific controls that don't work with V4 **yet** like, tree tables (sap.ui.table.TreeTable).
+OData V2 is deprecated. Use OData V2 only if you need to support existing UIs or if you need to use specific controls that don't work with V4 _yet_, such as tree tables (sap.ui.table.TreeTable).
 
 :::
 
@@ -1380,7 +1419,7 @@ In CAP Java, serving the OData V2 protocol is supported natively by the [CDS ODa
 
 ### Omitting Elements from APIs
 
-Add annotation `@cds.api.ignore` to suppress unwanted entity fields (for example, foreign-key fields) in APIs exposed from this the CDS model, that is, OData or OpenAPI. For example:
+Add annotation `@cds.api.ignore` to suppress unwanted entity fields (for example, foreign key fields) in APIs exposed from the CDS model, that is, OData or OpenAPI. For example:
 
 ```cds
 entity Books { ...
@@ -1389,11 +1428,11 @@ entity Books { ...
 }
 ```
 
-Please note that `@cds.api.ignore` is effective on regular elements that are rendered as `Edm.Property` only. The annotation doesn't suppress an `Edm.NavigationProperty` which is rendered for associations or compositions. If a managed association is annotated, the annotations are propagated to the (generated) foreign keys. In the previous example, the foreign keys of the managed association `author` are muted in the API.
+Note that `@cds.api.ignore` is effective on regular elements that are rendered as `Edm.Property` only. The annotation doesn't suppress an `Edm.NavigationProperty`, which is rendered for associations or compositions. If you annotate a managed association, the system propagates the annotations to the (generated) foreign keys. In the previous example, the system mutes the foreign keys of the managed association `author` in the API.
 
 ### Absolute Context URL { #absolute-context-url}
 
-In some scenarios, an absolute [context URL](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_ContextURL) is needed. In the Node.js runtime, this can be achieved through configuration `cds.odata.contextAbsoluteUrl`.
+In some scenarios, you need an absolute [context URL](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_ContextURL). In the Node.js runtime, you can achieve this through configuration `cds.odata.contextAbsoluteUrl`.
 
 You can use your own URL (including a protocol and a service path), for example:
 
@@ -1414,6 +1453,6 @@ to customize the annotation as follows:
 }
 ```
 
-If `contextAbsoluteUrl` is set to something truthy that doesn't match `http(s)://*`, an absolute path is constructed based on the environment of the application on a best effort basis.
+If you set `contextAbsoluteUrl` to something truthy that doesn't match `http(s)://*`, the system constructs an absolute path based on the environment of the application on a best effort basis.
 
-Note that we encourage you to stay with the default relative format, if possible, as it's proxy safe.
+We encourage you to stay with the default relative format, if possible, as it's proxy safe.

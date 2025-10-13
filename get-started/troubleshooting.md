@@ -524,8 +524,7 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 
 <div id="hana-ips" />
 
-#### Deployment fails — _... build plugin for file suffix "hdbmigrationtable" [8210015]_
-{#missingPlugin}
+#### Deployment fails — _... build plugin for file suffix "hdbmigrationtable" [8210015]_ {#missingPlugin}
 
 |  | Explanation |
 | --- | ---- |
@@ -627,8 +626,7 @@ Now you can build the archive with:
 mbt build -t gen --mtar mta.tar -e less.mtaext
 ```
 
-::: warning
-This approach is only recommended
+::: warning Not recommended for production deployments
 - For test deployments during _development_.  For _production_ deployments,  self-contained archives are preferrable.
 - If all your dependencies are available in _public_ registries like npmjs.org or Maven Central.  Dependencies from _corporate_ registries are not resolvable in this mode.
 :::
@@ -769,7 +767,16 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 
     :::
 
+### Why do I get a _404 Cannot GET /_ error?
 
+For security reasons, the **index page is not served in production** by default in both [Node.js](../node.js/cds-server#toggle-generic-index-page) and [Java](../java/developing-applications/configuring#production-profile).
+
+If you try to access your backend URL, you will therefore see a _404 Cannot GET /_ error.
+This also means you **cannot use the `/` path as a health status indicator**.  See the [Health Checks guide](../guides/deployment/health-checks) for the correct paths.
+
+Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
+
+Learn more about the generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
 ## CAP on Kyma
 
@@ -788,5 +795,17 @@ For SAP HANA deployment errors see [The HANA section](#how-do-i-resolve-deployme
 
 Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems.
 When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
+
+### tar: Error is not recoverable: exiting now
+
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) you can try installing the `tar` library for better compatibility with Windows systems.
+
+Add it to your `devDependencies` like so:
+
+```sh
+npm add -D tar
+```
+
+> On macOS and Linux, the built-in implementation will continue to be used.
 
 <div id="end" />

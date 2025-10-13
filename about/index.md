@@ -378,11 +378,16 @@ Keeping pace with a rapidly changing world of volatile cloud technologies and pl
 ## What about AI? <UnderConstruction/>
 
 - AI provides tremendous boosts to productivity → for example:
-  - **Coding Assists** → for example, by [Copilot](https://en.wikipedia.org/wiki/Microsoft_Copilot) in `.cds`, `.js`, even `.md` sources
+  - **Coding Assists** → for example, by [GitHub Copilot](https://github.com/features/copilot) in `.cds`, `.js`, even `.md` sources
   - **Code Analysis** → detecting [bad practices](bad-practices) → guiding to [best practices](best-practices)
   - **Code Generation** → for example, for tests, test data, ...
   - **Project Scaffolding** → for quick head starts
-  - **Search & Learning Assists** → like Maui, ...
+  - **Search & Learning Assists** → like SAP Joule, ...
 - But this doesn't replace the need for **Human Intelligence**!
   - There's a different between a GPT-generated one-off thesis and long-lived enterprise software, which needs to adapt and scale to new requirements.
-- **CAP itself** is a major contribution to AI → its simple, clear concepts, uniform ways to implement and consume services, capire, its openness and visibility in the public world, ...
+
+By **embracing and advocating standard tooling** like VS Code and GitHub Actions, CAP ensures its projects are day-one beneficiaries of new AI features rolled out there.
+
+**CAP itself** is a major contribution to AI → its simple, clear concepts, uniform ways to implement and consume services make it easier for AIs and humans alike to reason about the system.
+
+Its openness and public visibility helped influence the very first AI models — even the original ChatGPT knew some CAP, and its baked-in knowledge of it has since improved dramatically.

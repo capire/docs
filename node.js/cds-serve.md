@@ -400,6 +400,25 @@ service CatalogService {}
 
 Be aware that using an absolute path will disallow serving the service at multiple protocols.
 
+### PATCH vs. PUT vs. Replace
+
+The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
+`PUT`, on the other hand, is meant for ensuring a resource exists
+, that is, if it doesn't yet exists, it gets created.
+If it does exist, it gets updated to reflect the request's content.
+
+This content, however, may be incomplete.
+By default, the values for not listed keys are not touched.
+The rationale being that default values are known and clients have the option to send full representations, if necessary.
+
+The following table shows the Node.js runtime's configuration options and their respective default value:
+
+| Flag                                         | Behavior                                 | Default |
+|----------------------------------------------|------------------------------------------|---------|
+| <Config keyOnly>cds.runtime.patch_as_upsert </Config> | Create resource if it does not yet exist   | false   |
+| <Config keyOnly>cds.runtime.put_as_upsert</Config>     | Create resource if it does not yet exist    | true    |
+| <Config keyOnly>cds.runtime.put_as_replace</Config>   | Payload is enriched with default values  | false   |
+
 ### Custom Protocol Adapter
 
 Similar to the configuration of the GraphQL Adapter, you can plug in your own protocol.

@@ -73,19 +73,20 @@ As depicted in the figure below `cds.env` provides one-stop convenient and trans
 
 `cds.env` is actually a getter property, which on first usage loads settings from the following sources:
 
-| order | source | |
-|-|-|-|
-| 1 | [`@sap/cds`](#defaults) | built-in defaults
-| 2 | [_~/.cdsrc.json_](#defaults) | user-specific defaults
-| 3 | [_./.cdsrc.json_](#project-settings) | static project settings
-| 4 | [_./package.json_](#project-settings) | static project settings &rarr; `{"cds":{ ... }}`
-| 5 | [_./.cdsrc-private.json_](#private-project-settings) | user-specific project config |
-| 6 | [_./default-env.json_](#process-env) | *deprecated, see cds bind*
-| 7 | [_./.env_](#process-env)  | user-specific project env (lines of `name=value`)
-| 8 | [`process.env.CDS_CONFIG`](#env-cds-config) | runtime settings from shell or cloud
-| 9 | [`process.env`](#process-env) | runtime env vars from shell or cloud
-| 10 |  [`process.env.VCAP_SERVICES`](#services) | service bindings
-| 11 |  [_~/.cds-services.json_](#services) | service bindings for [_development_ profile](#profiles)
+| Order | Source                                               | Remarks                                                 |
+|------:|------------------------------------------------------|---------------------------------------------------------|
+|     1 | [`@sap/cds`](#defaults)                              | built-in defaults                                       |
+|     2 | [_~/.cdsrc.yaml (.json,.js)_](#defaults)             | user-specific defaults                                  |
+|     3 | [_./.cdsrc.yaml (.json,.js)_](#project-settings)     | static project settings, also in plugins                |
+|     4 | [_./package.json_](#project-settings)                | static project settings &rarr; `{"cds":{ ... }}`        |
+|     5 | [_./.cdsrc-private.json_](#private-project-settings) | user-specific project config                            |
+|     6 | [_./default-env.json_](#process-env)                 | *deprecated, see cds bind*                              |
+|     7 | [_./.env_](#process-env)                             | user-specific project env (lines of `name=value`)       |
+|     8 | [_./.\<profile\>.env_](#profiles)                    | profile-specific project env, like `.hybrid.env`        |
+|     9 | [`process.env.CDS_CONFIG`](#env-cds-config)          | runtime settings from shell or cloud                    |
+|    10 | [`process.env`](#process-env)                        | runtime env vars from shell or cloud                    |
+|    11 | [`process.env.VCAP_SERVICES`](#services)             | service bindings                                        |
+|    12 | [_~/.cds-services.json_](#services)                  | service bindings for [_development_ profile](#profiles) |
 
 > - `./` represents a project's root directory.
 > - `~/` represents a user's home directory.

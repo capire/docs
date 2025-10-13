@@ -168,7 +168,7 @@
       "header": false,
       "name": "cds.model.provider.cache.expirationTime",
       "type": "int",
-      "default": "600",
+      "default": "3600",
       "doc": "The lifetime of an entry in seconds after the entry's creation, the most recent<br>replacement of its value, or its last access."
     },
     {
@@ -926,7 +926,7 @@
       "header": false,
       "name": "cds.multiTenancy.dataSource.hanaEncryptionMode",
       "type": "String",
-      "doc": "Optional tenant encryption mode used by the HANA database. Possible values are<br>DEDICATED_KEY and MANAGED_KEY."
+      "doc": "Optional tenant encryption mode used by the HANA database for new tenants. Possible values<br>are DEDICATED_KEY and MANAGED_KEY."
     },
     {
       "header": true,
@@ -958,6 +958,24 @@
       "type": "Duration",
       "default": "PT30S",
       "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.hanaMtService",
+      "doc": "Properties for the Hana multi tenant service"
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.tokenRetrievalTimeout",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.hanaTenantPrefix",
+      "type": "String",
+      "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>_<btp tenant<br>id>"
     },
     {
       "header": true,
@@ -1399,6 +1417,13 @@
       "doc": "Determines, if error messages are automatically extended with additional debug information<br>(only for development)."
     },
     {
+      "header": false,
+      "name": "cds.errors.preferServiceException",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if CDS4j exceptions are replaced with corresponding ServiceException."
+    },
+    {
       "header": true,
       "name": "cds.errors.stackMessages",
       "doc": "Properties to configure how error messages from the framework are treated. If turned off,<br>only framework error messages, that are explicitly localized are returned. Other errors are<br>mapped to their plain HTTP error code representation."
@@ -1447,6 +1472,13 @@
       "type": "String",
       "default": "joint",
       "doc": "Determines the persistence mode for draft-enabled entities. In case of `joint` persistence<br>queries with JOINs between databases tables/views of active instances and databases tables of<br>draft instances can occur. If set to `split` such queries are avoided. Possible values are:<br>`joint`, `split`."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.enforceReadonly",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if @readonly, @Core.Computed and similar annotations are enforced on draft<br>instances already and therefore no longer during activation."
     },
     {
       "header": true,
@@ -1524,6 +1556,49 @@
     },
     {
       "header": true,
+      "name": "cds.query.restrictions",
+      "doc": "Properties for query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.restrictions.expand",
+      "doc": "Properties for expand query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.expand.maxLevels",
+      "type": "int",
+      "default": "-1",
+      "doc": "The default limit on how many levels of expands are allowed. `-1` means no restriction."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.expand.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.restrictions.filter",
+      "doc": "Properties for filter query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.filter.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
       "name": "cds.sql",
       "doc": "Properties for SQL generation. *"
     },
@@ -1576,6 +1651,18 @@
       "type": "String",
       "default": "auto",
       "doc": "Sets the inline-count mode. Possible values are: `auto`, `window-function` and `query`"
+    },
+    {
+      "header": true,
+      "name": "cds.sql.toOnePath",
+      "doc": "Configuration properties for to-one path expressions."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.toOnePath.mode",
+      "type": "String",
+      "default": "always-join",
+      "doc": "Sets the to-one path mode. Possible values are: `always-join` (default) and `optimize`. In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
     },
     {
       "header": true,

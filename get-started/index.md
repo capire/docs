@@ -146,8 +146,7 @@ We recommend sticking to CAP's way of [Convention over Configuration](https://en
 
 
 
-## Learning More
-{#next-steps}
+## Learning More {#next-steps}
 
 After the [initial setup](#setup), we recommend continuing as follows while you grow as you go...:
 
