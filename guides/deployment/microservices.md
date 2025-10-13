@@ -748,8 +748,26 @@ npm i @sap-cloud-sdk/resilience --workspace bookstore
 
 ::: details CAP Java: Configure each app for cloud readiness
 
-Add dependency to the **cds-feature-remote-odata** [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules)
+To access remote OData services, you need to add a dependency to the *cds-feature-remote-odata* [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules) and provide the latest available version. Additionally, to retrieve destination configurations using the destination service, you must include a *com.sap.cloud.sdk.cloudplatform* dependency with artifact ID *scp-cf*, as described in the following steps: [Cloud SDK Integration](https://cap.cloud.sap/docs/java/cqn-services/remote-services#cloud-sdk-dependencies).
 
+::: code-group
+```xml [bookstore/srv/pom.xml]
+...
+	<dependencies>
+...
+		<dependency>
+			<groupId>com.sap.cds</groupId>
+			<artifactId>cds-feature-remote-odata</artifactId>
+			<scope>runtime</scope>
+			<version>4.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sap.cloud.sdk.cloudplatform</groupId>
+			<artifactId>scp-cf</artifactId>
+		</dependency>
+...
+```
 :::
 
 ### Approuter
