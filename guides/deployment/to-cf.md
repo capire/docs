@@ -174,23 +174,7 @@ cds add mta
 
 [Learn more about MTA-based deployment.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d04fc0e2ad894545aebfd7126384307c.html?locale=en-US){.learn-more}
 
-### 4. App Router as Gateway { #add-app-router}
-
-The _App Router_ acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
-
-Two deployment options are available:
-
-- **Managed App Router**: for SAP Build Work Zone, the Managed App Router provided by SAP Fiori Launchpad is available.
-- **Custom App Router**: for custom scenarios without SAP Fiori Launchpad, the App Router needs to be deployed along with your application.
-  In this case, use the following command to enhance the application configuration:
-
-    ```sh
-    cds add approuter
-    ```
-
-[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
-
-### 5. User Interfaces { #add-ui }
+### 4. User Interfaces { #add-ui }
 
 #### Option A: SAP Cloud Portal
 
@@ -208,7 +192,7 @@ For **single-tenant** applications, you can use the new [SAP BTP Application Fro
 cds add app-front
 ```
 
-### 6. Optional: Multitenancy { #add-multitenancy }
+### 5. Optional: Multitenancy { #add-multitenancy }
 
 To enable multitenancy for production, run the following command:
 
