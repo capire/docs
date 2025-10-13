@@ -1105,10 +1105,11 @@ If the `groupby` transformation only includes a subset of the entity keys, the r
 | `topcount`/`bottomcount`     | retain highest/lowest _n_ values             |       <Na/>        | <Na/> |
 | `toppercent`/`bottompercent` | retain highest/lowest _p_% values            |       <Na/>        | <Na/> |
 | `topsum`/`bottomsum`         | retain _n_ values limited by sum             |       <Na/>        | <Na/> |
-| `TopLevels`                  | retain only _n_ levels of a hierarchy        |       <X/>         | <X/><sup>1</sup>  |
-| `ancestors/descendants`      | retain ancestors/descendants of specific nodes  |       <X/>         | <X/><sup>1</sup>  |
+| `TopLevels`                  | retain only _n_ levels of a hierarchy        |       <X/><sup>2</sup>         | <X/><sup>1,2</sup>  |
+| `ancestors/descendants`      | retain ancestors/descendants of specific nodes  |       <X/> <sup>2</sup>        | <X/><sup>1,2</sup>  |
 
 <sup>1</sup> - supported on SAP HANA, H2 ad PostgreSQL only
+<sup>2</sup> - only to support requests from the UI5 Tree Table
 
 #### `concat`
 
