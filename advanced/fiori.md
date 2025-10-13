@@ -490,8 +490,8 @@ For this feature to work correctly, CAP adds additional elements to your draft-e
 This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.
 :::
 
-::: warning Requires OData V4 and UI5 version >=1.135.0
-State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.135.0. OData V2 does not support this annotation.
+::: warning Requires OData V4 and UI5 version >=1.136.0
+State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.136.0. OData V2 does not support this annotation.
 :::
 To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
 
