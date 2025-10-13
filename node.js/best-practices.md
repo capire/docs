@@ -201,7 +201,7 @@ If a CSRF token is cached, it can potentially be reused in multiple requests, de
 
 #### Using App Router
 
-The _App Router_ is configured to require a _CSRF_ token by default for all protected routes and all HTTP requests methods except _HEAD_ and _GET_. Thus, by adding the _App Router_ as described in the [Deployment Guide: Using App Router as Gateway](../guides/deployment/to-cf#add-app-router), endpoints are CSRF protected.
+The _App Router_ is configured to require a _CSRF_ token by default for all protected routes and all HTTP requests methods except _HEAD_ and _GET_. Thus, the endpoints are CSRF protected.
 
 [Learn more about CSRF protection with the **App Router**](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/c19f165084d742e096c5d1625cecd2d4.html?q=csrf#loioc19f165084d742e096c5d1625cecd2d4__section_xj4_pcg_2z){.learn-more}
 
@@ -278,15 +278,13 @@ cds.on('bootstrap', app => app.use ((req, res, next) => {
 
 #### Configuring CORS in App Router
 
-The _App Router_ has full support for CORS. Thus, by adding the _App Router_ as described in the [Deployment Guide: Using App Router as Gateway](../guides/deployment/to-cf#add-app-router), CORS can be configured in the _App Router_ configuration.
+The _App Router_ has full support for CORS. Thus, CORS can be configured in the _App Router_ configuration.
 
 [Learn more about CORS handling with the **App Router**](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/ba527058dc4d423a9e0a69ecc67f4593.html?q=allowedOrigin#loioba527058dc4d423a9e0a69ecc67f4593__section_nt3_t4k_sz){.learn-more}
 
 ::: warning Avoid configuring CORS in both _App Router_ and CAP server
 Configuring CORS in multiple places can lead to confusing debugging scenarios. Centralizing CORS settings in one location decreases complexity, and thus, improves security.
 :::
-
-
 
 
 ## Availability Checks

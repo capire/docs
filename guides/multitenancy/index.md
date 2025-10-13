@@ -726,7 +726,7 @@ Now, open or refresh <http://localhost:4004/#Books-manage> again as _alice_ and 
 
 In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deployment/to-cf) and [deployment to Kyma](../deployment/to-kyma) guides.
 
-Once: Add SAP HANA Cloud, XSUAA, and [App Router](../deployment/to-cf#add-app-router) configuration. The App Router acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
+Once: Add SAP HANA Cloud and XSUAA for authentications and authorization:
 
 ```sh
 cds add hana,xsuaa
