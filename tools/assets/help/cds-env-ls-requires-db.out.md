@@ -2,7 +2,7 @@
 <pre class="log">
 > cds env ls requires.db
 
-requires.db.credentials.url = <em>':memory:'</em>
-requires.db.impl = <em>'@cap-js/sqlite'</em>
-requires.db.kind = <em>'sqlite'</em>
+requires.db.credentials.url = :memory:
+requires.db.impl = @cap-js/sqlite
+requires.db.kind = sqlite
 </pre>

@@ -57,6 +57,7 @@
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
+      <em>app-frontend</em>                 - SAP BTP AppFront service
       <em>portal</em>                       - SAP BTP Portal Service
       <em>application-logging</em>          - SAP BTP Application Logging Service
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
