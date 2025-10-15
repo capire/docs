@@ -39,8 +39,8 @@ These types are used to define the structure of entities and services, and are m
 | `Time` | e.g. `24:59:59` | _TIME_  |
 | `DateTime` | _sec_ precision | _TIMESTAMP_  |
 | `Timestamp` | _µs_ precision, with up to 7 fractional digits |  _TIMESTAMP_  |
-| `String` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)</sup> | _NVARCHAR_  |
-| `Binary` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(5)</sup> |  _VARBINARY_  |
+| `String` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)(5)</sup> | _NVARCHAR_  |
+| `Binary` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)(6)</sup> |  _VARBINARY_  |
 | `LargeBinary` | Unlimited data, usually streamed at runtime | _BLOB_ |
 | `LargeString` | Unlimited data, usually streamed at runtime | _NCLOB_  |
 | `Map` | Mapped to *NCLOB* for HANA. | *JSON* type |
@@ -54,9 +54,11 @@ These types are used to define the structure of entities and services, and are m
 >
 > <sup>(3)</sup> Not available on PostgreSQL and H2.
 >
-> <sup>(4)</sup> Configurable through `cds.cdsc.defaultStringLength`.
+> <sup>(4)</sup> Productive apps should always use an explicit length. Use the default only for rapid prototyping.
 >
-> <sup>(5)</sup> Configurable through `cds.cdsc.defaultBinaryLength`.
+> <sup>(5)</sup> Configurable through `cds.cdsc.defaultStringLength`.
+>
+> <sup>(6)</sup> Configurable through `cds.cdsc.defaultBinaryLength`.
 
 #### See also...
 
