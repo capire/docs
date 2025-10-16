@@ -573,7 +573,7 @@ npm i @sap-cloud-sdk/resilience --workspace bookstore
 
 ### Approuter
 
-Add [approuter configuration](../deployment/to-cf#add-app-router) using the command:
+Add approuter configuration using the command:
 
 ```shell
 cds add approuter
