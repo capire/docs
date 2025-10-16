@@ -78,7 +78,7 @@
 
   ### [Overhiew](guides/security/overview)
   ### [Authentication](guides/security/authentication)
-  ### [Users](guides/security/cap-users)
+  ### [CAP Users](guides/security/cap-users)
   ### [Authorization](guides/security/authorization)
   ### [Remote Authentication](guides/security/remote-authentication)
   ### [Security Aspects](guides/security/aspects)
