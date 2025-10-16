@@ -277,7 +277,7 @@ await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 
 IAS authentication is at best configured and tested in the Cloud, hence we're going to enhance the sample with a deyloyment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
-### Get Ready with IAS
+### Get Ready with IAS { #ias-ready }
 
 Before working with IAS on CF, you need to
 

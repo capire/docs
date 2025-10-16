@@ -186,7 +186,7 @@ The interaction between the CAP application and AMS (via plugin) is as follows:
 3. CAP performs the authorization on the basis of the CDS authorization model and the injected user claims.
 
 
-### Adding AMS
+### Adding AMS Support
 
 **AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
 
@@ -288,8 +288,10 @@ The `@sap/ams` plugin provides multiple build-time features:
 - Generate policies from the CDS model during the build using a [custom build task](../guides/deployment/custom-builds#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
-
-Read more about AMS <span id="internallinks"/>
+::: tip
+In general, AMS provides highly flexible APIs to define and enforce authorization rules at runtime suitable for native Cloud applications. 
+**In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
+:::
 
 
 ### Prepare CDS Model
@@ -381,7 +383,7 @@ annotate AdminService.Books with @ams.attributes.genre: {
 ```
 
 
-### Prepare Policies { #policies }
+### Prepare Base Policies { #policies }
 
 CAP roles and attribute filters cannot be directly assigned to business users.
 Instead, the application defines AMS base policies that include CAP roles and attributes, allowing user administrators to assign them to users or create custom policies based on them.
@@ -404,18 +406,23 @@ After the application is built, check the *srv/src/main/resources/ams* folder to
 
 :::
 
+[Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.leanr-more}
+
+
 The generated policies are a good starting point to add manual modifications.
 
-The generated DCL-schema contains all AMS attributes exposed for filtering and does not need to be refined:
+The generated DCL schema includes all AMS attributes exposed for filtering basically:
 
 ```yaml [/ams/schema.dcl]
 SCHEMA {
- Genre : String
+  Genre : String
 }
 ```
 
-In contrast, the generated policies are usually subject to change.
-For example, you can rename the policies to reflect appropriate job functions for the bookstore and adjust the referenced CAP roles as needed:
+In the schema you may configure [value help](https://sap.github.io/cloud-identity-developer-guide/Authorization/ValueHelp.html) for the attributes in the [Cockpit UI for AMS](#ams-deployment).
+
+The generated policies are usually subject to change.
+For example, you can rename the policies to reflect appropriate job functions and adjust the referenced CAP roles according to your needs:
 
 ```yaml [/ams/cap/basePolicies.dcl]
 POLICY StockManager {
@@ -428,17 +435,28 @@ POLICY ContentManager {
 }
 ```
 
-In contrast to a `StockManager` who is responsible for the books offering, a `ContentManager` makes the author selection, in addition.
-Optionally, CAP role `ManageBooks` for `StockManager` might be restricted to specific genres by applying filters prepared in customized policies.
+In contrast to a `StockManager` who is responsible for the books offering, a `ContentManager` additionally makes the author selection.
+Optionally, a `StockManager` with CAP role `ManageBooks` may be restricted to specific genres by applying filters prepared in [customized policies](#local-testing).
 As a `ContentManager` there is no genre-based restriction based on genres is prepared.
 
+There are several options for the attribute declarations that have an impact on the effect of filters:
+
+| Attribute Statement | Description | Attribute Filter |
+|:-----------------------:|:--------------------:|:---------------:|
+| `WHERE Genre IS NOT RESTRICTED` | Offers `Genre` as filterable attribute in the scope of the role | Filter restriction could be provided in a custom policy, but no filter applied by default (potentially restricted)  |
+| `WHERE Genre IS RESTRICTED` | Enforces `Genre` as filtered attribute in the scope for the role | Filter restriction must be provided in a custom policy and is applied (restricted) |
+| - no defintion - | The role does not offer any attribute for filtering | No restriction filter is applied (unrestricted) |
+
+::: tip
+The attribute statement is in the scope of a dedicated CAP role and filters are applied on matching entites only.
+:::
 
 [Learn more about AMS policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/configuring-authorization-policies){.learn-more}
 
 
-### Local Testing
+### Local Testing { #local-testing }
 
-Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (custom) policies to mock users and run local tests:
+Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (base) policies to mock users and run locally:
 
 ```yaml
 cds:
@@ -453,8 +471,6 @@ cds:
             - cap.StockManager // [!code ++]
 ```
 
-This is also very helpful in unit test scenarios.
-
 :::tip
 Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
 :::
@@ -465,69 +481,170 @@ Now (re)start the application with
 mvn spring-boot:run
 ```
 
-and verify in the UI (`http://localhost:8080`) that the access rules apply as implied by the assigned policies:
-- `content-manager` and `stock-manager` have full _read_ access to `Books` and `Authors` in the `AdminService`.
-- `content-manager` can edit `Books` and `Authors`.
-- `stock-manager` can only edit `Books`.
+and verify in the UI for `AdminService` (`http://localhost:8080/index.html#Books-manage`) that the the assigned policies imply the expected access rules:
+- mock user `content-manager` has full access to `Books` and `Authors`.
+- mock user `stock-manager` can _read_ `Books` and `Authors` and can _edit_ `Books` (but _not_ `Authors`).
+
+For the test scenario, you can define custom policies in pre-defined package `local` which is ignored during [deployment of the policies](#ams-deployment) to the Cloud service and hence will no show up in production.
+
+Let's add a custom policy `StockManagerFiction` which is based on base policy `cap.StockManager` restricting the assigned users to the genres `Mystery` and `Fantasy`:
+
+```yaml [/ams/local/customPolicies.dcl]
+POLICY StockManagerFiction {
+    USE cap.StockManager RESTRICT Genre IN ('Mystery', 'Fantasy');
+}
+```
+
+[Learn more about DCL operators](https://sap.github.io/cloud-identity-developer-guide/Authorization/ValueHelp.html#filter-operators){.learn-more}
+
+
+::: tip
+Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/local/`.
+:::
+
+```yaml
+cds:
+  security:
+    mock:
+      users:
+        stock-manager-fiction: // [!code ++]
+          policies: // [!code ++]
+            - local.StockManagerFiction // [!code ++]
+```
+
+You can verify in the UI that mock user `stock-manager-fiction` is restricted to books of genres `Mystery` and `Fantasy`.
+
+[Learn more about AMS attribute filters with CAP](https://sap.github.io/cloud-identity-developer-guide/CAP/InstanceBasedAuthorization.html#instance-based-authorization){.leanr-more}
+
+
+### Cloud Deployment { #ams-deployment }
+
+If not done yet, prepare your project Cloud deployment [as eplained before](./authentication#ias-ready).
+
+Policies can be automatically deployed to the AMS server during deployment of the application by means of AMS deployer script available in `@sap/ams`.
+
+Enhancing the project with by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deyployment.
+
+::: details AMS policy deployer task in the MTA
+
+::: code-group
+```yaml [mta.yaml- deployer task]
+- name: bookshop-ams-policies-deployer
+   type: javascript.nodejs
+   path: srv/src/gen/policies
+   parameters:
+     buildpack: nodejs_buildpack
+     no-route: true
+     no-start: true
+     tasks:
+       - name: deploy-dcl
+         command: npm start
+         memory: 512M
+   requires:
+     - name: bookshop-auth
+       [...]
+```
+
+
+```json [srv/src/gen/policies/package.json - deyployer module]
+{
+  "name": "ams-dcl-content-deployer",
+  "version": "3.0.0",
+  "dependencies": {
+    "@sap/ams": "^3"
+  },
+  [...]
+  "scripts": {
+    "start": "npx --package=@sap/ams deploy-dcl"
+  }
+}
+```
+
+:::
+
+
+Note that the policy deployer task requires a path to a directory structure containing the `ams` root folder with the policies to be deployed.
+By default, the path points to `srv/src/gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `srv/src/main/resources/ams`.
+In addition, `@sap/ams` needs to be referenced to add the deployer logic.
+
+::: tip
+Several microservices sharing the same IAS instance need a common folder structure the deployer task operates on. 
+It contains the common view of policies applied to all services.
+:::
+
+[Learn more about AMS deployer](https://sap.github.io/cloud-identity-developer-guide/Authorization/DeployDCL.html#ams-policies-deployer-app){.learn-more}
+
+Now let's deploy and start the application with
+
+```sh
+cds up
+```
+
+You can now perform following tasks in the Administrative Console for the IAS tenant (see prerequisits [here](../guides/security/authentication#ias-admin)):
+- Assign (base or custom) policies to IAS users
+- Create custom policies
+
+To assign a policy to an IAS user do the following steps:
+1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
+2. Switch to tab **Authorization Policies** and select the policy you want to assign
+3. In **Assignments** add the IAS user of the tenant the policy should be assigned (in **Rules** you can review the policy definition).
+
+::: details Assign AMS policy to an IAS user
+
+![AMS base policies in Administrative Console](assets/ams-base-policies.jpg)
+
+![AMS policy assignment in Administrative Console](assets/ams-policy-assignment.jpg)
+
+:::
+
+To create a custom policy with filter restrictions do the following steps:
+1. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
+2. Customize the filter condition for the AMS attributes available
+3. Press **Save**
+
+::: details Create custom AMS policy with filter condition
+
+![AMS custom policies in Administrative Console](assets/ams-custom-policy.jpg)
+
+![AMS custom policy filters in Administrative Console](assets/ams-custom-policy-filter.jpg)
+
+:::
+
+You can now assign the custom policy to the test user.
+
+[Learn more about AMS policy assignment](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/assign-authorization-policies) {.learn-more}
 
 
 
 
+
+### Tracing & Troubleshooting
+
+You can recognize a correct AMS plugin configuration by the following log output:
 
 ```sh
 c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
 ```
 
-ogging:
+For detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
+
+```yaml
+logging:
     level:
         com.sap.cloud.security.ams: DEBUG
-        com.sap.cloud.security.ams.dcl.capsupport: DEBUG
-
-/cap
-   - basePolicies.dcl
-/generated
-  - basePolicies.dcl
-/local
-  - testPolicies.dcl
-
-
-
-
-### Cloud Deployment { #ams-deployment }
-
-Policies are typically deployed to the AMS server whenever the application is deployed. Afterwards, those policies can be assigned to users in the Administration Console of the IAS tenant, for example, to grant a role to a user. Using the AMS plugins (`cds add ams`), the configuration of the deployment artifacts is done automatically.
-
-::: details Prerequisites on SAP BTP
-
-- [Get your SAP Cloud Identity Service tenant.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant)
-- [Establish Trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication) towards your SAP Cloud Identity Service tenant to use it as identity provider for applications in your subaccount.
-
-:::
-
-Follow the [Deploy to Cloud Foundry guide](../guides/deployment/to-cf), to prepare your project for deployment. Here's a shortcut:
-
-```sh
-cds add hana,approuter,mta,ams
-
 ```
 
-After successful deployment, you need to [Assign Authorization Policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/assign-authorization-policies).
+which gives you more information about the policy evaluation at request time.
 
-
-::: details Assign users to AMS policies
-
-![Screenshot showing the AMS Policy Assignment](assets/ams-assignment.png)
-
+```sh
+c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
+"unknowns":"[$app.Genre]", "$dcl.policies":"[local.StockManagerFiction]",
+ ...
+"accessResult":"or( eq($app.Genre, "Mystery") eq($app.Genre, "Fantasy") )"}.
+```
+::: tip
+It might be useful to investiagte the injected filter conditions by activating the query-trace (logger `com.sap.cds.persistence.sql`).
 :::
-
-
-<!-- [Learn more about using IAS and AMS with CAP Java.](/java/ams){.learn-more} -->
-[Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
-Neue AMS CAP Doku https://sap.github.io/cloud-identity-developer-guide/CAP/Basics.html
-
-https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html
-https://sap.github.io/cloud-identity-developer-guide/Authorization/GettingStarted.html
-
 
 
 ## Role Assignment with XSUAA { #xsuaa-roles }
