@@ -315,14 +315,14 @@ This is a known issue in CDS 9.
   cds:
     multi-tenancy:
       mtxs.enabled: true
-    security.mock.users: // [!code focus]
-      - name: alice // [!code focus]
+    security.mock.users: # [!code focus]
+      - name: alice # [!code focus]
         tenant: t1
         roles: [ admin ]
-      - name: bob // [!code focus]
+      - name: bob # [!code focus]
         tenant: t1
         roles: [ cds.ExtensionDeveloper ]
-      - name:  erin // [!code focus]
+      - name:  erin # [!code focus]
         tenant: t2
         roles: [ admin, cds.ExtensionDeveloper ]
   ```
