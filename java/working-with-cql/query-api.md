@@ -1396,7 +1396,7 @@ Given that there is simple reference pointing to the book created as follows.
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]}]}
-CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).asRef(); [!code focus]
+CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).asRef(); // [!code focus]
 ```
 
 To navigate to author of the book, use `CQL.entity(...)` to make it typed again and add one more segment to it. Note, that this does not check that original reference is indeed the reference to the book, this only lets you use required model interface.
