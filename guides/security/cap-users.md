@@ -584,6 +584,20 @@ You can now perform following tasks in the Administrative Console for the IAS te
 - Assign (base or custom) policies to IAS users
 - Create custom policies
 
+To create a custom policy with filter restrictions do the following steps:
+1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
+2. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
+2. Customize the filter condition for the AMS attributes available
+3. Press **Save**
+
+::: details Create custom AMS policy with filter condition
+
+![AMS custom policies in Administrative Console](assets/ams-custom-policy.jpg)
+
+![AMS custom policy filters in Administrative Console](assets/ams-custom-policy-filter.jpg)
+
+:::
+
 To assign a policy to an IAS user do the following steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
 2. Switch to tab **Authorization Policies** and select the policy you want to assign
@@ -597,36 +611,23 @@ To assign a policy to an IAS user do the following steps:
 
 :::
 
-To create a custom policy with filter restrictions do the following steps:
-1. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
-2. Customize the filter condition for the AMS attributes available
-3. Press **Save**
 
-::: details Create custom AMS policy with filter condition
-
-![AMS custom policies in Administrative Console](assets/ams-custom-policy.jpg)
-
-![AMS custom policy filters in Administrative Console](assets/ams-custom-policy-filter.jpg)
-
-:::
-
-You can now assign the custom policy to the test user.
+You can log on to the bookshop test application with the test user and check that only books of dedicated genres can be modified.
 
 [Learn more about AMS policy assignment](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/assign-authorization-policies) {.learn-more}
 
 
 
 
-
 ### Tracing & Troubleshooting
 
-You can recognize a correct AMS plugin configuration by the following log output:
+You can verify a valid configfuration of the AMS plugin by the following log output:
 
 ```sh
 c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
 ```
 
-For detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
+In addition, for detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
 
 ```yaml
 logging:
@@ -634,7 +635,7 @@ logging:
         com.sap.cloud.security.ams: DEBUG
 ```
 
-which gives you more information about the policy evaluation at request time.
+which gives you more information about the policy evaluation at request time:
 
 ```sh
 c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
