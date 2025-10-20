@@ -710,7 +710,7 @@ public class SubmitOrderHandler implements EventHandler {
   @On
   public void onSubmitOrder(SubmitOrderContext context) {
     Select<Books_> byId = Select.from(cds.gen.catalogservice.Books_.class).byId(context.getBook());
-    Books book = persistenceService.run(byId).single();
+Books book = persistenceService.run(byId).single(Books.class);
     if (context.getQuantity() > book.getStock())
       throw new IllegalArgumentException(context.getQuantity() + " exceeds stock for book #" + book.getTitle());
     book.setStock(book.getStock() - context.getQuantity());
