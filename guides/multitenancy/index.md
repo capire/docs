@@ -451,8 +451,8 @@ In the third terminal, subscribe to two tenants using one of the following metho
    ::: code-group
 
    ```sh [CLI]
-   cds subscribe t1 --to http://localhost:4005 -u yves:
-   cds subscribe t2 --to http://localhost:4005 -u yves:
+   cds subscribe t1 --to http://localhost:4005
+   cds subscribe t2 --to http://localhost:4005
    ```
 
    ```http
@@ -478,8 +478,8 @@ In the third terminal, subscribe to two tenants using one of the following metho
    ::: code-group
 
    ```sh [CLI]
-   cds subscribe t1 --to http://localhost:4005 -u yves:
-   cds subscribe t2 --to http://localhost:4005 -u yves:
+   cds subscribe t1 --to http://localhost:4005
+   cds subscribe t2 --to http://localhost:4005
    ```
 
    ```http
@@ -635,7 +635,7 @@ When deploying new versions of your app, you also need to upgrade your tenants' 
    ::: code-group
 
    ```sh [CLI]
-   cds upgrade t1 --at http://localhost:4005 -u yves:
+   cds upgrade t1 --at http://localhost:4005
    ```
 
    ```http
@@ -659,7 +659,7 @@ When deploying new versions of your app, you also need to upgrade your tenants' 
    ::: code-group
 
    ```sh [CLI]
-   cds upgrade t1 --at http://localhost:4005 -u yves:
+   cds upgrade t1 --at http://localhost:4005
    ```
 
    ```http
