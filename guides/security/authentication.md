@@ -691,8 +691,7 @@ DWC Integration (internal)
 
 
 
-
-# Pitfalls
+## Pitfalls
 - **Dont' miss to configure security middleware.**
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
   Without security middleware configured, CDS services are exposed to public. 
