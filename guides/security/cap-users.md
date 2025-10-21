@@ -884,6 +884,8 @@ There are multiple reasonable use cases in which user modification is a suitable
 [See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.leanr-more}
 
 
+<div class="impl java">
+
 ### Switching Users { #switching-users }
 		
 There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
@@ -916,7 +918,7 @@ Named user contexts are only created by the CAP Java framework as initial Reques
 
 #### Switching to Technical User {#switching-to-technical-user}
 
-![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg)
+![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
 
 The incoming JWT token triggers the creation of an initial Request Context with a named user. 
 Accesses to the database in the OData Adapter as well as the custom `On` handler are executed within <i>tenant1</i> and authorization checks are performed for user <i>JohnDoe</i>. 
@@ -934,7 +936,7 @@ public void afterHandler(EventContext context){
 
 #### Switching to Technical Provider Tenant {#switching-to-provider-tenant}
 
-![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg)
+![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
 
 The application offers a bound action in a CDS entity. Within the action, the application communicates with a remote CAP service using an internal technical user from the provider account. 
 The corresponding `on` handler of the action needs to create a new Request Context by calling `requestContext()`. 
@@ -952,7 +954,7 @@ public void onAction(AddToOrderContext context){
 
 #### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant}
 
-![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg)
+![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
 
 The application is using a job scheduler that needs to regularly perform tasks on behalf of a certain tenant. 
 By default, background executions (for example in a dedicated thread pool) aren't associated to any subscriber tenant and user. 
@@ -1000,6 +1002,7 @@ cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
 
 });
 ```
+
 
 ### User Propagation
 
@@ -1064,27 +1067,49 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 
 [Learn more about Cloud SDK integration in CAP Java](../../java/cqn-services/remote-services#cloud-sdk-integration){.learn-more}
 
-
+</div>
 
 ### Tracing { #user-tracing }
 
+By default, information about the request user are not logged to the application trace.
+During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
 
 ```sh
 logging.level.com.sap.cds.security.authentication: DEBUG
 ```
+
+This makes the runtime tracing user information of authenticated users to the application log like this:
 
 ```sh
 MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
 
 ::: warning
-Never activate user tracing in production!
+Don't activate user tracing in production!
 :::
 
+[Learn more about various options to activate CAP Java loggers](../../java/operating-applications/observability#logging-configuration){.learn-more}
 
-## Ptifalls
 
-- asynchronous business requests
-- wrong granularity of CAP/AMS roles
-- no cross-sectional attributes
-- mixing business roles with technical
+## Pitfalls
+
+- **Don't write custom code against concrete user types of a specific identity service (e.g. XSUAA or IAS)**. 
+Instead, if required at all, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
+
+- **Don't try to propagtate named user context in asynchronous requests**. Do not attempt to propagate the context of a named user in asynchronous requests, such as when using the Outbox pattern or Messaging. 
+Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. 
+Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
+
+- **Don't mix CAP Roles for business and technical users**. CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application.
+Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
+
+- **Don't mix AMS Policy level with CAP Role level**.
+AMS policies operate at the business level, while CAP roles are defined at the technical domain level. 
+Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
+
+- **Don't expose non-cross-sectional entity attributes as AMS Attributes**.
+When defining AMS attributes, ensure that only cross-sectional attributes are exposed. 
+These attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
+Typically, only a limited number of attributes (fewer than 5) meet this criterion. 
+Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
+
