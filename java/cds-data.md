@@ -638,7 +638,7 @@ entity Books {
 }
 ```
 
-This will yield an interface that has no methods for the attribute `ignored`.
+This provides an interface that has no methods for the attribute `ignored`.
 
 On the service level, you can exclude elements from projections as well as operations and their arguments like this:
 
