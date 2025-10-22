@@ -604,7 +604,7 @@ There are multiple reasons why customization might be required:
 2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
 3. The application needs to integrate with a 3rd party authentication service.
 
-![Endpoints with different authentication strategy](./assets/custom-auth.svg){width="430px"}
+![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="430px"}
 
 - For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
 - For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
@@ -674,7 +674,7 @@ Be cautious with the configuration of the `HttpSecurity` instance in your custom
 
 In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protercted by a secure channel:
 
-![Service Mesh with Ingress Gateway](./assets/ingress-auth.svg){width="500px"}
+![Service Mesh with Ingress Gateway](./assets/ingress-auth.drawio.svg){width="500px"}
 
 In architectures like this, the CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
 

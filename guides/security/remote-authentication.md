@@ -21,26 +21,9 @@ status: released
 
 # Remote Authentication { #remote-authentication }
 
-### User Propagation
+CAP supports the consumption of various kinds of remote services:
 
-  - threads
-  https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext
-
-	- original authentication claim
-
-  - Remote Services
-
-  Custom:
-  - Cloud SDK: 
-     tenant provider, 
-     user per SecurityContext
-
-
-## Connecting to IAS Services { #outbound-auth }
-
-CAP Java supports the consumption of IAS-based services of various kinds:
-
-* [Internal Services](#internal-app) bound to the same IAS instance of the provider application.
+* [Local Services](#local-app) bound to the same IAS instance of the provider application.
 * [External IAS](#app-to-app) applications consumed by providing a destination.
 * [BTP reuse services](#ias-reuse) consumed via service binding.
 
@@ -49,16 +32,30 @@ CAP Java supports the consumption of IAS-based services of various kinds:
 Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
-### Internal Services {#internal-app}
+## Local Services {#local-app}
 
 For communication between adjacent CAP applications, these are CAP applications which are bound to the same identity instance, simplified configuration is explained in [Binding to a Service with Shared Identity](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
 
-### External Services (IAS App-to-App)  {#app-to-app}
+Local CDS services which are meant for *internal* usage only can be easily consumed by in-process function calls.
+They shouldn't be exposed via protocol adapters at all. 
+In order to prevent access from external clients, annotate those services with `@protocol: 'none'`:
+
+```cds
+@protocol: 'none'
+service InternalService {
+  ...
+}
+```
+`InternalService` is not handled by protocol adapters and can only receive events sent by in-process handlers.
+
+
+
+## External Services (IAS App-to-App)  {#app-to-app}
 
 CAP Java supports technical communication with any IAS-based service deployed to an SAP Cloud landscape. User propagation is supported.
 For connection setup, it uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications).
 
-#### Provider Application
+### Provider Application
 
 The CAP Java application as a _provider app_ needs to:
 
@@ -106,7 +103,7 @@ Use different CAP roles for technical clients without user propagation and for n
 Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
 :::
 
-#### Consumer Application
+### Consumer Application
 
 To set up a connection to such an IAS service, the _consumer app_ requires to do:
 
@@ -166,7 +163,8 @@ To activate the App-2-App connection as a *consumer*, you need to:
 [Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
 
 
-### BTP Reuse Services {#ias-reuse}
+
+## BTP Reuse Services {#ias-reuse}
 
 IAS-based BTP reuse services can be created/consumed with CAP Java even more easily.
 
@@ -268,7 +266,7 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 :::
 
 
-#### How to Authorize Callbacks
+### How to Authorize Callbacks
 
 For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
 Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
@@ -288,28 +286,3 @@ private void authorizeCallback() {
 :::
 
 
-
-## Local Services
-
-Local CDS services which are meant for *internal* usage only can be easily consumed by in-process function calls.
-They shouldn't be exposed via protocol adapters at all. 
-In order to prevent access from external clients, annotate those services with `@protocol: 'none'`:
-
-```cds
-@protocol: 'none'
-service InternalService {
-  ...
-}
-```
-`InternalService` is not handled by protocol adapters and can only receive events sent by in-process handlers.
-
-## Application-Internal Services
-- internal-user (IAS + XSUAA)
-
-## BTP Reuse Services
-- IAS 
-- XSUAA
-
-## External Services
-- IAS App-2-App
-- Via Destination (S/4)
