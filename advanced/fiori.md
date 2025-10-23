@@ -743,9 +743,9 @@ Cache Control feature is currently supported on the Java runtime only.
 
 ## Hierarchical Tree Views
 
-Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee a as direct report or manager.
+Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
-A generic implementation is supported on the following databases for the respective CAP runtimes:
+Database support for a generic hierarchy implementation by CAP runtime:
 
 | Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
 |-------------|----------|----|------------|--------|
@@ -765,7 +765,7 @@ entity Genres { //...
 }
 ```
 
-and its projection on service level
+and its projection in a service
 
 ```cds
 service AdminService {
@@ -773,7 +773,7 @@ service AdminService {
 }
 ```
 
-#### Annotate/extend the entity in the service as follows:
+#### Annotate/extend the entity in the service:
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
@@ -806,10 +806,10 @@ extend AdminService.Genres with @(
 };
 ```
 
-> Note: hierarchy qualifier should be chosen as: <br>
+> Note: When naming the hierarchy qualifier, use the following pattern: <br>
 > `<entity name in service>Hierarchy`
 
-#### Configure the TreeTable in UI5's _manifest.json_
+#### Configure the TreeTable in UI5's _manifest.json_ file:
 
 ```jsonc
   "sap.ui5": { ...
