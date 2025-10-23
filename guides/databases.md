@@ -921,12 +921,12 @@ Instead, they protect the integrity of your data in the database layer against p
 
 ## Standard Database Functions
 
-A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way, and translated to the best-possible native SQL functions or polyfills during runtime (currently only Node.js) and for your CDL files.
+A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way, and translated to the best-possible native SQL functions or polyfills during runtime and for your CDL files.
 
 
 ### OData standard functions
 
-The `@sap/cds-compiler` and all CAP Node.js database services come with out of the box support for common OData functions.
+The `@sap/cds-compiler` and all CAP (Node.js & Java) database services come with out of the box support for common OData functions.
 
 ::: warning Case Sensitivity
 The OData function mappings are case-sensitive and must be written as in the list below.
@@ -1021,6 +1021,8 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
   If you provide more than one argument, the `round` function may behave differently depending on the database.
   :::
 
+<div class="impl node">
+
 #### Date and Time Functions
 
 - `year(x)`, `month(x)`, `day(x)`, `hour(x)`, `minute(x)`, `second(x)`
@@ -1063,6 +1065,8 @@ For the SAP HANA functions, both usages are allowed: all-lowercase as given abov
   Computes the number of seconds between two specified dates. ([link](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/seconds-between-function-datetime?locale=en-US))
 - `nano100_between`
   Computes the time difference between two dates to the precision of 0.1 microseconds. ([link](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/nano100-between-function-datetime?locale=en-US))
+
+</div>
 
 ### Special Runtime Functions
 
