@@ -1040,11 +1040,14 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
 - `mindatetime()`
   Returns the earliest possible point in time: `'0001-01-01T00:00:00.000Z'`.
 
+</div>
+
 #### Aggregate Functions
 
 - `min(x)`, `max(x)`, `sum(x)`, `average(x)`, `count(x)`, `countdistinct(x)`
   Standard aggregate functions used to calculate minimum, maximum, sum, average, count, and distinct count of values.
 
+<div class="impl node">
 
 ### SAP HANA Functions
 
@@ -1066,11 +1069,9 @@ For the SAP HANA functions, both usages are allowed: all-lowercase as given abov
 - `nano100_between`
   Computes the time difference between two dates to the precision of 0.1 microseconds. ([link](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/nano100-between-function-datetime?locale=en-US))
 
-</div>
-
 ### Special Runtime Functions
 
-In addition to the OData and SAP HANA standard functions, the **CAP runtimes** provides special functions that are only available for runtime queries:
+In addition to the OData and SAP HANA standard functions, the **CAP runtime** provides special functions that are only available for runtime queries:
 
 - `search(x, y)`
   Checks whether `y` is contained in any element of `x` (fuzzy matching may apply).
@@ -1082,6 +1083,8 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtimes** p
 
 - `now()`
   Returns the current timestamp.
+
+</div>
 
 ## Using Native Features  { #native-db-functions}
 
