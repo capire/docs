@@ -175,12 +175,18 @@ cds add multitenancy
      "devDependencies": {
        "@cap-js/sqlite": "^2"
      },
+     "engines": {
+       "node": ">=20"
+     },
      "scripts": {
        "start": "cds-serve",
        "build": "cds build ../.. --for mtx-sidecar --production && npm ci --prefix gen"
      },
      "cds": {
-       "profile": "mtx-sidecar"
+       "profiles": [
+         "mtx-sidecar",
+         "java"
+       ]
      }
    }
    ```
@@ -286,12 +292,6 @@ This is a known issue in CDS 9.
 
 ## Test-Drive Locally {#test-locally}
 
-For local testing, create a new profile that contains the multitenancy configuration:
-
-```sh
-cds add multitenancy --for local-multitenancy
-```
-
 <div class="impl java">
 
   For multitenancy you need additional dependencies in the _pom.xml_ of the `srv` directory. To support mock users in the local test scenario add `cds-starter-cloudfoundry`:
@@ -310,7 +310,7 @@ cds add multitenancy --for local-multitenancy
   ```yaml [application.yaml]
   ---
   spring:
-    config.activate.on-profile: local-multitenancy
+    config.activate.on-profile: with-mtx
   #...
   cds:
     multi-tenancy:
@@ -328,25 +328,6 @@ cds add multitenancy --for local-multitenancy
   ```
 
   :::
-
-Configure the sidecar to use dummy authentication.
-
-::: code-group
-
-```json [mtx/sidecar/package.json]
-{
-  "cds": {
-    "profile": "mtx-sidecar",
-    "[development]": {
-      "requires": {
-        "auth": "dummy"
-      }
-    }
-  }
-}
-```
-
-:::
 
 </div>
 
@@ -404,7 +385,7 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
 <div class="impl node">
 
    ```sh
-   cds watch --profile local-multitenancy
+   cds watch --with-mtx
    ```
 
    ::: details  Persistent database
@@ -440,7 +421,7 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
 
   ```sh
   cd srv
-  mvn cds:watch -Dspring-boot.run.profiles=local-multitenancy
+  mvn cds:watch -Dspring-boot.run.profiles=with-mtx
   ```
 
   ::: details  Persistent database
@@ -448,7 +429,7 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
   The server starts as usual, with the difference that a persistent database is used automatically instead of an in-memory one:
 
   ```log
-  2023-03-31 14:19:23.987  INFO 68528 --- [  restartedMain] c.s.c.bookshop.Application               : The following 1 profile is active: "local-mtxs"
+  2023-03-31 14:19:23.987  INFO 68528 --- [  restartedMain] c.s.c.bookshop.Application               : The following 1 profile is active: "with-mtx"
   ...
   2023-03-31 14:19:23.987  INFO 68528 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service ExtensibilityService$Default
   2023-03-31 14:19:23.999  INFO 68528 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service CatalogService
@@ -772,6 +753,13 @@ cds up --to k8s
 
 :::
 
+:::tip Ensure a unique metadata container
+To prevent potential conflicts during the initial creation of the MTXS metadata container (`t0`), it is recommended to perform the initial deployment with only one instance of the MTXS sidecar.
+
+Alternatively, you can run `cds-mtx upgrade t0` beforehand, such as in a [Cloud Foundry hook](#run-as-cloud-foundry-hook).
+:::
+
+
 ### Subscribe
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
@@ -979,6 +967,8 @@ cds watch --profile dev
 ```
 
 :::
+
+<div id="hana-tms" />
 
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).

@@ -57,11 +57,13 @@
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
+      <em>app-frontend</em>                 - SAP BTP AppFront service
       <em>portal</em>                       - SAP BTP Portal Service
       <em>application-logging</em>          - SAP BTP Application Logging Service
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
+      <em>ui5</em>                          - SAP UI5 integration
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint

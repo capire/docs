@@ -168,7 +168,7 @@
       "header": false,
       "name": "cds.model.provider.cache.expirationTime",
       "type": "int",
-      "default": "600",
+      "default": "3600",
       "doc": "The lifetime of an entry in seconds after the entry's creation, the most recent<br>replacement of its value, or its last access."
     },
     {
@@ -961,6 +961,24 @@
     },
     {
       "header": true,
+      "name": "cds.multiTenancy.hanaMtService",
+      "doc": "Properties for the Hana multi tenant service"
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.tokenRetrievalTimeout",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.hanaTenantPrefix",
+      "type": "String",
+      "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>_<btp tenant<br>id>"
+    },
+    {
+      "header": true,
       "name": "cds.multiTenancy.security",
       "doc": "Properties for authorization."
     },
@@ -1456,6 +1474,13 @@
       "doc": "Determines the persistence mode for draft-enabled entities. In case of `joint` persistence<br>queries with JOINs between databases tables/views of active instances and databases tables of<br>draft instances can occur. If set to `split` such queries are avoided. Possible values are:<br>`joint`, `split`."
     },
     {
+      "header": false,
+      "name": "cds.drafts.enforceReadonly",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if @readonly, @Core.Computed and similar annotations are enforced on draft<br>instances already and therefore no longer during activation."
+    },
+    {
       "header": true,
       "name": "cds.drafts.gc",
       "doc": "Properties to configure the automatic draft garbage collection."
@@ -1626,6 +1651,18 @@
       "type": "String",
       "default": "auto",
       "doc": "Sets the inline-count mode. Possible values are: `auto`, `window-function` and `query`"
+    },
+    {
+      "header": true,
+      "name": "cds.sql.toOnePath",
+      "doc": "Configuration properties for to-one path expressions."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.toOnePath.mode",
+      "type": "String",
+      "default": "always-join",
+      "doc": "Sets the to-one path mode. Possible values are: `always-join` (default) and `optimize`. In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
     },
     {
       "header": true,

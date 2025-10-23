@@ -335,10 +335,10 @@ It supports the following command-line options:
 | `-Dpackage=<a valid Java package>` | The Java package for your project's classes. Defaults to `${groupId}.${artifactId}`. |
 | `-DincludeModel=true` | Adds a minimalistic sample CDS model to the project. |
 | `-DincludeIntegrationTest=true` | Adds an integration test module to the project. |
-| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. |
+| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. Defaults to `v4`|
 | `-DtargetPlatform=cloudfoundry` | Adds CloudFoundry target platform support to the project. |
 | `-DinMemoryDatabase=[h2\|sqlite]` | Specify which in-memory database is used for local testing. If not specified, the default value is `h2`. |
-| `-DjdkVersion=[17\|21]` | Specifies the target JDK version. If not specified, the default value is `21`. |
+| `-DjdkVersion=[17\|21\|25]` | Specifies the target JDK version. Defaults to `21`. |
 | `-Dpersistence=[true\|false]` | Specify whether persistence is enabled (`true`) or disabled (`false`). Defaults to `true`. |
 | `-DcdsdkVersion=<a valid cds-dk version>` | Sets the provided cds-dk version in the project. If not specified, the default of CAP Java is used. |
 
@@ -528,7 +528,7 @@ The `install-cdsdk` goal is no longer used to install the `@sap/cds-dk` locally 
 ```json
 {
   "devDependencies" : {
-    "@sap/cds-dk" : "^8.5.1",
+    "@sap/cds-dk" : "^9",
   }
 }
 ```
