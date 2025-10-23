@@ -315,14 +315,14 @@ This is a known issue in CDS 9.
   cds:
     multi-tenancy:
       mtxs.enabled: true
-    security.mock.users: // [!code focus]
-      - name: alice // [!code focus]
+    security.mock.users: # [!code focus]
+      alice: # [!code focus]
         tenant: t1
         roles: [ admin ]
-      - name: bob // [!code focus]
+      bob: # [!code focus]
         tenant: t1
         roles: [ cds.ExtensionDeveloper ]
-      - name:  erin // [!code focus]
+      erin: # [!code focus]
         tenant: t2
         roles: [ admin, cds.ExtensionDeveloper ]
   ```
@@ -420,7 +420,6 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
   <div class="impl java">
 
   ```sh
-  cd srv
   mvn cds:watch -Dspring-boot.run.profiles=with-mtx
   ```
 
