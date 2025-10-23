@@ -556,7 +556,7 @@ You can have this _.js_ file created automatically with [`cds add handler`](../t
 In CAP Java, you can add custom handlers for your service as so called EventHandlers. As CAP Java integrates with Spring Boot, you need to provide your custom code in classes, annotated with `@Component`, for example. Use your favorite Java IDE to add a class like the following to the `srv/src/main/java/` folder of your application. {.impl .java}
 
 ::: code-group
-```java [srv/src/main/java/com/sap/capire/bookshop/handlers/CatalogServiceHandler.java]
+```java [srv/src/main/java/com/cap/capire/bookshop/handlers/CatalogServiceHandler.java]
 @Component
 @ServiceName(CatalogService_.CDS_NAME)
 public class CatalogServiceHandler implements EventHandler {
@@ -609,7 +609,7 @@ module.exports = CatalogService
 Now that you have created the classes for your custom handlers it's time to add the actual logic. You can achieve this by adding methods annotated with CAP's `@Before`,  `@On`, or `@After` to your new class. The annotation takes two arguments: the event that shall be handled and the entity name for which the event is handled.
 
 ::: code-group
-```java [srv/src/main/java/com/sap/capire/bookshop/handlers/CatalogServiceHandler.java]
+```java [srv/src/main/java/com/cap/capire/bookshop/handlers/CatalogServiceHandler.java]
   @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME)
   public void addDiscountIfApplicable(List<Books> books) {
     for (Books book : books) {
@@ -623,7 +623,7 @@ Now that you have created the classes for your custom handlers it's time to add 
 
 :::details Code including imports
 ::: code-group
-```java [srv/src/main/java/com/sap/capire/bookshop/handlers/CatalogServiceHandler.java]
+```java [srv/src/main/java/com/cap/capire/bookshop/handlers/CatalogServiceHandler.java]
 package com.sap.capire.bookshop.handlers;
 
 import java.util.List;
@@ -696,7 +696,7 @@ module.exports = CatalogService
 <span class="impl java">
 
 ::: code-group
-```java [srv/src/main/java/com/sap/capire/bookshop/handlers/SubmitOrderHandler.java]
+```java [srv/src/main/java/com/cap/capire/bookshop/handlers/SubmitOrderHandler.java]
 @Component
 @ServiceName(CatalogService_.CDS_NAME)
 public class SubmitOrderHandler implements EventHandler {
