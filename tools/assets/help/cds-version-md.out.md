@@ -4,11 +4,11 @@
 
 | your-project           | https://github.com/&lt;your/repo&gt;          |
 | ---------------------- | --------------------------------------- |
-| @sap/cds               | 9.3.1                                   |
+| @sap/cds               | 9.4.3                                   |
 | @sap/cds-dk            | -- missing --                           |
-| @sap/cds-compiler      | 6.3.6                                   |
-| @sap/cds-dk (global)   | 9.3.2                                   |
-| @sap/cds-fiori         | 2.0.1                                   |
+| @sap/cds-compiler      | 6.4.2                                   |
+| @sap/cds-dk (global)   | 9.4.1                                   |
+| @sap/cds-fiori         | 2.1.0                                   |
 | @sap/cds-mtxs          | 3.3.1                                   |
 | @cap-js/asyncapi       | 1.0.3                                   |
 | @cap-js/db-service     | 2.5.1                                   |
