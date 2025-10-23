@@ -833,7 +833,7 @@ extend AdminService.Genres with @(
     },
 ```
 
-> Note: use the `hierarchyQualifier` declared above
+> Note: use the `hierarchyQualifier` declared earlier
 
 <div id="reserved-words" />
 
