@@ -723,7 +723,7 @@ Books book = persistenceService.run(byId).single(Books.class);
 
 :::details Code including imports
 ::: code-group
-```java [srv/src/main/java/com/sap/capire/bookshop/handlers/SubmitOrderHandler.java]
+```java [srv/src/main/java/com/cap/capire/bookshop/handlers/SubmitOrderHandler.java]
 package com.sap.capire.bookshop.handlers;
 
 import org.springframework.stereotype.Component;
