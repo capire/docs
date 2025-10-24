@@ -3,81 +3,41 @@
 synopsis: Learn how to install, configure, and use the CAP console.
 ---
 
-# The CAP console
+# The CAP Console
 
 > [!NOTE]
 > This documentation and the tool is still a work in progress.
 
-The CAP console is a native desktop app designed to enhance your CAP development experience by enabling local development, BTP deployment, and monitoring from a unified interface. It simplifies the development workflow by offering different development tools and handling infrastructure complexity, so you can focus on building your application. Inspired by the CAP Developer Dashboard as well as OpenLens, it’s designed to be a tool developers actually want to use.
+The CAP console is a native desktop app, available for Windows & macOS, designed to enhance your CAP development experience by enabling local development, BTP deployment, and monitoring from a unified interface. It simplifies the development workflow by offering different development tools and handling infrastructure complexity, so you can focus on building your application. Inspired by the CAP Developer Dashboard as well as OpenLens, it's designed to be a tool developers actually want to use.
 
-CAP console is available for Windows & macOS and can be downloaded from [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole).
 
 [[toc]]
 
-## Project Detection
+## Setup CAP Console
+
+Download the CAP console from [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole) and install it.
+
+![](assets/console/console-download-tools.png){style="width:450px; box-shadow: 1px 1px 5px #888888"}
+
+Start the CAP console and see your running CAP projects:
 
 ![Screenshot of CAP console start page](assets/console/console-projects.png)
 
-Once you start CAP console it will automatically scan your local processes to identify running CAP projects. This works for JavaScript as well as Java projects. Identified projects will be listed on the start page, allowing you to quickly access them. As soon as you stop a project, it will be automatically removed from the list.
+Once you start CAP console, it will automatically scan your local processes to identify running CAP projects. This works for JavaScript as well as Java projects. Identified projects will be listed on the start page, allowing you to quickly access them. As soon as you stop a project, it will be automatically removed from the list.
 
-In case your project is not detected automatically or it is currently not running, you can manually add it by clicking on the "Add Project" button and selecting the project root folder.
-
-There is also a filter option available, allowing you to customize which projects you want to have displayed. You can filter projects by their process status (running or stopped) as well as by their save status (detected or saved).
-
-### Remembering Projects
+If you always want to have a project listed in CAP console, even when it is not running, you can use the "Remember Project" feature. Open the ellipsis menu and select "Remember Project". To forget a project, simply click on "Forget Project" in the same menu.
 
 ![Screenshot of CAP console menu to remember project](assets/console/console-remember-project.png)
 
-If you always want to have a project listed in CAP console, you can use the "Remember Project" feature. This will keep the project in the list even when it is not running. To remember a project, click on the ellipsis menu and select "Remember Project". To forget a project, simply click on "Forget Project" in the same menu.
+If your project is not detected automatically or it is currently not running, you can manually add it by clicking on the "Add Project" button and selecting the project root folder.
 
-## Monitoring
+There is also a filter option available, allowing you to customize which projects you want to have displayed. You can filter projects by their process status (running or stopped) as well as by their save status (detected or saved).
 
-> [!IMPORTANT]
-> To utilize the full functionality of the monitoring features, please ensure that you have the [CAP console Plugin](#plugins) installed in your CAP project.
-
-If you click on any project card, you will be taken to the monitoring view for that project. In the monitoring view you can see various information about your project.
-
-### Features and Functions
-
-#### Project Structure
-
-![Screenshot of CAP console monitoring overview](assets/console/console-structure.png)
-
-Based on your MTA, the console will visualize the structure of your project. You can click on any component of your project structure to see detailed information about it in the bottom section of the monitoring view.
-
-#### Status and Metrics
-
-You can see the health of each component of your project at a quick glance. Each component displays its current state (running, stopped, or crashed) via a colored status indicator in the top left corner, along with real-time performance metrics including CPU and memory usage.
-
-#### Logs
-
-![Screenshot of CAP console logs](assets/console/console-logs.png)
-
-View real-time logs for each application of your project! And if your application has the [CAP console plugin](#plugins) installed, you can switch log levels without restarting the application. For Non-CAP applications and CAP applications without the plugin, the Cloud Foundry logs are displayed. Simply click on the "Logs" button and start viewing your application logs.
-
-#### Meta Information and Deployment Descriptor
-
-![Screenshot of CAP console meta information](assets/console/console-meta-information.png)
-
-By clicking on any of the components in your project structure, you can view detailed meta information about it as well as an excerpt of the MTA that only includes the selected component. Additionally, you have access to basic application controls for starting, stopping, and restarting CF applications, as well as viewing all registered application routes.
-
-#### Environment Switching
-
-By clicking on the environment name in the top bar, you can quickly switch between different environments you have configured for your project. Every environment configuration is stored inside your project in a `.cds` folder as a YAML file. The environment configurations are git friendly and can be shared with your team. Since CAP console does not ship with any built-in credentials, only people who have access to the CF space will be able to access the environment.
-
-If you want to remove an environment configuration from your project, simply remove the respective YAML file from your `.cds` folder.
-
-#### Local Environment
-
-![Screenshot of CAP console local environment](assets/console/console-local-environment.png)
-
-CAP console also supports your local development environment. This allows you to use the same monitoring tools locally that you use for deployed applications. Simply select the "local" environment to connect to your locally running CAP project. Some functionality, like viewing BTP Services, is not available in the local environment.
-
-### Plugins
+## Prepare Your Projects
 
 To utilize the full functionality of CAP console, you need to install the CAP console plugin in your CAP project. The plugin enables additional monitoring features and allows you to change log levels on the fly. The plugin is available for JavaScript and Java. Both versions of the plugin are OpenSource and can be found on GitHub ([JS Plugin](https://github.com/cap-js/console), [Java Plugin](https://github.com/cap-java/cds-feature-console)). If you want to use the plugin in a deployed environment, make sure to read and understand the [Security](#security) section first.
 
-#### JavaScript
+### JavaScript Plugin
 
 Simply install the plugin as dependency in your project - no further configuration required:
 
@@ -85,7 +45,7 @@ Simply install the plugin as dependency in your project - no further configurati
 npm install @cap-js/console
 ```
 
-#### Java
+### Java Plugin
 
 Add the following dependency to your `srv/pom.xml` - no further configuration required:
 
@@ -95,6 +55,48 @@ Add the following dependency to your `srv/pom.xml` - no further configuration re
     <artifactId>cds-feature-console</artifactId>
 </dependency>
 ```
+
+
+## Monitoring
+
+> [!IMPORTANT]
+> To utilize the full functionality of the monitoring features, please ensure that you have the [CAP console Plugin](#prepare-your-projects) installed in your CAP project.
+
+If you click on any project card, you will be taken to the monitoring view for that project. In the monitoring view you can see various information about your project.
+
+### Project Structure
+
+![Screenshot of CAP console monitoring overview](assets/console/console-structure.png)
+
+Based on your MTA, the console will visualize the structure of your project. You can click on any component of your project structure to see detailed information about it in the bottom section of the monitoring view.
+
+### Status and Metrics
+
+You can see the health of each component of your project at a quick glance. Each component displays its current state (running, stopped, or crashed) via a colored status indicator in the top left corner, along with real-time performance metrics including CPU and memory usage.
+
+### Logs
+
+![Screenshot of CAP console logs](assets/console/console-logs.png)
+
+View real-time logs for each application of your project! And if your application has the [CAP console plugin](#plugins) installed, you can switch log levels without restarting the application. For Non-CAP applications and CAP applications without the plugin, the Cloud Foundry logs are displayed. Simply click on the "Logs" button and start viewing your application logs.
+
+### Meta Information and Deployment Descriptor
+
+![Screenshot of CAP console meta information](assets/console/console-meta-information.png)
+
+By clicking on any of the components in your project structure, you can view detailed meta information about it as well as an excerpt of the MTA that only includes the selected component. Additionally, you have access to basic application controls for starting, stopping, and restarting CF applications, as well as viewing all registered application routes.
+
+### Environment Switching
+
+By clicking on the environment name in the top bar, you can quickly switch between different environments you have configured for your project. Every environment configuration is stored inside your project in a `.cds` folder as a YAML file. The environment configurations are git friendly and can be shared with your team. Since CAP console does not ship with any built-in credentials, only people who have access to the CF space will be able to access the environment.
+
+If you want to remove an environment configuration from your project, simply remove the respective YAML file from your `.cds` folder.
+
+### Local Environment
+
+![Screenshot of CAP console local environment](assets/console/console-local-environment.png)
+
+CAP console also supports your local development environment. This allows you to use the same monitoring tools locally that you use for deployed applications. Simply select the "local" environment to connect to your locally running CAP project. Some functionality, like viewing BTP Services, is not available in the local environment.
 
 ## Deployment
 
@@ -119,7 +121,7 @@ You can choose between two deployment modes:
 
 ### Designed for Simplicity
 
-CAP console is optimized for the **initial deployment** of your application. It’s ideal for developers who want to get their app running on BTP quickly after local development.
+CAP console is optimized for the **initial deployment** of your application. It's ideal for developers who want to get their app running on BTP quickly after local development.
 
 
 ### Configuring Default Deployment Target
