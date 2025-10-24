@@ -150,6 +150,7 @@
   ### [cds. add()](tools/apis/cds-add)
   ### [cds. import()](tools/apis/cds-import)
   ### [cds. build()](../guides/deployment/custom-builds#custom-build-plugins)
+## [CAP console](tools/console)
 
 # [Plugins](plugins/)
 
