@@ -79,6 +79,9 @@ cds add multitenancy
         "requires": {
           "[production]": {
             "multitenancy": true
+          },
+          "[with-mtx]": {
+            "multitenancy": true
           }
        }
      }
@@ -721,24 +724,10 @@ cds add mta
 ```
 
 ```sh [Kyma]
-cds add helm,containerize
+cds add kyma
 ```
 
 :::
-
-::: details Add xsuaa redirect for trial / extension landscapes
-Add the following snippet to your _xs-security.json_ and adapt it to the landscape you're deploying to:
-
-```json
-  "oauth2-configuration": {
-    "redirect-uris": ["https://*.cfapps.us10-001.hana.ondemand.com/**"]
-  }
-```
-
-:::
-
-[Learn more about configured BTP services for SaaS applications.](#behind-the-scenes){.learn-more}
-
 
 ::: code-group
 
