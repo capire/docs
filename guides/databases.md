@@ -921,7 +921,7 @@ Instead, they protect the integrity of your data in the database layer against p
 
 ## Standard Database Functions
 
-A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way. The functions are translated to the best-possible native SQL functions or polyfills during runtime and also during compilation of your CDL files.
+A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way. The functions are translated to the best-possible database-specific SQL expressions at runtime and also during compilation of your CDL files.
 
 
 ### OData standard functions
