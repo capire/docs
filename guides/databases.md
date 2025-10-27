@@ -926,7 +926,7 @@ A specified set of standard functions - inspired by [OData](https://docs.oasis-o
 
 ### OData standard functions
 
-The `@sap/cds-compiler` and all CAP (Node.js & Java) database services come with out of the box support for common OData functions.
+The `@sap/cds-compiler` and all CAP database services (Node.js & Java) come with out of the box support for common OData functions.
 
 ::: warning Case Sensitivity
 The OData function mappings are case-sensitive and must be written as in the list below.
