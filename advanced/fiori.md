@@ -740,6 +740,9 @@ The `max-age` is the elapsed time since the response was generated on the origin
 Cache Control feature is currently supported on the Java runtime only.
 :::
 
+<div id="client-side-validations" />
+
+<div id="fiori-compat" />
 
 ## Hierarchical Tree Views
 
