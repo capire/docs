@@ -116,7 +116,9 @@ Deploying your application is as simple as clicking through a guided dialog. CAP
 
 You can choose between two deployment modes:
 
-- **In-App Deployment**: Uses pre-packaged CLI tools with the correct versions — no need to install anything locally. (Currently you still have to locally install [cds-dk](https://www.npmjs.com/package/@sap/cds-dk?activeTab=dependencies), [mbt](https://sap.github.io/cloud-mta-build-tool/download/) and in case of windows [make](https://sap.github.io/cloud-mta-build-tool/makefile/), but we are working on it!)
+- **In-App Deployment**: Uses pre-packaged CLI tools with the correct versions — no need to install anything locally.
+  > [!note]
+  > Currently you still have to locally install [cds-dk](https://www.npmjs.com/package/@sap/cds-dk?activeTab=dependencies), [mbt](https://sap.github.io/cloud-mta-build-tool/download/) and in case of windows [make](https://sap.github.io/cloud-mta-build-tool/makefile/), but we are working on it!
 - **CLI-Based Deployment**: Copy all necessary commands and run them in your own terminal.
 
 ### Designed for Simplicity
