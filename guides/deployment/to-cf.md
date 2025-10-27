@@ -216,8 +216,6 @@ To enable multitenancy for production, run the following command:
 cds add multitenancy
 ```
 
-[Learn more about MTX services.](../multitenancy/#behind-the-scenes){.learn-more}
-
 <br>
 
 ::: tip You're set!
