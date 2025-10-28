@@ -1151,10 +1151,9 @@ This query groups the 500 most expensive books by author name and determines the
 | `average`          | average of values                |  <X/>   | <X/>  |
 | `countdistinct`    | count of distinct values         |  <X/>   | <X/>  |
 | custom method      | custom aggregation method        |  <Na/>  | <Na/> |
-| custom aggregate   | predefined custom aggregate<sup>1</sup> |  <X/>   | <X/>  | 
+| custom aggregate   | predefined custom aggregate      |  <X/>   | <X/>  | 
 | `$count`           | number of instances in input set |  <X/>   | <X/>  |
 
-<sup>1</sup> CAP Node.js does not support custom aggregates for currencies or units of measure.
 
 ### Custom Aggregates
 
