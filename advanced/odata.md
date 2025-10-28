@@ -1091,21 +1091,25 @@ If the `groupby` transformation only includes a subset of the entity keys, the r
 
 ### Transformations
 
-| Transformation               | Description                                 |      Node.js       | Java  |
-|------------------------------|---------------------------------------------|:------------------:|:-----:|
-| `filter`                     | filter by filter expression                 |        <X/>        | <X/>  |
-| `search`                     | filter by search term or expression         |       <Na/>        | <X/>  |
-| `groupby`                    | group by dimensions and aggregates values   |        <X/>        | <X/>  |
-| `aggregate`                  | aggregate values                            |        <X/>        | <X/>  |
-| `compute`                    | add computed properties to the result set   |       <Na/>        | <X/>  |
-| `expand`                     | expand navigation properties                |       <Na/>        | <Na/> |
-| `concat`                     | append additional aggregation to the result |        <X/>        | <X/>  |
-| `skip` / `top`               | paginate                                    |        <X/>        | <X/>  |
-| `orderby`                    | sort the input set                          |        <X/>        | <X/>  |
-| `topcount`/`bottomcount`     | retain highest/lowest _n_ values            |       <Na/>        | <Na/> |
-| `toppercent`/`bottompercent` | retain highest/lowest _p_% values           |       <Na/>        | <Na/> |
-| `topsum`/`bottomsum`         | retain _n_ values limited by sum            |       <Na/>        | <Na/> |
+| Transformation               | Description                                  |      Node.js       | Java  |
+|------------------------------|----------------------------------------------|:------------------:|:-----:|
+| `filter`                     | filter by filter expression                  |        <X/>        | <X/>  |
+| `search`                     | filter by search term or expression          |       <Na/>        | <X/>  |
+| `groupby`                    | group by dimensions and aggregates values    |        <X/>        | <X/>  |
+| `aggregate`                  | aggregate values                             |        <X/>        | <X/>  |
+| `compute`                    | add computed properties to the result set    |       <Na/>        | <X/>  |
+| `expand`                     | expand navigation properties                 |       <Na/>        | <Na/> |
+| `concat`                     | append additional aggregation to the result  |        <X/>        | <X/>  |
+| `skip` / `top`               | paginate                                     |        <X/>        | <X/>  |
+| `orderby`                    | sort the input set                           |        <X/>        | <X/>  |
+| `topcount`/`bottomcount`     | retain highest/lowest _n_ values             |       <Na/>        | <Na/> |
+| `toppercent`/`bottompercent` | retain highest/lowest _p_% values            |       <Na/>        | <Na/> |
+| `topsum`/`bottomsum`         | retain _n_ values limited by sum             |       <Na/>        | <Na/> |
+| `TopLevels`                  | retain only _n_ levels of a hierarchy        |       <X/><sup>2</sup>         | <X/><sup>1,2</sup>  |
+| `ancestors/descendants`      | retain ancestors/descendants of specific nodes  |       <X/> <sup>2</sup>        | <X/><sup>1,2</sup>  |
 
+<sup>1</sup> - supported on SAP HANA, H2 ad PostgreSQL only
+<sup>2</sup> - only to support requests from the UI5 Tree Table
 
 #### `concat`
 
@@ -1137,7 +1141,6 @@ GET /Order(10)/books?
 
 This query groups the 500 most expensive books by author name and determines the price of the most expensive book per author.
 
-
 ### Aggregation Methods
 
 | Aggregation Method | Description                      | Node.js | Java  |
@@ -1148,7 +1151,9 @@ This query groups the 500 most expensive books by author name and determines the
 | `average`          | average of values                |  <X/>   | <X/>  |
 | `countdistinct`    | count of distinct values         |  <X/>   | <X/>  |
 | custom method      | custom aggregation method        |  <Na/>  | <Na/> |
+| custom aggregate   | predefined custom aggregate      |  <X/>   | <X/>  | 
 | `$count`           | number of instances in input set |  <X/>   | <X/>  |
+
 
 ### Custom Aggregates
 
@@ -1218,7 +1223,7 @@ A custom aggregate for a currency code or unit of measure should also be exposed
 | chain transformations                   |  <X/>   | <X/>  |
 | chain transformations within group by   |  <Na/>  | <Na/> |
 | `groupby` with `rollup`/`$all`          |  <Na/>  | <Na/> |
-| `$expand` result set of `$apply`        |  <Na/>  | <Na/> |
+| `$expand` result set of `$apply`        |  <Na/>  | <X/> |
 | `$filter`/`$search` result set          |  <X/>   | <X/>  |
 | sort result set with `$orderby`         |  <X/>   | <X/>  |
 | paginate result set with `$top`/`$skip` |  <X/>   | <X/>  |
