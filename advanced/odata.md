@@ -1203,7 +1203,7 @@ entity Sales {
 }
 ```
 
-The CAP Java SDK exposes all properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` as a [custom aggregate](../advanced/odata#custom-aggregates) with the property's name that returns:
+All properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` as a [custom aggregate](../advanced/odata#custom-aggregates) are exposed with the property's name that returns:
 
 * The property's value if it's unique within a group of dimensions
 * `null` otherwise
