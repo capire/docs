@@ -216,8 +216,6 @@ To enable multitenancy for production, run the following command:
 cds add multitenancy
 ```
 
-[Learn more about MTX services.](../multitenancy/#behind-the-scenes){.learn-more}
-
 <br>
 
 ::: tip You're set!
@@ -236,11 +234,14 @@ cf target
 ```
 [Learn more about `cf login`](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/7a37d66c2e7d401db4980db0cd74aa6b.html){.learn-more}
 
-::: tip Prevent outdated lock file issues
-If your project already includes a _package-lock.json_, run `npm update` to make sure it’s in sync with your _package.json_ before proceeding.
-:::
 
-You can now freeze dependencies, build, and deploy the application:
+If your project already includes a _package-lock.json_, freeze your updated dependencies:
+
+```sh
+npm install --package-lock-only
+```
+
+You can now build and deploy the application:
 
 ```sh
 cds up
