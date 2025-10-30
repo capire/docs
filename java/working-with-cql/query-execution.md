@@ -409,7 +409,7 @@ Remember to run draft specific queries through the [Draft Service](../fiori-draf
 
 
 ::: tip Draft queries on runtime views
-If you define runtime views on [draft-enabled](../fiori-drafts#reading-drafts) entities and want to run draft specific queries on these views, set the [*cds.drafts.persistence*](../fiori-drafts#reading-drafts) configuration to `split`.
+If you define runtime views on [draft-enabled](../fiori-drafts#reading-drafts) entities and want to run draft specific queries in [resolve mode](#rtview-resolve) on these views, set the [*cds.drafts.persistence*](../fiori-drafts#reading-drafts) configuration to `split`.
 :::
 
 ::: warning Avoid draft-enabling runtime views
