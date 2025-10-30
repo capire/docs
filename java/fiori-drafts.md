@@ -60,8 +60,8 @@ public Result delegateToS4(ActiveReadEventContext context) {
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
 
-::: Aggregation Queries
-Aggregations over active and inactive draft entities return two rows (active and inactive) instead of one aggregated row.
+::: warning Aggregation Queries
+Aggregations over active and inactive draft entities are not supported. Results of queries with aggregation functions will return disjunct rows for active and inactive instead of aggregated rows. `IsActiveEntity` is always implicitly part of of the group-by clause.
 :::
 
 ## Editing Drafts
