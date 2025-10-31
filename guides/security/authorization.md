@@ -517,7 +517,9 @@ Supported features are:
 * [Exists predicate](#exists-predicate) based on subselects.
 
 ::: info Avoid enumerable keys
-In case the filter condition is not met in an `UPDATE` or `DELETE` request, the runtime rejects the request (response code 403) even if the user is not even allowed to read the entity. To avoid to disclosure the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable.
+In case the filter condition is not met in an `UPDATE` or `DELETE` request, the runtime rejects the request with `404` in case the entity doesn't exist but a `READ` request would succeed if it did.
+Otherwise, the runtimes rejects with `403`, such that the response is consistent whether the entity doesn't exists or the user is not allowed to read it (in both cases a `READ` would result in a `404`).
+In general, to avoid disclosing the existence entities to unauthorized users, make sure that keys are not efficiently enumerable.
 :::
 
 ### User Attribute Values { #user-attrs}
