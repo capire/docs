@@ -144,6 +144,10 @@ It's possible to create and update data directly without creating intermediate d
 
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
+::: warning
+Bypassing draft is not supported for entities with a draft version, as the update would be lost when the draft is activated.
+:::
+
 ## Draft Lock { #draft-lock }
 
 An entity with a draft is locked from being edited by other users until either the draft is saved or a timeout is hit (15 minutes by default). You can configure this timeout by the following application configuration property:
