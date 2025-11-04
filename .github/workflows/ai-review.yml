@@ -9,14 +9,14 @@ concurrency:
   group: pr-sap-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-
 jobs:
   ai-review:
     name: AI Review
     if: ${{ contains(github.event.pull_request.labels.*.name, 'AI Review') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: SAP/ai-assisted-github-actions/pr-review@v3
         with:
