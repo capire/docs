@@ -21,16 +21,25 @@ status: released
 
 # Remote Authentication { #remote-authentication }
 
-CAP supports the consumption of various kinds of remote services:
+CAP supports out-of-the-box consumption of various kinds of remote services:
 
-* [Local Services](#local-app) bound to the same IAS instance of the provider application.
-* [External IAS](#app-to-app) applications consumed by providing a destination.
+* [Local Services](#local-app) as part of the same deployment and bound to the same identity instance (i.e. same trusted [application zone](./overview#application-zone)).
+* [External IAS services](#app-to-app) which could be even running on a none-BTP-platform.
 * [BTP reuse services](#ias-reuse) consumed via service binding.
 
-![The TAM graphic is explained in the accompanying text.](./assets/java-ias.png){width="800px" }
+According to key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of Remote Services decouples protocol level (i.e. exchanged content) from connection level (i.e. established connection channel). 
+While the business context of the application has an impact on the protocol, the connectivity of the service endpoints is agnostic to it and mainly depends on platform-level capabilities.
+The latter one is frequently subject to changes and hence should not introduce a dependency to the application. 
 
-Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
-Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
+![Remote Service stack architecture](./assets/remote-service-stack.drawio.svg){width="300px" }
+
+Given the CAP user of the request and the destination provided by the application configuration, the connectivity can handle authentication (IAS, XSUAA, X.509, ZTID, ...) and destination handling (local call, BTP Destination, BTP Service Binding) transparantly.
+Appropriate user propagation and resilience are tackled on this level as well.
+
+::: tip
+BTP HTTP Destinations offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
+:::
+
 
 ## Local Services {#local-app}
 

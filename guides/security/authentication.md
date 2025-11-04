@@ -51,7 +51,8 @@ Setup and start a simple sample application:
 <div class="impl java">
 
 ```sh
-cds init bookshop --java --add sample && cd ./bookshop
+cds init bookshop --java --add sample 
+cd ./bookshop
 mvn spring-boot:run
 ```
 
@@ -106,7 +107,7 @@ Sending OData request `curl http://localhost:8080/odata/v4/CatalogService/Books 
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.htlm`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with curl `http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (`200`).
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with curl `http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
 
 
 ::: tip
@@ -134,8 +135,8 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 
 ### Customization { #custom-mock-users }
 
-You can define custom mock users to perfectly simulate different types of [end users]((../cap-users#user-representation)) that will interact with your application at production time.
-Hence, you can use the mock users to test authorization rules and custom handlers transparently from the actual context.
+You can define custom mock users to simulate any type of [end users]((../cap-users#user-representation)) that will interact with your application at production time.
+Hence, you can use the mock users to test your authorization settings as well as custom handlers fully decoupled from the actual execution environment.
 
 <div class="impl java">
 
@@ -586,7 +587,8 @@ The same is true for the logout flow.
 
 
 ## XSUAA Authentication { #xsuaa-auth }
-  - setup cds add xsuaa
+
+TBD
   
 ## Hybrid Authentication { hybrid-authentication }
 
@@ -604,7 +606,7 @@ There are multiple reasons why customization might be required:
 2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
 3. The application needs to integrate with a 3rd party authentication service.
 
-![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="430px"}
+![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="380px"}
 
 - For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
 - For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
@@ -687,8 +689,6 @@ This will make standard CAP authorization work properly.
 If you switch off CAP authentication, make sure that the internal communication channels are secured by the given infrastructure.
 :::
 
-DWC Integration (internal)
-
 
 
 ## Pitfalls
@@ -700,5 +700,5 @@ DWC Integration (internal)
 
 - **Don't deviate from security defaults**. Only when absolute necessary, only experts should take the decision to add modifications or even replace parts of the standard authentication mechanisms. 
   
-- **Don't miss to add authentication tests** to ensure properly setup security configuration in your deployed application that rejects unauthenticated requests."
+- **Don't miss to add authentication tests** to ensure properly setup security configuration in your deployed application that rejects unauthenticated requests.
 

@@ -19,7 +19,7 @@ status: released
 </style>
 
 
-# CAP Users { #users }
+# CAP Users { #cap-users }
 
 A successfull authentication results in an CAP [user representation](#claims) reflecting the request user in an uniform way.
 Referring to the key concepts, the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategy.
