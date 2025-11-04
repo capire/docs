@@ -1,5 +1,4 @@
 ---
-shorty: Fiori UIs
 synopsis: >
   CAP provides out-of-the-box support for SAP Fiori elements front ends.
 permalink: advanced/fiori
@@ -9,7 +8,7 @@ impl-variants: true
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
-# Serving Fiori UIs
+# Serving SAP Fiori UIs
 
 {{ $frontmatter.synopsis }}
 
@@ -23,13 +22,13 @@ This guide explains how to add one or more SAP Fiori elements apps to a CAP proj
 
 ## SAP Fiori Preview
 
-For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori Elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
+For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
 ::: details Be aware that this is **not meant for production**.
 
 <div class="impl node">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is only active locally where the [development profile](../node.js/cds-env#profiles) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
@@ -38,7 +37,7 @@ To also enable it in cloud deployments, for test or demo purposes maybe, set <Co
 
 <div class="impl java">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is active by default, but disabled automatically in case the [production profile](../java/developing-applications/configuring#production-profile) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
@@ -744,4 +743,101 @@ Cache Control feature is currently supported on the Java runtime only.
 
 <div id="fiori-compat" />
 
+## Hierarchical Tree Views
+
+Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
+
+Database support for a generic hierarchy implementation by CAP runtimes:
+
+| Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
+|-------------|----------|----|------------|--------|
+| CAP Java    | ✓        | ✓ | ✓          |        |
+| CAP Node.js | ✓        |    |✓          |✓       |
+
+
+### Example
+Let's assume we have the following domain model and its projection in a service:
+
+::: code-group
+```cds [schema.cds]
+namespace my.bookshop;
+
+entity Genres { //...
+  parent : Association to Genres;
+}
+```
+:::
+
+::: code-group
+```cds [AdminService.cds]
+service AdminService {
+  entity Genres as projection on my.bookshop.Genres;
+}
+```
+:::
+
+
+Annotate/extend the entity in the service as follows:
+
+```cds
+// declare a hierarchy with the qualifier "GenresHierarchy"
+annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy : {
+  NodeProperty             : ID,    // identifies a node, usually the key
+  ParentNavigationProperty : parent // navigates to a node's parent
+};
+
+extend AdminService.Genres with @(
+  // The computed properties expected by Fiori to be present in hierarchy entities
+  Hierarchy.RecursiveHierarchy #GenresHierarchy : {
+    LimitedDescendantCount : LimitedDescendantCount,
+    DistanceFromRoot       : DistanceFromRoot,
+    DrillState             : DrillState,
+    LimitedRank            : LimitedRank
+  },
+  // Disallow filtering on these properties from Fiori UIs
+  Capabilities.FilterRestrictions.NonFilterableProperties: [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+  // Disallow sorting on these properties from Fiori UIs
+  Capabilities.SortRestrictions.NonSortableProperties    : [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+) columns { // Ensure we can query these columns from the database
+  null as LimitedDescendantCount : Int16,
+  null as DistanceFromRoot       : Int16,
+  null as DrillState             : String,
+  null as LimitedRank            : Int16
+};
+```
+
+> Note: When naming the hierarchy qualifier, use the following pattern: <br>
+> `<entity name in service>Hierarchy`
+
+Configure the TreeTable in UI5's _manifest.json_ file:
+
+```jsonc
+  "sap.ui5": { ...
+    "routing": { ...
+      "targets": { ...
+        "GenresList": { ...
+          "options": {
+            "settings": { ...
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
+                    "type": "TreeTable" // [!code focus]
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+    },
+```
+
+> Note: use the `hierarchyQualifier` declared earlier
+
 <div id="reserved-words" />
+
