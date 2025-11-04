@@ -11,13 +11,14 @@ concurrency:
 
 permissions:
   contents: read
-  pull-request: write
 
 jobs:
   ai-review:
     name: AI Review
     if: ${{ contains(github.event.pull_request.labels.*.name, 'AI Review') }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-request: write
     steps:
       - uses: SAP/ai-assisted-github-actions/pr-review@v3
         with:
