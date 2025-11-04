@@ -61,7 +61,7 @@ When setting `cds.drafts.persistence` to `split` only queries that are specified
 :::
 
 ::: warning Aggregation Queries
-Aggregations over active and inactive draft entities are not supported. Results of queries with aggregation functions will return disjunct rows for active and inactive instead of aggregated rows. `IsActiveEntity` is always implicitly part of of the group-by clause.
+Aggregations over active and inactive draft entities are not supported. Results of queries with aggregation functions will return disjunct rows for active and inactive instead of aggregated rows. `IsActiveEntity` is always implicitly part of the group-by clause.
 :::
 
 ## Editing Drafts
