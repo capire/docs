@@ -1,5 +1,4 @@
 ---
-shorty: Fiori UIs
 synopsis: >
   CAP provides out-of-the-box support for SAP Fiori elements front ends.
 permalink: advanced/fiori
@@ -9,7 +8,7 @@ impl-variants: true
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
-# Serving Fiori UIs
+# Serving SAP Fiori UIs
 
 {{ $frontmatter.synopsis }}
 
@@ -23,13 +22,13 @@ This guide explains how to add one or more SAP Fiori elements apps to a CAP proj
 
 ## SAP Fiori Preview
 
-For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori Elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
+For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
 ::: details Be aware that this is **not meant for production**.
 
 <div class="impl node">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is only active locally where the [development profile](../node.js/cds-env#profiles) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
@@ -38,7 +37,7 @@ To also enable it in cloud deployments, for test or demo purposes maybe, set <Co
 
 <div class="impl java">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is active by default, but disabled automatically in case the [production profile](../java/developing-applications/configuring#production-profile) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
