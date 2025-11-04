@@ -1,6 +1,7 @@
 ---
 synopsis: >
-  This section provides an overview about the security architecture of CAP applications on different platforms.
+  This section provides an overview about the security concepts and architecture of CAP applications on different platforms.
+status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -16,14 +17,14 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ### Pluggable Building Blocks { #key-concept-pluggable }
 
-CAP divides the different tasks related to security into separate and independent building blocks:
+CAP divides the different security-related tasks into separate and independent building blocks for which all of them there is a standard CAP implementation suitable for most scenarios:
 
 ![Overview Security Components with CAP](./assets/security-components.drawio.svg){width="600px" }
 
-- [Authentication](#inbound-authentication )
-- [User representation and propagation](#user-representation)
-- [Authorization](#authorization)
-- [Remote Authentication](#outbound-authentication)
+- [Authentication](./authentication )
+- [CAP Users](./cap-users)
+- [Authorization](./authorization)
+- [Remote Authentication](./remote-authentication)
 
 **By separating these concerns**, CAP ensures that each security function can be configured and customized independently without affecting other parts of the system, providing maximum flexibility.
 
@@ -45,16 +46,16 @@ Likewise, the CAP representation of the request user can be overruled to match a
 CAP does not deal with user login flows, password and credential management, user sessions, or any cryptographic logic - **and applications should not have to do it at all!**
 Instead, **CAP seamlessly integrates with bullet-proven [platform services](#btp-services)** that handle these critical security topics centrally. 
 This approach not only simplifies the implementation but also enhances security by leveraging robust, well-tested mechanisms provided by the platform.
-By leveraging platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
+Built on platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
 
 Most notably, authentication is covered by [platform's identity services](#identity-service). 
-Likewise, TLS termination is offered by the [platform](#platform-environment).
+Likewise, TLS termination is offered by the [platform infrastructure](#platform-environment).
 
 ![Overview Platform Integration with CAP](./assets/security-platform-integration.drawio.svg){width="600px" }
 
 ### Decoupled from Business Logic  { #key-concept-decoupled-coding }
 
-As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any adaptions. 
+As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any security-related adaptions. 
 This safeguards business logic being independent from platform services which are frequently subject to security hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
@@ -65,7 +66,7 @@ This abstraction layer ensures developers not having to worry about the details 
 ### Secure by Default { #key-concept-secure-by-default }
 
 CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code to adapt accordingly.
-CAP's autoconfiguration feature significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are under safe control**. 
+CAP's security autoconfiguration approach significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are under safe control**. 
 
 For instance, endpoints of deployed CAP applications are authenticated automatically, thus providing a secure baseline.
 Making endpoints public requires manual configuration either in the CAP model or in the middleware. 
@@ -74,17 +75,16 @@ Making endpoints public requires manual configuration either in the CAP model or
 
 ## Security Architecture
 
-As [pointed out](#platform-compliance), CAP cloud applications run in a specific context that has a major impact on the security [architecture](#architecture-overview).
+CAP applications run in a specific context that has a major impact on the security [architecture](#architecture-overview).
 CAP requires a dedicated [platform environment](#platform-environment) to integrate with, in order to ensure end-to-end security.
 
 ### Architecture Overview { #architecture-overview }
 
-The following diagram provides a high-level overview about the security-relevant aspects of a deployed CAP application in a cloud environment:
+The following diagram provides a high-level overview about the security-relevant components and interfaces of a deployed CAP application in a cloud environment:
 
-<!-- TODO: Redraw as .drawio.svg -->
 ![This TAM graphic is explained in the accompanying text.](./assets/cap-security-architecture-overview.png){width="600px"}
 
-To serve a business request, different runtime components are involved: a request, issued by a UI or technical client ([public zone](#public-zone)), is forwarded by a gateway or ingress router to the CAP application. In case of a UI request, an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance acts as a proxy. The CAP application might make use of a CAP sidecar. All application components ([application zone](#application-zone)) might make use of platform services such as database or identity service ([platform zone](#platform-zone)).
+To serve a business request, different runtime components are involved: a request, issued by a UI or technical client ([public zone](#public-zone)), is forwarded by a gateway or ingress router to the CAP application. In case of a UI request, an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance acts as a proxy to manage the login flow and the browser session. The CAP application can have additional services such as a CAP sidecar. All application components ([application zone](#application-zone)) might make use of platform services such as database or identity service ([platform zone](#platform-zone)).
 
 #### Public Zone { #public-zone }
 
@@ -104,7 +104,7 @@ The platform zone also includes the gateway, which is the main entry point for e
 
 #### Application Zone { #application-zone}
 
-The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a unit of trust. The application provider is responsible to *develop, deploy and operate* these services:
+The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a **unit of trust**. The application provider is responsible to *develop, deploy and operate* these services:
 
 - The [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) acts as as an optional reverse proxy wrapping the application service and providing business-independent functionality required for UIs.
 This includes serving UI content, providing a login flow as well as managing the session with the browser.
@@ -122,10 +122,6 @@ In contrast, application subscribers, that is business users, are restricted to 
 In a productive environment, it is recommended to deploy and operate the application on behalf of a technical user.
 :::
 
-::: tip
-Without limitation of generality, there may be multiple CAP services or sidecars according to common [microservice architecture pattern](https://microservices.io/patterns/microservices.html).
-:::
-
 
 ### Platform Requirements { #platform-environment }
 
@@ -135,9 +131,9 @@ There are several assumptions that a CAP application needs to make about the pla
 Hence, the **CAP application can offer a pure HTTP endpoint** without having to enforce TLS and to deal with certificates.
 
 2. The server certificates presented by the external endpoints are signed by a trusted certificate authority.
-This **frees CAP applications from the need to manage trust certificates**. The underlying runtimes (Java or Node) can validate the server certificates by default.
+This **frees CAP applications from the need to manage trust certificates**. The underlying runtimes (Java or Node.js VMs) can validate the server certificates by default.
 
-3. **Secrets** that are required to protect the application or to consume other platform services **are injected by the platform** into the application in a secure way.
+3. **Secrets** that are required to protect the application or to consume other platform services **are injected by the platform** into the application microservices in a secure way.
 
 All supported [environments](platform#cloud) fulfill the given requirements. Additional requirements could be added in future.
 
@@ -146,9 +142,7 @@ Custom domain certificates need to be signed by trusted certificate authority.
 :::
 
 ::: warning
-❗ **In general, application endpoints are visible to public zone**. Hence, CAP can't rely on private endpoints.
-In particular, an application router does not prevent external access to the CAP application service.
-As a consequence, **all CAP endpoints must be protected in an appropriate manner**.
+❗ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
 :::
 
 
@@ -156,16 +150,16 @@ As a consequence, **all CAP endpoints must be protected in an appropriate manner
 
 CAP applications run in a certain environment, that is, in the context of some platform framework that has specific characteristics as explained [before](#platform-environment).
 The underlying framework has a major impact on the security of the application,
-regardless of whether it runs a [cloud](#cloud) environment or [local](#local) environment.
+regardless of whether it runs a [cloud environment](#cloud) or [local environment](#local).
 Moreover, CAP applications are tightly integrated with [platform services](#btp-services), in particular with identity and persistence service.
 
-::: warning End-to-end security necessarily requires compliance with all security policies of all involved components.
+::: warning ❗ End-to-end security necessarily requires compliance with all security policies of all involved components
 CAP application security requires consistent security configuration of the underlying platform and all consumed services. Consult the relevant security documentation accordingly.
 :::
 
 ### CAP in Local Environment { #local }
 
-Security not only plays a crucial role in [cloud](#cloud) environments, but also during local development.
+Security not only plays a crucial role in [cloud environments](#cloud), but also during local development.
 Apparently the security requirements are different from cloud scenario as local endpoints are typically not exposed for remote clients.
 But there are still a few things to consider because exploited vulnerabilities could be the basis for attacks on productive cloud services:
 
@@ -218,12 +212,12 @@ SAP BTP provides a range of platform services that your CAP applications can uti
 ::: tip
 SAP BTP services and the underlying platform infrastructure hold various certifications and attestations, which can be found under the naming of SAP Cloud Platform in the [SAP Trust Center](https://www.sap.com/about/trust-center/certification-compliance/compliance-finder.html?search=SAP%20Business%20Technology%20Platform%20ISO).
 :::
+[Webcast SAP BTP Cloud Identity and Security Services](https://assets.dm.ux.sap.com/webinars/sap-user-groups-k4u/pdfs/221117_sap_security_webcast_series_sap_btp_cloud_identity_and_security_services.pdf){.learn-more}
+
 
 The CAP framework offers flexible APIs that you can integrate with various services, including your custom services. If you replace platform services with your custom ones, it's important to ensure that the service level agreements (SLAs) CAP depends on are still met.
 
 The most important services for security offered by the platform:
-
-[Webcast SAP BTP Cloud Identity and Security Services](https://assets.dm.ux.sap.com/webinars/sap-user-groups-k4u/pdfs/221117_sap_security_webcast_series_sap_btp_cloud_identity_and_security_services.pdf){.learn-more}
 
 #### [SAP Cloud Identity Services - Identity Authentication](https://help.sap.com/docs/IDENTITY_AUTHENTICATION) { #identity-service }
 
@@ -237,6 +231,8 @@ This service helps to introduce a strict separation between platform users (prov
 
 The service lets customers manage user authorizations in technical roles at application level, which can be aggregated into business-level role collections for large-scale cloud scenarios.
 Obviously, developers must define application roles carefully as they form basic access rules to business data.
+
+[Learn more in the security guide.](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security){.learn-more}
 
 #### [SAP BTP Connectivity](https://help.sap.com/docs/CP_CONNECTIVITY)
 
