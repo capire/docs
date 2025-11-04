@@ -747,7 +747,7 @@ Cache Control feature is currently supported on the Java runtime only.
 
 Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
-Database support for a generic hierarchy implementation by CAP runtime:
+Database support for a generic hierarchy implementation by CAP runtimes:
 
 | Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
 |-------------|----------|----|------------|--------|
@@ -755,27 +755,29 @@ Database support for a generic hierarchy implementation by CAP runtime:
 | CAP Node.js | ✓        |    |✓          |✓       |
 
 
-### Configuration
+### Example
+Let's assume we have the following domain model and its projection in a service:
 
-Given the following domain model:
-
-```cds
+::: code-group
+```cds [schema.cds]
 namespace my.bookshop;
 
 entity Genres { //...
   parent : Association to Genres;
 }
 ```
+:::
 
-and its projection in a service
-
-```cds
+::: code-group
+```cds [AdminService.cds]
 service AdminService {
   entity Genres as projection on my.bookshop.Genres;
 }
 ```
+:::
 
-#### Annotate/extend the entity in the service:
+
+Annotate/extend the entity in the service as follows:
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
@@ -811,7 +813,7 @@ extend AdminService.Genres with @(
 > Note: When naming the hierarchy qualifier, use the following pattern: <br>
 > `<entity name in service>Hierarchy`
 
-#### Configure the TreeTable in UI5's _manifest.json_ file:
+Configure the TreeTable in UI5's _manifest.json_ file:
 
 ```jsonc
   "sap.ui5": { ...
