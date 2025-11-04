@@ -16,7 +16,7 @@ jobs:
   ai-review:
     name: AI Review
     if: ${{ contains(github.event.pull_request.labels.*.name, 'AI Review') }}
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
     steps:
       - uses: SAP/ai-assisted-github-actions/pr-review@v3
         with:
