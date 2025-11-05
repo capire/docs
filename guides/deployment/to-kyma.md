@@ -79,7 +79,7 @@ The following diagram illustrates the deployment workflow:
 + Install [Docker Desktop or Docker for Linux](https://docs.docker.com/get-docker/)
 + Download and install the following command line tools:
   + [`kubectl` command line client](https://kubernetes.io/docs/tasks/tools/) for Kubernetes
-  + [`pack` command line tool](https://buildpacks.io/docs/tools/pack/)
+  + [`pack` command line tool](https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/)
   + [`helm` command line tool](https://helm.sh/docs/intro/install/)
 + Make sure your SAP HANA Cloud is [mapped to your namespace](https://community.sap.com/t5/technology-blogs-by-sap/consuming-sap-hana-cloud-from-the-kyma-environment/ba-p/13552718#toc-hId-569025164)
 + Ensure SAP HANA Cloud is accessible from your Kyma cluster by [configuring trusted source IPs](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/0610e4440c7643b48d869a6376ccaecd.html)
@@ -95,16 +95,16 @@ Download the Kubernetes configuration from SAP BTP and move it to _$HOME/.kube/c
 SAP BTP doesn't provide a container image registry (or container repository), but you can choose from offerings of hosted open source and private container image registries, as well as solutions that can be run on premise or in your own cloud infrastructure.
 
 ::: tip Ensure network access
-
 Verify the Kubernetes cluster has network access to the container registry, especially if hosted behind a VPN or within a restricted network environment.
-
 :::
 
 #### Set Up Your Cluster for a Private Container Registry
 
 To use a docker image from a private repository, you need to [create an image pull secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) and configure this secret for your containers.
 
+:::info Interactive setup
 If a pull secret does not exist for your namespace when deploying your application, the CLI will prompt you to set up the pull secret interactively.
+:::
 
 ::: warning Assign limited permissions to the technical user
 For this secret, use a technical user with read-only permissions. This limits the risk, as anyone with access to the Kubernetes cluster could retrieve the password from the secret and potentially modify or publish images to the registry.
