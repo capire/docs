@@ -4,15 +4,15 @@
 
 | your-project           | https://github.com/&lt;your/repo&gt;          |
 | ---------------------- | --------------------------------------- |
-| @sap/cds               | 9.4.3                                   |
+| @sap/cds               | 9.4.4                                   |
 | @sap/cds-dk            | -- missing --                           |
-| @sap/cds-compiler      | 6.4.2                                   |
-| @sap/cds-dk (global)   | 9.4.1                                   |
+| @sap/cds-compiler      | 6.4.6                                   |
+| @sap/cds-dk (global)   | 9.4.2                                   |
 | @sap/cds-fiori         | 2.1.0                                   |
-| @sap/cds-mtxs          | 3.3.1                                   |
+| @sap/cds-mtxs          | 3.4.2                                   |
 | @cap-js/asyncapi       | 1.0.3                                   |
-| @cap-js/db-service     | 2.5.1                                   |
+| @cap-js/db-service     | 2.6.0                                   |
 | @cap-js/openapi        | 1.2.3                                   |
-| @cap-js/sqlite         | 2.0.3                                   |
+| @cap-js/sqlite         | 2.0.4                                   |
 | Node.js                | v22.20.0                                |
 </pre>

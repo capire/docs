@@ -979,7 +979,7 @@ Essentially, Compositions are the same as _[associations](#associations)_, just 
 :::
 
 ::: warning Limitations of Compositions of one
-Using of compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
+Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
 :::

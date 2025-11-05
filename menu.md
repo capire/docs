@@ -55,7 +55,7 @@
   ### [AsyncAPI](advanced/publishing-apis/asyncapi)
 
 ## [Serving UIs](advanced/fiori)
-  ### [Fiori UIs](advanced/fiori)
+  ### [SAP Fiori UIs](advanced/fiori)
 
 ## [Databases](guides/databases)
 
@@ -150,6 +150,7 @@
   ### [cds. add()](tools/apis/cds-add)
   ### [cds. import()](tools/apis/cds-import)
   ### [cds. build()](../guides/deployment/custom-builds#custom-build-plugins)
+## [CAP Console](tools/console)
 
 # [Plugins](plugins/)
 

@@ -79,6 +79,9 @@ cds add multitenancy
         "requires": {
           "[production]": {
             "multitenancy": true
+          },
+          "[with-mtx]": {
+            "multitenancy": true
           }
        }
      }
@@ -315,14 +318,14 @@ This is a known issue in CDS 9.
   cds:
     multi-tenancy:
       mtxs.enabled: true
-    security.mock.users: // [!code focus]
-      - name: alice // [!code focus]
+    security.mock.users: # [!code focus]
+      alice: # [!code focus]
         tenant: t1
         roles: [ admin ]
-      - name: bob // [!code focus]
+      bob: # [!code focus]
         tenant: t1
         roles: [ cds.ExtensionDeveloper ]
-      - name:  erin // [!code focus]
+      erin: # [!code focus]
         tenant: t2
         roles: [ admin, cds.ExtensionDeveloper ]
   ```
@@ -420,7 +423,6 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
   <div class="impl java">
 
   ```sh
-  cd srv
   mvn cds:watch -Dspring-boot.run.profiles=with-mtx
   ```
 
@@ -722,24 +724,10 @@ cds add mta
 ```
 
 ```sh [Kyma]
-cds add helm,containerize
+cds add kyma
 ```
 
 :::
-
-::: details Add xsuaa redirect for trial / extension landscapes
-Add the following snippet to your _xs-security.json_ and adapt it to the landscape you're deploying to:
-
-```json
-  "oauth2-configuration": {
-    "redirect-uris": ["https://*.cfapps.us10-001.hana.ondemand.com/**"]
-  }
-```
-
-:::
-
-[Learn more about configured BTP services for SaaS applications.](#behind-the-scenes){.learn-more}
-
 
 ::: code-group
 
@@ -1275,24 +1263,6 @@ In these MTX sidecar setups, a subproject is added in _./mtx/sidecar_, which ser
 The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests.
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
-
-<!-- Who cares? Also outdated with IAS -> busywork keeping that in sync -->
-### Behind the Scenes { #behind-the-scenes}
-
-With adding the MTX services, your project configuration is adapted at all relevant places.
-
-Configuration and dependencies are added to your _package.json_ and an _xs-security.json_ containing MTX-specific scopes and roles is created. {.node}
-
-Configuration and dependencies are added to your _.cdsrc.json_ and an _xs-security.json_ containing MTX-specific scopes and roles is created. {.java}
-
-For the MTA deployment service dependencies are added to the _mta.yaml_ file. Each SaaS application will have bindings to at least three SAP BTP service instances.
-
-| Service                                                      | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [Service Manager](https://help.sap.com/docs/SERVICEMANAGEMENT/09cc82baadc542a688176dce601398de/4e19b11211fe4ca2a266d3fdd4a72188.html) (`service-manager`) | CAP uses this service for creating a new SAP HANA Deployment Infrastructure (HDI) container for each tenant and for retrieving tenant-specific database connections. |
-| [SaaS Provisioning Service](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/3971151ba22e4faa9b245943feecea54.html) (`saas-registry`)                  | To make a SaaS application available for subscription to SaaS consumer tenants, the application provider must register the application in the SAP BTP Cloud Foundry environment through the SaaS Provisioning Service. |
-| [User Account and Authentication Service](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) (`xsuaa`)            | Binding information contains the OAuth client ID and client credentials. The XSUAA service can be used to validate the JSON Web Token (JWT) from requests and to retrieve the tenant context from the JWT.|
-
 
 <!--
 

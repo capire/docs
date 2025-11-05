@@ -120,6 +120,8 @@ Your SAP Cloud Application Event Hub configuration must include your system name
 resources:
   - name: incidents-event-broker
     type: org.cloudfoundry.managed-service
+    requires:
+      - name: incidents-srv-api
     parameters:
       service: event-broker
       service-plan: event-connectivity
@@ -128,8 +130,7 @@ resources:
         # should start with own namespace (i.e., "foo.bar") and may not be longer than 15 characters
         systemNamespace: cap.incidents
         webhookUrl: ~{incidents-srv-api/url}/-/cds/event-broker/webhook
-      requires:
-        - name: incidents-srv-api
+
 ```
 
 ```yaml [mta.yaml in Java]
