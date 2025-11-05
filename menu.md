@@ -55,7 +55,7 @@
   ### [AsyncAPI](advanced/publishing-apis/asyncapi)
 
 ## [Serving UIs](advanced/fiori)
-  ### [Fiori UIs](advanced/fiori)
+  ### [SAP Fiori UIs](advanced/fiori)
 
 ## [Databases](guides/databases)
 
