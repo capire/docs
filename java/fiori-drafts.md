@@ -145,7 +145,7 @@ It's possible to create and update data directly without creating intermediate d
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
 ::: warning
-Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If the active entity is locked by an existing draft, any attempt to update it is blocked. This ensures that no changes to the active entity are lost when a draft is subsequently activated.
+Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
 :::
 
 ## Draft Lock { #draft-lock }
