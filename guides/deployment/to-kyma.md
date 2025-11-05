@@ -68,7 +68,7 @@ Deploying apps on the SAP BTP Kyma Runtime requires two main artifact types:
 
 The following diagram illustrates the deployment workflow:
 
-![A CAP Helm chart is added to your project. Then you build your project as container images and push those images to a container registry of your choice. As last step the Helm chart is deployed to your Kyma resources, where service instances of SAP BTP services are created and pods pull the previously created container images from the container registry.](assets/deploy-kyma.drawio.svg)
+![A CAP Helm chart is added to your project. Then you build your project as container images and push those images to a container registry of your choice. As last step the Helm chart is deployed to your Kyma cluster, where service instances of SAP BTP services are created and pods pull the previously created container images from the container registry.](assets/deploy-kyma.drawio.svg)
 
 
 ## Prerequisites {#prerequisites}
@@ -81,7 +81,6 @@ The following diagram illustrates the deployment workflow:
   + [`kubectl` command line client](https://kubernetes.io/docs/tasks/tools/) for Kubernetes
   + [`pack` command line tool](https://buildpacks.io/docs/tools/pack/)
   + [`helm` command line tool](https://helm.sh/docs/intro/install/)
-  + [`ctz` command line tool](https://www.npmjs.com/package/ctz)
 + Make sure your SAP HANA Cloud is [mapped to your namespace](https://community.sap.com/t5/technology-blogs-by-sap/consuming-sap-hana-cloud-from-the-kyma-environment/ba-p/13552718#toc-hId-569025164)
 + Ensure SAP HANA Cloud is accessible from your Kyma cluster by [configuring trusted source IPs](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/0610e4440c7643b48d869a6376ccaecd.html)
 
@@ -105,25 +104,10 @@ Verify the Kubernetes cluster has network access to the container registry, espe
 
 To use a docker image from a private repository, you need to [create an image pull secret](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) and configure this secret for your containers.
 
-::: details Use this script to create the docker pull secret...
-
-```sh
-echo -n "Your docker registry server: "; read YOUR_REGISTRY
-echo -n "Your user: "; read YOUR_USER
-echo -n "Your email: "; read YOUR_EMAIL
-echo -n "Your API token: "; read -s YOUR_API_TOKEN
-kubectl create secret docker-registry \
-  docker-registry \
-  "--docker-server=$YOUR_REGISTRY" \
-  "--docker-username=$YOUR_USER" \
-  "--docker-password=$YOUR_API_TOKEN" \
-  "--docker-email=$YOUR_EMAIL"
-# The 2nd 'docker-registry' above is our default secret name.
-```
-:::
+If a pull secret does not exist for your namespace when deploying your application, the CLI will prompt you to set up the pull secret interactively.
 
 ::: warning Assign limited permissions to the technical user
-It is recommended to use a technical user for this secret that has only read permission, because users with access to the Kubernetes cluster can reveal the password from the secret.
+For this secret, use a technical user with read-only permissions. This limits the risk, as anyone with access to the Kubernetes cluster could retrieve the password from the secret and potentially modify or publish images to the registry.
 :::
 
 <span id="afterprivatereg" />
@@ -166,9 +150,9 @@ cds add workzone
 CAP provides a configurable [Helm chart](https://helm.sh/) for Node.js and Java applications, which can be added like so:
 
 ```sh
-cds add helm
+cds add kyma
 ```
-> You will be asked to provide a Kyma domain, the secret name to pull images and your container registry name.
+> You will be asked to provide a Kyma cluster domain and your container registry name.
 
 ::: details Running `cds build` now creates a _gen_/_chart_ folder
 
@@ -184,17 +168,25 @@ They support the deployment of your CAP service, database, UI content, and the c
 You can now quickly deploy the application like so:
 
 ```sh
-cds up -2 k8s
+cds up -2 k8s [ -n <your-namespace> ]
 ```
 
 ::: details Essentially, this automates the following steps...
 
 ```zsh
-cds add helm,containerize # if not already done
+cds add kyma # if not already done
 
 # Installing app dependencies, e.g.
-npm i app/browse
+
+# If package-lock.json doesn't exist
+npm install --prefix app/browse
+
+npm run build --prefix app/browser
+
+# If package-lock.json doesn't exist
 npm i app/admin-books
+
+npm run build --prefix app/admin-books
 
 # If project is multitenant
 npm i --package-lock-only mtx/sidecar
@@ -202,15 +194,20 @@ npm i --package-lock-only mtx/sidecar
 # If package-lock.json doesn't exist
 npm i --package-lock-only
 
+# Buildpack commands
+pack build bookshop-srv:latest --path gen/srv --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
+pack build bookshop-html5-deployer:latest --path app/html5-deployer --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
+
 # Final assembly and deployment, e.g.
-ctz containerize.yaml --log --push
-helm upgrade --install bookshop ./gen/chart --wait --wait-for-jobs --set-file xsuaa.jsonParameters=xs-security.json
+helm upgrade --install bookshop ./gen/chart --namespace bookshop --wait --wait-for-jobs --timeout=10m
 kubectl rollout status deployment bookshop-srv --timeout=8m
 kubectl rollout status deployment bookshop-approuter --timeout=8m
 kubectl rollout status deployment bookshop-sidecar --timeout=8m
 ```
 
 :::
+
+_This command uses checksums to detect changes in your code. If any modifications are found, it automatically triggers a rebuild. The checksums are reflected in the Docker image tags._
 
 This process can take a few minutes to complete and logs output like this:
 
@@ -257,24 +254,13 @@ Specify the repository where you want to push the images:
 ...
 repository: <your-container-registry>
 ```
-
 :::
-
-Now, we use the `ctz` build tool to build all the images:
-
-```sh
-ctz containerize.yaml
-```
-
-This will start containerizing your modules based on the configuration in _containerize.yaml_. After finishing, it will ask whether you want to push the images or not. Type `y` and press enter to push your images. You can also use the above command with `--push` flag to auto-confirm. If you want more logs, you can use the `--log` flag with the above command.
-
-[Learn more about the `ctz` build tool.](https://www.npmjs.com/package/ctz/){.learn-more style="margin-top:10px"}
 
 ### Customize Helm Chart {#customize-helm-chart}
 
 #### About CAP Helm Charts {#about-cap-helm}
 
-The following files are added to a _chart_ folder by executing `cds add helm`:
+The following files are added to a _chart_ folder by executing `cds add kyma`:
 
 ```zsh
 chart/
@@ -323,7 +309,7 @@ imagePullSecret:
 # Kubernetes cluster ingress domain (used for application URLs)
 domain: <cluster-domain>
 
-# Container image registry
+# Container image registry where to pull the image from
 image:
   registry: <registry-server>
 ```
@@ -497,8 +483,7 @@ parametersFrom:
 The `jsonParameters` key can also be specified using the `--set file` flag while installing/upgrading Helm release. For example, `jsonParameters` for the `xsuaa` property can be defined using the following command:
 
 ```sh
-helm install bookshop ./chart \
-  --set-file xsuaa.jsonParameters=xs-security.json
+cds up -2 k8s
 ```
 
 > You can explore more configuration options in the subchart's directory _gen/chart/charts/service-instance_.
@@ -573,18 +558,18 @@ srv: # Key is the target service, e.g. 'srv'
 
 Modifying the Helm chart allows you to customize it to your needs. However, this has consequences if you want to update with the latest changes from the CAP template.
 
-You can run `cds add helm` again to update your Helm chart. It has the following behavior for modified files:
+You can run `cds add kyma` again to update your Helm chart. It has the following behavior for modified files:
 
-1. Your changes of the _chart/values.yaml_ and _chart/Chart.yaml_ will not be modified. Only new or missing properties will be added by `cds add helm`.
+1. Your changes of the _chart/values.yaml_ and _chart/Chart.yaml_ will not be modified. Only new or missing properties will be added by `cds add kyma`.
 2. To modify any of the generated files such as templates or subcharts, copy the files from _gen/chart_ folder and place it in the same level inside the _chart_ folder. After the next `cds build` executions the generated chart will have the modified files.
 3. If you want to have some custom files such as templates or subcharts, you can place them in the _chart_ folder at the same level where you want them to be in _gen/chart_ folder. They will be copied as is.
 
 ### Extend
 
-Instead of modifying consider extending the CAP Helm chart. Just make sure adding new files to the Helm chart does not conflict with `cds add helm`.
+Instead of modifying consider extending the CAP Helm chart. Just make sure adding new files to the Helm chart does not conflict with `cds add kyma`.
 
 ::: tip Consider Kustomize
-A modification-free approach to change files is to use [Kustomize](https://kustomize.io/) as a [post-processor](https://helm.sh/docs/topics/advanced/#post-rendering) for your Helm chart. This might be usable for small changes if you don't want to branch-out from the generated `cds add helm` content.
+A modification-free approach to change files is to use [Kustomize](https://kustomize.io/) as a [post-processor](https://helm.sh/docs/topics/advanced/#post-rendering) for your Helm chart. This might be usable for small changes if you don't want to branch-out from the generated `cds add kyma` content.
 :::
 
 
