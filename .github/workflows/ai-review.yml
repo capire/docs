@@ -25,7 +25,8 @@ jobs:
           model-parameters: '{"temperature": 0.1}'
           prompt: |
             - As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation:
-            - Check for spelling errors in English and provide corrections.
+            - Use U.S. English spelling and punctuation.
+            - Check for spelling errors and provide corrections.
             - Identify and correct grammatical errors and incorrect punctuation.
             - Provide suggestions for improving the clarity and conciseness of the text to make it more understandable. Restrict yourself to the 5 most important findings and create suggestions for them.
             - Consider the guidelines that can be found in .github/workflows/assets/editor.md and apply them.
