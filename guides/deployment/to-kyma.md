@@ -68,7 +68,7 @@ Deploying apps on the SAP BTP Kyma Runtime requires two main artifact types:
 
 The following diagram illustrates the deployment workflow:
 
-![A CAP Helm chart is added to your project. Then you build your project as container images and push those images to a container registry of your choice. As last step the Helm chart is deployed to your Kyma cluster, where service instances of SAP BTP services are created and pods pull the previously created container images from the container registry.](assets/deploy-kyma.drawio.svg)
+![A CAP Helm chart is added to your project. Then you build your project as container images and push those images to a container registry of your choice. As a last step the Helm chart is deployed to your Kyma cluster, where service instances of SAP BTP services are created and pods pull the previously created container images from the container registry.](assets/deploy-kyma.drawio.svg)
 
 
 ## Prerequisites {#prerequisites}
@@ -181,7 +181,7 @@ cds add kyma # if not already done
 # If package-lock.json doesn't exist
 npm install --prefix app/browse
 
-npm run build --prefix app/browser
+npm run build --prefix app/browse
 
 # If package-lock.json doesn't exist
 npm i app/admin-books
