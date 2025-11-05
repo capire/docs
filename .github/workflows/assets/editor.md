@@ -41,11 +41,11 @@ There are a couple of aspects that are easy to consider when writing w/o digging
 
   This sound easier than it is, but if you can put it in simpler words, it gets automatically clearer and more helpful.
 
+- Use present tense and **avoid future tense**!
 - Avoid emoticons and emojis.
 - Do NOT remove TODO markers at all.
 - Do NOT remove tip, warning or danger notes indicated by `... tip` or similar constructs.
 
-- Use present and avoid future tense!
 
 The documentation should follow the here described style guidance so that it keeps a consistent external and internal appearance:
 
