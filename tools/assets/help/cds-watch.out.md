@@ -47,6 +47,11 @@
     Specify from which profile(s) the binding information is taken.
     <em>Example:</em> cds w --profile hybrid,production
 
+  <em>--with-mtx</em>
+
+    A shortcut for <i>--profile with-mtx</i> to enable mtx features also in
+    development, while by default, these are only enabled in production.
+
   <em>--debug</em> / <em>--inspect</em> &lt;host:port | 127.0.0.1:9229&gt;
 
     Activate debugger on the given host:port.
