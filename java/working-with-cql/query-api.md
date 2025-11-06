@@ -1389,7 +1389,7 @@ Given a simple reference pointing to the book created as follows.
 CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).asRef(); // [!code focus]
 ```
 
-You can use `CQL.entity(...)` method to cast the reference to required type and use its methods to extend it further.
+You can use `CQL.entity(...)` to cast the reference to the required type and use its methods to extend it further.
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]},"author"]}
