@@ -35,3 +35,14 @@ jobs:
             - Check for consistency in terminology and style throughout the document.
             - Use active voice instead of passive voice
             - Use present tense and **avoid future tense**!
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Custom Analysis
+        uses: acrolinx/nextgen-analyzer@v0.0.6
+        with:
+          acrolinx_token: ${{ secrets.ACROLINX_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          style-guide: 'chicago'
+          add_commit_status: 'true'
