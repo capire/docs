@@ -480,12 +480,6 @@ parametersFrom:
 ```
 :::
 
-The `jsonParameters` key can also be specified using the `--set file` flag while installing/upgrading Helm release. For example, `jsonParameters` for the `xsuaa` property can be defined using the following command:
-
-```sh
-cds up -2 k8s
-```
-
 > You can explore more configuration options in the subchart's directory _gen/chart/charts/service-instance_.
 
 #### Configuration Options for Service Bindings
