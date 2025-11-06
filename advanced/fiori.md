@@ -469,6 +469,97 @@ Content-Type: application/json
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
+#### Background
+
+> TODO: find a good place for this section, maybe make it internal
+
+When we initially built draft support, the assumption was that most apps would not maintain
+translations for texts in the data (like product names and descriptions) via the UI,
+but do the translation externally and then bring in the translated texts via mass data upload.
+Thus the default is that if an entity is draft enabled via `@odata.draft.enabled`,
+the corresponding `.texts` entity is _not_ part of the draft tree, although it is a composition child of
+the main entity.
+
+If such a `.texts` entity should take part in the draft workflow, this must be explicitly switched
+on by also adding the annotation `@fiori.draft.enabled` to the main entity.
+This annotation does however not only include the `.texts` entity into the draft tree, but it also
+changes the key of the `.texts`entity.
+At the time draft support was implemented in CAP, Fiori required
+that a draft enabled entity must have a single key element of type UUID.
+As a `.texts` entity by construction has at least two key elements (the `locale` plus the key elements
+of the main entity), we remove the `key` property from all these elements and add a technical key element
+`ID_texts` of type UUID.
+
+Example:
+```cds
+service S {
+  @odata.draft.enabled
+  @fiori.draft.enabled
+  entity Books {
+    key ID : Integer;
+    title : localized String;
+  }
+}
+```
+Generated tables:
+```sql
+CREATE TABLE S_Books (
+  ID INTEGER NOT NULL,
+  title NVARCHAR(255),
+  PRIMARY KEY(ID)
+);
+CREATE TABLE S_Books_drafts (
+  ID INTEGER NOT NULL,
+  title NVARCHAR(255) NULL,
+  -- ... special draft fields
+  PRIMARY KEY(ID)
+);
+CREATE TABLE S_Books_texts (
+  ID_texts NVARCHAR(36) NOT NULL,      -- <-- new key field
+  locale NVARCHAR(14),
+  ID INTEGER,
+  title NVARCHAR(255),
+  PRIMARY KEY(ID_texts),
+  CONSTRAINT S_Books_texts_locale UNIQUE (locale, ID)
+);
+CREATE TABLE S_Books_texts_drafts (
+  ID_texts NVARCHAR(36) NOT NULL,
+  locale NVARCHAR(14) NULL,
+  ID INTEGER NULL,
+  title NVARCHAR(255) NULL,
+  -- ... special draft fields
+  PRIMARY KEY(ID_texts)
+);
+```
+
+This is the current state, but it has another problem. The `.texts` entity now has a key column
+that the developer didn't define and doesn't need. So when providing initial data in a `csv` file,
+this column usually isn't part of it.
+
+Deployment (for PostgreSQL) has recently been improved to handle this. For each entry, the values of
+the original key elements are used to generate a hash value which is then used as value for
+`ID_texts`. It is important the the generated value is stable, so that upon redeployment the same values
+for `ID_texts` are produced.
+
+Today Fiori can also deal with composite keys with non-UUID types. For an entity with such a key,
+Fiori cannot generate an initial value. So when creating a new entry, a pop-up is launched asking
+the user to provide the immutable key values.
+
+Is there a way to avoid this popup, but on the other hand keep the structure of the `.texts` entity
+and table unchanged?
+
+The basic idea is to have in the CDS runtime and for the database a `.texts` entity and table with
+the original structure, but a `.texts.drafts` entity and table with `ID_texts` as key.
+The entity in the OData API would also have the `ID_texts` key.
+
+This only works, however, if we can guarantee that Fiori never sends a query based on `ID_texts`.
+So, an ObjectPage for a text entry would not work.
+
+ 
+
+
+
+
 ### Validating Drafts
 
 With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
