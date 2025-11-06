@@ -1324,12 +1324,7 @@ StructuredTypeRef ref = bookWithId.asRef(); // or CqnStructuredTypeRef which is 
 
 The method `asRef()` seals the reference and makes it immutable.
 
-Relative references point to the elements of the entity, for example, the title of a book, where the type is known in advance or specified elsewhere. In CQL statements, relative references are members of its select list and relate to the statement source that is an absolute reference.
-
-```java
-CqnElementRef title = CQL.entity(Books_.class).title(); // {"ref":["title"]}
-CqnElementRef dynamicTitle = CQL.get(Books.TITLE);      // {"ref":["title"]}
-```
+Relative references do not specify the type in the first segment and are [element references](/java/working-with-cql/query-api#element-refs) most of the time.
 
 New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](/java/working-with-cql/query-api#concepts). Prefer model interfaces in the application code.
 
@@ -1337,33 +1332,6 @@ References with multiple segments represent navigation within a structured entit
 
 ```java
 CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).chapters(c -> c.ID().eq("...")).pages(p -> p.ID().eq("...")).asRef();
-```
-
-References have JSON representation that follows an [Expression](../../cds/cxn) notation. Below is the example if it:
-
-```json
-{
-  "ref": [
-    {
-      "id": "sap.capire.bookshop.Books",
-      "where": [
-        { "ref": ["ID"]}, "=", {"val": "..."}
-      ]
-    },
-    {
-      "id": "chapters",
-      "where": [
-        { "ref": ["ID"]}, "=", {"val": "..."}
-      ]
-    },
-    {
-      "id": "pages",
-      "where": [
-        { "ref": ["ID"]}, "=", {"val": "..."}
-      ]
-    }
-  ]
-}
 ```
 
 An existing reference can be reused as an object or a variable, or a new reference can be built on top of it.
@@ -1382,7 +1350,7 @@ You can use `CQL.entity(...)` to cast the reference to the required type and use
 CqnStructuredTypeRef refToAuthor = CQL.entity(Books_.class, ref).author().asRef(); // [!code focus]
 ```
 
-With `CQL.to(...)` the same is produced dynamically.
+Use `CQL.to(...)` to produce the same dynamically.
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]},"author"]}
@@ -1435,16 +1403,11 @@ The references are not comparable between each other. They cannot be used as map
 
 ### Element References {#element-refs}
 
-An element reference points to an element of the entity. Such references are usually _relative_, they do not have the name of the entity in their root. They can include filters in their segments except _in the last one_.
-Most of the time, they exist as members of the [select list](#projections) of a statement or part of the statement, for example, of an expand predicate.
-
-The following example illustrates the difference:
+An element reference points to regular element of the entity. Such references are usually _relative_ and form select list for a CQL statement or an expand.
 
 ```java
 CqnSelect statement = Select.from(Books_.class, b -> b.filter(f -> f.ID().eq("...")))
     .columns(b -> b.author().placeOfBirth());
-
-CqnStructuredTypeRef absoluteRef = statement.ref(); // Books(ID=...)
 
 CqnElementRef relativeRef = statement.items().getFirst().asRef(); // author/placeOfBirth
 ```
