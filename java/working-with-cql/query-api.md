@@ -1441,7 +1441,7 @@ StructuredTypeRef copy = builder.build(); // new reference is ready
 
 Test this code thoroughly and ensure that you do not omit the filters or change the reference so that it becomes inconsistent.
 
-References can be analyzed using the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind it back to the model, for example, to find annotations or extract filter values. References an be introspected with [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor).
+References can be analyzed using the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind it back to the model, for example, to find annotations or extract filter values. References can be introspected with [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor).
 
 :::warning Limitation
 The references are not comparable between each other. They cannot be used as map keys or set values.
