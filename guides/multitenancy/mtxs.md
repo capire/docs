@@ -1267,8 +1267,8 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 "cds.xt.SaasProvisioningService": {
   "jobs": {
     "queueSize": 5, // default: 100
-    "workerSize": 5, // default: 1
-    "clusterSize": 5, // default: 1
+    "workerSize": 5, // default: 4
+    "clusterSize": 5, // default: 3
   }
 }
 ```
