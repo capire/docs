@@ -1312,7 +1312,7 @@ Entity references specify entity sets and can define the target entity set of a 
 
 A reference consists of _segments_ that define the path from the entity's root to a certain part of it. Each segment has the _identifier_ with the name of the entity or an element and an optional filter _predicate_. These predicates might include other references. The references are not bound to the particular model and are not checked against it while they are being built.
 
-References are either _absolute_ or _relative_. Absolute references always have the fully qualified name of the type in their first segment.
+References can be either _absolute_ or _relative_. Absolute references always have the fully qualified name of the type in their first segment.
 
 The simplest kind of absolute reference is a reference to the entity set, for example, to all books.
 
@@ -1331,7 +1331,7 @@ CqnElementRef title = CQL.entity(Books_.class).title(); // {"ref":["title"]}
 CqnElementRef dynamicTitle = CQL.get(Books.TITLE);      // {"ref":["title"]}
 ```
 
-New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](/java/working-with-cql/query-api#concepts). For most of application code, the model interfaces are the recommended way to do this.
+New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](/java/working-with-cql/query-api#concepts). Prefer model interfaces in the application code.
 
 References with multiple segments represent navigation within a structured entity or between different entities via its associations. For example, the following is a reference that represents the path from the book to its chapters.
 
@@ -1339,7 +1339,7 @@ References with multiple segments represent navigation within a structured entit
 CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).chapters(c -> c.ID().eq("...")).pages(p -> p.ID().eq("...")).asRef();
 ```
 
-References can be represented as JSON following an [Expression](../../cds/cxn) notation. The following is the JSON representation of the reference above:
+References have JSON representation that follows an [Expression](../../cds/cxn) notation. Below is the example if it:
 
 ```json
 {
@@ -1364,20 +1364,6 @@ References can be represented as JSON following an [Expression](../../cds/cxn) n
     }
   ]
 }
-```
-
-Below is an example of how this can be used together to build a CQL statement:
-
-```java
-// bookshop.Books[year = 2020].author // [!code focus]
-Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code focus]
-
-// or as untyped entity ref
-StructuredType<?> authors =
-   CQL.entity("bookshop.Books").filter(b -> b.get("year").eq(2020)).to("author");
-
-// SELECT from bookshop.Books[year = 2020]:author { name } // [!code focus]
-Select.from(authors).columns("name"); // [!code focus]
 ```
 
 An existing reference can be reused as an object or a variable, or a new reference can be built on top of it.
@@ -1439,9 +1425,9 @@ builder.segments().forEach(s -> {
 StructuredTypeRef copy = builder.build(); // new reference is ready
 ```
 
-Test this code thoroughly and ensure that you do not omit filters or make the reference inconsistent.
+Use the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind the reference back to the CDS model and inspect annotations or filter values.
 
-References can be analyzed using the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind it back to the model, for example, to find annotations or extract filter values. References can be introspected with [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor).
+Use [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor) to introspect references. 
 
 :::warning Limitation
 The references are not comparable between each other. They cannot be used as map keys or set values.
