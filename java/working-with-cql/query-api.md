@@ -1310,7 +1310,7 @@ The Query Builder API supports using expressions in many places. Expressions con
 
 Entity references specify entity sets and can define the target entity set of a [CQL](../../cds/cql) statement or serve as an argument for event handlers.
 
-A reference consists of _segments_ that define the path from the entity's root to a certain part of it. Each segment has the _identifier_ with the name of the entity or an element and an optional filter _predicate_. These predicates might include other references. The references are not bound to the particular model and are not checked against it while they are being built. 
+A reference consists of _segments_ that define the path from the entity's root to a certain part of it. Each segment has the _identifier_ with the name of the entity or an element and an optional filter _predicate_. These predicates might include other references. The references are not bound to the particular model and are not checked against it while they are being built.
 
 References are either _absolute_ or _relative_. Absolute references always have the fully qualified name of the type in their first segment.
 
@@ -1366,7 +1366,7 @@ References can be represented as JSON following an [Expression](../../cds/cxn) n
 }
 ```
 
-Below is an example how this can be used together to build an CQL statement:
+Below is an example how this can be used together to build a CQL statement:
 
 ```java
 // bookshop.Books[year = 2020].author // [!code focus]
@@ -1380,7 +1380,7 @@ StructuredType<?> authors =
 Select.from(authors).columns("name"); // [!code focus]
 ```
 
-An existing reference can be reused as an object or a variable, or a new reference can be built on top of it. 
+An existing reference can be reused as an object or a variable, or a new reference can be built on top of it.
 
 Given a simple reference pointing to the book created as follows.
 
@@ -1413,7 +1413,7 @@ CqnStructuredTypeRef toParent = CQL.to(
     refToAuthor.segments().subList(0, refToAuthor.segments().size() - 1)).asRef(); // [!code focus]
 ```
 
-The `rootSegment()` method can be used to construct the reference starting with the root of the existing reference. For example, when you need to navigate to different parts of the same structured type, for example, from the author of the book to its pages.
+The `rootSegment()` method can be used to construct the reference starting with the root of the existing reference when you need to navigate to different parts of the same structured type, for example, from the author of the book to its pages.
 
 ```java
 CqnStructuredTypeRef toPagesOfTheBook = CQL.to(List.of(refToAuthor.rootSegment())).to("chapters").to("pages").asRef();
@@ -1447,7 +1447,7 @@ References can be analyzed using the [`CqnAnalyzer`](/java/working-with-cql/quer
 The references are not comparable between each other. They cannot be used as map keys or set values.
 :::
 
-### Elements References {#element-refs}
+### Element References {#element-refs}
 
 An element reference points to an element of the entity. Such references are usually _relative_, they do not have the name of the entity in their root. They can include filters in their segments except _in the last one_.
 Most of the time, they exist as members of the [select list](#projections) of a statement or part of the statement, for example, of an expand predicate.
