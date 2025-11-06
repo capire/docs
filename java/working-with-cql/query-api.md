@@ -1403,9 +1403,9 @@ With `CQL.to(...)` the same is produced dynamically.
 CqnStructuredTypeRef toAuthor = CQL.to(ref.segments()).to("author").asRef(); // [!code focus]
 ```
 
-This new reference might be used as the root of its own statement to read or change the author.
+You can use this reference as the root for a new statement that targets the author.
 
-To navigate to the parent, you can strip segment from the end of the ref.
+To navigate to the parent, you can strip a segment from the end of the reference.
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]}]}
@@ -1439,7 +1439,7 @@ builder.segments().forEach(s -> {
 StructuredTypeRef copy = builder.build(); // new reference is ready
 ```
 
-Test this code thoroughly and ensure that you do not omit the filters or change the reference so that it becomes inconsistent.
+Test this code thoroughly and ensure that you do not omit filters or make the reference inconsistent.
 
 References can be analyzed using the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind it back to the model, for example, to find annotations or extract filter values. References can be introspected with [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor).
 
