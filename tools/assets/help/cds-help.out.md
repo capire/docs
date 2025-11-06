@@ -30,10 +30,10 @@
     <em> </em> | <em>logout</em>      logout from extensible multitenant SaaS app
     <em> </em> | <em>pull</em>        pull base model of extensible SaaS app
     <em> </em> | <em>push</em>        push extension to extensible SaaS app
-    <em>t</em> | <em>lint</em>        run linter for env or model checks
+    <em> </em> | <em>lint</em>        run linter for env or model checks
     <em>v</em> | <em>version</em>     get detailed version information
     <em> </em> | <em>completion</em>  add/remove cli completion for cds commands
-    <em>?</em> | <em>help</em>        get detailed usage information
+    <em>h</em> | <em>help</em>        get detailed usage information
 
   Learn more about each command using:
   <em>cds help</em> &lt;command&gt; or
