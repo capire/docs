@@ -1403,7 +1403,7 @@ The references are not comparable between each other. They cannot be used as map
 
 ### Element References {#element-refs}
 
-An element reference points to regular element of the entity. Such references are usually _relative_ and form select list for a CQL statement or an expand.
+An element reference points to a regular element of the entity. Such references are usually _relative_ and form select list for a CQL statement or an expand.
 
 ```java
 CqnSelect statement = Select.from(Books_.class, b -> b.filter(f -> f.ID().eq("...")))
@@ -1424,7 +1424,7 @@ You can create _absolute_ element references, but they are rarely used.
 CqnElementRef nameOfAuthor = CQL.entity(Books_.class).filter(f -> f.ID().eq("...")).author().name();
 ```
 
-Element references share the same features and limitations as entity references and cannot be used with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
+Element references share the same features and limitations as entity references. However, you cannot use them with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
 
 ### Values
 
