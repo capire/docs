@@ -63,6 +63,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Custom Analysis
         uses: acrolinx/nextgen-analyzer@v0.0.6
+        permissions:
+          pull-requests: write
+          statuses: write
         with:
           acrolinx_token: ${{ secrets.ACROLINX_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
