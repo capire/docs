@@ -1413,7 +1413,7 @@ CqnStructuredTypeRef toParent = CQL.to(
     refToAuthor.segments().subList(0, refToAuthor.segments().size() - 1)).asRef(); // [!code focus]
 ```
 
-Method `rootSegment()` that can be used to construct the reference starting with the root of the existing reference. For example, when you need to navigate to different parts of the same structured type, for example, from the author of the book to its pages.
+The `rootSegment()` method can be used to construct the reference starting with the root of the existing reference. For example, when you need to navigate to different parts of the same structured type, for example, from the author of the book to its pages.
 
 ```java
 CqnStructuredTypeRef toPagesOfTheBook = CQL.to(List.of(refToAuthor.rootSegment())).to("chapters").to("pages").asRef();
