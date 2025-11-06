@@ -589,7 +589,7 @@ The error response is generated from the error object constructed via [`req.reje
 For example:
 
 ```js
-req.reject ({ status: 400, message: 'MISSING_INPUT', target: 'title' })
+req.reject ({ code: 400, message: 'MISSING_INPUT', target: 'title' })
 req.reject (400, 'MISSING_INPUT', 'title') // same as above
 ```
 
