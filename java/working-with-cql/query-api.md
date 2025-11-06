@@ -1366,7 +1366,7 @@ References can be represented as JSON following an [Expression](../../cds/cxn) n
 }
 ```
 
-Below is an example how this can be used together to build a CQL statement:
+Below is an example of how this can be used together to build a CQL statement:
 
 ```java
 // bookshop.Books[year = 2020].author // [!code focus]
@@ -1389,7 +1389,7 @@ Given a simple reference pointing to the book created as follows.
 CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).asRef(); // [!code focus]
 ```
 
-To navigate to the author of the book, use `CQL.entity(...)` to make it typed again and add one more segment to it. Note, that this does not check that the original reference is indeed the reference to the book. This only lets you use required model interface.
+You can use `CQL.entity(...)` method to cast the reference to required type and use its methods to extend it further.
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]},"author"]}
@@ -1475,7 +1475,7 @@ You can create _absolute_ element references, but they are rarely used.
 CqnElementRef nameOfAuthor = CQL.entity(Books_.class).filter(f -> f.ID().eq("...")).author().name();
 ```
 
-They also share the same features and limitations as the entity references and they cannot be used with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
+Element references share the same features and limitations as entity references and cannot be used with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
 
 ### Values
 
