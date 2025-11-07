@@ -60,10 +60,11 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       pull-requests: write
       statuses: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Custom Analysis
         uses: acrolinx/nextgen-analyzer@v0.0.7
         with:
