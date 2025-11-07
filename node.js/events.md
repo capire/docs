@@ -482,7 +482,7 @@ This is a convenience variant of the [`req.reject()`](#req-reject) method, with 
 
 ```tsx
 function req.reject (
-  code?    : number,
+  status?  : number,
   message? : string,
   target?  : string,
   args?    : string[]
