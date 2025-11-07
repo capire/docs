@@ -371,7 +371,7 @@ req.subject //> ...
 ```js
 SELECT.from(req.subject)  //> returns the single target row
 UPDATE(req.subject)...    //> updates the single target row
-DELETEfrom(req.subject)   //> deletes the single target row
+DELETE.from(req.subject)   //> deletes the single target row
 ```
 
 > [!warning] 
