@@ -50,8 +50,7 @@ CAP Java SDK is tested on [PostgreSQL](https://www.postgresql.org/) 15 and suppo
 
 1. No locale specific sorting. The sort order of queries behaves as configured on the database.
 2. Write operations through CDS views are only supported for views that can be [resolved](../working-with-cql/query-execution#updatable-views) or are [updatable](https://www.postgresql.org/docs/14/sql-createview.html#SQL-CREATEVIEW-UPDATABLE-VIEWS) in PostgreSQL.
-3. The CDS type `UInt8` can't be used with PostgreSQL, as there's no `TINYINT`. Use `Int16` instead.
-4. [Multitenancy](../../guides/multitenancy/) and [extensibility](../../guides/extensibility/) aren't yet supported on PostgreSQL.
+3. [Multitenancy](../../guides/multitenancy/) and [extensibility](../../guides/extensibility/) aren't yet supported on PostgreSQL.
 
 ### H2 Database
 
@@ -62,8 +61,7 @@ CAP Java SDK is tested on [PostgreSQL](https://www.postgresql.org/) 15 and suppo
 3. By default, views aren't updatable on H2. However, the CAP Java SDK supports some views to be updatable as described [here](../working-with-cql/query-execution#updatable-views).
 4. Although referential and foreign key constraints are supported, H2 [doesn't support deferred checking](https://www.h2database.com/html/grammar.html#referential_action). As a consequence, schema SQL is never generated with referential constraints.
 5. In [pessimistic locking](../working-with-cql/query-execution#pessimistic-locking), _shared_ locks are not supported but an _exclusive_ lock is used instead.
-6. The CDS type `UInt8` can't be used with H2, as there is no `TINYINT`. Use `Int16` instead.
-7. For regular expressions, H2's implementation is compatible with Java's: the matching behaviour is an equivalent of the `Matcher.find()` call for the given pattern.
+6. For regular expressions, H2's implementation is compatible with Java's: the matching behaviour is an equivalent of the `Matcher.find()` call for the given pattern.
 
 ::: warning
 Support for localized and temporal data via session context variables requires H2 v2.2.x or later.
