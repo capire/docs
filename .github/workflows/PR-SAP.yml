@@ -57,3 +57,18 @@ jobs:
           npm run docs:preview -- --port 5555 &
           sleep 2
           .github/etc/blc.js http://localhost:5555/docs/
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run Custom Analysis
+        uses: acrolinx/nextgen-analyzer@v0.0.7
+        with:
+          acrolinx_token: ${{ secrets.ACROLINX_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          style-guide: 'chicago'
+          add_commit_status: 'true'
