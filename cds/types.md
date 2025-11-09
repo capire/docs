@@ -36,7 +36,7 @@ These types are used to define the structure of entities and services, and are m
 | `Decimal` (`prec`, `scale`) | A *decfloat* type is used if arguments are omitted | _DECIMAL_  |
 | `Double` | Floating point with binary mantissa | _DOUBLE_  |
 | `Date` | e.g. `2022-12-31` | _DATE_  |
-| `Time` | e.g. `24:59:59` | _TIME_  |
+| `Time` | e.g. `23:59:59` | _TIME_  |
 | `DateTime` | _sec_ precision | _TIMESTAMP_  |
 | `Timestamp` | _µs_ precision, with up to 7 fractional digits |  _TIMESTAMP_  |
 | `String` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)(5)</sup> | _NVARCHAR_  |
