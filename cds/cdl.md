@@ -130,6 +130,10 @@ entity DocumentedEntity {
 }
 ```
 
+::: tip
+These annotations are illustrative only and are not defined nor have any meaning beyond this example.
+:::
+
 Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`, are supported. Line endings are normalized. If you don't want a line ending at that position, end a line with a backslash (`\`). For string literals inside triple backticks, indentation is stripped and tagging is possible.
 
 
