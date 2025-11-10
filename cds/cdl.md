@@ -41,7 +41,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed, cuid } from `@sap/cds/common`;
+using { managed, cuid } from '@sap/cds/common';
 aspect primary : managed, cuid {}
 
 entity Books : primary {
