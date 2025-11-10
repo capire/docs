@@ -43,7 +43,7 @@ The [predefined CDS types](../cds/types) are mapped to Java types and as follows
 | `cds.Binary`       | `byte[]`                |                                                                          |
 | `cds.LargeBinary`  | `byte[]`                | `java.io.InputStream` <sup>(1)</sup> if annotated with `@Core.MediaType` |
 | `cds.Vector`       | `com.sap.cds.CdsVector` | for [vector embeddings](#vector-embeddings)                              |
-| `cds.Map`          | `java.util.Map`         | for arbitrary [structured data](#structured-data)<sup>(2)</sup>          |
+| `cds.Map`          | `java.util.Map`         | for schemaless [structured data](#cds-map)          |
 
 ### SAP HANA-Specific Data Types
 
@@ -63,7 +63,6 @@ To facilitate using legacy CDS models, the following [SAP HANA-specific data typ
 
 
 > <sup>(1)</sup> Although the API to handle large objects is the same for every database, the streaming feature, however, is supported (and tested) in **SAP HANA**, **PostgreSQL**, and **H2**. See section [Database Support in Java](./cqn-services/persistence-services#database-support) for more details on database support and limitations.
-> <sup>(2)</sup> Serialized as JSON to a CLOB column or JSONB column (on Postgres)
 
 ::: warning
 The framework isn't responsible for closing the stream when writing to the database. You decide when the stream is to be closed. If you forget to close the stream, the open stream can lead to a memory leak.
@@ -74,7 +73,7 @@ These types are used for the values of CDS elements with primitive type. In the 
 ## Structured Data
 
 In CDS, structured data is used as payload of *Insert*, *Update*, and *Upsert* statements. Also the query result of *Select* may be structured.
-CAP Java represents data of entities and structured types as `Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
+CAP Java represents data of entities, structured types and elements of type [cds.Map](#cds-map) as `java.util.Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
 
 In the following we use this CDS model:
 
@@ -279,6 +278,26 @@ Avoid cyclic relationships between CdsData objects when using toJson.
 
 <div id="cdsdata-serialization-jsonconverter"/>
 
+## Map Data<Beta /> { #cds-map }
+
+Elements of type `cds.Map` can be used to store arbitrary _schemaless_  [stuctured data](#structured-data). CAP Java represents data of elemens of type `cds.Map` as Map<String, Object>.
+
+On the database, this data is serialized to JSON<sup>(2)</sup>. Only data types that are compatible with [JSON](https://www.json.org/) can be stored and retrieved:
+
+| Java Type                        | JSON Type       |
+| ---------------------------------| --------------- |
+| `java.lang.String`               | `string`        |
+| `java.lang.Number`<sup>(2)</sup> | `number`        |
+| `java.lang.Boolean`              | `true`, `false` |
+| `java.util.Map`                  | `object`        |
+| `java.util.List`                 | `array`         |
+| `null`                           | `null`          |
+
+Map data can be nested. 
+
+> <sup>(1)</sup> Serialized as JSON to a CLOB column or JSONB column (on Postgres)
+
+> <sup>(2)</sup> The actual subclass of a `Number` is not preserved upon serialization and might change upon deserialization.   
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 

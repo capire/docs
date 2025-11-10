@@ -187,6 +187,30 @@ Select.from(BOOKS)
 Select.from(BOOKS).byParams("title", "author.name");
 ```
 
+#### Filtering Map Data<Beta />
+
+You can also filter by _content_ of [map data](../cds-data.md#map-data) (i.e. elements of type `cds.Map`). Considering this model
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+this query selects all products of the category "Tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME". 
+
+```java
+Select.from(PRODUCTS)
+      .where(p -> p.category().eq("Tech").and(
+                  p.to("details").get("brand").eq("ACME")));
+```
+
+::: warning
+Depending on the data database filtering by content of Map data can be an expensive operation. A filter by a content of map data should always be a narrowing restriction.
+:::
+
 ### Parameters
 
 The [CQL](../../cds/cql) builders support [parameters](#expr-param) in the `where` clause and in infix filters for [parameterized execution](query-execution#parameterized-execution):
@@ -815,6 +839,30 @@ Select.from("bookshop.Books").limit(10, 20);
 In this example, it's assumed that the total number of books is more or equal to 20. Otherwise, result set is empty.
 ::: tip
 The pagination isn't stateful. If rows are inserted or removed before a subsequent page is requested, the next page could contain rows that were already contained in a previous page or rows could be skipped.
+:::
+
+#### Sorting by Map Data<Beta />
+
+You can also sort by _content_ of [map data](../cds-data.md#map-data) (i.e. elements of type `cds.Map`). Considering this model
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+this query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
+
+```java
+Select.from(PRODUCTS)
+      .orderBy(p -> p.category().asc(), 
+               p.to("details").get("brand").asc());
+```
+
+::: warning
+Depending on the data database sorting by content of Map data can be an expensive operation. A sort specificytion that sorts by content of map data should always be an additional sort specification.
 :::
 
 ### Pessimistic Locking { #write-lock}
