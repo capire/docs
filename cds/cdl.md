@@ -242,7 +242,7 @@ context scoped {
 
 You can define types and entities with other definitions' names as prefixes:
 
-```cds[prefixes.cds]
+```cds [prefixes.cds]
 namespace foo.bar;
 entity Foo {}           //> foo.bar.Foo
 entity Foo.Bar {}       //> foo.bar.Foo.Bar
