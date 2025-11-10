@@ -85,7 +85,7 @@ The following literals can be used in CDL (mostly as in JavaScript, Java, and SQ
 <!-- cds-mode: ignore; values only, no valid CDS file -->
 ```cds
 true , false , null        // as in all common languages
-11 , 2.4 , 1e3, 1.23e-11   // for numbers
+11 , 2.4 , 1e3 , 1.23e-11  // for numbers
 'A string''s literal'      // for strings
 `A string\n paragraph`     // for strings with escape sequences
 { foo:'boo', bar:'car' }   // for records
