@@ -242,7 +242,7 @@ context scoped {
 
 You can define types and entities with other definitions' names as prefixes:
 
-```cds
+```cds[prefixes.cds]
 namespace foo.bar;
 entity Foo {}           //> foo.bar.Foo
 entity Foo.Bar {}       //> foo.bar.Foo.Bar
@@ -252,7 +252,7 @@ type Foo.Bar.Car {}     //> foo.bar.Foo.Bar.Car
 
 #### Fully Qualified Names
 
-A model ultimately is a collection of definitions with unique, fully qualified names. For example, the second model above would compile to this [CSN](./csn):
+A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to this [CSN](./csn):
 
 ::: code-group
 
