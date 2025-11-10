@@ -252,7 +252,7 @@ type Foo.Bar.Car {}     //> foo.bar.Foo.Bar.Car
 
 #### Fully Qualified Names
 
-A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to this [CSN](./csn):
+A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to the following [CSN](./csn):
 
 ::: code-group
 
