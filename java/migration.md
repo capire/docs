@@ -1434,4 +1434,4 @@ This is the list of migrations we have released for CAP Java:
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
-|[com.sap.cds.services.migrations.MigrateStatements](./releases/aug25#typed-query-results)|Prepares applications by migrating CQN statements for typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.MigrateStatements](/releases/aug25#typed-query-results)|Prepares applications by migrating CQN statements for typed Query API changes in 4.3.0.|4.3.0|
