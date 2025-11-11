@@ -585,6 +585,7 @@ Select.from(PRODUCTS)
       .columns(p-> p.ID(), 
                p-> p.to("details").get("brand"))
       .where(p -> p.category().eq("tech"));
+```      
 
 This query selects the sub-element `brand` of the element `details` for all products of category "tech".
 
@@ -607,6 +608,7 @@ entity Book {
   title  : String;
 }
 ```
+
 In the following example, element `title` is included in `@cds.search`. Only this particular element is searchable then.
 
 ```cds
