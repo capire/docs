@@ -189,7 +189,7 @@ Select.from(BOOKS).byParams("title", "author.name");
 
 #### Filtering Map Data<Beta />
 
-You can also filter by _content_ of [map data](../cds-data.md#map-data) (i.e. elements of type `cds.Map`). Considering this model
+You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
 
 ```cds
 entity Product : cuid {
@@ -199,11 +199,11 @@ entity Product : cuid {
 }
 ```
 
-this query selects all products of the category "Tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME". 
+this query selects all products of the category "tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME". 
 
 ```java
 Select.from(PRODUCTS)
-      .where(p -> p.category().eq("Tech").and(
+      .where(p -> p.category().eq("tech").and(
                   p.to("details").get("brand").eq("ACME")));
 ```
 
@@ -560,6 +560,33 @@ Object authorId = book.get("author.Id"); // path access
 Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases#database-constraints) on the database.
 :::
 
+#### Selecting Map Data
+
+You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list. Considering this model
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+the query 
+
+```java
+Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
+```
+
+will select the product's ID along with the details, which are returned as a `Map<String, Object>`. You can also select sub-elements of elements of type `cds.Map`:
+
+```java
+Select.from(PRODUCTS)
+      .columns(p-> p.ID(), 
+               p-> p.to("details").get("brand"))
+      .where(p -> p.category().eq("tech"));
+
+This query selects the sub-element `brand` of the element `details` for all products of category "tech".
 
 ### Filtering and Searching { #filtering}
 
@@ -843,7 +870,7 @@ The pagination isn't stateful. If rows are inserted or removed before a subseque
 
 #### Sorting by Map Data<Beta />
 
-You can also sort by _content_ of [map data](../cds-data.md#map-data) (i.e. elements of type `cds.Map`). Considering this model
+You can also sort by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
 
 ```cds
 entity Product : cuid {
