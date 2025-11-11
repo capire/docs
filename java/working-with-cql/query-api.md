@@ -199,7 +199,7 @@ entity Product : cuid {
 }
 ```
 
-this query selects all products of the category "tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME". 
+the following query selects all products of the category "tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME":
 
 ```java
 Select.from(PRODUCTS)
@@ -208,7 +208,7 @@ Select.from(PRODUCTS)
 ```
 
 ::: warning
-Depending on the data database filtering by content of Map data can be an expensive operation. A filter by a content of map data should always be a narrowing restriction.
+Depending on the data database, filtering by content of map data can be an expensive operation. A filter by a content of map data should only be used to make a filter that uses column data more restrictive.
 :::
 
 ### Parameters
@@ -884,12 +884,13 @@ this query sorts products by category and additionally by the sub-element `brand
 
 ```java
 Select.from(PRODUCTS)
+      .where(p -> p.category().eq("tech"))
       .orderBy(p -> p.category().asc(), 
                p.to("details").get("brand").asc());
 ```
 
 ::: warning
-Depending on the data database sorting by content of Map data can be an expensive operation. A sort specification that sorts by content of map data should always be an additional sort specification.
+Depending on the data database, sorting by content of map data can be an expensive operation and should only be applied on a small result set.
 :::
 
 ### Pessimistic Locking { #write-lock}
