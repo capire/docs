@@ -60,6 +60,9 @@ public Result delegateToS4(ActiveReadEventContext context) {
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
 
+### Aggregation Queries
+Aggregating over active and inactive draft entities isn't supported. Queries with aggregation functions implicitly add `IsActiveEntity` as a part of the group-by clause, resulting in disjunct `active` and `inactive` rows being returned instead of aggregated rows.
+
 ## Editing Drafts
 
 When users edit a draft-enabled entity in the frontend, the following requests are sent to the CAP Java backend. As an effect, draft-specific events are triggered, as described in the following table. The draft-specific events are defined by the [DraftService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/draft/DraftService.html) interface.
