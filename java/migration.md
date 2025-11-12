@@ -1414,3 +1414,24 @@ After rebuilding and restarting your application, your Application Services are 
 <!-- TODO: Move this to "Development" section -->
 
 <span id="afterenablingodata" />
+
+## Automatic Java Migrations with OpenRewrite { #open-rewrite }
+
+Whenever we introduce new versions or replacements of an API version, we try to make the transition from the old version to the new version as smooth as possible. When possible we introduce a new version in the same major version as the version where deprecate the old version. This is the foundation for having automatic code migrations with [OpenRewrite](https://docs.openrewrite.org). At CAP Java, we aim to provide OpenRewrite Recipes for our API changes.
+
+The application of these recipes is done via Maven as a one-shot operation on a developer's laptop, similar to calling Maven archetypes. Take this call as an example:
+
+```bash
+mvn org.openrewrite.maven:rewrite-maven-plugin:run \
+  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:4.3.0 \
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.MigrateStatements \
+  -DskipMavenParsing=true
+```
+
+Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` in the Maven artifact `com.sap.cds:cds-services-recipes:4.3.0` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code from version A to version B.
+
+This is the list of migrations we have released for CAP Java:
+
+|Name    |Description|Available since|
+|--------|-----------|---------------|
+|[com.sap.cds.services.migrations.MigrateStatements](/releases/aug25#typed-query-results)|Prepares applications by migrating CQN statements for typed Query API changes in 4.3.0.|4.3.0|
