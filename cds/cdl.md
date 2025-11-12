@@ -980,6 +980,7 @@ entity Orders.Items {
 
 :::info Contained-in relationship
 Essentially, Compositions are the same as _[associations](#associations)_, just with the additional information that this association represents a _contained-in_ relationship so the same syntax and rules apply in their base form.
+Deep operations permit modifications to the composition's target entity, unlike associations.
 :::
 
 ::: warning Limitations of Compositions of one
