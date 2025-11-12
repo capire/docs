@@ -1324,9 +1324,9 @@ StructuredTypeRef ref = bookWithId.asRef(); // or CqnStructuredTypeRef which is 
 
 The method `asRef()` seals the reference and makes it immutable.
 
-Relative references do not specify the type in the first segment and are [element references](/java/working-with-cql/query-api#element-refs) most of the time.
+Relative references do not specify the type in the first segment and are [element references](#element-refs) most of the time.
 
-New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](/java/working-with-cql/query-api#concepts). Prefer model interfaces in the application code.
+New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](#concepts). Prefer model interfaces in the application code.
 
 References with multiple segments represent navigation within a structured entity or between different entities via its associations. For example, the following is a reference that represents the path from the book to its chapters.
 
@@ -1336,7 +1336,7 @@ CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")
 
 An existing reference can be reused as an object or a variable, or a new reference can be built on top of it.
 
-Given a simple reference pointing to the book created as follows.
+For the upcoming examples, let's assume a simple reference pointing to the book created as follows:
 
 ```java
 // {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]}]}
@@ -1412,16 +1412,10 @@ CqnSelect statement = Select.from(Books_.class, b -> b.filter(f -> f.ID().eq("..
 CqnElementRef relativeRef = statement.items().getFirst().asRef(); // author/placeOfBirth
 ```
 
-Element references can be extended with the same APIs as the entity references.
+Element references can be extended with the same APIs as the [entity references](#entity-refs).
 
 ```java
 CqnElementRef extendedRef = CQL.to(relativeRef.segments()).get("name"); // author/placeOfBirth/name
-```
-
-You can create _absolute_ element references, but they are rarely used.
-
-```java
-CqnElementRef nameOfAuthor = CQL.entity(Books_.class).filter(f -> f.ID().eq("...")).author().name();
 ```
 
 Element references share the same features and limitations as entity references. However, you cannot use them with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
