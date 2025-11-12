@@ -155,7 +155,7 @@ cds.drafts.cancellationTimeout: 1h
 You can turn off this feature completely by means of the application configuration property:
 
 ```yaml
-cds.security.draftProtection.enabled: false
+cds.security.authorization.draftProtection.enabled: false
 ```
 
 ## Draft Garbage Collection { #draft-gc }
