@@ -1308,7 +1308,7 @@ The Query Builder API supports using expressions in many places. Expressions con
 
 ### Entity References {#entity-refs}
 
-Entity references specify entity sets and can define the target entity set of a [CQL](../../cds/cql) statement or serve as an argument for event handlers.
+Entity references specify entity sets. You can use them to define the target entity set of a [CQL](../../cds/cql) statement or serve as an argument for event handlers.
 
 A reference consists of _segments_ that define the path from the entity's root to a certain part of it. Each segment has the _identifier_ with the name of the entity or an element and an optional filter _predicate_. These predicates might include other references. The references are not bound to the particular model and are not checked against it while they are being built.
 
@@ -1326,7 +1326,7 @@ The method `asRef()` seals the reference and makes it immutable.
 
 Relative references do not specify the type in the first segment and are [element references](#element-refs) most of the time.
 
-New references are constructed with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via API that is also used to build [CQL statements](#concepts). Prefer model interfaces in the application code.
+Construct new references with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via the API to build [CQL statements](#concepts). Use model interfaces in the application code.
 
 References with multiple segments represent navigation within a structured entity or between different entities via its associations. For example, the following is a reference that represents the path from the book to its chapters.
 
