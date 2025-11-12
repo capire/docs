@@ -60,6 +60,9 @@ public Result delegateToS4(ActiveReadEventContext context) {
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
 
+### Aggregation Queries
+Aggregating over active and inactive draft entities isn't supported. Queries with aggregation functions implicitly add `IsActiveEntity` as a part of the group-by clause, resulting in disjunct `active` and `inactive` rows being returned instead of aggregated rows.
+
 ## Editing Drafts
 
 When users edit a draft-enabled entity in the frontend, the following requests are sent to the CAP Java backend. As an effect, draft-specific events are triggered, as described in the following table. The draft-specific events are defined by the [DraftService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/draft/DraftService.html) interface.
@@ -144,6 +147,10 @@ It's possible to create and update data directly without creating intermediate d
 
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
+::: warning
+Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
+:::
+
 ## Draft Lock { #draft-lock }
 
 An entity with a draft is locked from being edited by other users until either the draft is saved or a timeout is hit (15 minutes by default). You can configure this timeout by the following application configuration property:
@@ -155,7 +162,7 @@ cds.drafts.cancellationTimeout: 1h
 You can turn off this feature completely by means of the application configuration property:
 
 ```yaml
-cds.security.draftProtection.enabled: false
+cds.security.authorization.draftProtection.enabled: false
 ```
 
 ## Draft Garbage Collection { #draft-gc }
