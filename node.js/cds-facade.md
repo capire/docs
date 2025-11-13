@@ -185,6 +185,8 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 Is a shortcut to `cds.model.entities`. Used as a function, you can [specify a namespace](/node.js/cds-reflect#entities).
 
+Be aware of the limitations of [`cds.model`](cds-facade#cds-model)
+
 ### cds. env {.property}
 
 Provides access to the effective configuration of the current process, transparently from various sources, including the local _package.json_ or _.cdsrc.json_, service bindings and process environments.
@@ -297,6 +299,9 @@ cds.model = await cds.load('*')
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
 
+::: danger Limitations of `cds.model`
+`cds.model` is just the base model of the application. In multi-tenant scenarios tenants might [extend](../@external/guides/extensibility/index.md#extensibility) the model or parts of the model are put behind [feature flags](../@external/guides/extensibility/feature-toggles.md) and thus `cds.context.model` must be used at runtime to lookup the actual model used by the tenant.
+:::
 
 
 ### cds. app {.property}
