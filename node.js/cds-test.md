@@ -314,13 +314,6 @@ You can also start the tests in watch mode, for example:
 ```sh
 jest --watchAll
 ```
-### Using Test Watchers
-
-You can also start the tests in watch mode, for example:
-
-```sh
-jest --watchAll
-```
 
 This should give you green tests, when running in *cap/samples* root:
 
