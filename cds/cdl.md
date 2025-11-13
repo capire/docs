@@ -951,6 +951,7 @@ entity Emp2Addr {
 ```
 
 [Learn more about **Managed Compositions for Many-to-many Relationships**.](#for-many-to-many-relationships){.learn-more}
+[Watch a short video by DJ Adams to see an example of how a link entity can be used.](https://www.youtube.com/shorts/yGg3YD1weIA){.learn-more}
 
 
 <div id="aftermanytomany" />
