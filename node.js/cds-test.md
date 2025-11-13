@@ -143,6 +143,177 @@ To avoid such conflicts, do not use the following helpers:
 - _jest.useFakeTimers_ as it intercepts the server shutdown causing test timeouts.
 :::
 
+
+### Mocha (choose when you prefer single-process, explicit hooks)
+
+If you pick Mocha for your project, treat it as the single reliable, single-process runner for local and CI jobs.
+
+- Recommended `package.json` scripts:
+  - `"test:mocha": "mocha --config .mocharc.cjs 'test/**/*.test.@(js|cjs)'"`
+  - `"test:mocha:debug": "node --inspect-brk ./node_modules/.bin/mocha --config .mocharc.cjs 'test/**/*.test.@(js|cjs)'"`
+
+- Dev-dependencies to add:
+
+```sh
+npm add -D mocha chai chai-as-promised chai-subset @cap-js/cds-test axios
+```
+
+- Example `.mocharc.cjs` (keep test process single-threaded):
+
+```js
+module.exports = {
+  require: ['chai/register-expect'],
+  extension: ['js','cjs'],
+  spec: 'test/**/*.test.@(js|cjs)',
+  timeout: 10000,
+  // avoid global --exit unless you need to force shutdown
+}
+```
+
+- Practical tips & common pitfalls:
+  - Always call `cds.test()` inside a `describe` block and before any import that might load `cds.env` (use `CDS_TEST_ENV_CHECK=y` in CI to catch errors).
+  - Do not use `process.chdir()`; prefer `cds.test.in(__dirname)` to change the test root safely.
+  - Prefer Mocha hooks `before/after` or `beforeEach/afterEach` as usual; `cds.test()` will start and stop the server via `before`/`after` equivalents.
+  - If tests hang: run with `DEBUG=@sap/cds*` or `DEBUG=build` to see plugin / deploy logs, and run `mocha --inspect` to attach a debugger.
+  - Mocha parallel mode is experimental — avoid it for `cds.test` suites because tests share process state.
+
+- Minimal test file layout (Mocha):
+
+```js
+const cds = require('@sap/cds')
+describe('mocha suite', ()=>{
+  const { GET, expect } = cds.test(__dirname)
+  it('GET /browse/Books works', async ()=>{
+    const { data } = await GET('/browse/Books')
+    expect(data).to.be.ok
+  })
+})
+```
+
+- CI snippet (GitHub Actions):
+
+```yaml
+- name: Run Mocha tests
+  run: npm ci && CDS_TEST_ENV_CHECK=y npm run test:mocha
+  env:
+    CI: true
+```
+
+---
+
+### Jest (choose when you need snapshot testing or Jest ecosystem)
+
+Jest runs tests in separate worker processes by default which can interfere with global server state. For `cds.test` you should run Jest in-band.
+
+- Recommended `package.json` scripts:
+  - `"test:jest": "jest --runInBand --config jest.config.cjs"`
+  - `"test:jest:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --config jest.config.cjs"`
+
+- Dev-dependencies to add (if not already present):
+
+```sh
+npm add -D jest @cap-js/cds-test chai chai-as-promised chai-subset axios
+```
+
+- Example `jest.config.cjs`:
+
+```js
+module.exports = {
+  testEnvironment: 'node',
+  testTimeout: 30000,
+  maxWorkers: 1,
+  testMatch: ['**/test/**/*.test.@(js|cjs)'],
+  // keep other globals disabled to avoid conflicts
+}
+```
+
+- Practical tips & common pitfalls:
+  - Use `--runInBand` (or `maxWorkers: 1`) so all tests share a single process — necessary because `cds.test()` manipulates global `cds` state.
+  - Avoid `jest.resetModules()` and `jest.useFakeTimers()` which break CDS internals and graceful shutdown.
+  - If you rely on Jest's `expect`, that's fine; for portability keep using Chai if your project needs it across runners.
+  - Use `CDS_TEST_ENV_CHECK=y` in CI to detect accidental pre-loading of `cds.env`.
+  - Debugging: use `node --inspect-brk ./node_modules/.bin/jest --runInBand` and enable `DEBUG=@sap/cds*` to see CDS logs.
+
+- Minimal test file layout (Jest):
+
+```js
+describe('jest suite', ()=>{
+  const { GET, expect } = cds.test(__dirname)
+  test('GET /browse/Books works', async ()=>{
+    const { data } = await GET('/browse/Books')
+    expect(data).toBeDefined()
+  })
+})
+```
+
+- CI snippet (GitHub Actions):
+
+```yaml
+- name: Run Jest tests
+  run: npm ci && CDS_TEST_ENV_CHECK=y npm run test:jest
+  env:
+    CI: true
+```
+
+---
+
+### Node built-in Test Runner (choose when you want minimal dependencies)
+
+Node's `--test` runner is useful when you prefer not to add a test framework dependency. It runs tests in the same process by default (good for `cds.test`).
+
+- Recommended `package.json` scripts:
+  - `"test:node": "node --test --test-reporter=spec"`
+  - `"test:node:debug": "node --inspect-brk --test"`
+
+- Dev-dependencies you may still want:
+
+```sh
+npm add -D @cap-js/cds-test chai axios
+```
+
+- ESM vs CJS:
+  - Node's test runner prefers ESM; if your project is CommonJS, name test files `.cjs` and use `require()`.
+
+- Practical tips & common pitfalls:
+  - Keep tests synchronous about test file imports: call `cds.test()` inside a `describe` block and avoid top-level code that touches `cds` before `cds.test()` runs.
+  - Use `node --inspect-brk --test` to attach debuggers.
+  - Watch the Node runner's experimental features; its CLI flags change between Node versions — specify the Node version in CI and your README.
+
+- Minimal test file (Node test runner):
+
+```js
+describe('node test runner', ()=>{
+  const { GET, expect } = cds.test(__dirname)
+  it('GET /browse/Books works', async ()=>{
+    const { data } = await GET('/browse/Books')
+    expect(data).to.be.ok
+  })
+})
+```
+
+- CI snippet (GitHub Actions):
+
+```yaml
+- name: Run Node built-in tests
+  uses: actions/setup-node@v3
+  with:
+    node-version: 18
+- run: npm ci && CDS_TEST_ENV_CHECK=y npm run test:node
+  env:
+    CI: true
+```
+
+Notes
+- In all runners enable `CDS_TEST_ENV_CHECK=y` in CI to detect accidental pre-loading of `cds.env`.
+- Prefer running tests single-process and keep tests isolated — `cds.test` manipulates shared runtime state and expects a single controlling process.
+
+### Using Test Watchers
+
+You can also start the tests in watch mode, for example:
+
+```sh
+jest --watchAll
+```
 ### Using Test Watchers
 
 You can also start the tests in watch mode, for example:
