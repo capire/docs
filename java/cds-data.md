@@ -282,7 +282,7 @@ Avoid cyclic relationships between CdsData objects when using toJson.
 
 Elements of type `cds.Map` can be used to store arbitrary _schemaless_  [stuctured data](#structured-data). CAP Java represents data of elements of type `cds.Map` as `Map<String, Object>`.
 
-On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(2)</sup>. Only data types that are compatible with JSON can be stored and retrieved:
+On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1)</sup>. Only data types that are compatible with JSON can be stored and retrieved:
 
 | Java Type                        | JSON Type       |
 | ---------------------------------| --------------- |
@@ -297,7 +297,7 @@ On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(2
 
 > <sup>(2)</sup> The actual subclass of a `Number` is not preserved upon serialization and might change upon deserialization.
 
-Map data can be nested and may contain `List`s, which are serialized to JSON arrays. 
+Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 

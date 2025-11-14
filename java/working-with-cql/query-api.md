@@ -187,7 +187,7 @@ Select.from(BOOKS)
 Select.from(BOOKS).byParams("title", "author.name");
 ```
 
-#### Filtering Map Data<Beta />
+#### Filtering Map Data <Beta />
 
 You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
 
@@ -199,16 +199,16 @@ entity Product : cuid {
 }
 ```
 
-the following query selects all products of the category "tech" and where type Map element `details` contains a sub-element `brand` with the value "ACME":
+The following query selects all products of category "tech" where the `details` map contains a sub-element `brand` with value "ACME":
 
 ```java
 Select.from(PRODUCTS)
       .where(p -> p.category().eq("tech").and(
-                  p.to("details").get("brand").eq("ACME")));
+                  p.details().get("brand").eq("ACME")));
 ```
 
 ::: warning
-Depending on the data database, filtering by content of map data can be an expensive operation. A filter by a content of map data should only be used to make a filter that uses column data more restrictive.
+Depending on the database, filtering by content of a map element can be expensive when applied on large datasets. Use additional filters on non-map elements to reduce the dataset.
 :::
 
 ### Parameters
@@ -578,16 +578,16 @@ the query
 Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
 ```
 
-will select the product's ID along with the details, which are returned as a `Map<String, Object>`. You can also select sub-elements of elements of type `cds.Map`:
+selects the product's ID along with the details, which are returned as a `CdsData` map. You can also select sub-elements of a `cds.Map` via path expressions:
 
 ```java
 Select.from(PRODUCTS)
       .columns(p-> p.ID(), 
-               p-> p.to("details").get("brand"))
+               p-> p.details().get("brand"))
       .where(p -> p.category().eq("tech"));
 ```      
 
-This query selects the sub-element `brand` of the element `details` for all products of category "tech".
+This query selects the sub-element `brand` of the `details` map element for all products of category "tech".
 
 ### Filtering and Searching { #filtering}
 
@@ -870,7 +870,7 @@ In this example, it's assumed that the total number of books is more or equal to
 The pagination isn't stateful. If rows are inserted or removed before a subsequent page is requested, the next page could contain rows that were already contained in a previous page or rows could be skipped.
 :::
 
-#### Sorting by Map Data<Beta />
+#### Sorting by Map Data <Beta />
 
 You can also sort by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
 
@@ -882,7 +882,7 @@ entity Product : cuid {
 }
 ```
 
-this query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
+This following query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
 
 ```java
 Select.from(PRODUCTS)
@@ -892,7 +892,7 @@ Select.from(PRODUCTS)
 ```
 
 ::: warning
-Depending on the data database, sorting by content of map data can be an expensive operation and should only be applied on a small result set.
+Depending on the data database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
 :::
 
 ### Pessimistic Locking { #write-lock}
