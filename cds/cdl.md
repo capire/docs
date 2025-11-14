@@ -1040,7 +1040,7 @@ aspect OrderItems {
 
 #### Default Target Cardinality
 
-If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one*.
+If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one* for the backlink.
 
 #### For Many-to-many Relationships
 
