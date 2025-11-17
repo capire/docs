@@ -578,7 +578,11 @@ the query
 Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
 ```
 
-selects the product's ID along with the details, which are returned as a `CdsData` map. You can also select sub-elements of a `cds.Map` via path expressions:
+selects the product's ID along with the details, which are returned as a `CdsData` map. 
+
+##### Selecting Subelements of Map Data </beta>
+
+You can also select sub-elements of a `cds.Map` via path expressions:
 
 ```java
 Select.from(PRODUCTS)
