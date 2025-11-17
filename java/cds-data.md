@@ -278,7 +278,7 @@ Avoid cyclic relationships between CdsData objects when using toJson.
 
 <div id="cdsdata-serialization-jsonconverter"/>
 
-## Map Data<Beta /> { #cds-map }
+## Map Data { #cds-map }
 
 Elements of type `cds.Map` can be used to store arbitrary _schemaless_  [stuctured data](#structured-data). CAP Java represents data of elements of type `cds.Map` as `Map<String, Object>`.
 

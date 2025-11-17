@@ -560,7 +560,7 @@ Object authorId = book.get("author.Id"); // path access
 Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases#database-constraints) on the database.
 :::
 
-#### Selecting Map Data <Beta />
+#### Selecting Map Data
 
 You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list. Considering this model
 
@@ -892,7 +892,7 @@ Select.from(PRODUCTS)
 ```
 
 ::: warning
-Depending on the data database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
+Depending on the database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
 :::
 
 ### Pessimistic Locking { #write-lock}
