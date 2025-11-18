@@ -393,7 +393,7 @@ Create CSV files that already include some sample data:
 ```sh
 cds add data --records 10
 ```
-[Find the full set of options here.](../tools/cds-cli.md#data){.learn-more}
+[Find the full set of options in the CLI reference](../tools/cds-cli.md#data){.learn-more}
 :::
 
 <span class="impl node">
