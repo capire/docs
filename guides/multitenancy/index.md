@@ -897,14 +897,14 @@ For faster turnaround cycles in development and testing, you can run the app loc
 To achieve this, bind your SaaS app and the MTX sidecar to its required cloud services, for example:
 
 ```sh
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-srv
 ```
 
 For testing the sidecar, make sure to run the command there as well:
 
 ```sh
 cd mtx/sidecar
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-mtx
 ```
 
 To generate the SAP HANA HDI files for deployment, go to your project root and run the build:
