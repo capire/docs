@@ -35,6 +35,7 @@ Perform a structured review of the text, checking compliance with the following 
 - Do NOT edit phrases that contain "the following". Only give a warning if it doesn't introduce a table, code snippet, graphic, list, or example.
 - Do not remove markdown-specific formatting like _document URLs_.
 - Do not edit code samples, not even whitespace.
+- Do not touch <Config> tags, as these have a special meaning and need to be preserved.
 
 3. Consistency & Tone
 
