@@ -1172,7 +1172,7 @@ modules:
       TENANT_HOST_PATTERN: ^(.*)-${default-uri}
 ```
 
-[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more style="margin-top: 10px;"}
+[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more}
 
 
 :::
