@@ -29,7 +29,7 @@ When building CAP Java plugin modules, you need to keep in mind that the generat
 Of course, it's up to your project / plugin how you call the corresponding Maven GroupId and Java packages. To avoid confusion and also to make responsibilities clear `com.sap.cds` for GroupId and Java package names are reserved for components maintained by the CAP Java team and must not be used for external plugins. This rule also includes substructures to `com.sap.cds` like `com.sap.cds.foo.plugin`.
 
 
-## Share CDS Models via Maven Artifacts
+## Reusable CDS Artifacts
 
 CDS models, CSV import data and i18n files can be shared through Maven dependencies. In addition they can also be shared through npm packages.
 This means you can provide CDS models, CSV files, i18n files, and Java code (for example, event handlers) in a single Maven dependency.
@@ -102,6 +102,10 @@ The location in the `using` directive differs from the default [CDS model resolu
 [Learn more about providing and using reuse packages.](../guides/extensibility/composition){.learn-more}
 
 This technique can be used independently or together with one or more of the techniques described on this page.
+
+::: tip Domain modelling best-practices
+When modelling and naming your artifacts, consider CAP [best-practices](../@external/guides/domain-modeling#best-practices) for domain modelling, which detail naming conventions and design principles.
+:::
 
 ## Event Handlers for Custom Types and Annotations
 
