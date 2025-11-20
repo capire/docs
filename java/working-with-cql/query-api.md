@@ -629,6 +629,8 @@ Select.from(BOOK)
 
 ::: warning
 Searching by content of a map element can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset.
+
+Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior may yield unexpected results.
 :::
 
 #### Using `where` Clause {#where-clause}
