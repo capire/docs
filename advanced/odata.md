@@ -39,12 +39,14 @@ OData is an OASIS standard that enhances plain REST with standardized system que
 | `$count`       | Gets number of rows for paged results     | <X/>      | <X/>   |
 | `$apply`       | For [data aggregation](#data-aggregation) | <X/>      | <X/>   |
 | `$expand`      | Deep-read associated entities             | <X/>      | <X/>   |
-| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(2)</sup> |
-| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(3)</sup>   |
+| `$compute`     | Dynamic expressions for other query options<sup>(2)</sup> | <X/>      | <X/>   |
+| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
+| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
 - <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../guides/providing-services#searching-data).
-- <sup>(2)</sup> The navigation path identifying the collection can only contain one segment.
-- <sup>(3)</sup> Supported for key values and for parameters of functions only.
+- <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
+- <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
+- <sup>(4)</sup> Supported for key values and for parameters of functions only.
 
 System query options can also be applied to an [expanded navigation property](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361039) (nested within `$expand`):
 
