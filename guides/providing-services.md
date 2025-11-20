@@ -968,7 +968,7 @@ entity Foo {
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
 
 ::: info Expression Evaluation
-Expressions are evaluated against the after-image of the affected entity. The after-image is the state of the given entity *after* the given request is applied to the underlying datastore. The affected entities are the entities being part of the request and identified by their primary keys. The evaluating runtime constructs and executes statements with the annotation-provided expressions and the respective primary key values for the given entities. Depending on the structure and cardinality of the request data it can be one or more statements being executed.
+Expressions are evaluated *after* the request has been applied to the underlying datastore. The affected entities are the entities being part of the request and identified by their primary keys. The evaluating runtime constructs and executes statements with the annotation-provided expressions and the respective primary key values for the given entities. Depending on the structure and cardinality of the request data it can be one or more statements being executed.
 :::
 
 ::: warning Limitations
