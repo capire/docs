@@ -954,6 +954,7 @@ entity Foo {
     when bar == 'invalid' then 'foo.bar.invalid' 
   end)
   bar : String;
+}
 ```
 
 It is possible to include multiple conditions in a single annotation. Each condition can return a different error message to precisely describe the error.
@@ -979,6 +980,7 @@ entity Foo {
     when length(boo) > length(far) then error('foo.boo.toolong', (boo, bar)) 
   end)
   boo : String;
+}
 ```
 
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
