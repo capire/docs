@@ -219,7 +219,7 @@ Since implementing a proper `NewAction` and enable a seamless draft experience i
 This feature is disabled by default.
 Activating the feature will cause the `@Common.DraftRoot.NewAction` annotation to be added to _every_ draft enabled entity in the background.
 Additionally, a collection bound action `draftNew` will be added to the entity's runtime model. 
-Invokations of this action will internally be handled like a `NEW` event. 
+Invocations* of this action will internally be handled like a `NEW` event. 
 
 :::warning
 No custom handlers can be registered for the `draftNew` action. Instead, such custom handlers should be registered on the regular `NEW` event.
