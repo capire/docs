@@ -941,11 +941,12 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an element with `@assert` to define an expression for more complex validations that need to be fulfilled before data gets persisted. The expectation is that in case of a violated validation, the expression returns the error message to be sent to the client, or `null` if the validation passed. With the help of `case when` syntax, it is possible to run several validations one after another and fail early.
+Annotate an element with `@assert` to define an expression for more complex validations that need to be fulfilled before data gets persisted. If the validation should fail, the expression must return the error message to be sent to the client, or `null` if the validation passed.
 
-The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service. If the error message requires parameters, you can use the `error(key, parameters)` function to pass parameters to the message. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
-
+The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
+
+The following example ensures that the field `bar` does not contain the value `'invalid'`. If it does, an error message with key `foo.bar.invalid` is returned.
 
 ```cds
 entity Foo {
@@ -953,16 +954,31 @@ entity Foo {
     when bar == 'invalid' then 'foo.bar.invalid' 
   end)
   bar : String;
+```
+
+It is possible to include multiple conditions in a single annotation. Each condition can return a different error message to precisely describe the error.
+
+```cds
+entity Foo {
   @assert: (case
     when boo > 100 then 'high'
     when boo > 50  then 'medium'
   end)
   boo : Integer;
-  @assert: (case 
-    when length(car) > length(boo) then error('foo.car.invalid', (car, boo)) 
-  end)
-  car: String;
 }
+```
+
+If the error message requires parameters, the `error(key, parameters)` function can be used to pass parameters for the message. Each parameter can be represented by an expression. In its simplest form, this is the actual value of an entity field. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
+
+In the following example, it is expected that the error message with key `foo.boo.toolong` is defined to have two parameters which are filled with the concrete values of the fields `boo` and `far`.
+
+```cds
+entity Foo {
+  bar : String;
+  @assert: (case 
+    when length(boo) > length(far) then error('foo.boo.toolong', (boo, bar)) 
+  end)
+  boo : String;
 ```
 
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
