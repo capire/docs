@@ -60,6 +60,7 @@ The section [Hybrid Testing](../advanced/hybrid-testing#run-cap-java-apps-with-s
 
 
 ## Logging SQL to console
+
 To view the generated SQL, which will be executed against the database in your local environment, it is also possible to enable `DEBUG` log output by adding the certain log levels in `application.yaml`
 
 ```yml
@@ -71,6 +72,10 @@ logging:
 This comes handy especially in situations, when the CAP Java developers needs to track runtime or a Java Application behavior.
 
 To learn more about loggers, refer to [Predefined Loggers](https://cap.cloud.sap/docs/java/operating-applications/observability#predefined-loggers)
+
+## Inspecting H2 in-memory database on the fly
+
+CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (if the port differs from the default `8080`, it should be changed accordingly).
 
 ## Inspecting with CDS Tools
 
