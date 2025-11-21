@@ -282,7 +282,7 @@ await srv.update(Books,201).with({stock:111})
 await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
 ```
 
-[Emitting Asynchronous Event Messsages:](#srv-emit-event)
+[Emitting Asynchronous Event Messages:](#srv-emit-event)
 
 ```js
 await srv.emit ('SomeEvent', {foo:'bar'})
@@ -882,7 +882,7 @@ All *cds.Services* are intrinsically events & messaging-enabled. The core implem
 
 ::: danger **PLEASE NOTE**
 
-Although emitters do not handle any return values from consumers, it is necessary to always call them with `await`. Keep in mind that `srv.emit()` is an *`async`* method, it is **very important** to properly handle the returned *Promises* by using `await`. Not handing them will likely lead to invalid transaction states and deadlocks.
+Although emitters do not handle any return values from consumers, it is necessary to always call them with `await`. Keep in mind that `srv.emit()` is an *`async`* method, it is **very important** to properly handle the returned *Promises* by using `await`. Not handling them will likely lead to invalid transaction states and deadlocks.
 
 :::
 
@@ -1049,7 +1049,7 @@ All matching `.before`, `.on`, and `.after` handlers are executed in correspondi
   -  ***concurrently*** for instances of `cds.Event`
 - **`after`** handlers are always executed *concurrently*
 
-In effect, for asynchronous event messages, that is, instances of `cds.Event`, sent via [`srv.emit()`](#srv-emit-event), all registered `.on` handlers are always executed. In contrast to that, for synchronous resuests, that is, instances of `cds.Requests`  this is up to the individual handlers calling `next()`. See [`srv.on(request)`](#interceptor-stack-with-next) for an example.
+In effect, for asynchronous event messages, that is, instances of `cds.Event`, sent via [`srv.emit()`](#srv-emit-event), all registered `.on` handlers are always executed. In contrast to that, for synchronous requests, that is, instances of `cds.Requests`  this is up to the individual handlers calling `next()`. See [`srv.on(request)`](#interceptor-stack-with-next) for an example.
 
 
 
