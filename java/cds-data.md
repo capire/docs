@@ -71,6 +71,22 @@ The framework isn't responsible for closing the stream when writing to the datab
 
 These types are used for the values of CDS elements with primitive type. In the [Model Reflection API](./reflection-api), they're represented by the enum [CdsBaseType](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsBaseType.html).
 
+### Numeric Type Promotion in Expressions { #numeric-promotion }
+
+To have a consistent behavior across different databases, numeric type promotion in arithmetic expressions is handled by the CAP Java runtime. Arithmetic expressions promote numeric types according to the following precedence:
+
+**Type Precedence (highest to lowest):**
+`DOUBLE` (binary64), `HANA_REAL` (binary32), `DECIMAL` (base 10), `INT64`, `INT32`, `INT16`, `UINT8`
+
+- For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
+- For division:
+  - If any operand is a binary floating-point type (`DOUBLE`, `HANA_REAL`), the result type is `DOUBLE` (binary64).
+  - Otherwise, the result type is `DECIMAL` (base 10), which provides higher accuracy for decimal fractions.
+
+::: tip
+Use `type(CdsBaseType)` to explicitly set the result type if needed.
+:::
+
 ## Structured Data
 
 In CDS, structured data is used as payload of *Insert*, *Update*, and *Upsert* statements. Also the query result of *Select* may be structured.
