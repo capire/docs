@@ -18,7 +18,7 @@ This section describes the H2 configuration and usage in CAP Java projects. It a
 
 ## Why use H2
 
-H2 is the preffered database for CAP Java applications. It offers a combination of features making it the best candidate for local development and testing.
+H2 is the preferred database for CAP Java applications. It offers a combination of features making it the best candidate for local development and testing.
 
 * **Easy Configuration and Spring Boot Integration**
 H2 is easy to configure, with minimal setup required to get started. Its seamless integration with Spring Boot applications means you can focus on building features rather than wrestling with complex database configurations.
@@ -53,7 +53,7 @@ Although CAP Java enables running and testing applications with a local H2 datab
 
 The section [Hybrid Testing](../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in local environment.
 
-## H2 and Srping Dev Tools
+## H2 and Spring Dev Tools
 
 [TODO] describe and link
 [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html)
