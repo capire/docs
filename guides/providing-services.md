@@ -946,41 +946,60 @@ Annotate an element with `@assert` to define an expression for more complex vali
 The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
 
-The following example ensures that the field `bar` does not contain the value `'invalid'`. If it does, an error message with key `foo.bar.invalid` is returned.
+The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If there is not enough available in the stock, a static error message is returned.
 
 ```cds
-entity Foo {
-  @assert: (case 
-    when bar == 'invalid' then 'foo.bar.invalid' 
-  end)
-  bar : String;
+entity Books : cuid {
+    title   : String;
+    stock   : Integer;
+}
+
+entity Orders : cuid {
+   Items    : Composition of many OrderItems
+                   on Items.parent = $self;
+}
+
+entity OrderItems : cuid {
+    parent    : Association to Orders;  
+    book      : Association to Books;
+    @assert: (case
+      when book.stock <= amount then 'Stock exceeded'
+    end)
+    quantity  : Integer;
+    amount    : Decimal(9, 2);
 }
 ```
 
-It is possible to include multiple conditions in a single annotation. Each condition can return a different error message to precisely describe the error.
+Alternatively, the same condition can be simplified by using the ternary operator:
 
 ```cds
-entity Foo {
-  @assert: (case
-    when boo > 100 then 'high'
-    when boo > 50  then 'medium'
-  end)
-  boo : Integer;
-}
+    @assert: ((book.stock <= amount) ? 'Stock exceeded' : null)
+    quantity  : Integer;
 ```
 
-If the error message requires parameters, the `error(key, parameters)` function can be used to pass parameters for the message. Each parameter can be represented by an expression.
+By using multiple `when` sections, multiple conditions can be included in a single annotation. Each condition returns its own error message to precisely describe the error.
+
+```cds
+    @assert: (case
+      when book.stock = 0 then 'Stock is zero'
+      when book.stock <= amount then 'Stock exceeded'
+    end)
+    quantity  : Integer;
+```
+
+With the help of the function `error(message, parameters, targets)`, it is possible to specify parameters as well as explicit target elements for the message. Each parameter can be represented by an expression.
 In its simplest form, this is the actual value of an entity field. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
 
-In the following example, it is expected that the error message with key `foo.boo.toolong` is defined to have two parameters which are filled with the concrete values of the fields `boo` and `far`.
+In the following example, it is expected that the error message with key `error.author.date` is defined to have two parameters which are filled with the concrete values of the elements `dateOfBirth` and `dateOfDeath`. The third parameter ensures that both fields are set as targets and thus marked erroneous.
 
 ```cds
-entity Foo {
-  bar : String;
+entity Authors : cuid, managed {
+   
   @assert: (case 
-    when length(boo) > length(far) then error('foo.boo.toolong', (boo, bar)) 
+    when dateOfBirth > dateOfDeath then error('error.author.date', (dateOfBirth, dateOfDeath), (dateOfBirth, dateOfDeath)) 
   end)
-  boo : String;
+  dateOfBirth  : Date;
+  dateOfDeath  : Date;
 }
 ```
 
