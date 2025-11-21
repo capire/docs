@@ -973,18 +973,24 @@ entity OrderItems : cuid {
 Alternatively, the same condition can be simplified by using the ternary operator:
 
 ```cds
+entity OrderItems : cuid {
+
     @assert: ((book.stock <= amount) ? 'Stock exceeded' : null)
     quantity  : Integer;
+}
 ```
 
 By using multiple `when` sections, multiple conditions can be included in a single annotation. Each condition returns its own error message to precisely describe the error.
 
 ```cds
+entity OrderItems : cuid {
+
     @assert: (case
       when book.stock = 0 then 'Stock is zero'
       when book.stock <= amount then 'Stock exceeded'
     end)
     quantity  : Integer;
+}
 ```
 
 With the help of the function `error(message, parameters, targets)`, it is possible to specify parameters as well as explicit target elements for the message. Each parameter can be represented by an expression.
