@@ -185,10 +185,36 @@ You can set the property to one of the following:
 It can occur that inactive drafts are still in the database after the configured timeout. The deletion is implemented as a side effect of creating new drafts and there's no periodic job that does the garbage collection.
 :::
 
-
 ## Bypassing Drafts
-Creating or modifying active instances directly is possible without creating drafts. This comes in handy when technical services without a UI interact with each other.
 
+The draft choreography does not allow active instances of draft-enabled entities to be created or modified directly.
+However, when working with technical services that are not exclusively consumed through a GUI, the option to bypass this restriction can be useful.
+The CAP Node.js runtime provides two similar but distinct options for bypassing the regular draft choreography.
+
+### Generic `@Common.DraftRoot.NewAction`
+
+By enabling the feature `cds.features.new_draft_via_action`, you can change how new instances of draft-enabled entities get created in the CAP Node.js runtime.
+This feature is disabled by default.
+When you activate this feature, the `@Common.DraftRoot.NewAction` annotation is automatically added to _every_ draft-enabled entity in the background.
+Additionally, a collection-bound action `draftNew` is added to the entity's runtime model.
+When this annotation is present, Fiori Elements triggers the action referenced by the annotation instead of sending a `POST` request to the collection path to create a new entity.
+The runtime rewrites calls to this action internally as a `NEW` event.
+
+:::warning
+No custom handlers can be registered for the `draftNew` action. Instead, such custom handlers should be registered on the regular `NEW` event.
+:::
+
+By providing a dedicated action that can be called to create a new instance, `POST` requests to the collection path of the entity can now be used differently:
+With `cds.features.new_draft_via_action` enabled, `POST` requests to the collection path create an active instance instead of a draft.
+When handling these `POST` requests, the runtime considers an `IsActiveEntity` attribute in the request body to still allow creating a draft instance when `IsActiveEntity: false` is specified explicitly. 
+
+This change in what the `POST` method does in the context of draft-enabled entities promotes the assumption that all CRUD operations will target the active- rather than the draft-state entity by default.
+This is why activating the `cds.features.new_draft_via_action` feature has just that effect:
+Just like the `bypass_draft` feature flag, it will cause restrictions on modifications of active entities to no longer be enforced.
+
+### Disable Enforcement by Feature Flag
+
+Alternatively, you can choose to forcefully disable restrictions on how users interact with active instances of draft-enabled entities.
 To enable this feature, set this feature flag in your configuration:
 
 ```json
