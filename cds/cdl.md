@@ -1882,7 +1882,7 @@ service MyOrders {
 ```
 
 ::: tip
-You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which, will be enforced by the CAP runtimes in Java and Node.js.
+You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which will be enforced by the CAP runtimes in Java and Node.js.
 :::
 
 Entities can be also exposed as views with parameters:

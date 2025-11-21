@@ -420,7 +420,7 @@ See also [Extensibility configuration](./mtxs.md#extensibility-config)
 ### Verify Application Locally
 
 As first verification of your configuration changes, you can try to run your application locally in [hybrid mode](../../advanced/hybrid-testing#run-with-service-bindings). To bind all the service
-that are bound to your existing application, you can call `cds bind --to-app-services <your application>`. Afterwards, you can run `cds run --profile hybrid --resolve-bindings`.
+that are bound to your existing application, you can call `cds bind -a <your application>`. Afterwards, you can run `cds run --profile hybrid --resolve-bindings`.
 
 ### Migrate Tenant Content of Existing Applications
 
