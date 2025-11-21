@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Configuration and usage of H2 Database in CAP Java
+# H2 configuration and usage in CAP Java
 <style scoped>
   h1:before {
     content: "Java"; display: block; font-size: 60%; margin: 0 0 .2em;
@@ -14,11 +14,11 @@ status: released
 {{ $frontmatter.synopsis }}
 
 
-This section describes the H2 configuration and usage in CAP Java projects. 
+This section describes the H2 configuration and usage in CAP Java projects. It also provides links and further information on Development and Inspection Tools. 
 
-## Why H2
+## Why use H2
 
-H2 is the preffered database for CAP Java applications. It offers a combination of features making it ideal candidate for development and testing.
+H2 is the preffered database for CAP Java applications. It offers a combination of features making it the best candidate for local development and testing.
 
 * **Easy Configuration and Spring Boot Integration**
 H2 is easy to configure, with minimal setup required to get started. Its seamless integration with Spring Boot applications means you can focus on building features rather than wrestling with complex database configurations.
@@ -53,3 +53,25 @@ Although CAP Java enables running and testing applications with a local H2 datab
 
 The section [Hybrid Testing](../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in local environment.
 
+## H2 and Srping Dev Tools
+
+[TODO] describe and link
+[Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html)
+
+
+## Logging SQL to console
+To view the generated SQL, which will be executed against the database in your local environment, it is also possible to enable `DEBUG` log output by adding the certain log levels in `application.yaml`
+
+```yml
+logging:
+  level:
+    com.sap.cds.persistence.sql: DEBUG
+```
+
+This comes handy especially in situations, when the CAP Java developers needs to track runtime or a Java Application behavior.
+
+To learn more about loggers, refer to [Predefined Loggers](https://cap.cloud.sap/docs/java/operating-applications/observability#predefined-loggers)
+
+## Inspecting with CDS Tools
+
+[TODO] what exactly we can inspect with Tools?
