@@ -587,8 +587,8 @@ You can now perform following tasks in the Administrative Console for the IAS te
 To create a custom policy with filter restrictions do the following steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
 2. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
-2. Customize the filter condition for the AMS attributes available
-3. Press **Save**
+3. Customize the filter condition for the AMS attributes available
+4. Confirm with **Save**
 
 ::: details Create custom AMS policy with filter condition
 
