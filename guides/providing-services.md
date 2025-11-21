@@ -969,7 +969,8 @@ entity Foo {
 }
 ```
 
-If the error message requires parameters, the `error(key, parameters)` function can be used to pass parameters for the message. Each parameter can be represented by an expression. In its simplest form, this is the actual value of an entity field. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
+If the error message requires parameters, the `error(key, parameters)` function can be used to pass parameters for the message. Each parameter can be represented by an expression.
+In its simplest form, this is the actual value of an entity field. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
 
 In the following example, it is expected that the error message with key `foo.boo.toolong` is defined to have two parameters which are filled with the concrete values of the fields `boo` and `far`.
 
