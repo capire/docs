@@ -781,7 +781,7 @@ Books book = persistenceService.run(byId).single(Books.class);
 
 ### Sample HTTP Requests
 
-Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files.
+Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](/tools/cds-editors#add-useful-plugins).
 
 <span class="impl node">
 
