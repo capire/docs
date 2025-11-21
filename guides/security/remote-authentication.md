@@ -160,7 +160,7 @@ cd ./xflights_java
 cds up
 ```
 
-#### 4. Verify the deployment
+#### 4. Verify the deployment { #verify }
 
 First, you can check the overall deployment status at the CF CLI level. In particular, the application services need to be started successfully and the shared identity instance needs to be verified.
 
@@ -220,6 +220,9 @@ CAP offers a simplified App-2-App setup by leveraging remote services that requi
 - Principal propagation mode (optional)
 :::
 
+[Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
+
+
 #### 1. Prepare the CF environment
 
 Make sure that you've prepared the following [local environment for CF deployments](../deployment/to-cf#prerequisites):
@@ -231,15 +234,14 @@ Make sure that you've prepared the following [local environment for CF deploymen
 
 #### 2. Prepare and deploy the provider application
 
-As first step, clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
+As a first step, clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to the remote branch.
 
-Similar to the [co-located](#co-located-provider) flavour, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
-The difference is that the consumers are not known a priori and also are not part of the same application deployment, in general.
+Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
+The difference is that the consumers are not known a priori and are also not part of the same application deployment, in general.
 
-To expose service APIs for consumption, you can enhance the identity instance of the provider by defining API identifies that are listed in property `provided-apis`:
+To expose service APIs for consumption, you can enhance the identity instance of the provider by defining API identifiers that are listed in property `provided-apis`:
 
 ::: code-group
-
 ```yaml [mta.yaml]
 resources:
   - name: xflights-ias
@@ -253,7 +255,6 @@ resources:
           description: Grants technical access to data service API
         }]
 ```
-
 :::
 
 Only a single entry with name `DataConsumer` representing the consumption of service `sap.capire.flights.data` is added.
@@ -261,16 +262,17 @@ The description helps administrators to configure the consumer application with 
 
 [Detailed description about identity instance parameters for `provided-apis`](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-instance-parameters){.learn-more}
 
-OAuth tokens presented by a valid consumer requests as a result of an App-2-App flow will have API claim `DataConsumer` which is automatically mapped to a CAP role by the runtime.
-Hence, the corresponding CDS service can be protected by CAP-role `DataConsumer` in order to authorize the requests thoroughly:
+How can proper authorization be configured for _technical clients without user propagation_? 
+OAuth tokens presented by valid consumer requests as a result of an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
+Hence, the corresponding CDS service can be protected by CAP role `DataConsumer` in order to authorize the requests thoroughly:
 
 ::: code-group
-
 ```cds [/srv/authorization.cds]
 using { sap.capire.flights.data as data } from './data-service';
 
 annotate data with @(requires: 'DataConsumer');
 ```
+:::
 
 Finally, deploy and start the application with
 
@@ -279,10 +281,9 @@ cd ./xflights_java
 cds up
 ```
 
-:::
 
 ::: tip API as CAP role
-The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication.
+The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication and hence can be used in @requires annotation.
 :::
 
 ::: warning Use different roles for technical and business users
@@ -291,13 +292,13 @@ Use different CAP roles for technical clients without user propagation and for n
 Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice versa.
 :::
 
-#### 3. Prepare and deploy the consumer application
+#### 3. Prepare and deploy the consumer application { #consumer }
 
 Like with xflights, clone [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
 
-First, a BTP destination needs to be added which points to the provider service endpoint to be called (`URL`) and which bears the the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).  
-The name for the IAS dependency is flexible but **need to match the chosen name in next step** when [connecting consumer and provider in IAS](#connect).
-The destination is required by the connectivity component to prepare the HTTP call accordingly. Also note that the authentication type of the destination is `NoAuthentication` as the destination itself does not contribute to the authentication process.
+First, a BTP destination needs to be added that points to the provider service endpoint to be called (`URL`) and that contains the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).  
+The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
+The destination is required by the connectivity component to prepare the HTTP call accordingly. Also note that the authentication type of the destination is `NoAuthentication`, as the destination itself does not contribute to the authentication process.
 
 
 ::: code-group
@@ -311,6 +312,7 @@ The destination is required by the connectivity component to prepare the HTTP ca
       config:
         init_data:
           instance:
+            existing_destinations_policy: update
             destinations:
               - Name: xtravels-data-consumer
                 Type: HTTP
@@ -329,6 +331,7 @@ modules:
     requires:
       - name: xtravels-destination # [!code ++]
 ```
+
 :::
 
 :::tip
@@ -336,7 +339,8 @@ Alternatively, the destination can also be created manually in the [BTP destinat
 :::
 
 
-Given the destination, the remote service can be configured in a pretty similar way as with [co-located services](#co-located-consumer):
+Given the destination, the remote service can be configured in a very similar way as with [co-located services](#co-located-consumer). 
+Currently, an additional Cloud SDK dependency `scp-cf` is required to support communication with the BTP destination service:
 
 ::: code-group
 
@@ -353,7 +357,17 @@ cds:
         onBehalfOf: systemUserProvider
 ```
 
+```xml [/srv/pom.xml]
+<dependency>
+		<groupId>com.sap.cloud.sdk.cloudplatform</groupId>
+ 		<artifactId>scp-cf</artifactId>
+  	<scope>runtime</scope>
+</dependency>
+```
+
 :::
+
+[Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
 
 Finally, deploy and start the application with
 
@@ -362,123 +376,320 @@ cd ./xtravels_java
 cds up
 ```
 
-Technically, the remote service implementation will delegate the HTTP connection setup to the connectivity component which can recognize by the type of the destination that it needs to initiate an App-2-App flow.
+xtravels-srv is not expected to start successfully; instead, you should see error log messages like this:	
+```yaml
+Remote HCQL service responded with HTTP status code '401', ...
+```
+
+Technically, the remote service implementation will delegate the HTTP connection setup to the connectivity component, which can recognize by the type of destination that it needs to initiate an App-2-App flow.
 It then takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
-The token exchange requires property `oauth2-configuration.token-policy.access-token-format: jwt` to be set in the identity instance in order to create a token in the JWT format.
+As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
+
+Moreover, the token exchange requires property `oauth2-configuration.token-policy.access-token-format: jwt` to be set in the identity instance in order to create a token in the JWT format.
 
 #### 4. Connect consumer with provider { #connect }
 
-To activate the App-2-App connection as a *consumer*, you need to:
+Now let's create the missing IAS dependency to establish trust for the API service call targeting provided API with id `DataConsumer`.
 
-Create an IAS application dependency in the IAS tenant:
-    - Open the Cloud Identity Services admin console
-    - Navigate to [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)
-    - Create a new dependency pointing to your provider application's API
+Open the Administrative Console for the IAS tenant (see prerequisites [here](../guides/security/authentication#ias-admin)):
 
+1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
+2. In **Application APIs** select **Dependencies** and click on **Add**.
+3. Type a dependency name (needs to match property value `cloudsdk.ias-dependency-name`) and pick provided API `DataConsumer` from the provider IAS application `xflights`.
+4. Confirm with **Save**
 
-<div id="orchint" />
+::: details Create IAS dependency
 
+![Manage IAS dependencies in Administrative Console](assets/ias-dependencies.png) {width="500px" }
 
-[Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
+![Create a new IAS dependency in Administrative Console](assets/add-api.png) {width="500px" }
 
-[Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
-
-
-
-## BTP Reuse Services {#ias-reuse}
-
-IAS-based BTP reuse services can be created/consumed with CAP Java even more easily.
-
-The CAP reuse service (provider) needs to:
-
-1. Configure [IAS authentication](/java/security#xsuaa-ias).
-2. Bind an IAS instance that exposes services and service plans.
-
-    ::: details Sample IAS instance for provider
-
-    ```yaml
-    - name: server-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            catalog:
-              services:
-                - id: "1d5c23ee-1ce6-6130-4af4-26461bc6ef79"
-                  name: "review-service"
-                  plans:
-                    - id: "2d5c23ee-1ce6-6130-4af4-26461bc6ef78"
-                      name: "review-api"
-    ```
-
-    :::
-
-3. Prepare a CDS service endpoint for the exposed API.
-
-    ::: details Sample CDS Service for the API
-
-    ```cds
-    service ReviewService @(requires: 'review-api') {
-      [...]
-    }
-    ```
-
-    :::
-
-The CAP consumer application (client) needs to:
-
-1. Create and bind the provided service from the marketplace.
-
-    ::: details Create and bind service instance.
-    ```sh
-    cf create-service review-service review-api review-service-instance
-    cf bind-service <your-app-name> review-service-instance --binding-name review-service-binding
-    ```
-    :::
-
-2. Create an IAS instance that consumes the required service.
-
-    ::: details Sample IAS instance for client
-
-    ```yaml
-      - name: client-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            "consumed-services": [ {
-              "service-instance-name": "review-service-instance"
-            } ]
-    ```
-
-    :::
-
-3. Create a Remote Service based on the binding (optional).
-
-    ::: details Sample Remote Service configuration
-
-    ```yaml
-    cds:
-      remote.services:
-        Reviews:
-          binding:
-            name: review-service-binding
-            onBehalfOf: currentUser
-    ```
-
-    :::
-
-4. Use CQN queries to consume the reuse service (optional)
-
-[Learn more about simplified Remote Service configuration with bindings](/java/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
-
-::: tip Service plan name as CAP role
-The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
 :::
+
+:::tip
+The BTP destination as well as the IAS dependency can be automatically created at runtime by making use of [UCL integration](../java/integrating-applications/ucl#unified-customer-landscape-ucl).
+:::
+
+Now restart the consumer application with
+
+```sh
+cf restart xtravels-srv
+```
+
+to trigger a successful startup with valid flight data retrieved from the provider.
+
+You can now test the valid setup of the xtravels application by accessing the UI and logging in with an authorized test user of the IAS tenant.
+To do so, assign a proper AMS policy (e.g., `admin`) to the test user as described [earlier](./cap-users#ams-deployment).
+
+
+
+## BTP Reuse Services {#ias-reuse}  
+
+Similar to [external services](#app-to-app), BTP reuse services have a fully decoupled lifecycle. The trust between consumer and provider is established at _deployment_ time by means of the [Open Service Broker](https://www.openservicebrokerapi.org/)(OSB) API, i.e., the consumer creates and binds a service instance of the provider service. 
+However, the simplified configuration comes with a drawback: consumer and provider necessarily need to run on the same BTP landscape. 
+Still, in particular, services used at a technical provider level in the consumer perfectly match this setup.
+
+![External services](./assets/external-services.drawio.svg){width="500px" }
+
+[IAS](./authentication#ias-auth) offers built-in support for OSB, resulting in a simplified configuration for provider applications. In contrast, XSUAA-based applications need to host a dedicated service broker as an additional effort.
+
+Similar to co-located and external services, CAP supports communication with BTP reuse services transparently as it builds on the same architectural pattern of [remote services]( #remote-services).
+Technically, the connectivity component uses the provided service binding to inspect the proper authentication strategy. Under the hood, it manages required interactions with the identity service, e.g., to fetch a proper token, depending on the concrete scenario. For instance, an IAS-based request token needs to be exchanged into an XSUAA token in case the binding shows an XSUAA client.
+
+:::tip
+CAP offers a simplified consumption of BTP reuse services by leveraging remote services that require:
+- A service binding in the consumer
+- Principal propagation mode (optional)
+:::
+
+
+#### 1. Prepare the CF environment
+
+Make sure that you've prepared the following [local environment for CF deployments](../deployment/to-cf#prerequisites):
+- CF space to deploy the applications and a `cf`-CLI session targeting this space.
+- MBT CLI build tool.
+- [btp CLI tool](https://help.sap.com/docs/btp/sap-business-technology-platform/account-administration-using-sap-btp-command-line-interface-btp-cli)
+- HANA Cloud instance mapped to the space.
+- [IAS tenant](./authentication#ias-ready) mapped to the subaccount.
+
+
+#### 2. Prepare and deploy the provider service
+
+As a first step, clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to the remote branch.
+
+Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
+
+In contrast to the scenarios before, the consumers are not known a priori and might also have a different tenant.
+As a consequence, the provider service needs to manage multiple subscribers and hence needs to be a multi-tenant service. 
+
+You can easily enhance the service by adding the `multitenancy` facet:
+
+```sh
+cds add multitenancy
+```
+
+Note that multi-tenancy aspect is now also reflected in the identity instance (property `config.multi-tenant: true`).
+
+As OSB protocol is leveraged to establish trust, a service broker needs to expose the API as dedicated service plan being part of a service catalog.
+IAS can be used to provide a matching service broker without the application having to provide the OSB endpoints itself.
+This can be achieved through enhanced configuration of the identity instance by declaratively creating the service catalog to be provided:
+
+```yaml [mta.yaml]
+- name: <identity instance>
+  type: org.cloudfoundry.managed-service
+  requires:
+    catalog:
+      services:
+        - name: "xflights-data"
+          plans:
+          - name: "data-consumer"
+```
+
+::: details See detailed service catalog configuration
+
+```yaml [mta.yaml]
+- name: xflights-ias
+  type: org.cloudfoundry.managed-service
+  requires:
+    - name: srv-api
+    [...]
+    catalog:
+      services:
+        - id: "4aa23ee-1ce6-6130-4af4-26461bc6ef79"
+          description: "xflights data service"
+          name: "xflights-data"
+          bindable: true
+          bindings_retrievable: true
+          instances_retrievable: true
+          plans:
+          - id: "2aac23ae-1ce6-6930-4af4-26461bc6ef78"
+            name: "data-consumer"
+            bindable: true
+            metadata:
+              subscribe_with_consuming_app: true
+              auto_subscription:
+                type: "subscription-manager"
+                propagateParams: true
+              bindingData:
+                authentication-service:
+                  service-label: "identity"
+                endpoints:
+                  eventing-endpoint:
+                    uri: ~{srv-api/srv-cert-url}
+                    always-requires-token: true
+                url: ~{srv-api/srv-cert-url} 
+```
+
+Property `auto_subscription` will automatically forward the subscription request to the provider.
+The ids are required to enable an updateable service catalog
+
+:::
+
+[Learn more about IAS service brokers](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker){.learn-more}
+
+::: tip
+If the application requires specific functionality in the service broker, IAS can also be configured with a [custom service broker](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#create-custom-broker-optional).
+:::
+
+To authorize the client requests you may add the API name (i.e. the plan name) as CAP role protecting the service access:
+
+::: code-group
+
+```cds [/srv/authorization.cds]
+using { sap.capire.flights.data as data } from './data-service';
+
+annotate data with @(requires: 'data-consumer');
+```
+
+:::
+
+Afterwards, you may start the provider service by
+
+```sh
+cds up
+```
+
+As the service is not yet registered to Service Manager, it will not yet appear in the output of `cf marketplace`.
+We'll address this in the next section.
+
+#### 3. Register the provider as service broker 
+
+https://wiki.one.int.sap/wiki/pages/viewpage.action?spaceKey=CPC15N&title=Test#Test-5.RegisteryourBrokerasSubaccount-Scoped
+
+
+Subaccount-scoped means your service is automatically visible for consumption in the catalog of all environments in the subaccount where the service is registered in.
+
+```sh
+btp login --sso
+```
+
+CLI server URL [https://cli.btp.cloud.sap]>
+https://canary.cli.btp.int.sap  SAP BTP Control Center -> Choose Landscape -> Open in btp CLI -> CLI Server URL
+
+```sh
+btp list accounts/subaccount
+btp target --subaccount <subaccount id>
+```
+
+[Learn more how to login with btp CLI](https://help.sap.com/docs/btp/sap-business-technology-platform/log-in){.learn-more}
+[Learn more how to target a subaccount with btp CLI](https://help.sap.com/docs/btp/sap-business-technology-platform/set-target-for-subsequent-commands-with-btp-target){.learn-more}
+[Learn more about btp CLI commands](https://help.sap.com/docs/btp/sap-business-technology-platform/working-with-resources-of-sap-service-manager-using-btp-cli?version=Cloud){.learn-more}
+
+
+```sh
+https://service-manager.<landscape-domain>/v1/info
+{
+ [...]
+  "service_manager_certificate_subject": "/C=DE/O=SAP SE/OU=SAP Cloud Platform Clients..."
+}
+```
+
+landscape-domain:
+cfapps.sap.hana.ondemand.com (EU10)
+
+
+```sh
+openssl req -newkey rsa:4096 \
+            -x509 \
+            -sha256 \
+            -days 3650 \
+            -nodes \
+            -out sm.crt \
+            -keyout sm.key \
+            -subj "/C=DE/O=SAP SE/OU=SAP Cloud Platform Clients/OU=Canary/OU=sap-service-manager-cf-eu10-canary/L=service-manager/CN=service-manager"
+
+cat sm.crt | sed ':a;N;$!ba;s/\n/\\n/g' > sm-line.crt
+cf create-service-key xflights-ias xflights-ias-key -c '{"credential-type": "X509_PROVIDED", "certificate": "'"$(cat sm-line.crt)"'"}'
+```
+
+[Learn more about establishing trust between service broker and Service Manager](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-manager-provided-certificate){.learn-more}
+
+
+```sh
+cf service-key xflights-ias xflights-ias-key | grep osb_url
+
+"osb_url": "https://eu-osb.accounts400.ondemand.com/sap/cp-kernel/identity/v1/osb/c0e703e2-93aa-4c9f-adb5-16efd4fabcdef",
+```
+
+```sh
+btp register services/broker --name xflights-service-broker --url <osb_url> --use-sm-tls
+
+cf marketplace | grep xflights
+xflights-data  standard       xflights data service 
+```
+
+[Learn more about registering a service broker](https://help.sap.com/docs/btp/btp-cli-command-reference/btp-register-services-broker){.learn-more}
+
+
+
+
+#### 4. Prepare and deploy the consumer
+
+The consumer can now consume the reuse service in a quite straightforward manner.
+First, a service instance of type `xflights-data` with plan `data-consumer` as displayed in the marketplace must be created and `xtravels-srv` must be bound to it:
+
+::: code-group
+
+```yaml [mta.yaml]
+modules:
+  - name: xtravels-srv
+    requires:
+      - name: xtravels-data
+
+resources:
+  - name: xtravels-data
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xflights-data
+      service-plan: data-consumer
+```
+
+:::
+
+The identity instance must also be configured to enable the corresponding service:
+
+::: code-group
+
+```yaml [mta.yaml]
+resources:
+  - name: xtravels-ias
+    parameters:
+      config:
+        consumed-services:
+          - service-instance-name: xtravels-data
+```
+:::
+
+Only in this way will a token generated via the identity instance on the consumer side also be accepted by the provider.
+Additionally, after validation, the token carries the CAP role `data-consumer` in the provider backend to pass authorization.
+
+Finally, to establish the connection between the service binding, which represents the reuse service and carries all necessary information to establish the connection, and the service consumption, a remote service can again be created analogously as follows:
+
+::: code-group
+
+```yaml [mta.yaml]
+---
+spring:
+  config.activate.on-profile: cloud
+cds:
+  remote.services:
+    xflights:
+      type: hcql
+      model: sap.capire.flights.data
+      http:
+        suffix: /hcql
+      binding:
+        name: xtravels-data
+        onBehalfOf: systemUserProvider
+```
+:::
+
+Note that in this case `http.suffix` must be set to the URL suffix `/hcql`, as this information is not contained in the binding.
+Like before, user propagation for communication is set to the technical provider tenant.
+
+[Learn more about remote service configurations based on service bindings](https://pages.github.tools.sap/cap/docs/java/cqn-services/remote-services#binding-to-a-reuse-service){.learn-more}
+[Learn more about URLs in remote service configurations](https://pages.github.tools.sap/cap/docs/java/cqn-services/remote-services#configuring-the-url){.learn-more}
+
 
 ::: warning  Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
@@ -487,7 +698,7 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 :::
 
 
-### How to Authorize Callbacks
+#### How to Authorize Callbacks
 
 For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
 Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
@@ -504,6 +715,18 @@ private void authorizeCallback() {
 		}
 	}
 ```
+
 :::
 
+
+## Pitfalls
+
+- **Don't write custom integration logic** for consumed services. 
+Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
+
+- **Don't implement connectivity layer code** (e.g., to fetch or exchange tokens). 
+Instead, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
+
+- **Don't treat co-located services as external services**. 
+This introduces unnecessary communication overhead and increases total cost of ownership (TCO).
 
