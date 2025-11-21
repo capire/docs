@@ -75,7 +75,7 @@
 
 ## [Security](guides/security/)
 
-  ### [Overhiew](guides/security/overview)
+  ### [Overview](guides/security/overview)
   ### [Authentication](guides/security/authentication)
   ### [CAP Users](guides/security/cap-users)
   ### [Authorization](guides/security/authorization)
