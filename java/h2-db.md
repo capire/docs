@@ -53,10 +53,12 @@ Although CAP Java enables running and testing applications with a local H2 datab
 
 The section [Hybrid Testing](../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in local environment.
 
-## H2 and Spring Dev Tools
+## H2 and Spring Dev Tools integration
 
-[TODO] describe and link
-[Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html)
+Most CAP Java projects use Spring Boot. To speed up the edit–compile–verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
+
+
+The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. For details on how to configure file-based H2, see the [Connecting to an Embedded (Local) Database](https://www.h2database.com/html/features.html#embedded_databases)
 
 
 ## Logging SQL to console
@@ -73,7 +75,7 @@ This comes handy especially in situations, when the CAP Java developers needs to
 
 To learn more about loggers, refer to [Predefined Loggers](https://cap.cloud.sap/docs/java/operating-applications/observability#predefined-loggers)
 
-## Inspecting H2 in-memory database on the fly
+## Inspecting H2 database on the fly
 
 CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (if the port differs from the default `8080`, it should be changed accordingly).
 
