@@ -365,7 +365,7 @@ PUT/PATCH /Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>')/<field_
 Content-Type: application/json
 
 {
-  {"name": "Ein neuer Name"}
+  "name": "Ein neuer Name"
 }
 ```
 
