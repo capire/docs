@@ -987,7 +987,7 @@ entity OrderItems : cuid {
 
     @assert: (case
       when book.stock = 0 then 'Stock is zero'
-      when book.stock <= amount then 'Stock exceeded'
+      when book.stock <= quantity then 'Stock exceeded'
     end)
     quantity  : Integer;
 }
