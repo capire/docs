@@ -28,18 +28,18 @@ status: released
 
 OData is an OASIS standard that enhances plain REST with standardized system query options like `$select`, `$expand`, `$filter`, and others. The following table provides an overview of the feature coverage:
 
-| Query Options  | Remarks                                   | Node.js    | Java    |
-|----------------|-------------------------------------------|:------------:|:---------:|
+| Query Options  | Remarks                                     | Node.js    | Java    |
+|----------------|---------------------------------------------|:------------:|:---------:|
 | `$search`      | Search in multiple/all text elements<sup>(1)</sup>| <X/> | <X/>   |
-| `$value`       | Retrieves single rows/values              | <X/>      | <X/>  |
-| `$top`,`$skip` | Requests paginated results                | <X/>      | <X/>   |
-| `$filter`      | Like SQL where clause                     | <X/>      | <X/>   |
-| `$select`      | Like SQL select clause                    | <X/>      | <X/>   |
-| `$orderby`     | Like SQL order by clause                  | <X/>      | <X/>   |
-| `$count`       | Gets number of rows for paged results     | <X/>      | <X/>   |
-| `$apply`       | For [data aggregation](#data-aggregation) | <X/>      | <X/>   |
-| `$expand`      | Deep-read associated entities             | <X/>      | <X/>   |
-| `$compute`     | Dynamic expressions for other query options<sup>(2)</sup> | <X/>      | <X/>   |
+| `$value`       | Retrieves single rows/values                | <X/>      | <X/>  |
+| `$top`,`$skip` | Requests paginated results                  | <X/>      | <X/>   |
+| `$filter`      | Like SQL where clause                       | <X/>      | <X/>   |
+| `$select`      | Like SQL select clause                      | <X/>      | <X/>   |
+| `$orderby`     | Like SQL order by clause                    | <X/>      | <X/>   |
+| `$count`       | Gets number of rows for paged results       | <X/>      | <X/>   |
+| `$apply`       | For [data aggregation](#data-aggregation)   | <X/>      | <X/>   |
+| `$expand`      | Deep-read associated entities               | <X/>      | <X/>   |
+| `$compute`     | Dynamic expressions for other query options | <X/><sup>(2)</sup> | <X/>   |
 | [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
 | [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
