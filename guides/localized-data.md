@@ -413,12 +413,12 @@ For example, _Books.csv_ can look as follows:
 
 ::: code-group
 ```csv [Books.csv]
-ID;title;descr;author_ID;stock;price;currency_code;genre_ID
-201;Wuthering Heights;Wuthering Heights, Emily Brontë's only novel ...;101;12;11.11;GBP;11
-207;Jane Eyre;Jane Eyre is a novel by English writer ...;107;11;12.34;GBP;11
-251;The Raven;The Raven is a narrative poem by ...;150;333;13.13;USD;16
-252;Eleonora;Eleonora is a short story by ...;150;555;14;USD;16
-271;Catweazle;Catweazle is a British fantasy ...;170;22;150;JPY;13
+ID,title,descr,author_ID,stock,price,currency_code,genre_ID
+201,Wuthering Heights,Wuthering Heights, Emily Brontë's only novel ...,101,12,11.11,GBP,11
+207,Jane Eyre,Jane Eyre is a novel by English writer ...,107,11,12.34,GBP,11
+251,The Raven,The Raven is a narrative poem by ...,150,333,13.13,USD,16
+252,Eleonora,Eleonora is a short story by ...,150,555,14,USD,16
+271,Catweazle,Catweazle is a British fantasy ...,170,22,150,JPY,13
 ...
 ```
 :::
@@ -427,11 +427,11 @@ This is the corresponding _Books_texts.csv_:
 
 ::: code-group
 ```csv [Books_texts.csv]
-ID;locale;title;descr
-201;de;Sturmhöhe;Sturmhöhe (Originaltitel: Wuthering Heights) ist der einzige Roman...
-201;fr;Les Hauts de Hurlevent;Les Hauts de Hurlevent (titre original : Wuthering Heights)...
-207;de;Jane Eyre;Jane Eyre. Eine Autobiographie (Originaltitel: Jane Eyre. An Autobiography)...
-252;de;Eleonora;Eleonora ist eine Erzählung von Edgar Allan Poe. Sie wurde 1841...
+ID,locale,title,descr
+201,de,Sturmhöhe,Sturmhöhe (Originaltitel: Wuthering Heights) ist der einzige Roman...
+201,fr,Les Hauts de Hurlevent,Les Hauts de Hurlevent (titre original : Wuthering Heights)...
+207,de,Jane Eyre,Jane Eyre. Eine Autobiographie (Originaltitel: Jane Eyre. An Autobiography)...
+252,de,Eleonora,Eleonora ist eine Erzählung von Edgar Allan Poe. Sie wurde 1841...
 ...
 ```
 :::
