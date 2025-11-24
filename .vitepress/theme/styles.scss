@@ -299,6 +299,11 @@ main {
     border-width: 0 0 0 7px;
     border-radius: 14px;
 
+    .learn-more {
+      margin-top: 10px;
+      margin-bottom: -5px;
+    }
+
     &.note {
       background-color: #f6f6f6;
       border-color: #bbb;
