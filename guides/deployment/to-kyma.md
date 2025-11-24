@@ -194,6 +194,9 @@ npm i --package-lock-only mtx/sidecar
 # If package-lock.json doesn't exist
 npm i --package-lock-only
 
+# Build tasks
+cds build --production
+
 # Buildpack commands
 pack build bookshop-srv:latest --path gen/srv --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
 pack build bookshop-html5-deployer:latest --path app/html5-deployer --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
@@ -233,7 +236,10 @@ Try out the [CAP SFLIGHT](https://github.com/SAP-samples/cap-sflight)
 and [CAP for Java](https://github.com/SAP-samples/cloud-cap-samples-java) examples on Kyma.
 ::: -->
 
----
+## Next Up...
+
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
+
 {style="margin-top:11em"}
 
 ## Deep Dives
