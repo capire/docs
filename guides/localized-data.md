@@ -414,7 +414,7 @@ For example, _Books.csv_ can look as follows:
 ::: code-group
 ```csv [Books.csv]
 ID,title,descr,author_ID,stock,price,currency_code,genre_ID
-201,Wuthering Heights,Wuthering Heights, Emily Brontë's only novel ...,101,12,11.11,GBP,11
+201,Wuthering Heights,"Wuthering Heights, Emily Brontë's only novel ...",101,12,11.11,GBP,11
 207,Jane Eyre,Jane Eyre is a novel by English writer ...,107,11,12.34,GBP,11
 251,The Raven,The Raven is a narrative poem by ...,150,333,13.13,USD,16
 252,Eleonora,Eleonora is a short story by ...,150,555,14,USD,16
