@@ -1028,6 +1028,7 @@ You can add further vocabularies to the translation process [using configuration
 | [@Common](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Common.md){target="_blank"}                   | for all SAP vocabularies                          |
 | [@Communication](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Communication.md){target="_blank"}     | for annotating communication-relevant information |
 | [@DataIntegration](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/DataIntegration.md){target="_blank"} | for data integration                              |
+| [@Hierarchy](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Hierarchy.md){target="_blank"}             | for hierarchies                                   |
 | [@PDF](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PDF.md){target="_blank"}                         | for PDF                                           |
 | [@PersonalData](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PersonalData.md){target="_blank"}       | for annotating personal data                      |
 | [@Session](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Session.md){target="_blank"}                 | for sticky sessions for data modification         |
