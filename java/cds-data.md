@@ -80,8 +80,8 @@ To have a consistent behavior across different databases, numeric type promotion
 
 - For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
 - For division:
-  - If any operand is a binary floating-point type (`DOUBLE`, `HANA_REAL`), the result type is `DOUBLE` (binary64).
-  - Otherwise, the result type is `DECIMAL` (base 10), which provides higher accuracy for decimal fractions.
+  - If any operand is a binary floating-point type (`DOUBLE`, `HANA_REAL`), the result type is `DOUBLE`.
+  - Otherwise, the result type is `DECIMAL`, which provides higher accuracy for decimal fractions.
 
 ::: tip
 Use `type(CdsBaseType)` to explicitly set the result type if needed.
