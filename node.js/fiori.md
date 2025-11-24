@@ -193,7 +193,7 @@ The CAP Node.js runtime provides two similar but distinct options for bypassing 
 
 ### Generic `@Common.DraftRoot.NewAction`
 
-By enabling the feature `cds.features.new_draft_via_action`, you can change how new instances of draft-enabled entities get created in the CAP Node.js runtime.
+By enabling the feature `cds.fiori.draft_new_action`, you can change how new instances of draft-enabled entities get created in the CAP Node.js runtime.
 This feature is disabled by default.
 When you activate this feature, the `@Common.DraftRoot.NewAction` annotation is automatically added to _every_ draft-enabled entity in the background.
 Additionally, a collection-bound action `draftNew` is added to the entity's runtime model.
@@ -205,11 +205,11 @@ No custom handlers can be registered for the `draftNew` action. Instead, such cu
 :::
 
 By providing a dedicated action that can be called to create a new instance, `POST` requests to the collection path of the entity can now be used differently:
-With `cds.features.new_draft_via_action` enabled, `POST` requests to the collection path create an active instance instead of a draft.
+With `cds.fiori.draft_new_action` enabled, `POST` requests to the collection path create an active instance instead of a draft.
 When handling these `POST` requests, the runtime considers an `IsActiveEntity` attribute in the request body to still allow creating a draft instance when `IsActiveEntity: false` is specified explicitly. 
 
 This change in what the `POST` method does in the context of draft-enabled entities promotes the assumption that all CRUD operations will target the active- rather than the draft-state entity by default.
-This is why activating the `cds.features.new_draft_via_action` feature has just that effect:
+This is why activating the `cds.fiori.draft_new_action` feature has just that effect:
 Just like the `bypass_draft` feature flag, it will cause restrictions on modifications of active entities to no longer be enforced.
 
 ### Disable Enforcement by Feature Flag
