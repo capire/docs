@@ -257,10 +257,10 @@ The CSV file needs to be added to the _db/data_ folder. {.java}
 
 ::: code-group
 ```csv [API_BUSINESS_PARTNER-A_BusinessPartner.csv]
-BusinessPartner;BusinessPartnerFullName;BusinessPartnerIsBlocked
-1004155;Williams Electric Drives;false
-1004161;Smith Batteries Ltd;false
-1004100;Johnson Automotive Supplies;true
+BusinessPartner,BusinessPartnerFullName,BusinessPartnerIsBlocked
+1004155,Williams Electric Drives,false
+1004161,Smith Batteries Ltd,false
+1004100,Johnson Automotive Supplies,true
 ```
 :::
 
