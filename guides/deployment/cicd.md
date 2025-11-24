@@ -31,7 +31,7 @@ cds add github-actions
 
 ### Deploy to Staging
 
-The created workflows do a _Staging_ deployment for pushes on the `main` branch, for example after merging pull requests.
+The created workflows do a _Staging_ deployment for pushes on the `main` branch, usually after merging pull requests.
 
 If no defaults are maintained in your GitHub org, a set of variables and secrets has to be provided. Open the repository and navigate here to maintain them:
 
@@ -41,19 +41,19 @@ For a minimal deployment setup, these variables and secrets are required:
 
 #### Cloud Foundry
 
-| **Type**   | **Name**       | **Note**  | **Example**       |
-|------------|----------------|-----------|-------------------|
-| Variable   | `CF_API`       | API URL   | `https://api.cf.example.com` |
-|    | `CF_USERNAME`  | Username  | `user@example.com` |
-|    | `CF_ORG`       | Org Name  | `my-org`          |
-|    | `CF_SPACE`     | Space Name| `my-space`        |
-| Secret     | `CF_PASSWORD`  | Password  | `********`        |
+| **Type**   | **Name**       | **Note**   | **Example**       |
+|------------|----------------|------------|-------------------|
+| Variable   | `CF_API`       | API URL    | `https://api.cf.example.com` |
+|            | `CF_USERNAME`  | Username   | `user@example.com` |
+|            | `CF_ORG`       | Org Name   | `my-org`          |
+|            | `CF_SPACE`     | Space Name | `my-space`        |
+| Secret     | `CF_PASSWORD`  | Password   | `********`        |
 
 #### Kyma
 
 | **Type**   | **Name**       | **Note**  | **Example**       |
 |------------|----------------|-----------|-------------------|
-| Secret   | `KUBE_CONFIG`       | Base64-encoded Kubernetes config   | see below |
+| Secret     | `KUBE_CONFIG`  | Base64-encoded Kubernetes config   | see below |
 
 
 ::: details Example of a decoded `KUBE_CONFIG`
@@ -107,7 +107,7 @@ You can now simply push any CAP project that was set up using `cds add github-ac
 
 For the actual release we want to override org-wide sandbox variables to deploy to a different subaccount/organization and database.
 
-Go to `Settings` → `Environments` → `New environment` → enter "Production".
+Go to **Settings** → **Environments** → **New environment** → enter "Production".
 
 Now override org-wide variables (e.g. `CF_ORG` and `CF_SPACE` in Cloud Foundry) to use a dedicated subaccount you created for the release deployment.
 
