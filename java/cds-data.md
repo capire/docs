@@ -71,9 +71,17 @@ The framework isn't responsible for closing the stream when writing to the datab
 
 These types are used for the values of CDS elements with primitive type. In the [Model Reflection API](./reflection-api), they're represented by the enum [CdsBaseType](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsBaseType.html).
 
-### Numeric Type Promotion in Expressions { #numeric-promotion }
+### Numeric Type Determination { #type-determination }
 
-To have a consistent behavior across different databases, numeric type promotion in arithmetic expressions is handled by the CAP Java runtime. Arithmetic expressions promote numeric types according to the following precedence:
+To have a consistent behavior across different databases, the CAP Java runtime applies numeric type determination in arithmetic expressions and numeric standard functions according to the following rules.
+
+::: tip
+Use `type(CdsBaseType)` to explicitly set the result type if needed.
+:::
+
+#### Arithmetic Expressions { #numeric-promotion }
+
+Arithmetic expressions promote numeric types according to the following precedence:
 
 **Type Precedence (highest to lowest):**
 `DOUBLE` (binary64), `HANA_REAL` (binary32), `DECIMAL` (base 10), `INT64`, `INT32`, `INT16`, `UINT8`
@@ -83,9 +91,15 @@ To have a consistent behavior across different databases, numeric type promotion
   - If any operand is a binary floating-point type (`DOUBLE`, `HANA_REAL`), the result type is `DOUBLE`.
   - Otherwise, the result type is `DECIMAL`, which provides higher accuracy for decimal fractions.
 
-::: tip
-Use `type(CdsBaseType)` to explicitly set the result type if needed.
-:::
+#### Numeric Standard Functions { #type-determination-functions }
+
+Numeric aggregation and standard functions determine their result type based on the argument types:
+
+- **ceiling(x)**, **floor(x)**, **round(x)**: Return the same type as the input `x`.
+- **min(x)**, **max(x)**, **sum(x)**: Aggregate functions return the same type as the argument `x`.
+- **average(x)**: Returns `DECIMAL` for exact numeric types and `DOUBLE` for approximate numeric types.
+- **count(x)**, **countdistinct(x)**: Always return `INT64`.
+
 
 ## Structured Data
 
