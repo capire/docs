@@ -194,6 +194,9 @@ npm i --package-lock-only mtx/sidecar
 # If package-lock.json doesn't exist
 npm i --package-lock-only
 
+# Build tasks
+cds build --production
+
 # Buildpack commands
 pack build bookshop-srv:latest --path gen/srv --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
 pack build bookshop-html5-deployer:latest --path app/html5-deployer --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
