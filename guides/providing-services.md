@@ -963,7 +963,7 @@ entity OrderItems : cuid {
     parent    : Association to Orders;  
     book      : Association to Books;
     @assert: (case
-      when book.stock <= amount then 'Stock exceeded'
+      when book.stock <= quantity then 'Stock exceeded'
     end)
     quantity  : Integer;
     amount    : Decimal(9, 2);
