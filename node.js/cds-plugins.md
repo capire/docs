@@ -220,6 +220,10 @@ srv.before('UPDATE', 'myEntity', req => {
 })
 ```
 
+::: danger Do not access `VCAP_SERVICES` directly
+Do not read the credentials from `process.env.VCAP_SERVICES`! `VCAP_SERVICES` is set by Cloud Foundry and as such not available in Kyma scenarios or when `VCAP_SERVICES_PATH` is given. Thus always prefer reading from `cds.env` to stay platform agnostic.
+:::
+
 #### Connecting to BTP services
 
 Before you use `axios` or `node:fetch`, you can use the [`Cloud SDK`](https://sap.github.io/cloud-sdk/) and its functions `executeHttpRequest` and `getDestination` to retrieve a destination from BTP and run an HTTP request against it. This takes full care of doing the authentication and is the preferred method for communicating with BTP services so your plugin does not need to fetch the token itself.
