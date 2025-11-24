@@ -384,7 +384,7 @@ sed -i 's/org.springframework.boot.loader.JarLauncher/-Dloader.main=com.sap.cds.
 
 ## Next Up...
 
-You would then [set up your CI/CD for deployment](../deployment/cicd).
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
 
 
 <!--

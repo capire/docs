@@ -238,7 +238,7 @@ and [CAP for Java](https://github.com/SAP-samples/cloud-cap-samples-java) exampl
 
 ## Next Up...
 
-You would then [set up your CI/CD for deployment](../deployment/cicd).
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
 
 {style="margin-top:11em"}
 

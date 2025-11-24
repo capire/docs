@@ -80,7 +80,7 @@ contexts:
       user: ci-user
 current-context: ci-context
 ```
-[Learn more about configuring Kubernetes](./to-kyma#configure-kubernetes){.learn-more style="margin-top:20px"}
+[Learn more about configuring Kubernetes](./to-kyma#configure-kubernetes){.learn-more}
 
 :::
 
