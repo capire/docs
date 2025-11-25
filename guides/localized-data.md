@@ -80,9 +80,6 @@ entity localized.Books as select from Books {*,
   coalesce (localized.descr, descr) as descr
 };
 ```
-::: warning Note:
-In contrast to former versions, with CDS compiler v2 we don't add such entities to CSN anymore, but only on generated SQL DDL output.
-:::
 
 ### Resolving localized texts via views
 
@@ -124,7 +121,9 @@ entity OpenBookView as select from Books {*}
 Include the `localized` association:
 
 ```cds
-entity ClosedBookView as select from Books { ID, title, descr, localized };
+entity ClosedBookView as select from Books {
+  ID, title, descr, localized
+};
 ```
 
 
@@ -266,9 +265,9 @@ using { Books } from './books';
 service CatalogService {
   entity BooksList as projection on Books { ID, title, price };
   entity BooksDetails as projection on Books;
-  entity BooksShort as projection on Books { 
+  entity BooksShort as projection on Books {
     ID, price,
-    substr(title, 0, 10) as title : localized String(10), 
+    substr(title, 0, 10) as title : localized String(10),
   };
 }
 ```
@@ -285,15 +284,16 @@ entity localized.CatalogService.BooksList as
 
 entity localized.CatalogService.BooksDetails as
   SELECT from localized.Books;
-  
+
 entity localized.CatalogService.BooksShort as
     SELECT from localized.Books { ID, price,
         substr(title, 0, 10) as title : localized String(10),
     };
 ```
-::: warning Note:
-Note that these `localized.` entities are not part of CSN and aren't exposed through OData.
-They are only generated for SQL.
+::: warning `localized` entities are only generated for SQL
+
+They are not part of the CSN or exposed via OData.
+
 :::
 
 ### Read Operations
@@ -312,7 +312,9 @@ service CatalogService {
 In Node.js applications, for requests with an `$expand` query option on entities annotated with `@cds.localized: false`, the expanded properties are not translated.
 
 ```http
-GET /BooksDetails?$expand=authors //> all fields from authors are non-localized defaults, if BooksDetails is annotated with `@cds.localized: false`
+// all fields from authors are non-localized defaults if BooksDetails
+// is annotated with `@cds.localized: false`
+GET /BooksDetails?$expand=authors
 ```
 
 ### Write Operations
@@ -320,7 +322,7 @@ GET /BooksDetails?$expand=authors //> all fields from authors are non-localized 
 Since the corresponding text table is linked through composition, you can use deep inserts or upserts to fill in language-specific texts.
 
 ```http
-POST <your_service_url>/Entity HTTP/1.1
+POST /Entity HTTP/1.1
 Content-Type: application/json
 
 {
@@ -333,7 +335,7 @@ Content-Type: application/json
 If you want to add a language-specific text to an existing entity, perform a `POST` request to the text table of the entity through navigation.
 
 ```http
-POST <your_service_url>/Entity(<entity_key>)/texts HTTP/1.1
+POST /Entity(<entity_key>)/texts HTTP/1.1
 Content-Type: application/json
 
 {
@@ -346,7 +348,7 @@ Content-Type: application/json
 To update the language-specific texts of an entity along with the default fallback text, you can perform a deep update as a `PUT` or `PATCH` request to the entity through navigation.
 
 ```http
-PUT/PATCH <your_service_url>/Entity(<entity_key>) HTTP/1.1
+PUT/PATCH /Entity(<entity_key>) HTTP/1.1
 Content-Type: application/json
 
 {
@@ -359,15 +361,15 @@ Content-Type: application/json
 To update a single language-specific text field, perform a `PUT` or a `PATCH` request to the entity's text field via navigation.
 
 ```http
-PUT/PATCH <your_service_url>/Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>')/<field_name> HTTP/1.1
+PUT/PATCH /Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>')/<field_name> HTTP/1.1
 Content-Type: application/json
 
 {
-  {"name": "Ein neuer Name"} ]
+  "name": "Ein neuer Name"
 }
 ```
 
-::: warning *Note:* <!--  -->
+::: warning Language codes need to follow BCP 47
 Accepted language codes in the `locale` property need to follow the [BCP 47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) standard but use __underscore__ (`_`) instead of __hyphen__ (`-`), for example `en_GB`.
 :::
 
@@ -376,7 +378,7 @@ Accepted language codes in the `locale` property need to follow the [BCP 47](htt
 To delete a locale's language-specific texts of an entity, perform a `DELETE` request to the entity's texts table through navigation. Specify the entity's key and the locale that you want to delete.
 
 ```http
-DELETE <your_service_url>/Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>') HTTP/1.1
+DELETE /Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>') HTTP/1.1
 ```
 
 ## Nested Localized Data
@@ -413,12 +415,12 @@ For example, _Books.csv_ can look as follows:
 
 ::: code-group
 ```csv [Books.csv]
-ID;title;descr;author_ID;stock;price;currency_code;genre_ID
-201;Wuthering Heights;Wuthering Heights, Emily Brontë's only novel ...;101;12;11.11;GBP;11
-207;Jane Eyre;Jane Eyre is a novel by English writer ...;107;11;12.34;GBP;11
-251;The Raven;The Raven is a narrative poem by ...;150;333;13.13;USD;16
-252;Eleonora;Eleonora is a short story by ...;150;555;14;USD;16
-271;Catweazle;Catweazle is a British fantasy ...;170;22;150;JPY;13
+ID,title,descr,author_ID,stock,price,currency_code,genre_ID
+201,Wuthering Heights,"Wuthering Heights, Emily Brontë's only novel ...",101,12,11.11,GBP,11
+207,Jane Eyre,Jane Eyre is a novel by English writer ...,107,11,12.34,GBP,11
+251,The Raven,The Raven is a narrative poem by ...,150,333,13.13,USD,16
+252,Eleonora,Eleonora is a short story by ...,150,555,14,USD,16
+271,Catweazle,Catweazle is a British fantasy ...,170,22,150,JPY,13
 ...
 ```
 :::
@@ -427,11 +429,11 @@ This is the corresponding _Books_texts.csv_:
 
 ::: code-group
 ```csv [Books_texts.csv]
-ID;locale;title;descr
-201;de;Sturmhöhe;Sturmhöhe (Originaltitel: Wuthering Heights) ist der einzige Roman...
-201;fr;Les Hauts de Hurlevent;Les Hauts de Hurlevent (titre original : Wuthering Heights)...
-207;de;Jane Eyre;Jane Eyre. Eine Autobiographie (Originaltitel: Jane Eyre. An Autobiography)...
-252;de;Eleonora;Eleonora ist eine Erzählung von Edgar Allan Poe. Sie wurde 1841...
+ID,locale,title,descr
+201,de,Sturmhöhe,Sturmhöhe (Originaltitel: Wuthering Heights) ist der einzige Roman...
+201,fr,Les Hauts de Hurlevent,Les Hauts de Hurlevent (titre original : Wuthering Heights)...
+207,de,Jane Eyre,Jane Eyre. Eine Autobiographie (Originaltitel: Jane Eyre. An Autobiography)...
+252,de,Eleonora,Eleonora ist eine Erzählung von Edgar Allan Poe. Sie wurde 1841...
 ...
 ```
 :::
