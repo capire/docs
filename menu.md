@@ -76,10 +76,10 @@
 
 ## [Security](guides/security/)
 
-  ### [Overhiew](guides/security/overview)
+  ### [Overview](guides/security/overview)
   ### [Authentication](guides/security/authentication)
   ### [CAP Users](guides/security/cap-users)
-  ### [Authorization](guides/security/authorization)
+  ### [CAP Authorization](guides/security/authorization)
   ### [Remote Authentication](guides/security/remote-authentication)
   ### [Security Aspects](guides/security/aspects)
   ### [Data Protection & Privacy](guides/security/data-protection-privacy)
