@@ -1085,7 +1085,7 @@ service Sue {
   entity Foo { key ID:Integer } actions {
     function getStock() returns Integer;
     action order (x:Integer) returns Integer;
-    //bound to the collection and not a specific instance of Foo
+    // bound to the collection and not a specific instance of Foo
     action customCreate (in: many $self, x: String) returns Foo;
     // All parameters are optional by default, unless marked with `not null`:
     action discard (reason: String not null);
@@ -1227,9 +1227,11 @@ For more complex requirements, you can extend flows with custom event handlers.
 
 ### Enabling Flows
 
-Status-transition flows are part of the CAP Node.js core (`@sap/cds`), so no additional steps are required.
+Status-transition flows are supported by both CAP runtimes.
 
-For CAP Java, add the [cds-feature-flow](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-flow) dependency to your `srv/pom.xml` file:
+In CAP Node.js support for flows is part of the CAP Node.js core (`@sap/cds`).
+
+For CAP Java, support for flows is provided by the feature [cds-feature-flow](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-flow). Enable it by adding this dependency to your _srv/pom.xml_ file:
 
 ```xml
 <dependency>
@@ -1295,7 +1297,7 @@ No custom action handlers are needed for simple transitions—the flow feature's
 For more complex scenarios, you can add custom handlers as explained later.
 
 
-### Annotations
+### Flow Annotations
 
 Flows consist of a _status element_ and a set of _flow actions_ that define transitions between states. 
 
@@ -1303,7 +1305,7 @@ Flows consist of a _status element_ and a set of _flow actions_ that define tran
 
 To model a flow, one of the entity fields needs to be annotated with `@flow.status`. This field must be one of the following:
 
-- A String enum consisting of keys and values
+- A String or Integer enum consisting of keys and values
 - A String enum with only symbols
 - A Codelist entity with the key `code` if localization is needed (`code` must be one of the two above)
 
@@ -1319,7 +1321,7 @@ When you annotate `@flow.status: <element name>` at the entity level (as in the 
 - This annotation is mandatory
 - The annotated element must be either an enum or an association to a code list
 - Only one status element per entity is supported
-- Draft-enabled entities are supported
+- Draft-enabled entities are supported, however flows are only applied to the active version
 - `null` is **not** a valid state—model your empty state explicitly
 
 ::: warning Only simple projections are supported
@@ -1333,7 +1335,7 @@ After declaring `@flow.status`, use the following annotations on bound actions t
 - Defines valid entry states for the action
 - Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here)
 - Can be a single value or an array of values (each element must be a value from the status enum)
-- UI annotations to allow/disallow buttons and to refresh the page are automatically generated
+- UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5
 
 #### `@to`
 
@@ -1351,11 +1353,12 @@ Generic handlers are registered automatically, so no custom implementations are 
 #### `before`
 
 Based on the `@from` annotation, a handler validates that the entity is in a valid entry state—the current state must match one of the states specified in `@from`.
-If validation fails, the request returns a `409` HTTP status code with an appropriate error message.
+If validation fails, the request returns a `409 Conflict` HTTP status code with an appropriate error message.
 
 #### `on`
 
-If no custom handler is provided, an empty handler is registered that completes the action for void return types, ensuring the request passes through the generic handler stack.
+In case of a `@to` declaration and if no custom handler is provided, an empty handler is registered that completes the action for void return types, ensuring the request passes through the generic handler stack.
+This is an exception to the rule that actions must be implemented by the application.
 
 #### `after`
 
@@ -1364,11 +1367,11 @@ For example, if the current state is `Open` and the target state is `Accepted`, 
 This ensures consistent state transitions without custom logic.
 
 ::: tip Generic handlers are not executed for draft entities
-For example, calling `acceptTravel()` on a `Travels` entity currently in draft state has no effect.
+For example, calling `acceptTravel()` on a `Travels` entity that is currently being _edited_, i.e. is in _inactive_ state, has no effect.
 :::
 
 
-### `$flow.previous`
+### Reverting to Previous State
 
 You can use the target state `$flow.previous` to restore the previous state in a workflow.
 The following example introduces a `Blocked` state with two possible previous states (`Open` and `InReview`) and an action `unblockTravel` that restores the previous state.
@@ -1406,7 +1409,7 @@ service TravelService {
 }
 ```
 
-Entities with flows that include at least one transition to `$flow.previous` are automatically augmented with the `sap.common.FlowHistory` aspect to record transition history.
+Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
 
 ::: tip Transitions are excluded from projections
 The `transitions_` composition automatically appended to the base entity is automatically excluded from all projections.
@@ -1421,7 +1424,6 @@ Flow annotations work well for basic flows. For more complex scenarios, implemen
 - **Additional validation:** Implement a custom `before` handler when entry state validation depends on extra conditions
 - **Non-void return types:** Implement a custom `on` handler when the action returns data
 - **Conditional target states:** Implement a custom `on` handler (without `@to` annotation) when multiple target states depend on conditions
-- **External integration:** Implement a custom `on` handler to contact external systems during state transitions
 
 <!-- TODO: add example -->
 
