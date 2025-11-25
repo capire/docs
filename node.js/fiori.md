@@ -77,16 +77,6 @@ As a result, a new entry to `MyEntity.drafts` is created.
 
 For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
 
-<!--
-You can also register handlers on the standard `CREATE` events for draft entities, which would be called whenever a new draft is created, be it via `NEW` or `EDIT`, like so:
-
-```js
-srv.before('CREATE', MyEntity.drafts, /*...*/)
-srv.after('CREATE', MyEntity.drafts, /*...*/)
-srv.on('CREATE', MyEntity.drafts, /*...*/)
-```
--->
-
 
 ### `DISCARD`
 
