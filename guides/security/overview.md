@@ -15,6 +15,9 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Key Concepts { #key-concepts }
 
+CAP's security architecture is built on several fundamental principles that enable flexible, secure, and maintainable applications. 
+These concepts work together to provide comprehensive security while maintaining developer productivity and operational efficiency.
+
 ### Pluggable Building Blocks { #key-concept-pluggable }
 
 CAP divides the different security-related tasks into separate and independent building blocks, each with a standard CAP implementation suitable for most scenarios:
@@ -23,12 +26,12 @@ CAP divides the different security-related tasks into separate and independent b
 
 - [Authentication](./authentication )
 - [CAP Users](./cap-users)
-- [Authorization](./authorization)
+- [CAP Authorization](./authorization)
 - [Remote Authentication](./remote-authentication)
 
 **By separating these concerns**, CAP ensures that each security function can be configured and customized independently without affecting other parts of the system, providing maximum flexibility.
 
-For example, authentication can be delegated to a separate ingress component, while authorization remains within the application service close to the data.
+For example, authentication can be delegated to a [separate ingress component](./authentication#fully-auth), while authorization remains within the application service close to the data.
 
 ### Customizable { #key-concept-customizable }
 
@@ -38,7 +41,7 @@ Moreover, this integration helps to easily incorporate non-CAP and even non-BTP 
 
 ![Overview Customizable Components with CAP](./assets/security-customizable.drawio.svg){width="600px" }
 
-For instance, it is possible to define specific endpoints with a custom authentication strategy. 
+For instance, it is possible to define specific endpoints with a [custom authentication strategy](./authentication#custom-auth). 
 Likewise, the CAP representation of the request user can be overruled to match additional, application-specific requirements.
 
 ### Built on Best of Breed { #key-concept-platform-services }
@@ -48,7 +51,7 @@ Instead, **CAP seamlessly integrates with battle-tested [platform services](#btp
 This approach not only simplifies the implementation but also enhances security by leveraging robust, well-tested mechanisms provided by the platform.
 Built on platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
 
-Most notably, authentication is covered by [platform's identity services](#identity-service). 
+Most notably, authentication is covered by CAP-integration of [platform's identity services](./authentication#ias-auth). 
 Likewise, TLS termination is offered by the [platform infrastructure](#platform-environment).
 
 ![Overview Platform Integration with CAP](./assets/security-platform-integration.drawio.svg){width="600px" }
@@ -59,7 +62,7 @@ As security functions are factorized into independent components, **application 
 This safeguards business logic being independent from platform services which are frequently subject to security hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
-For instance, CAP allows performing outbound service calls via Remote Services while handling authentication under the hood completely. 
+For instance, CAP allows performing outbound service calls via [Remote Services while handling authentication under the hood completely](./security/remote-authentication#remote-services). 
 This abstraction layer ensures that developers do not need to worry about the details of authentication. 
 
 
@@ -68,7 +71,7 @@ This abstraction layer ensures that developers do not need to worry about the de
 CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code accordingly.
 CAP's security autoconfiguration approach significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are safely controlled**. 
 
-For instance, endpoints of deployed CAP applications are automatically authenticated, providing a secure baseline.
+For instance, endpoints of deployed CAP applications are [automatically authenticated](./authentication#model-auth), providing a secure baseline.
 Making endpoints public requires manual configuration in either the CAP model or the middleware. 
 
 
