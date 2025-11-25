@@ -402,11 +402,10 @@ cds.application.services.CatalogService.serve:
     - 'odata-v2'
 ```
 
-Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations like `@odata` (OData V4) or `@hcql`:
+Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations like `@odata` (OData V4):
 
 ```cds
-@hcql @odata service CatalogService { ... }
-```
+@odata service CatalogService { ... }
 
 You can also disable serving a service if needed:
 
