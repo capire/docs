@@ -21,15 +21,15 @@ status: released
 
 # CAP Users { #cap-users }
 
-A successfull authentication results in an CAP [user representation](#claims) reflecting the request user in an uniform way.
-Referring to the key concepts, the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategy.
-It contains static information about the user such as name, ID and tenant. Moreover it contains additional claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
+A successful authentication results in a CAP [user representation](#claims) reflecting the request user in a uniform way.
+Referring to the key concepts, the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
+It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
 
 Dynamic assignments of roles to users can be done by 
 - [Authorization Management Service (AMS)](#ams-roles) in case of [IAS authentication](./authentication#ias-auth).
 - [XS User Authentication and Authorization Service (XSUAA)](#xsuaa-roles) in case of [XSUAA authentication](./authentication#xsuaa-auth).
 
-In addition, CAP users provide an API for [programmatic]( #developing-with-users ) processing and customization.
+In addition, CAP users provide an API for [programmatic](#developing-with-users) processing and customization.
 
 [[toc]]
 
@@ -37,10 +37,10 @@ In addition, CAP users provide an API for [programmatic]( #developing-with-users
 
 After _successful_ authentication, a CAP user is mainly represented by the following properties:
 
-- **_Logon name_** identifying the user uniquly
+- **_Logon name_** identifying the user uniquely
 - **_Tenant_** describes the tenant of the user (subscriber or provider) which implies the CDS model and business data container.
-- **_Roles_** the user has been assigned by an user administrator (business [user roles](#roles)) or roles which are derived by the authentication level ([pseudo roles](#pseudo-roles)).
-- **_Attributes_** the user has been assigned e.g. for instance-based authorization.
+- **_Roles_** the user has been assigned by a user administrator (business [user roles](#roles)) or roles which are derived by the authentication level ([pseudo roles](#pseudo-roles)).
+- **_Attributes_** the user has been assigned, for example, for instance-based authorization.
 
 <div class="impl java">
 
@@ -75,20 +75,20 @@ CAP users can be classified in multiple dimensions:
 Typically, the provider tenant is not subscribed to a multi-tenant application and therefore has no business users.
 In contrast, for a single-tenant application, there is no subscriber tenant, and the provider tenant includes all business users.
 
-| MT Application    | Business users | Technical users
-|-------------------|----------------|---
-| Provider Tenant   |         -     | <Y/>
-| Subscriber Tenant |         <Y/>      | <Y/> 
+| Multi-Tenant Application | Business users | Technical users
+|---------------------------|----------------|----------------
+| Provider Tenant           |       -        | <Y/>
+| Subscriber Tenant         |      <Y/>      | <Y/> 
 
 ::: tip
 Apart from anonymous users, all users have a unique tenant.
 :::
 
 The user types are designed to support various flows, such as:
-- UI requests are executed on behalf of a business user interacting with the CAP backend service.
-- During the processing of a business request, the backend utilizes platform services on behalf of the technical user of the subscriber tenant.
-- An asynchronously received message processes data on behalf of the technical user of a subscriber tenant.
-- A background task operates on behalf of the technical provider tenant."
+- UI requests executed on behalf of a business user interacting with the CAP backend service.
+- Backend processing that utilizes platform services on behalf of the technical user of the subscriber tenant.
+- Asynchronously received messages that process data on behalf of the technical user of a subscriber tenant.
+- Background tasks that operate on behalf of the technical provider tenant.
 - ...
 
 Find more details about how to [switch the user context](#switching-users) during request processing.
@@ -114,17 +114,17 @@ annotate Issues with @(restrict: [
 For instance, the role `ReportIssues` allows to work with the `Issues` created by the own user, whereas a user with role `ReviewIssues` is only allowed to read `Issues` of any user.
 
 CAP roles represent basic building blocks for authorization rules that are defined by the application developers who have in-depth domain knowledge.
-Independently from that, user administrators combine CAP roles in higher-level policies and assign to business users in the platform's central authorization management solution.
+Independently of that, user administrators combine CAP roles in higher-level policies and assign them to business users in the platform's central authorization management solution.
 
 ::: tip
-CDS-based authorization deliberately refrains from using technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the technical domain of business applications.
+CDS-based authorization deliberately avoids technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the business domain of applications.
 :::
 
 #### Pseudo Roles { #pseudo-roles}
  
 It's frequently required to define access rules that aren't based on an application-specific user role, but rather on the _technical authentication level_ of the request. 
 For instance, a service should be accessible only for technical users, with or without user propagation. 
-Such roles are called pseudo roles as they aren't assigned by user administrators, but are added by the runtime automatically on succcessful authentication, reflecting the technical level:
+Such roles are called pseudo roles as they aren't assigned by user administrators, but are added by the runtime automatically on successful authentication, reflecting the technical level:
 
 | Pseudo Role                 | User Type | Technical Indicator | User Name
 |-----------------------------|---------------------|---------------|---------------|
@@ -148,7 +148,7 @@ All technical clients that have access to the application's XSUAA or IAS service
 
 ### Model References
 
-The resulting object representaiton of the user is attached to the current request context and has an impact on the request flow for instance with regards to
+The resulting object representation of the user is attached to the current request context and has an impact on the request flow for instance with regards to
 - [authorizations](./authorization#restrictions)
 - [enriching business data](../guides/domain-modeling#managed-data) with user data
 - setting [DB session variables](../guides/db-feature-comparison#session-variables)
@@ -171,7 +171,7 @@ AMS acts as a central service to define access policies that include CAP roles a
 _Business users_, technically identified by the IAS ID token, can have AMS policies assigned by user administrators.
 
 ::: tip
-Authorizations for technical users should not be adressed by AMS policies.
+Authorizations for technical users can't be addressed by AMS policies yet.
 :::
 
 The integration with AMS is provided as an easy-to-use plugin for CAP applications.
@@ -362,10 +362,10 @@ You need to make use of a compiler expression in order to ensure validity of the
 
 ::: tip
 Choose attributes exposed to AMS carefully.
-The attribute should have cross-sectional sematic in the domain.
+The attribute should have cross-sectional semantics in the domain.
 :::
 
-As such attributes are usually shared by multiple entities, it is convenient to add the `@ams`-annotation on level of a shared aspect as scetched here:
+As such attributes are usually shared by multiple entities, it is convenient to add the `@ams`-annotation at the level of a shared aspect as sketched here:
 
 ```cds
 aspect withGenre @ams.attributes: { Genre: (genre.name) } {
@@ -514,7 +514,7 @@ cds:
 
 You can verify in the UI that mock user `stock-manager-fiction` is restricted to books of genres `Mystery` and `Fantasy`.
 
-[Learn more about AMS attribute filters with CAP](https://sap.github.io/cloud-identity-developer-guide/CAP/InstanceBasedAuthorization.html#instance-based-authorization){.leanr-more}
+[Learn more about AMS attribute filters with CAP](https://sap.github.io/cloud-identity-developer-guide/CAP/InstanceBasedAuthorization.html#instance-based-authorization){.learn-more}
 
 
 ### Cloud Deployment { #ams-deployment }
@@ -580,14 +580,14 @@ Now let's deploy and start the application with
 cds up
 ```
 
-You can now perform following tasks in the Administrative Console for the IAS tenant (see prerequisits [here](../guides/security/authentication#ias-admin)):
+You can now perform the following tasks in the Administrative Console for the IAS tenant (see prerequisites [here](../guides/security/authentication#ias-admin)):
 - Assign (base or custom) policies to IAS users
 - Create custom policies
 
-To create a custom policy with filter restrictions do the following steps:
+To create a custom policy with filter restrictions, follow these steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
 2. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
-3. Customize the filter condition for the AMS attributes available
+3. Customize the filter conditions for the available AMS attributes
 4. Confirm with **Save**
 
 ::: details Create custom AMS policy with filter condition
@@ -598,10 +598,10 @@ To create a custom policy with filter restrictions do the following steps:
 
 :::
 
-To assign a policy to an IAS user do the following steps:
+To assign a policy to an IAS user, follow these steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
 2. Switch to tab **Authorization Policies** and select the policy you want to assign
-3. In **Assignments** add the IAS user of the tenant the policy should be assigned (in **Rules** you can review the policy definition).
+3. In **Assignments**, add the IAS user of the tenant to which the policy should be assigned (you can review the policy definition in **Rules**).
 
 ::: details Assign AMS policy to an IAS user
 
@@ -881,7 +881,7 @@ There are multiple reasonable use cases in which user modification is a suitable
 - Constructing the request's user based on forwarded (and trusted) header information, completely replacing default authentication.
 - ...
 
-[See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.leanr-more}
+[See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.learn-more}
 
 
 <div class="impl java">
@@ -1009,14 +1009,14 @@ cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
 #### Between Threads
 
 Within the same Request Context, all CAP service calls share the same user information.
-By default, the Request Context of the current thread is not shared with spawned thread and hence user information is lost.
+By default, the Request Context of the current thread is not shared with spawned threads and hence user information is lost.
 If you want to avoid this, you can propagate the Request Context to spawned threads as described [here](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext) and hence the same user context is applied.
 
-#### None-CAP Libraries { #user-token }
+#### Non-CAP Libraries { #user-token }
 
 CAP plugins for IAS and XSUAA store the resolved user information in Spring's [`SecurityContext`](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/core/context/SecurityContext.html) which contains all relevant authentication information. Hence, library code can rely on standards to fetch the authentication information and restore the user information if needed.
 
-In addition, the [authentication information](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/authentication/AuthenticationInfo.html) is stored in the Request Context and can be fetched like scetched here:
+In addition, the [authentication information](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/authentication/AuthenticationInfo.html) is stored in the Request Context and can be fetched as sketched here:
 
 ```java
 AuthenticationInfo authInfo = context.getAuthenticationInfo();
@@ -1096,7 +1096,7 @@ Don't activate user tracing in production!
 - **Don't write custom code against concrete user types of a specific identity service (e.g. XSUAA or IAS)**. 
 Instead, if required at all, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
 
-- **Don't try to propagtate named user context in asynchronous requests**. Do not attempt to propagate the context of a named user in asynchronous requests, such as when using the Outbox pattern or Messaging. 
+- **Don't try to propagate named user context in asynchronous requests**. Do not attempt to propagate the context of a named user in asynchronous requests, such as when using the Outbox pattern or Messaging. 
 Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. 
 Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
 

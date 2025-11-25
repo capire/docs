@@ -21,7 +21,7 @@ status: released
 
 # Remote Authentication { #remote-authentication }
 
-CAP supports out-of-the-box consumption of various kinds of [remote services]( #remote-services):
+CAP supports out-of-the-box consumption of various types of [remote services]( #remote-services):
 
 * [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (i.e., belong to the same trusted [application zone](./overview#application-zone)).
 * [External services](#app-to-app) which can be running on non-BTP platforms.
@@ -30,8 +30,8 @@ CAP supports out-of-the-box consumption of various kinds of [remote services]( #
 ## Remote Service Abstraction { #remote-services }
 
 According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../using-services#consuming-services) decouples protocol level (i.e., exchanged content) from connection level (i.e., established connection channel). 
-While the business context of the application has an impact on the protocol, the connectivity of the service endpoints is agnostic to it and mainly depends on platform-level capabilities.
-The latter is frequently subject to changes and hence should not introduce a dependency on the application. 
+While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
+The latter is frequently subject to change and therefore should not introduce application dependencies. 
 
 ![Remote Service stack architecture](./assets/remote-service-stack.drawio.svg){width="400px" }
 
@@ -40,14 +40,14 @@ At the connectivity layer, the following basic tasks can be addressed genericall
 - Destination (_how to find the target service_)
 - User propagation (_how to transport user information_)
 
-CAP's connectivity component can handle authentication (IAS, XSUAA, X.509, ZTID, ...) and destination (local destination, BTP Destination, BTP Service Binding) as well as user propagation (technical provider, technical subscriber, named user) transparently and in a fully configuration-driven manner.
-All three different service scenarios listed above can be conveniently addressed by configuration variants of the same remote service concept as shown in the following sections.
+CAP's connectivity component handles authentication (IAS, XSUAA, X.509, ZTID, ...), destination (local destination, BTP Destination, BTP Service Binding), and user propagation (technical provider, technical subscriber, named user) transparently through configuration.
+All three service scenarios can be addressed through configuration variants of the same remote service concept, as shown in the following sections.
 
 
 ## Co-located Services {#co-located-services}
 
 Co-located services do not run in the same microservice, but are typically part of the same deployment unit and hence reside within the same trust boundary of the [application zone](./overview#application-zone).
-Logically, such co-located services contribute to the application equally and hence could run as services integrated in the same microservice as well, but for some technical reason (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../providing-services#late-cut-microservices).
+Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../providing-services#late-cut-microservices).
 
 Technically, **they share the same identity instance, which allows direct token forwarding**:
 
@@ -67,7 +67,7 @@ CAP offers a simplified co-located service setup by leveraging remote services t
 :::
 
 
-To combine both applications in a co-located setup, you can follow these steps:
+To combine both applications in a co-located setup, follow these steps:
 
 #### 1. Prepare the CF environment { #prepare }
 
@@ -100,7 +100,7 @@ cds:
 ```
 :::
 
-Property `type` activates the protocol to exchange the business data and needs to be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
+The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
 The `model` property needs to match the fully qualified name of the CDS service from the imported model.
 You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
 The `binding.name` needs to point to the shared identity instance and `option.url` provides the required location of the remote service endpoint.
@@ -139,7 +139,7 @@ For different [user propagation](./cap-users#remote-services) modes the remote s
 The provider service authorization needs to align with the configured user propagation.
 :::
 
-In addition, to finally establish the the co-located setup, the microservice needs to share the same identity instance:
+Additionally, to establish the co-located setup, the microservice needs to share the same identity instance:
 
 ::: code-group
 
@@ -168,7 +168,7 @@ cds up
 
 #### 4. Verify the deployment { #verify }
 
-First, you can check the overall deployment status at the CF CLI level. In particular, the application services need to be started successfully and the shared identity instance needs to be verified.
+First, you can check the overall deployment status at the CF CLI level. Specifically, the application services must be started successfully and the shared identity instance must be verified.
 
 ::: details Verify: `cf apps` should show the following lines:
 
@@ -204,7 +204,7 @@ The very same setup could be deployed for XSUAA-based services.
 
 ## External Services
 
-In contrast to [co-located services](#co-located-services), external services do not have a strong dependency as they have a fully decoupled lifecycle and are provided by different owners in general.
+In contrast to [co-located services](#co-located-services), external services do not have strong dependencies as they have a fully decoupled lifecycle and are provided by different owners.
 As a consequence, external services can run cross-regionally; even non-BTP systems might be involved.
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
@@ -214,14 +214,14 @@ Alternatively, remote services can be configured on top of [BTP HTTP Destination
 
 ### IAS App-2-App { #app-to-app }
 
-As first calss citizen, [IAS](./authentication#ias-auth) is positioned to simplify cross-regional requests with user propagation. 
-Prerequisites are identity instances on both consumer and provider sides as well as a registered IAS dependency in the consumer instance.
+As a first-class citizen, [IAS](./authentication#ias-auth) is positioned to simplify cross-regional requests with user propagation. 
+Prerequisites are identity instances on both consumer and provider sides, plus a registered IAS dependency in the consumer instance.
 
 ![External services](./assets/external-services.drawio.svg){width="500px" }
 
-CAP supports communication between arbitrary IAS endpoints and remains transparent for applications as it builds on the same architectural pattern of [remote services]( #remote-services).
+CAP supports communication between arbitrary IAS endpoints and remains transparent for applications as it builds on the same architectural pattern of [remote services](#remote-services).
 Technically, the connectivity component uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) in this scenario which requires a token exchange from a consumer token into a token for the provider.
-The latter is issued by IAS only if the consumer is configured with a valid IAS dependency ponting to the provider accordingly.
+The latter is issued by IAS only if the consumer is configured with a valid IAS dependency pointing to the provider accordingly.
 
 :::tip
 CAP offers a simplified App-2-App setup by leveraging remote services that require:
@@ -237,10 +237,10 @@ CAP offers a simplified App-2-App setup by leveraging remote services that requi
 
 #### 1. Prepare and deploy the provider application
 
-Assuimg the same local CF environment setup as [here](#prepare), clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to the remote branch.
+Assuming the same local CF environment setup as [here](#prepare), clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to the remote branch.
 
 Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
-The difference is that the consumers are not known a priori and are also not part of the same application deployment, in general.
+The difference is that the consumers are not known a priori and are not part of the same application deployment.
 
 To expose service APIs for consumption, you can enhance the identity instance of the provider by defining API identifiers that are listed in property `provided-apis`:
 
@@ -266,8 +266,8 @@ The description helps administrators to configure the consumer application with 
 [Detailed description about identity instance parameters for `provided-apis`](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-instance-parameters){.learn-more}
 
 How can proper authorization be configured for _technical clients without user propagation_? 
-OAuth tokens presented by valid consumer requests as a result of an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
-Hence, the corresponding CDS service can be protected by CAP role `DataConsumer` in order to authorize the requests thoroughly:
+OAuth tokens presented by valid consumer requests from an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
+Therefore, the corresponding CDS service can be protected by CAP role `DataConsumer` to authorize requests thoroughly:
 
 ::: code-group
 ```cds [/srv/authorization.cds]
@@ -286,7 +286,7 @@ cds up
 
 
 ::: tip API as CAP role
-The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication and hence can be used in @requires annotation.
+The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication and can be used in @requires annotations.
 :::
 
 ::: warning Use different roles for technical and business users
@@ -394,7 +394,7 @@ Note that property `oauth2-configuration.token-policy.access-token-format: jwt` 
 
 Now let's create the missing IAS dependency to establish trust for the API service call targeting provided API with id `DataConsumer`.
 
-Open the Administrative Console for the IAS tenant (see prerequisits [here](../guides/security/authentication#ias-admin)):
+Open the Administrative Console for the IAS tenant (see prerequisites [here](../guides/security/authentication#ias-admin)):
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
@@ -410,7 +410,7 @@ Open the Administrative Console for the IAS tenant (see prerequisits [here](../g
 :::
 
 :::tip
-The BTP destination as well as the IAS dependency can be automatically created at runtime by making use of [UCL integration](../java/integrating-applications/ucl#unified-customer-landscape-ucl).
+Both the BTP destination and the IAS dependency can be automatically created at runtime using [UCL integration](../java/integrating-applications/ucl#unified-customer-landscape-ucl).
 :::
 
 Now restart the consumer application with
@@ -428,9 +428,9 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## BTP Reuse Services {#ias-reuse}  
 
-Similar to [external services](#app-to-app), BTP reuse services have a fully decoupled lifecycle. The trust between consumer and provider is established at _deployment_ time by means of the [Open Service Broker](https://www.openservicebrokerapi.org/)(OSB) API, i.e., the consumer creates and binds a service instance of the provider service. 
-However, the simplified configuration comes with a drawback: consumer and provider necessarily need to run on the same BTP landscape. 
-Still, in particular, services used at a technical provider level in the consumer perfectly match this setup.
+Similar to [external services](#app-to-app), BTP reuse services have a fully decoupled lifecycle. The trust between consumer and provider is established at _deployment_ time through the [Open Service Broker](https://www.openservicebrokerapi.org/) (OSB) API, where the consumer creates and binds a service instance of the provider service. 
+However, this simplified configuration comes with a limitation: consumer and provider must run on the same BTP landscape. 
+Nevertheless, services used at a technical provider level in the consumer are well-suited for this setup.
 
 ![BTP Reuse services](./assets/reuse-services.drawio.svg){width="500px" }
 
@@ -449,7 +449,7 @@ CAP offers a simplified consumption of BTP reuse services by leveraging remote s
 #### 1. Prepare the CF environment
 
 Make sure to setup a local CF environment setup as described [here].
-In addition, install the [btp CLI tool](https://help.sap.com/docs/btp/sap-business-technology-platform/account-administration-using-sap-btp-command-line-interface-btp-cli) wich is required to manage service brokers.
+In addition, install the [btp CLI tool](https://help.sap.com/docs/btp/sap-business-technology-platform/account-administration-using-sap-btp-command-line-interface-btp-cli) which is required to manage service brokers.
 
 
 #### 2. Prepare and deploy the provider service
@@ -459,7 +459,7 @@ As a first step, clone [`xflights-java`](https://github.com/capire/xflights-java
 Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
 
 In contrast to the scenarios before, the consumers are not known a priori and might also have a different tenant.
-As a consequence, the provider service needs to manage multiple subscribers and hence needs to be a multi-tenant service. 
+Consequently, the provider service must manage multiple subscribers and therefore must be a multi-tenant service. 
 
 You can easily enhance the service by adding the `multitenancy` facet:
 
@@ -699,9 +699,9 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 
 #### How to Authorize Callbacks
 
-For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
-Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
-As a prerequisite*, the CAP service needs to know the clientId of the reuse service's IAS application which should be part of the binding exposed to the CAP service.
+For bidirectional communication, callbacks from the reuse service to the CAP service also need to be authorized.
+Currently, there is no standardized way to achieve this in CAP, so custom coding is required.
+As a prerequisite, the CAP service needs to know the clientId of the reuse service's IAS application, which should be part of the binding exposed to the CAP service.
 
 ::: details Sample Code for Authorization of Callbacks
 
