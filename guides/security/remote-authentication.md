@@ -429,7 +429,7 @@ Similar to [external services](#app-to-app), BTP reuse services have a fully dec
 However, the simplified configuration comes with a drawback: consumer and provider necessarily need to run on the same BTP landscape. 
 Still, in particular, services used at a technical provider level in the consumer perfectly match this setup.
 
-![External services](./assets/external-services.drawio.svg){width="500px" }
+![BTP Reuse services](./assets/reuse-services.drawio.svg){width="500px" }
 
 [IAS](./authentication#ias-auth) offers built-in support for OSB, resulting in a simplified configuration for provider applications. In contrast, XSUAA-based applications need to host a dedicated service broker as an additional effort.
 
