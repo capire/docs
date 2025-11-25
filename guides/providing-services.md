@@ -1324,7 +1324,8 @@ Flows consist of a _status element_ and a set of _flow actions_ that define tran
 
 #### `@flow.status`
 
-To model a flow, one of the entity fields needs to be annotated with `@flow.status`. This field must be one of the following:
+To model a flow, one of the entity fields needs to be annotated with `@flow.status`.
+This field must be one of the following:
 
 - A String or Integer enum consisting of keys and values
 - A String enum with only symbols
@@ -1357,6 +1358,7 @@ After declaring `@flow.status`, use the following annotations on bound actions t
 - Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here)
 - Can be a single value or an array of values (each element must be a value from the status enum)
 - UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5
+  - Annotation generation can be deactivated via <Config>cds.features.annotate_for_flows: false</Config>
 
 #### `@to`
 
@@ -1431,6 +1433,7 @@ service TravelService {
 ```
 
 Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
+This automatic entity extending can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
 
 ::: tip Transitions are excluded from projections
 The `transitions_` composition automatically appended to the base entity is automatically excluded from all projections.
