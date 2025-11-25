@@ -406,6 +406,7 @@ Alternatively to the `@protocol` and `@protocols` annotation you can also use ex
 
 ```cds
 @odata service CatalogService { ... }
+```
 
 You can also disable serving a service if needed:
 
