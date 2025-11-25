@@ -2,7 +2,7 @@
 # layout: cookbook
 label: CAP Users
 synopsis: >
-  This guide introduces to CAP user abstraction.
+  This guide introduces to CAP user abstraction and role assignments.
 status: released
 ---
 
@@ -21,21 +21,17 @@ status: released
 
 # CAP Users { #cap-users }
 
-A successful authentication results in a CAP [user representation](#claims) reflecting the request user in a uniform way.
-Referring to the key concepts, the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
-It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
-
-Dynamic assignments of roles to users can be done by 
-- [Authorization Management Service (AMS)](#ams-roles) in case of [IAS authentication](./authentication#ias-auth).
-- [XS User Authentication and Authorization Service (XSUAA)](#xsuaa-roles) in case of [XSUAA authentication](./authentication#xsuaa-auth).
-
-In addition, CAP users provide an API for [programmatic](#developing-with-users) processing and customization.
-
 [[toc]]
 
-## CAP User Representation { #claims }
+## CAP User Abstraction { #claims }
 
-After _successful_ authentication, a CAP user is mainly represented by the following properties:
+A successful authentication results in a CAP [user representation](#claims) reflecting the request user in a uniform way.
+Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
+It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
+
+![CAP Userse](./assets/cap-users.drawio.svg){width="600px" }
+
+After _successful_ authentication, a **CAP user** is mainly represented by the following properties:
 
 - **_Logon name_** identifying the user uniquely
 - **_Tenant_** describes the tenant of the user (subscriber or provider) which implies the CDS model and business data container.
@@ -72,13 +68,19 @@ CAP users can be classified in multiple dimensions:
 - A subscriber tenant includes all users of an application customer.
 
 
-Typically, the provider tenant is not subscribed to a multi-tenant application and therefore has no business users.
-In contrast, for a single-tenant application, there is no subscriber tenant, and the provider tenant includes all business users.
+Typically, the provider tenant is not subscribed to a [multi-tenant application](../multitenancy/#multitenancy) and therefore has no business users.
 
-| Multi-Tenant Application | Business users | Technical users
+| Multi-Tenant Application | Business users | Technical user
 |---------------------------|----------------|----------------
 | Provider Tenant           |       -        | <Y/>
-| Subscriber Tenant         |      <Y/>      | <Y/> 
+| Subscriber Tenants        |      <Y/>      | <Y/> 
+
+In contrast, for a single-tenant application, the provider tenant coincides with the only subscriber tenant and therefore contains all business users.
+
+| Single-Tenant Application | Business users | Technical user
+|---------------------------|----------------|----------------
+| Provider (=subscriber) Tenant  |      <Y/>      | <Y/>
+
 
 ::: tip
 Apart from anonymous users, all users have a unique tenant.
@@ -89,7 +91,7 @@ The user types are designed to support various flows, such as:
 - Backend processing that utilizes platform services on behalf of the technical user of the subscriber tenant.
 - Asynchronously received messages that process data on behalf of the technical user of a subscriber tenant.
 - Background tasks that operate on behalf of the technical provider tenant.
-- ...
+- etc.
 
 Find more details about how to [switch the user context](#switching-users) during request processing.
 
@@ -115,6 +117,10 @@ For instance, the role `ReportIssues` allows to work with the `Issues` created b
 
 CAP roles represent basic building blocks for authorization rules that are defined by the application developers who have in-depth domain knowledge.
 Independently of that, user administrators combine CAP roles in higher-level policies and assign them to business users in the platform's central authorization management solution.
+
+Dynamic assignments of roles to users can be done by 
+- [AMS roles](#ams-roles) in case of [IAS authentication](./authentication#ias-auth).
+- [XSUAA roles](#xsuaa-roles) in case of [XSUAA authentication](./authentication#xsuaa-auth).
 
 ::: tip
 CDS-based authorization deliberately avoids technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the business domain of applications.

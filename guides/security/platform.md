@@ -12,7 +12,6 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 [[toc]]
 
 
-
 ## Key Concepts { #key-concepts }
 
 CAP's security architecture is built on several fundamental principles that enable flexible, secure, and maintainable applications. 

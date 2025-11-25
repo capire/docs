@@ -29,24 +29,24 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 For Web services, authentication is about controlling _who_ is using the service. It typically involves verifying the user's identity, tenant, and validating claims like granted roles. In contrast, authorization makes sure that the user has the required privileges to access the requested resources. Hence, authorization is about controlling _what_ the user is allowed to handle.
 
-Hence both, authentication and authorization, are essential for application security:
+Both authentication and authorization are essential for application security:
 * [Authentication](#authentication) describes how to configure authentication.
 * [Authorization](#auth) is about resource access control.
 
 [Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
 
 ::: warning
-Without security configured, CDS services are exposed to public. Proper configuration of authentication __and__ authorization is required to secure your CAP application.
+Without security configuration, CDS services are exposed to the public. Proper configuration of authentication __and__ authorization is required to secure your CAP application.
 :::
 
 ## Authentication { #authentication}
 
 Authentication rejects user requests with invalid authentication and limits the possible resource impact.
 
-Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
+Rejecting them as soon as possible is one reason why authentication is not an integral part of the CAP runtime and must be configured at the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
 By default, it supports the standard BTP platform identity services [out of the box](#xsuaa-ias):
 
-- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
+- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution for integrating endpoints across SAP systems
 - [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
 
 Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well.
@@ -63,7 +63,7 @@ These are the individual dependencies that can be explicitly added in the `pom.x
 
 :::
 
-In addition, your application needs to be bound to corresponding service instances depending on your scenario.  The following list describes which service needs to be bound depending on the tokens your applications should accept:
+Additionally, your application must be bound to corresponding service instances depending on your scenario.  The following list describes which service must be bound depending on the tokens your application should accept:
    * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authorization#xsuaa-configuration)
    * only accept tokens issued by IAS --> bind your application to an [IAS service instance](https://help.sap.com/docs/IDENTITY_AUTHENTICATION)
    * accept tokens issued by XSUAA and IAS --> bind your application to service instances of both types.
@@ -83,9 +83,9 @@ On Cloud Foundry, the CAP application needs to be exposed under an additional ro
 
 <div id="meshdomain" />
 
-On Kyma, it is required to configure an additional component (i.e. a gateway in Istio) which accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header. An example can be found in the Bookshop sample application [here](https://github.com/SAP-samples/cloud-cap-samples-java/tree/ias-ams-kyma/k8s). Besides defining the actual `Gateway` resource, it is required to expose the application under the new domain (see the `values.yaml` [here](https://github.com/SAP-samples/cloud-cap-samples-java/blob/e9c779cb64c0937815910988387b0775d8842765/helm/values.yaml#L47).
+On Kyma, you must configure an additional component (a gateway in Istio) that accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header. An example can be found in the Bookshop sample application [here](https://github.com/SAP-samples/cloud-cap-samples-java/tree/ias-ams-kyma/k8s). Besides defining the actual `Gateway` resource, you must expose the application under the new domain (see the `values.yaml` [here](https://github.com/SAP-samples/cloud-cap-samples-java/blob/e9c779cb64c0937815910988387b0775d8842765/helm/values.yaml#L47).
 
-The Proof-Of-Possession also affects approuter calls to a CAP Java application. The approuter needs to be configured to forward the certificate to the CAP application. First, set `forwardAuthCertificates: true` on the destination pointing to your CAP backend (for more details see [the `environment destinations` section on npmjs.org](https://www.npmjs.com/package/@sap/approuter#environment-destinations)). Second, configure the destination to use the route of the CAP backend that has been configured to accept client certificates as described previously.
+The Proof-Of-Possession also affects approuter calls to a CAP Java application. You must configure the approuter to forward the certificate to the CAP application. First, set `forwardAuthCertificates: true` on the destination pointing to your CAP backend (for more details see [the `environment destinations` section on npmjs.org](https://www.npmjs.com/package/@sap/approuter#environment-destinations)). Second, configure the destination to use the route of the CAP backend that has been configured to accept client certificates as described previously.
 
 When authenticating incoming requests with IAS, the Proof-Of-Possession is activated by default. This requires using at least version `3.5.1` of the [SAP BTP Spring Security Client](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security) library.
 
@@ -126,7 +126,7 @@ service BooksService @(requires: 'any') {
 
 
 ::: tip
-For multitenant applications, it's required to authenticate all endpoints as the tenant information is essential for processing the request.
+For multitenant applications, you must authenticate all endpoints because tenant information is essential for processing requests.
 :::
 
 There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration:
@@ -137,7 +137,7 @@ There are several application parameters in section `cds.security.authentication
 | `authenticateUnknownEndpoints`  | Determines, if security configurations enforce authentication for endpoints not managed by protocol-adapters. | `true`
 | `authenticateMetadataEndpoints`  | Determines, if OData $metadata endpoints enforce authentication. | `true`
 
-The following properties can be used to switch off automatic security configuration at all:
+The following properties can be used to disable automatic security configuration:
 
 | Configuration Property                               | Description                                             | Default
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------
@@ -155,16 +155,16 @@ The property `cds.security.authentication.mode` controls the strategy used for a
 
 By default the authentication mode is set to `model-strict` to comply with secure-by-default.
 In that case you can use the annotation `@requires: 'any'` on service-level to make the service and its entities public again.
-Please note that it's only possible to make an endpoint public, if the full endpoint path is considered public as well.
+You can only make an endpoint public if the full endpoint path is also considered public.
 For example you can only make an entity public, if the service that contains it is also considered public.
 ::: tip
-Please note that the authentication mode has no impact on the *authorization* behaviour.
+The authentication mode has no impact on the *authorization* behaviour.
 :::
 
 #### Customizing Spring Boot Security Configuration { #custom-spring-security-config}
 
 If you want to explicitly change the automatic security configuration, you can add an _additional_ Spring security configuration on top that overrides the default configuration by CAP.
-This can be useful, for instance, if an alternative authentication method is required for *specific endpoints* of your application.
+This can be useful if an alternative authentication method is required for *specific endpoints* of your application.
 
 As the default security configurations provided by CAP act as the last line of defense and handle any request by default, you need to ensure that your custom security configurations have higher precedence. At the `SecurityFilterChain` bean method,  set the `@Order` annotation with a lower numeric value, for example `1`:
 
@@ -217,9 +217,9 @@ In case you want to write your own custom security configuration that acts as a 
 
 ### Custom Authentication { #custom-authentication}
 
-You're free to configure any authentication method according to your needs. CAP isn't bound to any specific authentication method or user representation such as introduced with XSUAA, it rather runs the requests based on a [user abstraction](../guides/security/authorization#user-claims). The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in [Enforcement API & Custom Handlers](#enforcement-api).
+You can configure any authentication method according to your needs. CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA; it runs requests based on a [user abstraction](../guides/security/authorization#user-claims). The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in [Enforcement API & Custom Handlers](#enforcement-api).
 
-Hence, if you bring your own authentication, you have to transform the authenticated user and inject as `UserInfo` to the current request. This is done by means of [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers).
+Therefore, if you bring your own authentication, you must transform the authenticated user and inject it as `UserInfo` to the current request. This is done by means of [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers).
 More frequently you might have the requirement to just adapt the request's `UserInfo` which is possible with the same interface:
 
 
@@ -269,12 +269,12 @@ Mock users are only initialized if the `org.springframework.boot:spring-boot-sta
 
 #### Preconfigured Mock Users
 
-For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/authorization#pseudo-roles). They are named `authenticated`, `system` and `privileged` and can be used with an empty password. For instance, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. The privileged user will pass any authorization checks. `cds.security.mock.defaultUsers = false` prevents the creation of default mock users at startup.
+For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/authorization#pseudo-roles). They are named `authenticated`, `system` and `privileged` and can be used with an empty password. For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. The privileged user will pass any authorization checks. `cds.security.mock.defaultUsers = false` prevents the creation of default mock users at startup.
 
 #### Explicitly Defined Mock Users
 
 You can also define mock users explicitly. This mock user configuration only applies if:
-* The service runs without an XSUAA service binding (non-productive mode)
+* The service runs without an XSUAA service binding (non-production mode)
 * Mock users are defined in the active application configuration
 
 Define the mock users in a Spring profile, which may be only active during testing, as in the following example:
@@ -306,7 +306,7 @@ cds:
             - "*"
 ```
 :::
-- Mock user with name `Viewer-User` is a typical business user with SaaS-tenant `CrazyCars` who has assigned role `Viewer` and user attribute `Country` (`$user.Country` evaluates to value list `[GER, FR]`). This user also has the additional attribute `email`, which can be retrieved with `UserInfo.getAdditionalAttribute("email")`. The [features](../java/reflection-api#feature-toggles) `cruise` and `park` are enabled for this mock user.
+- Mock user with name `Viewer-User` is a typical business user with SaaS tenant `CrazyCars` who has the assigned role `Viewer` and user attribute `Country` (`$user.Country` evaluates to the value list `[GER, FR]`). This user also has the additional attribute `email`, which can be retrieved with `UserInfo.getAdditionalAttribute("email")`. The [features](../java/reflection-api#feature-toggles) `cruise` and `park` are enabled for this mock user.
 - `Admin-User` is a user running in privileged mode. Such a user is helpful in tests that bypasses all authorization handlers.
 
 Property `cds.security.mock.enabled = false` disables any mock user configuration (default in production profile).
@@ -426,7 +426,7 @@ The API identifiers exposed by the IAS instance in list `provided-apis` are gran
 ::: warning Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice verse.
+Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
 :::
 
 #### Consumer Application
@@ -587,15 +587,15 @@ The service plan names as specified in `consumed-services` in the IAS instance a
 ::: warning  Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice versa.
+Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
 :::
 
 
 #### How to Authorize Callbacks
 
 For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
-Currently, there is no standadized way to achieve this in CAP so that custom codeing is required.
-As a prerequisite*, the CAP service needs to know the clientId of the reuse service's IAS application which should be part of the binding exposed to the CAP service.
+Currently, there is no standardized way to achieve this in CAP, so custom coding is required.
+As a prerequisite, the CAP service must know the clientId of the reuse service's IAS application, which should be part of the binding exposed to the CAP service.
 
 ::: details Sample Code for Authorization of Callbacks
 
@@ -618,7 +618,7 @@ CAP Java SDK provides a comprehensive authorization service. By defining authori
 - [Role-based authorization](../guides/security/authorization#requires) allows to restrict resource access depending on user roles.
 - [Instance-based authorization](../guides/security/authorization#instance-based-auth) allows to define user privileges even on entity instance level, that is, a user can be restricted to instances that fulfill a certain condition.
 
-It's recommended to configure authorization declaratively in the CDS model. If necessary, custom implementations can be built on the [Authorization API](#enforcement-api).
+We recommend configuring authorization declaratively in the CDS model. When necessary, you can build custom implementations on the [Authorization API](#enforcement-api).
 
 A precise description of the general authorization capabilities in CAP can be found in the [Authorization](../guides/security/authorization) guide.
 
@@ -750,7 +750,7 @@ The most helpful getters in `UserInfo` are listed in the following table:
 | `getRoles()` | Returns the roles of the current user |
 | `getAttributeValues(String attribute)` | Returns the value list of the given user attribute. Referred by `$user.<attribute>`. |
 
-It's also possible to modify the `UserInfo` object for internal calls. See section [Request Contexts](./event-handlers/request-contexts) for more details.
+You can also modify the `UserInfo` object for internal calls. See section [Request Contexts](./event-handlers/request-contexts) for more details.
 For instance, you might want to run internal service calls in privileged mode that bypasses authorization checks:
 
 ```java
