@@ -27,7 +27,7 @@
 # [Security](security)
   ## [IAS and AMS](../../java/ams)
 # [Spring Boot Integration](spring-boot-integration)
-# [H2](h2-db)
+# [H2 Database Integration](h2-db)
 # [Developing Applications](developing-applications/)
   ## [Building](developing-applications/building)
   ## [Running](developing-applications/running)
