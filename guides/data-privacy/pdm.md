@@ -101,7 +101,7 @@ Make sure to have [indicated all relevant entities and elements in your domain m
 
 As an additional step, you have to create flat projections on the additional business data, like transactional data.
 
-In our model, we have `Incidents` and `Conversations`, which are connected via a [composition](https://github.com/SAP-samples/cloud-cap-samples/blob/gdpr/orders/db/schema.cds). Since SAP Personal Data Manager needs flattened out structures, we define a helper view `IncidentConversationView` to flatten this out.
+In our model, we have `Incidents` and `Conversations`, which are connected via a composition. Since SAP Personal Data Manager needs flattened out structures, we define a helper view `IncidentConversationView` to flatten this out.
 
 We have to then add data privacy-specific annotations to this new view as well. The `IncidentConversationView` as transactional data is marked as `Other`. In addition, it is important to tag the correct field, which defines the corresponding data subject, in our case that is `customer_ID @PersonalData.FieldSemantics: 'DataSubjectID';`
 

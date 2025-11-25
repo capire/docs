@@ -137,7 +137,7 @@ If an event handler for an `UPDATE` or `DELETE` event does not specify a result 
 
 Event handlers for `INSERT` and `UPSERT` events can return a result representing the data that was inserted/upserted.
 
-A failed insert is indicated by throwing an exception, for example, a `UniqueConstraintException` or a `CdsServiceException` with error status `CONFLICT`.
+A failed insert is indicated by throwing an exception, for example, a `UniqueConstraintException` or a `ServiceException` with error status `CONFLICT`.
 
 ### Result Builder { #result-builder}
 

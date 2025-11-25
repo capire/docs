@@ -42,11 +42,11 @@ cd bookshop
 
 ::: details Alternatively, download or clone the sample repository
 
-Exercise the following steps in the `bookshop` subfolder of the [`cloud-cap-samples`](https://github.com/sap-samples/cloud-cap-samples) repo:
+Exercise the following steps in the [`@capire/bookshop` sample](https://github.com/capire/bookshop):
 
 ```sh
-git clone https://github.com/sap-samples/cloud-cap-samples samples
-cd samples/bookshop
+git clone https://github.com/capire/bookshop
+cd bookshop
 ```
 
 :::
@@ -194,21 +194,19 @@ Two deployment options are available:
 
 #### Option A: SAP Cloud Portal
 
-If you intend to deploy user interface applications, you also need to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+If you intend to deploy **multi-tenant** user interface applications, you also need to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
 
 ```sh
 cds add portal
 ```
 
-#### Option B: SAP Build Work Zone, Standard Edition <Beta />
+#### Option B: SAP BTP Application Frontend <Beta />
 
-For **single-tenant applications**, you can use [SAP Build Work Zone, Standard Edition](https://discovery-center.cloud.sap/serviceCatalog/sap-build-work-zone-standard-edition):
+For **single-tenant** applications, you can use the new [SAP BTP Application Frontend](https://help.sap.com/docs/application-frontend-service) service:
 
 ```sh
-cds add workzone
+cds add app-front
 ```
-
-**Important:** This also requires you to set up SAP Build Work Zone, Standard Edition [according to the SAP Learning tutorial](https://developers.sap.com/tutorials/spa-configure-workzone.html).
 
 ### 6. Optional: Multitenancy { #add-multitenancy }
 
@@ -217,8 +215,6 @@ To enable multitenancy for production, run the following command:
 ```sh
 cds add multitenancy
 ```
-
-[Learn more about MTX services.](../multitenancy/#behind-the-scenes){.learn-more}
 
 <br>
 
@@ -238,11 +234,14 @@ cf target
 ```
 [Learn more about `cf login`](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/7a37d66c2e7d401db4980db0cd74aa6b.html){.learn-more}
 
-::: tip Prevent outdated lock file issues
-If your project already includes a _package-lock.json_, run `npm update` to make sure it’s in sync with your _package.json_ before proceeding.
-:::
 
-You can now freeze dependencies, build, and deploy the application:
+If your project already includes a _package-lock.json_, freeze your updated dependencies:
+
+```sh
+npm install --package-lock-only
+```
+
+You can now build and deploy the application:
 
 ```sh
 cds up
@@ -278,11 +277,11 @@ While `cds build` is already ran as part of `mbt build` in `cds up`, you can als
 cds build --production
 ```
 
-[Learn more about running and customizing `cds build`.](custom-builds){.learn-more style="margin-top: 10px"}
+[Learn more about running and customizing `cds build`.](custom-builds){.learn-more}
 
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more style="margin-top: 10px"}
+[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more}
 [Learn how to reduce the MTA archive size **during development**.](../../get-started/troubleshooting#reduce-mta-size){.learn-more}
 
 This process can take some minutes and finally logs an output like this:
@@ -382,6 +381,11 @@ sed -i 's/org.springframework.boot.loader.JarLauncher/-Dloader.main=com.sap.cds.
 ```
 
 :::
+
+## Next Up...
+
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
+
 
 <!--
 ---

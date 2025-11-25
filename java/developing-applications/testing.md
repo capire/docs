@@ -154,7 +154,7 @@ public class CatalogServiceTest {
 
     @Test
     public void discountApplied() {
-        Result result = catalogService.run(Select.from(Books_.class).byId("51061ce3-ddde-4d70-a2dc-6314afbcc73e"));
+        CdsResult<Books> result = catalogService.run(Select.from(Books_.class).byId("51061ce3-ddde-4d70-a2dc-6314afbcc73e"));
 
         // book with title "The Raven" and a stock quantity of > 111
         Books book = result.single(Books.class);

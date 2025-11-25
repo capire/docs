@@ -45,18 +45,18 @@ code .
 
 ### Get `cap/samples` for Step-By-Step Exercises {.node}
 
-The following steps will extend the [cap/samples/fiori](https://github.com/sap-samples/cloud-cap-samples/blob/main/fiori) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/sap-samples/cloud-cap-samples) before, and prepare to extend the *fiori* app:
+The following steps will extend the [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/capire/samples) before, and prepare to extend the *bookstore* app:
 
 ```sh
-git clone https://github.com/sap-samples/cloud-cap-samples samples
+git clone https://github.com/capire/samples samples
 cd samples
 npm install
 ```
 
-Now, open the `fiori` app in your editor, for example, by this if you're using VS Code on macOS:
+Now, open the `bookstore` app in your editor, for example, by this if you're using VS Code on macOS:
 
 ```sh
-code fiori
+code bookstore
 ```
 
 ## Enable Feature Toggles {.node}

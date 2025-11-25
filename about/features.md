@@ -47,10 +47,13 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Compile cds models to different outputs](../node.js/cds-compile)          | `cds compile <models>`     |
 | [Run your services in local server](../node.js/cds-serve)                  | `cds serve <services>`     |
 | [Run and restart on file changes](../get-started/in-a-nutshell)            | `cds watch`                |
-| [Read-eval-event loop](../node.js/cds-env#cli)  <!-- TODO -->              | `cds repl`                 |
+| [Read-eval-event loop](../node.js/cds-env#cli)                             | `cds repl`                 |
 | Inspect effective configuration                                            | `cds env`                  |
 | Prepare for deployment                                                     | `cds build`                |
-| Deploy to databases or cloud                                               | `cds deploy`               |
+| Deploy to databases                                                        | `cds deploy`               |
+| Build and deploy your application to the cloud                             | `cds up`                   |
+| Bind application to remote services                                        | `cds bind`                 |
+| Debug your application                                                     | `cds debug`                |
 | Login to multitenant SaaS application                                      | `cds login <app-url>`      |
 | Upgrade SaaS tenant(s) to latest versions                                  | `cds upgrade`              |
 | Logout from multitenant SaaS application                                   | `cds logout`               |

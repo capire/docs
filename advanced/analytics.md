@@ -71,7 +71,7 @@ No custom implementation is necessary.
 
 In this document, we don't explain the CDI protocol, but explain what needs to be done
 in a CAP application to manually implement the required services. The examples are
-based on the master data entities of the [CAP SFlight Sample App](https://github.com/SAP-samples/cap-sflight).
+based on the master data entities of the [CAP SFlight Sample App](https://github.com/capire/xtravels).
 
 Note: delta handling isn't supported.
 

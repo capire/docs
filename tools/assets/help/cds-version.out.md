@@ -2,16 +2,15 @@
 <pre class="log">
 > cds version
 
-<em>@sap/cds</em>: 9.2.0
-<em>@sap/cds-dk</em>: undefined
-<em>@sap/cds-compiler</em>: 6.2.2
-<em>@sap/cds-dk (global)</em>: 9.2.0
-<em>@sap/cds-fiori</em>: 2.0.1
-<em>@sap/cds-mtxs</em>: 3.2.0
-<em>@cap-js/asyncapi</em>: 1.0.3
-<em>@cap-js/cds-types</em>: 0.13.0
-<em>@cap-js/db-service</em>: 2.3.0
-<em>@cap-js/openapi</em>: 1.2.3
-<em>@cap-js/sqlite</em>: 2.0.2
-<em>Node.js</em>: v22.18.0
+@sap/cds: 9.4.4
+@sap/cds-dk: undefined
+@sap/cds-compiler: 6.4.6
+@sap/cds-dk (global): 9.4.3
+@sap/cds-fiori: 2.1.1
+@sap/cds-mtxs: 3.4.3
+@cap-js/asyncapi: 1.0.3
+@cap-js/db-service: 2.6.0
+@cap-js/openapi: 1.2.3
+@cap-js/sqlite: 2.0.4
+Node.js: v22.21.1
 </pre>

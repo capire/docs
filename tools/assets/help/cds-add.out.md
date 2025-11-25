@@ -16,10 +16,7 @@
       <em>extension</em>                    - extension project
       <em>mta</em>                          - Cloud Foundry deployment using mta.yaml
       <em>cf-manifest</em>                  - Cloud Foundry deployment using manifest files
-      <em>helm</em>                         - Kyma deployment using Helm charts
-      <em>helm-unified-runtime</em>         - Kyma deployment using Unified Runtime Helm charts
-      <em>containerize</em>                 - containerization using ctz CLI
-      <em>kyma</em>                         - helm + containerize
+      <em>kyma</em>                         - Kyma deployment using Helm charts
       <em>tiny-sample</em>                  - minimal sample files
       <em>sample</em>                       - sample files including Fiori UI
       <em>handler</em>                      - handler stubs for service entities, actions and functions
@@ -50,11 +47,13 @@
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
+      <em>app-frontend</em>                 - SAP BTP AppFront service
       <em>portal</em>                       - SAP BTP Portal Service
       <em>application-logging</em>          - SAP BTP Application Logging Service
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
+      <em>ui5</em>                          - SAP UI5 integration
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
@@ -162,14 +161,6 @@
 
         Custom output directory.
         For Java, the default is 'handlers'. For Node.js, the default is 'srv'.
-
-
-    <em>cds add helm</em>
-
-      --y
-
-        If provided, the default values will be used for all prompts.
-
 
     <em>cds add http</em>
 

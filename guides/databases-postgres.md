@@ -420,7 +420,7 @@ You can use `cds deploy` with option `--dry` to simulate and inspect how things 
    cds deploy --dry --model-only --out cds-model.csn
    ```
 
-2. Change your models, for example in *[cap/samples/bookshop/db/schema.cds](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/db/schema.cds)*:
+2. Change your models, for example in *[capire/bookshop/db/schema.cds](https://github.com/capire/bookshop/blob/main/db/schema.cds)*:
 
    ```cds
    entity Books { ...

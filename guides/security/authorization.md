@@ -284,7 +284,7 @@ A privilege is met, if and only if **all properties are fulfilled** for the curr
 
 ```cds
 entity Orders @(restrict: [
-    { grant: 'READ', to: 'Auditor', where: 'AuditBy = $user' }
+    { grant: 'READ', to: 'Auditor', where: (AuditBy = $user) }
   ]) {/*...*/}
 ```
 
@@ -303,7 +303,7 @@ You can build restrictions based on *multiple privileges*:
 ```cds
 entity Orders @(restrict: [
     { grant: ['READ','WRITE'], to: 'Admin' },
-    { grant: 'READ', where: 'buyer = $user' }
+    { grant: 'READ', where: (buyer = $user) }
   ]) {/*...*/}
 ```
 
@@ -313,8 +313,8 @@ Similarly, the filter conditions of matched privileges are combined with logical
 
 ```cds
 entity Orders @(restrict: [
-    { grant: 'READ', to: 'Auditor', where: 'country = $user.country' },
-    { grant: ['READ','WRITE'], where: 'CreatedBy = $user' },
+    { grant: 'READ', to: 'Auditor', where: (country = $user.country) },
+    { grant: ['READ','WRITE'], where: (CreatedBy = $user) },
   ]) {/*...*/}
 ```
 
@@ -374,7 +374,7 @@ service CustomerService @(requires: 'authenticated-user') {
      action addRating (stars: Integer);
   }
   entity Orders @(restrict: [
-    { grant: '*', to: 'Customer', where: 'CreatedBy = $user' }
+    { grant: '*', to: 'Customer', where: (CreatedBy = $user) }
   ]) {/*...*/}
   action monthlyBalance @(requires: 'Vendor') ();
 }
@@ -499,14 +499,14 @@ For instance, a user is allowed to read or edit `Orders` (defined with the `mana
 
 ```cds
 annotate Orders with @(restrict: [
-  { grant: ['READ', 'UPDATE', 'DELETE'], where: 'CreatedBy = $user' } ]);
+  { grant: ['READ', 'UPDATE', 'DELETE'], where: (CreatedBy = $user) } ]);
 ```
 
 Or a `Vendor` can only edit articles on stock (that means `Articles.stock` positive):
 
 ```cds
 annotate Articles with @(restrict: [
-  { grant: ['UPDATE'], to: 'Vendor',  where: 'stock > 0' } ]);
+  { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
 ```
 
 You can define `where`-conditions in restrictions based on [CQL](/cds/cql)-where-clauses.<br>
@@ -550,7 +550,7 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
   entity SalesOrgs @(restrict: [
      { grant: '*',
        to: ['SalesAdmin', 'SalesManager'],
-       where: '$user.country = countryCode or $user.country is null' } ]) {
+       where: ($user.country = countryCode or $user.country is null) } ]) {
      countryCode: String; /*...*/
   }
 }
@@ -564,7 +564,7 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
   entity SalesOrgs @(restrict: [
      { grant: '*',
        to: 'SalesManager',
-       where: '$user.country = countryCode' },
+       where: ($user.country = countryCode) },
      { grant: '*',
        to: 'SalesAdmin' } ]) {
      countryCode: String; /*...*/
@@ -583,7 +583,7 @@ You can leverage the `exists` predicate in `where` conditions to define filters 
 service ProjectService @(requires: 'authenticated-user') {
   entity Projects @(restrict: [
      { grant: ['READ', 'WRITE'],
-       where: 'exists members[userId = $user and role = `Editor`]' } ]) {
+       where: (exists members[userId = $user and role = `Editor`]) } ]) {
     members: Association to many Members; /*...*/
   }
   @readonly entity Members {
@@ -601,7 +601,7 @@ Supported features of `exists` predicate:
 * Use target paths (`where: 'exists a1.b1[...]`).
 * Usage of [user attributes](#user-attrs).
 ::: warning
-Paths *inside* the filter (`where: 'exists a1[b1.c = ...]`) are not yet supported.
+Paths *inside* the filter (`where: (exists a1[b1.c = ...])`) are not yet supported.
 :::
 
 <!--  * Note that in the Node.js stack, variant `a1[b1.c = ...]` only works on SAP HANA (as `b1.c` is a path expression).  -->
@@ -614,7 +614,7 @@ The following example demonstrates the last two features:
 service ProductsService @(requires: 'authenticated-user') {
  entity Products @(restrict: [
    { grant: '*',
-     where: 'exists producers.division[$user.division = name]'}]): cuid {
+     where: (exists producers.division[$user.division = name])}]): cuid {
     producers : Association to many ProducingDivisions
                 on producers.product = $self;
   }
@@ -647,7 +647,7 @@ The `where`-condition in a restriction can also contain [CQL path expressions](/
 service SalesOrderService @(requires: 'authenticated-user') {
   entity SalesOrders @(restrict: [
      { grant: 'READ',
-       where: 'product.productType = $user.productType' } ]) {
+       where: (product.productType = $user.productType) } ]) {
     product: Association to one Products;
   }
   entity Products {
@@ -683,7 +683,7 @@ Have a closer look at this example:
 service CatalogService @(requires: 'authenticated-user') {
    entity Books @(restrict: [
     { grant: 'READ' },
-    { grant: 'WRITE', to: 'Vendor', where: '$user.publishers = publisher' },
+    { grant: 'WRITE', to: 'Vendor', where: ($user.publishers = publisher) },
     { grant: 'WRITE', to: 'Admin' } ])
   as projection on db.Books;
   action doAccounting @(requires: ['Accountant', 'Admin']) ();
@@ -704,7 +704,7 @@ service CatalogService @(requires: 'authenticated-user') {
 service VendorService @(requires: 'Vendor') {
   entity Books @(restrict: [
     { grant: 'READ' },
-    { grant: 'WRITE', to: 'vendor', where: '$user.publishers = publisher' } ])
+    { grant: 'WRITE', to: 'vendor', where: ($user.publishers = publisher) } ])
   as projection on db.Books;
 }
 

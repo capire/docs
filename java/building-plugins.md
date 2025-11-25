@@ -22,7 +22,7 @@ In the following sections, the different extension points and mechanisms are exp
 
 ### Java Version
 
-When building CAP Java plugin modules, you need to keep in mind that the generated Java byte code of the plugin has to be compatible with the Java byte code version of the potential consumers of the plugin. To be on the safe side, we recommend using *Java 17* as this is anyways the minimum Java version for CAP Java (for 2.x release) applications. In case you deviate from this you need to check and align with the potential consumers of the plugin.
+When building CAP Java plugin modules, you need to keep in mind that the generated Java byte code of the plugin has to be compatible with the Java byte code version of the potential consumers of the plugin. To be on the safe side, we recommend using *Java 17* as this is anyways the minimum Java version for CAP Java applications. In case you deviate from this you need to check and align with the potential consumers of the plugin.
 
 ### Maven GroupId and Java Packages
 
@@ -31,13 +31,12 @@ Of course, it's up to your project / plugin how you call the corresponding Maven
 
 ## Share CDS Models via Maven Artifacts
 
-Before the CAP Java 2.2 release CDS definitions had to be shared as Node.js modules, also for Java projects.
-
-Starting with the 2.2 release CDS models, CSV import data and i18n files can now be shared through Maven dependencies in addition to npm packages. This means you can now provide CDS models, CSV files, i18n files, and Java code (for example, event handlers) in a single Maven dependency.
+CDS models, CSV import data and i18n files can be shared through Maven dependencies. In addition they can also be shared through npm packages.
+This means you can provide CDS models, CSV files, i18n files, and Java code (for example, event handlers) in a single Maven dependency.
 
 ### Create the CDS Model in a New Maven Artifact
 
-Simply create a plain Maven Java project and place your CDS models in the `main/resources/cds` folder of the reuse package under a unique module directory (for example, leveraging group ID and artifact ID): `src/main/resources/cds/com.sap.capire/bookshop/`. With `com.sap.capire` being the group ID and `bookshop` being the artifact ID.
+Simply create a plain Maven Java project and place your CDS models in the `src/main/resources/cds` folder of the reuse package under a unique module directory (for example, leveraging group ID and artifact ID): `src/main/resources/cds/com.sap.capire/bookshop/`. With `com.sap.capire` being the group ID and `bookshop` being the artifact ID.
 
 You can simplify the creation of such a **plain Maven Java** project by calling the following Maven archetype command:
 
@@ -65,7 +64,7 @@ Projects wanting to import the content simply add a Maven dependency to the reus
 ```
 :::
 
-Additionally, the new `resolve` goal from the CDS Maven Plugin needs to be added, to extract the models into the `target/cds/` folder of the Maven project, in order to make them available to the CDS Compiler.
+Additionally, the `resolve` goal from the CDS Maven Plugin needs to be added, to extract the models into the `target/cds/` folder of the Maven project, in order to make them available to the CDS Compiler.
 
 ::: code-group
 ```xml [srv/pom.xml]
@@ -87,8 +86,8 @@ Additionally, the new `resolve` goal from the CDS Maven Plugin needs to be added
 ```
 :::
 
-::: details Reuse module as Maven module
-Please be aware that the module that uses the reuse module needs to be a Maven module itself or a submodule to a Maven module that declares the dependency to the Maven module. Usually you would declare the dependency in the `srv` module of your CAP Java project and use the reuse model in the service's CDS files then. In case you want to use the reuse model in your `db` module you need to make sure that your `db` module is a Maven module and include it to the project's parent `pom.xml` file.
+::: details Scope of the Reuse Package
+Usually you would declare the dependency to the reuse package in the `srv` module of your CAP Java project. Since CAP Java 4.4.0 this makes the reuse models available to all CDS files in the CAP project. The models are extracted to the root `target/cds` folder. In case you want to make the reuse models only available within the Maven module that declared the dependency (e.g. `srv`) set the configuration `to` of the `resolve` goal to `${project.build.directory}`. In earlier versions of CAP Java reuse models where only available within CDS files placed in the Maven module that declared the dependency by default.
 :::
 
 When your Maven build is set up correctly, you can use the reuse models in your CDS files using the standard `using` directive:
@@ -112,7 +111,7 @@ In most of the cases an event handler plugin for a CAP Java application can be a
 
 ```xml
 <properties>
-    <cds.services.version>2.4.0</cds.services.version>
+    <cds.services.version>...</cds.services.version>
 </properties>
 
 <dependencyManagement>

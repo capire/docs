@@ -69,7 +69,7 @@ The afore-mentioned packages use `cds-plugin` techniques to automatically config
 {"cds":{
   "requires": {
     "db": {
-      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": "memory" } },
+      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": ":memory:" } },
       "[production]": { "kind": "hana", "impl": "@cap-js/hana", "deploy-format": "hdbtable" }
     }
   }
@@ -166,7 +166,7 @@ You can use CSV files to fill your database with initial data - see [Location of
 
 <div class="impl node">
 
-For example, in our [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop/db/data) application, we do so for *Books*, *Authors*, and *Genres* as follows:
+For example, in our [*capire/bookshop*](https://github.com/capire/bookshop/tree/main/db/data) application, we do so for *Books*, *Authors*, and *Genres* as follows:
 
 ```zsh
 bookshop/
@@ -427,7 +427,7 @@ When you've created a CAP Java application with `cds init --java` or with CAP Ja
 ### Using `cds compile`
 
 
-For example, given these CDS models (derived from [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop)):
+For example, given these CDS models (derived from [*capire/bookshop*](https://github.com/capire/bookshop)):
 
 ::: code-group
 
@@ -921,12 +921,12 @@ Instead, they protect the integrity of your data in the database layer against p
 
 ## Standard Database Functions
 
-A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way, and translated to the best-possible native SQL functions or polyfills during runtime (currently only Node.js) and for your CDL files.
+A specified set of standard functions - inspired by [OData](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_StringandCollectionFunctions) and [SAP HANA](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alphabetical-list-of-functions?locale=en-US) - is supported in a **database-agnostic**, hence portable way. The functions are translated to the best-possible database-specific SQL expressions at runtime and also during compilation of your CDL files.
 
 
 ### OData standard functions
 
-The `@sap/cds-compiler` and all CAP Node.js database services come with out of the box support for common OData functions.
+The `@sap/cds-compiler` and the database services come with out of the box support for common OData functions.
 
 ::: warning Case Sensitivity
 The OData function mappings are case-sensitive and must be written as in the list below.
@@ -1021,6 +1021,8 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
   If you provide more than one argument, the `round` function may behave differently depending on the database.
   :::
 
+<div class="impl node">
+
 #### Date and Time Functions
 
 - `year(x)`, `month(x)`, `day(x)`, `hour(x)`, `minute(x)`, `second(x)`
@@ -1038,11 +1040,14 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
 - `mindatetime()`
   Returns the earliest possible point in time: `'0001-01-01T00:00:00.000Z'`.
 
+</div>
+
 #### Aggregate Functions
 
 - `min(x)`, `max(x)`, `sum(x)`, `average(x)`, `count(x)`, `countdistinct(x)`
   Standard aggregate functions used to calculate minimum, maximum, sum, average, count, and distinct count of values.
 
+<div class="impl node">
 
 ### SAP HANA Functions
 
@@ -1066,7 +1071,7 @@ For the SAP HANA functions, both usages are allowed: all-lowercase as given abov
 
 ### Special Runtime Functions
 
-In addition to the OData and SAP HANA standard functions, the **CAP runtimes** provides special functions that are only available for runtime queries:
+In addition to the OData and SAP HANA standard functions, the **CAP runtime** provides special functions that are only available for runtime queries:
 
 - `search(x, y)`
   Checks whether `y` is contained in any element of `x` (fuzzy matching may apply).
@@ -1078,6 +1083,8 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtimes** p
 
 - `now()`
   Returns the current timestamp.
+
+</div>
 
 ## Using Native Features  { #native-db-functions}
 
@@ -1191,5 +1198,4 @@ Once you have 2 non-HANA local databases, you need to have 2 distinct database c
 
 </div>
 
-CAP samples demonstrate this in [cap/samples/fiori](https://github.com/SAP-samples/cloud-cap-samples/commit/65c8c82f745e0097fab6ca8164a2ede8400da803). <br>
-There's also a [code tour](https://github.com/SAP-samples/cloud-cap-samples#code-tours) available for that.
+CAP samples demonstrate this in [@capire/bookstore](https://github.com/capire/bookstore/tree/main/db).

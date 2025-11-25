@@ -621,7 +621,22 @@ Select.from("bookshop.Books")
               b.get("title").startsWith("Wuth")));
 ```
 
-### Grouping
+
+### Aggregating Data { #aggregating }
+
+You can aggregate data in two ways:
+
+- **Aggregate the current entity:** Use [aggregate functions](#aggregation-functions) like `sum` in the columns clause of your `Select` statement, usually together with [groupBy](#group-by), to summarize or group data.
+
+- **Aggregate associated entities:** Use dedicated aggregation methods to calculate values over to-many associations directly in your queries. See [Aggregating over Associations](#aggregating-associations).
+
+
+#### Aggregation Functions { #aggregation-functions }
+
+Use [aggregation functions](/guides/databases#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+
+
+#### Grouping { #grouping }
 
 The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
 
@@ -635,7 +650,7 @@ Let's assume the following dataset for our examples:
 |103 |Hugo  |
 |104 |Smith |
 
-#### Group By
+##### Group By { #group-by }
 
 The `groupBy` clause groups by one or more elements and usually involves aggregate [functions](query-api#scalar-functions), such as `count`, `countDistinct`, `sum`, `max`, `avg`, and so on. It returns one row for each group.
 
@@ -658,7 +673,7 @@ If we execute the query on our dataset, we get the following result:
 |Hugo  |1    |
 
 
-#### Having
+##### Having { #having }
 
 To filter the [grouped](#group-by) result, `having` is used. Both, `having` and `where`, filter the result before `group by` is applied and can be used in the same query.
 
@@ -676,6 +691,65 @@ If we execute the query on our dataset, we get the following result:
 |name  |count|
 |------|-----|
 |Smith |3    |
+
+
+#### Aggregating over Associations <Beta /> { #aggregating-associations }
+
+Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
+
+::: tip
+Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
+:::
+
+##### min
+
+Find the minimum value of an element in a collection.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items()
+       .filter(i -> i.amount().gt(0)) // optional filter
+       .min(i -> i.amount()).as("minAmount")
+);
+```
+
+This query selects each order’s id and the minimum item amount greater than 0 as "minAmount".
+
+##### max
+
+Find the maximum value of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().max(i -> i.amount()).gt(100));
+```
+
+This query selects all orders where the maximum item amount is greater than 100.
+
+##### sum
+
+Calculate the total of a numeric element across related entities.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items().sum(i -> i.amount().times(i.price())).as("orderTotal")
+);
+```
+
+This query selects each order's id and the total order amount (sum of amount times price) as "orderTotal".
+
+##### count
+
+Count non-null values of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().count(i -> i.discount()).gt(0));
+```
+
+This query selects all orders where at least one item has a discount.
 
 
 ### Ordering and Pagination
@@ -1409,6 +1483,10 @@ Scalar functions are values that are calculated from other values. This calculat
       .where(e -> e.get("name").substring(2).eq("ter"));
     ```
 
+* Concat
+
+  See [`Concat`](#string-expressions) String Expression
+
 #### Case-When-Then Expressions
 
 Use a case expression to compute a value based on the evaluation of conditions. The following query converts the stock of Books into a textual representation as 'stockLevel':
@@ -1420,6 +1498,17 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
+#### String Expressions
+
+* Concat
+
+    Function `concat` creates a string expression to concatenate a specified value to this value.
+
+    ```java
+    // SELECT from Author {name || ' - the Author' as author_name : String}
+    Select.from(AUTHOR)
+      .columns(a -> a.name().concat(" - the Author").as("author_name"));
+    ```
 
 #### Arithmetic Expressions
 
@@ -1623,7 +1712,7 @@ BETWEEN
 
 #### `IN` Predicate
 
-The `IN` predicate tests if a value is equal to any value in a given list. 
+The `IN` predicate tests if a value is equal to any value in a given list.
 
 The following example, filters for books written by Poe or Hemingway:
 

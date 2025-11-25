@@ -41,22 +41,18 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed } from `@sap/cds/common`;
-aspect entity : managed { key ID: Integer }
+using { managed, cuid } from '@sap/cds/common';
+aspect primary : managed, cuid {}
 
-entity Books : entity {
+entity Books : primary {
   title  : String;
   author : Association to Authors;
 }
 
-entity Authors : entity {
+entity Authors : primary {
   name   : String;
 }
 ```
-
-::: details Noteworthy...
-In the example above `entity` shows up as a keyword, as well as an identifier of an aspect declaration and references to that.
-:::
 
 Keywords are *case-insensitive*, but are most commonly used in lowercase notation.
 
@@ -69,7 +65,7 @@ type ![Delimited Identifier] : String;
 ```
 
 ::: warning Avoid using delimited identifiers
-Delimited identifiers in general, but in particular non-ASCII characters, or keywords as identifiers should be avoided as much as possible, for reasons of interoperability.
+Delimited identifiers in general, but in particular non-ASCII characters, should be avoided as much as possible, for reasons of interoperability.
 :::
 
 
@@ -89,7 +85,7 @@ The following literals can be used in CDL (mostly as in JavaScript, Java, and SQ
 <!-- cds-mode: ignore; values only, no valid CDS file -->
 ```cds
 true , false , null        // as in all common languages
-11 , 2.4 , 1e3, 1.23e-11   // for numbers
+11 , 2.4 , 1e3 , 1.23e-11  // for numbers
 'A string''s literal'      // for strings
 `A string\n paragraph`     // for strings with escape sequences
 { foo:'boo', bar:'car' }   // for records
@@ -133,6 +129,10 @@ entity DocumentedEntity {
   // ...
 }
 ```
+
+::: tip
+These annotations are illustrative only and are not defined nor have any meaning beyond this example.
+:::
 
 Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`, are supported. Line endings are normalized. If you don't want a line ending at that position, end a line with a backslash (`\`). For string literals inside triple backticks, indentation is stripped and tagging is possible.
 
@@ -242,7 +242,7 @@ context scoped {
 
 You can define types and entities with other definitions' names as prefixes:
 
-```cds
+```cds [prefixes.cds]
 namespace foo.bar;
 entity Foo {}           //> foo.bar.Foo
 entity Foo.Bar {}       //> foo.bar.Foo.Bar
@@ -252,7 +252,7 @@ type Foo.Bar.Car {}     //> foo.bar.Foo.Bar.Car
 
 #### Fully Qualified Names
 
-A model ultimately is a collection of definitions with unique, fully qualified names. For example, the second model above would compile to this [CSN](./csn):
+A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to the following [CSN](./csn):
 
 ::: code-group
 
@@ -426,7 +426,6 @@ definitions using the `projection on` syntax.
 You can use nested projections or aliases as known from entity projections.
 Only the effective signature of the projection is relevant.
 
-<!-- cds-mode: upcoming -->
 ```cds
 type CustomerData : projection on Customer {
   name.firstName, // select from structures
@@ -483,7 +482,7 @@ entity Bar {
 
 An element definition can be prefixed with modifier keyword `virtual`. This keyword indicates that this element isn't added to persistent artifacts, that is, tables or views in SQL databases. Virtual elements are part of OData metadata.
 
-By default, virtual elements are annotated with `@Core.Computed: true`, not writable for the client and will be [silently ignored](../guides/providing-services#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable.
+By default, virtual elements are annotated with `@Core.Computed: true`, not writable for the client and will be [silently ignored](../guides/providing-services#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable. Further, during read requests, you need to provide values for all virtual elements. You can do this by using post-processing in an `after` handler.
 
 ```cds
 entity Employees {
@@ -984,7 +983,7 @@ Essentially, Compositions are the same as _[associations](#associations)_, just 
 :::
 
 ::: warning Limitations of Compositions of one
-Using of compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
+Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
 :::
@@ -1384,7 +1383,7 @@ Propagation of annotations can be stopped via value `null`, for example, `@anno:
 :::
 
 
-### Expressions as Annotation Values <Beta /> {#expressions-as-annotation-values}
+### Expressions as Annotation Values {#expressions-as-annotation-values}
 
 In order to use an expression as an annotation value, it must be enclosed in parentheses:
 ```cds
@@ -1481,7 +1480,7 @@ and a value written as expression `@aValueExpr: ( 11 )`, respectively.
 If the annotation value is an expression, it is sometimes necessary to adapt references inside the expression
 during propagation, for example, when a referenced element is renamed in a projection.
 The compiler automatically takes care of the necessary rewriting. When a reference in an annotation expression
-is rewritten, the `=` property is set to `true`.
+is rewritten, the `=` property is adapted accordingly if the expression is a single reference, otherwise it is set to `true`.
 
 Example:
 ```cds
@@ -1530,9 +1529,9 @@ rewritten to `@Common.Text: (descr)`.
 
 ::: info
 
-There are situations where automatic rewriting doesn't work, resulting in the compiler error
+There may be situations where automatic rewriting doesn't work, resulting in the compiler error
 [`anno-missing-rewrite`](https://cap.cloud.sap/docs/cds/compiler/messages#anno-missing-rewrite).
-Some of these situations are going to be addressed in upcoming releases.
+In these cases you can overwrite the annotation with the correct expression in the new location.
 
 :::
 
@@ -1883,7 +1882,7 @@ service MyOrders {
 ```
 
 ::: tip
-You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which, will be enforced by the CAP runtimes in Java and Node.js.
+You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which will be enforced by the CAP runtimes in Java and Node.js.
 :::
 
 Entities can be also exposed as views with parameters:
@@ -2100,7 +2099,21 @@ service CatalogService {
 
 Explicitly modelled binding parameters are ignored for OData V2.
 
+#### Returning Media Data Streams { #actions-returning-media}
 
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](/guides/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+
+```cds
+service CatalogService {
+  @Core.MediaType: 'image/png'  @Core.ContentDisposition.Filename: 'image.png'  @Core.ContentDisposition.Type: 'attachment'
+  type png : LargeBinary;
+
+  entity Products as projection on data.Products { ... }
+    actions {
+      function image() returns png;
+    }
+}
+```
 
 ### Custom-Defined Events {#events}
 

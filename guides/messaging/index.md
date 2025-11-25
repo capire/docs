@@ -109,41 +109,42 @@ Emitters of event messages are decoupled from the receivers and don't need to kn
 
 The following explanations walk us through a books review example from cap/samples:
 
-* **[@capire/bookshop](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop)** provides the well-known basic bookshop app.
-* **[@capire/reviews](https://github.com/sap-samples/cloud-cap-samples/tree/main/reviews)** provides an independent service to manage reviews.
-* **[@capire/bookstore](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore)** combines both into a composite application.
+* **[@capire/bookshop](https://github.com/capire/bookshop)** provides the well-known basic bookshop app.
+* **[@capire/reviews](https://github.com/capire/reviews)** provides an independent service to manage reviews.
+* **[@capire/bookstore](https://github.com/capire/bookstore)** combines both into a composite application.
 
 ![This graphic is explained in the accompanying text.](assets/cap-samples.drawio.svg)
 
 ::: tip
-Follow the instructions in [*cap/samples/readme*](https://github.com/SAP-samples/cloud-cap-samples#readme) for getting the samples and exercising the following steps.
+Follow the instructions in [*cap/samples/readme*](https://github.com/capire/samples) for getting the samples and exercising the following steps.
 :::
 
 ### Declaring Events in CDS
 
-Package `@capire/reviews` essentially provides a `ReviewsService`, [declared like that](https://github.com/sap-samples/cloud-cap-samples/blob/main/reviews/srv/reviews-service.cds):
+Package `@capire/reviews` provides a `ReviewsService` API, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-api.cds):
 
 ```cds
-service ReviewsService {
+service ReviewsService @(path:'reviews/api') {
 
-  // Sync API
-  entity Reviews as projection on my.Reviews excluding { likes }
-  action like (review: Reviews:ID);
-  action unlike (review: Reviews:ID);
+  /**
+   * Summary of average ratings per subject.
+   */
+  @readonly entity AverageRatings as projection on my.Reviews {
+    key subject,
+    round(avg(rating),2) as rating  : my.Rating,
+    count(*)             as reviews : Integer,
+  } group by subject;
 
-  // Async API
-  event reviewed : {
-    subject : Reviews:subject;
-    count   : Integer;
-    rating  : Decimal; // new avg rating
-  }
-
+  /**
+   * Informs about changes in a subject's average rating.
+   */
+  event AverageRatings.Changed : AverageRatings; // [!code focus]
 }
 ```
 
 [Learn more about declaring events in CDS.](../../cds/cdl#events){.learn-more}
 
-As you can read from the definitions, the service's synchronous API allows to create, read, update, and delete user `Reviews` for arbitrary review subjects. In addition, the service's asynchronous API declares the `reviewed` event that shall be emitted whenever a subject's average rating changes.
+As we can read from the definition, the service's synchronous API allows to read average ratings per subject; the service's asynchronous API declares the `AverageRatings.Changed` event that shall be emitted whenever a subject's average rating changes.
 
 ::: tip
 **Services in CAP** combine **synchronous** *and* **asynchronous** APIs. Events are declared on conceptual level focusing on domain, instead of low-level wire protocols.
@@ -151,18 +152,15 @@ As you can read from the definitions, the service's synchronous API allows to cr
 
 ### Emitting Events
 
-Find the code to emit events in *[@capire/reviews/srv/reviews-service.js](https://github.com/SAP-samples/cloud-cap-samples/blob/139d9574950d1a5ead475c7b47deb174418500e4/reviews/srv/reviews-service.js#L12-L20)*:
+Find the code to emit events in *[@capire/reviews/srv/reviews-service.js](https://github.com/capire/reviews/tree/main/srv/reviews-service.js#L32-L37)*:
 
 ```js
-class ReviewsService extends cds.ApplicationService { async init() {
-
-  // Emit a `reviewed` event whenever a subject's avg rating changes
-  this.after (['CREATE','UPDATE','DELETE'], 'Reviews', (_, req) => {
-    let { subject } = req.data, count, rating //= ...
-    return this.emit ('reviewed', { subject, count, rating })
+  // Inform API event subscribers about new avg ratings for reviewed subjects
+  const api = await cds.connect.to ('sap.capire.reviews.api.ReviewsService')
+  this.after (['CREATE','UPDATE','DELETE'], 'Reviews', async function(_,req) {
+    const { subject, rating, reviews } = await api.get ('AverageRatings', { subject: req.data.subject })
+    return api.emit ('AverageRatings.Changed', { subject, rating, reviews }) // [!code focus]
   })
-
-}}
 ```
 [Learn more about `srv.emit()` in Node.js.](../../node.js/core-services#srv-emit-event){.learn-more}
 [Learn more about `srv.emit()` in Java.](../../java/services#an-event-based-api){.learn-more}
@@ -175,11 +173,12 @@ Simply use `srv.emit()` to emit events, and let the CAP framework care for wire 
 
 ### Receiving Events
 
-Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/SAP-samples/cloud-cap-samples/blob/30764b261b6bf95854df59f54a8818a4ceedd462/bookstore/srv/mashup.js#L39-L47)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
+Find the code to receive events in *[@capire/bookstore/srv/mashup.js](https://github.com/capire/bookstore/blob/main/srv/mashup.js#L49-L52)* (which is the basic bookshop app enhanced by reviews, hence integration with `ReviewsService`):
 
 ```js
-  // Update Books' average ratings when reviews are updated
-  ReviewsService.on ('reviewed', (msg) => {
+  // Update Books' average ratings when ReviewsService signals updated reviews
+  ReviewsService.on ('AverageRatings.Changed', (msg) => {
+    console.debug ('> received:', msg.event, msg.data)
     const { subject, count, rating } = msg.data
     // ...
   })
@@ -281,7 +280,7 @@ For quick tests during development, CAP provides a simple file-based messaging s
 
 [Learn more about `cds.env` profiles.](../../node.js/cds-env#profiles){.learn-more}
 
-In our samples, you find that in [@capire/reviews/package.json](https://github.com/SAP-samples/cloud-cap-samples/blob/main/reviews/package.json) as well as [@capire/bookstore/package.json](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/package.json), which you'll run in the next step as separate processes.
+In our samples, you find that in [@capire/reviews/package.json](https://github.com/capire/reviews/blob/main/package.json) as well as [@capire/bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json), which you'll run in the next step as separate processes.
 
 
 ### 2. Start the `reviews` Service and `bookstore` Separately

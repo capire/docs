@@ -1,0 +1,12 @@
+{
+  "name": "eslint-test-project",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@sap/cds": "^9"
+  },
+  "devDependencies": {
+    "@sap/eslint-plugin-cds": "^4",
+    "eslint": "^9"
+  }
+}

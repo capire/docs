@@ -79,36 +79,50 @@ A tag property which is `true` for linked models. {.indent}
 
 The [CSN definitions](../cds/csn#definitions) of the model, turned into an instance of [`LinkedDefinitions`].  {.indent}
 
-### . services {.property alt="The following documentation on entities also applies to services. "}
+### . services {.property}
+
+Convenient shortcut to access all *[service](../cds/cdl#services)* definitions in a model. The returned value is an array of all service definitions, with additional non-enumerable properties to access the service definitions by name.
+
+Example:
+
+```js
+let m = cds.linked`
+  service CatalogService { ... }
+  service AdminService { ... }
+`
+
+// Object nature
+let { CatalogService, AdminService } = m.services
+
+// Array nature
+for (let each of m.services) console.log (each.name)
+```
+
 
 ### . entities {.property}
 
-These are convenient shortcuts to access all *[service](../cds/cdl#services)* or all *[entity](../cds/cdl#entities)* definitions in a model. <br>The value is an instance of [`LinkedDefinitions`].
+These are convenient shortcuts to access all *[entity](../cds/cdl#entities)* definitions in a model. The returned value is a function that allows to specify a namespace to fetch all matching entity definitions, with initial properties for all entity definitions in the model.
 
-For example:
+Example:
 
 ```js
 let m = cds.linked`
   namespace my.bookshop;
   entity Books {...}
   entity Authors {...}
-  service CatalogService {
-    entity ListOfBooks as projection on Books {...}
-  }
 `
+// Function nature
+let { Books, Authors } = m.entities ('my.bookshop')
 
-// Object nature
-let { CatalogService, AdminService } = m.services
+
+// Object nature (uses the model's top-level namespace)
 let { Books, Authors } = m.entities
 
 // Array nature
-for (let each of m.entities) console.log(each.name)
-
-// Function nature
-let { ListOfBooks } = m.entities ('my.bookshop.CatalogService')
+for (let each of m.entities) console.log (each.name)
+//> my.bookshop.Books
+//> my.bookshop.Authors
 ```
-
-In addition to the object and array natures of  [`LinkedDefinitions`] these properties also can be used as functions, which allows to optionally specify a namespace to fetch all definitions with prefixed with that. If no namespace is specified, the model's declared namespace is used, if any.
 
 
 

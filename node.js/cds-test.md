@@ -21,7 +21,7 @@ npm add -D @cap-js/cds-test
 ```
 
 ::: tip Examples
-Find examples in [*cap/samples*](https://github.com/sap-samples/cloud-cap-samples/tree/main/test) and in the [*SFlight sample*](https://github.com/SAP-samples/cap-sflight/tree/main/test).
+Find examples in [*capire/samples*](https://github.com/capire/samples/tree/main/tests) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
 :::
 
 
@@ -61,7 +61,7 @@ To ensure `cds.env`, and hence all plugins, are loaded from the test's target fo
 ### Testing Service APIs
 
 
-As `cds.test()` launches the server in the current process, you can access all services programmatically using the respective [Node.js Service APIs](core-services). Here's an example for that taken from [*cap/samples*](https://github.com/SAP-samples/cloud-cap-samples/blob/a8345122ea5e32f4316fe8faef9448b53bd097d4/test/consuming-services.test.js#L2):
+As `cds.test()` launches the server in the current process, you can access all services programmatically using the respective [Node.js Service APIs](core-services). Here's an example for that:
 
 
 ```js
@@ -585,7 +585,7 @@ describe(() => { cds.test(...) })
 
 ## Using `cds.test` in REPL
 
-You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/sap-samples/cloud-cap-samples):
+You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/capire/samples):
 
 ```sh
 [cap/samples] cds repl

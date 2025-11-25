@@ -1,5 +1,4 @@
 ---
-shorty: Fiori UIs
 synopsis: >
   CAP provides out-of-the-box support for SAP Fiori elements front ends.
 permalink: advanced/fiori
@@ -9,7 +8,7 @@ impl-variants: true
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
-# Serving Fiori UIs
+# Serving SAP Fiori UIs
 
 {{ $frontmatter.synopsis }}
 
@@ -23,13 +22,13 @@ This guide explains how to add one or more SAP Fiori elements apps to a CAP proj
 
 ## SAP Fiori Preview
 
-For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori Elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
+For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
 ::: details Be aware that this is **not meant for production**.
 
 <div class="impl node">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is only active locally where the [development profile](../node.js/cds-env#profiles) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
@@ -38,7 +37,7 @@ To also enable it in cloud deployments, for test or demo purposes maybe, set <Co
 
 <div class="impl java">
 
-The preview not meant as a replacement for a proper SAP Fiori Elements (UI5) application.
+The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 It is active by default, but disabled automatically in case the [production profile](../java/developing-applications/configuring#production-profile) is enabled.
 
 To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
@@ -77,9 +76,9 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --add sample`.
 
 
-### From [cap/samples](https://github.com/sap-samples/cloud-cap-samples)
+### From [Capire Samples](https://github.com/capire)
 
-For example, you can copy the [SAP Fiori apps from cap/samples](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/app) as a template and modify the content as appropriate.
+For example, you can copy the [SAP Fiori apps from capire/bookshop](https://github.com/capire/bookstore/tree/main/app) as a template and modify the content as appropriate.
 
 
 ### From [Incidents Sample](https://github.com/SAP-samples/fiori-elements-incident-management/tree/sampleSolution)
@@ -113,7 +112,7 @@ annotate CatalogService.Books with @(
 ```
 
 
-[Find this source and many more in **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookstore/app){.learn-more target="_blank"}
+[Find this source and many more in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more target="_blank"}
 [Learn more about **OData Annotations in CDS**.](./odata#annotations){.learn-more}
 
 
@@ -134,7 +133,7 @@ While CDS in principle allows you to add such annotations everywhere in your mod
 ...
 ```
 
-[See this also in **cap/samples/fiori**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/services.cds){.learn-more}
+[See this also in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/services.cds){.learn-more}
 
 **Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../guides/domain-modeling#domain-driven-design) and [Separation of Concerns](../guides/domain-modeling#separation-of-concerns).
 
@@ -388,7 +387,7 @@ SAP Fiori supports edit sessions with draft states stored on the server, so user
 
 [For details and guidelines, see **SAP Fiori Design Guidelines for Draft**.](https://experience.sap.com/fiori-design-web/draft-handling/){.learn-more}
 
-[Find a working end-to-end version in **cap/samples/fiori**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/fiori){.learn-more}
+[Find a working end-to-end version in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more}
 
 [For details about the draft flow in SAP Fiori elements, see **SAP Fiori elements > Draft Handling**](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d){.learn-more}
 
@@ -401,7 +400,7 @@ To enable draft for an entity exposed by a service, simply annotate it with `@od
 annotate AdminService.Books with @odata.draft.enabled;
 ```
 
-[See it live in **cap/samples**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L94){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L79){.learn-more}
 
 ::: warning
 You can't project from draft-enabled entities, as annotations are propagated. Either _enable_ the draft for the projection and not the original entity or _disable_ the draft on the projection using `@odata.draft.enabled: null`.
@@ -429,9 +428,9 @@ Adding the annotation `@fiori.draft.enabled` won't work if the corresponding `_t
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](../assets/draft-for-localized-data.png){style="margin:0"}
 
-[See it live in **cap/samples**.](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L93){.learn-more}
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
 
-If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/app/admin-books/fiori-service.cds#L116) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
+If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L104) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
 
 ### Draft Choreography: How Draft Editing Works
 
@@ -466,11 +465,37 @@ POST /odata/v4/AdminService/Books(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActi
 Content-Type: application/json
 
 {}
-
+```
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
 ### Validating Drafts
+
+With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
+- The UI displays error messages for annotation-based validations (such as `@mandatory` or `@assert...`) while editing drafts.
+- You can register [custom validations](#custom-validations) to the `PATCH` event and write (error) messages. The draft choreography ensures the invalid value still persists.
+- Messages remain visible in the UI, even after editing other fields.
+- The UI automatically loads messages when reopening a previously edited draft.
+CAP generates side-effect annotations in the EDMX to instruct UI5 to fetch state messages after every `PATCH` request. To control side-effect annotations more precisely, override or disable them per entity:
+
+  ```cds
+  // Setting `null` disables the side-effect annotation for always fetching messages.
+  annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
+  ```
+
+For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](/guides/security/data-protection-privacy#dpp-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
+
+::: warning Requires Schema Update
+This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.
+:::
+
+::: warning Requires OData V4 and UI5 version >=1.136.0
+State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.136.0. OData V2 does not support this annotation.
+:::
+To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
+
+
+#### Custom Validations
 
 You can add [custom handlers](../guides/providing-services#custom-logic) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
 
@@ -596,7 +621,7 @@ entity Books { //...
 }
 ```
 
-[Find this also in our **cap/samples**.](https://github.com/sap-samples/cloud-cap-samples/tree/main/bookshop/db/schema.cds){.learn-more}
+[Find this also in our **capire/bookstore**.](https://github.com/capire/bookshop/blob/main/db/schema.cds){.learn-more}
 
 Still, all SAP Fiori UIs, on all services exposing `Books`, will automatically receive Value Help for currencies. You can also benefit from that when [deriving your project-specific code list entities from **sap.common.CodeList**](../cds/common#adding-own-code-lists).
 
@@ -718,4 +743,101 @@ Cache Control feature is currently supported on the Java runtime only.
 
 <div id="fiori-compat" />
 
+## Hierarchical Tree Views
+
+Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
+
+Database support for a generic hierarchy implementation by CAP runtimes:
+
+| Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
+|-------------|----------|----|------------|--------|
+| CAP Java    | ✓        | ✓ | ✓          |        |
+| CAP Node.js | ✓        |    |✓          |✓       |
+
+
+### Example
+Let's assume we have the following domain model and its projection in a service:
+
+::: code-group
+```cds [schema.cds]
+namespace my.bookshop;
+
+entity Genres { //...
+  parent : Association to Genres;
+}
+```
+:::
+
+::: code-group
+```cds [AdminService.cds]
+service AdminService {
+  entity Genres as projection on my.bookshop.Genres;
+}
+```
+:::
+
+
+Annotate/extend the entity in the service as follows:
+
+```cds
+// declare a hierarchy with the qualifier "GenresHierarchy"
+annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy : {
+  NodeProperty             : ID,    // identifies a node, usually the key
+  ParentNavigationProperty : parent // navigates to a node's parent
+};
+
+extend AdminService.Genres with @(
+  // The computed properties expected by Fiori to be present in hierarchy entities
+  Hierarchy.RecursiveHierarchy #GenresHierarchy : {
+    LimitedDescendantCount : LimitedDescendantCount,
+    DistanceFromRoot       : DistanceFromRoot,
+    DrillState             : DrillState,
+    LimitedRank            : LimitedRank
+  },
+  // Disallow filtering on these properties from Fiori UIs
+  Capabilities.FilterRestrictions.NonFilterableProperties: [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+  // Disallow sorting on these properties from Fiori UIs
+  Capabilities.SortRestrictions.NonSortableProperties    : [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+) columns { // Ensure we can query these columns from the database
+  null as LimitedDescendantCount : Int16,
+  null as DistanceFromRoot       : Int16,
+  null as DrillState             : String,
+  null as LimitedRank            : Int16
+};
+```
+
+> Note: When naming the hierarchy qualifier, use the following pattern: <br>
+> `<entity name in service>Hierarchy`
+
+Configure the TreeTable in UI5's _manifest.json_ file:
+
+```jsonc
+  "sap.ui5": { ...
+    "routing": { ...
+      "targets": { ...
+        "GenresList": { ...
+          "options": {
+            "settings": { ...
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
+                    "type": "TreeTable" // [!code focus]
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+    },
+```
+
+> Note: use the `hierarchyQualifier` declared earlier
+
 <div id="reserved-words" />
+
