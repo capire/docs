@@ -2,7 +2,7 @@
 # layout: cookbook
 label: Authentication
 synopsis: >
-  This guide explains how to authenticate CAP services and how to work with users.
+  This guide explains how to authenticate CAP services to resolve CAP users.
 status: released
 ---
 
@@ -21,14 +21,16 @@ status: released
 
 # Authentication { #authentication }
 
+[[toc]]
+
+## Pluggable Authentication
+
 In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
 Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
 CAP applications making use of remote services of any type need to have a proper [remote authentication](#remote-authentication) in place as well.
 
-
-[[toc]]
-
+![Authentication with CAP](./assets/authentication.drawio.svg){width="500px" }
 
 According to key concept [Pluggable Building Blocks](key-concept-pluggable), the authentication method can be configured freely. 
 CAP [leverages platform services](#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:

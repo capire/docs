@@ -21,11 +21,7 @@ status: released
 
 # Remote Authentication { #remote-authentication }
 
-CAP supports out-of-the-box consumption of various types of [remote services]( #remote-services):
-
-* [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (i.e., belong to the same trusted [application zone](./overview#application-zone)).
-* [External services](#app-to-app) which can be running on non-BTP platforms.
-* [BTP reuse services](#ias-reuse) consumed via service binding.
+[[toc]]
 
 ## Remote Service Abstraction { #remote-services }
 
@@ -42,6 +38,12 @@ At the connectivity layer, the following basic tasks can be addressed genericall
 
 CAP's connectivity component handles authentication (IAS, XSUAA, X.509, ZTID, ...), destination (local destination, BTP Destination, BTP Service Binding), and user propagation (technical provider, technical subscriber, named user) transparently through configuration.
 All three service scenarios can be addressed through configuration variants of the same remote service concept, as shown in the following sections.
+
+CAP supports out-of-the-box consumption of various types of [remote services]( #remote-services):
+
+* [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (i.e., belong to the same trusted [application zone](./overview#application-zone)).
+* [External services](#app-to-app) which can be running on non-BTP platforms.
+* [BTP reuse services](#ias-reuse) consumed via service binding.
 
 
 ## Co-located Services {#co-located-services}

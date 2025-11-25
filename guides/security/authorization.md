@@ -21,7 +21,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 
-# Authorization { #authorization }
+# CAP Authorization { #authorization }
 
 Authorization means restricting access to data by adding respective declarations to CDS models, which are then enforced in service implementations. By adding such declarations, we essentially revoke all default access and then grant individual privileges.
 
