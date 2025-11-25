@@ -17,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ### Pluggable Building Blocks { #key-concept-pluggable }
 
-CAP divides the different security-related tasks into separate and independent building blocks for which all of them there is a standard CAP implementation suitable for most scenarios:
+CAP divides the different security-related tasks into separate and independent building blocks, each with a standard CAP implementation suitable for most scenarios:
 
 ![Overview Security Components with CAP](./assets/security-components.drawio.svg){width="600px" }
 
@@ -36,7 +36,7 @@ Due to the plugin-based architecture, **CAP allows standard functions to be modi
 This flexibility is crucial for scenarios where the default methods do not fully meet the requirements of the application.
 Moreover, this integration helps to easily incorporate non-CAP and even non-BTP services, thereby providing a flexible and interoperable environment. 
 
-![Overview Cusomizable Components with CAP](./assets/security-customizable.drawio.svg){width="600px" }
+![Overview Customizable Components with CAP](./assets/security-customizable.drawio.svg){width="600px" }
 
 For instance, it is possible to define specific endpoints with a custom authentication strategy. 
 Likewise, the CAP representation of the request user can be overruled to match additional, application-specific requirements.
@@ -44,7 +44,7 @@ Likewise, the CAP representation of the request user can be overruled to match a
 ### Built on Best of Breed { #key-concept-platform-services }
 
 CAP does not deal with user login flows, password and credential management, user sessions, or any cryptographic logic - **and applications should not have to do it at all!**
-Instead, **CAP seamlessly integrates with bullet-proven [platform services](#btp-services)** that handle these critical security topics centrally. 
+Instead, **CAP seamlessly integrates with battle-tested [platform services](#btp-services)** that handle these critical security topics centrally. 
 This approach not only simplifies the implementation but also enhances security by leveraging robust, well-tested mechanisms provided by the platform.
 Built on platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
 
@@ -60,16 +60,16 @@ This safeguards business logic being independent from platform services which ar
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
 For instance, CAP allows performing outbound service calls via Remote Services while handling authentication under the hood completely. 
-This abstraction layer ensures developers not having to worry about the details of authentication. 
+This abstraction layer ensures that developers do not need to worry about the details of authentication. 
 
 
 ### Secure by Default { #key-concept-secure-by-default }
 
-CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code to adapt accordingly.
-CAP's security autoconfiguration approach significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are under safe control**. 
+CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code accordingly.
+CAP's security autoconfiguration approach significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are safely controlled**. 
 
-For instance, endpoints of deployed CAP applications are authenticated automatically, thus providing a secure baseline.
-Making endpoints public requires manual configuration either in the CAP model or in the middleware. 
+For instance, endpoints of deployed CAP applications are automatically authenticated, providing a secure baseline.
+Making endpoints public requires manual configuration in either the CAP model or the middleware. 
 
 
 
@@ -91,7 +91,7 @@ To serve a business request, different runtime components are involved: a reques
 From CAP's point of view, all components without specific security requirements belong to the public zone.
 Therefore, you shouldn't rely on the behavior or structure of consumer components like browsers or technical clients for the security of server components.
 The platform's gateway provides a single point of entry for any incoming call and defines the API visible to the public zone.
-As malicious users have free access to the public zone, these endpoints need to be protected carefully.
+Since malicious users have free access to the public zone, you must protect these endpoints carefully.
 Ideally, you should limit the number of exposed endpoints to a minimum, perhaps through proper network configuration.
 
 #### Platform Zone { #platform-zone }
@@ -106,20 +106,20 @@ The platform zone also includes the gateway, which is the main entry point for e
 
 The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a **unit of trust**. The application provider is responsible to *develop, deploy and operate* these services:
 
-- The [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) acts as as an optional reverse proxy wrapping the application service and providing business-independent functionality required for UIs.
+- The [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) acts as an optional reverse proxy wrapping the application service and providing business-independent functionality required for UIs.
 This includes serving UI content, providing a login flow as well as managing the session with the browser.
-It can be deployed as application (reusable module) or alternatively consumed as a [service](https://help.sap.com/docs/btp/sap-business-technology-platform/managed-application-router).
+It can be deployed as an application (reusable module) or alternatively consumed as a [service](https://help.sap.com/docs/btp/sap-business-technology-platform/managed-application-router).
 
 - The CAP application service exposes the API to serve business requests. Usually, it makes use of lower-level platform services. As built on CAP, a significant number of security requirements is covered either out of the box or by adding minimal configuration.
 
 - The optional CAP sidecar (reusable module) is used to outsource application-independent tasks such as providing multitenancy and extension support.
 
-Application providers, that is platform users, have privileged access to the application zone.
-In contrast, application subscribers, that is business users, are restricted to a minimal interface.
+Application providers (platform users) have privileged access to the application zone.
+In contrast, application subscribers (business users) are restricted to a minimal interface.
 
 ::: warning
-❗ Application providers **may not share any secrets from the application zone** such as binding information with other components or persons.
-In a productive environment, it is recommended to deploy and operate the application on behalf of a technical user.
+❗ Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
+In a production environment, we recommend deploying and operating the application on behalf of a technical user.
 :::
 
 
@@ -138,7 +138,7 @@ This **frees CAP applications from the need to manage trust certificates**. The 
 All supported [environments](platform#cloud) fulfill the given requirements. Additional requirements could be added in future.
 
 ::: tip
-Custom domain certificates need to be signed by trusted certificate authority.
+Custom domain certificates must be signed by a trusted certificate authority.
 :::
 
 ::: warning
@@ -181,13 +181,13 @@ Currently, CAP supports to run on two cloud runtimes of [SAP Business Technology
 Application providers are responsible to ensure a **secure platform environment**.
 In particular, this includes *configuring* [platform services](#btp-services) the application consumes.
 For instance, the provider (user) administrator needs to configure the [identity service](#identity-service) to separate platform users from business users that come from different identity providers.
-Likewise login policies (for example, multifactor authentication or single-sign-on) need to be aligned with company-specific requirements.
+Likewise, login policies (for example, multifactor authentication or single-sign-on) must be aligned with company-specific requirements.
 
 Note, that achieving production-ready security requires to meet all relevant aspects of the **development process** as well.
-For instance, source code repositories need to be protected and may not contain any secrets or personal data.
-Likewise, the **deployment process** needs to be secured. That includes not only setting up CI/CD pipelines running on technical platform users, but also defining integration tests to ensure properly secured application endpoints.
+For instance, source code repositories must be protected and must not contain any secrets or personal data.
+Likewise, the **deployment process** must be secured. This includes not only setting up CI/CD pipelines running on technical platform users, but also defining integration tests to ensure properly secured application endpoints.
 
-As part of **secure operations**, application providers need to establish a patch and vulnerability management, as well as a secure support process. For example, component versions need to be updated and credentials need to be rotated regularly.
+As part of **secure operations**, application providers must establish patch and vulnerability management, as well as a secure support process. For example, component versions must be updated and credentials must be rotated regularly.
 
 ::: warning
 The application provider is responsible to **develop, deploy, and operate the application in a secure platform environment**.
@@ -229,8 +229,8 @@ This service helps to introduce a strict separation between platform users (prov
 
 #### [SAP Authorization and Trust Management Service](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG)
 
-The service lets customers manage user authorizations in technical roles at application level, which can be aggregated into business-level role collections for large-scale cloud scenarios.
-Obviously, developers must define application roles carefully as they form basic access rules to business data.
+The service allows customers to manage user authorizations in technical roles at the application level, which can be aggregated into business-level role collections for large-scale cloud scenarios.
+Developers must define application roles carefully as they form the basic access rules for business data.
 
 [Learn more in the security guide.](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security){.learn-more}
 
@@ -243,14 +243,14 @@ It provides a way to establish a secure communication channel between remote end
 
 #### [SAP Malware Scanning Service](https://help.sap.com/docs/MALWARE_SCANNING)
 
-This service can be used to scan transferred business documents for malware and viruses.
-Currently, there is no CAP integration. A scan needs to be triggered by the business application explicitly.
+This service scans transferred business documents for malware and viruses.
+Currently, there is no CAP integration. A scan must be triggered explicitly by the business application.
 
 [Learn more in the security guide.](https://help.sap.com/docs/btp?#operate_task-security){.learn-more}
 
 #### [SAP Credential Store](https://help.sap.com/docs/CREDENTIAL_STORE)
 
-Credentials managed by applications need to be stored in a secure way.
+Credentials managed by applications must be stored securely.
 This service provides a REST API for (CAP) applications to store and retrieve credentials at runtime.
 
 [Learn more in the security guide.](https://help.sap.com/docs/CREDENTIAL_STORE?#discover_task-security){.learn-more}

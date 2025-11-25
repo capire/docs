@@ -36,14 +36,14 @@ CAP [leverages platform services](#key-concept-platform-services) to provide pro
 - For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-auth) is an appropriate built-in authentication feature.
 
 - For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services:  
-  - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fleged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
+  - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-authentication) to support a smooth migration from XSUAA to IAS.
 
 
 ## Mock User Authentication { #mock-user-auth }
 
-In none-production profile, by default, CAP creates a security configuration which accepts _mock users_.
+In non-production profile, by default, CAP creates a security configuration which accepts _mock users_.
 As this authentication strategy is a built-in feature which does not require any platform service, it is perfect for **unit testing and local development scenarios**.
 
 Setup and start a simple sample application:
@@ -194,7 +194,7 @@ cds:
 
 </div>
 
-In the mock user configuration you are free to specify:
+In mock user configuration you can specify:
 - name (mandatory) and tenant
 - CAP roles (including pseudo-roles) and attributes affecting authorization
 - additional attributes
@@ -202,7 +202,7 @@ In the mock user configuration you are free to specify:
 which influence request processing.
 
 To verify the properties in a user request with a dedicated mock user, activate [user tracing](../cap-users#user-tracing) and send the same request on behalf of `viewer-user`.
-In the application log you should find information about the resolved user after successful authentication:
+In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
 
@@ -225,11 +225,11 @@ TODO
 ### Automated Testing { #mock-user-testing }
 
 Mock users provide an ideal foundation for automated **unit tests, which are essential for ensuring application security**.
-The flexibility in defining various kinds of mock users and the seamless integration into testing code significantly lowers the burden to cover all relevant test combinations.
+The flexibility in defining various types of mock users and the seamless integration into testing code significantly reduces the burden of covering all relevant test combinations.
 
 <div class="impl java">
 
-::: details How to useleverage @WithMockUser in Spring-MVC to use CAP mock users
+::: details How to use @WithMockUser in Spring-MVC to use CAP mock users
 ```java [srv/src/test/java/customer/bookshop/handlers/CatalogServiceTest.java]
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -275,7 +275,7 @@ await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 
  - cross-landscape user propagation (including on-premise)
  - streamlined SAP and non-SAP system [integration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/integrating-service) (due to [OpenId Connect](https://openid.net/connect/) compliance)
 
-IAS authentication is at best configured and tested in the Cloud, hence we're going to enhance the sample with a deyloyment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+IAS authentication is best configured and tested in the Cloud, so we're going to enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with IAS { #ias-ready }
@@ -288,9 +288,9 @@ Before working with IAS on CF, you need to
 towards your IAS tenant to use it as identity provider for applications in your subaccount.
 
 - ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
-in particular you require a `cf` CLI-session targeting to a CF space in the test subaccount (test with `cf target`).
+in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-In the project's root folder execute
+In the project root folder, execute
 
 ```sh
 cds add mta
@@ -371,7 +371,7 @@ The following trace in the application log confirms the activated IAS authentica
 </div>
 
 At startup, the CAP runtime checks the available bindings and activates IAS authentication accordingly. 
-**Hence, the local setup without an IAS binding in the environment is still working**.
+**Therefore, the local setup without an IAS binding in the environment continues to work**.
 
 For mTLS support which is mandatory for IAS, the CAP application has a second route configured with the `cert.*` domain.
 
@@ -401,12 +401,12 @@ On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config
 ### Administrative Console for IAS { #ias-admin }
 
 In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
-you should can see and manage the deployed IAS application. You need an user with administrative provileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
+you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
 
-In the Console you can manage the IAS tenant and the IAS applications, e.g. 
+In the Console you can manage the IAS tenant and IAS applications, for example: 
 - create (test) users in `Users & Authorizations` -> `User Management`
 - deactivate users
-- configure the authentication strategy (password policies, MFA etc.) in `Applications & Ressources` -> `Applications` (IAS instances listed with their disply-name)
+- configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
 - inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
 
 ::: tip
@@ -416,7 +416,7 @@ In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows d
 
 ### Testing IAS on CLI Level
 
-Due to the autoconfiguration in CAP, all CAP endpoints should be authenticated and expect valid ID tokens generated for the IAS application.
+Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
 Sending the test request 
 ```sh
 curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
@@ -432,7 +432,7 @@ cf create-service-key bookshop-auth bookshop-auth-key \
    -c '{"credential-type": "X509_GENERATED"}'
 ```
 
-The overall setup with local CLI client and the Cloud services is scetched in the diagram:
+The overall setup with local CLI client and the Cloud services is sketched in the diagram:
 
 ![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
 
@@ -473,8 +473,8 @@ From the credentials, you can prepare local files containing the certificate use
 
 ::: details How to prepare client X.509 certificate files
 
-Copy the public X.509-certificate in property `certifiacte` into a file `cert-raw.pem` and `key` into a file `key-raw.pem`, accordingly.
-Both files need to be post-processed to transform the single-line represnatation into a standard multi-line representation:
+Copy the public X.509-certificate in property `certificate` into a file `cert-raw.pem` and `key` into a file `key-raw.pem`, accordingly.
+Both files need to be post-processed to transform the single-line representation into a standard multi-line representation:
 
 ```sh
 awk '{gsub(/\\n/,"\n")}1' <file-raw>.pem > <file>.pem
@@ -537,7 +537,7 @@ cds add approuter
 ```
 
 adds the additional AppRouter to the deployment which is already prepared for IAS.
-The resulting setup is scetched in the diagram:
+The resulting setup is sketched in the diagram:
 
 ![UI-level Testing of IAS Endpoints](./assets/ias-ui-setup.svg){width="500px"}
 
@@ -602,7 +602,7 @@ This is the safe baseline on which minor customization steps can be applied on t
 :::
 
 There are multiple reasons why customization might be required:
-1. Endpoints for none-business requests often require specific authentication methods (e.g. health check, techincal services).
+1. Endpoints for non-business requests often require specific authentication methods (e.g. health check, technical services).
 2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
 3. The application needs to integrate with a 3rd party authentication service.
 
@@ -664,7 +664,7 @@ public class CustomSecurityConfig {
 ```
 Due to the custom configuration, all URLs matching `/public/**` are opened for public access in this example.
 
-Make sure your custom configuration has higher priority than the CAP's default security configuration by decorating the bean with a low order. 
+Ensure your custom configuration has higher priority than CAP's default security configuration by decorating the bean with a low order. 
 
 ::: warning _❗ Warning_ <!--  -->
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
@@ -678,7 +678,7 @@ In services meshes such as [Istio](https://istio.io/) the authentication is usua
 
 ![Service Mesh with Ingress Gateway](./assets/ingress-auth.drawio.svg){width="500px"}
 
-In architectures like this, the CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
+In such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
 
 ::: tip
 User propagation should be done by forwarding the request token in `Authorization`-header accordingly.
@@ -692,13 +692,13 @@ If you switch off CAP authentication, make sure that the internal communication 
 
 
 ## Pitfalls
-- **Dont' miss to configure security middleware.**
+- **Don't miss to configure security middleware.**
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
-  Without security middleware configured, CDS services are exposed to public. 
+  Without security middleware configured, CDS services are exposed to the public. 
 
-- **Don't rely on AppRouter authentication**. Approuter as frontend proxy does not shield the backend from incoming traffic. Hence, the backend needs to be secured independently.
+- **Don't rely on AppRouter authentication**. AppRouter as a frontend proxy does not shield the backend from incoming traffic. Therefore, the backend must be secured independently.
 
-- **Don't deviate from security defaults**. Only when absolute necessary, only experts should take the decision to add modifications or even replace parts of the standard authentication mechanisms. 
+- **Don't deviate from security defaults**. Only when absolutely necessary should experts make the decision to add modifications or replace parts of the standard authentication mechanisms. 
   
-- **Don't miss to add authentication tests** to ensure properly setup security configuration in your deployed application that rejects unauthenticated requests.
+- **Don't forget to add authentication tests** to ensure properly configured security in your deployed application that rejects unauthenticated requests.
 
