@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an element with `@assert` to define an expression for more complex validations that need to be fulfilled before data gets persisted. If the validation should fail, the expression must return the error message to be sent to the client, or `null` if the validation passed.
+Annotate an element with `@assert` to define arbitrary validation expressions that are run after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
 
 The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
