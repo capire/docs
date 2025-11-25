@@ -187,19 +187,19 @@ It can occur that inactive drafts are still in the database after the configured
 
 ## Bypassing Drafts
 
-The draft choreography does not allow active instances of draft-enabled entities to be created or modified directly.
-However, when working with technical services that are not exclusively consumed through a GUI, bypassing this restriction can be useful.
+The draft choreography prevents direct creation or modification of active instances of draft-enabled entities.
+However, when working with technical services not exclusively consumed through a GUI, bypassing this restriction is useful.
 The CAP Node.js runtime provides two similar but distinct options for bypassing the regular draft choreography.
 
 ### Generic `@Common.DraftRoot.NewAction`
 
-By enabling the feature `cds.fiori.draft_new_action`, you can change how new instances of draft-enabled entities get created in the CAP Node.js runtime.
+By enabling the feature `cds.fiori.draft_new_action`, you change how new instances of draft-enabled entities get created in the CAP Node.js runtime.
 This feature is disabled by default.
 When you activate this feature, the runtime automatically adds the `@Common.DraftRoot.NewAction` annotation to _every_ draft-enabled entity in the background and adds a collection-bound action `draftNew` to the entity's runtime model.
 When this annotation is present, Fiori Elements triggers the action referenced by the annotation instead of sending a `POST` request to the collection path to create a new entity. The runtime internally rewrites calls to this action as a `NEW` event.
 
 :::warning
-No custom handlers can be registered for the `draftNew` action. Instead, such custom handlers should be registered on the regular `NEW` event.
+No custom handlers can be registered for the `draftNew` action. Instead, register such custom handlers on the regular `NEW` event.
 :::
 
 By providing a dedicated action that can be called to create a new instance, `POST` requests to the collection path of the entity can now be used differently:
