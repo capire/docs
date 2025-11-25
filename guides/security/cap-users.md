@@ -330,7 +330,7 @@ service AdminService @(requires: ['ManageAuthors', 'ManageBooks']) {
 }
 ```
 
-Role `ManageBooks` allows an user to mange books _for the authors already in sale_, auch as offering new books.
+Role `ManageBooks` allows a user to mange books _for the authors already in sale_, as well as offering new books.
 In contrast, users with `ManageAuthors` are allowed to decide which authors' books should be offered, but they do not define the range of books.
 Both CAP roles are ready to be used in higher-level [AMS policies](#policies).
 
@@ -357,7 +357,7 @@ annotate AdminService.Books with @ams.attributes: {
 
 In general, the `@ams` annotation operates on the entity level.
 The value of the AMS attribute needs to point to a single-value property of the target entity (paths are supported).
-It is highly recommended to make use of a compiler expression in order to ensure validity of the value reference.
+You need to make use of a compiler expression in order to ensure validity of the value reference.
 
 
 ::: tip
@@ -406,7 +406,7 @@ After the application is built, check the *srv/src/main/resources/ams* folder to
 
 :::
 
-[Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.leanr-more}
+[Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.learn-more}
 
 
 The generated policies are a good starting point to add manual modifications.
@@ -541,7 +541,7 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
          command: npm start
          memory: 512M
    requires:
-     - name: bookshop-auth
+     - name: bookshop-ias
        [...]
 ```
 
