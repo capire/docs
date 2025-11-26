@@ -89,7 +89,7 @@ Arithmetic expressions promote numeric types according to the following preceden
 - For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
 - For division:
   - If any operand is an approximate numeric type (`cds.Double`, `hana.REAL`), the result type is `cds.Double`.
-  - Otherwise, the result type is `DECIMAL`, which provides higher accuracy for decimal fractions.
+  - Otherwise, the result type is `cds.Decimal`, which provides higher accuracy for decimal fractions.
 
 #### Numeric Standard Functions { #type-determination-functions }
 
