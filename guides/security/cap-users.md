@@ -374,7 +374,10 @@ The attribute should have cross-sectional semantics in the domain.
 As such attributes are usually shared by multiple entities, it is convenient to add the `@ams`-annotation at the level of a shared aspect as sketched here:
 
 ```cds
-aspect withGenre @ams.attributes: { Genre: (genre.name) } {
+@ams.attributes: {
+  Genre: (genre.name)
+}
+aspect withGenre {
     genre : Association to Genres;
 }
 
