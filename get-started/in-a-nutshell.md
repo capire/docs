@@ -393,7 +393,7 @@ Create CSV files that already include some sample data:
 ```sh
 cds add data --records 10
 ```
-[Find the full set of options here.](../tools/cds-cli.md#data){.learn-more}
+[Find the full set of options in the CLI reference.](../tools/cds-cli.md#data){.learn-more}
 :::
 
 <span class="impl node">
@@ -781,7 +781,7 @@ Books book = persistenceService.run(byId).single(Books.class);
 
 ### Sample HTTP Requests
 
-Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it.
+Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](/tools/cds-editors#add-useful-plugins).
 
 <span class="impl node">
 
