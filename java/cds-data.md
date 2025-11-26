@@ -84,7 +84,7 @@ Use `type(CdsBaseType)` to explicitly set the result type if needed.
 Arithmetic expressions promote numeric types according to the following precedence:
 
 **Type Precedence (highest to lowest):**
-`cds.Double`, `hana.REAL`, `cds.Decimal, `cds.Int64`, `cds.Int32`, `cds.Int16`, `cds.UInt8`
+`cds.Double`, `hana.REAL`, `cds.Decimal`, `cds.Int64`, `cds.Int32`, `cds.Int16`, `cds.UInt8`
 
 - For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
 - For division:
