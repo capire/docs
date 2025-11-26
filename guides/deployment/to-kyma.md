@@ -236,7 +236,10 @@ Try out the [CAP SFLIGHT](https://github.com/SAP-samples/cap-sflight)
 and [CAP for Java](https://github.com/SAP-samples/cloud-cap-samples-java) examples on Kyma.
 ::: -->
 
----
+## Next Up...
+
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
+
 {style="margin-top:11em"}
 
 ## Deep Dives
