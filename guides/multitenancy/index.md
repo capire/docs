@@ -897,14 +897,14 @@ For faster turnaround cycles in development and testing, you can run the app loc
 To achieve this, bind your SaaS app and the MTX sidecar to its required cloud services, for example:
 
 ```sh
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-srv
 ```
 
 For testing the sidecar, make sure to run the command there as well:
 
 ```sh
 cd mtx/sidecar
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-mtx
 ```
 
 To generate the SAP HANA HDI files for deployment, go to your project root and run the build:
@@ -1172,7 +1172,7 @@ modules:
       TENANT_HOST_PATTERN: ^(.*)-${default-uri}
 ```
 
-[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more style="margin-top: 10px;"}
+[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more}
 
 
 :::
@@ -1264,63 +1264,6 @@ The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
 
-<!--
-
-## Multiple Microservices
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
-
-## Sharing One Database
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
--->
-
-<!--
-<div class="impl node">
-
-Use CLI option `--without-sidecar` to do so, e.g.:
-
-```sh
-cds add multitenancy --without-sidecar
-```
-
-::: details See what this adds to your Node.js project...
-
-1. Adds package `@sap/cds-mtxs` to your project:
-
-   ```jsonc
-   {
-      "dependencies": { // [!code focus]
-         "@sap/cds-mtxs": "^1" // [!code focus]
-      },
-   }
-   ```
-
-2. Adds these lines to your project's _package.json_ to enable multitenancy with sidecar:
-
-   ```jsonc
-   {
-      "cds": {  // [!code focus]
-         "requires": { "multitenancy": true }, // [!code focus]
-         "profile": "with-mtx-sidecar" // [!code --]
-      },
-      "dependencies": {
-         "@sap/cds-mtxs": "^1"
-      },
-   }
-   ```
-
-3. ~~**Doesn't** add a sidecar subproject at `mtx/sidecar`~~
-:::
-
-</div>
- -->
 
 ## Next Steps
 
