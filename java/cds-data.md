@@ -97,8 +97,8 @@ Numeric aggregation and standard functions determine their result type based on 
 
 - **ceiling(x)**, **floor(x)**, **round(x)**: Return the same type as the input `x`.
 - **min(x)**, **max(x)**, **sum(x)**: Aggregate functions return the same type as the argument `x`.
-- **average(x)**: Returns `DECIMAL` for exact numeric types and `DOUBLE` for approximate numeric types.
-- **count(x)**, **countdistinct(x)**: return `INT64`.
+- **average(x)**: Returns `cds.Decimal` for exact numeric types and `cds.Double` for approximate numeric types.
+- **count(x)**, **countdistinct(x)**: return `cds.Int64`.
 
 
 ## Structured Data
