@@ -14,7 +14,7 @@ synopsis: >
 
 ### Example Use Case
 
-Consider a requirement where customers can withdraw from travel (for example, due to sickness), but only up to 24 hours before the travel begins. This requires custom validation logic.
+Consider a requirement where customers can withdraw from travel — for example, due to sickness — but only up to 24 hours before travel begins. This requires custom validation logic.
 
 The status transition diagram below shows the new state and transitions:
 ![](./assets/flows/xtravels-flow-extend.svg)
@@ -55,12 +55,12 @@ service TravelService {
 }
 ```
 
-Note that `withdrawTravel` doesn't have a `@to` annotation—the transition is implemented in a custom handler.
+Note that `withdrawTravel` has no `@to` annotation; you implement the transition in a custom handler.
 
 
 ### In Java
 
-Here's a custom implementation for the transition to `Withdrawn` in Java:
+Here is a custom Java implementation that enforces the 24-hour rule:
 
 ```java
 @Component
@@ -109,7 +109,7 @@ public class WithdrawTravelHandler implements EventHandler {
 }
 ```
 
-The custom `before` handler retrieves the travel's `BeginDate` from the database and validates that the withdrawal occurs within the allowed time frame (up to 24 hours before the travel begins).
+The custom `before` handler reads the travel's `BeginDate` and validates that withdrawal occurs within the allowed timeframe. The custom `on` handler updates the travel status to `Withdrawn` and marks the action as completed.
 
 <!--
 The custom `On` handler implements the transition by updating the travel status to `Withdrawn`.
@@ -124,7 +124,7 @@ The custom `on` handler updates the travel status to `Withdrawn` and marks the a
 -> `withdrawTravel` should only have an additional before check.
 :::
 
-While we could use the `@to` annotation with the default handler, omitting it here signals to developers that custom transition logic is implemented.
+While you could use the `@to` annotation with the default handler, omitting it signals that you implemented custom transition logic.
 
 
 ### In Node.js
