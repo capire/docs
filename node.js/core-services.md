@@ -584,7 +584,7 @@ The input validation handlers above collect input errors with [`req.error()`](./
 
 [Learn more about how requests are processed by `srv.handle(req)`](#srv-handle-event) {.learn-more}
 
-
+<div id="afterbefore" />
 
 ### srv. after (request) {.method}
 
@@ -625,7 +625,107 @@ this.after ('each', Books, book => {
 
 [Learn more about how requests are processed by `srv.handle(req)`](#srv-handle-event) {.learn-more}
 
+#### Implication when modifying data in `after` handlers
 
+A unique feature for CAP and Fiori apps, contributing to enterprise ready solutions, is that usually data can be arbitrarily filtered, sorted or grouped on the UI. These operations are pushed down to the database by CAP and thus the response received in an `after` handler already considers these query parameters. Data modifications in `after` handlers should never cause deviations from that.
+
+<video src="./assets/fiori-generic-sort-filter.mp4" autoplay loop muted webkit-playsinline playsinline />{.ignore-dark style="width: 688px"}
+
+Just imagine if a user requests to sort a table after a column from A to Z but the data returned does not come back A to Z because an `after` handler modified the values yielding a different structure. The user would be confused, the application would get tickets, a colleague would confusingly debug to just find out one `after` handler, out of potentially many, modifies data in a way that does not work with the UI.
+
+::: code-group
+
+```js [catalog.js]
+module.exports = srv => {
+  srv.after('READ', srv.entities.Books, (res, req) => {// [!code --]
+    for (const book of res) {// [!code --]
+      book.price = book.stock > 100 ? book.price * 0.9 : book.price // [!code --]
+    }// [!code --]
+  })// [!code --]
+  
+  srv.before('READ', srv.entities.Books, async (req) => { // [!code --]
+    if ( // [!code --]
+      req.query.SELECT.columns && // [!code --]
+      !req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'stock') && // [!code --]
+      req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'price')  // [!code --]
+    ) { // [!code --]
+      req.query.SELECT.columns.push({ref: ['stock']}) // [!code --]
+    } // [!code --]
+  }) // [!code --]
+}
+```
+
+```cds [catalog.cds]
+service CatalogService {
+  entity Books as projection on persistence.Books; // [!code --]
+  entity Books as projection on persistence.Books { // [!code ++]
+    *, // [!code ++]
+    (stock > 100 ? price * 0.9 : price) as price// [!code ++]
+  };// [!code ++]
+}
+```
+
+:::
+
+Prefer using conditional statements within the entity projection directly or add the conditional statements dynamically in a `before` handler to push the conditions down to the database so it can apply sorting and filtering correctly.
+
+::: code-group
+
+```js [catalog.js]
+module.exports = srv => {
+  srv.after('READ', srv.entities.Books, (res, req) => {// [!code --]
+    for (const book of res) {// [!code --]
+      book.price = book.stock > 100 ? book.price * 0.9 : book.price // [!code --]
+    }// [!code --]
+  })// [!code --]
+  
+  srv.before('READ', srv.entities.Books, async (req) => {
+    if ( // [!code --]
+      req.query.SELECT.columns && // [!code --]
+      !req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'stock') && // [!code --]
+      req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'price')  // [!code --]
+    ) { // [!code --]
+      req.query.SELECT.columns.push({ref: ['stock']}) // [!code --]
+    } // [!code --]
+    if (req.query.SELECT.columns /* && additional logic check */) { // [!code ++]
+      const priceCol = req.query.SELECT.columns?.indexOf(c => c.ref && c.ref[0] === 'price')// [!code ++]
+      if (priceCol >= 0) {// [!code ++]
+        req.query.SELECT.columns.splice(priceCol, 1)// [!code ++]
+      }// [!code ++]
+      req.query.SELECT.columns.push({// [!code ++]
+        xpr: ['case', 'when', {ref: ['stock']}, '>', {val: 100}, // [!code ++]
+          'then', {ref: ['price']}, '*', {val: 0.9}, // [!code ++]
+          'else', {ref: ['stock']}, // [!code ++]
+        'end'], // [!code ++]
+        as: 'price'})// [!code ++]
+    }// [!code ++]
+  })
+}
+```
+
+:::
+
+There are valid cases where data modifications must be made and sorting or filtering cannot be considered. In those cases you must add the correct `@Capabilities` annotations to the entity in question to ensure the UI does not offer functionality the backend cannot handle.
+
+::: code-group
+```js [catalog.js]
+module.exports = srv => {
+  srv.after('each', srv.entities.ListOfBooks, book => {
+    if (book.stock > 111) book.title += ` -- 11% discount!`
+  })
+}
+```
+
+```cds [catalog.cds]
+service CatalogService {
+  @Capabilities : { // [!code ++]
+    FilterRestrictions.NonFitlerableFields : [title], // [!code ++]
+    SortRestrictions.NonSortableFields : [title] // [!code ++]
+  } // [!code ++]
+  entity ListOfBooks as projection on persistence.Books;
+}
+```
+:::
 
 ### srv. on (request) {.method}
 
@@ -1162,3 +1262,78 @@ await srv.create `Books` .entries ({title:'Wuthering Heights'})
 await srv.update `Books` .where `ID=${201}` .with `title=${'Sturmhöhe'}`
 await srv.delete `Books` .where `ID=${201}`
 ```
+
+## Performance considerations
+
+Consider the impact of your custom handlers on the response time. This means, use as few `on` handlers as possible, while at the same time minimise the amount of `await` keywords in any handler, including `before` and `after` handlers!
+
+`await` allows for async processing, meaning the server is not blocked and can proceed processing other requests in the meantime while waiting for the awaited result, but to return the response for a request the await still must finish!
+
+In practice this means, no `await` in for loops as well minimizing `await`'s in `before` and `after` handlers. `after` handlers are usually used to post process responses or trigger an event. 
+
+- When you need additional information in the `after` handler, use a `before` handler to adjust the incoming query to enforce properties you need in your `after` handler. When you need data unrelated to the query use an `on` handler and `Promise.all` to await the db result for the query and your additional data simultaneously.
+
+::: code-group
+
+```js [additional-data-of-entity-sample]
+srv.after('READ', Books, async (res, req) => {
+  for (const book of res) {
+    const bookOnDB = await SELECT.one.from(Books).where({ID: book.ID}).columns('stock') // [!code --]
+    book.price = bookOnDB.stock > 100 ? book.price * 0.9 : book.price // [!code --]
+    book.price = book.stock > 100 ? book.price * 0.9 : book.price // [!code ++]
+  }
+})
+
+srv.before('READ', Books, async (req) => { // [!code ++]
+  if ( // [!code ++]
+    req.query.SELECT.columns && // [!code ++]
+    !req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'stock') && // [!code ++]
+    req.query.SELECT.columns.some(c => c.ref && c.ref[0] === 'price')  // [!code ++]
+  ) { // [!code ++]
+    req.query.SELECT.columns.push({ref: ['stock']}) // [!code ++]
+  } // [!code ++]
+}) // [!code ++]
+```
+
+```js [different-data-sample]
+srv.after('READ', Books, async (res, req) => { // [!code --]
+srv.on('READ', Books, async (req, next) => { // [!code ++]
+  const [res, config] = await Promise.all([ // [!code ++]
+    next(), // [!code ++]
+    srv.run(SELECT.one.from(Configuration)) // [!code ++]
+  ]) // [!code ++]
+  const config = await srv.run(SELECT.one.from(Configuration)) // [!code --]
+  for (const book of res) {
+    if (config.saleIsHappening)
+      book.price = book.stock > 100 ? book.price * 0.9 : book.price
+  }
+  return res; // [!code ++]
+}) // [!code --]
+```
+:::
+
+- When you need to execute actions irrelevant to the response, wrap them inside [`cds.spawn`](./cds-tx#cds-spawn) so they are processed asynchronously and the request can proceed without waiting for the action. An example here would be triggering a notification.
+
+::: code-group
+
+```js [emit-event-after-delete]
+srv.after('SAVE', Books, async (book, req) => {
+  // Without cds.spawn both selects and the notify // [!code ++]
+  // would slow down the response time for the SAVE // [!code ++]
+  cds.spawn({}, async () => { // [!code ++]
+    const author = await SELECT.one.from(Authors).where({ID: book.author_ID});
+    const editor = await SELECT.one.from(Users).where({ID: cds.context.user.id}).columns('displayName');
+
+    const alert = await cds.connect.to('notifications');
+    await alert.notify ('BookModified', {
+      recipients: [ author.email ],
+      data: {
+        customer: customer.info,
+        title: book.title,
+        user: editor.displayName,
+      }
+    })
+  })// [!code ++]
+})
+```
+:::
