@@ -749,6 +749,10 @@ Recursive hierarchies are parent-child hierarchies, where each entity references
 
 A generic hierarchy implementation for hierarchies is available on all relational datases supported by the CAP runtimes.
 
+::: warning
+On H2 the size of hierarchies should be kept small for performance reasons.
+:::
+
 ### Example
 Let's assume we have the following domain model and its projection in a service:
 
