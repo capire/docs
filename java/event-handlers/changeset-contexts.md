@@ -181,4 +181,4 @@ A ChangeSet Context can always be marked as requiring a transaction, by calling 
 Some Select queries will still require a transaction:
 
 - Select queries with a lock: These are treated like a modifying statement and will start a transaction.
-- Select queries reading streamed media data: These are currently not automatically detected. The surrounding ChangeSet Context needs to be marked as transactional explicitly. If not done, `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.
+- Select queries reading streamed media data: For these a transaction is started to avoid that `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.
