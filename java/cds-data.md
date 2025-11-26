@@ -84,11 +84,11 @@ Use `type(CdsBaseType)` to explicitly set the result type if needed.
 Arithmetic expressions promote numeric types according to the following precedence:
 
 **Type Precedence (highest to lowest):**
-`DOUBLE` (binary64), `HANA_REAL` (binary32), `DECIMAL` (base 10), `INT64`, `INT32`, `INT16`, `UINT8`
+`cds.Double`, `hana.REAL`, `cds.Decimal, `cds.Int64`, `cds.Int32`, `cds.Int16`, `cds.UInt8`
 
 - For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
 - For division:
-  - If any operand is a binary floating-point type (`DOUBLE`, `HANA_REAL`), the result type is `DOUBLE`.
+  - If any operand is an approximate numeric type (`cds.Double`, `hana.REAL`), the result type is `cds.Double`.
   - Otherwise, the result type is `DECIMAL`, which provides higher accuracy for decimal fractions.
 
 #### Numeric Standard Functions { #type-determination-functions }
@@ -98,7 +98,7 @@ Numeric aggregation and standard functions determine their result type based on 
 - **ceiling(x)**, **floor(x)**, **round(x)**: Return the same type as the input `x`.
 - **min(x)**, **max(x)**, **sum(x)**: Aggregate functions return the same type as the argument `x`.
 - **average(x)**: Returns `DECIMAL` for exact numeric types and `DOUBLE` for approximate numeric types.
-- **count(x)**, **countdistinct(x)**: Always return `INT64`.
+- **count(x)**, **countdistinct(x)**: return `INT64`.
 
 
 ## Structured Data
