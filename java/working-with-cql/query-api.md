@@ -610,9 +610,9 @@ Select.from("bookshop.Books")
         .search(term -> term.has("Allen").or(term.has("Heights")));
 ```
 
-#### Search in sub-elements of Map <Beta />
+#### Search in Sub-Elements of Map <Beta />
 
-You can also search for values of sub-elements of a [cds.Map](cds-data.md#cds-map) element by adding a path to the sub-element to the search scope:
+You can search for values in sub-elements of a [cds.Map](cds-data.md#cds-map) element by adding a path to the sub-element in the search scope:
 
 ```cds
 entity Book : cuid {
@@ -628,9 +628,9 @@ Select.from(BOOK)
 ```
 
 ::: warning
-Searching by content of a map element can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset.
+Searching by content of a map element can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
 
-Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior may yield unexpected results.
+Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
 :::
 
 #### Using `where` Clause {#where-clause}
