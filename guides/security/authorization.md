@@ -40,17 +40,18 @@ CAP authorization modeling means restricting user access to application resource
 The decisive point here is that the application logic does not need to contribute any security-critical code for this, but can rely on the generic framework.
 
 There are several levels to put access rules on CDS resources:
-- [Static access control](#static-access-control) limits access to CDS services on a general level independently from users.
-- [Role-based access control](#role-based-access-control) controls resource access according to roles granted by user administrators.
+- [Static access control](#static-access-control) limits access to CDS services on a general level independently from the request user.
+- [Role-based access control](#role-based-access-control) derives recource access rules from roles granted by user administrators.
 - [Instance-based access control](#instance-based-auth) even allows entity-level filters that usually depend on user criteria.
 
-But **by default, CDS services have no access control** which means that authenticated users have access to all entities without any restrictions.
+**By default, CDS services have no access control** which means that without authorization modelling authenticated users have access to all entities.
 
 ::: warning
-Applications need to ensure a proper authorization which is highly dependent from the domain model and therefore cannot be enforced by CAP out of the box.
+**Applications must implement proper authorization.** CAP cannot enforce this automatically as it depends entirely on the specific domain model.
 :::
 
-Finally, according to key concept [Customizable Security](./overview#key-concept-customizable), applications can introduce custom authorization code for special scenarios.
+Finally, according to key concept [Customizable Security](./overview#key-concept-customizable), 
+applications can implement [custom authorization logic](./cap-users#developing-with-users) for exceptional scenarios when declarative approaches are insufficient.
 
 
 ## Static Access Control { #static-access-control }
@@ -150,8 +151,7 @@ CodeLists such as `Languages`, `Currencies`, and `Countries` from `sap.common` a
 
 ## Role-Based Access Control { #role-based-access-control }
 
-To protect resources according to your business needs, you can define [restrictions](#restrict-annotation) that make the runtime enforce proper access control. 
-Alternatively, you can add custom authorization logic by means of an [authorization enforcement API](#enforcement).
+To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations. 
 
 Restrictions can be defined on *different CDS resources*:
 
