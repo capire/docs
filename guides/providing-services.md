@@ -1434,9 +1434,16 @@ service TravelService {
 
 Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
 This automatic entity extending can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
+If you do so, you need to add aspect `sap.common.FlowHistory` manually in order to use `@to: $flow.previous`!
+Further, automatic history capturing can be enabled for all entities with a flow definition <Config>cds.features.history_for_flows: 'all'</Config>.
 
 ::: tip Transitions are excluded from projections
 The `transitions_` composition automatically appended to the base entity is automatically excluded from all projections.
+:::
+
+::: warning The `transitions_` composition is a technical artifact
+The `transitions_` composition is meant as a technical artifact to implement transitioning to the previous state and not for exposing the transition history to business users, etc.
+For such use cases, check out the [Change Tracking plugin](../plugins/index.md#change-tracking).
 :::
 
 
