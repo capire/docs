@@ -258,19 +258,19 @@ Check out the version in our [CAP Java bookshop sample project](https://github.c
 
 ## Testing with H2
 
-**H2** is the preferred database for CAP Java applications, as it offers a combination of features making it the best candidate for local development and testing:
+**H2** is the preferred database for CAP Java applications, as it offers a combination of features that make it the best candidate for local development and testing:
 
-* **Concurrent Access and Locking**
+* **Concurrent access and locking**
 
-The database supports multiple concurrent connections and implements row-level locking, allowing safe parallel data access without data corruption or race conditions.
+  The database supports multiple concurrent connections and implements row-level locking, allowing safe parallel data access without data corruption or race conditions.
 
-* **Open Source and Java Native**
+* **Open Source and Java native**
 
-As an open-source database written entirely in Java, H2 offers transparency, flexibility, and the benefit of being maintained by an active community. Its Java implementation ensures optimal integration with Java-based applications and platforms.
+  As an open-source database written entirely in Java, H2 offers transparency, flexibility, and the benefit of being maintained by an active community. Its Java implementation ensures optimal integration with Java-based applications and platforms.
 
-* **Administrative Tools**
+* **Administrative tools**
 
-H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (if the port differs from the default `8080`, it should be changed accordingly).
+  H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (if the port differs from the default `8080`, it should be changed accordingly).
 
 ### Setup & Configuration
 
@@ -295,11 +295,11 @@ Next, configure the build to [create an initial _schema.sql_ file](../../java/cq
 
 In Spring, H2 is automatically initialized as in-memory database when the driver is present on the classpath.
 
-[Learn more about the configuration of H2 ](../../java/cqn-services/persistence-services#h2){.learn-more}
+[Learn more about the configuration of H2.](../../java/cqn-services/persistence-services#h2){.learn-more}
 
 After performing the above mentioned configuration steps, the `application.yaml` should contain the following lines for `default` profile:
-
-```yml
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
 spring:
   config.activate.on-profile: default
   sql.init.platform: h2
@@ -307,32 +307,32 @@ cds:
   data-source:
     auto-config.enabled: false
 ```
+:::
 
-### H2 limitations
+### H2 Limitations
 
-When developing a CAP Java application, it’s important to understand the limits and constraints of the underlying database. Every database has its own performance characteristics, data type restrictions, indexing behavior, and transaction handling rules.
+When developing a CAP Java application, it's important to understand the limits and constraints of the underlying database. Every database has its own performance characteristics, data type restrictions, indexing behavior, and transaction handling rules.
 
-To learn more about known limitations, read the section [H2 limitations](../../java/cqn-services/persistence-services#h2-database).
+Read more about known limitations in the H2 section of the [Persistence Services guide.](../../java/cqn-services/persistence-services#h2-database)
 
-::: warning
+::: warning Constraints with local MTXS
 In addition to the limitations of the H2 database mentioned above, there are also constraints when it comes to testing multitenancy and extensibility (MTXS) scenarios on a local environment.
 :::
 
 ### Hybrid Testing - a way to overcome limitations
 
-Although CAP Java enables running and testing applications with a local H2 database, still there are cases when it is not possible due to some limits mentioned above. In that case hybrid testing capabilities help to stay in a local development environment avoiding long turnaround times of cloud deployments, by selectively connecting to services in the cloud.
+Although CAP Java enables running and testing applications with a local H2 database, still there are cases when it is not possible, due to some limitations mentioned previously. In that case, hybrid testing capabilities help you to stay in a local development environment avoiding long turnaround times of cloud deployments. You just selectively connect to services in the cloud.
 
-The section [Hybrid Testing](../../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in local environment.
+The section [Hybrid Testing](../../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in a local environment.
 
 ### H2 and Spring Dev Tools integration
 
-Most CAP Java projects use Spring Boot. To speed up the edit–compile–verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
+Most CAP Java projects use Spring Boot. To speed up the edit-compile-verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
 
-The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. For details on how to configure file-based H2, see the [Connecting to an Embedded (Local) Database](https://www.h2database.com/html/features.html#embedded_databases)
+The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows: 
 
-The simplest `application.yaml` configuration would look as follows: 
-
-```yml
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
 spring:
   config.activate.on-profile: default
   sql.init.platform: h2
@@ -341,17 +341,22 @@ cds:
   data-source:
     auto-config.enabled: false
 ```
+:::
+
+[Learn more about how to configure file-based H2.](https://www.h2database.com/html/features.html#embedded_databases){.learn-more}
 
 ### Logging SQL to console
 
-To view the generated SQL statements, which will be run on the H2, it is possible to switch to `DEBUG` log output by adding the following log-levels in the `application.yaml`
+To view the generated SQL statements, which will be run on the H2 database, it is possible to switch to `DEBUG` log output by adding the following log-levels:
 
-```yml
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
 logging:
   level:
     com.sap.cds.persistence.sql: DEBUG
 ```
+:::
 
-This comes especially handy in situations, when the CAP Java developers need to track runtime or a Java Application behavior.
+This is beneficial, when you need to track runtime or a Java Application behavior.
 
-To learn more about loggers, refer to [Predefined Loggers](../../java/operating-applications/observability#predefined-loggers)
+[Learn more about Predefined Loggers.](../../java/operating-applications/observability#predefined-loggers){.learn-more}
