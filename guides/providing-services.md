@@ -950,23 +950,21 @@ The following example ensures that the `quantity` of the ordered book is validat
 
 ```cds
 entity Books : cuid {
-    title   : String;
-    stock   : Integer;
+   title : String;
+   stock : Integer;
 }
 
 entity Orders : cuid {
-   Items    : Composition of many OrderItems
-                   on Items.parent = $self;
-}
+   Items : Composition of many {
+      key itemId   : GUID;
+         book     : Association to Books;
 
-entity OrderItems : cuid {
-    parent    : Association to Orders;  
-    book      : Association to Books;
-    @assert: (case
-      when book.stock <= quantity then 'Stock exceeded'
-    end)
-    quantity  : Integer;
-    amount    : Decimal(9, 2);
+         @assert: (case // [!code focus]
+            when book.stock <= quantity then 'Stock exceeded' // [!code focus]
+         end) // [!code focus]
+         quantity : Integer;
+         amount   : Decimal(9, 2);
+   };
 }
 ```
 
