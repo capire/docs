@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-The `to` property of a `@restrict` privilege defines one or more [user roles](../../../../guides/security/authorization#roles) or [pseudo roles](../../../../guides/security/authorization#pseudo-roles) that the privilege applies to. This rule checks that the values of `@restrict.to` are valid, that is, roles cannot be missing or misspelled and that roles including `any` should be simplified to just `any`.
+The `to` property of a `@restrict` privilege defines one or more [user roles](../../../../guides/security/cap-users#roles) or [pseudo roles](../../../../guides/security/cap-users#pseudo-roles) that the privilege applies to. This rule checks that the values of `@restrict.to` are valid, that is, roles cannot be missing or misspelled and that roles including `any` should be simplified to just `any`.
 
 ## Examples
 

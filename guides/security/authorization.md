@@ -162,7 +162,7 @@ See [combined restrictions](#combined-restrictions) for more details.
 Beside the scope, restrictions can limit access to resources with regards to *different dimensions*:
 
 - The [event](#restricting-events) of the request, that is, the type of the operation (what?)
-- The [roles](#roles) of the user (who?)
+- The [roles](cap-users#roles) of the user (who?)
 - [Filter-condition](#instance-based-auth) on instances to operate on (which?)
 
 ### @requires { #requires}
@@ -194,13 +194,13 @@ The building block of such a restriction is a single **privilege**, which has th
 whereas the properties are:
 
 * `grant`: one or more events that the privilege applies to
-* `to`: one or more [user roles](#roles) that the privilege applies to (optional)
+* `to`: one or more [user roles](cap-users#roles) that the privilege applies to (optional)
 * `where`: a filter condition that further restricts access on an instance level (optional).
 
 The following values are supported:
 - `grant` accepts all standard [CDS events](../../get-started/concepts#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
 
-- The `to` property lists all [user roles](#roles) or [pseudo roles](#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
+- The `to` property lists all [user roles](cap-users#roles) or [pseudo roles](cap-users#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
 - The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
 
@@ -411,7 +411,7 @@ A service level entity can't inherit a restriction with a `where` condition that
 
 The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. In addition, you can define a `where`-condition that further limits the set of accessible instances. This condition, which acts like a filter, establishes *instance-based authorization*.
 
-The condition defined in the `where` clause typically associates domain data with static [user claims](#user-claims). Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. This means that, the condition applies to following standard CDS events only<sup>1</sup>:
+The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. This means that, the condition applies to following standard CDS events only<sup>1</sup>:
 - `READ` (as result filter)
 - `UPDATE` (as reject condition<sup>2</sup>)
 - `DELETE` (as reject condition<sup>2</sup>)
@@ -446,7 +446,7 @@ In case the filter condition is not met in an `UPDATE` or `DELETE` request, the 
 
 ### User Attribute Values { #user-attrs}
 
-To refer to attribute values from the user claim, prefix the attribute name with '`$user.`' as outlined in [static user claims](#user-claims). For instance, `$user.country` refers to the attribute with the name `country`.
+To refer to attribute values from the user claim, prefix the attribute name with '`$user.`' as outlined in [static user claims](cap-users#claims). For instance, `$user.country` refers to the attribute with the name `country`.
 
 In general, `$user.<attribute>` contains a **list of attribute values** that are assigned to the user. The following rules apply:
 * A predicate in the `where` clause evaluates to `true` if one of the attribute values from the list matches the condition.
@@ -456,7 +456,7 @@ For example, the condition `where: $user.country = countryCode` will grant a use
 
 #### Unrestricted XSUAA Attributes
 
-By default, all attributes defined in [XSUAA instances](#xsuaa-configuration) require a value (`valueRequired:true`), which is well-aligned with the CAP runtime that enforces restrictions on empty attributes.
+By default, all attributes defined in [XSUAA instances](./cap-users#xsuaa-roles) require a value (`valueRequired:true`), which is well-aligned with the CAP runtime that enforces restrictions on empty attributes.
 If you explicitly want to offer unrestricted attributes to customers, you need to do the following:
 
 1. Switch your XSUAA configuration to `valueRequired:false`
