@@ -64,7 +64,7 @@ These are the individual dependencies that can be explicitly added in the `pom.x
 :::
 
 Additionally, your application must be bound to corresponding service instances depending on your scenario.  The following list describes which service must be bound depending on the tokens your application should accept:
-   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authorization#xsuaa-configuration)
+   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authentication#xsuaa-auth)
    * only accept tokens issued by IAS --> bind your application to an [IAS service instance](https://help.sap.com/docs/IDENTITY_AUTHENTICATION)
    * accept tokens issued by XSUAA and IAS --> bind your application to service instances of both types.
 
@@ -102,7 +102,7 @@ Only if **both, the library dependencies and an XSUAA/IAS service binding are in
 * Protocol adapter endpoints (managed by CAP such as OData V4/V2 or custom protocol adapters)
 * Remaining custom endpoints (not managed by CAP such as custom REST controllers or Spring Actuators)
 
-The security auto configuration authenticates all endpoints by default, unless corresponding CDS model is not explicitly opened to public with [pseudo-role](../guides/security/authorization#pseudo-roles) `any` (configurable behaviour).
+The security auto configuration authenticates all endpoints by default, unless corresponding CDS model is not explicitly opened to public with [pseudo-role](../guides/security/cap-users#pseudo-roles) `any` (configurable behaviour).
 Here's an example of a CDS model and the corresponding authentication configuration:
 
 ```cds
@@ -217,7 +217,7 @@ In case you want to write your own custom security configuration that acts as a 
 
 ### Custom Authentication { #custom-authentication}
 
-You can configure any authentication method according to your needs. CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA; it runs requests based on a [user abstraction](../guides/security/authorization#user-claims). The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in [Enforcement API & Custom Handlers](#enforcement-api).
+You can configure any authentication method according to your needs. CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA; it runs requests based on a [user abstraction](../guides/security/cap-users#claims). The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in [Enforcement API & Custom Handlers](#enforcement-api).
 
 Therefore, if you bring your own authentication, you must transform the authenticated user and inject it as `UserInfo` to the current request. This is done by means of [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers).
 More frequently you might have the requirement to just adapt the request's `UserInfo` which is possible with the same interface:
@@ -269,7 +269,7 @@ Mock users are only initialized if the `org.springframework.boot:spring-boot-sta
 
 #### Preconfigured Mock Users
 
-For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/authorization#pseudo-roles). They are named `authenticated`, `system` and `privileged` and can be used with an empty password. For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. The privileged user will pass any authorization checks. `cds.security.mock.defaultUsers = false` prevents the creation of default mock users at startup.
+For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/cap-users#pseudo-roles). They are named `authenticated`, `system` and `privileged` and can be used with an empty password. For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. The privileged user will pass any authorization checks. `cds.security.mock.defaultUsers = false` prevents the creation of default mock users at startup.
 
 #### Explicitly Defined Mock Users
 
@@ -743,8 +743,8 @@ The most helpful getters in `UserInfo` are listed in the following table:
 | :---------------------------------------------------- | :----------------------------------------------------- |
 | `getName()`  | Returns the unique (logon) name of the user as configured in the IdP. Referred by `$user` and `$user.name`. |
 | `getTenant()` | Returns the tenant of the user. |
-| `isSystemUser()` | Indicates whether the request has been initiated by a technical service. Refers to [pseudo-role](../guides/security/authorization#pseudo-roles) `system-user`. |
-| `isAuthenticated()` | True if the current user has been authenticated. Refers to [pseudo-role](../guides/security/authorization#pseudo-roles) `authenticated-user`. |
+| `isSystemUser()` | Indicates whether the request has been initiated by a technical service. Refers to [pseudo-role](../guides/security/cap-users#pseudo-roles) `system-user`. |
+| `isAuthenticated()` | True if the current user has been authenticated. Refers to [pseudo-role](../guides/security/cap-users#pseudo-roles) `authenticated-user`. |
 | `isPrivileged()` |  Returns `true` if the current user runs in privileged (that is, unrestricted) mode |
 | `hasRole(String role)` | Checks if the current user has the given role. |
 | `getRoles()` | Returns the roles of the current user |

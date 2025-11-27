@@ -28,12 +28,12 @@ status: released
 In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
 Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
-CAP applications making use of remote services of any type need to have a proper [remote authentication](#remote-authentication) in place as well.
+CAP applications making use of remote services of any type need to have a proper [remote authentication](./remote-authentication) in place as well.
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="500px" }
 
 According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely. 
-CAP [leverages platform services](#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
+CAP [leverages platform services](overview#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
 
 - For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-auth) is an appropriate built-in authentication feature.
 
@@ -137,7 +137,7 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 
 ### Customization { #custom-mock-users }
 
-You can define custom mock users to simulate any type of [end users](./cap-users#user-representation)) that will interact with your application at production time.
+You can define custom mock users to simulate any type of [end users](./cap-users#claims)) that will interact with your application at production time.
 Hence, you can use the mock users to test your authorization settings as well as custom handlers fully decoupled from the actual execution environment.
 
 <div class="impl java">

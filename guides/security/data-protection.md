@@ -117,7 +117,7 @@ CAP doesn't require any specific authentication strategy, but it provides out of
 On configured authentication, *all CAP endpoints are authenticated by default*.
 
 ::: warning
-❗ **CAP applications need to ensure that an appropriate [authentication method](authorization#prerequisite-authentication) is configured**.
+❗ **CAP applications need to ensure that an appropriate [authentication method](authentication) is configured**.
 It's highly recommended to establish integration tests to safeguard a valid configuration.
 :::
 
@@ -195,7 +195,7 @@ To verify CAP authorizations in your model, it's recommended to use [CDS lint ru
 
 The rules prepared by application developers are applied to business users according to grants given by the subscribers user administrator, that is, they're applied tenant-specific.
 
-CAP authorizations can be defined dependently from [user claims](authorization#user-claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
+CAP authorizations can be defined dependently from [user claims](cap-users#claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
 that are deployed by application developers and granted by the user administrator of the subscriber.
 Hence, CAP provides a seamless integration of central identity service without technical lock-in.
 
