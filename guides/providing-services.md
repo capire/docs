@@ -943,9 +943,6 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 Annotate an element with `@assert` to define arbitrary validation expressions that are run after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
 
-The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
-[Learn more about localized messages](./i18n){.learn-more}
-
 The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
 
 ```cds
@@ -990,8 +987,13 @@ entity OrderItems : cuid {
     quantity  : Integer;
 }
 ```
+#### The Error Message String
 
-#### The `error` function
+As mentioned above error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+[Learn more about localized messages](./i18n){.learn-more}
+
+
+#### The `error` Function
 
 With the help of the function `error(message, parameters, targets)`, it is possible to specify parameters as well as explicit target elements for the message. Each parameter can be represented by an expression.
 In its simplest form, this is the actual value of an entity field. The evaluating runtime replaces placeholders in the message with the provided parameters.
