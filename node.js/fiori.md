@@ -191,7 +191,7 @@ The draft choreography prevents direct creation or modification of active instan
 However, when working with technical services not exclusively consumed through a GUI, bypassing this restriction is useful.
 The CAP Node.js runtime provides two similar but distinct options for bypassing the regular draft choreography.
 
-### Using an Action <Beta />
+### Active as Default <Beta />
 
 By enabling the feature <Config keyOnly>cds.fiori.draft_new_action:true</Config>, you create new draft instances through the collection-bound action `draftNew` in the CAP Node.js runtime. That means, sending a `POST` request to the collection path, for example `/Books`, can be used to create a new active entity instance. You can leverage this behavior, for example, when working with technical services.
 
@@ -212,7 +212,7 @@ You still can create a draft instance through a `POST` request to the collection
 Activating the <Config keyOnly>cds.fiori.draft_new_action:true</Config> feature has a similar effect as the <Config keyOnly>cds.fiori.bypass_draft:true</Config> feature flag. It allows you to modify active entities without runtime restrictions.
 
 
-### Using Feature Flag
+### Specify State
 
 Alternatively, you can choose to forcefully disable restrictions on how users interact with active instances of draft-enabled entities.
 To enable this feature, set this feature flag in your configuration:
