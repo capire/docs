@@ -28,23 +28,25 @@ status: released
 
 OData is an OASIS standard that enhances plain REST with standardized system query options like `$select`, `$expand`, `$filter`, and others. The following table provides an overview of the feature coverage:
 
-| Query Options  | Remarks                                   | Node.js    | Java    |
-|----------------|-------------------------------------------|:------------:|:---------:|
+| Query Options  | Remarks                                     | Node.js    | Java    |
+|----------------|---------------------------------------------|:------------:|:---------:|
 | `$search`      | Search in multiple/all text elements<sup>(1)</sup>| <X/> | <X/>   |
-| `$value`       | Retrieves single rows/values              | <X/>      | <X/>  |
-| `$top`,`$skip` | Requests paginated results                | <X/>      | <X/>   |
-| `$filter`      | Like SQL where clause                     | <X/>      | <X/>   |
-| `$select`      | Like SQL select clause                    | <X/>      | <X/>   |
-| `$orderby`     | Like SQL order by clause                  | <X/>      | <X/>   |
-| `$count`       | Gets number of rows for paged results     | <X/>      | <X/>   |
-| `$apply`       | For [data aggregation](#data-aggregation) | <X/>      | <X/>   |
-| `$expand`      | Deep-read associated entities             | <X/>      | <X/>   |
-| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(2)</sup> |
-| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(3)</sup>   |
+| `$value`       | Retrieves single rows/values                | <X/>      | <X/>  |
+| `$top`,`$skip` | Requests paginated results                  | <X/>      | <X/>   |
+| `$filter`      | Like SQL where clause                       | <X/>      | <X/>   |
+| `$select`      | Like SQL select clause                      | <X/>      | <X/>   |
+| `$orderby`     | Like SQL order by clause                    | <X/>      | <X/>   |
+| `$count`       | Gets number of rows for paged results       | <X/>      | <X/>   |
+| `$apply`       | For [data aggregation](#data-aggregation)   | <X/>      | <X/>   |
+| `$expand`      | Deep-read associated entities               | <X/>      | <X/>   |
+| `$compute`     | Dynamic expressions for other query options | <X/><sup>(2)</sup> | <X/>   |
+| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
+| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
 - <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../guides/providing-services#searching-data).
-- <sup>(2)</sup> The navigation path identifying the collection can only contain one segment.
-- <sup>(3)</sup> Supported for key values and for parameters of functions only.
+- <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
+- <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
+- <sup>(4)</sup> Supported for key values and for parameters of functions only.
 
 System query options can also be applied to an [expanded navigation property](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361039) (nested within `$expand`):
 
@@ -1028,6 +1030,7 @@ You can add further vocabularies to the translation process [using configuration
 | [@Common](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Common.md){target="_blank"}                   | for all SAP vocabularies                          |
 | [@Communication](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Communication.md){target="_blank"}     | for annotating communication-relevant information |
 | [@DataIntegration](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/DataIntegration.md){target="_blank"} | for data integration                              |
+| [@Hierarchy](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Hierarchy.md){target="_blank"}             | for hierarchies                                   |
 | [@PDF](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PDF.md){target="_blank"}                         | for PDF                                           |
 | [@PersonalData](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PersonalData.md){target="_blank"}       | for annotating personal data                      |
 | [@Session](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Session.md){target="_blank"}                 | for sticky sessions for data modification         |
