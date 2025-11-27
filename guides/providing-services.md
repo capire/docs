@@ -994,7 +994,7 @@ The remaining cases that need custom handlers, reduce to real custom logic, spec
 
 - Domain-specific programmatic [Validations](#input-validation)
 - Augmenting result sets, for example to add computed fields for frontends
-- Programmatic [Authorization Enforcements](/guides/security/cap-users#developing-with-userst)
+- Programmatic [Authorization Enforcements](/guides/security/cap-users#developing-with-users)
 - Triggering follow-up actions, for example calling other services or emitting outbound events in response to inbound events
 - And more... In general, all the things not (yet) covered by generic handlers
 
