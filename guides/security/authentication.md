@@ -32,7 +32,7 @@ CAP applications making use of remote services of any type need to have a proper
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="500px" }
 
-According to key concept [Pluggable Building Blocks](key-concept-pluggable), the authentication method can be configured freely. 
+According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely. 
 CAP [leverages platform services](#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
 
 - For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-auth) is an appropriate built-in authentication feature.
@@ -116,8 +116,8 @@ Mock users require **basic authentication**, hence sending the same request on b
 Mock users are deactivated in production profile by default ❗
 :::
 
-[Learn more about authentication options in CAP Java](../java/security#spring-boot){.learn-more}
-[Learn more about authentication options in CAP Node.js](../node.js/authentication#strategies){.learn-more}
+[Learn more about authentication options in CAP Java](../../java/security#spring-boot){.learn-more}
+[Learn more about authentication options in CAP Node.js](../../node.js/authentication#strategies){.learn-more}
 
 
 
@@ -131,13 +131,13 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 { .java }
 
 
-[Learn more about predefined mock users in CAP Java](../java/security#preconfigured-mock-users){.learn-more}
-[Learn more about predefined mock users in CAP Node.js](../node.js/authentication#mock-users){.learn-more}
+[Learn more about predefined mock users in CAP Java](../../java/security#preconfigured-mock-users){.learn-more}
+[Learn more about predefined mock users in CAP Node.js](../../node.js/authentication#mock-users){.learn-more}
 
 
 ### Customization { #custom-mock-users }
 
-You can define custom mock users to simulate any type of [end users]((../cap-users#user-representation)) that will interact with your application at production time.
+You can define custom mock users to simulate any type of [end users](./cap-users#user-representation)) that will interact with your application at production time.
 Hence, you can use the mock users to test your authorization settings as well as custom handlers fully decoupled from the actual execution environment.
 
 <div class="impl java">
@@ -200,10 +200,10 @@ In mock user configuration you can specify:
 - name (mandatory) and tenant
 - CAP roles (including pseudo-roles) and attributes affecting authorization
 - additional attributes
-- [feature toggles](../guides/extensibility/feature-toggles#feature-toggles)
+- [feature toggles](../extensibility/feature-toggles#feature-toggles)
 which influence request processing.
 
-To verify the properties in a user request with a dedicated mock user, activate [user tracing](../cap-users#user-tracing) and send the same request on behalf of `viewer-user`.
+To verify the properties in a user request with a dedicated mock user, activate [user tracing](./cap-users#user-tracing) and send the same request on behalf of `viewer-user`.
 In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
@@ -220,8 +220,8 @@ TODO
 
 </div>
 
-[Learn more about custom mock users in CAP Java](../java/security#explicitly-defined-mock-users){.learn-more}
-[Learn more about custom mock users in CAP Node.js](../node.js/authentication#mocked){.learn-more}
+[Learn more about custom mock users in CAP Java](../../java/security#explicitly-defined-mock-users){.learn-more}
+[Learn more about custom mock users in CAP Node.js](../../node.js/authentication#mocked){.learn-more}
 
 
 ### Automated Testing { #mock-user-testing }
@@ -265,8 +265,8 @@ await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 
 </div>
 
 
-[Learn more about testing in CAP Java](../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
-[Learn more about testing in CAP Node.js](../node.js/cds-test#testing-with-cds-test){.learn-more}
+[Learn more about testing in CAP Java](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
+[Learn more about testing in CAP Node.js](../../node.js/cds-test#testing-with-cds-test){.learn-more}
 
 
 ## IAS Authentication { #ias-auth }
@@ -485,7 +485,7 @@ Finally, ensure correct format of both files with
 ```sh
 openssl x509 -in <file>.pem -text -noout
 ```
-All the steps can be executed in a single script as shown in the [example](./assets/fetch-ias-certs.sh).
+All the steps can be executed in a single script as shown in the [example](https://cap.cloud.sap/resources/examples/fetch-ias-certs.sh).
 :::
 
 The fetch a token - either as technical or as named user - the request needs to provide the **client certificate** being send to `/oauth2/token` endpoint of IAS service with URI given in `url` property of the binding:
@@ -619,7 +619,7 @@ There are multiple reasons why customization might be required:
 
 **The auto-configuration authenticates all service endpoints found in the CDS model by default**. 
 
-Model endpoints that should be public can be explicitly annotated with [pseudo-role](../guides/security/authorization#pseudo-roles) `any`:
+Model endpoints that should be public can be explicitly annotated with [pseudo-role](cap-users#pseudo-roles) `any`:
 
 ```cds
 service BooksService @(requires: 'any') {
@@ -640,7 +640,7 @@ service BooksService @(requires: 'any') {
 In multitenant applications, anonymous requests to public endpoints are missing the tenant information and hence this gap needs to be filled by custom code.
 :::
 
-[Learn more about authentication options in CAP Java with Spring Boot](../guides/java/security#spring-boot){.learn-more}
+[Learn more about authentication options in CAP Java with Spring Boot](../../java/security#spring-boot){.learn-more}
 
 
 ### Partially Overrule Authentication { #partially-auth }
@@ -672,7 +672,7 @@ Ensure your custom configuration has higher priority than CAP's default security
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 
-[Learn more about custom security configuraitons in CAP Java with Spring Boot](../guides/java/security#custom-spring-security-config){.learn-more}
+[Learn more about custom security configuraitons in CAP Java with Spring Boot](../../java/security#custom-spring-security-config){.learn-more}
 
 ### Fully Overrule Authentication { #fully-auth }
 
