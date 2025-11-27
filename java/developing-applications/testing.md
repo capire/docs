@@ -276,7 +276,7 @@ H2 includes a built-in web console application, providing a user-friendly interf
 
 #### Using the Maven Archetype
 
-When a new CAP Java project is created with the [Maven Archetype](../java/developing-applications/building#the-maven-archetype) or with `cds init`,
+When a new CAP Java project is created with the [Maven Archetype](../../java/developing-applications/building#the-maven-archetype) or with `cds init`,
 H2 is automatically configured as in-memory database used for development and testing in the `default` profile.
 
 #### Manual Configuration
