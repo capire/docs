@@ -946,7 +946,7 @@ Annotate an element with `@assert` to define an expression for more complex vali
 The returned error can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
 
-The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If there is not enough available in the stock, a static error message is returned.
+The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
 
 ```cds
 entity Books : cuid {
