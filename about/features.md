@@ -114,8 +114,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Arrayed Elements](../cds/cdl#arrayed-types)                                               | <X/>  |  <X/>   | <X/> |
 | [Streaming & Media Types](../guides/providing-services#serving-media-data)                 | <X/>  |  <X/>   | <X/> |
 | [Conflict Detection through _ETags_](../guides/providing-services#etag)                    | <X/>  |  <X/>   | <X/> |
-| [Authentication via JWT](../guides/security/authorization#prerequisite-authentication)     | <Na/> |  <X/>   | <X/> |
-| [Basic Authentication](../guides/security/authorization#prerequisite-authentication)       | <Na/> |  <X/>   | <X/> |
+| [Authentication](../guides/security/authentication)                                        | <X/> |  <X/>   | <X/> |
 
 
 <br>
