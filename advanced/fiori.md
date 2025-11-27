@@ -747,13 +747,11 @@ Cache Control feature is currently supported on the Java runtime only.
 
 Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
-Database support for a generic hierarchy implementation by CAP runtimes:
+A generic hierarchy implementation for hierarchies is available on all relational datases supported by the CAP runtimes.
 
-| Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
-|-------------|----------|----|------------|--------|
-| CAP Java    | ✓        | ✓ | ✓          |        |
-| CAP Node.js | ✓        |    |✓          |✓       |
-
+::: warning
+On H2, only small hierarchies should be used for performance reasons.
+:::
 
 ### Example
 Let's assume we have the following domain model and its projection in a service:
