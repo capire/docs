@@ -1017,7 +1017,7 @@ The evaluating runtime constructs and executes statements with the annotation-pr
 :::
 
 ::: warning Limitations
-- Validations will only be enforced in `CREATE` and `UPDATE` statements that contain all key fields (including deep insert and deep update)
+- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update)
 - Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported
 :::
 
