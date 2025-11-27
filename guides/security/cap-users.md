@@ -25,7 +25,7 @@ status: released
 
 ## CAP User Abstraction { #claims }
 
-A successful authentication results in a CAP [user representation](#claims) reflecting the request user in a uniform way.
+A successful authentication results in a CAP user representation reflecting the request user in a uniform way.
 Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
 It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
 
@@ -156,8 +156,8 @@ All technical clients that have access to the application's XSUAA or IAS service
 
 The resulting object representation of the user is attached to the current request context and has an impact on the request flow for instance with regards to
 - [authorizations](./authorization#restrictions)
-- [enriching business data](../guides/domain-modeling#managed-data) with user data
-- setting [DB session variables](../guides/db-feature-comparison#session-variables)
+- [enriching business data](../domain-modeling#managed-data) with user data
+- setting [DB session variables](../db-feature-comparison#session-variables)
 
 In the CDS model, some of the user properties can be referenced in annotations or static views:
 
@@ -273,7 +273,7 @@ If required, it also runs the new `cds add ias` command to configure the project
 :::
 
 These libraries integrate into the CAP framework to handle incoming requests. 
-Based on the user's assigned [policies](#generate-policies), the user's roles are determined and written to the [UserInfo](./security#enforcement-api) object. 
+Based on the user's assigned [policies](#generate-policies), the user's roles are determined and written to the [UserInfo](#reflection) object. 
 The framework then authorizes the request as usual based on the user's roles.
 
 ::: details Node.js plugin `@sap/ams` added to the project
@@ -291,7 +291,7 @@ The framework then authorizes the request as usual based on the user's roles.
 The `@sap/ams` plugin provides multiple build-time features:
 
 - Validate `ams.attributes` annotations for type coherence against the AMS schema.
-- Generate policies from the CDS model during the build using a [custom build task](../guides/deployment/custom-builds#custom-build-plugins).
+- Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 ::: tip
@@ -589,7 +589,7 @@ Now let's deploy and start the application with
 cds up
 ```
 
-You can now perform the following tasks in the Administrative Console for the IAS tenant (see prerequisites [here](../guides/security/authentication#ias-admin)):
+You can now perform the following tasks in the Administrative Console for the IAS tenant (see prerequisites [here](./authentication#ias-admin)):
 - Assign (base or custom) policies to IAS users
 - Create custom policies
 
@@ -836,7 +836,7 @@ In most cases, CAP's default mapping to the CAP user will match your requirement
 For instance, the logon name as injected by standard XSUAA integration might not be unique if several customer IdPs are connected to the underlying identity service.
 Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you can implement in a custom adaptation.
 
-This is done by means of a custom [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers):
+This is done by means of a custom [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../../java/event-handlers/request-contexts#global-providers):
 
 ::: details Sample implementation to override the user name
 
@@ -886,7 +886,7 @@ Also consider data protection and privacy regulations when storing user data.
 There are multiple reasonable use cases in which user modification is a suitable approach:
 
 - Injecting or mixing user roles by calling `modifiableUserInfo.addRole(String role)` (In fact this is the base for [AMS plugin](#roles-assignment-ams) injecting user specifc roles).
-- Providing calculated attributes used for [instance-based authorization](../guides/security/authorization#user-attrs) by calling `modifiableUserInfo.setAttributeValues(String attribute, List<String> values)`.
+- Providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by calling `modifiableUserInfo.setAttributeValues(String attribute, List<String> values)`.
 - Constructing the request's user based on forwarded (and trusted) header information, completely replacing default authentication.
 - ...
 
@@ -1037,7 +1037,7 @@ String jwtToken = jwtTokenInfo.getToken();
 
 Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
 Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
-CAP's [Remote Services](../guides/using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
 Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../../java/cqn-services/remote-services#configuring-the-authentication-strategy):
 
 ```yaml

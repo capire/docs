@@ -61,7 +61,7 @@ As security functions are factorized into independent components, **application 
 This safeguards business logic being independent from platform services which are frequently subject to security hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
-For instance, CAP allows performing outbound service calls via [Remote Services while handling authentication under the hood completely](./security/remote-authentication#remote-services). 
+For instance, CAP allows performing outbound service calls via [Remote Services while handling authentication under the hood completely](./remote-authentication#remote-services). 
 This abstraction layer ensures that developers do not need to worry about the details of authentication. 
 
 

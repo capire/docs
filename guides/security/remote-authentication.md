@@ -396,7 +396,7 @@ Note that property `oauth2-configuration.token-policy.access-token-format: jwt` 
 
 Now let's create the missing IAS dependency to establish trust for the API service call targeting provided API with id `DataConsumer`.
 
-Open the Administrative Console for the IAS tenant (see prerequisites [here](../guides/security/authentication#ias-admin)):
+Open the Administrative Console for the IAS tenant (see prerequisites [here](./authentication#ias-admin)):
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
@@ -412,7 +412,7 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](../
 :::
 
 :::tip
-Both the BTP destination and the IAS dependency can be automatically created at runtime using [UCL integration](../java/integrating-applications/ucl#unified-customer-landscape-ucl).
+Both the BTP destination and the IAS dependency can be automatically created at runtime using [UCL integration](../../java/integrating-applications/ucl#unified-customer-landscape-ucl).
 :::
 
 Now restart the consumer application with
