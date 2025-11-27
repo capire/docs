@@ -994,7 +994,7 @@ entity OrderItems : cuid {
 #### The `error` function
 
 With the help of the function `error(message, parameters, targets)`, it is possible to specify parameters as well as explicit target elements for the message. Each parameter can be represented by an expression.
-In its simplest form, this is the actual value of an entity field. The evaluating runtime will take care of replacing the placeholders in the message with the provided parameters.
+In its simplest form, this is the actual value of an entity field. The evaluating runtime replaces placeholders in the message with the provided parameters.
 
 In the following example, it is expected that the error message with key `error.author.date` is defined to have two parameters which are filled with the concrete values of the elements `dateOfBirth` and `dateOfDeath`. The third parameter ensures that both fields are set as targets and thus marked erroneous.
 
