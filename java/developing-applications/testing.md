@@ -281,9 +281,11 @@ The simplest `application.yaml` configuration would look as follows:
 
 ```yml
 spring:
-  datasource:
-    url: "jdbc:h2:mem:test"
-    driver-class-name: org.h2.Driver
+  config.activate.on-profile: default
+  sql.init.platform: h2
+cds:
+  data-source:
+    auto-config.enabled: false
 ```
 
 ## H2 limitations
@@ -291,6 +293,10 @@ spring:
 When developing a CAP Java application, it’s important to understand the limits and constraints of the underlying database. Every database has its own performance characteristics, data type restrictions, indexing behavior, and transaction handling rules.
 
 To learn more about known limitations, read the section [H2 limitations](../../java/cqn-services/persistence-services#h2-database).
+
+::: warning
+In addition to the limitations of the H2 database mentioned above, there are also constraints when it comes to testing multitenancy and extensibility (MTXS) scenarios on a local environment.
+:::
 
 ## Hybrid Testing - a way to overcome limitations
 
@@ -308,9 +314,12 @@ The simplest `application.yaml` configuration would look as follows:
 
 ```yml
 spring:
-  datasource:
-    url: "jdbc:h2:file:/data/test"
-    driver-class-name: org.h2.Driver
+  config.activate.on-profile: default
+  sql.init.platform: h2
+  url: "jdbc:h2:file:/data/testdb"
+cds:
+  data-source:
+    auto-config.enabled: false
 ```
 
 ## Logging SQL to console
