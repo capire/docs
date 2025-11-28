@@ -71,6 +71,36 @@ The framework isn't responsible for closing the stream when writing to the datab
 
 These types are used for the values of CDS elements with primitive type. In the [Model Reflection API](./reflection-api), they're represented by the enum [CdsBaseType](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsBaseType.html).
 
+### Numeric Type Determination { #type-determination }
+
+To have a consistent behavior across different databases, the CAP Java runtime applies numeric type determination in arithmetic expressions and numeric standard functions according to the following rules.
+
+::: tip
+Use `type(CdsBaseType)` to explicitly set the result type if needed.
+:::
+
+#### Arithmetic Expressions { #numeric-promotion }
+
+Arithmetic expressions promote numeric types according to the following precedence:
+
+**Type Precedence (highest to lowest):**
+`cds.Double`, `hana.REAL`, `cds.Decimal`, `cds.Int64`, `cds.Int32`, `cds.Int16`, `cds.UInt8`
+
+- For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
+- For division:
+  - If any operand is an approximate numeric type (`cds.Double`, `hana.REAL`), the result type is `cds.Double`.
+  - Otherwise, the result type is `cds.Decimal`, which provides higher accuracy for decimal fractions.
+
+#### Numeric Standard Functions { #type-determination-functions }
+
+Numeric aggregation and standard functions determine their result type based on the argument types:
+
+- **ceiling(x)**, **floor(x)**, **round(x)**: Return the same type as the input `x`.
+- **min(x)**, **max(x)**, **sum(x)**: Aggregate functions return the same type as the argument `x`.
+- **average(x)**: Returns `cds.Decimal` for exact numeric types and `cds.Double` for approximate numeric types.
+- **count(x)**, **countdistinct(x)**: Return `cds.Int64`.
+
+
 ## Structured Data
 
 In CDS, structured data is used as payload of *Insert*, *Update*, and *Upsert* statements. Also the query result of *Select* may be structured.
