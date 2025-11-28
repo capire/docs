@@ -292,7 +292,7 @@ A new option `privilegedUser()` can be leveraged when [defining](../java/event-h
 
 |              | Explanation                                                                                                                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | You've [explicitly configured a mock](../java/security#explicitly-defined-mock-users) user with a name that is already used by a [preconfigured mock user](../java/security#preconfigured-mock-users). |
+| _Root Cause_ | You've [explicitly configured a mock](../java/security#custom-mock-users) user with a name that is already used by a [preconfigured mock user](../java/security#preconfigured-mock-users). |
 | _Solution_   | Rename the mock user and build your project again.                                                                                                                                                     |
 
 ### Why do I get an "Error on server start"?
