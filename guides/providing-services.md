@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an element with `@assert` to define arbitrary validation expressions that are run after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
+Annotate an element with `@assert` to define arbitrary CXL validation expressions that are run after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
 
 The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
 
@@ -979,31 +979,13 @@ entity OrderItems : cuid {
     quantity  : Integer;
 }
 ```
-#### The Error Message String
-
-As mentioned above error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
-[Learn more about localized messages](./i18n){.learn-more}
-
-
-#### The `error` Function
-
-With the help of the function `error(message, parameters, targets)`, it is possible to specify parameters as well as explicit target elements for the message. Each parameter can be represented by an expression.
-In its simplest form, this is the actual value of an entity field. The evaluating runtime replaces placeholders in the message with the provided parameters.
-
-In the following example, it is expected that the error message with key `error.author.date` is defined to have two parameters which are filled with the concrete values of the elements `dateOfBirth` and `dateOfDeath`. The third parameter ensures that both fields are set as targets and thus marked erroneous.
-
-```cds
-entity Authors : cuid, managed {
-   
-  @assert: (case 
-    when dateOfBirth > dateOfDeath then error('error.author.date', (dateOfBirth, dateOfDeath), (dateOfBirth, dateOfDeath)) 
-  end)
-  dateOfBirth  : Date;
-  dateOfDeath  : Date;
-}
-```
 
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
+
+::: info Error Messages
+As mentioned above error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+[Learn more about localized messages](./i18n){.learn-more}
+:::
 
 ::: info Expression Evaluation
 Expressions are evaluated *after* the request has been applied to the underlying datastore. The affected entities are the entities being part of the request and identified by their primary keys.
