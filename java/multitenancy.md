@@ -397,7 +397,7 @@ See section [Multitenancy Configuration Properties](#mtx-properties) for more de
 ### Logging Support { #app-log-support}
 
 Logging service support gives you the capability to observe properly correlated requests between the different components of your CAP application in Kibana.
-This is especially useful for multi-tenant aware applications that use the `MTX sidecar`.
+This is especially useful for multitenant aware applications that use the `MTX sidecar`.
 Just enable either [`application-logs`](../java/operating-applications/observability#logging-service) service or [`cloud-logging`](../java/operating-applications/observability#open-telemetry) service for both, the Java service as well as for the `MTX sidecar`, to get correlated log messages from these components.
 
 The logs can be inspected in the corresponding front ends such as `Kibana`, `Cloud Logging Service` or `Dynatrace`.
