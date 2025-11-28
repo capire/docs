@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  Describes authentication and authorization in CAP Java.
+  Describes authentication and authorization specific for CAP Java.
 status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -26,115 +26,61 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 { #security}
 
-## Overview
-
-For Web services, authentication is about controlling _who_ is using the service. It typically involves verifying the user's identity, tenant, and validating claims like granted roles. In contrast, authorization makes sure that the user has the required privileges to access the requested resources. Hence, authorization is about controlling _what_ the user is allowed to handle.
-
-Both authentication and authorization are essential for application security:
-* [Authentication](#authentication) describes how to configure authentication.
-* [Authorization](#auth) is about resource access control.
-
-[Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
-
-::: warning
-Without security configuration, CDS services are exposed to the public. Proper configuration of authentication __and__ authorization is required to secure your CAP application.
+::: info
+This chapter appends CAP Java sepcifc information only. 
+Consult the comprehensive [Security Guide](../guides/security/#cap-security-guide) first to learn about CAP Security features in general.
 :::
 
 ## Authentication { #authentication}
 
-Authentication rejects user requests with invalid authentication and limits the possible resource impact.
+### Auto Configuration { #xsuaa-ias }
 
-Rejecting them as soon as possible is one reason why authentication is not an integral part of the CAP runtime and must be configured at the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
-By default, it supports the standard BTP platform identity services [out of the box](#xsuaa-ias):
+To enable auto-configuration for authentication based on platform services, following two conditions need to be met:
+1. Required Maven (runtime) dependencies available.
+2. Binding to a corresponding service instance (XSUAA and/or IAS) is available at runtime.
 
-- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution for integrating endpoints across SAP systems
-- [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
+::: warning
+Only **if both, the library dependencies and an XSUAA/IAS service binding are in place**, the CAP Java SDK activates a Spring security configuration, which enforces authentication for all endpoints **automatically**:
+:::
 
-Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well.
-Local development and testing can be done easily with built-in [mock user](#mock-users) support.
+#### Maven Dependencies
+To ensure the proper maven dependencies, we recommend using the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle.
+Both can be active for the local scenario.
 
-### Configure XSUAA and IAS Authentication { #xsuaa-ias}
-To enable your application for XSUAA or IAS-authentication, we recommend using the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle, which covers all required dependencies.
+:::details Dependencies required for authentication
 
-:::details Individual Dependencies
-These are the individual dependencies that can be explicitly added in the `pom.xml` file of your service:
-   * `com.sap.cloud.security:resourceserver-security-spring-boot-starter` that brings [spring-security library](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security)
-   * `org.springframework.boot:spring-boot-starter-security`
-   * `cds-feature-identity`
+   - `com.sap.cloud.security:resourceserver-security-spring-boot-starter` that brings [spring-security library](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security)
+   - `org.springframework.boot:spring-boot-starter-security`
+   - `cds-feature-identity`
 
 :::
 
-Additionally, your application must be bound to corresponding service instances depending on your scenario.  The following list describes which service must be bound depending on the tokens your application should accept:
-   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authentication#xsuaa-auth)
-   * only accept tokens issued by IAS --> bind your application to an [IAS service instance](https://help.sap.com/docs/IDENTITY_AUTHENTICATION)
-   * accept tokens issued by XSUAA and IAS --> bind your application to service instances of both types.
+#### Service Bindings
 
-::: tip Specify Binding
+Additionally, your application must be bound to corresponding service instances depending on your scenario.  
+The following list describes which service must be bound depending on the tokens your application should accept:
+   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authentication#xsuaa-auth)
+   * only accept tokens issued by IAS --> bind your application to an [IAS service instance](../guides/security/authentication#ias-auth)
+   * accept tokens issued by XSUAA and IAS --> bind your application to service instances of [both types](../guides/security/authentication#hybrid-auth).
+
+::: tip Unique Binding
 CAP Java picks only a single binding of each type. If you have multiple XSUAA or IAS bindings, choose a specific binding with property `cds.security.xsuaa.binding` respectively `cds.security.identity.binding`.
 Choose an appropriate XSUAA service plan to fit the requirements. For instance, if your service should be exposed as technical reuse service, make use of plan `broker`.
 :::
 
-#### Proof-Of-Possession for IAS { #proof-of-possession}
 
-Proof-Of-Possession is a technique for additional security where a JWT token is **bound** to a particular OAuth client for which the token was issued. On BTP, Proof-Of-Possession is supported by IAS and can be used by a CAP Java application.
+### Advanced Options { #spring-boot }
 
-Typically, a caller of a CAP application provides a JWT token issued by IAS to authenticate a request. With Proof-Of-Possession in place, a mutual TLS (mTLS) tunnel is established between the caller and your CAP application in addition to the JWT token. Clients calling your CAP application need to send the certificate provided by their `identity` service instance in addition to the IAS token.
+#### Authenticated Endpoints { #auth-endpoints }
 
-On Cloud Foundry, the CAP application needs to be exposed under an additional route which accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header (for example, the `.cert.cfapps.<landscape>` domain).
-
-<div id="meshdomain" />
-
-On Kyma, you must configure an additional component (a gateway in Istio) that accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header. An example can be found in the Bookshop sample application [here](https://github.com/SAP-samples/cloud-cap-samples-java/tree/ias-ams-kyma/k8s). Besides defining the actual `Gateway` resource, you must expose the application under the new domain (see the `values.yaml` [here](https://github.com/SAP-samples/cloud-cap-samples-java/blob/e9c779cb64c0937815910988387b0775d8842765/helm/values.yaml#L47).
-
-The Proof-Of-Possession also affects approuter calls to a CAP Java application. You must configure the approuter to forward the certificate to the CAP application. First, set `forwardAuthCertificates: true` on the destination pointing to your CAP backend (for more details see [the `environment destinations` section on npmjs.org](https://www.npmjs.com/package/@sap/approuter#environment-destinations)). Second, configure the destination to use the route of the CAP backend that has been configured to accept client certificates as described previously.
-
-When authenticating incoming requests with IAS, the Proof-Of-Possession is activated by default. This requires using at least version `3.5.1` of the [SAP BTP Spring Security Client](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security) library.
-
-You can disable the Proof-Of-Possession enforcement in your CAP Java application by setting the property `sap.spring.security.identity.prooftoken` to `false` in the `application.yaml` file.
-
-:::tip
-CAP Java requires an AppRouter to be configured with mTLS in case of IAS authentication (`forwardAuthCertificates: true`).
-:::
-
-
-### Automatic Spring Boot Security Configuration { #spring-boot}
-
-Only if **both, the library dependencies and an XSUAA/IAS service binding are in place**, the CAP Java SDK activates a Spring security configuration, which enforces authentication for all endpoints **automatically**:
+By default, the [auto-configuration](#xsuaa-ias) covers
 * Protocol adapter endpoints (managed by CAP such as OData V4/V2 or custom protocol adapters)
 * Remaining custom endpoints (not managed by CAP such as custom REST controllers or Spring Actuators)
 
-The security auto configuration authenticates all endpoints by default, unless corresponding CDS model is not explicitly opened to public with [pseudo-role](../guides/security/cap-users#pseudo-roles) `any` (configurable behaviour).
-Here's an example of a CDS model and the corresponding authentication configuration:
-
-```cds
-service BooksService @(requires: 'any') {
-  @readonly
-  entity Books @(requires: 'any') {...}
-
-  entity Reviews {...}
-
-  entity Orders @(requires: 'Customer') {...}
-}
-```
-
-| Path                      | Authenticated ?  |
-|:--------------------------|:----------------:|
-| `/BooksService`           |      <Na/>       |
-| `/BooksService/$metadata` |      <Na/>       |
-| `/BooksService/Books`     |      <Na/>       |
-| `/BooksService/Reviews`   |       <X/>       |
-| `/BooksService/Orders`    |       <X/>       |
-
-
-::: tip
-For multitenant applications, you must authenticate all endpoints because tenant information is essential for processing requests.
-:::
-
-There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration:
+There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration wit hregards to the affected endpoints:
 
 | Configuration Property                               | Description                                             | Default
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------
-| `mode`  | Determines the [authentication mode](#auth-mode): `never`, `model-relaxed`, `model-strict` or `always` | `model-strict`
 | `authenticateUnknownEndpoints`  | Determines, if security configurations enforce authentication for endpoints not managed by protocol-adapters. | `true`
 | `authenticateMetadataEndpoints`  | Determines, if OData $metadata endpoints enforce authentication. | `true`
 
@@ -145,7 +91,7 @@ The following properties can be used to disable automatic security configuration
 | `cds.security.xsuaa.enabled`  | Whether automatic XSUAA security configuration is enabled. | `true`
 | `cds.security.identity.enabled`  | Whether automatic IAS security configuration is enabled. | `true`
 
-#### Setting the Authentication Mode { #auth-mode}
+#### Authentication Modes { #auth-mode}
 
 The property `cds.security.authentication.mode` controls the strategy used for authentication of protocol-adapter endpoints. There are four possible values:
 
@@ -258,7 +204,7 @@ public class CustomUserInfoProvider implements UserInfoProvider {
 
 In the example, the `CustomUserInfoProvider` defines an overlay on the default XSUAA-based provider (`defaultProvider`). The overlay redefines the user's name by a combination of email and origin.
 
-### Mock User Authentication with Spring Boot { #mock-users}
+### Mock Users { #mock-users}
 
 By default, CAP Java creates a security configuration, which accepts _mock users_ for test purposes.
 
@@ -360,256 +306,8 @@ cds:
 The mock user `Alice` is assigned to the mock tenant `CrazyCars` for which the features `cruise` and `park` are enabled.
 
 
-## Connecting to IAS Services { #outbound-auth }
 
-CAP Java supports the consumption of IAS-based services of various kinds:
 
-* [Internal Services](#internal-app) bound to the same IAS instance of the provider application.
-* [External IAS](#app-to-app) applications consumed by providing a destination.
-* [BTP reuse services](#ias-reuse) consumed via service binding.
-
-![The TAM graphic is explained in the accompanying text.](./assets/java-ias.png){width="800px" }
-
-Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
-Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
-
-### Internal Services {#internal-app}
-
-For communication between adjacent CAP applications, these are CAP applications which are bound to the same identity instance, simplified configuration is explained in [Binding to a Service with Shared Identity](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
-
-### External Services (IAS App-to-App)  {#app-to-app}
-
-CAP Java supports technical communication with any IAS-based service deployed to an SAP Cloud landscape. User propagation is supported.
-For connection setup, it uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications).
-
-#### Provider Application
-
-The CAP Java application as a _provider app_ needs to:
-
-1. Configure [IAS authentication](/java/security#xsuaa-ias).
-2. Expose an API in the IAS service instance.
-
-    ::: details Sample IAS instance of provider (mta.yaml)
-
-    Add this to your `mta.yaml` resources section:
-
-    ```yaml
-    - name: server-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            provided-apis:
-              - name: "review-api"
-    ```
-
-    :::
-
-3. Prepare a CDS service endpoint for the exposed API.
-
-    ::: details Sample CDS Service for the API
-
-    ```cds
-    service ReviewService @(requires: 'review-api') {
-      [...]
-    }
-    ```
-
-    :::
-
-
-::: tip API as CAP role
-The API identifiers exposed by the IAS instance in list `provided-apis` are granted as CAP roles after successful authentication.
-:::
-
-::: warning Use different roles for technical and business users
-Use different CAP roles for technical clients without user propagation and for named business users.
-
-Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
-:::
-
-#### Consumer Application
-
-To set up a connection to such an IAS service, the _consumer app_ requires to do:
-
-1. Create an IAS instance that consumes the required API.
-
-    ::: details Sample IAS instance for client (mta.yaml)
-
-    Add this to your `mta.yaml` resources section:
-
-    ```yaml
-    - name: client-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            oauth2-configuration:
-              token-policy:
-                grant_types:
-                  - "urn:ietf:params:oauth:grant-type:jwt-bearer"
-    ```
-
-    :::
-
-2. Create a Remote Service based on the destination (optional).
-    ::: details Sample Remote Service configuration
-
-    ```yaml
-    cds:
-      remote.services:
-        Reviews:
-          destination:
-            name: review-service-destination
-    ```
-
-    :::
-
-To activate the App-2-App connection as a *consumer*, you need to:
-
-1. Create an IAS application dependency in the IAS tenant:
-    - Open the Cloud Identity Services admin console
-    - Navigate to [Application APIs / Dependencies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/communicate-between-applications)
-    - Create a new dependency pointing to your provider application's API
-
-2. Create a dedicated [destination](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/access-destinations-editor) with the following configuration:
-    * The URL pointing to the IAS-endpoint of the application.
-    * Authentication type `NoAuthentication`.
-    * Attribute `cloudsdk.ias-dependency-name` with the name of the created IAS application dependency in Step 1.
-
-<div id="orchint" />
-
-
-
-[Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
-
-[Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
-
-
-### BTP Reuse Services {#ias-reuse}
-
-IAS-based BTP reuse services can be created/consumed with CAP Java even more easily.
-
-The CAP reuse service (provider) needs to:
-
-1. Configure [IAS authentication](/java/security#xsuaa-ias).
-2. Bind an IAS instance that exposes services and service plans.
-
-    ::: details Sample IAS instance for provider
-
-    ```yaml
-    - name: server-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            catalog:
-              services:
-                - id: "1d5c23ee-1ce6-6130-4af4-26461bc6ef79"
-                  name: "review-service"
-                  plans:
-                    - id: "2d5c23ee-1ce6-6130-4af4-26461bc6ef78"
-                      name: "review-api"
-    ```
-
-    :::
-
-3. Prepare a CDS service endpoint for the exposed API.
-
-    ::: details Sample CDS Service for the API
-
-    ```cds
-    service ReviewService @(requires: 'review-api') {
-      [...]
-    }
-    ```
-
-    :::
-
-The CAP consumer application (client) needs to:
-
-1. Create and bind the provided service from the marketplace.
-
-    ::: details Create and bind service instance.
-    ```sh
-    cf create-service review-service review-api review-service-instance
-    cf bind-service <your-app-name> review-service-instance --binding-name review-service-binding
-    ```
-    :::
-
-2. Create an IAS instance that consumes the required service.
-
-    ::: details Sample IAS instance for client
-
-    ```yaml
-      - name: client-identity
-        type: org.cloudfoundry.managed-service
-        parameters:
-          service: identity
-          service-plan: application
-          config:
-            multi-tenant: true
-            "consumed-services": [ {
-              "service-instance-name": "review-service-instance"
-            } ]
-    ```
-
-    :::
-
-3. Create a Remote Service based on the binding (optional).
-
-    ::: details Sample Remote Service configuration
-
-    ```yaml
-    cds:
-      remote.services:
-        Reviews:
-          binding:
-            name: review-service-binding
-            onBehalfOf: currentUser
-    ```
-
-    :::
-
-4. Use CQN queries to consume the reuse service (optional)
-
-[Learn more about simplified Remote Service configuration with bindings](/java/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
-
-::: tip Service plan name as CAP role
-The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
-:::
-
-::: warning  Use different roles for technical and business users
-Use different CAP roles for technical clients without user propagation and for named business users.
-
-Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
-:::
-
-
-#### How to Authorize Callbacks
-
-For bidirectional communication, callbacks from the reuse service to the CAP service need to be authorized as well.
-Currently, there is no standardized way to achieve this in CAP, so custom coding is required.
-As a prerequisite, the CAP service must know the clientId of the reuse service's IAS application, which should be part of the binding exposed to the CAP service.
-
-::: details Sample Code for Authorization of Callbacks
-
-```java
-private void authorizeCallback() {
-		UserInfo userInfo = runtime.getProvidedUserInfo();
-		String azp = (String) userInfo.getAdditionalAttributes().get("azp");
-		if(!userInfo.isSystemUser() || azp == null || !azp.equals(clientId)) {
-			throw new ErrorStatusException(ErrorStatuses.FORBIDDEN);
-		}
-	}
-```
-:::
 
 
 ## Authorization { #auth}

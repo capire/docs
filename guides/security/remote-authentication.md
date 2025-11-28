@@ -21,6 +21,10 @@ status: released
 
 # Remote Authentication { #remote-authentication }
 
+<ImplVariantsHint />
+
+This guide explains how to authenticate remote services.
+
 [[toc]]
 
 ## Remote Service Abstraction { #remote-services }

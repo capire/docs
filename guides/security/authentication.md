@@ -21,6 +21,10 @@ status: released
 
 # Authentication { #authentication }
 
+<ImplVariantsHint />
+
+This guide explains how to authenticate CAP services to resolve CAP users.
+
 [[toc]]
 
 ## Pluggable Authentication
@@ -116,8 +120,13 @@ Mock users require **basic authentication**, hence sending the same request on b
 Mock users are deactivated in production profile by default ❗
 :::
 
-[Learn more about authentication options in CAP Java](../../java/security#spring-boot){.learn-more}
-[Learn more about authentication options in CAP Node.js](../../node.js/authentication#strategies){.learn-more}
+<div class="impl java">
+[Learn more about authentication options](../../java/security#spring-boot){.learn-more}
+</div>
+
+<div class="impl node">
+[Learn more about authentication options](../../node.js/authentication#strategies){.learn-more}
+</div>
 
 
 
@@ -131,9 +140,13 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 { .java }
 
 
+<div class="impl java">
 [Learn more about predefined mock users in CAP Java](../../java/security#preconfigured-mock-users){.learn-more}
-[Learn more about predefined mock users in CAP Node.js](../../node.js/authentication#mock-users){.learn-more}
+</div>
 
+<div class="impl node">
+[Learn more about predefined mock users in CAP Node.js](../../node.js/authentication#mock-users){.learn-more}
+</div>
 
 ### Customization { #custom-mock-users }
 
@@ -142,7 +155,7 @@ Hence, you can use the mock users to test your authorization settings as well as
 
 <div class="impl java">
 
-::: details How to add custom mock user named `viewer-user` in local Spring profile
+::: details How to define a custom mock user with name `viewer-user`
 ```yaml [srv/src/main/resources/application.yaml]
 spring:
   config.activate.on-profile: default
@@ -170,7 +183,7 @@ cds:
 
 <div class="impl node">
 
-::: details How to add a custom mock user named `viewer-user` in the configuration file for local testing:
+::: details How to add a custom mock user with name `viewer-user`
 ```yaml [package.json]
 "cds": {
   "requires": {
@@ -207,21 +220,22 @@ To verify the properties in a user request with a dedicated mock user, activate 
 In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
-
 ```sh
 MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
-
 </div>
 
 <div class="impl node">
-
 TODO
-
 </div>
 
-[Learn more about custom mock users in CAP Java](../../java/security#explicitly-defined-mock-users){.learn-more}
-[Learn more about custom mock users in CAP Node.js](../../node.js/authentication#mocked){.learn-more}
+<div class="impl java">
+[Learn more about custom mock users](../../java/security#explicitly-defined-mock-users){.learn-more}
+</div>
+
+<div class="impl node">
+[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more}
+</div>
 
 
 ### Automated Testing { #mock-user-testing }
@@ -256,17 +270,20 @@ public class BookServiceOrdersTest {
 ```
 :::
 
-
 </div>
 
 <div class="impl node">
 TODO
-await GET('/CatalogService/Books', { auth: { username: 'viewer-user', password: 'pass' } })
 </div>
 
 
-[Learn more about testing in CAP Java](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
-[Learn more about testing in CAP Node.js](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+<div class="impl java">
+[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
+</div>
+
+<div class="impl node">
+[Learn more about unit testing](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+</div>
 
 
 ## IAS Authentication { #ias-auth }
@@ -284,25 +301,29 @@ IAS authentication is best configured and tested in the Cloud, so we're going to
 
 Before working with IAS on CF, you need to
 
-- have an IAS (test) tenant. If not available yet, you need to [create](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant) it now.
+- Prepare an IAS (test) tenant. If not available yet, you need to [create](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant) it now.
 
-- [establish trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
+- [Establish trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
 towards your IAS tenant to use it as identity provider for applications in your subaccount.
 
-- ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
+- Ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
 in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-In the project root folder, execute
+You can continue with the sample [already created](#mock-user-auth). In the project root folder, execute
 
 ```sh
 cds add mta
 ```
 
-to make your application ready for deployment to CF, initially.
+to make your application ready for deployment to CF.
+
+<div class="impl java">
 
 ::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and hence adds all dependencies required for security transitively.
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all dependencies required for security are added transitively.
 :::
+
+</div>
 
 ### Adding IAS
 
@@ -320,33 +341,34 @@ modules:
   - name: bookshop-srv
     # [...]
     requires:
-      - name: bookshop-auth
+      - name: bookshop-ias
         parameters:
           config:
             credential-type: X509_GENERATED
             app-identifier: srv
 
 resources:
-  - name: bookshop-auth
+  - name: bookshop-ias
     type: org.cloudfoundry.managed-service
     parameters:
       service: identity
-      service-name: bookshop-auth
+      service-name: bookshop-ias
       service-plan: application
       config:
         display-name: bookshop
 ```
 :::
 
-Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a unique client (multiple bindings are allowed). 
-CAP applications can have at most one binding to an IAS instance.
+Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a client.
+**CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS intstance. 
+
 
 Following properties apply:
 
 | Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
-| `name` |  instance   | _Name for the IAS application - unique in the tenant_  |
-| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS admins_ |
+| `name` |  _instance_   | _Name for the IAS application - unique in the tenant_  |
+| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS adminstrators_ |
 | `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
 | `credential-type` |  _binding_   | _`X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application_       |
 | `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
@@ -361,7 +383,8 @@ Now let's pack and deploy the application with
 cds up
 ```
 
-and wait until the application is up and running which you can test with `cf apps` or in BTP Cockpit, alternatively.
+and wait until the application is up and running. 
+You can test the status with `cf apps` or in BTP Cockpit, alternatively.
 
 The following trace in the application log confirms the activated IAS authentication:
 <div class="java">
@@ -372,8 +395,12 @@ The following trace in the application log confirms the activated IAS authentica
 
 </div>
 
+<div class="node">
+TODO
+</div>
+
 At startup, the CAP runtime checks the available bindings and activates IAS authentication accordingly. 
-**Therefore, the local setup without an IAS binding in the environment continues to work**.
+**Therefore, the local setup (no IAS binding in the environment) is still runnable**.
 
 For mTLS support which is mandatory for IAS, the CAP application has a second route configured with the `cert.*` domain.
 
@@ -456,10 +483,10 @@ cf service-key bookshop-auth bookshop-auth-key
   "credentials": {
       [...]
     "certificate": "-----BEGIN CERTIFICATE----- [...] -----END CERTIFICATE-----",
-    "clientid": "2a92c297-8603-4157-9aa9-ca7585821979",
+    "clientid": "2a92c297-8603-4157-9aa9-ca758582abcd",
     "credential-type": "X509_GENERATED",
     "key": "-----BEGIN RSA PRIVATE KEY----- [...] -----END RSA PRIVATE KEY-----",
-    "url": "https://avpxtt84j.accounts400.ondemand.com",
+    "url": "https://<tenant-id>.accounts400.ondemand.com",
     [...]
   }
 }
@@ -488,7 +515,7 @@ openssl x509 -in <file>.pem -text -noout
 All the steps can be executed in a single script as shown in the [example](https://cap.cloud.sap/resources/examples/fetch-ias-certs.sh).
 :::
 
-The fetch a token - either as technical or as named user - the request needs to provide the **client certificate** being send to `/oauth2/token` endpoint of IAS service with URI given in `url` property of the binding:
+To fetch a token - either as technical or as named user - the request needs to provide the **client certificate** being send to `/oauth2/token` endpoint of IAS service with URI given in `url` property of the binding:
 
 ::: code-group
 
@@ -598,11 +625,6 @@ TBD
 
 ## Custom Authentication { #custom-auth }
 
-::: tip
-**By default, CAP authenticates all endpoints of the microservice**, including the endpoints which are not served by CAP itself.
-This is the safe baseline on which minor customization steps can be applied on top.
-:::
-
 There are multiple reasons why customization might be required:
 1. Endpoints for non-business requests often require specific authentication methods (e.g. health check, technical services).
 2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
@@ -615,11 +637,17 @@ There are multiple reasons why customization might be required:
 - For custom endpoints that should have any different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
 - In case the authentiaction is delegated to a different component, just [deactivate](#fully-auth) CAP authentication and replace by any suitable strategy.
 
+::: tip
+**By default, CAP authenticates all endpoints of the microservice, including the endpoints which are not served by CAP itself**.
+This is the safe baseline on which minor customization steps can be applied on top.
+:::
+
 ### Model-Driven Authentication { #model-auth }
 
-**The auto-configuration authenticates all service endpoints found in the CDS model by default**. 
+As the auto-configuration authenticates all service endpoints found in the CDS model by default,
+you don't need to explicitly activate authentication for these endpoints. 
 
-Model endpoints that should be public can be explicitly annotated with [pseudo-role](cap-users#pseudo-roles) `any`:
+Endpoints that should be public can be explicitly annotated with [pseudo-role](cap-users#pseudo-roles) `any`:
 
 ```cds
 service BooksService @(requires: 'any') {
@@ -640,10 +668,21 @@ service BooksService @(requires: 'any') {
 In multitenant applications, anonymous requests to public endpoints are missing the tenant information and hence this gap needs to be filled by custom code.
 :::
 
-[Learn more about authentication options in CAP Java with Spring Boot](../../java/security#spring-boot){.learn-more}
+By default, if a CAP service `MyService` is authenticated, also `/MyService/$metadata` is authenticated.
 
+<div class="java">
 
-### Partially Overrule Authentication { #partially-auth }
+With `cds.security.authentication.authenticateMetadataEndpoints: false` you can switch off this behaviour on a global level.
+
+[Learn more about authentication options](../../java/security#spring-boot){.learn-more}
+
+</div>
+
+<div class="node">
+TODO
+</div>
+
+### Partially Overrule Authentication { #partially-auth, .java }
 
 If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
 
@@ -668,11 +707,12 @@ Due to the custom configuration, all URLs matching `/public/**` are opened for p
 
 Ensure your custom configuration has higher priority than CAP's default security configuration by decorating the bean with a low order. 
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _❗ Warning_
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 
-[Learn more about custom security configuraitons in CAP Java with Spring Boot](../../java/security#custom-spring-security-config){.learn-more}
+[Learn more about custom security configurations in CAP Java with Spring Boot](../../java/security#custom-spring-security-config){.learn-more}
+
 
 ### Fully Overrule Authentication { #fully-auth }
 
