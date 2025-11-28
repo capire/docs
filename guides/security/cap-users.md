@@ -508,7 +508,7 @@ POLICY StockManagerFiction {
 }
 ```
 
-[Learn more about DCL operators](https://sap.github.io/cloud-identity-developer-guide/Authorization/ValueHelp.html#filter-operators){.learn-more}
+[Learn more about DCL operators](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/condition-operators){.learn-more}
 
 
 ::: tip
@@ -611,10 +611,15 @@ To create a custom policy with filter restrictions, follow these steps:
 
 :::
 
+[Learn more about how to create custom AMS policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/create-authorization-policy){.learn-more}
+
+
 To assign a policy to an IAS user, follow these steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
 2. Switch to tab **Authorization Policies** and select the policy you want to assign
 3. In **Assignments**, add the IAS user of the tenant to which the policy should be assigned (you can review the policy definition in **Rules**).
+
+[Learn more about how to edit custom AMS policies](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/edit-authorization-policy){.learn-more}
 
 ::: details Assign AMS policy to an IAS user
 
@@ -628,7 +633,6 @@ To assign a policy to an IAS user, follow these steps:
 You can log on to the bookshop test application with the test user and check that only books of dedicated genres can be modified.
 
 [Learn more about AMS policy assignment](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/assign-authorization-policies) {.learn-more}
-
 
 
 
