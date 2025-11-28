@@ -126,6 +126,7 @@
 ## [Query Language (CQL)](cds/cql)
 ## [Query Notation (CQN)](cds/cqn)
 ## [Expressions (CXN)](cds/cxn)
+## [Expression Language (CXL)](cds/cxl)
 ## [Core / Built-in Types](cds/types)
 ## [Common Reuse Types](cds/common)
 ## [Common Annotations](cds/annotations)
