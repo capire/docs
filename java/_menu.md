@@ -24,7 +24,6 @@
 # [Multitenancy](multitenancy)
   ## [Multitenancy (Classic)](multitenancy-classic) <!-- INTERNAL -->
 # [Security](security)
-  ## [IAS and AMS](../../java/ams)
 # [Spring Boot Integration](spring-boot-integration)
 # [Developing Applications](developing-applications/)
   ## [Building](developing-applications/building)

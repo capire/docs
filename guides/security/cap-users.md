@@ -21,6 +21,10 @@ status: released
 
 # CAP Users { #cap-users }
 
+<ImplVariantsHint />
+
+This guide introduces to CAP user abstraction and role assignments.
+
 [[toc]]
 
 ## CAP User Abstraction { #claims }
