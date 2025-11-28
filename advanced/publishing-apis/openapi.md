@@ -97,11 +97,15 @@ See [Frequently Asked Questions](#faq) for examples on how to use these annotati
 | `Description`      | Action, ActionImport, Function, FunctionImport                                | `summary` of Operation Object                                     |
 | `Description`      | EntitySet, Singleton                                                          | `description` of Tag Object                                       |
 | `Description`      | EntityType                                                                    | `title` of Request Body Object                                    |
-| `Description`      | ComplexType, EntityType, EnumerationType, Parameter, Property, TypeDefinition | `title` of Schema Object                                          |
+| `Description`      | ComplexType, EntityType, EnumerationType, TypeDefinition                      | `title` of Schema Object                                          |
+| `Description`      | Parameter                                                                     | `description` of Parameter Object (fallback if `LongDescription` not present) |
+| `Description`      | Property                                                                      | `description` of Schema Object (fallback if `LongDescription` not present) |
 | `Description`      | Schema, EntityContainer                                                       | `info.title`                                                      |
 | `Example`          | Property                                                                      | `example` of Schema Object                                        |
 | `Immutable`        | Property                                                                      | omit from Update structure                                        |
 | `LongDescription`  | Action, ActionImport, Function, FunctionImport                                | `description` of Operation Object                                 |
+| `LongDescription`  | Parameter                                                                     | `description` of Parameter Object                                 |
+| `LongDescription`  | Property                                                                      | `description` of Schema Object                                    |
 | `LongDescription`  | Schema, EntityContainer                                                       | `info.description`                                                |
 | `Permissions:Read` | Property                                                                      | omit read-only properties from Create and Update structures       |
 | `SchemaVersion`    | Schema                                                                        | `info.version`                                                    |
