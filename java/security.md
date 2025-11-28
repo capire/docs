@@ -185,7 +185,7 @@ Mock users are only initialized if the `org.springframework.boot:spring-boot-sta
 
 :::
 
-#### Preconfigured Mock Users
+#### Preconfigured Mock Users { #preconfigured-mock-users}
 
 For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/cap-users#pseudo-roles): 
 
@@ -207,7 +207,7 @@ There are several properties to control behavioud of mock users:
 | `cds.security.mock.enabled`  | Activates mock users. | `false` in production profile, `true` otherwise.
 
 
-#### Custom Mock Users
+#### Custom Mock Users {#custom-mock-users}
 
 You can also define mock users explicitly. This mock user configuration only applies if:
 * The service runs without a service binding (non-production mode)
