@@ -30,7 +30,7 @@ This guide explains how to restrict access to data by adding respective declarat
 
 In essence, [authentication](./authentication#authentication) verifies the user's identity and the presented claims. Briefly, authentication reveals _who_ is using the service.
 In contrast, **authorization controls _how_ the user may interact with the application's resources**. 
-As the access control depends on the user information, authentication is a prerequisite to authorization.
+As access control depends on user information, authentication is a prerequisite for authorization.
 
 ![Authorization with CAP](./assets/authorization.drawio.svg){width="500px"}
 
@@ -55,7 +55,7 @@ Finally, according to the key concept [Customizable Security](./overview#key-con
 
 ### Internal Services
 
-CDS services which are only meant for *internal* usage shouldn't be exposed via protocol adapters. 
+CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters. 
 In order to prevent access from *any* external clients, annotate those services with `@protocol: 'none'`:
 
 ```cds
@@ -413,6 +413,8 @@ The [restrict annotation](#restrict-annotation) for an entity allows you to enfo
 In addition, you can define a `where`-condition that further limits the set of accessible instances. 
 This condition, which acts like a filter, establishes *instance-based authorization*.
 
+The condition defined in the `where` clause typically associates domain data with static user claims.
+
 ### Filter Conditions { #filter-consitions }
 
 The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
@@ -506,6 +508,7 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
   }
 }
 ```
+
 Let's assume a customer creates XSUAA roles `SalesManagerEMEA` with dedicated values (`['DE', 'FR', ...]`) and `SalesAdmin` with *unrestricted* values.
 As expected, a user assigned only to `SalesAdmin` has access to all `SalesOrgs`. But when role `SalesManagerEMEA` is added, *only* EMEA organizations are accessible suddenly!
 

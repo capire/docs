@@ -44,7 +44,7 @@ CAP [leverages platform services](overview#key-concept-platform-services) to pro
 - For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services:  
   - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
-  - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-authentication) to support a smooth migration from XSUAA to IAS.
+  - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
 
 
 ## Mock User Authentication { #mock-user-auth }
@@ -241,7 +241,7 @@ TODO
 
 <div class="impl java">
 
-[Learn more about custom mock users](../../java/security#explicitly-defined-mock-users){.learn-more}
+[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more}
 
 </div>
 
@@ -644,7 +644,7 @@ The same is true for the logout flow.
 
 TBD
   
-## Hybrid Authentication { hybrid-authentication }
+## Hybrid Authentication { hybrid-auth }
 
 TBD
 
@@ -718,7 +718,7 @@ With `cds.security.authentication.authenticateMetadataEndpoints: false` you can 
 TODO
 </div>
 
-### Overrule Partially { #partially-auth, .java }
+### Overrule Partially { #partially-auth .java }
 
 If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
 
