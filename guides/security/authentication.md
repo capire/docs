@@ -644,7 +644,7 @@ The same is true for the logout flow.
 
 TBD
   
-## Hybrid Authentication { hybrid-auth }
+## Hybrid Authentication { #hybrid-auth }
 
 TBD
 
