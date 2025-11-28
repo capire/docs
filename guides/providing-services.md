@@ -988,8 +988,7 @@ As mentioned above error message returned by the CXL expression inside the annot
 :::
 
 ::: info Expression Evaluation
-Expressions are evaluated *after* the request has been applied to the underlying datastore. The affected entities are the entities being part of the request and identified by their primary keys.
-The evaluating runtime constructs and executes statements with the annotation-provided expressions and the respective primary key values for the given entities. Depending on the structure and cardinality of the request data it can lead to one or more statements being executed.
+Expressions are evaluated *after* the request has been applied to the underlying datastore. Affected are the entities of the request's payload. The runtime executes check-statements with the provided expressions and the primary key values for the given entities.
 :::
 
 ::: warning Limitations
