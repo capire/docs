@@ -135,6 +135,26 @@ Note the following limitations for `.cds` files in features:
 
 In principle, features can be toggled per request, per user, or per tenant; most commonly they'll be toggled per tenant, as demonstrated in the following.
 
+### Feature Toggle Lifecycle
+
+This state diagram illustrates the typical lifecycle of a feature toggle from development to production cleanup:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Development
+    Development --> Testing: Feature Complete
+    Testing --> Staging: Tests Pass
+    Staging --> ProductionOff: Deploy
+    ProductionOff --> ProductionOn: Toggle Enable
+    ProductionOn --> ProductionOff: Toggle Disable
+    ProductionOff --> Canary: Gradual Rollout
+    Canary --> ProductionOn: Success
+    Canary --> ProductionOff: Rollback
+    ProductionOn --> Deprecated: Mark for Removal
+    Deprecated --> Removed: Cleanup
+    Removed --> [*]
+```
+
 ### In Development
 
 <div class="impl node">

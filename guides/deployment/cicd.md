@@ -128,6 +128,54 @@ The release will show up in your _Releases_ page and a deployment to your produc
 
 <span id="afterstart" />
 
+### CI/CD Pipeline Architecture
+
+The following diagram shows the typical CI/CD pipeline flow for CAP applications using Hyperspace and Deploy with Confidence:
+
+```mermaid
+graph TD
+    A[Source Repository] --> B[Hyperspace Pipeline]
+    B --> C[Build & Unit Tests]
+    C --> D[Security Scans]
+    D --> E{Deploy Strategy}
+    
+    E -->|Standard| F[Direct CF Deploy]
+    E -->|DwC| G[Deploy with Confidence]
+    
+    F --> H[Integration Tests]
+    G --> I[DwC Staging Environment]
+    
+    I --> J[Feature Toggle Tests]
+    J --> K[End-to-End Tests]
+    K --> L[Production Deployment]
+    
+    H --> M[Staging Environment]
+    M --> N[User Acceptance Tests]
+    N --> O[Production Deployment]
+    
+    L --> P[Health Monitoring]
+    O --> P
+    P --> Q[Operational Dashboards]
+    
+    style A fill:#EFF4F9,stroke:#427CAC,color:#333
+    style B fill:#427CAC,stroke:#3F5161,color:#FFF
+    style C fill:#EFF4F9,stroke:#427CAC,color:#333
+    style D fill:#EFF4F9,stroke:#427CAC,color:#333
+    style E fill:#91C8F6,stroke:#427CAC,color:#333
+    style F fill:#427CAC,stroke:#3F5161,color:#FFF
+    style G fill:#427CAC,stroke:#3F5161,color:#FFF
+    style H fill:#EFF4F9,stroke:#427CAC,color:#333
+    style I fill:#FAFAFA,stroke:#BFBFBF,color:#333
+    style J fill:#EFF4F9,stroke:#427CAC,color:#333
+    style K fill:#EFF4F9,stroke:#427CAC,color:#333
+    style L fill:#ABE2AB,stroke:#2B7D2B,color:#333
+    style M fill:#FAFAFA,stroke:#BFBFBF,color:#333
+    style N fill:#EFF4F9,stroke:#427CAC,color:#333
+    style O fill:#ABE2AB,stroke:#2B7D2B,color:#333
+    style P fill:#E5E5E5,stroke:#666666,color:#333
+    style Q fill:#E5E5E5,stroke:#666666,color:#333
+```
+
 <span id="beforecicd" />
 
 ## SAP Continuous Integration and Delivery
