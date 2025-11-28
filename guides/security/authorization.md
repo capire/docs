@@ -19,6 +19,8 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 # CAP Authorization { #authorization }
 
+<ImplVariantsHint />
+
 This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 
 [[toc]]
@@ -248,11 +250,6 @@ Here an `Auditor` user can read all orders with matching `country` or that they 
    - `@requires: 'Viewer'` is equivalent to `@restrict: [{grant:'*', to: 'Viewer'}]`
    - `@readonly` is the same as `@restrict: [{ grant:'READ' }]`
 
-Currently, the security annotations **are only evaluated on the target entity of the request**. Restrictions on associated entities touched by the operation are not regarded. This has the following implications:
-- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
-- Deep inserts and updates are checked on the root entity only.
-
-See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.{.learn-more}
 
 
 #### Supported Combinations with CDS Resources
@@ -321,6 +318,47 @@ The resulting authorizations are illustrated in the following access matrix:
 
 The example models access rules for different roles in the same service. In general, this is _not recommended_ due to the high complexity. See [best practices](#dedicated-services) for information about how to avoid this.
 
+### Propagation of Restrictions { #propagated-restrictions }
+
+Service entities inherit the restriction from the database entity, on which they define a projection.
+An explicit restriction defined on a service entity *replaces* inherited restrictions from the underlying entity.
+
+Entity `Books` on a database level:
+
+```cds
+namespace db;
+entity Books @(restrict: [
+  { grant: 'READ', to: 'Buyer' },
+]) {/*...*/}
+```
+
+Services `BuyerService` and `AdminService` on a service level:
+
+```cds
+service BuyerService @(requires: 'authenticated-user'){
+  entity Books as projection on db.Books; /* inherits */
+}
+
+service AdminService @(requires: 'authenticated-user'){
+  entity Books @(restrict: [
+    { grant: '*', to: 'Admin'} /* overrides */
+  ]) as projection on db.Books;
+}
+```
+
+| Events                        | `Buyer` | `Admin` | `authenticated-user` |
+|-------------------------------|:-------:|:-------:|:--------------------:|
+| `BuyerService.Books` (`READ`) |  <Y/>   |  <X/>   |         <X/>         |
+| `AdminService.Books` (`*`)    |  <X/>   |  <Y/>   |         <X/>         |
+
+::: tip
+We recommend defining restrictions on a database entity level only in exceptional cases. Inheritance and override mechanisms can lead to an unclear situation.
+:::
+
+::: warning _Warning_ <!--  -->
+A service level entity can't inherit a restriction with a `where` condition that doesn't match the projected entity. The restriction has to be overridden in this case.
+:::
+
 
 ### Draft Mode {#restrictions-and-draft-mode}
 
@@ -367,57 +405,44 @@ So, the authorization for the requests in the example is delegated as follows:
 > <sup>2</sup> `@readonly` due to `@cds.autoexpose`<br>
 > <sup>3</sup> According to the restriction. `<id>` is relevant for instance-based filters.
 
-### Inheritance of Restrictions
 
-Service entities inherit the restriction from the database entity, on which they define a projection. An explicit restriction defined on a service entity *replaces* inherited restrictions from the underlying entity.
-
-Entity `Books` on a database level:
-
-```cds
-namespace db;
-entity Books @(restrict: [
-  { grant: 'READ', to: 'Buyer' },
-]) {/*...*/}
-```
-
-Services `BuyerService` and `AdminService` on a service level:
-
-```cds
-service BuyerService @(requires: 'authenticated-user'){
-  entity Books as projection on db.Books; /* inherits */
-}
-
-service AdminService @(requires: 'authenticated-user'){
-  entity Books @(restrict: [
-    { grant: '*', to: 'Admin'} /* overrides */
-  ]) as projection on db.Books;
-}
-```
-
-| Events                        | `Buyer` | `Admin` | `authenticated-user` |
-|-------------------------------|:-------:|:-------:|:--------------------:|
-| `BuyerService.Books` (`READ`) |  <Y/>   |  <X/>   |         <X/>         |
-| `AdminService.Books` (`*`)    |  <X/>   |  <Y/>   |         <X/>         |
-
-::: tip
-We recommend defining restrictions on a database entity level only in exceptional cases. Inheritance and override mechanisms can lead to an unclear situation.
-:::
-
-::: warning _Warning_ <!--  -->
-A service level entity can't inherit a restriction with a `where` condition that doesn't match the projected entity. The restriction has to be overridden in this case.
-:::
 
 ## Instance-Based Access Control { #instance-based-auth }
 
-The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. In addition, you can define a `where`-condition that further limits the set of accessible instances. This condition, which acts like a filter, establishes *instance-based authorization*.
+The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. 
+In addition, you can define a `where`-condition that further limits the set of accessible instances. 
+This condition, which acts like a filter, establishes *instance-based authorization*.
 
-The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. This means that, the condition applies to following standard CDS events only<sup>1</sup>:
+### Filter Conditions { #filter-consitions }
+
+The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
+Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
+This means that, the condition applies to following standard CDS events only:
 - `READ` (as result filter)
-- `UPDATE` (as reject condition<sup>2</sup>)
-- `DELETE` (as reject condition<sup>2</sup>)
+- `UPDATE` (as reject condition)
+- `DELETE` (as reject condition)
 
- > <sup>1</sup> Node.js supports _static expressions_ that *don't have any reference to the model* such as `where: $user.level = 2` for all events.
- > <sup>2</sup> CAP Java uses a filter condition by default.
+<div class="impl java">
+
+In addition, the runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
+- `CREATE` (input filter)
+- `UPDATE` (input filer)
+
+</div>
+
+You can define filter conditions in the `where`-clause of restrictions based on [CQL](/cds/cql)-predicates, declared as [compiler expressions](../../cds/cdl#expressions-as-annotation-values):
+
+* Predicates with arithmetic operators.
+* Combining predicates to expressions with `and` and `or` logical operators.
+* Value references to constants, [user attributes](#user-attrs), and entity data (elements including [association paths](#association-paths))
+* [Exists predicate](#exists-predicate) based on subselects.
+
+<div class="impl java">
+
+* [Exists with a subquery](#exists-subquery) for access to ACL like entities.
+
+</div>
+
 
 For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
 
@@ -433,18 +458,20 @@ annotate Articles with @(restrict: [
   { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
 ```
 
-You can define `where`-conditions in restrictions based on [CQL](../../cds/cql)-where-clauses.<br>
-Supported features are:
-* Predicates with arithmetic operators.
-* Combining predicates to expressions with `and` and `or` logical operators.
-* Value references to constants, [user attributes](#user-attrs), and entity data (elements including [paths](#association-paths))
-* [Exists predicate](#exists-predicate) based on subselects.
-
-::: info Avoid enumerable keys
-In case the filter condition is not met in an `UPDATE` or `DELETE` request, the runtime rejects the request (response code 403) even if the user is not even allowed to read the entity. To avoid disclosing the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable.
+::: tip
+Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
 :::
 
-### User Attribute Values { #user-attrs}
+At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
+
+:::warning Modification of Statements
+Be careful when you modify or extend the statements in custom handlers.
+Make sure you keep the filters for authorization.
+:::
+
+
+
+#### User Attributes { #user-attrs}
 
 To refer to attribute values from the user claim, prefix the attribute name with '`$user.`' as outlined in [static user claims](cap-users#claims). For instance, `$user.country` refers to the attribute with the name `country`.
 
@@ -454,7 +481,7 @@ In general, `$user.<attribute>` contains a **list of attribute values** that are
 
 For example, the condition `where: $user.country = countryCode` will grant a user with attribute values `country = ['DE', 'FR']` access to entity instances that have `countryCode = DE` _or_ `countryCode = FR`. In contrast, the user has no access to any entity instances if the value list of country is empty or the attribute is not available at all.
 
-#### Unrestricted XSUAA Attributes
+##### Unrestricted XSUAA Attributes
 
 By default, all attributes defined in [XSUAA instances](./cap-users#xsuaa-roles) require a value (`valueRequired:true`), which is well-aligned with the CAP runtime that enforces restrictions on empty attributes.
 If you explicitly want to offer unrestricted attributes to customers, you need to do the following:
@@ -496,9 +523,7 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
 }
 ```
 
-
-
-### Exists Predicate { #exists-predicate }
+#### Exists Predicate { #exists-predicate }
 
 In many cases, the authorization of an entity needs to be derived from entities reachable via association path. See [domain-driven authorization](#domain-driven-authorization) for more details.
 You can leverage the `exists` predicate in `where` conditions to define filters that directly apply to associated entities defined by an association path:
@@ -560,8 +585,6 @@ Here, the authorization of `Products` is derived from `Divisions` by leveraging 
 Be aware that deep paths might introduce a performance bottleneck. Access Control List (ACL) tables, managed by the application, allow efficient queries and might be the better option in this case.
 :::
 
-<div id="exists-subquery" />
-
 
 ### Association Paths { #association-paths}
 
@@ -580,15 +603,131 @@ service SalesOrderService @(requires: 'authenticated-user') {
 }
 ```
 
-Paths on 1:n associations (`Association to many`) are only supported, _if the condition selects at most one associated instance_.
-It's highly recommended to use the [exists](#exists-predicate) predicate instead.
-::: tip
-Be aware of increased execution time when modeling paths in the authorization check of frequently requested entities. Working with materialized views might be an option for performance improvement in this case.
+Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the condition selects at most one associated instance_ (`exists` semantic).
+
+
+<div class="impl java">
+
+<div id="exists-subquery" />
+
+</div>
+
+
+### Checking Input Data { #input-data-auth .java}
+
+Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
+Invalid input that does not meet the condition is rejected with response code `400`.
+
+Let's assume an entity `Orders` which restricts access to users classified by assigned accounting areas:
+
+```cds
+annotate Orders with @(restrict: [
+  { grant: '*', where: 'accountingArea = $user.accountingAreas' } ]);
+```
+
+A user with accounting areas `[Development, Research]` is not able to send an `UPDATE` request, that changes `accountingArea` from `Research` or `Development` to `CarFleet`, for example.
+Note that the `UPDATE` on instances _not matching the request user's accounting areas_ (for example, `CarFleet`) are rejected by standard instance-based authorization checks.
+
+Starting with CAP Java `4.0`, deep authorization is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
+
+
+### Rejected Entity Selection { #reject-403 .java}
+
+Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
+are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
+Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
+
+To allow the UI to distinguish between *not found* and *forbidden*, CAP Java can detect this situation and rejects`UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
+The additional authorization check may affect performance.
+
+::: warning Avoid enumerable keys
+To avoid to disclosure the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable or add custom code to overrule the default behaviour otherwise.
 :::
 
-::: warning _Warning_ <!--  -->
-In Node.js, association paths in `where` clauses are currently only supported when using SAP HANA.
+Starting with CAP Java `4.0`, the reject behaviour is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
+
+
+
+## Limitations {.node}
+
+Currently, the security annotations **are only evaluated on the target entity of the request**. 
+Restrictions on associated entities touched by the operation are not regarded. 
+This has the following implications:
+- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
+- Deep inserts and updates are checked on the root entity only.
+
+See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.
+
+
+## Deep Authorizations { #deep-auth .java}
+
+### Associations
+
+Queries to Application Services are not only authorized by the target entity which has a `@restrict` or `@requires` annotation, but also for all __associated entities__ that are used in the statement.
+For instance, consider the following model:
+
+```cds
+@(restrict: [{ grant: 'READ', to: 'Manager' }])
+entity Books {...}
+
+@(restrict: [{ grant: 'READ', to: 'Manager' }])
+entity Orders {
+  key ID: String;
+  items: Composition of many {
+    key book: Association to Books;
+    quantity: Integer;
+  }
+}
+```
+
+For the following OData request `GET Orders(ID='1')/items?$expand=book`, authorizations for `Orders` and for `Books` are checked.
+If the entity `Books` has a `where` clause for instance-based authorization, it will be added as a filter to the sub-request with the expand.
+
+Custom CQL statements submitted to the [Application Service](../../java/cqn-services/application-services) instances are also authorized by the same rules including the path expressions and subqueries used in them.
+
+For example, the following statement checks role-based authorizations for both `Orders` and `Books`,
+because the association to `Books` is used in the select list.
+
+```java
+Select.from(Orders_.class,
+    f -> f.filter(o -> o.ID().eq("1")).items())
+  .columns(c -> c.book().title());
+```
+
+For modification statements with associated entities used in infix filters or where clauses,
+role-based authorizations are checked as well. 
+Associated entities require `READ` authorization, in contrast to the target of the statement itself.
+
+The following statement requires `UPDATE` authorization on `Orders` and `READ` authorization on `Books`
+because an association from `Orders.items` to the book is used in the where condition.
+
+```java
+Update.entity(Orders_.class, f -> f.filter(o -> o.ID().eq("1")).items())
+  .data("quantity", 2)
+  .where(t -> t.book().ID().eq(1));
+```
+Starting with CAP Java `4.0`, deep authorization is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
+
+
+### Compositions
+
+Restrictions on associated composition entities touched by the request are **not** regarded by the runtime.
+The rational behind that is that authorization rules are [implicitly defined by the root entity of the document](#autoexposed-restrictions) and therefore security annotations **of the composition root entity are evaluated**.
+
+This has the following implications:
+- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
+- Deep `INSERT`s and `UPDATE`s are checked on the root entity only.
+
+::: warning
+**Restrictions on compositions are not checked by the runtime**.
+If you model dedicated restriction rules on child entity level, you need to add custom authorization handlers accordingly.
 :::
+
+
+
 
 ## Best Practices
 
