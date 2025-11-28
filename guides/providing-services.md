@@ -946,21 +946,13 @@ Annotate an element with `@assert` to define arbitrary validation expressions th
 The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
 
 ```cds
-entity Books : cuid {
-   title : String;
-   stock : Integer;
-}
-
 entity Orders : cuid {
-   Items : Composition of many {
-      key itemId   : GUID;
-         book     : Association to Books;
-
-         @assert: (case // [!code focus]
-            when book.stock <= quantity then 'Stock exceeded' // [!code focus]
-         end) // [!code focus]
+         ...
+         @assert: (case 
+            when book.stock <= quantity then 'Stock exceeded' 
+         end)
          quantity : Integer;
-         amount   : Decimal(9, 2);
+         ...
    };
 }
 ```
