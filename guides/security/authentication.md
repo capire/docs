@@ -63,7 +63,7 @@ mvn spring-boot:run
 ```
 
 ::: tip
-CAP Java requires (transitive) dependency to `spring-boot-starter-security` to enable authentication middleware support. 
+CAP Java requires some Maven [dependencies](../../java/security#maven-dependencies) to enable authentication middleware support. 
 Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
 :::
 
@@ -121,11 +121,15 @@ Mock users are deactivated in production profile by default ❗
 :::
 
 <div class="impl java">
+
 [Learn more about authentication options](../../java/security#spring-boot){.learn-more}
+
 </div>
 
 <div class="impl node">
+
 [Learn more about authentication options](../../node.js/authentication#strategies){.learn-more}
+
 </div>
 
 
@@ -141,11 +145,15 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 
 
 <div class="impl java">
+
 [Learn more about predefined mock users in CAP Java](../../java/security#preconfigured-mock-users){.learn-more}
+
 </div>
 
 <div class="impl node">
+
 [Learn more about predefined mock users in CAP Node.js](../../node.js/authentication#mock-users){.learn-more}
+
 </div>
 
 ### Customization { #custom-mock-users }
@@ -220,9 +228,11 @@ To verify the properties in a user request with a dedicated mock user, activate 
 In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
+
 ```sh
 MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
+
 </div>
 
 <div class="impl node">
@@ -230,11 +240,15 @@ TODO
 </div>
 
 <div class="impl java">
+
 [Learn more about custom mock users](../../java/security#explicitly-defined-mock-users){.learn-more}
+
 </div>
 
 <div class="impl node">
+
 [Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more}
+
 </div>
 
 
@@ -278,11 +292,15 @@ TODO
 
 
 <div class="impl java">
+
 [Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
+
 </div>
 
 <div class="impl node">
+
 [Learn more about unit testing](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+
 </div>
 
 
@@ -320,7 +338,7 @@ to make your application ready for deployment to CF.
 <div class="impl java">
 
 ::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all dependencies required for security are added transitively.
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
 
 </div>
@@ -359,11 +377,18 @@ resources:
 ```
 :::
 
+<div class="impl java">
+
+::: tip
+Command `add ias` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates IAS authentiaction automatically.
+:::
+
+</div>
+
 Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a client.
 **CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS intstance. 
 
-
-Following properties apply:
+Following properties are available:
 
 | Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
@@ -375,8 +400,8 @@ Following properties apply:
 
 
 [Lean more about IAS service instance and binding creation options](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
-<div id="learn-more-IAS-instances-bindings" />
 
+<div id="learn-more-IAS-instances-bindings" />
 
 Now let's pack and deploy the application with
 ```sh
@@ -632,17 +657,28 @@ There are multiple reasons why customization might be required:
 
 ![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="380px"}
 
+<div class="java">
+
+[Advanced configuration options](../../java/security#spring-boot) allow you to control the behaviour of CAP's authentication behaviour according to your needs:
+
+</div>
+
+<div class="node">
+TODO
+</div>
+
 - For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
 - For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
 - For custom endpoints that should have any different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
 - In case the authentiaction is delegated to a different component, just [deactivate](#fully-auth) CAP authentication and replace by any suitable strategy.
 
-::: tip
+::: tip Secure by Default
 **By default, CAP authenticates all endpoints of the microservice, including the endpoints which are not served by CAP itself**.
 This is the safe baseline on which minor customization steps can be applied on top.
 :::
 
-### Model-Driven Authentication { #model-auth }
+
+### Automatic Authentication { #model-auth }
 
 As the auto-configuration authenticates all service endpoints found in the CDS model by default,
 you don't need to explicitly activate authentication for these endpoints. 
@@ -682,7 +718,7 @@ With `cds.security.authentication.authenticateMetadataEndpoints: false` you can 
 TODO
 </div>
 
-### Partially Overrule Authentication { #partially-auth, .java }
+### Overrule Partially { #partially-auth, .java }
 
 If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
 
@@ -711,16 +747,14 @@ Ensure your custom configuration has higher priority than CAP's default security
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 
-[Learn more about custom security configurations in CAP Java with Spring Boot](../../java/security#custom-spring-security-config){.learn-more}
+[Learn more about overruling Spring security configuration in CAP Java](../../java/security#custom-spring-security-config){.learn-more}
 
 
-### Fully Overrule Authentication { #fully-auth }
+### Overrule Fully { #fully-auth }
 
 In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protercted by a secure channel:
 
 ![Service Mesh with Ingress Gateway](./assets/ingress-auth.drawio.svg){width="500px"}
-
-In such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
 
 ::: tip
 User propagation should be done by forwarding the request token in `Authorization`-header accordingly.
@@ -731,6 +765,16 @@ This will make standard CAP authorization work properly.
 If you switch off CAP authentication, make sure that the internal communication channels are secured by the given infrastructure.
 :::
 
+<div class="java">
+In such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
+
+[Learn more about how to switch off authentication in CAP Java](../../java/security#custom-spring-security-alone){.learn-more}
+
+</div>
+
+<div class="node">
+TODO
+</div>
 
 
 ## Pitfalls
