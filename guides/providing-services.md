@@ -755,11 +755,11 @@ The records are locked until the end of the transaction by commit or rollback st
 
 Here's an overview table:
 
-| State              | Select Without Lock   | Select With Shared Lock |  Select With Exclusive Lock/Update |
-| --------------- | ----------------------- | -------------------------- |  ------------------------------------- |
-| not locked      | passes | passes  | passes |
-| shared lock     | passes | passes  | waits |
-| exclusive lock | passes | waits  | waits |
+| State          | Select Without Lock | Select With Shared Lock | Select With Exclusive Lock/Update |
+|----------------|---------------------|-------------------------|-----------------------------------|
+| not locked     | passes              | passes                  | passes                            |
+| shared lock    | passes              | passes                  | waits                             |
+| exclusive lock | passes              | waits                   | waits                             |
 
 
 [Learn more about using the `SELECT ... FOR UPDATE` statement in the Node.js runtime.](../node.js/cds-ql#forupdate){.learn-more}
@@ -1433,17 +1433,17 @@ service TravelService {
 ```
 
 Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
-This automatic entity extending can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
-If you do so, you need to add aspect `sap.common.FlowHistory` manually in order to use `@to: $flow.previous`!
-Further, automatic history capturing can be enabled for all entities with a flow definition <Config>cds.features.history_for_flows: 'all'</Config>.
 
-::: tip Transitions are excluded from projections
-The `transitions_` composition automatically appended to the base entity is automatically excluded from all projections.
-:::
-
-::: warning The `transitions_` composition is a technical artifact
+::: details The `transitions_` composition
 The `transitions_` composition is meant as a technical artifact to implement transitioning to the previous state and not for exposing the transition history to business users, etc.
 For such use cases, check out the [Change Tracking plugin](../plugins/index.md#change-tracking).
+
+The automatic entity extending described above can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
+If you do so, you need to add aspect `sap.common.FlowHistory` manually in order to use `@to: $flow.previous`!
+
+Automatic history capturing can, as an experimental feature, also be enabled for all entities with a flow definition via <Config>cds.features.history_for_flows: 'all'</Config>.
+
+The `transitions_` composition automatically appended to the base entity is also automatically excluded from all projections.
 :::
 
 
@@ -1454,7 +1454,7 @@ Flow annotations work well for basic flows. For more complex scenarios, implemen
 **Common use cases for custom handlers:**
 - **Additional validation:** Implement a custom `before` handler when entry state validation depends on extra conditions
 - **Non-void return types:** Implement a custom `on` handler when the action returns data
-- **Conditional target states:** Implement a custom `on` handler (without `@to` annotation) when multiple target states depend on conditions
+- **Conditional target states:** Implement a custom `on` or `after` handler (without `@to` annotation) when multiple target states depend on conditions
 
 <!-- TODO: add example -->
 
