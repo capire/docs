@@ -957,7 +957,7 @@ entity Orders : cuid {
 }
 ```
 
-Alternatively, the same condition can be simplified by using the ternary operator:
+Alternatively, an assert with a single `when` .. `then` block can be simplified by using the ternary operator:
 
 ```cds
 entity OrderItems : cuid {
