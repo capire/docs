@@ -636,7 +636,7 @@ You can log on to the bookshop test application with the test user and check tha
 
 
 
-### Tracing & Troubleshooting
+### Tracing
 
 You can verify a valid configfuration of the AMS plugin by the following log output:
 
@@ -660,6 +660,9 @@ c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
  ...
 "accessResult":"or( eq($app.Genre, "Mystery") eq($app.Genre, "Fantasy") )"}.
 ```
+
+You can add general user information by applying [user tracing](#user-tracing).
+
 ::: tip
 It might be useful to investiagte the injected filter conditions by activating the query-trace (logger `com.sap.cds.persistence.sql`).
 :::
@@ -783,7 +786,7 @@ Avoid writing custom code based on the raw authentication info, as this undermin
 **In most casese, there is no need to write custom code dependent on the CAP user - leverage CDS modelling whenever possible**.
 :::
 
-### Programmatic Reflection { #reflection }
+### Reflection { #reflection }
 
 In CAP Java, The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) of a handler in different ways:
 
@@ -810,17 +813,17 @@ public void discountBooks(Stream<Books> books) {
 ```
 
 There is always an `UserInfo` attached to the current `RequestContext`, reflecting any type of [users](#user-types).
-The `UserInfo` object is not modifyable, but during request processing, a new `RequestContext` can be spawned and may be accompanied by a [change of the current user](#switching-users).
+The `UserInfo` object is not modifyable, but during request processing, a new `RequestContext` can be spawned and may be accompanied by a [switch of the current user](#switching-users).
 
 
-Depending on the configured [authentication](./authentication) strategy, CAP derives a *default set* of user claims containing the user's name, tenant and attributes:
+Depending on the configured [authentication](./authentication) strategy, CAP derives a *default set* of user claims containing the user's name, tenant, attributes and assigned roles:
 
 | User Property | UserInfo Getter | XSUAA JWT Property               | IAS JWT Property        | `@restrict`-annotation
 |---------------|---------------------|----------------------------------|-------------------------|--------------------|
-| Logon name     | `getName()`    | `user_name`                      | `sub`                   | `$user`  |
-| Tenant   | `getTenant()`  | `zid`                            | `zone_uuid`             | `$user.tenant` |
-| Attributes | `getAttributeValues(String attr)` | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>` |
-| Roles     | `getRoles()` and `hasRole(String role)` | `scopes`  | n/a - injected via AMS | String in `to`-clause |
+| _Logon name_     | `getName()`    | `user_name`                      | `sub`                   | `$user`  |
+| _Tenant_   | `getTenant()`  | `zid`                            | `zone_uuid`             | `$user.tenant` |
+| _Attributes_ | `getAttributeValues(String attr)` | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>` |
+| _Roles_     | `getRoles()` and `hasRole(String role)` | `scopes`  | n/a - injected via AMS | String in `to`-clause |
 
 ::: tip
 CAP does not make any assumptions on the presented claims given in the token. String values are copied as they are.
@@ -833,7 +836,7 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 | `isAuthenticated()` | True if the current user has been authenticated. | `authenticated-user` |
 | `isSystemUser()` | Indicates whether the current user has pseudo-role `system-user`. | `system-user` |
 | `isInternalUser()` |  Indicates whether the current user has pseudo-role `internal-user`. | `internal-user` |
-| `isPrivileged()` |  Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted | n/a |
+| `isPrivileged()` |  Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted. | n/a |
 
 
 
@@ -894,9 +897,9 @@ Also consider data protection and privacy regulations when storing user data.
 There are multiple reasonable use cases in which user modification is a suitable approach:
 
 - Injecting or mixing user roles by calling `modifiableUserInfo.addRole(String role)` (In fact this is the base for [AMS plugin](#roles-assignment-ams) injecting user specifc roles).
-- Providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by calling `modifiableUserInfo.setAttributeValues(String attribute, List<String> values)`.
-- Constructing the request's user based on forwarded (and trusted) header information, completely replacing default authentication.
-- ...
+- Providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by invoking `modifiableUserInfo.setAttributeValues(String attribute, List<String> values)`.
+- Constructing a request user based on forwarded (and trusted) header information, completely replacing default authentication.
+- etc.
 
 [See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.learn-more}
 
