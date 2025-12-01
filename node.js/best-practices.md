@@ -333,7 +333,7 @@ The most important aspects for programming errors are:
 - Fail loudly: Do not hide errors and silently continue. Make sure that unexpected errors are correctly logged. Do not catch errors you can't handle.
 - Don't program in a defensive way: Concentrate on your business logic and only handle errors if you know that they occur. Only use `try`/`catch` blocks when necessary.
 
-Never attempt to catch and handle unexpected errors, promise rejections, etc. If it's unexpected, you can't handle it correctly. If you could, it would be expected (and should already be handled). Even though your apps should be stateless, you can never be 100% certain that any shared resource wasn't affected by the unexpected error. Hence, you should never keep an app running after such an event, especially in multi-tenant apps that bear the risk of information disclosure.
+Never attempt to catch and handle unexpected errors, promise rejections, etc. If it's unexpected, you can't handle it correctly. If you could, it would be expected (and should already be handled). Even though your apps should be stateless, you can never be 100% certain that any shared resource wasn't affected by the unexpected error. Hence, you should never keep an app running after such an event, especially in multitenant apps that bear the risk of information disclosure.
 
 This will make your code shorter, clearer, and simpler.
 

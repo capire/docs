@@ -1208,8 +1208,8 @@ In this case, the application can use its static local model without requesting 
 cds:
   model:
     provider:
-      extensibility: false // [!code focus]
-      toggles: false // [!code focus]
+      extensibility: false # [!code focus]
+      toggles: false # [!code focus]
 
 ```
 
@@ -1264,63 +1264,6 @@ The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
 
-<!--
-
-## Multiple Microservices
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
-
-## Sharing One Database
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
--->
-
-<!--
-<div class="impl node">
-
-Use CLI option `--without-sidecar` to do so, e.g.:
-
-```sh
-cds add multitenancy --without-sidecar
-```
-
-::: details See what this adds to your Node.js project...
-
-1. Adds package `@sap/cds-mtxs` to your project:
-
-   ```jsonc
-   {
-      "dependencies": { // [!code focus]
-         "@sap/cds-mtxs": "^1" // [!code focus]
-      },
-   }
-   ```
-
-2. Adds these lines to your project's _package.json_ to enable multitenancy with sidecar:
-
-   ```jsonc
-   {
-      "cds": {  // [!code focus]
-         "requires": { "multitenancy": true }, // [!code focus]
-         "profile": "with-mtx-sidecar" // [!code --]
-      },
-      "dependencies": {
-         "@sap/cds-mtxs": "^1"
-      },
-   }
-   ```
-
-3. ~~**Doesn't** add a sidecar subproject at `mtx/sidecar`~~
-:::
-
-</div>
- -->
 
 ## Next Steps
 

@@ -20,7 +20,6 @@
 # [Messaging](messaging)
 # [Audit Logging](auditlog)
 # [Change Tracking](change-tracking)
-# [State Transitions](../../java/flows)
 # [Transactional Outbox](outbox)
 # [Multitenancy](multitenancy)
   ## [Multitenancy (Classic)](multitenancy-classic)
