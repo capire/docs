@@ -957,7 +957,7 @@ entity Orders : cuid {
 }
 ```
 
-Alternatively, the same condition can be simplified by using the ternary operator:
+Alternatively, an assert with a single `when` .. `then` block can be simplified by using the ternary operator:
 
 ```cds
 entity OrderItems : cuid {
@@ -983,7 +983,7 @@ entity OrderItems : cuid {
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
 
 ::: info Error Messages
-As mentioned above error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+As mentioned above, the error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
 :::
 
