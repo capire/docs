@@ -110,6 +110,8 @@
   ### [Feature Toggles](guides/extensibility/feature-toggles)
   ### [Reuse & Compose](guides/extensibility/composition)
 
+## [Integration](../guides/integration/)
+
 ## [Performance](advanced/performance-modeling)
 
 # [CDS](cds/)
