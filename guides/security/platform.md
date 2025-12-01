@@ -21,7 +21,7 @@ These concepts work together to provide comprehensive security while maintaining
 
 CAP divides the different security-related tasks into separate and independent building blocks, each with a standard CAP implementation suitable for most scenarios:
 
-![Overview Security Components with CAP](./assets/security-components.drawio.svg){width="600px" }
+![Overview Security Components with CAP](./assets/security-components.drawio.svg){width="700px" }
 
 - [Authentication](./authentication )
 - [CAP Users](./cap-users)
