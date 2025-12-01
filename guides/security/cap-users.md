@@ -33,7 +33,7 @@ A successful authentication results in a CAP [user representation](#claims) refl
 Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
 It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
 
-![CAP Userse](./assets/cap-users.drawio.svg){width="600px" }
+![CAP Userse](./assets/cap-users.drawio.svg){width="650px" }
 
 After _successful_ authentication, a **CAP user** is mainly represented by the following properties:
 

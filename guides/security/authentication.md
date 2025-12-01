@@ -34,7 +34,7 @@ Briefly, **authentication ensures _who_ is going to use the service**, in contra
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
 CAP applications making use of remote services of any type need to have a proper [remote authentication](./remote-authentication) in place as well.
 
-![Authentication with CAP](./assets/authentication.drawio.svg){width="500px" }
+![Authentication with CAP](./assets/authentication.drawio.svg){width="550px" }
 
 According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely. 
 CAP [leverages platform services](overview#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
@@ -667,10 +667,10 @@ There are multiple reasons why customization might be required:
 TODO
 </div>
 
-- For CAP endpoints you can go with the [model-driven](#model-auth) authentication which is fully automated by CAP.
-- For custom endpoints you also can go with default settings because CAP will enforce authentication as well.
-- For custom endpoints that should have any different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
-- In case the authentiaction is delegated to a different component, just [deactivate](#fully-auth) CAP authentication and replace by any suitable strategy.
+- For CAP endpoints you are fine to go with the [automatic authentication](#model-auth) fully derived from the CAP model.
+- For custom endpoints that should be protected by the same authentication strategy you are also fine with automatc authentication as CAP will cover these endpoints by default.
+- For custom endpoints that should have a different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [partially overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
+- In case the authentiaction is delegated to a different component, just [fully overrule](#fully-auth) CAP authentication and replace by any suitable strategy.
 
 ::: tip Secure by Default
 **By default, CAP authenticates all endpoints of the microservice, including the endpoints which are not served by CAP itself**.
