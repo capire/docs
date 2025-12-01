@@ -12,6 +12,13 @@ import expr from '/assets/cxl/expr.drawio.svg?raw'
 import ref from '/assets/cxl/ref.drawio.svg?raw'
 import pathSegment from '/assets/cxl/path-segment.drawio.svg?raw'
 import infixFilter from '/assets/cxl/infix-filter.drawio.svg?raw'
+import unaryOperator from '/assets/cxl/unary-operator.drawio.svg?raw'
+import binaryOperator from '/assets/cxl/binary-operator.drawio.svg?raw'
+import literalValue from '/assets/cxl/literal-value.drawio.svg?raw'
+import bindingParameter from '/assets/cxl/binding-parameter.drawio.svg?raw'
+import functionArgs from '/assets/cxl/function-args.drawio.svg?raw'
+import orderingTerm from '/assets/cxl/ordering-term.drawio.svg?raw'
+import overClause from '/assets/cxl/over-clause.drawio.svg?raw'
 </script>
 
 # Core Expression Language (CXL) { #expressions }
@@ -40,17 +47,50 @@ TODO: some text
 
 TODO: some text
 
-## literal value<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />  { #literal-value }
+## unary operator { #unary-operator }
+
+<div class="diagram" v-html="unaryOperator"></div>
+
+TODO: some text
+
+## binary operator { #binary-operator }
+
+<div class="diagram" v-html="binaryOperator"></div>
+
+TODO: some text
+
+## literal value { #literal-value }
+
+<div class="diagram" v-html="literalValue"></div>
 
 TODO
+
+## binding parameter { #binding-parameter }
+
+<div class="diagram" v-html="bindingParameter"></div>
+
+TODO: some text
+
+💡 string and numeric literal as well as `?` are parsed as `ref`
 
 ## function args <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #function-args }
 
-TODO
+<div class="diagram" v-html="functionArgs"></div>
+
+TODO: some text
+
+❓ REVISIT: I dont get the `ordering term` logic - it can only be applied to exactly one parameter.
+I would have expected that it can only be provided for the last parameter.
+
+## ordering term <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ordering-term }
+
+<div class="diagram" v-html="orderingTerm"></div>
+
+TODO: some text
 
 ## over-clause <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #over-clause }
 
-TODO
+<div class="diagram" v-html="overClause"></div>
 
 ## type-name <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-name }
 
