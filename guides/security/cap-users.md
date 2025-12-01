@@ -64,8 +64,8 @@ CAP users can be classified in multiple dimensions:
 - Technical users operate on behalf of an entire tenant at a technical API level.
 
 **Authenticated users vs. anonymous users**
-- Authenticated users have successfully completed authentication by presenting a claim (e.g., a token).
-- Anonymous users are unidentifiable, as they have not presented any claim for endpoints with optional authentication.
+- Authenticated users have successfully completed authentication by presenting valid credentials (e.g., a token).
+- Anonymous users are unidentifiable in general, as they usually do not presented any credentials.
 
 **Provider vs. subscriber tenant**
 - The provider tenant includes all users of the application owner.
@@ -140,8 +140,8 @@ Such roles are called pseudo roles as they aren't assigned by user administrator
 |-----------------------------|---------------------|---------------|---------------|
 | `authenticated-user`        | <Na/>  | _successful authentication_ |  _derived from the token_ |
 | `any`        | <Na/>      | <Na/>   | _derived from the token if available or `anonymous`_ |
-| `system-user` | _technical_                   | _client credential flow_ | `system` |
-| `internal-user` | _technical_        | _client credential flow with same identity instance_ | `system-internal` |
+| `system-user` | _technical_                   | _grant type client credential_ | `system` |
+| `internal-user` | _technical_        | _grant type client credential and shared identity instance_ | `system-internal` |
 
 The pseudo-role `system-user` allows you to separate access by business users from _technical_ clients. 
 Note that this role does not distinguish between any technical clients sending requests to the API.
@@ -786,7 +786,7 @@ Avoid writing custom code based on the raw authentication info, as this undermin
 **In most casese, there is no need to write custom code dependent on the CAP user - leverage CDS modelling whenever possible**.
 :::
 
-### Reflection { #reflection }
+### Reflection { #reflection .java }
 
 In CAP Java, The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) of a handler in different ways:
 
@@ -840,7 +840,7 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 
 
 
-### Customizing Users { #customizing-users }
+### Customizing Users { #customizing-users .java }
 
 In most cases, CAP's default mapping to the CAP user will match your requirements, but CAP also allows you to customize the mapping according to specific needs. 
 
@@ -906,7 +906,7 @@ There are multiple reasonable use cases in which user modification is a suitable
 
 <div class="impl java">
 
-### Switching Users { #switching-users }
+### Switching Users { #switching-users  .java }
 		
 There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
 For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
@@ -1024,7 +1024,7 @@ cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
 ```
 
 
-### User Propagation
+### User Propagation { .java }
 
 #### Between Threads
 
@@ -1091,6 +1091,8 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 
 ### Tracing { #user-tracing }
 
+<div class="impl java">
+
 By default, information about the request user are not logged to the application trace.
 During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
 
@@ -1110,6 +1112,11 @@ Don't activate user tracing in production!
 
 [Learn more about various options to activate CAP Java loggers](../../java/operating-applications/observability#logging-configuration){.learn-more}
 
+</div>
+
+<div class="impl node">
+TODO 
+</div>
 
 ## Pitfalls
 
