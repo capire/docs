@@ -299,7 +299,7 @@ cds add my-facet -p @cap-js-community/example
 
 ::: details Install directly from your GitHub branch
 
- For example, if your plugin's code is in `https://github.com/cap-js-community/example` on branch `cds-add` and registers the  command `cds add my-facet`, then doing an integration test of your plugin with `@sap/cds-dk` in a single command:
+ For example, assume your plugin's code is in `https://github.com/cap-js-community/example` on branch `cds-add` and registers the command `cds add my-facet`. You could then do a real-world test of your `cds add` plugin in a single command:
 
 ```sh
 cds add my-facet -p @cap-js-community/example@git+https://github.com/cap-js-community/example#cds-add
