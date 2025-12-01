@@ -1299,15 +1299,15 @@ service TravelService {
   // Define entity and actions
   entity Travels as projection on db.Travels
   actions {
-    action acceptTravel();
     action rejectTravel();
+    action acceptTravel();
     action deductDiscount( percent: Percentage not null ) returns Travels;
   };
 
   // Define flow through actions (+ status check for "deductDiscount")
   annotate Travels with @flow.status: Status actions {  // [!code highlight]
-    acceptTravel    @from: #Open  @to: #Accepted;       // [!code highlight]
     rejectTravel    @from: #Open  @to: #Canceled;       // [!code highlight]
+    acceptTravel    @from: #Open  @to: #Accepted;       // [!code highlight]
     deductDiscount  @from: #Open;                       // [!code highlight]
   };                                                    // [!code highlight]
 
@@ -1413,8 +1413,8 @@ service TravelService {
     action reopenTravel();
     action blockTravel();
     action unblockTravel();
-    action acceptTravel();
     action rejectTravel();
+    action acceptTravel();
     action deductDiscount( percent: Percentage not null ) returns Travels;
   };
 
@@ -1424,8 +1424,8 @@ service TravelService {
     reopenTravel    @from: #InReview           @to: #Open;           // [!code highlight]
     blockTravel     @from: [#Open, #InReview]  @to: #Blocked;        // [!code highlight]
     unblockTravel   @from: #Blocked            @to: $flow.previous;  // [!code highlight]
-    acceptTravel    @from: #InReview           @to: #Accepted;
     rejectTravel    @from: #InReview           @to: #Canceled;
+    acceptTravel    @from: #InReview           @to: #Accepted;
     deductDiscount  @from: #Open;
   };
 
