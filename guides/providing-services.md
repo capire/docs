@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an element with `@assert` to define arbitrary CXL validation expressions that are run after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
+Annotate an element with `@assert` to define CXL expressions that are validated after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
 
 The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
 
