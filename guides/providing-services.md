@@ -960,7 +960,7 @@ Alternatively, the same condition can be simplified by using the ternary operato
 ```cds
 entity OrderItems : cuid {
   
-  @assert: ((book.stock <= quantity) ? 'Stock exceeded' : null)
+  @assert: (book.stock <= quantity ? 'Stock exceeded' : null)
   quantity  : Integer;
 }
 ```
