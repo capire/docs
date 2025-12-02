@@ -38,16 +38,16 @@ service TravelService {
   // Define entity and actions
   entity Travels as projection on db.Travels
   actions {
-    action acceptTravel();
     action rejectTravel();
+    action acceptTravel();
     action withdrawTravel();  // [!code highlight]
     action deductDiscount( percent: Percentage not null ) returns Travels;
   };
 
   // Define flow through actions
   annotate Travels with @flow.status: Status actions {
-    acceptTravel    @from: #Open  @to: #Accepted;
     rejectTravel    @from: #Open  @to: #Canceled;
+    acceptTravel    @from: #Open  @to: #Accepted;
     withdrawTravel  @from: [#Open, #Accepted];     // [!code highlight]
     deductDiscount  @from: #Open;
   };
