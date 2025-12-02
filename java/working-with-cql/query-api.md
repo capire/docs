@@ -678,6 +678,7 @@ entity Book : cuid {
 }
 ```
 
+For example to search for books in the "Software development" category having "CAP Java" within the _summary_ sub-element of the _details_ map:
 ```Java
 Select.from(BOOK)
    .search("CAP Java", List.of("details.summary"))
@@ -685,7 +686,7 @@ Select.from(BOOK)
 ```
 
 ::: warning
-Searching by content of a map element can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
+Searching within map element content can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
 
 Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
 :::
