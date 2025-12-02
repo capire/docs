@@ -23,11 +23,36 @@ import overClause from '/assets/cxl/over-clause.drawio.svg?raw'
 
 # Core Expression Language (CXL) { #expressions }
 
+Expressions are represented using the Core Expression Language (CXL). It is based on SQL expressions, so many syntax elements from SQL are also available in CXL.
+
+CXL can be used in various places (TODO: Links):
+- In queries as part of the select list or where clause
+- In calculated elements
+- In annotations, where supported
+
 ## expr <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #expr }
+
+An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // ref
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path segment
+  chapters[number < 3]   as earlyChapters,  // infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+Syntax:
 
 <div class="diagram" v-html="expr"></div>
 
-TODO: some text
+
+
+TODO: some text and more examples
 
 ## ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ref }
 
