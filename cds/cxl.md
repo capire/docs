@@ -16,6 +16,7 @@ import unaryOperator from '/assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from '/assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from '/assets/cxl/literal-value.drawio.svg?raw'
 import bindingParameter from '/assets/cxl/binding-parameter.drawio.svg?raw'
+import functionDef from '/assets/cxl/function-def.drawio.svg?raw'
 import functionArgs from '/assets/cxl/function-args.drawio.svg?raw'
 import orderingTerm from '/assets/cxl/ordering-term.drawio.svg?raw'
 import overClause from '/assets/cxl/over-clause.drawio.svg?raw'
@@ -97,6 +98,12 @@ TODO
 TODO: some text
 
 💡 string and numeric literal as well as `?` are parsed as `ref`
+
+## function <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #function }
+
+<div class="diagram" v-html="functionDef"></div>
+
+TODO: some text
 
 ## function args <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #function-args }
 
