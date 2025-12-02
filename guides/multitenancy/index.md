@@ -1208,8 +1208,8 @@ In this case, the application can use its static local model without requesting 
 cds:
   model:
     provider:
-      extensibility: false // [!code focus]
-      toggles: false // [!code focus]
+      extensibility: false # [!code focus]
+      toggles: false # [!code focus]
 
 ```
 
