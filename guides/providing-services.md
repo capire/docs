@@ -755,11 +755,11 @@ The records are locked until the end of the transaction by commit or rollback st
 
 Here's an overview table:
 
-| State          | Select Without Lock | Select With Shared Lock | Select With Exclusive Lock/Update |
-|----------------|---------------------|-------------------------|-----------------------------------|
-| not locked     | passes              | passes                  | passes                            |
-| shared lock    | passes              | passes                  | waits                             |
-| exclusive lock | passes              | waits                   | waits                             |
+| State              | Select Without Lock   | Select With Shared Lock |  Select With Exclusive Lock/Update |
+| --------------- | ----------------------- | -------------------------- |  ------------------------------------- |
+| not locked      | passes | passes  | passes |
+| shared lock     | passes | passes  | waits |
+| exclusive lock | passes | waits  | waits |
 
 
 [Learn more about using the `SELECT ... FOR UPDATE` statement in the Node.js runtime.](../node.js/cds-ql#forupdate){.learn-more}
