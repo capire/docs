@@ -667,6 +667,29 @@ Select.from("bookshop.Books")
         .search(term -> term.has("Allen").or(term.has("Heights")));
 ```
 
+#### Search in Sub-Elements of Map <Beta />
+
+You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
+
+```cds
+entity Book : cuid {
+  category : String;
+  details  : Map;
+}
+```
+
+For example to search for books in the "Software development" category having "CAP Java" within the _summary_ sub-element of the _details_ map:
+```Java
+Select.from(BOOK)
+   .search("CAP Java", List.of("details.summary"))
+   .where(p -> p.category().eq("Software development"));
+```
+
+::: warning
+Searching within map element content can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
+
+Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
+:::
 
 #### Using `where` Clause {#where-clause}
 
