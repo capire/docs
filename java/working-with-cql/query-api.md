@@ -669,7 +669,7 @@ Select.from("bookshop.Books")
 
 #### Search in Sub-Elements of Map <Beta />
 
-You can search for values in sub-elements of a [cds.Map](cds-data.md#cds-map) element by adding a path to the sub-element in the search scope:
+You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
 
 ```cds
 entity Book : cuid {
