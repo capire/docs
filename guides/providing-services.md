@@ -947,13 +947,11 @@ The following example ensures that the `quantity` of the ordered book is validat
 
 ```cds
 entity Orders : cuid {
-         ...
-         @assert: (case 
-            when book.stock <= quantity then 'Stock exceeded' 
-         end)
-         quantity : Integer;
-         ...
-   };
+        
+  @assert: (case 
+    when book.stock <= quantity then 'Stock exceeded' 
+  end)
+  quantity : Integer;       
 }
 ```
 
@@ -961,9 +959,9 @@ Alternatively, the same condition can be simplified by using the ternary operato
 
 ```cds
 entity OrderItems : cuid {
-
-    @assert: ((book.stock <= quantity) ? 'Stock exceeded' : null)
-    quantity  : Integer;
+  
+  @assert: ((book.stock <= quantity) ? 'Stock exceeded' : null)
+  quantity  : Integer;
 }
 ```
 
@@ -971,12 +969,12 @@ By using multiple `when` sections, multiple conditions can be included in a sing
 
 ```cds
 entity OrderItems : cuid {
-
-    @assert: (case
-      when book.stock = 0 then 'Stock is zero'
-      when book.stock <= quantity then 'Stock exceeded'
-    end)
-    quantity  : Integer;
+  
+  @assert: (case
+    when book.stock = 0 then 'Stock is zero'
+    when book.stock <= quantity then 'Stock exceeded'
+  end)
+  quantity  : Integer;
 }
 ```
 
