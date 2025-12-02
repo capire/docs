@@ -270,7 +270,7 @@ Check out the version in our [CAP Java bookshop sample project](https://github.c
 
 * **Administrative tools**
 
-  H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (if the port differs from the default `8080`, it should be changed accordingly).
+  H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (assuming default port `8080`).
 
 ### Setup & Configuration
 
@@ -315,8 +315,8 @@ When developing a CAP Java application, it's important to understand the limits 
 
 Read more about known limitations in the H2 section of the [Persistence Services guide.](../../java/cqn-services/persistence-services#h2-database)
 
-::: warning Constraints with local MTXS
-In addition to the limitations of the H2 database mentioned above, there are also constraints when it comes to testing multitenancy and extensibility (MTXS) scenarios on a local environment.
+::: warning Test local MTXS with H2 not possible
+Besides the limitations mentioned above, it is not possible to use H2 database when it comes to testing multitenancy and extensibility (MTXS) scenarios on a local environment.
 :::
 
 ### Hybrid Testing - a way to overcome limitations
