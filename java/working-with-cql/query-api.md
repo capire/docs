@@ -672,17 +672,18 @@ Select.from("bookshop.Books")
 You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
 
 ```cds
-entity Book : cuid {
+entity Product : cuid {
+  name     : String;
   category : String;
   details  : Map;
 }
 ```
 
-For example to search for books in the "Software development" category having "CAP Java" within the _summary_ sub-element of the _details_ map:
+For example to search for products in the "tech" category having "ACME" within the `brand` sub-element of the `details` map:
 ```Java
-Select.from(BOOK)
-   .search("CAP Java", List.of("details.summary"))
-   .where(p -> p.category().eq("Software development"));
+Select.from(PRODUCT)
+   .search("ACME", List.of("details.brand"))
+   .where(p -> p.category().eq("tech"));
 ```
 
 ::: warning Expensive for large datasets
