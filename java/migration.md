@@ -98,7 +98,7 @@ Some property defaults have been adjusted:
 | `cds.security.authorization.instanceBased.rejectSelectedUnauthorizedEntity.enabled` | false | true | Requests that violate instance-based authorization conditions now fail with 403, instead of 404. |
 | `cds.security.authorization.instanceBased.checkInputData.enabled` | false | true | [Authorization Checks On Input Data](./security#input-data-auth) are now enabled by default. |
 | `cds.errors.defaultTranslations.enabled` | false | true | [Translations for Validation Error Messages](./event-handlers/indicating-errors#ootb-translated-messages) are now enabled by default. |
-| `cds.sql.runtimeView.mode` | resolve | cte | [Runtime views](./working-with-cql/query-execution#runtimeviews) are now by default translated into Common Table Expressions |
+| `cds.sql.runtimeView.mode` | resolve | cte | [Runtime views](../cds/cdl#runtimeviews) are now by default translated into Common Table Expressions |
 
 ### Deprecated Properties
 
