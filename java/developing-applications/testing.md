@@ -325,7 +325,7 @@ Although CAP Java enables running and testing applications with a local H2 datab
 
 The section [Hybrid Testing](../../advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in a local environment.
 
-### H2 and Spring Dev Tools integration
+### H2 and Spring Dev Tools Integration
 
 Most CAP Java projects use Spring Boot. To speed up the edit-compile-verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
 
@@ -345,7 +345,7 @@ cds:
 
 [Learn more about how to configure file-based H2.](https://www.h2database.com/html/features.html#embedded_databases){.learn-more}
 
-### Logging SQL to console
+### Logging SQL to Console
 
 To view the generated SQL statements, which will be run on the H2 database, it is possible to switch to `DEBUG` log output by adding the following log-levels:
 
