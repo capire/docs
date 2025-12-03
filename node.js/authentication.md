@@ -262,50 +262,6 @@ The pre-defined mock users can be deactivated by using kind `basic` instead of `
 :::
 
 
-<!--
-### Basic Authentication {#basic }
-
-This authentication strategy uses basic authentication to use mock users during development.
-
-> **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
-
-**Configuration:** Choose this strategy as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": "basic"
-  }
-}
-```
-:::
-
-You can optionally configure users as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": {
-      "kind": "basic",
-      "users": {
-        "<user.id>": {
-          "password": "<password>",
-          "roles": [ "<role-name>", ... ],
-          "attr": { ... }
-        }
-      }
-    }
-  }
-}
-```
-:::
-
-In contrast to [mocked authentication](#mocked), no default users are automatically added to the configuration.
--->
-
-
 ### JWT-based Authentication { #jwt }
 
 This is the default strategy used in production. User identity, as well as assigned roles and user attributes, are provided at runtime, by a bound instance of the ['User Account and Authentication'](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/419ae2ef1ddd49dca9eb65af2d67c6ec.html) service (UAA). This is done in form of a JWT token in the `Authorization` header of incoming HTTP requests.
