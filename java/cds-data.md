@@ -79,7 +79,7 @@ To have a consistent behavior across different databases, the CAP Java runtime a
 Use `type(CdsBaseType)` to explicitly set the result type if needed.
 :::
 
-#### Arithmetic Expressions { #numeric-promotion }
+#### Arithmetic Expressions
 
 Arithmetic expressions promote numeric types according to the following precedence:
 
@@ -91,7 +91,7 @@ Arithmetic expressions promote numeric types according to the following preceden
   - If any operand is an approximate numeric type (`cds.Double`, `hana.REAL`), the result type is `cds.Double`.
   - Otherwise, the result type is `cds.Decimal`, which provides higher accuracy for decimal fractions.
 
-#### Numeric Standard Functions { #type-determination-functions }
+#### Numeric Standard Functions
 
 Numeric aggregation and standard functions determine their result type based on the argument types:
 
@@ -501,7 +501,7 @@ To support _hybrid_ access, like simultaneous typed _and_ generic access, the ac
 The name of the CDS element referred to by a getter or setter, is defined through `@CdsName` annotation. If the annotation is missing, it's determined by removing the get/set from the method name and lowercasing the first character.
 :::
 
-### Generated Accessor Interfaces {#generated-accessor-interfaces}
+### Generated Accessor Interfaces
 
 For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
@@ -1260,7 +1260,7 @@ diff.add(new Filter() {
 
 Filters cannot limit the nature of the changes your visitor will observe and are always positive.
 
-### Deep Traversal {#cds-diff-processor-deep-traversal}
+### Deep Traversal
 
 For documents that have a lot of associations or a compositions and are changed in a deep way you might want to see additions for each level separately.
 
