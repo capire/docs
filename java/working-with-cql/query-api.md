@@ -580,8 +580,6 @@ Considering the previous model, the following query selects the product's ID alo
 Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
 ```
 
-selects the product's ID along with the details, which are returned as a `CdsData` map. 
-
 ##### Selecting Sub-Elements of Map Data <Beta />
 
 You can also select sub-elements of a `cds.Map` via path expressions:
