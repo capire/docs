@@ -7,6 +7,9 @@
   "credentials": {
     "url": ":memory:"
   },
+  "pool": {
+    "max": 1
+  },
   "kind": "sqlite"
 }
 </pre>
