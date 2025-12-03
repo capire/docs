@@ -73,7 +73,7 @@ These types are used for the values of CDS elements with primitive type. In the 
 ## Structured Data
 
 In CDS, structured data is used as payload of *Insert*, *Update*, and *Upsert* statements. Also the query result of *Select* may be structured.
-CAP Java represents data of entities, structured types and elements of type [cds.Map](#cds-map) as `java.util.Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
+CAP Java represents data of entities, structured types, and elements of type [cds.Map](#cds-map) as `java.util.Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
 
 In the following we use this CDS model:
 

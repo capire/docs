@@ -189,7 +189,9 @@ Select.from(BOOKS).byParams("title", "author.name");
 
 #### Filtering Map Data <Beta />
 
-You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
+You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`).
+
+Let's use this model as an example:
 
 ```cds
 entity Product : cuid {
@@ -207,7 +209,7 @@ Select.from(PRODUCTS)
                   p.details().get("brand").eq("ACME")));
 ```
 
-::: warning
+::: warning Expensive for large datasets
 Depending on the database, filtering by content of a map element can be expensive when applied on large datasets. Use additional filters on non-map elements to reduce the dataset.
 :::
 
@@ -562,7 +564,7 @@ Only to-one associations that are mapped via the primary key elements of the tar
 
 #### Selecting Map Data
 
-You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list. Considering this model
+You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list.
 
 ```cds
 entity Product : cuid {
@@ -572,7 +574,7 @@ entity Product : cuid {
 }
 ```
 
-the query 
+Considering the previous model, the following query selects the product's ID along with the details, which are returned as a `CdsData` map.
 
 ```java
 Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
@@ -667,7 +669,7 @@ Select.from("bookshop.Books")
         .search(term -> term.has("Allen").or(term.has("Heights")));
 ```
 
-#### Search in Sub-Elements of Map <Beta />
+#### Search in Sub-Elements of Map Data <Beta />
 
 You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
 
@@ -685,7 +687,7 @@ Select.from(BOOK)
    .where(p -> p.category().eq("Software development"));
 ```
 
-::: warning
+::: warning Expensive for large datasets
 Searching within map element content can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
 
 Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
@@ -918,7 +920,7 @@ Select.from(PRODUCTS)
                p.to("details").get("brand").asc());
 ```
 
-::: warning
+::: warning Expensive for large datasets
 Depending on the database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
 :::
 
