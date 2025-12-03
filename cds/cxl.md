@@ -20,18 +20,60 @@ import functionDef from '/assets/cxl/function-def.drawio.svg?raw'
 import functionArgs from '/assets/cxl/function-args.drawio.svg?raw'
 import orderingTerm from '/assets/cxl/ordering-term.drawio.svg?raw'
 import overClause from '/assets/cxl/over-clause.drawio.svg?raw'
+import intro from '/assets/cxl/intro.drawio.svg?raw'
 </script>
 
 # Core Expression Language (CXL) { #expressions }
 
-Expressions are represented using the Core Expression Language (CXL). It is based on SQL expressions, so many syntax elements from SQL are also available in CXL.
+Expressions are represented using the Core Expression Language (CXL).
+It is based on SQL expressions, so many syntax elements from SQL are also available in CXL.
 
 CXL can be used in various places (TODO: Links):
 - In queries as part of the select list or where clause
 - In calculated elements
 - In annotations, where supported
 
-## expr <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #expr }
+
+## How to read this guide { #how-to }
+
+
+In the following chapters we illustrate the CXN syntax based on simple and more complex examples.
+For a complete reference of the syntax, there are additionally clickable syntax diagrams for each language construct.
+
+### samples
+
+To try the samples by yourself, create a simple CAP app:
+
+```sh
+cds init bookshop --add sample && cd bookshop
+```
+
+We encourage you to play around with the snippets.
+Just create the sample app as described above and start a repl session within the newly created app by running:
+
+```sh
+cds repl --run .
+```
+
+:::info 💡 All of the example expressions follow the same pattern:
+1. A `CXL` snippet is shown as part of a query - either in the columns or in a query modifier.
+2. The corresponding **CAP Style CXL** representation is shown as `JSON`.
+3. The resulting **SQL Style CXL** is shown as `JSON`.
+4. The resulting **SQL output** is shown in SQL syntax.
+:::
+
+### diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+
+Each language construct is illustrated by a clickable syntax diagram.
+They show the syntax of CAPs expression language as a sequence of building blocks.
+By clicking on the individual blocks, you can get more information about the respective building block.
+
+The following diagram illustrates how to read the diagrams:
+
+<div class="diagram" v-html="intro"></div>
+
+
+## expr { #expr }
 
 An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
 ```cds
@@ -47,7 +89,7 @@ select from Books {
 }
 ```
 
-Syntax:
+### syntax <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 
 <div class="diagram" v-html="expr"></div>
 
@@ -55,11 +97,225 @@ Syntax:
 
 TODO: some text and more examples
 
-## ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ref }
+## ref (path expression) { #ref }
 
-<div class="diagram" v-html="ref"></div>
+A `ref` (short for reference) is used to refer to an element within the model.
+It can be used to navigate along [path-segments](#path-segment). Such a navigation is often
+referred to as a **path expression**.
 
-TODO: some text
+⬇️ [Jump to syntax diagram](#ref-syntax).
+
+### scalar element with and without table alias
+
+In it's most simple form, a `ref` just contains the name of the element being referenced:
+
+:::code-group
+```js
+> q = cds.ql`SELECT from Books as B { title, B.price }`// [!code focus]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ], as: 'B' },
+    columns: [ { ref: [ 'title' ] }, { ref: [ 'B', 'price' ] } ]
+  }
+}
+> await q
+[
+  { title: 'Wuthering Heights', price: 11.11 },
+  { title: 'Jane Eyre', price: 12.34 },
+  { title: 'The Raven', price: 13.13 },
+  { title: 'Eleonora', price: 14 },
+  { title: 'Catweazle', price: 150 }
+]
+```
+:::
+
+In this case, the CAP Style and SQL Style CXL representations are almost identical:
+
+:::code-group
+```json5 [CAP Style expression]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+    columns: [ { ref: [ 'title' ] }, { ref: [ 'B', 'price' ] } ]
+  }
+}
+```
+
+```json5 [SQL Style expression]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+    columns: [ { ref: [ 'B', 'title' ] }, { ref: [ 'B', 'price' ] } ]
+  }
+}
+```
+
+```sql [SQL output]
+SELECT B.title, B.price FROM sap_capire_bookshop_Books as B
+```
+:::
+
+The CAP runtime only prefixes the `ref` of the `title` element with the table alias `B` when generating the SQL output.
+
+### navigation to foreign key with multiple path-segments
+
+A `ref` can also contain multiple [path-segments](#path-segment), e.g. to navigate associations:
+
+:::code-group
+```js
+> q = cds.ql`SELECT from Books as B { author.ID, genre }` // [!code focus]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ], as: 'B' },
+    columns: [ { ref: [ 'author', 'ID' ] }, { ref: [ 'genre' ] } ]
+  }
+}
+> await q
+[
+  { author_ID: 101, genre_ID: 11 },
+  { author_ID: 107, genre_ID: 11 },
+  { author_ID: 150, genre_ID: 16 },
+  { author_ID: 150, genre_ID: 16 },
+  { author_ID: 170, genre_ID: 13 }
+]
+```
+:::
+
+In this case, we navigate along the association `author` and select the `ID`.
+As `ID` is the implicit foreign key field of the `author` association, the resulting SQL Style CXL representation
+contains the foreign key field `author_ID`.
+For `genre` the path ends on the association, in such a case the foreign key field `genre_ID` is selected.
+
+Both formats only deviate slightly:
+
+:::code-group
+```json5 [CAP Style expression]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+    columns: [ { ref: [ 'author', 'ID' ] }, { ref: [ 'genre' ] } ]
+  }
+}
+```
+
+```json5 [SQL Style expression]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+    columns: [ { ref: [ 'B', 'author_ID' ] }, { ref: [ 'B', 'genre_ID' ] } ]
+  }
+}
+```
+
+```sql [SQL output]
+SELECT B.author_ID, B.genre_ID FROM sap_capire_bookshop_Books as B
+```
+:::
+
+
+
+### navigation to non foreign key with multiple path-segments
+
+A `ref` can also end on a non-foreign key element after navigating associations
+
+:::code-group
+```js
+> q = cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ], as: 'B' },
+    columns: [ { ref: [ 'author', 'name' ] }, { ref: [ 'genre', 'name' ] } ]
+  }
+}
+> await q
+[
+  { author_name: 'Emily Brontë', genre_name: 'Drama' },
+  { author_name: 'Charlotte Brontë', genre_name: 'Drama' },
+  { author_name: 'Edgar Allen Poe', genre_name: 'Mystery' },
+  { author_name: 'Edgar Allen Poe', genre_name: 'Mystery' },
+  { author_name: 'Richard Carpenter', genre_name: 'Fantasy' }
+]
+```
+:::
+
+
+In this case, a little more happens under the hood. As the `ref` ends on non-foreign key elements (`name` of `author` and `genre`),
+the CAP runtime automatically adds the necessary joins to the SQL Style CXL representation and the resulting SQL output.
+
+:::code-group
+```json5 [CAP Style expression]
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+    columns: [ { ref: [ 'author', 'name' ] }, { ref: [ 'genre', 'name' ] } ]
+  }
+}
+```
+
+```json5 [SQL Style expression]
+cds.ql {
+  SELECT: {
+    from: {
+      join: 'left',
+      args: [
+        {
+          join: 'left',
+          args: [
+            { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
+            { ref: [ 'sap.capire.bookshop.Authors' ], as: 'author' }
+          ],
+          on: [
+            { ref: [ 'author', 'ID' ] },
+            '=',
+            { ref: [ 'B', 'author_ID' ] }
+          ]
+        },
+        { ref: [ 'sap.capire.bookshop.Genres' ], as: 'genre' }
+      ],
+      on: [ { ref: [ 'genre', 'ID' ] }, '=', { ref: [ 'B', 'genre_ID' ] } ]
+    },
+    columns: [
+      { ref: [ 'author', 'name' ], as: 'author_name' },
+      { ref: [ 'genre', 'name' ], as: 'genre_name' }
+    ]
+  }
+}
+```
+
+
+```sql [SQL output]
+SELECT
+  author.name as author_name,
+  genre.name as genre_name
+FROM
+  sap_capire_bookshop_Books as B
+  left JOIN sap_capire_bookshop_Authors as author ON author.ID = B.author_ID
+  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = B.genre_ID
+```
+:::
+
+### TODO: maybe one or two more examples with structure navigation
+
+…
+
+### syntax diagram for `ref` { #ref-syntax }
+
+<div class="diagram">
+  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+  <div v-html="ref"></div>
+</div>
+
+### conclusion
+
+A `ref` can be used to reference an element.
+It is possible to navigate along [path-segments](#path-segment) to reference elements within the model.
+This is not limited to an entities own elements, but can also be used to navigate associations to elements of related entities.
+
+This is only the tip of the iceberg.
+A path expression can be much more complex. For example, the individual [path-segments](#path-segment)
+themselves can contain expressions by applying [infix-filters](#infix-filter).
+More samples are shown in the upcoming sections.
+
 
 ## path segment <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #path-segment }
 
@@ -133,7 +389,6 @@ TODO
 TODO
 
 <style>
-/* put the badge at the right end of the heading line, minimal changes */
 .vp-doc :is(h2,h3):has(> .badge-inline) {
   display: flex;
   align-items: baseline;
@@ -141,14 +396,11 @@ TODO
   gap: .5rem;
 }
 
-/* compact, aligned badge */
-.vp-doc :is(h2,h3) > .badge-inline {
-  display: inline-flex;
-  align-items: center;
-  font-size: .75em;
-  padding: .1em .4em;
-  margin-left: 0; /* no need when using flex */
-  vertical-align: baseline;
+
+
+.diagram {
+  margin-top: 2em;
 }
+
 </style>
 
