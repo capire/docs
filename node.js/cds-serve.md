@@ -256,7 +256,7 @@ Registers additional middlewares at the specified position.
 - a function that returns an express middleware
 - an express middleware with the common _req_, _res_, _next_ arguments
 - an array of express middlewares
-`pos` specified the index or a relative position within the middleware chain. If not specified, the middleware is added to the end.
+`pos` specifies the index or a relative position within the middleware chain. If not specified, the middleware is added to the end.
 
 ```js
 cds.middlewares.add (mw, {at:0}) // to the front
