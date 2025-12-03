@@ -1278,7 +1278,7 @@ namespace sap.capire.travels;
 
 entity Travels : managed {
   // [...]
-  Status       : Association to TravelStatus default 'O';
+  Status       : Association to TravelStatus @readonly default 'O';
   // [...]
 }
 
