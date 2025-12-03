@@ -1267,7 +1267,7 @@ For CAP Java, support for flows is provided by the feature [cds-feature-flow](ht
 The following example, taken from [@capire/xtravels](https://github.com/capire/xtravels), shows the simplest way to model a flow.
 The annotations in the service model are sufficient to define and use the flow.
 
-![](./assets/flows/xtravels-flow-simple.svg)
+![A flow diagram showing three status states connected by arrows. The leftmost oval contains the word Open. An arrow labeled accept points from Open to an oval containing Accepted at the top right. Another arrow labeled reject points from Open to an oval containing Canceled at the bottom right. The diagram illustrates a simple state transition workflow where items can move from an open state to either accepted or canceled states.](./assets/flows/xtravels-flow-simple.svg)
 
 The following is an extract of the relevant parts of the domain model:
 
@@ -1322,7 +1322,7 @@ For more complex scenarios, you can add custom handlers as explained later.
 
 Flows consist of a _status element_ and a set of _flow actions_ that define transitions between states. 
 
-#### `@flow.status`
+#### Declare Flow Using `@flow.status`
 
 To model a flow, one of the entity fields needs to be annotated with `@flow.status`.
 This field must be one of the following:
@@ -1339,12 +1339,12 @@ As no initial state can be provided on `CREATE`, there should be a default value
 
 When you annotate `@flow.status: <element name>` at the entity level (as in the example above), the annotation is propagated to the respective element, which is also automatically annotated with `@readonly`.
 
-**Notes:**
-- This annotation is mandatory
-- The annotated element must be either an enum or an association to a code list
-- Only one status element per entity is supported
-- Draft-enabled entities are supported, however flows are only applied to the active version
-- `null` is **not** a valid state—model your empty state explicitly
+**About the `@flow.status` annotation:**
+- This annotation is **mandatory**.
+- The annotated element must be either an enum or an association to a code list.
+- Only one status element per entity is supported.
+- Draft-enabled entities are supported, however flows are only applied to the active version.
+- `null` is **not** a valid state—model your empty state explicitly.
 
 ::: warning Only simple projections are supported
 The entity must be _writable_, and renaming the status element is currently not supported.
@@ -1352,21 +1352,24 @@ The entity must be _writable_, and renaming the status element is currently not 
 
 After declaring `@flow.status`, use the following annotations on bound actions to model transitions:
 
-#### `@from`
-
-- Defines valid entry states for the action
-- Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here)
-- Can be a single value or an array of values (each element must be a value from the status enum)
-- UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5
-  - Annotation generation can be deactivated via <Config>cds.features.annotate_for_flows: false</Config>
-
-#### `@to`
-
-- Defines the desired target state of the entity after executing the action
-- Changes the state of the entity to the value defined in this annotation after executing the action
-- Must be a single value from the status enum
+#### Model Transitions Using `@from` and `to`
 
 Both annotations are optional, but at least one is required to mark an action as a flow action. Use either one or both depending on your needs. When you use both, no custom handlers are needed—generic handlers are registered automatically.
+
+**`@from`**
+
+- Defines valid entry states for the action.
+- Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here).
+- Can be a single value or an array of values (each element must be a value from the status enum).
+- UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5.
+  - Can be deactivated via <Config>cds.features.annotate_for_flows: false</Config>.
+
+**`@to`**
+
+- Defines the desired target state of the entity after executing the action.
+- Changes the state of the entity to the value defined in this annotation after executing the action.
+- Must be a single value from the status enum.
+
 
 
 ### Generic Handlers
@@ -1375,7 +1378,7 @@ Generic handlers are registered automatically, so no custom implementations are 
 
 #### `before`
 
-Based on the `@from` annotation, a handler validates that the entity is in a valid entry state—the current state must match one of the states specified in `@from`.
+Based on the `@from` annotation, a handler validates that the entity is in a valid entry state - the current state must match one of the states specified in `@from`.
 If validation fails, the request returns a `409 Conflict` HTTP status code with an appropriate error message.
 
 #### `on`
@@ -1390,7 +1393,7 @@ For example, if the current state is `Open` and the target state is `Accepted`, 
 This ensures consistent state transitions without custom logic.
 
 ::: tip Generic handlers are not executed for draft entities
-For example, calling `acceptTravel()` on a `Travels` entity that is currently being _edited_, i.e. is in _inactive_ state, has no effect.
+If you, for example, call `acceptTravel()` on a `Travels` entity that is currently being _edited_, which means it is in _inactive_ state, has no effect.
 :::
 
 
@@ -1400,7 +1403,7 @@ You can use the target state `$flow.previous` to restore the previous state in a
 The following example introduces a `Blocked` state with two possible previous states (`Open` and `InReview`) and an action `unblockTravel` that restores the previous state.
 For instance, if `Blocked` was transitioned to from `Open`, calling `unblockTravel` transitions back to `Open`. The same applies for `InReview`.
 
-![](./assets/flows/xtravels-flow-previous.svg)
+![The graphic is explained in the accompanying text.](./assets/flows/xtravels-flow-previous.svg)
 
 ```cds [srv/travel-service.cds]
 // srv/travel-service.cds
@@ -1451,7 +1454,7 @@ The `transitions_` composition automatically appended to the base entity is also
 
 Flow annotations work well for basic flows. For more complex scenarios, implement custom event handlers.
 
-**Common use cases for custom handlers:**
+Common use cases for custom handlers:
 - **Additional validation:** Implement a custom `before` handler when entry state validation depends on extra conditions
 - **Non-void return types:** Implement a custom `on` handler when the action returns data
 - **Conditional target states:** Implement a custom `on` or `after` handler (without `@to` annotation) when multiple target states depend on conditions
