@@ -26,7 +26,7 @@ import intro from '/assets/cxl/intro.drawio.svg?raw'
 # Core Expression Language (CXL) { #expressions }
 
 Expressions are represented using the Core Expression Language (CXL).
-It is based on SQL expressions, so many syntax elements from SQL are also available in CXL.
+It is based on SQL expressions, so many syntax elements from SQL are also available in `CXL`.
 
 CXL can be used in various places (TODO: Links):
 - In queries as part of the select list or where clause
@@ -37,7 +37,7 @@ CXL can be used in various places (TODO: Links):
 ## How to read this guide { #how-to }
 
 
-In the following chapters we illustrate the CXN syntax based on simple and more complex examples.
+In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
 For a complete reference of the syntax, there are additionally clickable syntax diagrams for each language construct.
 
 ### samples
@@ -57,8 +57,8 @@ cds repl --run .
 
 :::info 💡 All of the example expressions follow the same pattern:
 1. A `CXL` snippet is shown as part of a query - either in the columns or in a query modifier.
-2. The corresponding **CAP Style CXL** representation is shown as `JSON`.
-3. The resulting **SQL Style CXL** is shown as `JSON`.
+2. The corresponding **CAP Style `CXL`** representation is shown as `JSON`.
+3. The resulting **SQL Style `CXL`** is shown as `JSON`.
 4. The resulting **SQL output** is shown in SQL syntax.
 :::
 
@@ -129,7 +129,7 @@ cds.ql {
 ```
 :::
 
-In this case, the CAP Style and SQL Style CXL representations are almost identical:
+In this case, the CAP Style and SQL Style `CXL` representations are almost identical:
 
 :::code-group
 ```json5 [CAP Style expression]
@@ -182,7 +182,7 @@ cds.ql {
 :::
 
 In this case, we navigate along the association `author` and select the `ID`.
-As `ID` is the implicit foreign key field of the `author` association, the resulting SQL Style CXL representation
+As `ID` is the implicit foreign key field of the `author` association, the resulting SQL Style `CXL` representation
 contains the foreign key field `author_ID`.
 For `genre` the path ends on the association, in such a case the foreign key field `genre_ID` is selected.
 
@@ -240,7 +240,7 @@ cds.ql {
 
 
 In this case, a little more happens under the hood. As the `ref` ends on non-foreign key elements (`name` of `author` and `genre`),
-the CAP runtime automatically adds the necessary joins to the SQL Style CXL representation and the resulting SQL output.
+the CAP runtime automatically adds the necessary joins to the SQL Style `CXL` representation and the resulting SQL output.
 
 :::code-group
 ```json5 [CAP Style expression]
