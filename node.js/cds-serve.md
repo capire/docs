@@ -252,7 +252,10 @@ It adds the currently active model to the continuation. It's required for all ap
 ### .add(mw, pos?) {.method}
 
 Registers additional middlewares at the specified position.
-`mw` must be a function that returns an express middleware.
+`mw` can be either of:
+- a function that returns an express middleware
+- an express middleware with the common _req_, _res_, _next_ arguments
+- an array of express middlewares
 `pos` specified the index or a relative position within the middleware chain. If not specified, the middleware is added to the end.
 
 ```js
