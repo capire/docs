@@ -71,7 +71,7 @@ The framework isn't responsible for closing the stream when writing to the datab
 
 These types are used for the values of CDS elements with primitive type. In the [Model Reflection API](./reflection-api), they're represented by the enum [CdsBaseType](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsBaseType.html).
 
-### Numeric Type Determination { #type-determination }
+### Numeric Type Determination
 
 To have a consistent behavior across different databases, the CAP Java runtime applies numeric type determination in arithmetic expressions and numeric standard functions according to the following rules.
 
