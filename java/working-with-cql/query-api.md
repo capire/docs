@@ -187,6 +187,32 @@ Select.from(BOOKS)
 Select.from(BOOKS).byParams("title", "author.name");
 ```
 
+#### Filtering Map Data <Beta />
+
+You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`).
+
+Let's use this model as an example:
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+The following query selects all products of category "tech" where the `details` map contains a sub-element `brand` with value "ACME":
+
+```java
+Select.from(PRODUCTS)
+      .where(p -> p.category().eq("tech").and(
+                  p.details().get("brand").eq("ACME")));
+```
+
+::: warning Expensive for large datasets
+Depending on the database, filtering by content of a map element can be expensive when applied on large datasets. Use additional filters on non-map elements to reduce the dataset.
+:::
+
 ### Parameters
 
 The [CQL](../../cds/cql) builders support [parameters](#expr-param) in the `where` clause and in infix filters for [parameterized execution](query-execution#parameterized-execution):
@@ -536,6 +562,36 @@ Object authorId = book.get("author.Id"); // path access
 Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases#database-constraints) on the database.
 :::
 
+#### Selecting Map Data
+
+You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list.
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+Considering the previous model, the following query selects the product's ID along with the details, which are returned as a `CdsData` map.
+
+```java
+Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
+```
+
+##### Selecting Sub-Elements of Map Data <Beta />
+
+You can also select sub-elements of a `cds.Map` via path expressions:
+
+```java
+Select.from(PRODUCTS)
+      .columns(p-> p.ID(), 
+               p-> p.details().get("brand"))
+      .where(p -> p.category().eq("tech"));
+```      
+
+This query selects the sub-element `brand` of the `details` map element for all products of category "tech".
 
 ### Filtering and Searching { #filtering}
 
@@ -556,6 +612,7 @@ entity Book {
   title  : String;
 }
 ```
+
 In the following example, element `title` is included in `@cds.search`. Only this particular element is searchable then.
 
 ```cds
@@ -610,6 +667,29 @@ Select.from("bookshop.Books")
         .search(term -> term.has("Allen").or(term.has("Heights")));
 ```
 
+#### Search in Sub-Elements of Map Data <Beta />
+
+You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
+
+```cds
+entity Book : cuid {
+  category : String;
+  details  : Map;
+}
+```
+
+For example to search for books in the "Software development" category having "CAP Java" within the _summary_ sub-element of the _details_ map:
+```Java
+Select.from(BOOK)
+   .search("CAP Java", List.of("details.summary"))
+   .where(p -> p.category().eq("Software development"));
+```
+
+::: warning Expensive for large datasets
+Searching within map element content can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
+
+Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
+:::
 
 #### Using `where` Clause {#where-clause}
 
@@ -815,6 +895,31 @@ Select.from("bookshop.Books").limit(10, 20);
 In this example, it's assumed that the total number of books is more or equal to 20. Otherwise, result set is empty.
 ::: tip
 The pagination isn't stateful. If rows are inserted or removed before a subsequent page is requested, the next page could contain rows that were already contained in a previous page or rows could be skipped.
+:::
+
+#### Sorting by Map Data <Beta />
+
+You can also sort by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+This following query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
+
+```java
+Select.from(PRODUCTS)
+      .where(p -> p.category().eq("tech"))
+      .orderBy(p -> p.category().asc(), 
+               p.to("details").get("brand").asc());
+```
+
+::: warning Expensive for large datasets
+Depending on the database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
 :::
 
 ### Pessimistic Locking { #write-lock}
