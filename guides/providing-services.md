@@ -1393,7 +1393,7 @@ For example, if the current state is `Open` and the target state is `Accepted`, 
 This ensures consistent state transitions without custom logic.
 
 ::: tip Generic handlers are not executed for draft entities
-If you, for example, call `acceptTravel()` on a `Travels` entity that is currently being _edited_, which means it is in _inactive_ state, has no effect.
+For example, if you call `acceptTravel()` on a `Travels` entity that is currently being edited (in _inactive_ state), the call has no effect.
 :::
 
 
