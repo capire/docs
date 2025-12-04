@@ -858,9 +858,9 @@ Result result = service.run(Select.from("UsingView"), params);
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP Java resolves them *at runtime* on each request.
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP Java resolves them *at runtime* on each request.
 
-Runtime views must be simple [projections](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
+Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. CAP Java also supports writing through runtime views. The restrictions for [write through views](../java/working-with-cql/query-execution/#updatable-views) apply in the same way as for standard CDS views. If a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
 
 CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
 ::: details Changing the runtime view mode for CAP Java
@@ -873,7 +873,12 @@ Select.from(BooksWithLowStock).hint("cds.sql.runtimeView.mode", "resolve");
 ```
 :::
 
-Node.js only provides the [cte](#rtview-cte) mode by default. Has to be enabled with <Config>cds.features.runtime_views: true</Config>.
+Node.js only provides the [cte](#rtview-cte) mode. 
+
+::: details Changing the runtime view mode for CAP Node.js
+The runtime view mode can be globally enabled with 
+<Config>cds.features.runtime_views: true</Config>.
+:::
 
 The next two sections introduce both modes using the following CDS model and query:
 
@@ -912,10 +917,6 @@ SELECT ID, TITLE, AUTHOR AS "author"
  WHERE A.NAME = ?
 ```
 
-::: info Limitations of `cte` mode in Node.js
-UNION, JOIN and localized fields are currently not supported.
-:::
-
 ::: tip CAP Java 3.10
 Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
 :::
@@ -932,10 +933,10 @@ SELECT B.ID, B.TITLE, A.NAME AS "author"
 ```
 
 ::: info Limitations of `resolve` mode
-Using associations that are only [defined](../../cds/cql#association-definitions) in the view, as well as complex draft queries are not supported in *resolve* mode.
+Using associations that are only [defined](#associations) in the view, as well as complex draft queries are not supported in *resolve* mode.
 :::
 ::: info Pessimistic locking on PostgreSQL
-On PostgreSQL, some [pessimistic locking](#pessimistic-locking) queries on runtime views navigating associations require the *cte* mode.
+On PostgreSQL, some [pessimistic locking](../java/working-with-cql/query-execution/#pessimistic-locking) queries on runtime views navigating associations require the *cte* mode.
 :::
 
 ## Associations
