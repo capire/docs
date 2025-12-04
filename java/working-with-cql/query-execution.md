@@ -336,14 +336,14 @@ If you define runtime views on [draft-enabled](../fiori-drafts#reading-drafts) e
 :::
 
 ::: warning Avoid draft-enabling runtime views
-Draft-enabling runtime views is only supported in [*CTE*](#rtview-cte) mode and requires a schema deployment to update the draft table when the runtime view is changed.
+Draft-enabling runtime views is only supported in [*CTE*](/cds/cdl#rtview-cte) mode and requires a schema deployment to update the draft table when the runtime view is changed.
 :::
 
 ### Views on Remote Services
 
 When delegating queries between Application Services and Remote Services, statements are resolved to the targeted service's entity definition by the CAP Java runtime.
 
-For read, the CDS views are resolved similar to the runtime view [resolve](#rtview-resolve) mode. For write operations, views targeting *remote OData* services must fulfill the following:
+For read, the CDS views are resolved similar to the runtime view [resolve](/cds/cdl#rtview-resolve) mode. For write operations, views targeting *remote OData* services must fulfill the following:
 
 - all requirements of [writable views](#updatable-views)
 - not include [calculated elements](../../cds/cdl#calculated-elements)
