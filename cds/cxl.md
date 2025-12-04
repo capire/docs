@@ -103,7 +103,10 @@ A `ref` (short for reference) is used to refer to an element within the model.
 It can be used to navigate along [path-segments](#path-segment). Such a navigation is often
 referred to as a **path expression**.
 
-⬇️ [Jump to syntax diagram](#ref-syntax).
+<div class="diagram">
+  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+  <div v-html="ref"></div>
+</div>
 
 ### scalar element with and without table alias
 
@@ -305,13 +308,6 @@ FROM
 ### TODO: maybe one or two more examples with structure navigation
 
 …
-
-### syntax diagram for `ref` { #ref-syntax }
-
-<div class="diagram">
-  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-  <div v-html="ref"></div>
-</div>
 
 ### conclusion
 
