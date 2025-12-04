@@ -76,8 +76,11 @@
 
 ## [Security](guides/security/)
 
-  ### [CDS-based Authorization](guides/security/authorization)
-  ### [Platform Security](guides/security/overview)
+  ### [Overview](guides/security/overview)
+  ### [Authentication](guides/security/authentication)
+  ### [CAP Users](guides/security/cap-users)
+  ### [CAP Authorization](guides/security/authorization)
+  ### [Remote Authentication](guides/security/remote-authentication)
   ### [Security Aspects](guides/security/aspects)
   ### [Data Protection & Privacy](guides/security/data-protection-privacy)
   ### [Product Standard Compliance](../guides/security/product-standards)
