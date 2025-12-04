@@ -360,6 +360,20 @@ entity Structured select from Authors {
 
 
 
+Note: Some examples of infix-filters:
+
+```cds
+entity InfixFilter select from Authors {
+  books[price > 20], as expensiveBooks            // [!code focus]
+  exists books[price > 20] as hasDramaBooks   // [!code focus]
+}
+```
+
+```js
+await cds.ql `select from Authors { books[exists genre[name = 'Mystery']] { title, genre.name } }`
+await cds.ql `select from Authors { books[exists genre[exists parent [name = 'Fiction']]] { title, genre.name } }
+```
+
 ## infix filter <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #infix-filter }
 
 <div class="diagram" v-html="infixFilter"></div>
