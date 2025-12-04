@@ -923,7 +923,7 @@ Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
 
 #### Read in `resolve` mode { #rtview-resolve }
 
-This mode is <strong>only</strong> available in <strong>CAP Java</strong>. The Java runtime _resolves_ the [view definition](#runtimeviews) to the underlying persistence entities and executes the query directly against the corresponding tables.
+This mode is **only available in CAP Java**. The Java runtime _resolves_ the [view definition](#runtimeviews) to the underlying persistence entities and executes the query directly against the corresponding tables.
 
 ```sql
 SELECT B.ID, B.TITLE, A.NAME AS "author"
