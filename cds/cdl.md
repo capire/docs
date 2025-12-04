@@ -840,7 +840,7 @@ as SELECT * from SomeView(foo: 17, bar: :bar);
 
 For Node.js, there's no programmatic API yet. You need to provide a [CQN snippet](/cds/cqn#select).
 
-In CAP Java, run a select statement against the view with named [parameter values](/java/working-with-cql/query-execution#querying-views):
+In CAP Java, run a select statement against the view with named [parameter values](../java/working-with-cql/query-execution#querying-views):
 
 ::: code-group
 ```js [Node]
