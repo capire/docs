@@ -860,7 +860,7 @@ Result result = service.run(Select.from("UsingView"), params);
 
 To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP Java resolves them *at runtime* on each request.
 
-Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. CAP Java also supports writing through runtime views. The restrictions for [write through views](../java/working-with-cql/query-execution/#updatable-views) apply in the same way as for standard CDS views. If a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
+Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. CAP Java also supports writing through runtime views. The restrictions for [write through views](../java/working-with-cql/query-execution#updatable-views) apply in the same way as for standard CDS views. If a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
 
 CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
 ::: details Changing the runtime view mode for CAP Java
@@ -933,10 +933,10 @@ SELECT B.ID, B.TITLE, A.NAME AS "author"
 ```
 
 ::: info Limitations of `resolve` mode
-Using associations that are only [defined](#associations) in the view, as well as complex draft queries are not supported in *resolve* mode.
+Using associations that are only [defined](cql#association-definitions) in the view, as well as complex draft queries are not supported in *resolve* mode.
 :::
 ::: info Pessimistic locking on PostgreSQL
-On PostgreSQL, some [pessimistic locking](../java/working-with-cql/query-execution/#pessimistic-locking) queries on runtime views navigating associations require the *cte* mode.
+On PostgreSQL, some [pessimistic locking](../java/working-with-cql/query-execution#pessimistic-locking) queries on runtime views navigating associations require the *cte* mode.
 :::
 
 ## Associations
