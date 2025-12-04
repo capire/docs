@@ -236,7 +236,7 @@ Use the `@readonly` annotation to indicate that a view or a view element is not 
 
 To [write data](#updatable-views) or [delete](#delete-via-view) through views, only use simple [projections](../../cds/cdl#as-projection-on). The CAP Java runtime attempts to resolve the CDS views to their underlying persistence entities, rewriting the statement and data accordingly, which is not supported for complex views.
 
-For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL views can be avoided by using [runtime views](#runtimeviews). This allows you to change the view definition without redeploying the database schema and is the prerequisite for lightweight extensibility via predefined extension fields.
+For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL views can be avoided by using [runtime views](../../cds/cdl#runtimeviews). This allows you to change the view definition without redeploying the database schema and is the prerequisite for lightweight extensibility via predefined extension fields.
 
 ::: tip Prefer simple views
 Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Single-Purposed Services](../../guides/providing-services#single-purposed-services)), rather than one complex view for many scenarios.
@@ -319,83 +319,6 @@ DELETE from OrderView where ID = 42
 ```
 The delete operation is resolved to the underlying `Order` entity with ID *42* and cascades over the `header` and `items` compositions. The `delivery` composition, which is only defined in the view, is ignored and does not cascade the delete operation to `Delivery`.
 
-### Runtime Views { #runtimeviews }
-
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP Java resolves them *at runtime* on each request.
-
-Runtime views must be simple [projections](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
-
-CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
-
-::: details Changing the runtime view mode
-To globally set the runtime view mode, use the property `cds.sql.runtimeView.mode` with value `cte` (the default) or `resolve` in the *application.yml*. To set the mode for a specific runtime view, annotate it with `@cds.java.runtimeView.mode: cte|resolve`.
-
-To set the mode for a specific query, use a [hint](#hana-hints):
-
-```Java
-Select.from(BooksWithLowStock).hint("cds.sql.runtimeView.mode", "resolve");
-```
-:::
-
-The next two sections introduce both modes using the following CDS model and query:
-
-```cds
-entity Books {
-  key ID     : UUID;
-      title  : String;
-      stock  : Integer;
-      author : Association to one Authors;
-}
-@cds.persistence.skip
-entity BooksWithLowStock as projection on Books {
-    ID, title, author.name as author
-} where stock < 10; // makes the view read only
-```
-```sql
-SELECT from BooksWithLowStock where author = 'Kafka'
-```
-
-
-#### Read in `cte` mode { #rtview-cte }
-
-This is the default mode since CAP Java `4.x`. The runtime translates the [view definition](#runtimeviews) into a _Common Table Expression_ (CTE) and sends it with the query to the database.
-
-```sql
-WITH BOOKSWITHLOWSTOCK_CTE AS (
-    SELECT B.ID,
-           B.TITLE,
-           A.NAME AS "AUTHOR"
-      FROM BOOKS B
-      LEFT OUTER JOIN AUTHOR A ON B.AUTHOR_ID = A.ID
-     WHERE B.STOCK < 10
-)
-SELECT ID, TITLE, AUTHOR AS "author"
-  FROM BOOKSWITHLOWSTOCK_CTE
- WHERE A.NAME = ?
-```
-
-::: tip CAP Java 3.10
-Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
-:::
-
-#### Read in `resolve` mode { #rtview-resolve }
-
-The runtime _resolves_ the [view definition](#runtimeviews) to the underlying persistence entities and executes the query directly against the corresponding tables.
-
-```sql
-SELECT B.ID, B.TITLE, A.NAME AS "author"
-  FROM BOOKS AS B
-  LEFT OUTER JOIN AUTHORS AS A ON B.AUTHOR_ID = A.ID
- WHERE B.STOCK < 10 AND A.NAME = ?
-```
-
-::: info Limitations of `resolve` mode
-Using associations that are only [defined](../../cds/cql#association-definitions) in the view, as well as complex draft queries are not supported in *resolve* mode.
-:::
-::: info Pessimistic locking on PostgreSQL
-On PostgreSQL, some [pessimistic locking](#pessimistic-locking) queries on runtime views navigating associations require the *cte* mode.
-:::
-
 ### Draft Queries on Views { #draft-views }
 
 When draft-enabling a CDS view, the CDS Compiler creates a corresponding draft persistence table for this view. [Draft activate](../fiori-drafts#editing-drafts) updates the active entity via the view.
@@ -413,14 +336,14 @@ If you define runtime views on [draft-enabled](../fiori-drafts#reading-drafts) e
 :::
 
 ::: warning Avoid draft-enabling runtime views
-Draft-enabling runtime views is only supported in [*CTE*](#rtview-cte) mode and requires a schema deployment to update the draft table when the runtime view is changed.
+Draft-enabling runtime views is only supported in [*CTE*](/cds/cdl#rtview-cte) mode and requires a schema deployment to update the draft table when the runtime view is changed.
 :::
 
 ### Views on Remote Services
 
 When delegating queries between Application Services and Remote Services, statements are resolved to the targeted service's entity definition by the CAP Java runtime.
 
-For read, the CDS views are resolved similar to the runtime view [resolve](#rtview-resolve) mode. For write operations, views targeting *remote OData* services must fulfill the following:
+For read, the CDS views are resolved similar to the runtime view [resolve](/cds/cdl#rtview-resolve) mode. For write operations, views targeting *remote OData* services must fulfill the following:
 
 - all requirements of [writable views](#updatable-views)
 - not include [calculated elements](../../cds/cdl#calculated-elements)
