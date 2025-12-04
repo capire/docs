@@ -939,6 +939,60 @@ Cross-service checks are not supported. It is expected that the associated entit
 The `@assert.target` check constraint relies on database locks to ensure accurate results in concurrent scenarios. However, locking is a database-specific feature, and some databases don't permit to lock certain kinds of objects. On SAP HANA, for example, views with joins or unions can't be locked. Do not use `@assert.target` on such artifacts/entities.
 :::
 
+### `@assert` <Beta/>
+
+Annotate an element with `@assert` to define CXL expressions that are validated after the data has been written to the database. If the validation should fail, the expression must return a String containing the error message to be sent to the client. If at least one such validation fails the transaction is rolled back.
+
+The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned.
+
+```cds
+entity Orders : cuid {
+        
+  @assert: (case 
+    when book.stock <= quantity then 'Stock exceeded' 
+  end)
+  quantity : Integer;       
+}
+```
+
+Alternatively, the same condition can be simplified by using the ternary operator:
+
+```cds
+entity OrderItems : cuid {
+  
+  @assert: (book.stock <= quantity ? 'Stock exceeded' : null)
+  quantity  : Integer;
+}
+```
+
+By using multiple `when` sections, multiple conditions can be included in a single annotation. Each condition returns its own error message to precisely describe the error.
+
+```cds
+entity OrderItems : cuid {
+  
+  @assert: (case
+    when book.stock = 0 then 'Stock is zero'
+    when book.stock <= quantity then 'Stock exceeded'
+  end)
+  quantity  : Integer;
+}
+```
+
+Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
+
+::: info Error Messages
+The error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+[Learn more about localized messages](./i18n){.learn-more}
+:::
+
+::: info Expression Evaluation
+Expressions are evaluated *after* the request has been applied to the underlying datastore. Affected are the entities of the request's payload. The runtime executes check-statements with the provided expressions and the primary key values for the given entities.
+:::
+
+::: warning Limitations
+- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update)
+- Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported
+:::
 
 ### Custom Error Messages
 
