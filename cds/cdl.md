@@ -866,14 +866,14 @@ CAP Java provides two modes for resolving runtime views during read operations: 
 ::: details Changing the runtime view mode for CAP Java
 To globally set the runtime view mode, use the property `cds.sql.runtimeView.mode` with value `cte` (the default) or `resolve` in the *application.yml*. To set the mode for a specific runtime view, annotate it with `@cds.java.runtimeView.mode: cte|resolve`.
 
-To set the mode for a specific query, use a [hint](#hana-hints):
+To set the mode for a specific query, use a [hint](../java/working-with-cql/query-execution#hana-hints):
 
 ```Java
 Select.from(BooksWithLowStock).hint("cds.sql.runtimeView.mode", "resolve");
 ```
 :::
 
-Node.js only provides the [cte](#rtview-cte) mode. 
+Node.js only provides the [cte](#rtview-cte) mode.
 
 ::: details Changing the runtime view mode for CAP Node.js
 The runtime view mode can be globally enabled with 
