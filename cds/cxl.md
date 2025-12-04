@@ -110,7 +110,15 @@ referred to as a **path expression**.
 In it's most simple form, a `ref` just contains the name of the element being referenced:
 
 :::code-group
-```js
+```cds
+using {sap.capire.bookshop.Books} from './db/schema';
+
+entity Ref as select from Books as B {
+  title,    // [!code focus]
+  B.price   // [!code focus]
+}
+```
+```js [repl]
 > q = cds.ql`SELECT from Books as B { title, B.price }`// [!code focus]
 cds.ql {
   SELECT: {
@@ -322,6 +330,39 @@ More samples are shown in the upcoming sections.
 <div class="diagram" v-html="pathSegment"></div>
 
 TODO: some text
+
+### Structured element
+
+```cds
+extend Author with {
+  address: {
+    street: String;
+    city: String;
+  }
+}
+```
+
+
+:::code-group
+```cds
+entity Structured select from Authors {
+  address.street,   // [!code focus]
+  address.city     // [!code focus]
+}
+```
+```js
+> q = cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
+```
+:::
+
+### Path segment with parameterized navigation
+
+
+
+
+### Path segment with infix filter
+
+
 
 ## infix filter <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #infix-filter }
 
