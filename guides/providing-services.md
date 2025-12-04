@@ -940,9 +940,6 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 :::
 
 
-<div id="assertconstraints" />
-
-
 ### Custom Error Messages
 
 The annotations `@assert.range`, `@assert.format`, and `@mandatory` also support custom error messages. Use the annotation `@<anno>.message` with an error text or [text bundle key](../guides/i18n#externalizing-texts-bundles) to specify a custom error message:
