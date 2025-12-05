@@ -28,6 +28,7 @@
   ### [Input Validation](guides/providing-services#input-validation)
   ### [Custom Logic](guides/providing-services#custom-logic)
   ### [Actions & Functions](guides/providing-services#actions-functions)
+  ### [Status-Transition Flows](guides/providing-services#status-transition-flows)
   ### [Serving Media Data](guides/providing-services#serving-media-data)
   ### [Best Practices](guides/providing-services#best-practices)
 
@@ -55,7 +56,7 @@
   ### [AsyncAPI](advanced/publishing-apis/asyncapi)
 
 ## [Serving UIs](advanced/fiori)
-  ### [Fiori UIs](advanced/fiori)
+  ### [SAP Fiori UIs](advanced/fiori)
 
 ## [Databases](guides/databases)
 

@@ -747,7 +747,7 @@ Before deploying you need to log in to Cloud Foundry: `cf login --sso`
 
 Start the deployment and build process:
 
-```
+```sh
 cds up
 ```
 

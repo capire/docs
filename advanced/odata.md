@@ -28,23 +28,25 @@ status: released
 
 OData is an OASIS standard that enhances plain REST with standardized system query options like `$select`, `$expand`, `$filter`, and others. The following table provides an overview of the feature coverage:
 
-| Query Options  | Remarks                                   | Node.js    | Java    |
-|----------------|-------------------------------------------|:------------:|:---------:|
+| Query Options  | Remarks                                     | Node.js    | Java    |
+|----------------|---------------------------------------------|:------------:|:---------:|
 | `$search`      | Search in multiple/all text elements<sup>(1)</sup>| <X/> | <X/>   |
-| `$value`       | Retrieves single rows/values              | <X/>      | <X/>  |
-| `$top`,`$skip` | Requests paginated results                | <X/>      | <X/>   |
-| `$filter`      | Like SQL where clause                     | <X/>      | <X/>   |
-| `$select`      | Like SQL select clause                    | <X/>      | <X/>   |
-| `$orderby`     | Like SQL order by clause                  | <X/>      | <X/>   |
-| `$count`       | Gets number of rows for paged results     | <X/>      | <X/>   |
-| `$apply`       | For [data aggregation](#data-aggregation) | <X/>      | <X/>   |
-| `$expand`      | Deep-read associated entities             | <X/>      | <X/>   |
-| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(2)</sup> |
-| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(3)</sup>   |
+| `$value`       | Retrieves single rows/values                | <X/>      | <X/>  |
+| `$top`,`$skip` | Requests paginated results                  | <X/>      | <X/>   |
+| `$filter`      | Like SQL where clause                       | <X/>      | <X/>   |
+| `$select`      | Like SQL select clause                      | <X/>      | <X/>   |
+| `$orderby`     | Like SQL order by clause                    | <X/>      | <X/>   |
+| `$count`       | Gets number of rows for paged results       | <X/>      | <X/>   |
+| `$apply`       | For [data aggregation](#data-aggregation)   | <X/>      | <X/>   |
+| `$expand`      | Deep-read associated entities               | <X/>      | <X/>   |
+| `$compute`     | Dynamic expressions for other query options | <X/><sup>(2)</sup> | <X/>   |
+| [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
+| [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
 - <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../guides/providing-services#searching-data).
-- <sup>(2)</sup> The navigation path identifying the collection can only contain one segment.
-- <sup>(3)</sup> Supported for key values and for parameters of functions only.
+- <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
+- <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
+- <sup>(4)</sup> Supported for key values and for parameters of functions only.
 
 System query options can also be applied to an [expanded navigation property](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361039) (nested within `$expand`):
 
@@ -1028,6 +1030,7 @@ You can add further vocabularies to the translation process [using configuration
 | [@Common](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Common.md){target="_blank"}                   | for all SAP vocabularies                          |
 | [@Communication](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Communication.md){target="_blank"}     | for annotating communication-relevant information |
 | [@DataIntegration](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/DataIntegration.md){target="_blank"} | for data integration                              |
+| [@Hierarchy](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/Hierarchy.md){target="_blank"}             | for hierarchies                                   |
 | [@PDF](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PDF.md){target="_blank"}                         | for PDF                                           |
 | [@PersonalData](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/PersonalData.md){target="_blank"}       | for annotating personal data                      |
 | [@Session](https://github.com/SAP/odata-vocabularies/tree/main/vocabularies/Session.md){target="_blank"}                 | for sticky sessions for data modification         |
@@ -1091,21 +1094,25 @@ If the `groupby` transformation only includes a subset of the entity keys, the r
 
 ### Transformations
 
-| Transformation               | Description                                 |      Node.js       | Java  |
-|------------------------------|---------------------------------------------|:------------------:|:-----:|
-| `filter`                     | filter by filter expression                 |        <X/>        | <X/>  |
-| `search`                     | filter by search term or expression         |       <Na/>        | <X/>  |
-| `groupby`                    | group by dimensions and aggregates values   |        <X/>        | <X/>  |
-| `aggregate`                  | aggregate values                            |        <X/>        | <X/>  |
-| `compute`                    | add computed properties to the result set   |       <Na/>        | <X/>  |
-| `expand`                     | expand navigation properties                |       <Na/>        | <Na/> |
-| `concat`                     | append additional aggregation to the result |        <X/>        | <X/>  |
-| `skip` / `top`               | paginate                                    |        <X/>        | <X/>  |
-| `orderby`                    | sort the input set                          |        <X/>        | <X/>  |
-| `topcount`/`bottomcount`     | retain highest/lowest _n_ values            |       <Na/>        | <Na/> |
-| `toppercent`/`bottompercent` | retain highest/lowest _p_% values           |       <Na/>        | <Na/> |
-| `topsum`/`bottomsum`         | retain _n_ values limited by sum            |       <Na/>        | <Na/> |
+| Transformation               | Description                                  |      Node.js       | Java  |
+|------------------------------|----------------------------------------------|:------------------:|:-----:|
+| `filter`                     | filter by filter expression                  |        <X/>        | <X/>  |
+| `search`                     | filter by search term or expression          |       <Na/>        | <X/>  |
+| `groupby`                    | group by dimensions and aggregates values    |        <X/>        | <X/>  |
+| `aggregate`                  | aggregate values                             |        <X/>        | <X/>  |
+| `compute`                    | add computed properties to the result set    |       <Na/>        | <X/>  |
+| `expand`                     | expand navigation properties                 |       <Na/>        | <Na/> |
+| `concat`                     | append additional aggregation to the result  |        <X/>        | <X/>  |
+| `skip` / `top`               | paginate                                     |        <X/>        | <X/>  |
+| `orderby`                    | sort the input set                           |        <X/>        | <X/>  |
+| `topcount`/`bottomcount`     | retain highest/lowest _n_ values             |       <Na/>        | <Na/> |
+| `toppercent`/`bottompercent` | retain highest/lowest _p_% values            |       <Na/>        | <Na/> |
+| `topsum`/`bottomsum`         | retain _n_ values limited by sum             |       <Na/>        | <Na/> |
+| `TopLevels`                  | retain only _n_ levels of a hierarchy        |       <X/><sup>2</sup>         | <X/><sup>1,2</sup>  |
+| `ancestors/descendants`      | retain ancestors/descendants of specific nodes  |       <X/> <sup>2</sup>        | <X/><sup>1,2</sup>  |
 
+<sup>1</sup> - supported on SAP HANA, H2 ad PostgreSQL only
+<sup>2</sup> - only to support requests from the UI5 Tree Table
 
 #### `concat`
 
@@ -1137,7 +1144,6 @@ GET /Order(10)/books?
 
 This query groups the 500 most expensive books by author name and determines the price of the most expensive book per author.
 
-
 ### Aggregation Methods
 
 | Aggregation Method | Description                      | Node.js | Java  |
@@ -1148,7 +1154,9 @@ This query groups the 500 most expensive books by author name and determines the
 | `average`          | average of values                |  <X/>   | <X/>  |
 | `countdistinct`    | count of distinct values         |  <X/>   | <X/>  |
 | custom method      | custom aggregation method        |  <Na/>  | <Na/> |
+| custom aggregate   | predefined custom aggregate      |  <X/>   | <X/>  | 
 | `$count`           | number of instances in input set |  <X/>   | <X/>  |
+
 
 ### Custom Aggregates
 
@@ -1203,7 +1211,7 @@ entity Sales {
 }
 ```
 
-The CAP Java SDK exposes all properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` as a [custom aggregate](../advanced/odata#custom-aggregates) with the property's name that returns:
+All properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` are exposed as a [custom aggregate](../advanced/odata#custom-aggregates) with the property's name that returns:
 
 * The property's value if it's unique within a group of dimensions
 * `null` otherwise
@@ -1218,7 +1226,7 @@ A custom aggregate for a currency code or unit of measure should also be exposed
 | chain transformations                   |  <X/>   | <X/>  |
 | chain transformations within group by   |  <Na/>  | <Na/> |
 | `groupby` with `rollup`/`$all`          |  <Na/>  | <Na/> |
-| `$expand` result set of `$apply`        |  <Na/>  | <Na/> |
+| `$expand` result set of `$apply`        |  <Na/>  | <X/> |
 | `$filter`/`$search` result set          |  <X/>   | <X/>  |
 | sort result set with `$orderby`         |  <X/>   | <X/>  |
 | paginate result set with `$top`/`$skip` |  <X/>   | <X/>  |

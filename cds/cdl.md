@@ -41,7 +41,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed, cuid } from `@sap/cds/common`;
+using { managed, cuid } from '@sap/cds/common';
 aspect primary : managed, cuid {}
 
 entity Books : primary {
@@ -85,7 +85,7 @@ The following literals can be used in CDL (mostly as in JavaScript, Java, and SQ
 <!-- cds-mode: ignore; values only, no valid CDS file -->
 ```cds
 true , false , null        // as in all common languages
-11 , 2.4 , 1e3, 1.23e-11   // for numbers
+11 , 2.4 , 1e3 , 1.23e-11  // for numbers
 'A string''s literal'      // for strings
 `A string\n paragraph`     // for strings with escape sequences
 { foo:'boo', bar:'car' }   // for records
@@ -129,6 +129,10 @@ entity DocumentedEntity {
   // ...
 }
 ```
+
+::: tip
+These annotations are illustrative only and are not defined nor have any meaning beyond this example.
+:::
 
 Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`, are supported. Line endings are normalized. If you don't want a line ending at that position, end a line with a backslash (`\`). For string literals inside triple backticks, indentation is stripped and tagging is possible.
 
@@ -238,7 +242,7 @@ context scoped {
 
 You can define types and entities with other definitions' names as prefixes:
 
-```cds
+```cds [prefixes.cds]
 namespace foo.bar;
 entity Foo {}           //> foo.bar.Foo
 entity Foo.Bar {}       //> foo.bar.Foo.Bar
@@ -248,7 +252,7 @@ type Foo.Bar.Car {}     //> foo.bar.Foo.Bar.Car
 
 #### Fully Qualified Names
 
-A model ultimately is a collection of definitions with unique, fully qualified names. For example, the second model above would compile to this [CSN](./csn):
+A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to the following [CSN](./csn):
 
 ::: code-group
 
@@ -1878,7 +1882,7 @@ service MyOrders {
 ```
 
 ::: tip
-You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which, will be enforced by the CAP runtimes in Java and Node.js.
+You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which will be enforced by the CAP runtimes in Java and Node.js.
 :::
 
 Entities can be also exposed as views with parameters:

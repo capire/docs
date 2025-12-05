@@ -371,7 +371,7 @@ req.subject //> ...
 ```js
 SELECT.from(req.subject)  //> returns the single target row
 UPDATE(req.subject)...    //> updates the single target row
-DELETEfrom(req.subject)   //> deletes the single target row
+DELETE.from(req.subject)   //> deletes the single target row
 ```
 
 > [!warning] 
@@ -482,7 +482,7 @@ This is a convenience variant of the [`req.reject()`](#req-reject) method, with 
 
 ```tsx
 function req.reject (
-  code?    : number,
+  status?  : number,
   message? : string,
   target?  : string,
   args?    : string[]

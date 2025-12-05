@@ -79,6 +79,9 @@ cds add multitenancy
         "requires": {
           "[production]": {
             "multitenancy": true
+          },
+          "[with-mtx]": {
+            "multitenancy": true
           }
        }
      }
@@ -721,24 +724,10 @@ cds add mta
 ```
 
 ```sh [Kyma]
-cds add helm,containerize
+cds add kyma
 ```
 
 :::
-
-::: details Add xsuaa redirect for trial / extension landscapes
-Add the following snippet to your _xs-security.json_ and adapt it to the landscape you're deploying to:
-
-```json
-  "oauth2-configuration": {
-    "redirect-uris": ["https://*.cfapps.us10-001.hana.ondemand.com/**"]
-  }
-```
-
-:::
-
-[Learn more about configured BTP services for SaaS applications.](#behind-the-scenes){.learn-more}
-
 
 ::: code-group
 
@@ -908,14 +897,14 @@ For faster turnaround cycles in development and testing, you can run the app loc
 To achieve this, bind your SaaS app and the MTX sidecar to its required cloud services, for example:
 
 ```sh
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-srv
 ```
 
 For testing the sidecar, make sure to run the command there as well:
 
 ```sh
 cd mtx/sidecar
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-mtx
 ```
 
 To generate the SAP HANA HDI files for deployment, go to your project root and run the build:
@@ -1183,7 +1172,7 @@ modules:
       TENANT_HOST_PATTERN: ^(.*)-${default-uri}
 ```
 
-[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more style="margin-top: 10px;"}
+[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more}
 
 
 :::
@@ -1219,8 +1208,8 @@ In this case, the application can use its static local model without requesting 
 cds:
   model:
     provider:
-      extensibility: false // [!code focus]
-      toggles: false // [!code focus]
+      extensibility: false # [!code focus]
+      toggles: false # [!code focus]
 
 ```
 
@@ -1275,81 +1264,6 @@ The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
 
-<!-- Who cares? Also outdated with IAS -> busywork keeping that in sync -->
-### Behind the Scenes { #behind-the-scenes}
-
-With adding the MTX services, your project configuration is adapted at all relevant places.
-
-Configuration and dependencies are added to your _package.json_ and an _xs-security.json_ containing MTX-specific scopes and roles is created. {.node}
-
-Configuration and dependencies are added to your _.cdsrc.json_ and an _xs-security.json_ containing MTX-specific scopes and roles is created. {.java}
-
-For the MTA deployment service dependencies are added to the _mta.yaml_ file. Each SaaS application will have bindings to at least three SAP BTP service instances.
-
-| Service                                                      | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [Service Manager](https://help.sap.com/docs/SERVICEMANAGEMENT/09cc82baadc542a688176dce601398de/4e19b11211fe4ca2a266d3fdd4a72188.html) (`service-manager`) | CAP uses this service for creating a new SAP HANA Deployment Infrastructure (HDI) container for each tenant and for retrieving tenant-specific database connections. |
-| [SaaS Provisioning Service](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/3971151ba22e4faa9b245943feecea54.html) (`saas-registry`)                  | To make a SaaS application available for subscription to SaaS consumer tenants, the application provider must register the application in the SAP BTP Cloud Foundry environment through the SaaS Provisioning Service. |
-| [User Account and Authentication Service](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) (`xsuaa`)            | Binding information contains the OAuth client ID and client credentials. The XSUAA service can be used to validate the JSON Web Token (JWT) from requests and to retrieve the tenant context from the JWT.|
-
-
-<!--
-
-## Multiple Microservices
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
-
-## Sharing One Database
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
--->
-
-<!--
-<div class="impl node">
-
-Use CLI option `--without-sidecar` to do so, e.g.:
-
-```sh
-cds add multitenancy --without-sidecar
-```
-
-::: details See what this adds to your Node.js project...
-
-1. Adds package `@sap/cds-mtxs` to your project:
-
-   ```jsonc
-   {
-      "dependencies": { // [!code focus]
-         "@sap/cds-mtxs": "^1" // [!code focus]
-      },
-   }
-   ```
-
-2. Adds these lines to your project's _package.json_ to enable multitenancy with sidecar:
-
-   ```jsonc
-   {
-      "cds": {  // [!code focus]
-         "requires": { "multitenancy": true }, // [!code focus]
-         "profile": "with-mtx-sidecar" // [!code --]
-      },
-      "dependencies": {
-         "@sap/cds-mtxs": "^1"
-      },
-   }
-   ```
-
-3. ~~**Doesn't** add a sidecar subproject at `mtx/sidecar`~~
-:::
-
-</div>
- -->
 
 ## Next Steps
 

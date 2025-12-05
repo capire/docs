@@ -216,8 +216,6 @@ To enable multitenancy for production, run the following command:
 cds add multitenancy
 ```
 
-[Learn more about MTX services.](../multitenancy/#behind-the-scenes){.learn-more}
-
 <br>
 
 ::: tip You're set!
@@ -279,11 +277,11 @@ While `cds build` is already ran as part of `mbt build` in `cds up`, you can als
 cds build --production
 ```
 
-[Learn more about running and customizing `cds build`.](custom-builds){.learn-more style="margin-top: 10px"}
+[Learn more about running and customizing `cds build`.](custom-builds){.learn-more}
 
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more style="margin-top: 10px"}
+[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more}
 [Learn how to reduce the MTA archive size **during development**.](../../get-started/troubleshooting#reduce-mta-size){.learn-more}
 
 This process can take some minutes and finally logs an output like this:
@@ -383,6 +381,11 @@ sed -i 's/org.springframework.boot.loader.JarLauncher/-Dloader.main=com.sap.cds.
 ```
 
 :::
+
+## Next Up...
+
+You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
+
 
 <!--
 ---
