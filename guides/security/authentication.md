@@ -546,7 +546,7 @@ To fetch a token - either as technical or as named user - the request needs to p
 ```sh [Token for technical user]
 curl --cert cert.pem --key key.pem \
   -d "grant_type=client_credentials"\
-  -d "client_id"=<clientid>" \
+  -d "client_id=<clientid>" \
   https://<url>/oauth2/token
 ```
 
