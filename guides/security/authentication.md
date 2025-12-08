@@ -370,7 +370,7 @@ Now the application is ready to for adding IAS-support by executing
 cds add ias
 ```
 
-which automatically adds a service instance named `bookshop-srv` of type `identity` (plan: `application`) and binds the CAP application to it.
+which automatically adds a service instance named `bookshop-ias` of type `identity` (plan: `application`) and binds the CAP application to it.
 
 ::: details Generated deployment descriptor for IAS instance and binding
 ```yaml [mta.yaml]
@@ -661,11 +661,329 @@ The same is true for the logout flow.
 
 ## XSUAA Authentication { #xsuaa-auth }
 
-TBD
-  
+[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a profen platform service for identity and access management which provides:
+ - authentication mechanisms (single sign-on, multi-factor enforcement)
+ - federation of corporate identity providers (multiple user stores)
+ - create and assign access roles
+ 
+::: warn
+In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation. 
+::: 
+
+XSUAA authentication is best configured and tested in the Cloud, so we're going to enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+
+
+### Get Ready with XSUAA { #xsuaa-ready }
+
+Before working with IAS on CF, you need to
+
+- Ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
+in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
+
+You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
+If there is no deplyoment descriptor yet, in the project root folder, execute
+
+```sh
+cds add mta
+```
+
+to make your application ready for deployment to CF.
+
+<div class="impl java">
+
+::: tip
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
+:::
+
+</div>
+
+### Adding XSUAA
+
+Now the application is ready to for adding XSUAA-support by executing
+
+```sh
+cds add xsuaa
+```
+
+which automatically adds a service instance named `bookshop-auth` of type `xsuaa` (plan: `application`) and binds the CAP application to it.
+
+<div class="impl java">
+
+::: tip
+Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentiaction automatically.
+:::
+
+</div>
+
+::: details Generated deployment descriptor for XSUAA instance and binding
+```yaml [mta.yaml]
+modules:
+  - name: bookshop-srv
+    # [...]
+    requires:
+      - name: bookshop-auth
+
+resources:
+  - name: bookshop-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: bookshop-${org}-${space}
+        tenant-mode: dedicated
+        role-collections:
+          - name: 'admin (bookshop ${org}-${space})'
+            description: 'generated'
+            role-template-references:
+              - '$XSAPPNAME.admin'
+```
+:::
+
+**CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance. 
+
+There are some mandatory configuration parameters:
+
+| Property          |  Description         |
+|-------------------|:-------------------:|
+|`service-plan`     | `application` broker` |
+|`path`             | Relative file system path to the application security descriptor. |
+|`xsappname`        | A unique name within the subaccount. All XSUAA artifacts are scoped with `$XSAPPNAME`. |
+|`tenant-mode`      | `dedicated` is suitable for a single-tenant application. Mode `shared` is madatory for a [multitenant application](../guides/multitenancy/). |
+
+::: tip
+Set `service-plan` to type `broker` to ensure your XSUAA service API can be exposed via broker in future.
+:::
+
+The security descriptor perpares all [XSUAA authorization entities](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities) such as scopes, attributes and role-templates derived from the CDS model.
+
+::: details Generated XSUAA role templates
+```json
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.admin",
+      "description": "admin"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "admin",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.admin"
+      ],
+      "attribute-references": []
+    }
+  ]
+}
+```
+:::
+
+[Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
+
+
+For every [CAP role](./cap-users#roles) in the CDS model, one scope and one role template are generated with the exact name of the CDS role.
+In addition, [preconfigured role collections](https://help.sap.com/docs/btp/sap-business-technology-platform/configuration-options-for-sap-authorization-and-trust-management-service) can be deployed.
+In the example, a single role collection `admin (bookshop ${org}-${space})` that contains the role template `admin` is defined in the resource of the XSUAA intance.
+
+
+After successful authentication, the prefix `$XSAPPNAME`is removed from the scope name resulting in the CAP role name.
+
+::: tip Re-generate on model changes
+You can have such a file re-generated via
+```sh
+cds compile srv --to xsuaa > xs-security.json
+```
+:::
+
+See [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) in the SAP HANA Platform documentation for the syntax of the _xs-security.json_ and advanced configuration options.
+
+<!-- REVISIT: Not ideal cds compile --to xsuaa can generate invalid xs-security.json files -->
+::: warning Avoid invalid characters in your models
+Roles modeled in CDS may contain characters considered invalid by the XSUAA service.
+:::
+
+If you modify the _xs-security.json_ manually, make sure that the scope names in the file exactly match the role names in the CDS model, as these scope names will be checked at runtime.
+
+Now let's pack and deploy the application with
+```sh
+cds up
+```
+
+and wait until the application is up and running. 
+You can test the status with `cf apps` or in BTP Cockpit, alternatively.
+
+The following trace in the application log confirms the activated IAS authentication:
+<div class="java">
+
+```sh
+... : Loaded feature 'XsuaaUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
+```
+
+</div>
+
+<div class="node">
+TODO
+</div>
+
+At startup, the CAP runtime checks the available bindings and activates XSUAA authentication accordingly. 
+**Therefore, the local setup (no XSUAA binding in the environment) is still runnable**.
+
+
+### Administrative Console for XSUAA { #ias-admin }
+
+In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
+you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
+
+In the Console you can manage the IAS tenant and IAS applications, for example: 
+- create (test) users in `Users & Authorizations` -> `User Management`
+- deactivate users
+- configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
+- inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
+
+::: tip
+In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
+:::
+
+
+### Testing XSUAA on CLI Level
+
+Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
+Sending the test request 
+```sh
+curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
+```
+
+as anonymous user without a token results in a `401 Unauthorized` as expected.
+
+Now we want to fetch a token to prepare a fully authenticated test request. 
+As first step we add a new client for the IAS application by creating an appropriate service key:
+
+```sh
+cf create-service-key bookshop-ias bookshop-ias-key -c '{"credential-type": "X509_GENERATED"}'
+```
+
+The overall setup with local CLI client and the Cloud services is sketched in the diagram:
+
+![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
+
+As IAS requires mTLS-protected channels, **client certificates are mandatory** for all of the following requests:
+- Token request to IAS in order to fetch a valid IAS token (1)
+- Business request to the CAP application presenting the token (2)
+- Initial proof token request to IAS - not required for all business requests (3)
+
+The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
+
+::: details How to create and retrieve service key credentials
+
+```sh
+cf service-key bookshop-ias bookshop-ias-key
+```
+
+```sh
+{
+  "credentials": {
+      [...]
+    "certificate": "-----BEGIN CERTIFICATE----- [...] -----END CERTIFICATE-----",
+    "clientid": "2a92c297-8603-4157-9aa9-ca758582abcd",
+    "credential-type": "X509_GENERATED",
+    "key": "-----BEGIN RSA PRIVATE KEY----- [...] -----END RSA PRIVATE KEY-----",
+    "url": "https://<tenant-id>.accounts400.ondemand.com",
+    [...]
+  }
+}
+```
+
+:::
+
+::: warning
+❗ **Never share service keys or tokens** ❗
+:::
+
+From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request. 
+
+The request returns with a valid IAS token which is suitable for authentication in the CAP application:
+```sh
+{"access_token":"[...]","token_type":"Bearer","expires_in":3600}
+```
+
+The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
+
+```sh
+curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.cert.<landscape-domain>/odata/v4/CatalogService/Books
+```
+
+Don't forget to delete the service key after your tests:
+```sh
+cf delete-service-key bookshop-auth bookshop-auth-key
+```
+
+
+### Testing XSUAA on UI Level
+
+In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
+
+```sh
+cds add approuter
+cds up
+```
+
+adds the additional AppRouter to the deployment which is already prepared for XSUAA.
+The resulting setup is sketched in the diagram:
+
+![UI-level Testing of XSUAA Endpoints](./assets/ias-ui-setup.svg){width="500px"}
+
+To be able to fetch the token, the AppRouter needs a binding to the IAS instance as well.
+
+::: details AppRouter component with XSUAA binding
+```yaml
+  - name: bookshop
+    [...]
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api
+          url: ~{srv-cert-url}
+          forwardAuthToken: true
+          forwardAuthCertificates: true
+      - name: bookshop-ias
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: approuter
+```
+:::
+
+As the login flow is based on an HTTP redirect between the CAP application and IAS login page,
+IAS needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+The same is true for the logout flow.
+
+::: details Redirect URIs for login and logout
+```yaml
+  - name: bookshop-ias
+    [...]
+    parameters:
+      [...]
+      config:
+        [...]
+        oauth2-configuration:
+          redirect-uris:
+            - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
+          post-logout-redirect-uris:
+            - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html            
+```
+:::
+
+
 ## Hybrid Authentication { #hybrid-auth }
 
 will come soon
+
 
 ## Custom Authentication { #custom-auth }
 
