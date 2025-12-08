@@ -45,7 +45,7 @@ Likewise, the CAP representation of the request user can be overruled to match a
 
 ### Built on Best of Breed { #key-concept-platform-services }
 
-CAP does not deal with user login flows, password and credential management, user sessions, or any cryptographic logic - **and applications should not have to do it at all!**
+CAP does not deal with user login flows, password and credential management, user sessions, or any cryptographic logic - **and applications should definitely not do so!**
 Instead, **CAP seamlessly integrates with battle-tested [platform services](#btp-services)** that handle these critical security topics centrally. 
 This approach not only simplifies the implementation but also enhances security by leveraging robust, well-tested mechanisms provided by the platform.
 Built on platform services, CAP allows developers to focus on core application functionality without worrying about the intricacies of security implementation.
