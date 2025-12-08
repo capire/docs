@@ -482,8 +482,7 @@ Now we want to fetch a token to prepare a fully authenticated test request.
 As first step we add a new client for the IAS application by creating an appropriate service key:
 
 ```sh
-cf create-service-key bookshop-auth bookshop-auth-key \ 
-   -c '{"credential-type": "X509_GENERATED"}'
+cf create-service-key bookshop-ias bookshop-ias-key -c '{"credential-type": "X509_GENERATED"}'
 ```
 
 The overall setup with local CLI client and the Cloud services is sketched in the diagram:
