@@ -547,6 +547,17 @@ cds:
           policies: // [!code ++]
             - cap.StockManager // [!code ++]
 ```
+
+:::tip
+Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
+:::
+
+Now (re)start the application with
+
+```sh
+mvn spring-boot:run
+```
+
 </div>
 
 <div class="impl node">
@@ -575,7 +586,6 @@ cds:
   }
 }
 ```
-</div>
 
 :::tip
 Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
@@ -584,8 +594,10 @@ Don't forget to refer to fully qualified policy names including the package name
 Now (re)start the application with
 
 ```sh
-mvn spring-boot:run
+cds watch
 ```
+
+</div>
 
 and verify in the UI for `AdminService` (`http://localhost:8080/index.html#Books-manage`) that the the assigned policies imply the expected access rules:
 - mock user `content-manager` has full access to `Books` and `Authors`.
