@@ -610,7 +610,7 @@ In addition, property `forwardAuthCertificates` needs to be `true` to support th
           url: ~{srv-cert-url}
           forwardAuthToken: true
           forwardAuthCertificates: true
-      - name: bookshop-auth
+      - name: bookshop-ias
         parameters:
           config:
             credential-type: X509_GENERATED
