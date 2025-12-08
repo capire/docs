@@ -625,7 +625,7 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
 ```yaml [mta.yaml- deployer task]
 - name: bookshop-ams-policies-deployer
    type: javascript.nodejs
-   path: srv/src/gen/policies
+   path: srv/src/gen/policies # Node.js: gen/policies
    parameters:
      buildpack: nodejs_buildpack
      no-route: true
@@ -638,7 +638,6 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
      - name: bookshop-ias
        [...]
 ```
-
 
 ```json [srv/src/gen/policies/package.json - deyployer module]
 {
@@ -656,10 +655,18 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
 
 :::
 
-
+<div class="impl java">
 Note that the policy deployer task requires a path to a directory structure containing the `ams` root folder with the policies to be deployed.
 By default, the path points to `srv/src/gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `srv/src/main/resources/ams`.
 In addition, `@sap/ams` needs to be referenced to add the deployer logic.
+</div>
+
+<div class="impl node">
+Note that the policy deployer task requires a path to a directory structure containing the `ams/dcl` root folder with the policies to be deployed.
+By default, the path points to `gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `ams/dcl`.
+In addition, `@sap/ams` needs to be referenced to add the deployer logic.
+</div>
+
 
 ::: tip
 Several microservices sharing the same IAS instance need a common folder structure the deployer task operates on. 
