@@ -464,7 +464,7 @@ In the Console you can manage the IAS tenant and IAS applications, for example:
 - inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
 
 ::: tip
-In BTP Cockpit, service instance `bookshop-auth` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
+In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
 :::
 
 
