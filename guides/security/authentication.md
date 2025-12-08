@@ -158,7 +158,7 @@ You can opt out the preconfiguration of these users by setting <Config java>`cds
 
 ### Customization { #custom-mock-users }
 
-You can define custom mock users to simulate any type of [end users](./cap-users#claims)) that will interact with your application at production time.
+You can define custom mock users to simulate any type of [end users](./cap-users#claims) that will interact with your application at production time.
 Hence, you can use the mock users to test your authorization settings as well as custom handlers fully decoupled from the actual execution environment.
 
 <div class="impl java">
