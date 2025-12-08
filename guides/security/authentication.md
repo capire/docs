@@ -624,7 +624,7 @@ The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
 ```yaml
-  - name: bookshop-auth
+  - name: bookshop-ias
     [...]
     parameters:
       [...]
