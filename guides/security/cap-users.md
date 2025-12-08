@@ -196,7 +196,7 @@ The interaction between the CAP application and AMS (via plugin) is as follows:
 3. CAP performs the authorization on the basis of the CDS authorization model and the injected user claims.
 
 
-### Adding AMS Support
+### Adding AMS Support { .java }
 
 **AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
 
@@ -303,6 +303,50 @@ In general, AMS provides highly flexible APIs to define and enforce authorizatio
 **In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
 :::
 
+
+### Adding AMS Support { .node }
+
+**AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
+
+To enhance your project with AMS, you can make use of CDS CLI tooling:
+
+```sh
+cds add ams
+```
+
+This automatically adds required configuration for AMS, taking into account the concrete application context (tenant mode and runtime environment etc.).
+If required, it also runs the new `cds add ias` command to configure the project for IAS authentication.
+
+::: details See dependencies added
+
+```json [package.json]
+{
+  "dependencies": [
+    "@sap/ams": "^3",
+    "@sap/xssec": "^4"
+  ],
+  "devDependencies": [
+    "@sap/ams-dev": "^2"
+}
+```
+:::
+
+`@sap/ams` integrates into the CAP framework to handle incoming requests. 
+Based on the user's assigned [policies](#policies), the user's roles are determined to decorate the [user.is](/node.js/authentication#user-is) function with additional roles. 
+The framework then authorizes the request as usual based on the user's roles.
+
+For local development, `@sap/ams-dev` needs to compile the DCL files to Data Control Notation (DCN) files in `gen/dcn` which is the machine-readable version of DCL that is required by AMS at runtime.
+
+Additionally, `@sap/ams` provides multiple build-time features:
+
+- Validate `ams.attributes` annotations for type coherence against the AMS schema.
+- Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
+- Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
+
+::: tip
+In general, AMS provides highly flexible APIs to define and enforce authorization rules at runtime suitable for native Cloud applications. 
+**In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
+:::
 
 ### Prepare CDS Model
 
