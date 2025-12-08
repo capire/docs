@@ -393,7 +393,7 @@ Following properties are available:
 | Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
 | `name` |  _instance_   | _Name for the IAS application - unique in the tenant_  |
-| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS adminstrators_ |
+| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS administrators |
 | `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
 | `credential-type` |  _binding_   | _`X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application_       |
 | `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
