@@ -415,7 +415,7 @@ The following trace in the application log confirms the activated IAS authentica
 <div class="java">
 
 ```sh
-... : Loaded feature 'IdentityUserInfoProvider' (IAS: bookshop-auth, XSUAA: <none>)
+... : Loaded feature 'IdentityUserInfoProvider' (IAS: bookshop-ias, XSUAA: <none>)
 ```
 
 </div>
