@@ -499,7 +499,7 @@ The client certificates are presented in the IAS binding and hence can be examin
 ::: details How to create and retrieve service key credentials
 
 ```sh
-cf service-key bookshop-auth bookshop-auth-key
+cf service-key bookshop-ias bookshop-ias-key
 ```
 
 ```sh
