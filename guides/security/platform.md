@@ -58,7 +58,7 @@ Likewise, TLS termination is offered by the [platform infrastructure](#platform-
 ### Decoupled from Business Logic  { #key-concept-decoupled-coding }
 
 As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any security-related adaptions. 
-This safeguards business logic being independent from platform services which are frequently subject to security hardening initiatives.
+This ensures that business logic remains independent of platform services, which are often subject to security-hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
 For instance, CAP allows performing outbound service calls via [Remote Services while handling authentication under the hood completely](./remote-authentication#remote-services). 
