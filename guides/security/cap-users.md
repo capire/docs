@@ -406,6 +406,8 @@ AMS policies represent the business-level roles of end users interacting with th
 Often, they reflect real-world jobs or functions.
 :::
 
+
+<div class="impl java">
 After the application is built, check the *srv/src/main/resources/ams* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
 
 ::: code-group
@@ -418,6 +420,22 @@ After the application is built, check the *srv/src/main/resources/ams* folder to
 ```
 
 :::
+</div>
+
+<div class="impl node">
+After the application is built, check the *ams/dcl* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
+
+::: code-group
+
+``` [./ams]
+└─ dcl
+   ├─ cap
+   │  └─ basePolicies.dcl
+   └─ schema.dcl
+```
+
+:::
+</div>
 
 [Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.learn-more}
 
