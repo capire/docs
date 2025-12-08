@@ -57,8 +57,8 @@ cds repl --run .
 
 :::info 💡 All of the example expressions follow the same pattern:
 1. A `CXL` snippet is shown as part of a query - either in the columns or in a query modifier.
-2. The corresponding **CAP Style `CXL`** representation is shown as `JSON`.
-3. The resulting **SQL Style `CXL`** is shown as `JSON`.
+2. The corresponding **CAP Style `CXL`** is shown.
+3. The equivalent **SQL Style `CXL`** is shown.
 4. The resulting **SQL output** is shown in SQL syntax.
 :::
 
@@ -106,6 +106,8 @@ referred to as a **path expression**.
 <div class="diagram">
   <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
   <div v-html="ref"></div>
+  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+  <div v-html="pathSegment"></div>
 </div>
 
 ### scalar element with and without table alias
@@ -174,20 +176,13 @@ A `ref` can also contain multiple [path-segments](#path-segment), e.g. to naviga
 
 :::code-group
 ```js
-> q = cds.ql`SELECT from Books as B { author.ID, genre }` // [!code focus]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'Books' ], as: 'B' },
-    columns: [ { ref: [ 'author', 'ID' ] }, { ref: [ 'genre' ] } ]
-  }
-}
-> await q
+> await cds.ql`SELECT from Books as B { author.ID, genre }` // [!code focus]
 [
-  { author_ID: 101, genre_ID: 11 },
-  { author_ID: 107, genre_ID: 11 },
-  { author_ID: 150, genre_ID: 16 },
-  { author_ID: 150, genre_ID: 16 },
-  { author_ID: 170, genre_ID: 13 }
+  { author_ID: 101, genre_ID: '11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
+  { author_ID: 107, genre_ID: '11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
+  { author_ID: 150, genre_ID: '16aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
+  { author_ID: 150, genre_ID: '15aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
+  { author_ID: 170, genre_ID: '13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' }
 ]
 ```
 :::
