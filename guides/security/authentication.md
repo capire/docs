@@ -578,7 +578,7 @@ curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
 
 Don't forget to delete the service key after your tests:
 ```sh
-cf delete-service-key bookshop-auth bookshop-auth-key
+cf delete-service-key bookshop-ias bookshop-ias-key
 ```
 
 
