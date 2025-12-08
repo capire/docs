@@ -149,7 +149,7 @@ To know which error codes and messages are available by default, you can have a 
 ## Target
 
 When SAP Fiori interprets messages it can handle an additional `target` property, which, for example, specifies which element of an entity the message refers to. SAP Fiori can use this information to display the message along the corresponding field on the UI.
-SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../advanced/fiori#validating-drafts). You can therefore specify the `target` both when throwing a `ServiceException` or setting a validation error using the [Messages API](#Messages).
+SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../advanced/fiori#validating-drafts). You can therefore specify the `target` both when throwing a `ServiceException` or setting a validation error using the [Messages API](#messages).
 
 A message target is always relative to an input parameter in the event context.
 For CRUD-based events this is always the `cqn` parameter, which represents and carries the payload of the request.
