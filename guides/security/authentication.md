@@ -306,7 +306,7 @@ TODO
 
 ## IAS Authentication { #ias-auth }
 
-[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management which provides
+[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management which provides:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - cross-landscape user propagation (including on-premise)
