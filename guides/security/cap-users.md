@@ -489,6 +489,8 @@ The attribute statement is in the scope of a dedicated CAP role and filters are 
 
 Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (base) policies to mock users and run locally:
 
+<div class="impl java">
+
 ```yaml
 cds:
   security:
@@ -501,6 +503,35 @@ cds:
           policies: // [!code ++]
             - cap.StockManager // [!code ++]
 ```
+</div>
+
+<div class="impl node">
+
+```json [package.json]
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "content-manager": { // [!code ++:5]
+              "policies": [
+                "cap.ContentManager"
+              ]
+            },
+            "stock-manager": { // [!code ++:5]
+              "policies": [
+                "cap.StockManager"
+              ]
+          }
+        }
+      }
+    }
+  }
+}
+```
+</div>
 
 :::tip
 Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
@@ -528,6 +559,7 @@ POLICY StockManagerFiction {
 
 [Learn more about DCL operators](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/condition-operators){.learn-more}
 
+<div class="impl java">
 
 ::: tip
 Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/local/`.
@@ -542,6 +574,37 @@ cds:
           policies: // [!code ++]
             - local.StockManagerFiction // [!code ++]
 ```
+
+</div>
+
+<div class="impl node">
+
+::: tip
+Don't miss to add the policy files in sub folders of `ams/dcl` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `./ams/dcl/local/`.
+:::
+
+```json [package.json]
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "stock-manager-fiction": { // [!code ++:5]
+              "policies": [
+                "local.StockManagerFiction"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</div>
 
 You can verify in the UI that mock user `stock-manager-fiction` is restricted to books of genres `Mystery` and `Fantasy`.
 
