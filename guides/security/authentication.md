@@ -606,6 +606,7 @@ In the UI scenario, adding an AppRouter as an ingress proxy for authentication s
 
 ```sh
 cds add approuter
+cds up
 ```
 
 adds the additional AppRouter to the deployment which is already prepared for IAS.
@@ -664,7 +665,7 @@ TBD
   
 ## Hybrid Authentication { #hybrid-auth }
 
-TBD
+will come soon
 
 ## Custom Authentication { #custom-auth }
 
