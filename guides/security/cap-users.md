@@ -636,7 +636,7 @@ You can log on to the bookshop test application with the test user and check tha
 
 
 
-### Tracing
+### Tracing { .java }
 
 You can verify a valid configfuration of the AMS plugin by the following log output:
 
@@ -666,6 +666,48 @@ You can add general user information by applying [user tracing](#user-tracing).
 ::: tip
 It might be useful to investiagte the injected filter conditions by activating the query-trace (logger `com.sap.cds.persistence.sql`).
 :::
+
+### Tracing { .node }
+
+Detailed log output for the AMS plugin is enabled by the `DEBUG` environment variable:
+
+```json
+DEBUG=ams cds watch
+```
+
+You can verify a valid configfuration of the AMS plugin by the following log output:
+
+```sh
+[ams] - AMS Plugin loaded.
+[ams] - Added AMS middleware after 'auth' middleware.
+```
+
+and find more information about the policy evaluation at request time:
+
+```sh
+[ams] - Determined potential actions for resource '$SCOPES': stock-manager {
+        potentialActions: Set(1) { 'stock-manager' },
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - AMS user roles added to user.is: [ 'stock-manager' ]
+
+[ams] - Privilege check for 'stock-manager' on '$SCOPES' was conditional. {
+        result: 'conditional',
+        dcn: "$app.genre IN ['Fantasy', 'Mystery']",
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - Resulting privileges for  READ  on  AdminService.Books : [
+        {
+          grant: 'READ',
+          to: [ 'stock-manager' ],
+          where: "genre.name  IN  ('Fantasy', 'Mystery')"
+        }
+      ]
+```
+
+You can add general user information by applying [user tracing](#user-tracing).
 
 
 ## Role Assignment with XSUAA { #xsuaa-roles }
