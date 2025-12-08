@@ -90,30 +90,49 @@ MockUsersSecurityConfig  : *  Security configuration based on mock users found i
 </div>
 
 <div class="impl node">
-TODO
+TODO - is there a corresponding log output in Node?
 </div>
-
-Also notice the log output prints all recognized mock users such as
 
 <div class="impl java">
 
+Also notice the log output prints all recognized mock users such as
 ```sh
 MockUsersSecurityConfig  :  Added mock user {"name":"admin","password":"admin", ...}
 ```
 
 </div>
 
-<div class="impl node">
-TODO
-</div>
+<div class="impl java">
 
 The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
+
+::: tip
+In non-production profile, you may set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
+:::
 
 Sending OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
 Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with curl `http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
+
+</div>
+
+<div class="impl node">
+
+The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
+
+::: tip
+In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
+:::
+
+Sending OData request `curl http://localhost:8080/odata/admin/Books --verbose`
+results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
+This is true for all endpoints including the web application page at `/index.html`.
+
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with curl `http://alice:basic@localhost:8080/odata/admin/Books` returns successfully (HTTP response `200`).
+
+</div>
 
 
 ::: tip
