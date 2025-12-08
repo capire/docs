@@ -111,7 +111,7 @@ The CAP runtime will automatically authenticate all CAP endpoints - **you are no
 
 Sending OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
-This is true for all endpoints including the web application page at `/index.htlm`.
+This is true for all endpoints including the web application page at `/index.html`.
 
 Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with curl `http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
 
