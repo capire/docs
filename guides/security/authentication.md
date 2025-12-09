@@ -810,6 +810,7 @@ For convenience, when adding XSUAA facet, these artifacts are initially derived 
 ```
 [Learn more about XSUAA attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
 [Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
+[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.leanr-more}
 
 After successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
@@ -876,61 +877,71 @@ curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogServi
 as anonymous user without a token results in a `401 Unauthorized` as expected.
 
 Now we want to fetch a token to prepare a fully authenticated test request. 
-As first step we add a new client for the IAS application by creating an appropriate service key:
+As first step we add a new client for the XSUAA application by creating an appropriate service key:
 
 ```sh
-cf create-service-key bookshop-ias bookshop-ias-key -c '{"credential-type": "X509_GENERATED"}'
+cf create-service-key bookshop-auth bookshop-auth-key
 ```
 
-The overall setup with local CLI client and the Cloud services is sketched in the diagram:
-
-![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
-
-As IAS requires mTLS-protected channels, **client certificates are mandatory** for all of the following requests:
-- Token request to IAS in order to fetch a valid IAS token (1)
-- Business request to the CAP application presenting the token (2)
-- Initial proof token request to IAS - not required for all business requests (3)
-
-The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
-
-::: details How to create and retrieve service key credentials
 
 ```sh
-cf service-key bookshop-ias bookshop-ias-key
+cf service-key bookshop-auth bookshop-auth-key
 ```
 
 ```sh
 {
   "credentials": {
-      [...]
-    "certificate": "-----BEGIN CERTIFICATE----- [...] -----END CERTIFICATE-----",
-    "clientid": "2a92c297-8603-4157-9aa9-ca758582abcd",
-    "credential-type": "X509_GENERATED",
-    "key": "-----BEGIN RSA PRIVATE KEY----- [...] -----END RSA PRIVATE KEY-----",
-    "url": "https://<tenant-id>.accounts400.ondemand.com",
+    [...]
+    "clientid": "sb-bookshop-...",
+    "clientsecret": "...",
+    "url": "https://cap-zone.authentication.sap.hana.ondemand.com",
     [...]
   }
 }
 ```
 
-:::
-
 ::: warning
 ❗ **Never share service keys or tokens** ❗
 :::
 
-From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request. 
+As second step, assign the generated role collection with name `admin (bookshop cdsruntime-cap-zone-bookshop-xsuaa)` to your **test user** by following instructions from [Assign Roles in SAP BTP Cockpit](./cap-users##xsuaa-assign).
 
-The request returns with a valid IAS token which is suitable for authentication in the CAP application:
-```sh
-{"access_token":"[...]","token_type":"Bearer","expires_in":3600}
+With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
+
+::: code-group
+
+```sh [Token for technical user]
+curl -X POST \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=<clientid>' \
+  -d 'client_secret=<clientsecret>' \
+  <url>/oauth/token
 ```
 
-The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
+```sh [Token for named user]
+curl -X POST \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'grant_type=password' \
+  -d 'client_id=<clientid>' \
+  -d 'client_secret=<clientsecret>' \
+  -d 'username=<username>' \
+  -d 'password=<userpassword>' \
+  <url>/oauth/token
+```
+
+:::
+
+The request returns with a valid XSUAA token which is suitable to pass authentication in the CAP application:
+```sh
+{"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
+```
+
+The final test request needs to provide the token being send to the application's route:
 
 ```sh
-curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.cert.<landscape-domain>/odata/v4/CatalogService/Books
+curl -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books
 ```
 
 Don't forget to delete the service key after your tests:
@@ -938,12 +949,10 @@ Don't forget to delete the service key after your tests:
 cf delete-service-key bookshop-auth bookshop-auth-key
 ```
 
-[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.leanr-more}
-
 
 ### Testing XSUAA on UI Level
 
-In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
+In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the XSUAA token are done under the hood.
 
 ```sh
 cds add approuter
@@ -955,35 +964,39 @@ The resulting setup is sketched in the diagram:
 
 ![UI-level Testing of XSUAA Endpoints](./assets/ias-ui-setup.svg){width="500px"}
 
-To be able to fetch the token, the AppRouter needs a binding to the IAS instance as well.
+To be able to fetch the token, the AppRouter needs a binding to the XSUAA instance as well.
 
 ::: details AppRouter component with XSUAA binding
 ```yaml
+modules:
   - name: bookshop
-    [...]
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      [...]
     requires:
       - name: srv-api
         group: destinations
         properties:
-          name: srv-api
-          url: ~{srv-cert-url}
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
           forwardAuthToken: true
-          forwardAuthCertificates: true
-      - name: bookshop-ias
-        parameters:
-          config:
-            credential-type: X509_GENERATED
-            app-identifier: approuter
+      - name: bookshop-auth
+    provides:
+      - name: app-api
+        properties:
+          app-uri: ${default-uri}
+          [...]
 ```
 :::
 
-As the login flow is based on an HTTP redirect between the CAP application and IAS login page,
-IAS needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+As the login flow is based on an HTTP redirect between the CAP application and XSUAA login page,
+XSUAA needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
 The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
 ```yaml
-  - name: bookshop-ias
+  - name: bookshop-auth
     [...]
     parameters:
       [...]
@@ -991,11 +1004,22 @@ The same is true for the logout flow.
         [...]
         oauth2-configuration:
           redirect-uris:
-            - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
-          post-logout-redirect-uris:
-            - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html            
+            - https://*~{app-api/app-uri}/**
+    requires:
+      - name: app-api      
 ```
 :::
+
+To check the deplyoment, run `cf apps` in the targeted space:
+
+```sh
+name           requested state   processes   routes
+bookshop       started           web:1/1     <org>-<space>-bookshop.cfapps.sap.hana.ondemand.com
+bookshop-srv   started           web:1/1     <org>-<space>-bookshop-xsuaa-bookshop-srv.cfapps.sap.hana.ondemand.com
+```
+
+and open the route exposed by the `bookshop` UI application in a new browser session.
+
 
 
 ## Hybrid Authentication { #hybrid-auth }
