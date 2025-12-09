@@ -8,19 +8,19 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 ---
 
 <script setup>
-import expr from '/assets/cxl/expr.drawio.svg?raw'
-import ref from '/assets/cxl/ref.drawio.svg?raw'
-import pathSegment from '/assets/cxl/path-segment.drawio.svg?raw'
-import infixFilter from '/assets/cxl/infix-filter.drawio.svg?raw'
-import unaryOperator from '/assets/cxl/unary-operator.drawio.svg?raw'
-import binaryOperator from '/assets/cxl/binary-operator.drawio.svg?raw'
-import literalValue from '/assets/cxl/literal-value.drawio.svg?raw'
-import bindingParameter from '/assets/cxl/binding-parameter.drawio.svg?raw'
-import functionDef from '/assets/cxl/function-def.drawio.svg?raw'
-import functionArgs from '/assets/cxl/function-args.drawio.svg?raw'
-import orderingTerm from '/assets/cxl/ordering-term.drawio.svg?raw'
-import overClause from '/assets/cxl/over-clause.drawio.svg?raw'
-import intro from '/assets/cxl/intro.drawio.svg?raw'
+import expr from '../assets/cxl/expr.drawio.svg?raw'
+import ref from '../assets/cxl/ref.drawio.svg?raw'
+import pathSegment from '../assets/cxl/path-segment.drawio.svg?raw'
+import infixFilter from '../assets/cxl/infix-filter.drawio.svg?raw'
+import unaryOperator from '../assets/cxl/unary-operator.drawio.svg?raw'
+import binaryOperator from '../assets/cxl/binary-operator.drawio.svg?raw'
+import literalValue from '../assets/cxl/literal-value.drawio.svg?raw'
+import bindingParameter from '../assets/cxl/binding-parameter.drawio.svg?raw'
+import functionDef from '../assets/cxl/function-def.drawio.svg?raw'
+import functionArgs from '../assets/cxl/function-args.drawio.svg?raw'
+import orderingTerm from '../assets/cxl/ordering-term.drawio.svg?raw'
+import overClause from '../assets/cxl/over-clause.drawio.svg?raw'
+import intro from '../assets/cxl/intro.drawio.svg?raw'
 </script>
 
 # Core Expression Language (CXL) { #expressions }
