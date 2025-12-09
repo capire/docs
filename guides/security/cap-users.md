@@ -670,8 +670,9 @@ It might be useful to investiagte the injected filter conditions by activating t
 
 ## Role Assignment with XSUAA { #xsuaa-roles }
 
-Information about roles and attributes can be made available to the UAA platform service. 
+Information about roles and attributes can be made available to the XSUAA platform service. 
 This information enables the respective JWT tokens to be constructed and sent with the requests for authenticated users. 
+
 In particular, the following happens automatically behind-the-scenes upon build:
 
 
@@ -765,9 +766,29 @@ Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_
 
 [Learn more about **building and deploying MTA applications**.](/guides/deployment/){ .learn-more}
 
-### Assign Roles in SAP BTP Cockpit
+### Assign Roles in SAP BTP Cockpit { #xsuaa-assign }
 
-This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](/node.js/authentication#auth-in-cockpit) for more details. 
+This is a manual step a user administrator would do in SAP BTP Cockpit to setup and assign roles for the application:
+
+By creating a service instance of the `xsuaa` service, all the roles from the _xs-security.json_ file are already added to your subaccount. 
+Next, you create a role collection that assigns these roles to your users.
+
+1. Open the SAP BTP Cockpit.
+
+    > For your trial account, this is: [https://cockpit.hanatrial.ondemand.com](https://cockpit.hanatrial.ondemand.com)
+
+2. Navigate to your subaccount and then choose *Security* > *Role Collections*.
+3. Choose *Create New Role Collection*:
+
+   ![Create role collections in SAP BTP cockpit](./assets/create-role-collection.png)
+
+4. Enter a *Name* for the role collection, for example `BookshopAdmin`, and choose *Create*.
+5. Choose your new role collection to open it and switch to *Edit* mode.
+6. Add the `admin` role for your bookshop application (application id `bookshop!a<XXXX>`) to the *Roles* list.
+7. Add the email addresses for your users to the *Users* list.
+8. Choose *Save*
+
+
 If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. 
 For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
 In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.

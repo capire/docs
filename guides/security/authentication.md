@@ -666,8 +666,8 @@ The same is true for the logout flow.
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
  
-::: warn
-In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation. 
+::: tip Notice
+In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
 ::: 
 
 XSUAA authentication is best configured and tested in the Cloud, so we're going to enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
@@ -675,12 +675,11 @@ XSUAA authentication is best configured and tested in the Cloud, so we're going 
 
 ### Get Ready with XSUAA { #xsuaa-ready }
 
-Before working with IAS on CF, you need to
-
-- Ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
-in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
+Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
+In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
 You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
+
 If there is no deplyoment descriptor yet, in the project root folder, execute
 
 ```sh
@@ -691,31 +690,43 @@ to make your application ready for deployment to CF.
 
 <div class="impl java">
 
-::: tip
+::: tip Notice
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
 
 </div>
 
-### Adding XSUAA
+### Adding XSUAA { #adding-xsuaa }
 
 Now the application is ready to for adding XSUAA-support by executing
+
+<div class="impl java">
 
 ```sh
 cds add xsuaa
 ```
 
+</div>
+
+<div class="impl node">
+
+```sh
+cds add xsuaa --for production
+```
+
+</div>
+
+
 which automatically adds a service instance named `bookshop-auth` of type `xsuaa` (plan: `application`) and binds the CAP application to it.
 
 <div class="impl java">
 
-::: tip
-Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentiaction automatically.
+::: tip Notice
+Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentication automatically.
 :::
 
 </div>
 
-::: details Generated deployment descriptor for XSUAA instance and binding
 ```yaml [mta.yaml]
 modules:
   - name: bookshop-srv
@@ -739,26 +750,43 @@ resources:
             role-template-references:
               - '$XSAPPNAME.admin'
 ```
-:::
 
 **CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance. 
+
+<div class="impl java">
+
+::: tip
+In case your application has multiple XSUAA bindings you need to [pin the binding](../java/security#bindings) which is relevant for CAP Java.
+:::
+
+</div>
 
 There are some mandatory configuration parameters:
 
 | Property          |  Description         |
 |-------------------|:-------------------:|
-|`service-plan`     | `application` broker` |
-|`path`             | Relative file system path to the application security descriptor. |
-|`xsappname`        | A unique name within the subaccount. All XSUAA artifacts are scoped with `$XSAPPNAME`. |
-|`tenant-mode`      | `dedicated` is suitable for a single-tenant application. Mode `shared` is madatory for a [multitenant application](../guides/multitenancy/). |
+|`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
+|`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
+|`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
+|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is madatory for a [multitenant application](../guides/multitenancy/). |
 
-::: tip
-Set `service-plan` to type `broker` to ensure your XSUAA service API can be exposed via broker in future.
+::: warning
+Upgrading the `service-plan` from type `application` to `broker` us not supported.
+Hence, start with `broker` if you want to provides technial APIs potentially.
 :::
 
-The security descriptor perpares all [XSUAA authorization entities](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities) such as scopes, attributes and role-templates derived from the CDS model.
+[Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-web-ide-full-stack/application-security-descriptor-configuration-syntax){.learn-more}
 
-::: details Generated XSUAA role templates
+#### Security Descriptor { #xsuaa-security-descriptor }
+
+The security descriptor in the `xs-security.json` file contains the [XSUAA authorization artifacts](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities).
+In general, XSUAA artifacts are managed in a hierarchy with role collections as root elements that can be assigned to users.
+For convenience, when adding XSUAA facet, these artifacts are initially derived from the CDS model:
+
+- **XSUAA Scopes**: For every [CAP role](./cap-users#roles) in the CDS model, a dedicated scope is generated with the exact name of the CDS role.
+- **XSUAA attributes**  For every [CAP attribute](./authorization#user-attrs) in the CDS model, one attribute is generated.
+- **XSUAA role templates** For every scope, a dedicated role template with the exact name is generated. The role templates are building blocks for concrete role collections that finally can be assigned to users. 
+
 ```json
 {
   "scopes": [
@@ -780,17 +808,16 @@ The security descriptor perpares all [XSUAA authorization entities](https://help
   ]
 }
 ```
-:::
-
+[Learn more about XSUAA attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
 [Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
 
+After successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
-For every [CAP role](./cap-users#roles) in the CDS model, one scope and one role template are generated with the exact name of the CDS role.
-In addition, [preconfigured role collections](https://help.sap.com/docs/btp/sap-business-technology-platform/configuration-options-for-sap-authorization-and-trust-management-service) can be deployed.
-In the example, a single role collection `admin (bookshop ${org}-${space})` that contains the role template `admin` is defined in the resource of the XSUAA intance.
+In the [deplyoment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
+In general, role collections are [created manually](./cap-users#xsuaa-assign) at runtime by user administrators.
+But in case the underlying role template has no reference to an attribute, a corresponing role collection is prepared already.
+In the example, role collection `admin (bookshop ${org}-${space})` containing the role template `admin` is defined and can be directly assigned to users.
 
-
-After successful authentication, the prefix `$XSAPPNAME`is removed from the scope name resulting in the CAP role name.
 
 ::: tip Re-generate on model changes
 You can have such a file re-generated via
@@ -806,7 +833,11 @@ See [Application Security Descriptor Configuration Syntax](https://help.sap.com/
 Roles modeled in CDS may contain characters considered invalid by the XSUAA service.
 :::
 
+::: warning
 If you modify the _xs-security.json_ manually, make sure that the scope names in the file exactly match the role names in the CDS model, as these scope names will be checked at runtime.
+:::
+
+#### Start and Check the Deployment
 
 Now let's pack and deploy the application with
 ```sh
@@ -816,11 +847,11 @@ cds up
 and wait until the application is up and running. 
 You can test the status with `cf apps` or in BTP Cockpit, alternatively.
 
-The following trace in the application log confirms the activated IAS authentication:
+The following trace in the application log confirms the activated XSUAA authentication:
 <div class="java">
 
 ```sh
-... : Loaded feature 'XsuaaUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
+... : Loaded feature 'IdentityUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
 ```
 
 </div>
@@ -832,21 +863,6 @@ TODO
 At startup, the CAP runtime checks the available bindings and activates XSUAA authentication accordingly. 
 **Therefore, the local setup (no XSUAA binding in the environment) is still runnable**.
 
-
-### Administrative Console for XSUAA { #ias-admin }
-
-In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
-you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
-
-In the Console you can manage the IAS tenant and IAS applications, for example: 
-- create (test) users in `Users & Authorizations` -> `User Management`
-- deactivate users
-- configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
-- inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
-
-::: tip
-In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
-:::
 
 
 ### Testing XSUAA on CLI Level
@@ -921,6 +937,8 @@ Don't forget to delete the service key after your tests:
 ```sh
 cf delete-service-key bookshop-auth bookshop-auth-key
 ```
+
+[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.leanr-more}
 
 
 ### Testing XSUAA on UI Level
