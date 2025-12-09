@@ -23,10 +23,7 @@
       <em>extension</em>                    - extension project
       <em>mta</em>                          - Cloud Foundry deployment using mta.yaml
       <em>cf-manifest</em>                  - Cloud Foundry deployment using manifest files
-      <em>helm</em>                         - Kyma deployment using Helm charts
-      <em>helm-unified-runtime</em>         - Kyma deployment using Unified Runtime Helm charts
-      <em>containerize</em>                 - containerization using ctz CLI
-      <em>kyma</em>                         - helm + containerize
+      <em>kyma</em>                         - Kyma deployment using Helm charts
       <em>tiny-sample</em>                  - minimal sample files
       <em>sample</em>                       - sample files including Fiori UI
       <em>handler</em>                      - handler stubs for service entities, actions and functions
