@@ -62,10 +62,9 @@ cds repl --run .
 ```
 
 :::info 💡 All of the example expressions follow the same pattern:
-1. A `CXL` snippet is shown in the context of a query.
-2. The corresponding **CAP Style `CXL`** is shown.
-3. The equivalent **SQL Style `CXL`** is shown.
-4. The resulting **SQL output** is shown.
+1. A **CAP Style `CXL`** is shown in the context of a query.
+2. The equivalent **SQL Style `CXL`** is shown.
+3. The resulting **SQL output** is shown.
 :::
 
 ### diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
@@ -117,7 +116,7 @@ referred to as a **path expression**.
 ## path segment { #path-segment }
 
 [Path expressions](#ref) can't be explained without the corresponding path segments.
-In the context of a path expression path-segements can be used to navigate along
+In the context of a path expression path segments can be used to navigate along
 an association, or to access a structured element.
 
 <div class="diagram">
@@ -181,34 +180,39 @@ allows to select all authors that have written at least one book in the `Fantasy
 :::code-group
 ```js [CAP Style]
 > await cds.ql`
-  SELECT from Authors
+  SELECT from ${Authors} as FantasyAuthors { name }
   where exists books.genre[name = 'Fantasy']` // [!code focus]
 
-[
-  {
-    ID: 170,
-    createdAt: '2025-12-08T12:51:45.294Z',
-    createdBy: 'anonymous',
-    modifiedAt: '2025-12-08T12:51:45.294Z',
-    modifiedBy: 'anonymous',
-    name: 'Richard Carpenter',
-    dateOfBirth: '1929-08-14',
-    dateOfDeath: '2012-02-26',
-    placeOfBirth: 'King’s Lynn, Norfolk',
-    placeOfDeath: 'Hertfordshire, England'
-  }
-]
+[ { name: 'Richard Carpenter' } ]
 ```
 ```js [SQL Style]
 > await cds.ql`
-  SELECT from ${Authors} as A
+  SELECT
+    name
+  from ${Authors} as FantasyAuthors
   where exists (
-    SELECT from ${Books} as B
-    where B.author_ID = A.ID and exists (
-      SELECT from ${Genres} as G
-      where B.genre_ID = G.ID and G.name = 'Fantasy'
+    SELECT from ${Books} as books
+    where books.author_ID = FantasyAuthors.ID and exists (
+      SELECT from ${Genres} as genre
+      where books.genre_ID = genre.ID and genre.name = 'Fantasy'
     )
   )`
+```
+
+```sql [SQL output]
+SELECT FantasyAuthors.name
+FROM sap_capire_bookshop_Authors AS FantasyAuthors
+WHERE EXISTS (
+  SELECT 1
+  FROM sap_capire_bookshop_Books AS "$b"
+  WHERE "$b".author_ID = FantasyAuthors.ID
+    AND EXISTS (
+      SELECT 1
+      FROM sap_capire_bookshop_Genres AS "$g"
+      WHERE "$g".ID = "$b".genre_ID
+        AND "$g".name = 'Fantasy'
+    )
+);
 ```
 :::
 
@@ -334,7 +338,9 @@ that operates on the two operands `price` and `quantity`.
 
 ## literal value { #literal-value }
 
-<div class="diagram" v-html="literalValue"></div>
+<div class="diagram" >
+<div v-html="literalValue"></div>
+</div>
 
 TODO
 
@@ -352,9 +358,12 @@ TODO: some text
 
 TODO: some text
 
-## function args <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #function-args }
+## function args { #function-args }
 
-<div class="diagram" v-html="functionArgs"></div>
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+<div v-html="functionArgs"></div>
+</div>
 
 ### aggregate function with [ordering term](#ordering-term)
 
