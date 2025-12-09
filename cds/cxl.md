@@ -129,8 +129,8 @@ an association, or to access a structured element.
 A path expression can be used to navigate to any element of the associations target:
 
 :::code-group
-```js [CAP Style]
-> await cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
+```js [CQL]
+> await cds.ql`SELECT from Books { author.name, genre.name }` // [!code focus]
 [
   { author_name: 'Emily Brontë', genre_name: 'Drama' },
   { author_name: 'Charlotte Brontë', genre_name: 'Drama' },
@@ -140,17 +140,7 @@ A path expression can be used to navigate to any element of the associations tar
 ]
 ```
 
-```js [SQL Style]
-> await cds.ql`
-  SELECT
-    author.name as author_name,
-    genre.name as genre_name
-  from ${Books} as B
-    left join ${Authors} as author on B.author_ID = author.ID
-    left join ${Genres} as genre on B.genre_ID = genre.ID`
-```
-
-```sql [SQL output]
+```sql [SQL]
 SELECT
   author.name as author_name,
   genre.name as genre_name
@@ -165,7 +155,8 @@ In this example, we select the names of the authors and genres of books.
 Both `author` and `genre` are associations on the `Books` entity.
 
 ::: info 💡 Associations are **forward declared joins**
-Those joins are declared **before** they are used (e.g. in an entity definition)
+An association can be used just as a table alias.
+They are declared **before** they are used (e.g. in an entity definition)
 Once an association is traversed in a query, the respective join is added automatically.
 :::
 
@@ -178,28 +169,15 @@ In the example a path expression combined with an [infix-filter](#infix-filter),
 allows to select all authors that have written at least one book in the `Fantasy` genre.
 
 :::code-group
-```js [CAP Style]
+```js [CQL]
 > await cds.ql`
   SELECT from ${Authors} as FantasyAuthors { name }
   where exists books.genre[name = 'Fantasy']` // [!code focus]
 
 [ { name: 'Richard Carpenter' } ]
 ```
-```js [SQL Style]
-> await cds.ql`
-  SELECT
-    name
-  from ${Authors} as FantasyAuthors
-  where exists (
-    SELECT from ${Books} as books
-    where books.author_ID = FantasyAuthors.ID and exists (
-      SELECT from ${Genres} as genre
-      where books.genre_ID = genre.ID and genre.name = 'Fantasy'
-    )
-  )`
-```
 
-```sql [SQL output]
+```sql [SQL]
 SELECT FantasyAuthors.name
 FROM sap_capire_bookshop_Authors AS FantasyAuthors
 WHERE EXISTS (
@@ -214,6 +192,10 @@ WHERE EXISTS (
     )
 );
 ```
+:::
+
+::: info 💡 TODO
+???
 :::
 
 ### conclusion
@@ -246,7 +228,7 @@ This allows to filter the target of an association based on certain criteria.
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
 
-:::code-group
+:::code-group {4}  <!-- hier Zeilennummer(n) anpassen -->
 ```js [CAP Style]
 > await cds.ql`
   SELECT from ${Books} { title }
@@ -415,7 +397,7 @@ TODO: some text
 
 <div class="diagram" v-html="overClause"></div>
 
-## type-name <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-name }
+## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
 TODO
 
@@ -431,6 +413,7 @@ TODO
 
 .diagram {
   padding-top: 1em;
+  padding-bottom: 1em;
   width: 100%;
 }
 
