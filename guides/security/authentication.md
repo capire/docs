@@ -471,7 +471,7 @@ On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config
 :::
 
 
-### Administrative Console for IAS { #ias-admin }
+#### Administrative Console for IAS { #ias-admin }
 
 In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
 you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
@@ -487,7 +487,7 @@ In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows di
 :::
 
 
-### Testing IAS on CLI Level
+### CLI Level Testing
 
 Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
 Sending the test request 
@@ -600,7 +600,7 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 ```
 
 
-### Testing IAS on UI Level
+### UI Level Testing
 
 In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
 
@@ -666,7 +666,7 @@ The same is true for the logout flow.
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
  
-::: tip Notice
+::: tip Info
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
 ::: 
 
@@ -690,7 +690,12 @@ to make your application ready for deployment to CF.
 
 <div class="impl java">
 
-::: tip Notice
+In addition, activate H2 to serve as in-memory DB (**not** recommended for production!):
+```sh
+cds add h2 --for production
+```
+
+::: tip Info
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
 
@@ -866,7 +871,7 @@ At startup, the CAP runtime checks the available bindings and activates XSUAA au
 
 
 
-### Testing XSUAA on CLI Level
+### CLI Level Testing
 
 Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
 Sending the test request 
@@ -950,7 +955,7 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 ```
 
 
-### Testing XSUAA on UI Level
+### UI Level Testing
 
 In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the XSUAA token are done under the hood.
 
