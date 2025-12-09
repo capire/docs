@@ -106,188 +106,44 @@ referred to as a **path expression**.
 <div class="diagram">
   <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
   <div v-html="ref"></div>
+</div>
+
+
+## path segment { #path-segment }
+
+A path-segment in the context of a path-expression is used to navigate along
+an association, or to access a structured element.
+
+<div class="diagram">
   <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
   <div v-html="pathSegment"></div>
 </div>
 
-### scalar element with and without table alias
+### path expression in the select list
 
-In it's most simple form, a `ref` just contains the name of the element being referenced:
-
-:::code-group
-```cds
-using {sap.capire.bookshop.Books} from './db/schema';
-
-entity Ref as select from Books as B {
-  title,    // [!code focus]
-  B.price   // [!code focus]
-}
-```
-```js [repl]
-> q = cds.ql`SELECT from Books as B { title, B.price }`// [!code focus]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'Books' ], as: 'B' },
-    columns: [ { ref: [ 'title' ] }, { ref: [ 'B', 'price' ] } ]
-  }
-}
-> await q
-[
-  { title: 'Wuthering Heights', price: 11.11 },
-  { title: 'Jane Eyre', price: 12.34 },
-  { title: 'The Raven', price: 13.13 },
-  { title: 'Eleonora', price: 14 },
-  { title: 'Catweazle', price: 150 }
-]
-```
-:::
-
-In this case, the CAP Style and SQL Style `CXL` representations are almost identical:
+A path-expression can be used to navigate to any element of the associations target:
 
 :::code-group
-```json5 [CAP Style expression]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-    columns: [ { ref: [ 'title' ] }, { ref: [ 'B', 'price' ] } ]
-  }
-}
-```
-
-```json5 [SQL Style expression]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-    columns: [ { ref: [ 'B', 'title' ] }, { ref: [ 'B', 'price' ] } ]
-  }
-}
-```
-
-```sql [SQL output]
-SELECT B.title, B.price FROM sap_capire_bookshop_Books as B
-```
-:::
-
-The CAP runtime only prefixes the `ref` of the `title` element with the table alias `B` when generating the SQL output.
-
-### navigation to foreign key with multiple path-segments
-
-A `ref` can also contain multiple [path-segments](#path-segment), e.g. to navigate associations:
-
-:::code-group
-```js
-> await cds.ql`SELECT from Books as B { author.ID, genre }` // [!code focus]
-[
-  { author_ID: 101, genre_ID: '11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
-  { author_ID: 107, genre_ID: '11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
-  { author_ID: 150, genre_ID: '16aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
-  { author_ID: 150, genre_ID: '15aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' },
-  { author_ID: 170, genre_ID: '13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' }
-]
-```
-:::
-
-In this case, we navigate along the association `author` and select the `ID`.
-As `ID` is the implicit foreign key field of the `author` association, the resulting SQL Style `CXL` representation
-contains the foreign key field `author_ID`.
-For `genre` the path ends on the association, in such a case the foreign key field `genre_ID` is selected.
-
-Both formats only deviate slightly:
-
-:::code-group
-```json5 [CAP Style expression]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-    columns: [ { ref: [ 'author', 'ID' ] }, { ref: [ 'genre' ] } ]
-  }
-}
-```
-
-```json5 [SQL Style expression]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-    columns: [ { ref: [ 'B', 'author_ID' ] }, { ref: [ 'B', 'genre_ID' ] } ]
-  }
-}
-```
-
-```sql [SQL output]
-SELECT B.author_ID, B.genre_ID FROM sap_capire_bookshop_Books as B
-```
-:::
-
-
-
-### navigation to non foreign key with multiple path-segments
-
-A `ref` can also end on a non-foreign key element after navigating associations
-
-:::code-group
-```js
-> q = cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'Books' ], as: 'B' },
-    columns: [ { ref: [ 'author', 'name' ] }, { ref: [ 'genre', 'name' ] } ]
-  }
-}
-> await q
+```js [CAP Style]
+> await cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
 [
   { author_name: 'Emily Brontë', genre_name: 'Drama' },
   { author_name: 'Charlotte Brontë', genre_name: 'Drama' },
   { author_name: 'Edgar Allen Poe', genre_name: 'Mystery' },
-  { author_name: 'Edgar Allen Poe', genre_name: 'Mystery' },
+  { author_name: 'Edgar Allen Poe', genre_name: 'Romance' },
   { author_name: 'Richard Carpenter', genre_name: 'Fantasy' }
 ]
 ```
-:::
 
-
-In this case, a little more happens under the hood. As the `ref` ends on non-foreign key elements (`name` of `author` and `genre`),
-the CAP runtime automatically adds the necessary joins to the SQL Style `CXL` representation and the resulting SQL output.
-
-:::code-group
-```json5 [CAP Style expression]
-cds.ql {
-  SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-    columns: [ { ref: [ 'author', 'name' ] }, { ref: [ 'genre', 'name' ] } ]
-  }
-}
+```js [SQL Style]
+> await cds.ql`
+  SELECT
+    author.name as author_name,
+    genre.name as genre_name
+  from ${Books} as B
+    left join ${Authors} as author on B.author_ID = author.ID
+    left join ${Genres} as genre on B.genre_ID = genre.ID`
 ```
-
-```json5 [SQL Style expression]
-cds.ql {
-  SELECT: {
-    from: {
-      join: 'left',
-      args: [
-        {
-          join: 'left',
-          args: [
-            { ref: [ 'sap.capire.bookshop.Books' ], as: 'B' },
-            { ref: [ 'sap.capire.bookshop.Authors' ], as: 'author' }
-          ],
-          on: [
-            { ref: [ 'author', 'ID' ] },
-            '=',
-            { ref: [ 'B', 'author_ID' ] }
-          ]
-        },
-        { ref: [ 'sap.capire.bookshop.Genres' ], as: 'genre' }
-      ],
-      on: [ { ref: [ 'genre', 'ID' ] }, '=', { ref: [ 'B', 'genre_ID' ] } ]
-    },
-    columns: [
-      { ref: [ 'author', 'name' ], as: 'author_name' },
-      { ref: [ 'genre', 'name' ], as: 'genre_name' }
-    ]
-  }
-}
-```
-
 
 ```sql [SQL output]
 SELECT
@@ -300,9 +156,55 @@ FROM
 ```
 :::
 
-### TODO: maybe one or two more examples with structure navigation
+In this example, we select the names of the authors and genres of books.
+Both `author` and `genre` are associations on the `Books` entity.
 
-…
+::: info 💡 Associations are **forward declared joins**
+Those joins are declared **before** they are used (e.g. in an entity definition)
+Once an association is traversed in a query, the respective join is added automatically.
+:::
+
+### path-expression after `exists` predicate
+
+path-expressions can also be used after the `exists` predicate to check for the existence.
+This is especially useful for to-many relations.
+
+In the example a path-expression combined with an [infix-filter](#infix-filter),
+allows to select all authors that have written at least one book in the `Fantasy` genre.
+
+:::code-group
+```js [CAP Style]
+> await cds.ql`
+  SELECT from Authors
+  where exists books.genre[name = 'Fantasy']` // [!code focus]
+
+[
+  {
+    ID: 170,
+    createdAt: '2025-12-08T12:51:45.294Z',
+    createdBy: 'anonymous',
+    modifiedAt: '2025-12-08T12:51:45.294Z',
+    modifiedBy: 'anonymous',
+    name: 'Richard Carpenter',
+    dateOfBirth: '1929-08-14',
+    dateOfDeath: '2012-02-26',
+    placeOfBirth: 'King’s Lynn, Norfolk',
+    placeOfDeath: 'Hertfordshire, England'
+  }
+]
+```
+```js [SQL Style]
+> await cds.ql`
+  SELECT from ${Authors} as A
+  where exists (
+    SELECT from ${Books} as B
+    where B.author_ID = A.ID and exists (
+      SELECT from ${Genres} as G
+      where B.genre_ID = G.ID and G.name = 'Fantasy'
+    )
+  )`
+```
+:::
 
 ### conclusion
 
@@ -316,64 +218,87 @@ themselves can contain expressions by applying [infix-filters](#infix-filter).
 More samples are shown in the upcoming sections.
 
 
-## path segment <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #path-segment }
+## infix filter { #infix-filter }
 
-<div class="diagram" v-html="pathSegment"></div>
+An infix in linguistics refer to a letter or group of letters that are added in the middle of a word to make a new word.
 
-TODO: some text
+If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
+that is applied to a [path-segment](#path-segment) of a [path-expression](#ref).
+This allows to filter the target of an association based on certain criteria.
 
-### Structured element
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+<div v-html="infixFilter"></div>
+</div>
 
-```cds
-extend Author with {
-  address: {
-    street: String;
-    city: String;
-  }
-}
-```
+### enhancing path-expression with filter conditions
 
+In this case we want to select all books where the author's name starts with `Emily`
+and the author is younger than 40 years.
 
 :::code-group
-```cds
-entity Structured select from Authors {
-  address.street,   // [!code focus]
-  address.city     // [!code focus]
-}
+```js [CAP Style]
+> await cds.ql`
+  SELECT from ${Books} { title }
+  where startswith(
+    author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name,
+    'Emily'
+  )`
+
+[ { title: 'Wuthering Heights' } ]
 ```
-```js
-> q = cds.ql`SELECT from Books as B { author.name, genre.name }` // [!code focus]
+
+```js [SQL Style]
+> await cds.ql`
+  SELECT
+    title
+  from ${Books} as B
+    left join ${Authors} as author
+    on B.author_ID = author.ID and years_between(author.dateOfBirth, author.dateOfDeath) < 40
+  where startswith(
+    author.name,
+    'Emily'
+  )`
+```
+
+```sql [SQL output]
+SELECT
+  title
+FROM
+  sap_capire_bookshop_Books AS B
+  LEFT JOIN sap_capire_bookshop_Authors AS author
+    ON B.author_ID = author.ID
+    AND FLOOR(
+      (
+        (
+          (CAST(STRFTIME('%Y', author.dateOfDeath) AS INTEGER) - CAST(STRFTIME('%Y', author.dateOfBirth) AS INTEGER)) * 12
+        ) + (
+          CAST(STRFTIME('%m', author.dateOfDeath) AS INTEGER) - CAST(STRFTIME('%m', author.dateOfBirth) AS INTEGER)
+        ) + (
+          CASE
+            WHEN (CAST(STRFTIME('%Y%m', author.dateOfDeath) AS INTEGER) < CAST(STRFTIME('%Y%m', author.dateOfBirth) AS INTEGER)) THEN
+              (CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfDeath) AS INTEGER) > CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfBirth) AS INTEGER))
+            ELSE
+              (CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfDeath) AS INTEGER) < CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfBirth) AS INTEGER)) * -1
+          END
+        )
+      ) / 12
+    ) < ?
+WHERE
+  COALESCE(INSTR(author.name, ?) = 1, FALSE);
 ```
 :::
 
-### Path segment with parameterized navigation
+The path expression `author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name`
+navigates along the `author` association of the `Books` entity.
+
+The join for this path-expression is generated as usual and enhanced with the infix filter condition `years_between(dateOfBirth, dateOfDeath) < 40`.
 
 
+::: info 💡 Standard functions
+the `years_between` and `startswith` functions are in the [set of CAPs standard functions](../guides/databases.md#standard-database-functions) and are translated to the respective SQL to get the desired result.
+:::
 
-
-### Path segment with infix filter
-
-
-
-Note: Some examples of infix-filters:
-
-```cds
-entity InfixFilter select from Authors {
-  books[price > 20], as expensiveBooks            // [!code focus]
-  exists books[price > 20] as hasDramaBooks   // [!code focus]
-}
-```
-
-```js
-await cds.ql `select from Authors { books[exists genre[name = 'Mystery']] { title, genre.name } }`
-await cds.ql `select from Authors { books[exists genre[exists parent [name = 'Fiction']]] { title, genre.name } }
-```
-
-## infix filter <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #infix-filter }
-
-<div class="diagram" v-html="infixFilter"></div>
-
-TODO: some text
 
 ## unary operator { #unary-operator }
 
@@ -435,17 +360,13 @@ TODO
 TODO
 
 <style>
-.vp-doc :is(h2,h3):has(> .badge-inline) {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .5rem;
+
+.badge-inline {
+  margin-bottom: 1em
 }
 
-
-
 .diagram {
-  margin-top: 2em;
+  overflow: auto;
 }
 
 </style>
