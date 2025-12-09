@@ -24,21 +24,27 @@ import intro from '../assets/cxl/intro.drawio.svg?raw'
 </script>
 
 # Core Expression Language (CXL) { #expressions }
+The Core Expression Language (`CXL`) is a language to express calculations, conditions,
+and other expressions in the context of CDS models and queries.
+**`CXL` extends the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
 
-Expressions are represented using the Core Expression Language (CXL).
-It is based on SQL expressions, so many syntax elements from SQL are also available in `CXL`.
-
-CXL can be used in various places (TODO: Links):
+`CXL` can be used in various places (TODO: Links):
 - In queries as part of the select list or where clause
 - In calculated elements
 - In annotations, where supported
+
+::: info 💡 expressions in CAP are materialized in the context of queries
+No matter where `CXL` is used, it always manifests in queries.
+For example, [a calculated element](./cdl/#calculated-elements) defined in an entity will be resolved
+to the respective calculation in the generated query when the entity is queried.
+:::
 
 
 ## How to read this guide { #how-to }
 
 
 In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
-For a complete reference of the syntax, there are additionally clickable syntax diagrams for each language construct.
+For a complete reference of the syntax, there are clickable syntax diagrams for each language construct.
 
 ### samples
 
@@ -56,10 +62,10 @@ cds repl --run .
 ```
 
 :::info 💡 All of the example expressions follow the same pattern:
-1. A `CXL` snippet is shown as part of a query - either in the columns or in a query modifier.
+1. A `CXL` snippet is shown in the context of a query.
 2. The corresponding **CAP Style `CXL`** is shown.
 3. The equivalent **SQL Style `CXL`** is shown.
-4. The resulting **SQL output** is shown in SQL syntax.
+4. The resulting **SQL output** is shown.
 :::
 
 ### diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
@@ -100,7 +106,7 @@ TODO: some text and more examples
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
-It can be used to navigate along [path-segments](#path-segment). Such a navigation is often
+It can be used to navigate along [path segments](#path-segment). Such a navigation is often
 referred to as a **path expression**.
 
 <div class="diagram">
@@ -108,10 +114,10 @@ referred to as a **path expression**.
   <div v-html="ref"></div>
 </div>
 
-
 ## path segment { #path-segment }
 
-A path-segment in the context of a path-expression is used to navigate along
+[Path expressions](#ref) can't be explained without the corresponding path segments.
+In the context of a path expression path-segements can be used to navigate along
 an association, or to access a structured element.
 
 <div class="diagram">
@@ -121,7 +127,7 @@ an association, or to access a structured element.
 
 ### path expression in the select list
 
-A path-expression can be used to navigate to any element of the associations target:
+A path expression can be used to navigate to any element of the associations target:
 
 :::code-group
 ```js [CAP Style]
@@ -164,12 +170,12 @@ Those joins are declared **before** they are used (e.g. in an entity definition)
 Once an association is traversed in a query, the respective join is added automatically.
 :::
 
-### path-expression after `exists` predicate
+### path expression after `exists` predicate
 
 path-expressions can also be used after the `exists` predicate to check for the existence.
 This is especially useful for to-many relations.
 
-In the example a path-expression combined with an [infix-filter](#infix-filter),
+In the example a path expression combined with an [infix-filter](#infix-filter),
 allows to select all authors that have written at least one book in the `Fantasy` genre.
 
 :::code-group
@@ -209,11 +215,11 @@ allows to select all authors that have written at least one book in the `Fantasy
 ### conclusion
 
 A `ref` can be used to reference an element.
-It is possible to navigate along [path-segments](#path-segment) to reference elements within the model.
+It is possible to navigate along [path segments](#path-segment) to reference elements within the model.
 This is not limited to an entities own elements, but can also be used to navigate associations to elements of related entities.
 
 This is only the tip of the iceberg.
-A path expression can be much more complex. For example, the individual [path-segments](#path-segment)
+A path expression can be much more complex. For example, the individual [path segments](#path-segment)
 themselves can contain expressions by applying [infix-filters](#infix-filter).
 More samples are shown in the upcoming sections.
 
@@ -231,7 +237,7 @@ This allows to filter the target of an association based on certain criteria.
 <div v-html="infixFilter"></div>
 </div>
 
-### enhancing path-expression with filter conditions
+### enhancing path expression with filter conditions
 
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
@@ -292,7 +298,7 @@ WHERE
 The path expression `author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name`
 navigates along the `author` association of the `Books` entity.
 
-The join for this path-expression is generated as usual and enhanced with the infix filter condition `years_between(dateOfBirth, dateOfDeath) < 40`.
+The join for this path expression is generated as usual and enhanced with the infix filter condition `years_between(dateOfBirth, dateOfDeath) < 40`.
 
 
 ::: info 💡 Standard functions
@@ -300,17 +306,31 @@ the `years_between` and `startswith` functions are in the [set of CAPs standard 
 :::
 
 
-## unary operator { #unary-operator }
+### use an infix-filter to make an association more specific
 
-<div class="diagram" v-html="unaryOperator"></div>
 
-TODO: some text
+## operators
 
-## binary operator { #binary-operator }
+### unary operator { #unary-operator }
 
-<div class="diagram" v-html="binaryOperator"></div>
+<div class="diagram">
+<div v-html="unaryOperator"></div>
+</div>
 
-TODO: some text
+
+A unary operator is an operator that operates on only one operand.
+E.g. in the expression `-price`, the `-` operator is a unary operator
+that operates on the single operand `price`. It negates the value of `price`.
+
+### binary operator { #binary-operator }
+
+<div class="diagram">
+<div v-html="binaryOperator"></div>
+</div>
+A binary operator is an operator that operates on two operands.
+
+E.g. in the expression `price * quantity`, the `*` operator is a binary operator
+that operates on the two operands `price` and `quantity`.
 
 ## literal value { #literal-value }
 
@@ -336,10 +356,45 @@ TODO: some text
 
 <div class="diagram" v-html="functionArgs"></div>
 
-TODO: some text
+### aggregate function with [ordering term](#ordering-term)
 
-❓ REVISIT: I dont get the `ordering term` logic - it can only be applied to exactly one parameter.
-I would have expected that it can only be provided for the last parameter.
+::: code-group
+```js [CAP Style]
+> await cds.ql`
+  SELECT from Authors {
+    name,
+    string_agg(books.title, ', ' ORDER BY books.title DESC) as titles
+  }
+  GROUP BY books.author.ID`
+
+[
+  { name: 'Emily Brontë', titles: 'Wuthering Heights' },
+  { name: 'Charlotte Brontë', titles: 'Jane Eyre' },
+  { name: 'Edgar Allen Poe', titles: 'The Raven, Eleonora' },
+  { name: 'Richard Carpenter', titles: 'Catweazle' }
+]
+```
+
+```js [SQL Style]
+await cds.ql`
+  SELECT
+    name,
+    string_agg(books.title, ', ' ORDER BY books.title DESC) as titles
+  from ${Authors} as A
+    left join ${Books} as books on books.author_ID = A.ID
+  GROUP BY books.author_ID
+```
+
+```sql [SQL output]
+SELECT
+  "$A".name,
+  string_agg(books.title, ? ORDER BY books.title DESC) AS titles
+FROM sap_capire_bookshop_Authors AS "$A"
+LEFT JOIN sap_capire_bookshop_Books AS books
+  ON books.author_ID = "$A".ID
+GROUP BY books.author_ID;
+```
+:::
 
 ## ordering term <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ordering-term }
 
@@ -366,7 +421,7 @@ TODO
 }
 
 .diagram {
-  overflow: auto;
+  padding-top: 1em;
 }
 
 </style>
