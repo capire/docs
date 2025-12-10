@@ -949,7 +949,7 @@
       "header": false,
       "name": "cds.multiTenancy.serviceManager.cacheRefreshInterval",
       "type": "Duration",
-      "default": "PT2M",
+      "default": "PT20M",
       "doc": "The cache refresh interval (as Duration)."
     },
     {
@@ -975,7 +975,7 @@
       "header": false,
       "name": "cds.multiTenancy.hanaMtService.hanaTenantPrefix",
       "type": "String",
-      "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>_<btp tenant<br>id>"
+      "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>-<btp tenant<br>id>"
     },
     {
       "header": true,
@@ -1807,6 +1807,70 @@
     },
     {
       "header": true,
+      "name": "cds.outbox.persistent.statusLock",
+      "doc": "Properties to configure the locking strategy using a status column. By default row-level<br>database locks are used. Only enable status locks, if all deployed instances are already<br>using @sap/cds-dk >= 9 and CAP Java >= 4.5.0 and have already set<br>`cds.outbox.persistent.scheduler.enabled` to `true`"
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.statusLock.timeout",
+      "type": "Duration",
+      "default": "PT1H",
+      "doc": "The timeout, after which a message with status PROCESSING is considered for processing by<br>other instances again."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.statusLock.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler",
+      "doc": "Properties for the task-based outbox collector."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask",
+      "doc": "Properties to configure regular iterations over outbox tables of all tenants."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.startDelay",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The time to wait after startup, before triggering this task for the first time."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.interval",
+      "type": "Duration",
+      "default": "PT2H",
+      "doc": "The time to wait between executions of this task."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.spreadTime",
+      "type": "Duration",
+      "default": "PT15M",
+      "doc": "The time span over which checks of individual tenants are randomly distributed."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
       "name": "cds.outbox.services",
       "doc": "Properties for Outbox services. The key can be chosen arbitrarily and is used as the outbox<br>service name, if the `name` property is not explicitly defined. In addition it can be<br>leveraged to split configuration across multiple profiles."
     },
@@ -1822,6 +1886,13 @@
       "type": "int",
       "default": "10",
       "doc": "Specifies the maximum number of attempts to emit a message stored in the Outbox. Messages<br>that have reached the maximum number of attempts are ignored by the Outbox and need to be<br>handled by the application."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.threads",
+      "type": "int",
+      "default": "2",
+      "doc": "Determines the size of the thread pool, used to process outbox tasks. This configuration<br>only applies to outbox instances configured as `ordered: false`. For outbox instances<br>configured as `ordered: true` only one thread is used."
     },
     {
       "header": false,
@@ -1849,18 +1920,6 @@
       "name": "cds.outbox.services.<key>.enabled",
       "type": "boolean",
       "default": "true",
-      "doc": "Determines, if it is enabled."
-    },
-    {
-      "header": true,
-      "name": "cds.taskScheduler",
-      "doc": "Properties for the Task Scheduler."
-    },
-    {
-      "header": false,
-      "name": "cds.taskScheduler.enabled",
-      "type": "boolean",
-      "default": "false",
       "doc": "Determines, if it is enabled."
     },
     {
