@@ -396,19 +396,23 @@ var srv.options : { //> from cds.requires config
 
 
 
-### . entities {.property alt="The following documentation on operations also applies to entities. "}
+### . entities {.property alt="The following documentation on actions also applies to entities. "}
 
-### . events {.property alt="The following documentation on operations also applies to events. "}
+### . events {.property alt="The following documentation on actions also applies to events. "}
 
-### . operations {.property}
+### . operations {.property .deprecated alt="The following documentation on actions also applies to operations. "}
+
+Use [`.actions`](#actions) instead.
+
+### . actions {.property}
 
 ```tsx
-var srv.entities/events/operations : Iterable <{
+var srv.entities/events/actions : Iterable <{
   name : CSN definition
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and operations — that is *actions* and *functions* — exposed by this service.
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service.
 
 They are *iterable* objects, which means you can use them in all of these ways:
 
@@ -419,7 +423,6 @@ let all_entities = [ ... this.entities ]
 for (let k in this.entities) //... k is a CSN definition's name
 for (let d of this.entities) //... d is a CSN definition
 ```
-
 
 
 
