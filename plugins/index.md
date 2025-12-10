@@ -168,7 +168,12 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin provides out-of-the-box support for attachment handling. On Node.js, attachments are stored on AWS S/3 through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). For Java:  When using the package [`cds-feature-attachments-oss`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments-oss), depending on your cloud environment, attachments are stored on AWS S/3, Microsoft Azure, or the Google object store through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store). When using the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments), attachments are stored on the SAP HANA database.
+The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database. 
+
+For Java, use the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments). For Node.js, this is supported by the standard plugin.
+
+To integrate with cloud storage solutions such as `AWS S3`, `Azure Blob Storage`, or `Google Cloud Storage` through [SAP BTP's Object Store service](https://discovery-center.cloud.sap/serviceCatalog/object-store), use the [`cds-feature-attachments-oss`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments-oss) package for Java or the [`@cap-js/attachments`](https://www.npmjs.com/package/@cap-js/attachments) package for Node.js.
+
 To use the Attachments plugin, simply add a composition of the predefined aspect `Attachments` like so:
 
 ```cds
@@ -184,7 +189,7 @@ That's all we need to automatically add an interactive list of attachments to yo
 
 Features:
 
-- Pre-defined type `Attachment` to use in entity definitions
+- Pre-defined type `Attachments` to use in entity definitions
 - Automatic handling of all upload and download operations
 - Automatic malware scanning for uploaded files
 - (Automatic) Fiori Annotations for Upload Controls
