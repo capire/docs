@@ -471,6 +471,8 @@ The attribute statement is in the scope of a dedicated CAP role and filters are 
 
 Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (base) policies to mock users and run locally:
 
+<div class="impl java">
+
 ```yaml
 cds:
   security:
@@ -484,17 +486,63 @@ cds:
             - cap.StockManager // [!code ++]
 ```
 
+</div>
+
+<div class="impl node">
+
+```json
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "content-manager": {
+              "policies": ["cap.ContentManager"]
+            },
+            "stock-manager": {
+              "policies": ["cap.StockManager"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</div>
+
 :::tip
 Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
 :::
 
 Now (re)start the application with
 
+<div class="impl java">
+
 ```sh
 mvn spring-boot:run
 ```
 
+</div>
+
+<div class="impl node">
+
+```sh
+cds watch
+```
+
+</div>
+
+<div class="impl java">
 and verify in the UI for `AdminService` (`http://localhost:8080/index.html#Books-manage`) that the the assigned policies imply the expected access rules:
+</div>
+<div class="impl node">
+You can now verify that the assigned policies enforce the expected access rules:
+</div>
+
 - mock user `content-manager` has full access to `Books` and `Authors`.
 - mock user `stock-manager` can _read_ `Books` and `Authors` and can _edit_ `Books` (but _not_ `Authors`).
 
@@ -510,6 +558,7 @@ POLICY StockManagerFiction {
 
 [Learn more about DCL operators](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/condition-operators){.learn-more}
 
+<div class="impl java">
 
 ::: tip
 Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/local/`.
@@ -526,6 +575,35 @@ cds:
 ```
 
 You can verify in the UI that mock user `stock-manager-fiction` is restricted to books of genres `Mystery` and `Fantasy`.
+
+</div>
+
+<div class="impl node">
+
+::: tip
+Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/dcl/local/`.
+:::
+
+```json
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "stock-manager-fiction": {
+              "policies": ["local.StockManagerFiction"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</div>
 
 [Learn more about AMS attribute filters with CAP](https://sap.github.io/cloud-identity-developer-guide/CAP/InstanceBasedAuthorization.html#instance-based-authorization){.learn-more}
 
@@ -646,13 +724,35 @@ c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
 
 In addition, for detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
 
+<div class="impl java">
+
 ```yaml
 logging:
     level:
         com.sap.cloud.security.ams: DEBUG
 ```
 
+</div>
+
+<div class="impl node">
+
+```json
+{
+  "cds": {
+    "log": {
+      "levels": {
+        "ams": "DEBUG"
+      }
+    }
+  }
+}
+```
+
+</div>
+
 which gives you more information about the policy evaluation at request time:
+
+<div class="impl java">
 
 ```sh
 c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
@@ -660,6 +760,18 @@ c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
  ...
 "accessResult":"or( eq($app.Genre, "Mystery") eq($app.Genre, "Fantasy") )"}.
 ```
+
+</div>
+
+<div class="impl node">
+
+```sh
+[ams] - Computing AMS filter conditions for ...
+[ams] - Privilege check for ... on ... was granted. {...
+[ams] - Resulting privileges for  ...  on ... : [ ...
+```
+
+</div>
 
 You can add general user information by applying [user tracing](#user-tracing).
 
@@ -689,9 +801,11 @@ cds add xsuaa
 </div>
 
 <div class="impl node">
+
 ```sh
 cds add xsuaa --for production
 ```
+
 </div>
 
 This generates an _xs-security.json_ file:
