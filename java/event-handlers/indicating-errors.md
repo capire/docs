@@ -149,7 +149,7 @@ To know which error codes and messages are available by default, you can have a 
 ## Target
 
 When SAP Fiori interprets messages it can handle an additional `target` property, which, for example, specifies which element of an entity the message refers to. SAP Fiori can use this information to display the message along the corresponding field on the UI.
-SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../advanced/fiori#validating-drafts). You can therefore specify the `target` both when throwing a `ServiceException` or setting a validation error using the [Messages API](#messages).
+SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../advanced/fiori#validating-drafts). You can specify the `target` when throwing a `ServiceException` or when setting a validation error using the [Messages API](#messages).
 
 A message target is always relative to an input parameter in the event context.
 For CRUD-based events this is always the `cqn` parameter, which represents and carries the payload of the request.
@@ -161,7 +161,7 @@ By default a message target always refers to the CQN statement of the event. In 
 As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
-When using the `target(String)` API, which specifices the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API [draft state messages](../../advanced/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
+When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API [draft state messages](../../advanced/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
 :::
 
 Let's illustrate this with the following example:
@@ -207,7 +207,7 @@ Here, we have a `CatalogService` that exposes et al. the `Books` entity and a `B
 
 ### CRUD Events
 
-Within a `Before` handler that triggers on inserts of new books a message target can only refer to the `cqn` parameter. There are generic String-based APIs as well as a typed API backed by the interfaces generated from the CDS model:
+Within a `Before` handler that triggers on inserts of new books, a message target can only refer to the `cqn` parameter. You can use generic String-based APIs or a typed API backed by the interfaces generated from the CDS model:
 
 ```java
 @Before
@@ -289,7 +289,7 @@ public void validateReview(BooksAddReviewContext context) {
 }
 ```
 
-In case of OData the resulting target is `in/descr`, assuming the default name `in` is used for the binding parameter name.
+In the case of OData the resulting target is `in/descr`, assuming the default name `in` is used for the binding parameter name.
 
 ::: tip
 The previous examples showcase the target creation with the `Messages` API, but the same can be done with the `ServiceException` API and the respective `messageTarget(...)` methods.
