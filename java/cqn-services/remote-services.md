@@ -234,8 +234,8 @@ The destination or service binding configuration provides the base URL to the OD
 The full service URL however is built from three parts:
 
 1. The URL provided by the destination or the service binding configuration.
-1. An optional URL suffix provided in the _Remote Service_ http configuration under the `suffix` property.
-1. The name of the service, either obtained from the optional `service` configuration property or the fully qualified name of the CDS service definition.
+1. An optional URL suffix provided in the _Remote Service_ http configuration under the `http.suffix` property.
+1. The name of the service, either obtained from the optional `http.service` configuration property or the fully qualified name of the CDS service definition.
 
 Consider this example:
 

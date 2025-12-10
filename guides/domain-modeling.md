@@ -816,7 +816,6 @@ Managed data fields are filled in automatically and are write-protected for exte
 In case of `UPSERT` operations, the handlers for `@cds.on.update` are executed, but not the ones for `@cds.on.insert`.
 :::
 
-Domain Modeling > Managed Data {style="margin-bottom: 0; font-size:70%; font-style: italic;"}
 ### Aspect _`managed`_ {style="margin-top: 0;"}
 
 You can also use the [pre-defined aspect `managed`](../cds/common#aspect-managed) from [@sap/cds/common](../cds/common) to get the very same as by the definition above:
