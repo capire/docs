@@ -32,7 +32,6 @@ This guide explains how to authenticate CAP services to resolve CAP users.
 In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
 Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
-CAP applications making use of remote services of any type need to have a proper [remote authentication](./remote-authentication) in place as well.
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="550px" }
 
@@ -122,7 +121,7 @@ Mock users require **basic authentication**, hence sending the same request on b
 
 The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
 
-::: tip
+::: Hint
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
 :::
 
@@ -135,7 +134,7 @@ Mock users require **basic authentication**, hence sending the same request on b
 </div>
 
 
-::: tip
+::: Hint
 Mock users are deactivated in production profile by default ❗
 :::
 
