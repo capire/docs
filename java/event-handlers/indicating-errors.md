@@ -251,7 +251,7 @@ The same applies to message targets that refer to an action or function input pa
 ``` java
 @Before
 public void validateReview(BooksAddReviewContext context) {
-    Messages messages = context.getMessage();
+    Messages messages = context.getMessages();
     // event context contains the keys "reviewer", "rating", "title", "text",
     // which are the input parameters of the action "addReview"
 
