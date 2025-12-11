@@ -161,7 +161,7 @@ By default a message target always refers to the CQN statement of the event. In 
 As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
-When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API [draft state messages](../../advanced/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
+When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../advanced/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
 :::
 
 Let's illustrate this with the following example:
@@ -226,7 +226,7 @@ public void validateTitle(CdsCreateEventContext context, Books book) {
 }
 ```
 
-Depending on the OData request context the resulting target in this example is either `title` (assuming a `POST` or `PATCH` request) or `in/title` (assuming a bound action like `draftActivate`).
+Depending on the OData request context, the resulting target in this example is either `title` (assuming a `POST` or `PATCH` request) or `in/title` (assuming a bound action like `draftActivate`).
 
 You can also specify targets that point to elements within associations:
 
