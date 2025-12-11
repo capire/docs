@@ -2,15 +2,13 @@
 # layout: cds-ref
 shorty: Expressions
 synopsis: >
-  Specification of the Core Expression Notation (CXN) used to capture expressions as plain JavaScript objects.
+  Specification of the Core Expression Language (CXL) used to capture expressions in CDS.
 status: draft
-uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
 <script setup>
 import expr from '../assets/cxl/expr.drawio.svg?raw'
 import ref from '../assets/cxl/ref.drawio.svg?raw'
-import pathSegment from '../assets/cxl/path-segment.drawio.svg?raw'
 import infixFilter from '../assets/cxl/infix-filter.drawio.svg?raw'
 import unaryOperator from '../assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from '../assets/cxl/binary-operator.drawio.svg?raw'
@@ -26,12 +24,12 @@ import intro from '../assets/cxl/intro.drawio.svg?raw'
 # Core Expression Language (CXL) { #expressions }
 The Core Expression Language (`CXL`) is a language to express calculations, conditions,
 and other expressions in the context of CDS models and queries.
-**`CXL` extends the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
+**`CXL` is based on the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
 
 `CXL` can be used in various places (TODO: Links):
-- In queries as part of the select list or where clause
+- In queries (select list, where clause, …)
 - In calculated elements
-- In annotations, where supported
+- In annotations
 
 ::: info 💡 expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
@@ -62,9 +60,24 @@ cds repl --run .
 ```
 
 :::info 💡 All of the example expressions follow the same pattern:
-1. A **CAP Style `CXL`** is shown in the context of a query.
-2. The equivalent **SQL Style `CXL`** is shown.
-3. The resulting **SQL output** is shown.
+1. A **`CXL`** is shown in the context of a query.
+2. The resulting **`SQL`** is shown.
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title }` // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+```sql [SQL]
+SELECT Books.title FROM sap_capire_bookshop_Books as Books
+```
 :::
 
 ### diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
@@ -105,7 +118,7 @@ TODO: some text and more examples
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
-It can be used to navigate along [path segments](#path-segment). Such a navigation is often
+It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
 <div class="diagram">
@@ -113,16 +126,27 @@ referred to as a **path expression**.
   <div v-html="ref"></div>
 </div>
 
-## path segment { #path-segment }
 
-[Path expressions](#ref) can't be explained without the corresponding path segments.
-In the context of a path expression path segments can be used to navigate along
-an association, or to access a structured element.
+### scalar element reference
 
-<div class="diagram">
-  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-  <div v-html="pathSegment"></div>
-</div>
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title }` // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'The Tell-Tale Heart' },
+  { title: 'The Hobbit' }
+]
+```
+
+```sql [SQL]
+SELECT "$B".title FROM sap_capire_bookshop_Books as "$B"
+```
+:::
+
 
 ### path expression in the select list
 
