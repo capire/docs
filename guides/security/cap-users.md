@@ -993,7 +993,7 @@ srv.before('READ', srv.entities.Books, req => {
 })
 ```
 
-In addition to the request context, information about the current user can similarly be retrieved from the global [`cds.context`](#TODO), which provides access to the current `cds.EventContext`: 
+In addition to the request context, information about the current user can similarly be retrieved from the global [`cds.context`](../../node.js/events#cds-context), which provides access to the current [`cds.EventContext`](../../node.js/events#cds-event-context): 
 
 ```js
 const cds = require('@sap/cds')
@@ -1001,7 +1001,7 @@ const { user, tenant } = cds.context
 ```
 
 :::tip
-Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](#TODO), which induces some minor overhead.
+Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](https://nodejs.org/api/async_context.html#asynclocalstoragegetstore), which induces some minor overhead.
 :::
 
 Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
@@ -1018,6 +1018,8 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 
 </div>
 
+
+<!-- TODO: Pseudo Role Checks in Node? cds.User.is('privilged')? -->
 
 ### Customizing Users { #customizing-users }
 
@@ -1115,19 +1117,19 @@ cds.middlewares.before = [
 
 :::
 
-::: warning Be very careful when redefining `$user` and customizing `cds.middlewares`
-The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. 
-Also consider data protection and privacy regulations when storing user data.
-:::
-
 There are multiple reasonable use cases in which user modification is a suitable approach:
 
 - Overriding user roles by calling `user.roles(roles)`.
 - Overriding user attributes and providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by invoking `user.attr(attributes)`.
 - etc.
 
+::: warning Be very careful when redefining `$user` and customizing `cds.middlewares`
+The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. 
+Also consider data protection and privacy regulations when storing user data.
+:::
+
 :::tip Custom Authentication Middleware
-In case you require even more control, you can also replace the authentication middleware with a fully [Custom Middleware](#TODO).
+In case you require even more control, you can also replace the authentication middleware with a fully [Custom Authentication](../../node.js/authentication#custom).
 :::
 
 </div>
@@ -1167,7 +1169,7 @@ Named user contexts are only created by the CAP Java framework as initial Reques
 
 <div class="impl node">
 
-There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
+There are a few typical use cases in a (multitenant) application, where switching the current user of the request is required.
 For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
 
 These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
@@ -1176,7 +1178,7 @@ These scenarios are identified by a combination of the user (*technical* or *nam
 ![Typical Scenarios for a User Context Switch](./assets/requestcontext.drawio.svg)
 
 In CAP Node.js, the `cds.context` enables convenient access to the `cds.EventContext` and allows to update the principal of the context.
-The prefered method for switching users and executing code in a different context and for a different principal, is to spawn a new root transaction using [`cds/srv.tx()`](#TODO).
+The prefered method for switching users and executing code in a different context and for a different principal, is to spawn a new root transaction using [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx).
 Providing a `ctx` argument when creating a new root transaction allows switching the user for nested operations.
 The `cds.User` class exposes convenience constructors and accessors for specialized `cds.User` instances that represent typical technical principals you may require.
 
@@ -1187,7 +1189,7 @@ await srv.tx ({ user: new cds.User({ id: '...', roles: [...], ...}), tenant: '<t
 ```
 
 :::tip
-When creating new root transactions in calls to [`cds/srv.tx()`](#TODO), all properties not specified in the `ctx` argument are inherited from `cds.context`, if set in the current continuation.
+When creating new root transactions in calls to [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx), all properties not specified in the `ctx` argument are inherited from `cds.context`, if set in the current continuation.
 :::
 
 </div>
@@ -1306,16 +1308,14 @@ Instead, prefer a task-based approach which processes specific subscriber tenant
 <!-- TODO: Rework the graphic to fit Node runtime --> 
 ![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
 
-The application is using a [`cds.spawn`](#TODO) to regularly perform tasks on behalf of a certain tenant.
-By default, operations that are nested within `cds.spawn` will not inherit from an outer context.
+The application is using a [`cds.spawn`](../../node.js/cds-tx#cds-spawn) to regularly perform tasks on behalf of a certain tenant.
+By default, operations that are nested within `cds.spawn` will inherit the outer context.
 You can explicitly define the context `cds.spawn` should use by passing relevant information in a `ctx` argument. 
 This enables to ensure that the Persistence Service performs the query for the specified tenant.
 
 ```js
-cds.spawn({ user: cds.User.privileged, tenant: 't0', every: '1h'}, async tx => {
-  cds.tx({ tenant: 't1' }, async tx => {
+cds.spawn({ user: cds.User.privileged, tenant: 'tenant1', every: '1h' }, async tx => {
     await persistenceService.run(SELECT.from(Books))
-  })
 })
 ```
 
