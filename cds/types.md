@@ -41,7 +41,7 @@ These types are used to define the structure of entities and services, and are m
 | `Timestamp` | _µs_ precision, with up to 7 fractional digits |  _TIMESTAMP_  |
 | `String` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)(5)</sup> | _NVARCHAR_  |
 | `Binary` (`length`) | Default *length*: 255; on HANA: 5000 <sup>(4)(6)</sup> |  _VARBINARY_  |
-| `LargeBinary` | Unlimited data, usually streamed at runtime<br/>[Preferred using Attachments plugin for large files](../plugins/index.md#attachments) | _BLOB_ |
+| `LargeBinary` | Unlimited data, usually streamed at runtime<br/>[Prefer using Attachments plugin for large files](../plugins/index.md#attachments) | _BLOB_ |
 | `LargeString` | Unlimited data, usually streamed at runtime | _NCLOB_  |
 | `Map` | Mapped to *NCLOB* for HANA. | *JSON* type |
 | `Vector` (`dimension `) | Requires SAP HANA Cloud QRC 1/2024, or later |  _REAL_VECTOR_  |
