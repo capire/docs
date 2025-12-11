@@ -660,7 +660,7 @@ The same is true for the logout flow.
 
 ## XSUAA Authentication { #xsuaa-auth }
 
-[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a profen platform service for identity and access management which provides:
+[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a proven platform service for identity and access management which provides:
  - authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
@@ -679,7 +679,7 @@ In particular, you require a `cf` CLI session targeting a CF space in the test s
 
 You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
 
-If there is no deplyoment descriptor yet, in the project root folder, execute
+If there is no deployment descriptor yet, in the project root folder, execute
 
 ```sh
 cds add mta
@@ -697,6 +697,21 @@ cds add h2 --for production
 ::: tip Info
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
+
+</div>
+
+<div class="impl node">
+
+In addition, activate SQLite to serve as in-memory DB (**not** recommended for production!):
+```sh
+cds add sqlite --for production
+```
+
+make sure to run:
+
+```sh
+npm install
+```
 
 </div>
 
@@ -772,11 +787,11 @@ There are some mandatory configuration parameters:
 |`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
 |`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
 |`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
-|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is madatory for a [multitenant application](../guides/multitenancy/). |
+|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a [multitenant application](../guides/multitenancy/). |
 
 ::: warning
-Upgrading the `service-plan` from type `application` to `broker` us not supported.
-Hence, start with `broker` if you want to provides technial APIs potentially.
+Upgrading the `service-plan` from type `application` to `broker` is not supported.
+Hence, start with `broker` if you plan to provide technical APIs.
 :::
 
 [Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-web-ide-full-stack/application-security-descriptor-configuration-syntax){.learn-more}
@@ -814,13 +829,13 @@ For convenience, when adding XSUAA facet, these artifacts are initially derived 
 ```
 [Learn more about XSUAA attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
 [Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
-[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.leanr-more}
+[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.learn-more}
 
 After successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
 In the [deplyoment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
 In general, role collections are [created manually](./cap-users#xsuaa-assign) at runtime by user administrators.
-But in case the underlying role template has no reference to an attribute, a corresponing role collection is prepared already.
+But in case the underlying role template has no reference to an attribute, a corresponding role collection is prepared already.
 In the example, role collection `admin (bookshop ${org}-${space})` containing the role template `admin` is defined and can be directly assigned to users.
 
 
@@ -852,8 +867,8 @@ cds up
 and wait until the application is up and running. 
 You can test the status with `cf apps` or in BTP Cockpit, alternatively.
 
-The following trace in the application log confirms the activated XSUAA authentication:
 <div class="java">
+The following trace in the application log confirms the activated XSUAA authentication:
 
 ```sh
 ... : Loaded feature 'IdentityUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
@@ -862,7 +877,13 @@ The following trace in the application log confirms the activated XSUAA authenti
 </div>
 
 <div class="node">
-TODO
+
+run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
+
+```sh
+... : "using auth strategy { kind: 'xsuaa' … }
+```
+
 </div>
 
 At startup, the CAP runtime checks the available bindings and activates XSUAA authentication accordingly. 
@@ -872,13 +893,26 @@ At startup, the CAP runtime checks the available bindings and activates XSUAA au
 
 ### CLI Level Testing
 
-Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
-Sending the test request 
+Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the XSUAA application.
+Send the test request:
+
+<div class="java">
+
 ```sh
 curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
 ```
 
-as anonymous user without a token results in a `401 Unauthorized` as expected.
+</div>
+
+<div class="node">
+
+```sh
+curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books --verbose
+```
+
+</div>
+
+…as anonymous user without a token the request results in a `401 Unauthorized` as expected.
 
 Now we want to fetch a token to prepare a fully authenticated test request. 
 As first step we add a new client for the XSUAA application by creating an appropriate service key:
@@ -892,13 +926,13 @@ cf create-service-key bookshop-auth bookshop-auth-key
 cf service-key bookshop-auth bookshop-auth-key
 ```
 
-```sh
+```json
 {
   "credentials": {
     [...]
     "clientid": "sb-bookshop-...",
     "clientsecret": "...",
-    "url": "https://cap-zone.authentication.sap.hana.ondemand.com",
+    "url": "https://<org>.authentication.sap.hana.ondemand.com",
     [...]
   }
 }
@@ -908,7 +942,7 @@ cf service-key bookshop-auth bookshop-auth-key
 ❗ **Never share service keys or tokens** ❗
 :::
 
-As second step, assign the generated role collection with name `admin (bookshop cdsruntime-cap-zone-bookshop-xsuaa)` to your **test user** by following instructions from [Assign Roles in SAP BTP Cockpit](./cap-users##xsuaa-assign).
+As second step, assign the generated role collection with name `admin (bookshop cdsruntime-cap-zone-bookshop-xsuaa)` to your **test user** by following instructions from [Assign Roles in SAP BTP Cockpit](./cap-users#xsuaa-assign).
 
 With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
 
