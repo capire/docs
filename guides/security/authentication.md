@@ -32,7 +32,6 @@ This guide explains how to authenticate CAP services to resolve CAP users.
 In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
 Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
-CAP applications making use of remote services of any type need to have a proper [remote authentication](./remote-authentication) in place as well.
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="550px" }
 
@@ -90,7 +89,14 @@ MockUsersSecurityConfig  : *  Security configuration based on mock users found i
 </div>
 
 <div class="impl node">
-TODO - is there a corresponding log output in Node?
+
+```sh
+[cds] - using auth strategy {
+  kind: 'mocked',
+  …
+}
+```
+
 </div>
 
 <div class="impl java">
@@ -126,11 +132,20 @@ The CAP runtime will automatically authenticate all CAP endpoints - **you are no
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
 :::
 
-Sending OData request `curl http://localhost:8080/odata/admin/Books --verbose`
+Sending OData request
+
+```sh
+curl http://localhost:4004/odata/v4/admin/Books --verbose
+```
+
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with curl `http://alice:basic@localhost:8080/odata/admin/Books` returns successfully (HTTP response `200`).
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with
+```sh
+curl http://alice:basic@localhost:4004/odata/v4/admin/Books
+```
+returns successfully (HTTP response `200`).
 
 </div>
 
@@ -306,7 +321,9 @@ public class BookServiceOrdersTest {
 </div>
 
 <div class="impl node">
-TODO
+
+[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+
 </div>
 
 
@@ -471,7 +488,7 @@ On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config
 :::
 
 
-### Administrative Console for IAS { #ias-admin }
+#### Administrative Console for IAS { #ias-admin }
 
 In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
 you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
@@ -487,7 +504,7 @@ In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows di
 :::
 
 
-### Testing IAS on CLI Level
+### CLI Level Testing
 
 Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
 Sending the test request 
@@ -600,7 +617,7 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 ```
 
 
-### Testing IAS on UI Level
+### UI Level Testing
 
 In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
 
@@ -661,12 +678,12 @@ The same is true for the logout flow.
 
 ## XSUAA Authentication { #xsuaa-auth }
 
-[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a profen platform service for identity and access management which provides:
+[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a proven platform service for identity and access management which provides:
  - authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
  
-::: tip Notice
+::: tip Info
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
 ::: 
 
@@ -680,7 +697,7 @@ In particular, you require a `cf` CLI session targeting a CF space in the test s
 
 You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
 
-If there is no deplyoment descriptor yet, in the project root folder, execute
+If there is no deployment descriptor yet, in the project root folder, execute
 
 ```sh
 cds add mta
@@ -690,9 +707,29 @@ to make your application ready for deployment to CF.
 
 <div class="impl java">
 
-::: tip Notice
+In addition, activate H2 to serve as in-memory DB (**not** recommended for production!):
+```sh
+cds add h2 --for production
+```
+
+::: tip Info
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
+
+</div>
+
+<div class="impl node">
+
+In addition, activate SQLite to serve as in-memory DB (**not** recommended for production!):
+```sh
+cds add sqlite --for production
+```
+
+make sure to run:
+
+```sh
+npm install
+```
 
 </div>
 
@@ -768,11 +805,11 @@ There are some mandatory configuration parameters:
 |`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
 |`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
 |`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
-|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is madatory for a [multitenant application](../guides/multitenancy/). |
+|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a [multitenant application](../guides/multitenancy/). |
 
 ::: warning
-Upgrading the `service-plan` from type `application` to `broker` us not supported.
-Hence, start with `broker` if you want to provides technial APIs potentially.
+Upgrading the `service-plan` from type `application` to `broker` is not supported.
+Hence, start with `broker` if you plan to provide technical APIs.
 :::
 
 [Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-web-ide-full-stack/application-security-descriptor-configuration-syntax){.learn-more}
@@ -810,12 +847,13 @@ For convenience, when adding XSUAA facet, these artifacts are initially derived 
 ```
 [Learn more about XSUAA attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
 [Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
+[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.learn-more}
 
 After successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
 In the [deplyoment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
 In general, role collections are [created manually](./cap-users#xsuaa-assign) at runtime by user administrators.
-But in case the underlying role template has no reference to an attribute, a corresponing role collection is prepared already.
+But in case the underlying role template has no reference to an attribute, a corresponding role collection is prepared already.
 In the example, role collection `admin (bookshop ${org}-${space})` containing the role template `admin` is defined and can be directly assigned to users.
 
 
@@ -847,8 +885,8 @@ cds up
 and wait until the application is up and running. 
 You can test the status with `cf apps` or in BTP Cockpit, alternatively.
 
-The following trace in the application log confirms the activated XSUAA authentication:
 <div class="java">
+The following trace in the application log confirms the activated XSUAA authentication:
 
 ```sh
 ... : Loaded feature 'IdentityUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
@@ -857,7 +895,13 @@ The following trace in the application log confirms the activated XSUAA authenti
 </div>
 
 <div class="node">
-TODO
+
+run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
+
+```sh
+... : "using auth strategy { kind: 'xsuaa' … }
+```
+
 </div>
 
 At startup, the CAP runtime checks the available bindings and activates XSUAA authentication accordingly. 
@@ -865,72 +909,95 @@ At startup, the CAP runtime checks the available bindings and activates XSUAA au
 
 
 
-### Testing XSUAA on CLI Level
+### CLI Level Testing
 
-Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
-Sending the test request 
+Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the XSUAA application.
+Send the test request:
+
+<div class="java">
+
 ```sh
 curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
 ```
 
-as anonymous user without a token results in a `401 Unauthorized` as expected.
+</div>
+
+<div class="node">
+
+```sh
+curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books --verbose
+```
+
+</div>
+
+…as anonymous user without a token the request results in a `401 Unauthorized` as expected.
 
 Now we want to fetch a token to prepare a fully authenticated test request. 
-As first step we add a new client for the IAS application by creating an appropriate service key:
+As first step we add a new client for the XSUAA application by creating an appropriate service key:
 
 ```sh
-cf create-service-key bookshop-ias bookshop-ias-key -c '{"credential-type": "X509_GENERATED"}'
+cf create-service-key bookshop-auth bookshop-auth-key
 ```
 
-The overall setup with local CLI client and the Cloud services is sketched in the diagram:
-
-![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
-
-As IAS requires mTLS-protected channels, **client certificates are mandatory** for all of the following requests:
-- Token request to IAS in order to fetch a valid IAS token (1)
-- Business request to the CAP application presenting the token (2)
-- Initial proof token request to IAS - not required for all business requests (3)
-
-The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
-
-::: details How to create and retrieve service key credentials
 
 ```sh
-cf service-key bookshop-ias bookshop-ias-key
+cf service-key bookshop-auth bookshop-auth-key
 ```
 
-```sh
+```json
 {
   "credentials": {
-      [...]
-    "certificate": "-----BEGIN CERTIFICATE----- [...] -----END CERTIFICATE-----",
-    "clientid": "2a92c297-8603-4157-9aa9-ca758582abcd",
-    "credential-type": "X509_GENERATED",
-    "key": "-----BEGIN RSA PRIVATE KEY----- [...] -----END RSA PRIVATE KEY-----",
-    "url": "https://<tenant-id>.accounts400.ondemand.com",
+    [...]
+    "clientid": "sb-bookshop-...",
+    "clientsecret": "...",
+    "url": "https://<org>.authentication.sap.hana.ondemand.com",
     [...]
   }
 }
 ```
 
-:::
-
 ::: warning
 ❗ **Never share service keys or tokens** ❗
 :::
 
-From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request. 
+As second step, assign the generated role collection with name `admin (bookshop cdsruntime-cap-zone-bookshop-xsuaa)` to your **test user** by following instructions from [Assign Roles in SAP BTP Cockpit](./cap-users#xsuaa-assign).
 
-The request returns with a valid IAS token which is suitable for authentication in the CAP application:
-```sh
-{"access_token":"[...]","token_type":"Bearer","expires_in":3600}
+With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
+
+::: code-group
+
+```sh [Token for technical user]
+curl -X POST \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=<clientid>' \
+  -d 'client_secret=<clientsecret>' \
+  <url>/oauth/token
 ```
 
-The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
+```sh [Token for named user]
+curl -X POST \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d 'grant_type=password' \
+  -d 'client_id=<clientid>' \
+  -d 'client_secret=<clientsecret>' \
+  -d 'username=<username>' \
+  -d 'password=<userpassword>' \
+  <url>/oauth/token
+```
+
+:::
+
+The request returns with a valid XSUAA token which is suitable to pass authentication in the CAP application:
+```sh
+{"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
+```
+
+The final test request needs to provide the token being send to the application's route:
 
 ```sh
-curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.cert.<landscape-domain>/odata/v4/CatalogService/Books
+curl -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books
 ```
 
 Don't forget to delete the service key after your tests:
@@ -938,12 +1005,10 @@ Don't forget to delete the service key after your tests:
 cf delete-service-key bookshop-auth bookshop-auth-key
 ```
 
-[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.leanr-more}
 
+### UI Level Testing
 
-### Testing XSUAA on UI Level
-
-In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
+In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the XSUAA token are done under the hood.
 
 ```sh
 cds add approuter
@@ -955,35 +1020,39 @@ The resulting setup is sketched in the diagram:
 
 ![UI-level Testing of XSUAA Endpoints](./assets/ias-ui-setup.svg){width="500px"}
 
-To be able to fetch the token, the AppRouter needs a binding to the IAS instance as well.
+To be able to fetch the token, the AppRouter needs a binding to the XSUAA instance as well.
 
 ::: details AppRouter component with XSUAA binding
 ```yaml
+modules:
   - name: bookshop
-    [...]
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      [...]
     requires:
       - name: srv-api
         group: destinations
         properties:
-          name: srv-api
-          url: ~{srv-cert-url}
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
           forwardAuthToken: true
-          forwardAuthCertificates: true
-      - name: bookshop-ias
-        parameters:
-          config:
-            credential-type: X509_GENERATED
-            app-identifier: approuter
+      - name: bookshop-auth
+    provides:
+      - name: app-api
+        properties:
+          app-uri: ${default-uri}
+          [...]
 ```
 :::
 
-As the login flow is based on an HTTP redirect between the CAP application and IAS login page,
-IAS needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+As the login flow is based on an HTTP redirect between the CAP application and XSUAA login page,
+XSUAA needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
 The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
 ```yaml
-  - name: bookshop-ias
+  - name: bookshop-auth
     [...]
     parameters:
       [...]
@@ -991,11 +1060,22 @@ The same is true for the logout flow.
         [...]
         oauth2-configuration:
           redirect-uris:
-            - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
-          post-logout-redirect-uris:
-            - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html            
+            - https://*~{app-api/app-uri}/**
+    requires:
+      - name: app-api      
 ```
 :::
+
+To check the deplyoment, run `cf apps` in the targeted space:
+
+```sh
+name           requested state   processes   routes
+bookshop       started           web:1/1     <org>-<space>-bookshop.cfapps.sap.hana.ondemand.com
+bookshop-srv   started           web:1/1     <org>-<space>-bookshop-xsuaa-bookshop-srv.cfapps.sap.hana.ondemand.com
+```
+
+and open the route exposed by the `bookshop` UI application in a new browser session.
+
 
 
 ## Hybrid Authentication { #hybrid-auth }
