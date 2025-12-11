@@ -1121,6 +1121,17 @@ bookshop-srv   started           web:1/1     <org>-<space>-bookshop-xsuaa-booksh
 
 and open the route exposed by the `bookshop` UI application in a new browser session.
 
+<div class="node">
+
+E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/admin/Books`
+
+</div>
+
+<div class="java">
+
+E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/AdminService/Books`
+
+</div>
 
 
 ## Hybrid Authentication { #hybrid-auth }
