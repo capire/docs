@@ -207,7 +207,7 @@ Here, we have a `CatalogService` that exposes et al. the `Books` entity and a `B
 
 ### CRUD Events
 
-Within a `Before` handler that triggers on inserts of new books, a message target can only refer to the `cqn` parameter. You can use generic String-based APIs or a typed API backed by the interfaces generated from the CDS model:
+Within a `Before` handler that triggers on inserts of new books, a message target can only refer to the `cqn` parameter. You can use generic `String`-based APIs or a typed API backed by the interfaces generated from the CDS model:
 
 ```java
 @Before
