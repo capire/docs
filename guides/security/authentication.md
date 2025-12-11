@@ -720,6 +720,8 @@ Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and t
 
 <div class="impl node">
 
+TODO: the below command currently does not setup sqlite for production.
+
 In addition, activate SQLite to serve as in-memory DB (**not** recommended for production!):
 ```sh
 cds add sqlite --for production
