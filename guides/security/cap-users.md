@@ -923,9 +923,10 @@ Avoid writing custom code based on the raw authentication info, as this undermin
 **In most casese, there is no need to write custom code dependent on the CAP user - leverage CDS modelling whenever possible**.
 :::
 
-<div class="impl java">
 
-### Reflection { #reflection .java }
+### Reflection { #reflection }
+
+<div class="impl java">
 
 In CAP Java, The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) of a handler in different ways:
 
@@ -977,7 +978,50 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 | `isInternalUser()`  | Indicates whether the current user has pseudo-role `internal-user`.                                                | `internal-user`      |
 | `isPrivileged()`    | Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted. | n/a                  |
 
-### Customizing Users { #customizing-users .java }
+</div>
+
+<div class="impl node">
+
+In CAP Node.js, the CAP user of a request is represented by a [`cds.User`](../../node.js/authentication#cds-user) object. 
+An instance of `cds.User` representing the current principal is available from the current request context in `req.user`. 
+Similarly, the identifier of the users tenant is available from `req.tenant`.
+
+```js
+srv.before('READ', srv.entities.Books, req => {
+  const { user, tenant } = req
+  // [...]
+})
+```
+
+In addition to the request context, information about the current user can similarly be retrieved from the global [`cds.context`](#TODO), which provides access to the current `cds.EventContext`: 
+
+```js
+const cds = require('@sap/cds')
+const { user, tenant } = cds.context
+```
+
+:::tip
+Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](#TODO), which induces some minor overhead.
+:::
+
+Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
+During processing, you can set it programmatically or spawn a new root transaction providing a context argument to achieve a [switch of the current user](#switching-users--switching-users-node).
+
+Depending on the configured [authentication](./authentication) strategy, CAP derives a default set of user claims containing the user's name, tenant, attributes and assigned roles:
+
+| User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
+|---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
+| _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
+| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$user.tenant`         |
+| _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
+| _Roles_       | `is(role)`                          | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
+
+</div>
+
+
+### Customizing Users { #customizing-users }
+
+<div class="impl java">
 
 In most cases, CAP's default mapping to the CAP user will match your requirements, but CAP also allows you to customize the mapping according to specific needs. 
 
@@ -1040,226 +1084,9 @@ There are multiple reasonable use cases in which user modification is a suitable
 
 [See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.learn-more}
 
-### Switching Users { #switching-users  .java }
-		
-There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
-For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
-
-These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
-
-![A named user can switch to a technical user in the same/subscriber tenant using the systemUser() method. Also, a named user can switch to a technical user in the provider tenant using the systemUserProvider() method. In addition technical users provider/subscriber tenants can switch to technical users on provider/subscriber tenants using the methods systemUserProvider() or systemUser(tenant).](./assets/requestcontext.drawio.svg)
-
-In CAP Java, the user context can only be modified by explicitly opening an appropriate Request Context which ensures a well-defined scope for the changed settings.
-Services might, for example, trigger HTTP requests to external services by deriving the target tenant from the current Request Context.
-
-The `RequestContextRunner` API offers convenience methods that allow an easy transition from the current Request Context to a derived one according to the concrete scenario.
-
-| Method               | Scenario                                                                                                                          |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `systemUser()`         | [Switches](#switching-to-technical-user) to the **technical user** and preserves the tenant from the current user.         |
-| `systemUserProvider()` | [Switches](#switching-to-provider-tenant) to the **technical user of the provider account**.            |
-| `systemUser(tenant)`   | [Switches](#switching-to-subscriber-tenant) to a **technical user targeting a given subscriber account**.        |
-| `privilegedUser()`     | [Elevates](#switching-to-privileged-user) the current `UserInfo` to by-pass all authorization checks.     |
-| `anonymousUser()`      | [Switches](#switching-to-anonymous-user) to an anonymous user.          |
-
-Named user contexts are only created by the CAP Java framework as initial Request Context based on appropriate authentication information (for example, JWT token) attached to the incoming HTTP request.
-
-:::tip Note
-- It is not possible to switch from technical user to a named user.
-- Asynchronous requests to CAP services are always on behalf of a technical user.
-:::
-
-
-#### Switching to Technical User {#switching-to-technical-user .java}
-
-![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
-
-The incoming JWT token triggers the creation of an initial Request Context with a named user. 
-Accesses to the database in the OData Adapter as well as the custom `On` handler are executed within <i>tenant1</i> and authorization checks are performed for user <i>JohnDoe</i>. 
-An additionally defined `After` handler wants to call out to an external service using a technical user without propagating the named user <i>JohnDoe</i>.
-To achieve this, it's required to call `requestContext()` on the current `CdsRuntime` and use the `systemUser()` method to remove the named user from the new Request Context:
-
-```java
-@After(entity = Books_.CDS_NAME)
-public void afterHandler(EventContext context){
-    runtime.requestContext().systemUser().run(reqContext -> {
-        // call technical service
-    });
-}
-```
-
-#### Switching to Technical Provider Tenant {#switching-to-provider-tenant .java}
-
-![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
-
-The application offers a bound action in a CDS entity. Within the action, the application communicates with a remote CAP service using an internal technical user from the provider account. 
-The corresponding `on` handler of the action needs to create a new Request Context by calling `requestContext()`. 
-Using the `systemUserProvider()` method, the existing user information is removed and the tenant is automatically set to the provider tenant. 
-This allows the application to perform an HTTP call to the remote CAP service, which is secured using the pseudo-role `internal-user`.
-
-```java
-@On(entity = Books_.CDS_NAME)
-public void onAction(AddToOrderContext context){
-    runtime.requestContext().systemUserProvider().run(reqContext -> {
-        // call remote CAP service
-    });
-}
-```
-
-#### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant .java}
-
-![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
-
-The application is using a job scheduler that needs to regularly perform tasks on behalf of a certain tenant. 
-By default, background executions (for example in a dedicated thread pool) aren't associated to any subscriber tenant and user. 
-In this case, it's necessary to explicitly define a new Request Context based on the subscribed tenant by calling `systemUser(tenantId)`. 
-This ensures that the Persistence Service performs the query for the specified tenant.
-
-```java
-runtime.requestContext().systemUser(tenant).run(reqContext -> {
-    return persistenceService.run(Select.from(Books_.class))
-        .listOf(Books.class);
-});
-```
-
-::: warning Resource Bottlenecks in Tenant Looping
-Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
-Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
-:::
-
-#### Switching to Privileged User { #switching-to-privileged-user .java }
-
-Application services invoked within custom handlers enforce an authorization on second-layer, which is the preferred behaviour to ensure security by default.
-However, in certain situations, you might want to bypass additional authorization checks if the initial request authorization is deemed sufficient.
-
-Such service calls can be executed on behalf of a privileged user, acting as a superuser without restrictions:
-```java
-cdsRuntime.requestContext().privilegedUser().run(privilegedContext -> {
-  assert privilegedContext.getUserInfo().isPrivileged();
-  // service calls in this scope pass generic authorization handler
-});
-```
-
-::: warning
-Call application services on behalf of the privileged user only in case the service call is fully independent from the business user's actual restrictions.
-:::
-
-#### Switching to Anonymous User { #switching-to-anonymous-user .java }
-
-In rare situations you might want to call a public service without sharing information of the current request user. 
-In this case, user propagation is explicitly prevented.
-
-Such service calls can be executed on behalf of the anonymous user, acting as a public user without personal user claims:
-```java
-cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
-  // ... Service calls in this scope pass generic authorization handler
-
-});
-```
-
-
-### User Propagation { .java }
-
-#### Between Threads
-
-Within the same Request Context, all CAP service calls share the same user information.
-By default, the Request Context of the current thread is not shared with spawned threads and hence user information is lost.
-If you want to avoid this, you can propagate the Request Context to spawned threads as described [here](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext) and hence the same user context is applied.
-
-#### Non-CAP Libraries { #user-token .java }
-
-CAP plugins for IAS and XSUAA store the resolved user information in Spring's [`SecurityContext`](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/core/context/SecurityContext.html) which contains all relevant authentication information. Hence, library code can rely on standards to fetch the authentication information and restore the user information if needed.
-
-In addition, the [authentication information](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/authentication/AuthenticationInfo.html) is stored in the Request Context and can be fetched as sketched here:
-
-```java
-AuthenticationInfo authInfo = context.getAuthenticationInfo();
-JwtTokenAuthenticationInfo jwtTokenInfo = authInfo.as(JwtTokenAuthenticationInfo.class);
-String jwtToken = jwtTokenInfo.getToken();
-```
-
-#### Remote Services { #remote-services .java }
-
-Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
-Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
-CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
-Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../../java/cqn-services/remote-services#configuring-the-authentication-strategy):
-
-```yaml
-cds:
-  remote.services:
-    SomeReuseService:
-      binding:
-        name: reuse-service-instance
-        onBehalfOf: systemUserProvider
-```
-
-The parameter `onBehalfOf` in the binding configuration section allows to define following *user propagation* strategies:
-
-- `currentUser` (default): Propagate the user of the current Request Context.
-- `systemUser`: Propagate the (tenant-specific) technical user, based on the tenant set in the current Request Context.
-- `systemUserProvider`: Propagate the technical user of the provider tenant.
-
-::: tip
-Remote Services configurations with `destination` section support `onBehalfOf` only in case of [IAS App-2-App flows](../../java/cqn-services/remote-services#consuming-apis-from-other-ias-applications).
-:::
-
-[Learn more about Remote Services in CAP Java](../../java/cqn-services/remote-services#remote-services){.learn-more}
-
-
-#### Cloud SDK { #cloud-sdk .java }
-
-On a programmatic level, the CAP runtime integrates with [Cloud SDK](https://sap.github.io/cloud-sdk/) offering an abstraction for connection setup with remote services, including authentication and user propagation.
-By default, 
-- the *tenant* of the current Request Context is propagated under the hood.
-- the *user token* is propagated via Spring's [`SecurityContext`](#user-token).
-- *user propagation strategy* can be specified with parameter values [`OnBehalfOf`](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/service-bindings#multitenancy-and-principal-propagation).
-
-::: tip
-Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than natively consuming the Cloud SDK.
-:::
-
-[Learn more about Cloud SDK integration in CAP Java](../../java/cqn-services/remote-services#cloud-sdk-integration){.learn-more}
-
 </div>
 
 <div class="impl node">
-
-### Reflection {#reflection .node}
-
-In CAP Node.js, the CAP user of a request is represented by a [`cds.User`](#TODO) object, available from the current request context in `req.user`, as well as the tenant identifier available from `req.tenant`.
-
-```js
-srv.before('READ', srv.entities.Books, req => {
-  const { user, tenant } = req
-  // [...]
-})
-```
-
-In addition to the request context, information about the current user can similarly be retrieved from the global [`cds.context`](#TODO), which provides access to the current `cds.EventContext`: 
-
-```js
-const cds = require('@sap/cds')
-const { user, tenant } = cds.context
-```
-
-:::tip
-Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](#TODO), which induces some minor overhead.
-:::
-
-Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
-During processing, you can set it programmatically or spawn a new root transaction providing a context argument to achieve a [switch of the current user](#switching-users--switching-users-node).
-
-Depending on the configured [authentication](./authentication) strategy, CAP derives a default set of user claims containing the user's name, tenant, attributes and assigned roles:
-
-| User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
-|---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
-| _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
-| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$user.tenant`         |
-| _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
-| _Roles_       | `is(role)`                          | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
-
-### Customizing Users {#customizing-users .node}
 
 In most cases, CAP's default mapping to the CAP user will match your requirements, but CAP also allows you to customize the mapping according to specific needs. 
 
@@ -1303,8 +1130,43 @@ There are multiple reasonable use cases in which user modification is a suitable
 In case you require even more control, you can also replace the authentication middleware with a fully [Custom Middleware](#TODO).
 :::
 
-### Switching Users {#switching-users .node}
-		
+</div>
+
+### Switching Users { #switching-users }
+	
+<div class="impl java">
+
+There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
+For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
+
+These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
+
+![A named user can switch to a technical user in the same/subscriber tenant using the systemUser() method. Also, a named user can switch to a technical user in the provider tenant using the systemUserProvider() method. In addition technical users provider/subscriber tenants can switch to technical users on provider/subscriber tenants using the methods systemUserProvider() or systemUser(tenant).](./assets/requestcontext.drawio.svg)
+
+In CAP Java, the user context can only be modified by explicitly opening an appropriate Request Context which ensures a well-defined scope for the changed settings.
+Services might, for example, trigger HTTP requests to external services by deriving the target tenant from the current Request Context.
+
+The `RequestContextRunner` API offers convenience methods that allow an easy transition from the current Request Context to a derived one according to the concrete scenario.
+
+| Method               | Scenario                                                                                                                          |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `systemUser()`         | [Switches](#switching-to-technical-user) to the **technical user** and preserves the tenant from the current user.         |
+| `systemUserProvider()` | [Switches](#switching-to-provider-tenant) to the **technical user of the provider account**.            |
+| `systemUser(tenant)`   | [Switches](#switching-to-subscriber-tenant) to a **technical user targeting a given subscriber account**.        |
+| `privilegedUser()`     | [Elevates](#switching-to-privileged-user) the current `UserInfo` to by-pass all authorization checks.     |
+| `anonymousUser()`      | [Switches](#switching-to-anonymous-user) to an anonymous user.          |
+
+Named user contexts are only created by the CAP Java framework as initial Request Context based on appropriate authentication information (for example, JWT token) attached to the incoming HTTP request.
+
+:::tip Note
+- It is not possible to switch from technical user to a named user.
+- Asynchronous requests to CAP services are always on behalf of a technical user.
+:::
+
+</div>
+
+<div class="impl node">
+
 There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
 For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
 
@@ -1328,7 +1190,31 @@ await srv.tx ({ user: new cds.User({ id: '...', roles: [...], ...}), tenant: '<t
 When creating new root transactions in calls to [`cds/srv.tx()`](#TODO), all properties not specified in the `ctx` argument are inherited from `cds.context`, if set in the current continuation.
 :::
 
-#### Switching to Technical User {#switching-to-technical-user .node}
+</div>
+
+#### Switching to Technical User {#switching-to-technical-user }
+
+<div class="impl java">
+
+![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
+
+The incoming JWT token triggers the creation of an initial Request Context with a named user. 
+Accesses to the database in the OData Adapter as well as the custom `On` handler are executed within <i>tenant1</i> and authorization checks are performed for user <i>JohnDoe</i>. 
+An additionally defined `After` handler wants to call out to an external service using a technical user without propagating the named user <i>JohnDoe</i>.
+To achieve this, it's required to call `requestContext()` on the current `CdsRuntime` and use the `systemUser()` method to remove the named user from the new Request Context:
+
+```java
+@After(entity = Books_.CDS_NAME)
+public void afterHandler(EventContext context){
+    runtime.requestContext().systemUser().run(reqContext -> {
+        // call technical service
+    });
+}
+```
+
+</div>
+
+<div class="impl node">
 
 <!-- TODO: Rework the graphic to fit Node runtime --> 
 ![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
@@ -1346,7 +1232,31 @@ srv.after('*', srv.entities.Books, async (res, req) => {
 })
 ```
 
-#### Switching to Technical Provider Tenant {#switching-to-provider-tenant .node}
+</div>
+
+#### Switching to Technical Provider Tenant {#switching-to-provider-tenant }
+
+<div class="impl java">
+
+![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
+
+The application offers a bound action in a CDS entity. Within the action, the application communicates with a remote CAP service using an internal technical user from the provider account. 
+The corresponding `on` handler of the action needs to create a new Request Context by calling `requestContext()`. 
+Using the `systemUserProvider()` method, the existing user information is removed and the tenant is automatically set to the provider tenant. 
+This allows the application to perform an HTTP call to the remote CAP service, which is secured using the pseudo-role `internal-user`.
+
+```java
+@On(entity = Books_.CDS_NAME)
+public void onAction(AddToOrderContext context){
+    runtime.requestContext().systemUserProvider().run(reqContext -> {
+        // call remote CAP service
+    });
+}
+```
+
+</div>
+
+<div class="impl node">
 
 <!-- TODO: Rework the graphic to fit Node runtime --> 
 ![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
@@ -1364,7 +1274,34 @@ srv.on('action', srv.entities.Books, async req => {
 })
 ```
 
-#### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant .node}
+</div>
+
+#### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant }
+
+<div class="impl java">
+
+![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
+
+The application is using a job scheduler that needs to regularly perform tasks on behalf of a certain tenant. 
+By default, background executions (for example in a dedicated thread pool) aren't associated to any subscriber tenant and user. 
+In this case, it's necessary to explicitly define a new Request Context based on the subscribed tenant by calling `systemUser(tenantId)`. 
+This ensures that the Persistence Service performs the query for the specified tenant.
+
+```java
+runtime.requestContext().systemUser(tenant).run(reqContext -> {
+    return persistenceService.run(Select.from(Books_.class))
+        .listOf(Books.class);
+});
+```
+
+::: warning Resource Bottlenecks in Tenant Looping
+Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
+Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
+:::
+
+</div>
+
+<div class="impl node">
 
 <!-- TODO: Rework the graphic to fit Node runtime --> 
 ![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
@@ -1387,7 +1324,47 @@ Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
 Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
 :::
 
-#### Switching to Anonymous User { #switching-to-anonymous-user .node }
+</div>
+
+<div class="impl java">
+
+#### Switching to Privileged User { #switching-to-privileged-user }
+
+Application services invoked within custom handlers enforce an authorization on second-layer, which is the preferred behaviour to ensure security by default.
+However, in certain situations, you might want to bypass additional authorization checks if the initial request authorization is deemed sufficient.
+
+Such service calls can be executed on behalf of a privileged user, acting as a superuser without restrictions:
+```java
+cdsRuntime.requestContext().privilegedUser().run(privilegedContext -> {
+  assert privilegedContext.getUserInfo().isPrivileged();
+  // service calls in this scope pass generic authorization handler
+});
+```
+
+::: warning
+Call application services on behalf of the privileged user only in case the service call is fully independent from the business user's actual restrictions.
+:::
+
+</div>
+
+#### Switching to Anonymous User { #switching-to-anonymous-user }
+
+<div class="impl java">
+
+In rare situations you might want to call a public service without sharing information of the current request user. 
+In this case, user propagation is explicitly prevented.
+
+Such service calls can be executed on behalf of the anonymous user, acting as a public user without personal user claims:
+```java
+cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
+  // ... Service calls in this scope pass generic authorization handler
+
+});
+```
+
+</div>
+
+<div class="impl node">
 
 In rare situations you might want to call a public service without sharing information about the current request user. 
 In this case, user propagation can explicitly be prevented by running in a context whose principal is the `anonymous` user.
@@ -1398,9 +1375,37 @@ cds.tx({ user: cds.User.anonymous }, async tx => {
 })
 ```
 
-### User Propagation { .node }
+</div>
 
-#### Non-CAP Libraries { #user-token .node }
+### User Propagation { #user-propagation }
+
+<div class="impl java">
+
+#### Between Threads
+
+Within the same Request Context, all CAP service calls share the same user information.
+By default, the Request Context of the current thread is not shared with spawned threads and hence user information is lost.
+If you want to avoid this, you can propagate the Request Context to spawned threads as described [here](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext) and hence the same user context is applied.
+
+</div>
+
+#### Non-CAP Libraries { #user-token }
+
+<div class="impl java">
+
+CAP plugins for IAS and XSUAA store the resolved user information in Spring's [`SecurityContext`](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/core/context/SecurityContext.html) which contains all relevant authentication information. Hence, library code can rely on standards to fetch the authentication information and restore the user information if needed.
+
+In addition, the [authentication information](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/authentication/AuthenticationInfo.html) is stored in the Request Context and can be fetched as sketched here:
+
+```java
+AuthenticationInfo authInfo = context.getAuthenticationInfo();
+JwtTokenAuthenticationInfo jwtTokenInfo = authInfo.as(JwtTokenAuthenticationInfo.class);
+String jwtToken = jwtTokenInfo.getToken();
+```
+
+</div>
+
+<div class="impl node">
 
 CAPs generic authentication middlewares for IAS and XSUAA maintain resolved authentication information in the `authInfo` attribute of `cds.context.user` of the current `cds.EventContext`.
 For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
@@ -1416,7 +1421,41 @@ const jwtToken = token.jwt                  // string
 The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
 :::
 
+</div>
+
 #### Remote Services { #remote-services }
+
+<div class="impl java">
+
+Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
+Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
+CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../../java/cqn-services/remote-services#configuring-the-authentication-strategy):
+
+```yaml
+cds:
+  remote.services:
+    SomeReuseService:
+      binding:
+        name: reuse-service-instance
+        onBehalfOf: systemUserProvider
+```
+
+The parameter `onBehalfOf` in the binding configuration section allows to define following *user propagation* strategies:
+
+- `currentUser` (default): Propagate the user of the current Request Context.
+- `systemUser`: Propagate the (tenant-specific) technical user, based on the tenant set in the current Request Context.
+- `systemUserProvider`: Propagate the technical user of the provider tenant.
+
+::: tip
+Remote Services configurations with `destination` section support `onBehalfOf` only in case of [IAS App-2-App flows](../../java/cqn-services/remote-services#consuming-apis-from-other-ias-applications).
+:::
+
+[Learn more about Remote Services in CAP Java](../../java/cqn-services/remote-services#remote-services){.learn-more}
+
+</div>
+
+<div class="impl node">
 
 CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
 Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../using-services#authentication-and-authorization-of-remote-services).
@@ -1447,7 +1486,27 @@ Always prefer using [Remote Services](#remote-services) over natively consuming 
 
 </div>
 
-### Tracing { #user-tracing .java }
+#### Cloud SDK { #cloud-sdk }
+
+<div class="impl java">
+
+On a programmatic level, the CAP runtime integrates with [Cloud SDK](https://sap.github.io/cloud-sdk/) offering an abstraction for connection setup with remote services, including authentication and user propagation.
+By default, 
+- the *tenant* of the current Request Context is propagated under the hood.
+- the *user token* is propagated via Spring's [`SecurityContext`](#user-token).
+- *user propagation strategy* can be specified with parameter values [`OnBehalfOf`](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/service-bindings#multitenancy-and-principal-propagation).
+
+::: tip
+Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than natively consuming the Cloud SDK.
+:::
+
+[Learn more about Cloud SDK integration in CAP Java](../../java/cqn-services/remote-services#cloud-sdk-integration){.learn-more}
+
+</div>
+
+### Tracing { #user-tracing }
+
+<div class="impl java">
 
 By default, information about the request user are not logged to the application trace.
 During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
@@ -1468,7 +1527,9 @@ Don't activate user tracing in production!
 
 [Learn more about various options to activate CAP Java loggers](../../java/operating-applications/observability#logging-configuration){.learn-more}
 
-### Tracing { #user-tracing .node }
+</div>
+
+<div class="impl node">
 
 By default, information about the request user are not logged to the application trace.
 During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
@@ -1490,6 +1551,8 @@ This makes the runtime tracing user information of authenticated users to the ap
 ```sh
 [basic] - authenticated: { user: 'alice', tenant: 'some-tenant', features: [ 'some-feature' ] }
 ```
+
+</div>
 
 ## Pitfalls
 
