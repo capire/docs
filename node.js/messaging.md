@@ -146,7 +146,7 @@ In _srv/external/external.cds_:
 service ExternalService {
     event ExternalEvent {
         ID: UUID;
-        name: String;
+        rating: Decimal;
     }
 }
 ```
@@ -157,7 +157,7 @@ In _srv/own.cds_:
 service OwnService {
     event OwnEvent {
         ID: UUID;
-        name: String;
+        rating: Decimal;
     }
 }
 ```
@@ -185,7 +185,7 @@ Example:
 ```cds
 service OwnService {
     @topic: 'my.custom.topic'
-    event OwnEvent { ID: UUID; name: String; }
+    event OwnEvent { ID: UUID; rating: Decimal; }
 }
 ```
 
@@ -200,19 +200,19 @@ Example:
 const messaging = await cds.connect.to('messaging')
 
 this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
-  const { subject } = req.data
+  const { ID } = req.data
   const { rating } = await cds.run(
     SELECT.one(['round(avg(rating),2) as rating'])
     .from(Reviews)
-    .where({ subject }))
+    .where({ ID }))
 
   // send to a topic
-  await messaging.emit('cap/msg/system/review/reviewed',
-   { subject, rating })
+  await messaging.emit('cap/msg/system/my/custom/topic',
+   { ID, rating })
 
   // alternative if you want to send custom headers
-  await messaging.emit({ event: 'cap/msg/system/review/reviewed',
-    data: { subject, rating },
+  await messaging.emit({ event: 'cap/msg/system/my/custom/topic',
+    data: { ID, rating },
     headers: { 'X-Correlation-ID': req.headers['X-Correlation-ID'] }})
 })
 ```
@@ -232,9 +232,9 @@ Example:
 const messaging = await cds.connect.to('messaging')
 
 // listen to a topic
-messaging.on('cap/msg/system/review/reviewed', msg => {
-  const { subject, rating } = msg.data
-  return cds.run(UPDATE(Books, subject).with({ rating }))
+messaging.on('cap/msg/system/my/custom/topic', msg => {
+  const { ID, rating } = msg.data
+  return cds.run(UPDATE(Books, ID).with({ rating }))
 })
 ```
 
