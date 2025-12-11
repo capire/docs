@@ -1231,6 +1231,14 @@ Received when a new tenant subscribes.
 
 The implementations create and initialize required resources, that is, creating and initializing tenant-specific HDI containers in case of SAP HANA, or tenant-specific databases in case of SQLite.
 
+::: tip `subscribe` can be triggered multiple times
+
+In SAP BTP scenarios, the SaaS registry uses the same endpoint for both initial subscription and later updates. MTX forwards the original SaaS registry payload to `DeploymentService` as the `metadata` parameter.
+
+Custom handlers for `subscribe` must therefore be **idempotent** and able to handle multiple calls for the same tenant.
+
+:::
+
 ### `upgrade` _(tenant)_
 
 Used to upgrade a subscribed tenant.

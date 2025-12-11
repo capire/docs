@@ -43,7 +43,7 @@ The [predefined CDS types](../cds/types) are mapped to Java types and as follows
 | `cds.Binary`       | `byte[]`                |                                                                          |
 | `cds.LargeBinary`  | `byte[]`                | `java.io.InputStream` <sup>(1)</sup> if annotated with `@Core.MediaType` |
 | `cds.Vector`       | `com.sap.cds.CdsVector` | for [vector embeddings](#vector-embeddings)                              |
-| `cds.Map`          | `java.util.Map`         | for arbitrary [structured data](#structured-data)<sup>(2)</sup>          |
+| `cds.Map`          | `java.util.Map`         | for schemaless [structured data](#cds-map)          |
 
 ### SAP HANA-Specific Data Types
 
@@ -63,7 +63,6 @@ To facilitate using legacy CDS models, the following [SAP HANA-specific data typ
 
 
 > <sup>(1)</sup> Although the API to handle large objects is the same for every database, the streaming feature, however, is supported (and tested) in **SAP HANA**, **PostgreSQL**, and **H2**. See section [Database Support in Java](./cqn-services/persistence-services#database-support) for more details on database support and limitations.
-> <sup>(2)</sup> Serialized as JSON to a CLOB column or JSONB column (on Postgres)
 
 ::: warning
 The framework isn't responsible for closing the stream when writing to the database. You decide when the stream is to be closed. If you forget to close the stream, the open stream can lead to a memory leak.
@@ -71,10 +70,40 @@ The framework isn't responsible for closing the stream when writing to the datab
 
 These types are used for the values of CDS elements with primitive type. In the [Model Reflection API](./reflection-api), they're represented by the enum [CdsBaseType](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsBaseType.html).
 
+### Numeric Type Determination
+
+To have a consistent behavior across different databases, the CAP Java runtime applies numeric type determination in arithmetic expressions and numeric standard functions according to the following rules.
+
+::: tip
+Use `type(CdsBaseType)` to explicitly set the result type if needed.
+:::
+
+#### Arithmetic Expressions
+
+Arithmetic expressions promote numeric types according to the following precedence:
+
+**Type Precedence (highest to lowest):**
+`cds.Double`, `hana.REAL`, `cds.Decimal`, `cds.Int64`, `cds.Int32`, `cds.Int16`, `cds.UInt8`
+
+- For addition, subtraction, and multiplication, the result type is the one with highest precedence among the operands.
+- For division:
+  - If any operand is an approximate numeric type (`cds.Double`, `hana.REAL`), the result type is `cds.Double`.
+  - Otherwise, the result type is `cds.Decimal`, which provides higher accuracy for decimal fractions.
+
+#### Numeric Standard Functions
+
+Numeric aggregation and standard functions determine their result type based on the argument types:
+
+- **ceiling(x)**, **floor(x)**, **round(x)**: Return the same type as the input `x`.
+- **min(x)**, **max(x)**, **sum(x)**: Aggregate functions return the same type as the argument `x`.
+- **average(x)**: Returns `cds.Decimal` for exact numeric types and `cds.Double` for approximate numeric types.
+- **count(x)**, **countdistinct(x)**: Return `cds.Int64`.
+
+
 ## Structured Data
 
 In CDS, structured data is used as payload of *Insert*, *Update*, and *Upsert* statements. Also the query result of *Select* may be structured.
-CAP Java represents data of entities and structured types as `Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
+CAP Java represents data of entities, structured types, and elements of type [cds.Map](#cds-map) as `java.util.Map<String, Object>` and provides the `CdsData` interface as an extension of `Map` with additional convenience methods.
 
 In the following we use this CDS model:
 
@@ -279,6 +308,26 @@ Avoid cyclic relationships between CdsData objects when using toJson.
 
 <div id="cdsdata-serialization-jsonconverter"/>
 
+## Map Data { #cds-map }
+
+Elements of type `cds.Map` can be used to store arbitrary _schemaless_  [stuctured data](#structured-data). CAP Java represents data of elements of type `cds.Map` as `Map<String, Object>`.
+
+On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1)</sup>. Only data types that are compatible with JSON can be stored and retrieved:
+
+| Java Type                        | JSON Type       |
+| ---------------------------------| --------------- |
+| `java.lang.String`               | `string`        |
+| `java.lang.Number`<sup>(2)</sup> | `number`        |
+| `java.lang.Boolean`              | `true`, `false` |
+| `java.util.Map`                  | `object`        |
+| `java.util.List`                 | `array`         |
+| `null`                           | `null`          |
+
+> <sup>(1)</sup> Serialized as JSON to a CLOB column or JSONB column (on Postgres)
+
+> <sup>(2)</sup> The actual subclass of a `Number` is not preserved upon serialization and might change upon deserialization.
+
+Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 
@@ -471,7 +520,7 @@ To support _hybrid_ access, like simultaneous typed _and_ generic access, the ac
 The name of the CDS element referred to by a getter or setter, is defined through `@CdsName` annotation. If the annotation is missing, it's determined by removing the get/set from the method name and lowercasing the first character.
 :::
 
-### Generated Accessor Interfaces {#generated-accessor-interfaces}
+### Generated Accessor Interfaces
 
 For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
@@ -1230,7 +1279,7 @@ diff.add(new Filter() {
 
 Filters cannot limit the nature of the changes your visitor will observe and are always positive.
 
-### Deep Traversal {#cds-diff-processor-deep-traversal}
+### Deep Traversal
 
 For documents that have a lot of associations or a compositions and are changed in a deep way you might want to see additions for each level separately.
 
