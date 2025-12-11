@@ -1022,8 +1022,10 @@ curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books
 ```
 
-If you also want to access the `AdminService` which requires the role `admin`, you need to fetch the token for the named user instead.
-Then, the following request should succeed:
+If you also want to access the `AdminService` which requires the role `admin`,
+you need to fetch the token for the named user instead. That is the user which you have assigned the `admin (bookshop ${org}-${space})` role collection to.
+
+With the token for the named user, the following request should succeed:
 
 ```sh
 curl -H "Authorization: Bearer <access_token>" \
