@@ -720,15 +720,11 @@ Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and t
 
 <div class="impl node">
 
+TODO: the below command currently does not setup sqlite for production.
+
 In addition, activate SQLite to serve as in-memory DB (**not** recommended for production!):
 ```sh
 cds add sqlite --for production
-```
-
-make sure to run:
-
-```sh
-npm install
 ```
 
 </div>
@@ -878,9 +874,23 @@ If you modify the _xs-security.json_ manually, make sure that the scope names in
 #### Start and Check the Deployment
 
 Now let's pack and deploy the application with
+
+<div class="impl node">
+
+```sh
+npm install
+cds up
+```
+
+</div>
+
+<div class="impl java">
+
 ```sh
 cds up
 ```
+
+</div>
 
 and wait until the application is up and running. 
 You can test the status with `cf apps` or in BTP Cockpit, alternatively.
@@ -960,7 +970,8 @@ cf service-key bookshop-auth bookshop-auth-key
 ❗ **Never share service keys or tokens** ❗
 :::
 
-As second step, assign the generated role collection with name `admin (bookshop cdsruntime-cap-zone-bookshop-xsuaa)` to your **test user** by following instructions from [Assign Roles in SAP BTP Cockpit](./cap-users#xsuaa-assign).
+As second step, assign the generated role collection with name `admin (bookshop ${org}-${space})` to your **test user**.
+Follow the instructions from step 4 onwards of [Assign Roles in SAP BTP Cockpit Step](./cap-users#xsuaa-assign).
 
 With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
 
@@ -993,12 +1004,46 @@ The request returns with a valid XSUAA token which is suitable to pass authentic
 {"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
 ```
 
+
+<div class="java">
 The final test request needs to provide the token being send to the application's route:
 
 ```sh
 curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books
 ```
+
+</div>
+
+<div class="node">
+
+With the token for the technical user, you should be able to access any endpoint, which has no specific role requirements:
+
+```sh
+curl -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books
+```
+
+If you also want to access the `AdminService` which requires the role `admin`,
+you need to fetch the token for the named user instead. That is the user which you have assigned the `admin (bookshop ${org}-${space})` role collection to.
+
+With the token for the named user, the following request should succeed:
+
+```sh
+curl -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/admin/Books
+```
+
+::: tip
+Try out sending a request to the `admin` endpoint with the technical user token to see the expected `403 Forbidden` response:
+
+```sh
+{ "error": { "message":"Forbidden","code":"403", … } }
+```
+
+:::
+
+</div>
 
 Don't forget to delete the service key after your tests:
 ```sh
@@ -1076,6 +1121,17 @@ bookshop-srv   started           web:1/1     <org>-<space>-bookshop-xsuaa-booksh
 
 and open the route exposed by the `bookshop` UI application in a new browser session.
 
+<div class="node">
+
+E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/admin/Books`
+
+</div>
+
+<div class="java">
+
+E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/AdminService/Books`
+
+</div>
 
 
 ## Hybrid Authentication { #hybrid-auth }
