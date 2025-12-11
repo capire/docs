@@ -972,7 +972,7 @@ The error message returned by the CXL expression inside the annotation can be ei
 [Learn more about localized messages](./i18n){.learn-more}
 :::
 
-::: info Mutiple Targets
+::: info Multiple Targets
 If an assert should target multiple elements you need to annotate all targeted elements.
 :::
 
@@ -1017,7 +1017,7 @@ Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotat
 ::: warning Use complex asserts on service layer
 Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are avaliable in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile. 
 
-It is therefore recommened to use complex asserts on the highest projection, i.e. on the service layer.
+It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
 ::: 
 
 #### Multiple Conditions
