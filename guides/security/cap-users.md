@@ -1166,7 +1166,7 @@ Within the same Request Context, all CAP service calls share the same user infor
 By default, the Request Context of the current thread is not shared with spawned threads and hence user information is lost.
 If you want to avoid this, you can propagate the Request Context to spawned threads as described [here](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext) and hence the same user context is applied.
 
-#### Non-CAP Libraries { #user-token }
+#### Non-CAP Libraries { #user-token .java }
 
 CAP plugins for IAS and XSUAA store the resolved user information in Spring's [`SecurityContext`](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/core/context/SecurityContext.html) which contains all relevant authentication information. Hence, library code can rely on standards to fetch the authentication information and restore the user information if needed.
 
@@ -1178,7 +1178,7 @@ JwtTokenAuthenticationInfo jwtTokenInfo = authInfo.as(JwtTokenAuthenticationInfo
 String jwtToken = jwtTokenInfo.getToken();
 ```
 
-#### Remote Services { #remote-services }
+#### Remote Services { #remote-services .java }
 
 Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
 Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
@@ -1207,7 +1207,7 @@ Remote Services configurations with `destination` section support `onBehalfOf` o
 [Learn more about Remote Services in CAP Java](../../java/cqn-services/remote-services#remote-services){.learn-more}
 
 
-#### Cloud SDK { #cloud-sdk }
+#### Cloud SDK { #cloud-sdk .java }
 
 On a programmatic level, the CAP runtime integrates with [Cloud SDK](https://sap.github.io/cloud-sdk/) offering an abstraction for connection setup with remote services, including authentication and user propagation.
 By default, 
@@ -1400,13 +1400,54 @@ cds.tx({ user: cds.User.anonymous }, async tx => {
 
 ### User Propagation { .node }
 
+#### Non-CAP Libraries { #user-token .node }
 
+CAPs generic authentication middlewares for IAS and XSUAA maintain resolved authentication information in the `authInfo` attribute of `cds.context.user` of the current `cds.EventContext`.
+For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
+You can retrieve available authentication information for use in a non-CAP library from the `SecurityContext`. 
+
+```js
+const authInfo = cds.context.user.authInfo  // @sap/xssec SecurityContext
+const token = authInfo.token                // @sap/xssec Token
+const jwtToken = token.jwt                  // string
+```
+
+::: warning
+The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
+:::
+
+#### Remote Services { #remote-services }
+
+CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../using-services#authentication-and-authorization-of-remote-services).
+Under the hood CAP utilizes the [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/create-destinations-from-scratch) and [`@sap-cloud-sdk/connectivity`](https://www.npmjs.com/package/@sap-cloud-sdk/connectivity) to do most of the heavy lifting. 
+
+```json
+{
+  "cds": {
+    "requires": {
+      "SomeReuseService": {
+        "kind": "odata",
+        "model": "srv/external/SomeReuseService",
+        "credentials": {
+          "destination": "some-reuse-service",
+          "path": "/reuse/odata/api",
+        }
+      }
+    }
+  }
+}
+```
+
+<!-- TODO: 'onBehalfOf' or equivalent in Node.js runtime? -->
+
+::: tip
+Always prefer using [Remote Services](#remote-services) over natively consuming [Cloud SDK](https://sap.github.io/cloud-sdk/).
+:::
 
 </div>
 
-### Tracing { #user-tracing }
-
-<div class="impl java">
+### Tracing { #user-tracing .java }
 
 By default, information about the request user are not logged to the application trace.
 During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
@@ -1427,11 +1468,28 @@ Don't activate user tracing in production!
 
 [Learn more about various options to activate CAP Java loggers](../../java/operating-applications/observability#logging-configuration){.learn-more}
 
-</div>
+### Tracing { #user-tracing .node }
 
-<div class="impl node">
-TODO 
-</div>
+By default, information about the request user are not logged to the application trace.
+During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
+
+```json
+{
+  "cds": {
+    "log": {
+      "levels": {
+        "auth": "debug"
+      }
+    }
+  }
+}
+```
+
+This makes the runtime tracing user information of authenticated users to the application log like this:
+
+```sh
+[basic] - authenticated: { user: 'alice', tenant: 'some-tenant', features: [ 'some-feature' ] }
+```
 
 ## Pitfalls
 
