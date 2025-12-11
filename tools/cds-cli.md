@@ -468,6 +468,72 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 - [Diagram: Namespaces](vscode://settings/cds.preview.diagram.namespaces)
 - [Diagram: Queries](vscode://settings/cds.preview.diagram.queries)
 
+
+## cds export
+
+With `cds export` you create an API client package to be used
+for data exchange via CAP-level Service integration ("Calesi").
+
+First define a data provider service in your CDS model that serves as an
+interface to your data. Put each such data provider service in a separate file.
+
+For the [xflights](https://github.com/capire/xflights) sample app,
+an API that provides information about flights, airports, and airlines
+could look like this:
+
+::: code-group
+
+```cds [srv/data-service.cds]
+using { sap.capire.flights as my } from '../db/schema';
+
+@data.product @hcql @rest @odata 
+service sap.capire.flights.data {
+  @readonly entity Flights as projection on my.Flights;
+  @readonly entity Airlines as projection on my.Airlines;
+  @readonly entity Airports as projection on my.Airports;
+}
+```
+
+:::
+
+Then create an API client package for this service:
+
+```sh
+cds export srv/data-service.cds
+```
+
+The API client package is generated into a new folder _apis/data-service_.
+
+![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
+
+The `service.csn` contains only the interface defined in the service,
+stripping away the query part of the entities and all the model underneath it.
+In addition, there are i18n bundles with the localized metadata relevant
+for the interface, and a _data_ folder with test data
+that exactly matches the structure of the entities in the API.
+
+`cds export` also adds a _package.json_. The package name is the
+application name (from the main _package.json_) prefixed with the
+file name of the data service, in our example `@capire/xflights-data-service`.
+You can change this name as appropriate.
+
+The generated package can then be published, e.g. via `npm publish`.
+
+For consuming the API in another CAP application
+* import the API package with `npm add`
+* define consumption views on the imported entities
+* use them in your model as if they were local entities
+* add custom code to access the data in the provider app via any of the offered protocols
+
+Have a look at the [xtravels](https://github.com/capire/xtravels) sample app for an
+example of using an API client package.
+
+With the possibility to export and import API packages via `cds export` and `npm add`,
+you no longer have to use EDMX (or OpenAPI) as intermediate format for exchanging API information
+between CAP applications, with the known problem of loosing information.
+
+
+
 ## cds watch
 
 Use `cds watch` to watch for changed files, restarting your Node.js server.
