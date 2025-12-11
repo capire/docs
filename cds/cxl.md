@@ -414,16 +414,16 @@ TODO
 .diagram {
   padding-top: 1em;
   padding-bottom: 1em;
-  width: 100%;
+  max-width: 100%;
 }
 
 .diagram > div > svg {
-  width: 100%;
+  max-width: 100%;
   height: auto;
 }
 
 .diagram > svg {
-  width: 100%;
+  max-width: 100%;
   height: auto;
 }
 
