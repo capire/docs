@@ -1235,7 +1235,7 @@ The implementations create and initialize required resources, that is, creating 
 
 In SAP BTP scenarios, the SaaS registry uses the same endpoint for both initial subscription and later updates. MTX forwards the original SaaS registry payload to `DeploymentService` as the `metadata` parameter.
 
-Handlers for `subscribe` must therefore be **idempotent** and able to handle multiple calls for the same tenant.
+Custom handlers for `subscribe` must therefore be **idempotent** and able to handle multiple calls for the same tenant.
 
 :::
 
