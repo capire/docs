@@ -1255,7 +1255,8 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 | User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
 |---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
 | _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
-| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `zone_uuid`             | `$user.tenant`         |
+| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`             | `$user.tenant`         |
+``
 | _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
 | _Roles_       | `roles()` and `is(role)`            | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
 
