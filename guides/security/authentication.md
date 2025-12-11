@@ -89,7 +89,14 @@ MockUsersSecurityConfig  : *  Security configuration based on mock users found i
 </div>
 
 <div class="impl node">
-TODO - is there a corresponding log output in Node?
+
+```sh
+[cds] - using auth strategy {
+  kind: 'mocked',
+  …
+}
+```
+
 </div>
 
 <div class="impl java">
@@ -121,20 +128,29 @@ Mock users require **basic authentication**, hence sending the same request on b
 
 The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
 
-::: Hint
+::: tip
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
 :::
 
-Sending OData request `curl http://localhost:8080/odata/admin/Books --verbose`
+Sending OData request
+
+```sh
+curl http://localhost:4004/odata/v4/admin/Books --verbose
+```
+
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with curl `http://alice:basic@localhost:8080/odata/admin/Books` returns successfully (HTTP response `200`).
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with
+```sh
+curl http://alice:basic@localhost:4004/odata/v4/admin/Books
+```
+returns successfully (HTTP response `200`).
 
 </div>
 
 
-::: Hint
+::: tip
 Mock users are deactivated in production profile by default ❗
 :::
 
@@ -305,7 +321,9 @@ public class BookServiceOrdersTest {
 </div>
 
 <div class="impl node">
-TODO
+
+[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+
 </div>
 
 
