@@ -1,0 +1,67 @@
+<mxfile>
+  <diagram id="8x423Myv2o-A2hiDCpK7" name="Page-2">
+    <mxGraphModel dx="597" dy="678" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4VQcTZpkHG-smgN46T2B-2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EBECEE;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="92" y="174" width="500" height="146" as="geometry" />
+        </mxCell>
+        <mxCell id="4VQcTZpkHG-smgN46T2B-3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EBECEE;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="92" y="328" width="500" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="4VQcTZpkHG-smgN46T2B-1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EBECEE;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="92" y="74" width="500" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-1" value="Named User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="110" y="100" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-2" value="Named User&lt;br&gt;&lt;br&gt;or&lt;br&gt;&lt;br&gt;System User&amp;nbsp; Subscriber" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="110" y="200" width="130" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-3" value="System User&lt;br&gt;Subscriber" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="445" y="100" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-4" value="System User&lt;br&gt;Provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="445" y="200" width="130" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-5" value="System User&lt;br&gt;Provider" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="110" y="354" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="oS4NL4SunxO57dQKOvio-6" value="System User&lt;br&gt;Subscriber" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBFBFC;strokeColor=none;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="445" y="354" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4VQcTZpkHG-smgN46T2B-4" value="Switching to technical user" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="103" y="74" width="228" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4VQcTZpkHG-smgN46T2B-5" value="Switching to provider tenant" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="103" y="174" width="228" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="4VQcTZpkHG-smgN46T2B-6" value="Switching to a specific tenant" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" vertex="1">
+          <mxGeometry x="103" y="328" width="228" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Kvg9tU1Lcc3JVTnawQBu-1" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" source="oS4NL4SunxO57dQKOvio-2" target="oS4NL4SunxO57dQKOvio-4" edge="1">
+          <mxGeometry x="0.0345" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="270" as="sourcePoint" />
+            <mxPoint x="480" y="270" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OnLLUh_f5k9hszVNcecs-1" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" source="oS4NL4SunxO57dQKOvio-1" target="oS4NL4SunxO57dQKOvio-3" edge="1">
+          <mxGeometry x="0.0345" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="265.3553390593273" y="305.3553390593273" as="sourcePoint" />
+            <mxPoint x="344.64466094067257" y="434.64466094067257" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="OEi_iilweXarxyNLlaIU-1" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=default;fontFamily=&#39;Avenir Next&#39;, &#39;Inter var&#39;, &#39;Inter&#39;, Helvetica, Arial, sans-serif;" parent="1" source="oS4NL4SunxO57dQKOvio-5" target="oS4NL4SunxO57dQKOvio-6" edge="1">
+          <mxGeometry x="0.4634" y="-6" width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="374" as="sourcePoint" />
+            <mxPoint x="423.79999999999995" y="500.29999999999995" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
