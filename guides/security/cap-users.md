@@ -1135,7 +1135,7 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 
 In CAP Node.js, the CAP user of a request is represented by a [`cds.User`](../../node.js/authentication#cds-user) object. 
 An instance of `cds.User` representing the current principal is available from the current request context in `req.user`. 
-Similarly, the identifier of the users tenant is available from `req.tenant`.
+Similarly, the identifier of the user's tenant is available from `req.tenant`.
 
 ```js
 srv.before('READ', srv.entities.Books, req => {
@@ -1152,7 +1152,7 @@ const { user, tenant } = cds.context
 ```
 
 :::tip
-Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](https://nodejs.org/api/async_context.html#asynclocalstoragegetstore), which induces some minor overhead.
+Prefer local req objects in your handlers for accessing event context properties, as each access to `cds.context` happens through [AsyncLocalStorage.getStore()](https://nodejs.org/api/async_context.html#asynclocalstoragegetstore), which induces some minor overhead.
 :::
 
 Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
@@ -1247,8 +1247,8 @@ For instance, the logon name as injected by standard XSUAA integration might not
 Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you can implement in a custom adaptation.
 
 This can be done by modifying `cds.middlewares`. 
-To modify the `cds.context.user` while still relying on existing generic middlewares, a new middleware to customized the user must be registered after the `.auth()` middleware. 
-If `cds.context.tenant` is manipulated as well, it must also be done before `cds.context.model` is set for the current request.
+To modify the `cds.context.user` while still relying on existing generic middlewares, a new middleware must be registered after the `auth` middleware. 
+If you intend to manipulate the `cds.context.tenant` as well, the new middlware must run before `cds.context.model` is set for the current request.
 
 ::: details Sample implementation to override the user id
 
@@ -1280,7 +1280,7 @@ Also consider data protection and privacy regulations when storing user data.
 :::
 
 :::tip Custom Authentication Middleware
-In case you require even more control, you can also replace the authentication middleware with a fully [Custom Authentication](../../node.js/authentication#custom).
+In case you require even more control, it is possible to replace the authentication middleware with a fully [Custom Authentication](../../node.js/authentication#custom).
 :::
 
 </div>
@@ -1321,19 +1321,20 @@ Named user contexts are only created by the CAP Java framework as initial Reques
 <div class="impl node">
 
 There are a few typical use cases in a (multitenant) application, where switching the current user of the request is required.
-For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
+For instance, the business request on behalf of a named subscriber user needs to reach out to a service on behalf of the subscribers technical user.
 
 These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
 
 ![Typical Scenarios for a User Context Switch](./assets/requestcontext-node.drawio.svg)
 
-In CAP Node.js, the `cds.context` enables convenient access to the `cds.EventContext` and allows to update the principal of the context.
+In CAP Node.js, the `cds.context` allows to access the current `cds.EventContext` and enables updating the principal of the context.
 The prefered method for switching users and executing code in a different context and for a different principal, is to spawn a new root transaction using [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx).
 Providing a `ctx` argument when creating a new root transaction allows switching the user for nested operations.
 The `cds.User` class exposes convenience constructors and accessors for specialized `cds.User` instances that represent typical technical principals you may require.
 
 ```js
-await srv.tx ({ user: new cds.User({ id: '...', roles: [...], ...}), tenant: '<target-tenant>' }, async tx => {
+const newUser = new cds.User({ id: '...', roles: [...], ...})
+await srv.tx ({ user: newUser, tenant: '<target-tenant>' }, async tx => {
   // Perform operations with a privileged principal
 })
 ```
@@ -1415,7 +1416,7 @@ public void onAction(AddToOrderContext context){
 In this scenario the application offers a bound action in a CDS entity. 
 Within the action, the application communicates with a remote CAP service using a privileged user and the provider tenant. 
 The corresponding `.on` handler of the action needs to create a new root transaction by calling `srv.tx`.
-The user passed to `srv.tx` in the `ctx` attribute will be used as the prinicpal for requests made within the new closure.
+The user passed to `srv.tx` in the `ctx` attribute will be used as the prinicpal for requests made within the new root transaction.
 
 ```js
 srv.on('action', srv.entities.Books, async req => {
@@ -1457,7 +1458,7 @@ Instead, prefer a task-based approach which processes specific subscriber tenant
 
 ![The graphic is explained in the accompanying text.](./assets/switchtenant-node.drawio.svg){width="450px"}
 
-The application is using a [`cds.spawn`](../../node.js/cds-tx#cds-spawn) to regularly perform tasks on behalf of a certain tenant.
+The application is using [`cds.spawn`](../../node.js/cds-tx#cds-spawn) to regularly perform tasks on behalf of a certain tenant.
 By default, operations that are nested within `cds.spawn` will inherit the outer context.
 You can explicitly define the context `cds.spawn` should use by passing relevant information in a `ctx` argument. 
 This enables to ensure that the Persistence Service performs the query for the specified tenant.
@@ -1556,7 +1557,7 @@ String jwtToken = jwtTokenInfo.getToken();
 
 <div class="impl node">
 
-CAPs generic authentication middlewares for IAS and XSUAA maintain resolved authentication information in the `authInfo` attribute of `cds.context.user` of the current `cds.EventContext`.
+CAPs generic authentication middlewares for IAS and XSUAA maintain resolved authentication information in the `authInfo` attribute of `cds.context.user`.
 For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
 You can retrieve available authentication information for use in a non-CAP library from the `SecurityContext`. 
 
@@ -1635,9 +1636,10 @@ Always prefer using [Remote Services](#remote-services) over natively consuming 
 
 </div>
 
+<div class="impl java">
+
 #### Cloud SDK { #cloud-sdk }
 
-<div class="impl java">
 
 On a programmatic level, the CAP runtime integrates with [Cloud SDK](https://sap.github.io/cloud-sdk/) offering an abstraction for connection setup with remote services, including authentication and user propagation.
 By default, 
