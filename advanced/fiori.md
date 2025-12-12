@@ -745,9 +745,9 @@ Cache Control feature is currently supported on the Java runtime only.
 
 ## Hierarchical Tree Views
 
-Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
+Recursive hierarchies are parent-child hierarchies: each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
-A generic hierarchy implementation for hierarchies is available on all relational datases supported by the CAP runtimes.
+A generic hierarchy implementation for hierarchies is available on all relational databases supported by the CAP runtimes.
 
 ::: warning
 On H2, only small hierarchies should be used for performance reasons.
@@ -761,6 +761,7 @@ Let's assume we have the following domain model and its projection in a service:
 namespace my.bookshop;
 
 entity Genres { //...
+  ID : UUID;
   parent : Association to Genres;
 }
 ```
@@ -774,8 +775,51 @@ service AdminService {
 ```
 :::
 
+In this example, there is a managed to-one association `parent` that defines the parent-child hierarchy
+based on a single key element. In such a situation you can define the Tree View via the annotation `@hierarchy`:
 
-Annotate/extend the entity in the service as follows:
+```cds
+annotate AdminService.Genres with @hierarchy : parent;
+```
+
+If the entity contains only one such association, you can even omit the value:
+
+```cds
+annotate AdminService.Genres with @hierarchy;
+```
+
+Configure the TreeTable in UI5's _manifest.json_ file:
+
+```jsonc
+  "sap.ui5": { ...
+    "routing": { ...
+      "targets": { ...
+        "GenresList": { ...
+          "options": {
+            "settings": { ...
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
+                    "type": "TreeTable" // [!code focus]
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+    },
+```
+
+> Note: construct the `hierarchyQualifier` with the following pattern: <br>
+> `<entity name in service>Hierarchy`
+
+![Fiori UI with hierarchical trree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
+
+The compiler automatically expands the shortcut annotation `@hierarchy` to the
+following annotate and extend statements. If you cannot use the `@hierarchy` annotation,
+e.g. because you only have an unmanaged parent association, you can write them yourself.
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
@@ -810,32 +854,6 @@ extend AdminService.Genres with @(
 
 > Note: When naming the hierarchy qualifier, use the following pattern: <br>
 > `<entity name in service>Hierarchy`
-
-Configure the TreeTable in UI5's _manifest.json_ file:
-
-```jsonc
-  "sap.ui5": { ...
-    "routing": { ...
-      "targets": { ...
-        "GenresList": { ...
-          "options": {
-            "settings": { ...
-              "controlConfiguration": {
-                "@com.sap.vocabularies.UI.v1.LineItem": {
-                  "tableSettings": {
-                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
-                    "type": "TreeTable" // [!code focus]
-                  }
-                }
-              }
-            }
-          }
-        },
-      },
-    },
-```
-
-> Note: use the `hierarchyQualifier` declared earlier
 
 <div id="reserved-words" />
 
