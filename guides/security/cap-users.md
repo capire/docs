@@ -739,7 +739,7 @@ In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 ::: details AMS policy deployer task in the MTA
 
 ::: code-group
-```yaml [mta.yaml- deployer task]
+```yaml [mta.yaml - deployer task]
 - name: bookshop-ams-policies-deployer
    type: javascript.nodejs
    path: gen/policies
@@ -757,7 +757,7 @@ In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 ```
 
 
-```json [srv/src/gen/policies/package.json - deyployer module]
+```json [gen/policies/package.json - deyployer module]
 {
   "name": "ams-dcl-content-deployer",
   "version": "3.0.0",
@@ -888,9 +888,25 @@ c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
 <div class="impl node">
 
 ```sh
-[ams] - Computing AMS filter conditions for ...
-[ams] - Privilege check for ... on ... was conditional. {...
-[ams] - Resulting privileges for  ...  on ... : [ ...
+[ams] - Determined potential actions for resource '$SCOPES': stock-manager {
+        potentialActions: Set(1) { 'stock-manager' },
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - AMS user roles added to user.is: [ 'stock-manager' ]
+[ams] - Privilege check for 'stock-manager' on '$SCOPES' was conditional. {
+        result: 'conditional',
+        dcn: "$app.genre IN ['Fantasy', 'Mystery']",
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - Resulting privileges for  READ  on  AdminService.Books : [
+        {
+          grant: 'READ',
+          to: [ 'stock-manager' ],
+          where: "genre.name  IN  ('Fantasy', 'Mystery')"
+        }
+      ]
 ```
 
 </div>
@@ -1623,81 +1639,6 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 :::
 
 [Learn more about Cloud SDK integration in CAP Java](../../java/cqn-services/remote-services#cloud-sdk-integration){.learn-more}
-
-</div>
-
-### Tracing { #user-tracing }
-
-<div class="impl java">
-
-By default, information about the request user are not logged to the application trace.
-During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
-
-```sh
-logging.level.com.sap.cds.security.authentication: DEBUG
-```
-
-This makes the runtime tracing user information of authenticated users to the application log like this:
-
-```sh
-MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
-```
-
-::: warning
-Don't activate user tracing in production!
-:::
-
-[Learn more about various options to activate CAP Java loggers](../../java/operating-applications/observability#logging-configuration){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-By default, information about the request user are not logged to the application trace.
-During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
-
-```json
-{
-  "cds": {
-    "log": {
-      "levels": {
-        "auth": "debug"
-      }
-    }
-  }
-}
-```
-
-You can verify a valid configfuration of the AMS plugin by the following log output:
-
-```sh
-[ams] - AMS Plugin loaded.
-[ams] - Added AMS middleware after 'auth' middleware.
-```
-
-... and find more information about the policy evaluation at request time:
-
-```sh
-[ams] - Determined potential actions for resource '$SCOPES': stock-manager {
-        potentialActions: Set(1) { 'stock-manager' },
-        policies: [ 'local.StockManagerFiction' ],
-        ...
-      }
-[ams] - AMS user roles added to user.is: [ 'stock-manager' ]
-[ams] - Privilege check for 'stock-manager' on '$SCOPES' was conditional. {
-        result: 'conditional',
-        dcn: "$app.genre IN ['Fantasy', 'Mystery']",
-        policies: [ 'local.StockManagerFiction' ],
-        ...
-      }
-[ams] - Resulting privileges for  READ  on  AdminService.Books : [
-        {
-          grant: 'READ',
-          to: [ 'stock-manager' ],
-          where: "genre.name  IN  ('Fantasy', 'Mystery')"
-        }
-      ]
-```
 
 </div>
 
