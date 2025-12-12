@@ -602,10 +602,15 @@ cds watch
 </div>
 
 <div class="impl java">
+
 and verify in the UI for `AdminService` (`http://localhost:8080/index.html#Books-manage`) that the the assigned policies imply the expected access rules:
+
 </div>
+
 <div class="impl node">
+
 You can now verify that the assigned policies enforce the expected access rules:
+
 </div>
 
 - mock user `content-manager` has full access to `Books` and `Authors`.
@@ -731,7 +736,7 @@ In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 
 <div class="impl node">
 
-:: details AMS policy deployer task in the MTA
+::: details AMS policy deployer task in the MTA
 
 ::: code-group
 ```yaml [mta.yaml- deployer task]
@@ -773,7 +778,7 @@ Note that the policy deployer task requires a path to a directory structure cont
 By default, the path points to `gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `ams/dcl`.
 In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 
-<div>
+</div>
 
 ::: tip
 Several microservices sharing the same IAS instance need a common folder structure the deployer task operates on. 
