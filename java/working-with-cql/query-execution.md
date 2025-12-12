@@ -321,13 +321,12 @@ The delete operation is resolved to the underlying `Order` entity with ID *42* a
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP Java resolves them *at runtime* on each request.
 
-Runtime views must be simple [projections](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read. On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
+CAP Java provides two modes for resolving [runtime views](../cds/cdl#runtimeviews) during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
 
-CAP Java provides two modes for resolving runtime views during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
+On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
 
-::: details Changing the runtime view mode
+::: details Changing the runtime view read mode
 To globally set the runtime view mode, use the property `cds.sql.runtimeView.mode` with value `cte` (the default) or `resolve` in the *application.yml*. To set the mode for a specific runtime view, annotate it with `@cds.java.runtimeView.mode: cte|resolve`.
 
 To set the mode for a specific query, use a [hint](#hana-hints):
@@ -337,42 +336,9 @@ Select.from(BooksWithLowStock).hint("cds.sql.runtimeView.mode", "resolve");
 ```
 :::
 
-The next two sections introduce both modes using the following CDS model and query:
-
-```cds
-entity Books {
-  key ID     : UUID;
-      title  : String;
-      stock  : Integer;
-      author : Association to one Authors;
-}
-@cds.persistence.skip
-entity BooksWithLowStock as projection on Books {
-    ID, title, author.name as author
-} where stock < 10; // makes the view read only
-```
-```sql
-SELECT from BooksWithLowStock where author = 'Kafka'
-```
-
-
 #### Read in `cte` mode { #rtview-cte }
 
-This is the default mode since CAP Java `4.x`. The runtime translates the [view definition](#runtimeviews) into a _Common Table Expression_ (CTE) and sends it with the query to the database.
-
-```sql
-WITH BOOKSWITHLOWSTOCK_CTE AS (
-    SELECT B.ID,
-           B.TITLE,
-           A.NAME AS "AUTHOR"
-      FROM BOOKS B
-      LEFT OUTER JOIN AUTHOR A ON B.AUTHOR_ID = A.ID
-     WHERE B.STOCK < 10
-)
-SELECT ID, TITLE, AUTHOR AS "author"
-  FROM BOOKSWITHLOWSTOCK_CTE
- WHERE A.NAME = ?
-```
+In [cte mode](../cds/cdl#runtimeviews), the runtime translates the view definition into a _Common Table Expression_ (CTE) and sends it with the query to the database. This is the default mode since CAP Java `4.x`.
 
 ::: tip CAP Java 3.10
 Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
@@ -380,7 +346,9 @@ Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
 
 #### Read in `resolve` mode { #rtview-resolve }
 
-The runtime _resolves_ the [view definition](#runtimeviews) to the underlying persistence entities and executes the query directly against the corresponding tables.
+In `resolve` mode, the runtime _resolves_ the view definition to the underlying persistence entities and executes the query directly against the corresponding tables.
+
+For example, the [view definition](../cds/cdl#runtimeviews) is resolved into the following SQL statement:
 
 ```sql
 SELECT B.ID, B.TITLE, A.NAME AS "author"
