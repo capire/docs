@@ -471,6 +471,8 @@ The attribute statement is in the scope of a dedicated CAP role and filters are 
 
 Although the AMS policies are not yet [deployed to the Cloud service](#ams-deployment), you can assign (base) policies to mock users and run locally:
 
+<div class="impl java">
+
 ```yaml
 cds:
   security:
@@ -484,17 +486,63 @@ cds:
             - cap.StockManager // [!code ++]
 ```
 
+</div>
+
+<div class="impl node">
+
+```json
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "content-manager": {
+              "policies": ["cap.ContentManager"]
+            },
+            "stock-manager": {
+              "policies": ["cap.StockManager"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</div>
+
 :::tip
 Don't forget to refer to fully qualified policy names including the package name (`cap` in this example).
 :::
 
 Now (re)start the application with
 
+<div class="impl java">
+
 ```sh
 mvn spring-boot:run
 ```
 
+</div>
+
+<div class="impl node">
+
+```sh
+cds watch
+```
+
+</div>
+
+<div class="impl java">
 and verify in the UI for `AdminService` (`http://localhost:8080/index.html#Books-manage`) that the the assigned policies imply the expected access rules:
+</div>
+<div class="impl node">
+You can now verify that the assigned policies enforce the expected access rules:
+</div>
+
 - mock user `content-manager` has full access to `Books` and `Authors`.
 - mock user `stock-manager` can _read_ `Books` and `Authors` and can _edit_ `Books` (but _not_ `Authors`).
 
@@ -510,6 +558,7 @@ POLICY StockManagerFiction {
 
 [Learn more about DCL operators](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/condition-operators){.learn-more}
 
+<div class="impl java">
 
 ::: tip
 Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/local/`.
@@ -526,6 +575,35 @@ cds:
 ```
 
 You can verify in the UI that mock user `stock-manager-fiction` is restricted to books of genres `Mystery` and `Fantasy`.
+
+</div>
+
+<div class="impl node">
+
+::: tip
+Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/dcl/local/`.
+:::
+
+```json
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "stock-manager-fiction": {
+              "policies": ["local.StockManagerFiction"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+</div>
 
 [Learn more about AMS attribute filters with CAP](https://sap.github.io/cloud-identity-developer-guide/CAP/InstanceBasedAuthorization.html#instance-based-authorization){.learn-more}
 
@@ -646,13 +724,35 @@ c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
 
 In addition, for detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
 
+<div class="impl java">
+
 ```yaml
 logging:
     level:
         com.sap.cloud.security.ams: DEBUG
 ```
 
+</div>
+
+<div class="impl node">
+
+```json
+{
+  "cds": {
+    "log": {
+      "levels": {
+        "ams": "DEBUG"
+      }
+    }
+  }
+}
+```
+
+</div>
+
 which gives you more information about the policy evaluation at request time:
+
+<div class="impl java">
 
 ```sh
 c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
@@ -660,6 +760,18 @@ c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
  ...
 "accessResult":"or( eq($app.Genre, "Mystery") eq($app.Genre, "Fantasy") )"}.
 ```
+
+</div>
+
+<div class="impl node">
+
+```sh
+[ams] - Computing AMS filter conditions for ...
+[ams] - Privilege check for ... on ... was conditional. {...
+[ams] - Resulting privileges for  ...  on ... : [ ...
+```
+
+</div>
 
 You can add general user information by applying [user tracing](#user-tracing).
 
@@ -689,9 +801,11 @@ cds add xsuaa
 </div>
 
 <div class="impl node">
+
 ```sh
 cds add xsuaa --for production
 ```
+
 </div>
 
 This generates an _xs-security.json_ file:
@@ -801,13 +915,18 @@ CAP is not tied to any specific authentication method, nor to concrete user info
 Instead, an abstract [user representation](cap-users#claims) is attached to the request which can be used to influence request processing.
 For example, both authorization enforcement and domain logic can depend on the current user properties.
 
-::: tip
+::: warning
 Avoid writing custom code based on the raw authentication info, as this undermines the decoupling between authentication strategy and your business logic.
+:::
 
+::: tip
 **In most casese, there is no need to write custom code dependent on the CAP user - leverage CDS modelling whenever possible**.
 :::
 
-### Reflection { #reflection .java }
+
+### Reflection { #reflection }
+
+<div class="impl java">
 
 In CAP Java, The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) of a handler in different ways:
 
@@ -839,12 +958,12 @@ The `UserInfo` object is not modifyable, but during request processing, a new `R
 
 Depending on the configured [authentication](./authentication) strategy, CAP derives a *default set* of user claims containing the user's name, tenant, attributes and assigned roles:
 
-| User Property | UserInfo Getter | XSUAA JWT Property               | IAS JWT Property        | `@restrict`-annotation
-|---------------|---------------------|----------------------------------|-------------------------|--------------------|
-| _Logon name_     | `getName()`    | `user_name`                      | `sub`                   | `$user`  |
-| _Tenant_   | `getTenant()`  | `zid`                            | `zone_uuid`             | `$user.tenant` |
-| _Attributes_ | `getAttributeValues(String attr)` | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>` |
-| _Roles_     | `getRoles()` and `hasRole(String role)` | `scopes`  | n/a - injected via AMS | String in `to`-clause |
+| User Property | UserInfo Getter                         | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
+|---------------|-----------------------------------------|-----------------------------|-------------------------|------------------------|
+| _Logon name_  | `getName()`                             | `user_name`                 | `sub`                   | `$user`                |
+| _Tenant_      | `getTenant()`                           | `zid`                       | `app_tid`             | `$user.tenant`         |
+| _Attributes_  | `getAttributeValues(String attr)`       | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
+| _Roles_       | `getRoles()` and `hasRole(String role)` | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
 
 ::: tip
 CAP does not make any assumptions on the presented claims given in the token. String values are copied as they are.
@@ -852,16 +971,59 @@ CAP does not make any assumptions on the presented claims given in the token. St
 
 In addition, there are getters to retrieve information about [pseudo-roles](#pseudo-roles):
 
-| UserInfo method                               | Description                           | CAP Role  |
-| :---------------------------------------------------- | :----------------------------------------------------- | -------------- |
-| `isAuthenticated()` | True if the current user has been authenticated. | `authenticated-user` |
-| `isSystemUser()` | Indicates whether the current user has pseudo-role `system-user`. | `system-user` |
-| `isInternalUser()` |  Indicates whether the current user has pseudo-role `internal-user`. | `internal-user` |
-| `isPrivileged()` |  Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted. | n/a |
+| UserInfo method     | Description                                                                                                        | CAP Role             |
+|:--------------------|:-------------------------------------------------------------------------------------------------------------------|----------------------|
+| `isAuthenticated()` | True if the current user has been authenticated.                                                                   | `authenticated-user` |
+| `isSystemUser()`    | Indicates whether the current user has pseudo-role `system-user`.                                                  | `system-user`        |
+| `isInternalUser()`  | Indicates whether the current user has pseudo-role `internal-user`.                                                | `internal-user`      |
+| `isPrivileged()`    | Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted. | n/a                  |
+
+</div>
+
+<div class="impl node">
+
+In CAP Node.js, the CAP user of a request is represented by a [`cds.User`](../../node.js/authentication#cds-user) object. 
+An instance of `cds.User` representing the current principal is available from the current request context in `req.user`. 
+Similarly, the identifier of the users tenant is available from `req.tenant`.
+
+```js
+srv.before('READ', srv.entities.Books, req => {
+  const { user, tenant } = req
+  // [...]
+})
+```
+
+In addition to the request context, information about the current user can similarly be retrieved from the global [`cds.context`](../../node.js/events#cds-context), which provides access to the current [`cds.EventContext`](../../node.js/events#cds-event-context): 
+
+```js
+const cds = require('@sap/cds')
+const { user, tenant } = cds.context
+```
+
+:::tip
+Prefer local req objects in your handlers for accessing event context properties, as each access to cds.context happens through [AsyncLocalStorage.getStore()](https://nodejs.org/api/async_context.html#asynclocalstoragegetstore), which induces some minor overhead.
+:::
+
+Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
+During processing, you can set it programmatically or spawn a new root transaction providing a context argument to achieve a [switch of the current user](#switching-users--switching-users-node).
+
+Depending on the configured [authentication](./authentication) strategy, CAP derives a default set of user claims containing the user's name, tenant, attributes and assigned roles:
+
+| User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
+|---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
+| _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
+| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$user.tenant`         |
+| _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
+| _Roles_       | `is(role)`                          | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
+
+</div>
 
 
+<!-- TODO: Pseudo Role Checks in Node? cds.User.is('privilged')? -->
 
-### Customizing Users { #customizing-users .java }
+### Customizing Users { #customizing-users }
+
+<div class="impl java">
 
 In most cases, CAP's default mapping to the CAP user will match your requirements, but CAP also allows you to customize the mapping according to specific needs. 
 
@@ -924,11 +1086,58 @@ There are multiple reasonable use cases in which user modification is a suitable
 
 [See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.learn-more}
 
+</div>
 
+<div class="impl node">
+
+In most cases, CAP's default mapping to the CAP user will match your requirements, but CAP also allows you to customize the mapping according to specific needs. 
+
+For instance, the logon name as injected by standard XSUAA integration might not be unique if several customer IdPs are connected to the underlying identity service.
+Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you can implement in a custom adaptation.
+
+This can be done by modifying `cds.middlewares`. 
+To modify the `cds.context.user` while still relying on existing generic middlewares, a new middleware to customized the user must be registered after the `.auth()` middleware. 
+If `cds.context.tenant` is manipulated as well, it must also be done before `cds.context.model` is set for the current request.
+
+::: details Sample implementation to override the user id
+
+```js
+cds.middlewares.before = [
+  cds.middlewares.context(),
+  cds.middlewares.trace(),
+  cds.middlewares.auth(),
+  function ctx_user (_,__,next) {
+    const ctx = cds.context
+    ctx.user.id = ctx.user.attr('origin') + ctx.user.id
+    next()
+  },
+  cds.middlewares.ctx_model()
+]
+```
+
+:::
+
+There are multiple reasonable use cases in which user modification is a suitable approach:
+
+- Overriding user roles by calling `user.roles(roles)`.
+- Overriding user attributes and providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by invoking `user.attr(attributes)`.
+- etc.
+
+::: warning Be very careful when redefining `$user` and customizing `cds.middlewares`
+The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. 
+Also consider data protection and privacy regulations when storing user data.
+:::
+
+:::tip Custom Authentication Middleware
+In case you require even more control, you can also replace the authentication middleware with a fully [Custom Authentication](../../node.js/authentication#custom).
+:::
+
+</div>
+
+### Switching Users { #switching-users }
+	
 <div class="impl java">
 
-### Switching Users { #switching-users  .java }
-		
 There are a few typical use cases in a (multitenant) application where switching the current user of the request is required.
 For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
 
@@ -956,8 +1165,38 @@ Named user contexts are only created by the CAP Java framework as initial Reques
 - Asynchronous requests to CAP services are always on behalf of a technical user.
 :::
 
+</div>
 
-#### Switching to Technical User {#switching-to-technical-user}
+<div class="impl node">
+
+There are a few typical use cases in a (multitenant) application, where switching the current user of the request is required.
+For instance, the business request on behalf of a named subscriber user needs to reach out to a platform service on behalf of the underlying technical user of the subscriber.
+
+These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
+
+<!-- TODO: Rework the graphic to fit Node runtime --> 
+![Typical Scenarios for a User Context Switch](./assets/requestcontext.drawio.svg)
+
+In CAP Node.js, the `cds.context` enables convenient access to the `cds.EventContext` and allows to update the principal of the context.
+The prefered method for switching users and executing code in a different context and for a different principal, is to spawn a new root transaction using [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx).
+Providing a `ctx` argument when creating a new root transaction allows switching the user for nested operations.
+The `cds.User` class exposes convenience constructors and accessors for specialized `cds.User` instances that represent typical technical principals you may require.
+
+```js
+await srv.tx ({ user: new cds.User({ id: '...', roles: [...], ...}), tenant: '<target-tenant>' }, async tx => {
+  // Perform operations with a privileged principal
+})
+```
+
+:::tip
+When creating new root transactions in calls to [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx), all properties not specified in the `ctx` argument are inherited from `cds.context`, if set in the current continuation.
+:::
+
+</div>
+
+#### Switching to Technical User {#switching-to-technical-user }
+
+<div class="impl java">
 
 ![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
 
@@ -975,7 +1214,31 @@ public void afterHandler(EventContext context){
 }
 ```
 
-#### Switching to Technical Provider Tenant {#switching-to-provider-tenant}
+</div>
+
+<div class="impl node">
+
+<!-- TODO: Rework the graphic to fit Node runtime --> 
+![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
+
+The incoming JWT token triggers the creation of an initial `cds.EventContext` with a named user. 
+Accesses to the database in the OData Adapter as well as the custom `.on` handler are executed within <i>tenant1</i> and authorization checks are performed for user <i>JohnDoe</i>. 
+An additionally defined `.after` handler wants to call out to an external service using a technical user without propagating the named user <i>JohnDoe</i>.
+To achieve this, you can create a new root transaction using `srv.tx` and use it to connect to the external service from within a new context:
+
+```js
+srv.after('*', srv.entities.Books, async (res, req) => {
+  await srv.tx({ user: cds.User.privileged }, async tx => {
+    // call technical service
+  })
+})
+```
+
+</div>
+
+#### Switching to Technical Provider Tenant {#switching-to-provider-tenant }
+
+<div class="impl java">
 
 ![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
 
@@ -993,7 +1256,31 @@ public void onAction(AddToOrderContext context){
 }
 ```
 
-#### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant}
+</div>
+
+<div class="impl node">
+
+<!-- TODO: Rework the graphic to fit Node runtime --> 
+![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
+
+In this scenario the application offers a bound action in a CDS entity. 
+Within the action, the application communicates with a remote CAP service using a privileged user and the provider tenant. 
+The corresponding `.on` handler of the action needs to create a new root transaction by calling `srv.tx`.  
+This allows the application to perform an HTTP call to the remote CAP service with a `privileged` principal and within the provider tenant.
+
+```js
+srv.on('action', srv.entities.Books, async req => {
+  await srv.tx({ user: cds.User.privileged, tenant: 't0' }, async tx => {
+    // call remote CAP service
+  })
+})
+```
+
+</div>
+
+#### Switching to a Specific Technical Tenant {#switching-to-subscriber-tenant }
+
+<div class="impl java">
 
 ![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
 
@@ -1014,6 +1301,33 @@ Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
 Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
 :::
 
+</div>
+
+<div class="impl node">
+
+<!-- TODO: Rework the graphic to fit Node runtime --> 
+![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
+
+The application is using a [`cds.spawn`](../../node.js/cds-tx#cds-spawn) to regularly perform tasks on behalf of a certain tenant.
+By default, operations that are nested within `cds.spawn` will inherit the outer context.
+You can explicitly define the context `cds.spawn` should use by passing relevant information in a `ctx` argument. 
+This enables to ensure that the Persistence Service performs the query for the specified tenant.
+
+```js
+cds.spawn({ user: cds.User.privileged, tenant: 'tenant1', every: '1h' }, async tx => {
+    await persistenceService.run(SELECT.from(Books))
+})
+```
+
+::: warning Resource Bottlenecks in Tenant Looping
+Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
+Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
+:::
+
+</div>
+
+<div class="impl java">
+
 #### Switching to Privileged User { #switching-to-privileged-user }
 
 Application services invoked within custom handlers enforce an authorization on second-layer, which is the preferred behaviour to ensure security by default.
@@ -1031,7 +1345,11 @@ cdsRuntime.requestContext().privilegedUser().run(privilegedContext -> {
 Call application services on behalf of the privileged user only in case the service call is fully independent from the business user's actual restrictions.
 :::
 
+</div>
+
 #### Switching to Anonymous User { #switching-to-anonymous-user }
+
+<div class="impl java">
 
 In rare situations you might want to call a public service without sharing information of the current request user. 
 In this case, user propagation is explicitly prevented.
@@ -1044,8 +1362,24 @@ cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
 });
 ```
 
+</div>
 
-### User Propagation { .java }
+<div class="impl node">
+
+In rare situations you might want to call a public service without sharing information about the current request user. 
+In this case, user propagation can explicitly be prevented by running in a context whose principal is the `anonymous` user.
+
+```js
+cds.tx({ user: cds.User.anonymous }, async tx => {
+  // Perform operations anonymously
+})
+```
+
+</div>
+
+### User Propagation { #user-propagation }
+
+<div class="impl java">
 
 #### Between Threads
 
@@ -1053,7 +1387,11 @@ Within the same Request Context, all CAP service calls share the same user infor
 By default, the Request Context of the current thread is not shared with spawned threads and hence user information is lost.
 If you want to avoid this, you can propagate the Request Context to spawned threads as described [here](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#threading-requestcontext) and hence the same user context is applied.
 
+</div>
+
 #### Non-CAP Libraries { #user-token }
+
+<div class="impl java">
 
 CAP plugins for IAS and XSUAA store the resolved user information in Spring's [`SecurityContext`](https://docs.spring.io/spring-security/reference/api/java/org/springframework/security/core/context/SecurityContext.html) which contains all relevant authentication information. Hence, library code can rely on standards to fetch the authentication information and restore the user information if needed.
 
@@ -1065,7 +1403,29 @@ JwtTokenAuthenticationInfo jwtTokenInfo = authInfo.as(JwtTokenAuthenticationInfo
 String jwtToken = jwtTokenInfo.getToken();
 ```
 
+</div>
+
+<div class="impl node">
+
+CAPs generic authentication middlewares for IAS and XSUAA maintain resolved authentication information in the `authInfo` attribute of `cds.context.user` of the current `cds.EventContext`.
+For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
+You can retrieve available authentication information for use in a non-CAP library from the `SecurityContext`. 
+
+```js
+const authInfo = cds.context.user.authInfo  // @sap/xssec SecurityContext
+const token = authInfo.token                // @sap/xssec Token
+const jwtToken = token.jwt                  // string
+```
+
+::: warning
+The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
+:::
+
+</div>
+
 #### Remote Services { #remote-services }
+
+<div class="impl java">
 
 Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
 Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
@@ -1093,8 +1453,42 @@ Remote Services configurations with `destination` section support `onBehalfOf` o
 
 [Learn more about Remote Services in CAP Java](../../java/cqn-services/remote-services#remote-services){.learn-more}
 
+</div>
+
+<div class="impl node">
+
+CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../using-services#authentication-and-authorization-of-remote-services).
+Under the hood CAP utilizes the [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/create-destinations-from-scratch) and [`@sap-cloud-sdk/connectivity`](https://www.npmjs.com/package/@sap-cloud-sdk/connectivity) to do most of the heavy lifting. 
+
+```json
+{
+  "cds": {
+    "requires": {
+      "SomeReuseService": {
+        "kind": "odata",
+        "model": "srv/external/SomeReuseService",
+        "credentials": {
+          "destination": "some-reuse-service",
+          "path": "/reuse/odata/api",
+        }
+      }
+    }
+  }
+}
+```
+
+<!-- TODO: 'onBehalfOf' or equivalent in Node.js runtime? -->
+
+::: tip
+Always prefer using [Remote Services](#remote-services) over natively consuming [Cloud SDK](https://sap.github.io/cloud-sdk/).
+:::
+
+</div>
 
 #### Cloud SDK { #cloud-sdk }
+
+<div class="impl java">
 
 On a programmatic level, the CAP runtime integrates with [Cloud SDK](https://sap.github.io/cloud-sdk/) offering an abstraction for connection setup with remote services, including authentication and user propagation.
 By default, 
@@ -1136,7 +1530,28 @@ Don't activate user tracing in production!
 </div>
 
 <div class="impl node">
-TODO 
+
+By default, information about the request user are not logged to the application trace.
+During development, it might be useful to activate logger `com.sap.cds.security.authentication` by setting the level to `DEBUG`:
+
+```json
+{
+  "cds": {
+    "log": {
+      "levels": {
+        "auth": "debug"
+      }
+    }
+  }
+}
+```
+
+This makes the runtime tracing user information of authenticated users to the application log like this:
+
+```sh
+[basic] - authenticated: { user: 'alice', tenant: 'some-tenant', features: [ 'some-feature' ] }
+```
+
 </div>
 
 ## Pitfalls
