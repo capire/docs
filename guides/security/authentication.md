@@ -379,6 +379,37 @@ Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and t
 
 </div>
 
+You also need to configure DB support:
+
+<div class="impl java">
+
+::: code-group
+```sh [SAP HANA]
+cds add hana
+```
+```sh [Alternative: H2 (development only)]
+cds add h2 --for production
+```
+:::
+
+</div>
+
+
+<div class="impl node">
+
+::: code-group 
+```sh [SAP HANA]
+cds add hana
+```
+```sh [Alternative: SQLite (development only)]
+cds add sqlite --for production
+```
+:::
+
+</div>
+
+
+
 ### Adding IAS
 
 Now the application is ready to for adding IAS-support by executing
@@ -692,8 +723,11 @@ XSUAA authentication is best configured and tested in the Cloud, so we're going 
 
 ### Get Ready with XSUAA { #xsuaa-ready }
 
-Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
+Before working with XSUAA on CF, you need to ensure 
+- your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
 In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
+
+- https://help.sap.com/docs/application-frontend-service/application-frontend-service/enabling-service
 
 You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
 
@@ -703,31 +737,45 @@ If there is no deployment descriptor yet, in the project root folder, execute
 cds add mta
 ```
 
-to make your application ready for deployment to CF.
-
 <div class="impl java">
 
-In addition, activate H2 to serve as in-memory DB (**not** recommended for production!):
-```sh
-cds add h2 --for production
-```
-
-::: tip Info
+::: tip
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
 
 </div>
 
-<div class="impl node">
+to make your application ready for deployment to CF.
 
-TODO: the below command currently does not setup sqlite for production.
+You also need to configure DB support:
 
-In addition, activate SQLite to serve as in-memory DB (**not** recommended for production!):
-```sh
-cds add sqlite --for production
+<div class="impl java">
+
+::: code-group
+```sh [SAP HANA]
+cds add hana
 ```
+```sh [Alternative: H2 (development only)]
+cds add h2 --for production
+```
+:::
 
 </div>
+
+
+<div class="impl node">
+
+::: code-group 
+```sh [SAP HANA]
+cds add hana
+```
+```sh [Alternative: SQLite (development only)]
+cds add sqlite --for production
+```
+:::
+
+</div>
+
 
 ### Adding XSUAA { #adding-xsuaa }
 
