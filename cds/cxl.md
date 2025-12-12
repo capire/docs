@@ -127,7 +127,7 @@ referred to as a **path expression**.
 </div>
 
 
-### scalar element reference
+### simple element reference
 
 
 :::code-group
@@ -178,10 +178,18 @@ FROM
 In this example, we select the names of the authors and genres of books.
 Both `author` and `genre` are associations on the `Books` entity.
 
-::: info 💡 Associations are **forward declared joins**
-An association can be used just as a table alias.
-They are declared **before** they are used (e.g. in an entity definition)
-Once an association is traversed in a query, the respective join is added automatically.
+::: info 💡 Associations are **predefined joins**
+They provide a convenient way to navigate between related entities without having to define the join conditions manually.
+
+The join condition is defined **ahead of time** as part of the association.
+Typically, this is a foreign key relationship between two entities, but other conditions are also possible.
+
+It then manifests whenever the association is used in a path expression as part of a query.
+
+The condition can manifest in multiple ways:
+- In the on condition of a join
+- In the condition that correlates a subquery to a main query
+- To select related entities with an additional query
 :::
 
 ### path expression after `exists` predicate
@@ -233,6 +241,15 @@ A path expression can be much more complex. For example, the individual [path se
 themselves can contain expressions by applying [infix-filters](#infix-filter).
 More samples are shown in the upcoming sections.
 
+::: info 💡 Set theory of path expressions
+Path expressions point to a **set** of data that can be further filtered and used.
+
+A query with a filter (typically: where-clause) results in an entity set which is a subset of the complete entity. In terms of set theory: The set of elements for which the following holds true ...
+
+An infix filter further narrows down this set by applying additional conditions on the elements of the set.
+
+The resulting set can then be used in various ways, e.g., to select elements, to check for existence, to perform aggregations... or to further navigate along associations to related entities.
+:::
 
 ## infix filter { #infix-filter }
 
