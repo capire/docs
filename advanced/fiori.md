@@ -825,14 +825,14 @@ e.g. because you only have an unmanaged parent association, you can write them y
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
-annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy : {
+annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy: {
   NodeProperty             : ID,    // identifies a node, usually the key
   ParentNavigationProperty : parent // navigates to a node's parent
 };
 
 extend AdminService.Genres with @(
   // The computed properties expected by Fiori to be present in hierarchy entities
-  Hierarchy.RecursiveHierarchy #GenresHierarchy : {
+  Hierarchy.RecursiveHierarchy #GenresHierarchy: {
     LimitedDescendantCount : LimitedDescendantCount,
     DistanceFromRoot       : DistanceFromRoot,
     DrillState             : DrillState,
@@ -843,7 +843,7 @@ extend AdminService.Genres with @(
     'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
   ],
   // Disallow sorting on these properties from Fiori UIs
-  Capabilities.SortRestrictions.NonSortableProperties    : [
+  Capabilities.SortRestrictions.NonSortableProperties: [
     'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
   ],
 ) columns { // Ensure we can query these columns from the database
