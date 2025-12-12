@@ -1018,7 +1018,7 @@ Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotat
 Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are avaliable in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile. 
 
 It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
-::: 
+:::s
 
 #### Multiple Conditions
 
