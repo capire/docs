@@ -815,7 +815,9 @@ Configure the TreeTable in UI5's _manifest.json_ file:
 > Note: construct the `hierarchyQualifier` with the following pattern: <br>
 > `<entity name in service>Hierarchy`
 
-![Fiori UI with hierarchical trree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
+You can now start the server with `cds watch` and see the hierarchical tree view in action in the [_Browse Genres_](http://localhost:4004/fiori-apps.html#Genres-display) app.
+
+![Fiori UI with hierarchical tree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The compiler automatically expands the shortcut annotation `@hierarchy` to the
 following annotate and extend statements. If you cannot use the `@hierarchy` annotation,
