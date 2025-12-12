@@ -4,8 +4,8 @@
 
 | your-project           | https://github.com/&lt;your/repo&gt;          |
 | ---------------------- | --------------------------------------- |
-| @sap/cds               | 9.5.1                                   |
-| @sap/cds-compiler      | 6.5.0                                   |
+| @sap/cds               | 9.5.2                                   |
+| @sap/cds-compiler      | 6.5.2                                   |
 | @sap/cds-dk (global)   | 9.5.0                                   |
 | @sap/cds-fiori         | 2.1.1                                   |
 | @sap/cds-mtxs          | 3.5.0                                   |

@@ -34,11 +34,12 @@ Within the docs, you find badges that indicate the status of a feature, or API.
 Here's a list of the badges and their meanings:
 
 | Badge                                   | Description                                                                                                                                                        |
-|-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | <Since version="1.2.3" of="@sap/..." /> | The marked feature is available with the given version or higher                                                                                                   |
+| <Concept />                             | Concept features are ideas for potential future enhancements and an opportunity for you to give feedback. This is not a commitment to implement the feature though |
 | <Alpha />                               | Alpha features are experimental. They may never be generally available. If released subsequently, the APIs and behavior might change                               |
 | <Beta />                                | Beta features are planned to be generally available in subsequent releases, however, APIs and their behavior are not final and may change in the general release   |
-| <Concept />                             | Concept features are ideas for potential future enhancements and an opportunity for you to give feedback. This is not a commitment to implement the feature though |
+| <Gamma />                                | Gamma features are finalized and ready to use, stable, and supported long term. Yet, as they have a broad scope and range, you should ensure to test them thoroughly. |
 | <Internal />                            | SAP specific features, processes, or infrastructure. Examples are _Deploy with Confidence_, _SAP product standards_, or _xMake_                                    |
 
 

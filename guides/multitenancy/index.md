@@ -472,6 +472,16 @@ In the third terminal, subscribe to two tenants using one of the following metho
 
    :::
 
+   ::: tip Username defaults to `yves` on localhost
+   When subscribing to tenants on localhost, you can omit the `-u` option. The command automatically uses `yves` (the default mock user) with an empty password:
+
+   ```sh
+   cds subscribe t1 --to http://localhost:4005
+   ```
+
+   If you've logged in with `cds login`, that user takes precedence. To override, explicitly specify `-u <username>`.
+   :::
+
    > Run `cds help subscribe` to see all available options.
 
 <!--

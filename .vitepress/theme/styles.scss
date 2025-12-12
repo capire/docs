@@ -535,7 +535,19 @@ a.learn-more, p.learn-more, .learn-more {
   }
 }
 
-.VPBadge { white-space: nowrap; }
+.VPBadge {
+  &.tip { 
+    background-color: #ced; color: #031; .dark & { 
+      background-color: #031; color: #9ca; 
+    } 
+  }
+  margin-top: 3px !important;
+  padding: 0 0.7em !important;
+  font-size: 80%;
+  line-height: 1.5em; 
+  border-radius: 1.5em;
+  white-space: nowrap; 
+}
 
 html.java {
   & .node {
