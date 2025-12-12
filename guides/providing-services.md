@@ -941,13 +941,13 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database. If the validation should fail, the expression will return a String that indicates an error to runtime, or `null` if the validation passes. 
+Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database. If the validation should fail, the expression will return a String that indicates an error to the runtime, or `null` if the validation passes. 
 
 ```cds
 entity OrderItems : cuid {
         
   @assert: (case 
-    when quantity <= 0 then 'Quantity must be greater then zero' 
+    when quantity <= 0 then 'Quantity must be greater than zero' 
   end)
   quantity : Integer;       
 }
@@ -958,14 +958,14 @@ Alternatively, the same condition can be simplified by using the [ternary condit
 ```cds
 entity OrderItems : cuid {
   
-  @assert: (quantity <= 0 ? 'Quantity must be greater then zero' : null)
+  @assert: (quantity <= 0 ? 'Quantity must be greater than zero' : null)
   quantity  : Integer;
 }
 ```
 
 #### Error Messages and Message Targets
 
-If a validation fails the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The exception or error targets the annotated element, which is then highlighted on the Fiori UI.
+If a validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The exception or error targets the annotated element, which is then highlighted on the Fiori UI.
 
 ::: info Error Messages
 The error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
