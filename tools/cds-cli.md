@@ -469,7 +469,7 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 - [Diagram: Queries](vscode://settings/cds.preview.diagram.queries)
 
 
-## cds export
+## cds export <Beta />
 
 With `cds export` you create an API client package to be used
 for data exchange via CAP-level Service integration ("Calesi").
