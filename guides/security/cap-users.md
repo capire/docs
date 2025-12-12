@@ -1325,8 +1325,7 @@ For instance, the business request on behalf of a named subscriber user needs to
 
 These scenarios are identified by a combination of the user (*technical* or *named*) and the tenant (*provider* or *subscriber*):
 
-<!-- TODO: Rework the graphic to fit Node runtime --> 
-![Typical Scenarios for a User Context Switch](./assets/requestcontext.drawio.svg)
+![Typical Scenarios for a User Context Switch](./assets/requestcontext-node.drawio.svg)
 
 In CAP Node.js, the `cds.context` enables convenient access to the `cds.EventContext` and allows to update the principal of the context.
 The prefered method for switching users and executing code in a different context and for a different principal, is to spawn a new root transaction using [`cds/srv.tx()`](../../node.js/cds-tx#srv-tx).
@@ -1369,12 +1368,12 @@ public void afterHandler(EventContext context){
 
 <div class="impl node">
 
-<!-- TODO: Rework the graphic to fit Node runtime --> 
-![The graphic is explained in the accompanying text.](./assets/nameduser.drawio.svg){width="330px"}
+![The graphic is explained in the accompanying text.](./assets/nameduser-node.drawio.svg){width="330px"}
 
 The incoming JWT token triggers the creation of an initial `cds.EventContext` with a named user. 
-Accesses to the database in the OData Adapter as well as the custom `.on` handler are executed within <i>tenant1</i> and authorization checks are performed for user <i>JohnDoe</i>. 
-An additionally defined `.after` handler wants to call out to an external service using a technical user without propagating the named user <i>JohnDoe</i>.
+Accesses to the database in the OData Adapter as well as the custom `.on` handler are executed within _tenant1_ and authorization checks are performed for user _JohnDoe_. 
+
+In addition, there is an `.after` handler that wants to call out to an external service using a technical user without propagating the named user _JohnDoe_.
 To achieve this, you can create a new root transaction using `srv.tx` and use it to connect to the external service from within a new context:
 
 ```js
@@ -1411,17 +1410,17 @@ public void onAction(AddToOrderContext context){
 
 <div class="impl node">
 
-<!-- TODO: Rework the graphic to fit Node runtime --> 
-![The graphic is explained in the accompanying text.](./assets/switchprovidertenant.drawio.svg){width="500px"}
+![The graphic is explained in the accompanying text.](./assets/switchprovidertenant-node.drawio.svg){width="500px"}
 
 In this scenario the application offers a bound action in a CDS entity. 
 Within the action, the application communicates with a remote CAP service using a privileged user and the provider tenant. 
-The corresponding `.on` handler of the action needs to create a new root transaction by calling `srv.tx`.  
-This allows the application to perform an HTTP call to the remote CAP service with a `privileged` principal and within the provider tenant.
+The corresponding `.on` handler of the action needs to create a new root transaction by calling `srv.tx`.
+The user passed to `srv.tx` in the `ctx` attribute will be used as the prinicpal for requests made within the new closure.
 
 ```js
 srv.on('action', srv.entities.Books, async req => {
-  await srv.tx({ user: cds.User.privileged, tenant: 't0' }, async tx => {
+  const systemUser = new cds.User({ id: 'system', roles: [ 'internal-user' ] })
+  await srv.tx({ user: systemUser , tenant: 'provider-tenant' }, async tx => {
     // call remote CAP service
   })
 })
@@ -1456,8 +1455,7 @@ Instead, prefer a task-based approach which processes specific subscriber tenant
 
 <div class="impl node">
 
-<!-- TODO: Rework the graphic to fit Node runtime --> 
-![The graphic is explained in the accompanying text.](./assets/switchtenant.drawio.svg){width="450px"}
+![The graphic is explained in the accompanying text.](./assets/switchtenant-node.drawio.svg){width="450px"}
 
 The application is using a [`cds.spawn`](../../node.js/cds-tx#cds-spawn) to regularly perform tasks on behalf of a certain tenant.
 By default, operations that are nested within `cds.spawn` will inherit the outer context.
