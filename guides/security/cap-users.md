@@ -840,9 +840,22 @@ You can log on to the bookshop test application with the test user and check tha
 
 You can verify a valid configfuration of the AMS plugin by the following log output:
 
+<div class="impl java">
+
 ```sh
 c.s.c.s.a.c.AmsRuntimeConfiguration      : Configured AmsUserInfoProvider
 ```
+
+</div>
+
+<div class="impl node">
+
+```sh
+[ams] - AMS Plugin loaded.
+[ams] - Added AMS middleware after 'auth' middleware.
+```
+
+</div>
 
 In addition, for detailed analysis of issues, you can set AMS logger to `DEBUG` level: 
 
