@@ -856,7 +856,51 @@ Result result = service.run(Select.from("UsingView"), params);
 [Learn more about how to expose views with parameters in **Services - Exposed Entities**.](#exposed-entities){ .learn-more}
 [Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../advanced/hana){ .learn-more}
 
+### Runtime Views { #runtimeviews }
 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+
+Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
+
+In CAP Java, runtime views are enabled by default, in Node.js enable them via <Config>cds.features.runtime_views: true</Config>.
+
+[Learn more about runtime views in CAP Java.](../java/working-with-cql/query-execution#runtimeviews) {.learn-more}
+
+By default, runtime views are translated into _Common Table Expressions_ (CTEs) and sent with the query to the database.
+
+For example, given the following CDS model and query:
+
+```cds
+entity Books {
+  key ID     : UUID;
+      title  : String;
+      stock  : Integer;
+      author : Association to one Authors;
+}
+@cds.persistence.skip
+entity BooksWithLowStock as projection on Books {
+    ID, title, author.name as author
+} where stock < 10; // makes the view read only
+```
+```sql
+SELECT from BooksWithLowStock where author = 'Kafka'
+```
+
+The runtime translates the view definition into a _Common Table Expression_ (CTE) and sends it with the query to the database.
+
+```sql
+WITH BOOKSWITHLOWSTOCK_CTE AS (
+    SELECT B.ID,
+           B.TITLE,
+           A.NAME AS "AUTHOR"
+      FROM BOOKS B
+      LEFT OUTER JOIN AUTHOR A ON B.AUTHOR_ID = A.ID
+     WHERE B.STOCK < 10
+)
+SELECT ID, TITLE, AUTHOR AS "author"
+  FROM BOOKSWITHLOWSTOCK_CTE
+ WHERE A.NAME = ?
+```
 
 ## Associations
 
