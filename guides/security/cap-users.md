@@ -196,7 +196,7 @@ The interaction between the CAP application and AMS (via plugin) is as follows:
 3. CAP performs the authorization on the basis of the CDS authorization model and the injected user claims.
 
 
-### Adding AMS Support
+### Adding AMS Support { .java }
 
 **AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
 
@@ -303,6 +303,49 @@ In general, AMS provides highly flexible APIs to define and enforce authorizatio
 **In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
 :::
 
+### Adding AMS Support { .node }
+
+**AMS is transparent to CAP application code** and can be easily consumed via plugin dependency.
+
+To enhance your project with AMS, you can make use of CDS CLI tooling:
+
+```sh
+cds add ams
+```
+
+This automatically adds required configuration for AMS, taking into account the concrete application context (tenant mode and runtime environment etc.).
+If required, it also runs the new `cds add ias` command to configure the project for IAS authentication.
+
+::: details See dependencies added
+
+```json [package.json]
+{
+  "dependencies": [
+    "@sap/ams": "^3",
+    "@sap/xssec": "^4"
+  ],
+  "devDependencies": [
+    "@sap/ams-dev": "^2"
+}
+```
+:::
+
+`@sap/ams` integrates into the CAP framework to handle incoming requests. 
+Based on the user's assigned [policies](#policies), the user's roles are determined to decorate the [user.is](/node.js/authentication#user-is) function with additional roles. 
+The framework then authorizes the request as usual based on the user's roles.
+
+For local development, `@sap/ams-dev` needs to compile the DCL files to Data Control Notation (DCN) files in `gen/dcn` which is the machine-readable version of DCL that is required by AMS at runtime.
+
+Additionally, `@sap/ams` provides multiple build-time features:
+
+- Validate `ams.attributes` annotations for type coherence against the AMS schema.
+- Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
+- Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
+
+::: tip
+In general, AMS provides highly flexible APIs to define and enforce authorization rules at runtime suitable for native Cloud applications. 
+**In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
+:::
 
 ### Prepare CDS Model
 
@@ -406,6 +449,8 @@ AMS policies represent the business-level roles of end users interacting with th
 Often, they reflect real-world jobs or functions.
 :::
 
+<div class="impl java">
+
 After the application is built, check the *srv/src/main/resources/ams* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
 
 ::: code-group
@@ -418,6 +463,23 @@ After the application is built, check the *srv/src/main/resources/ams* folder to
 ```
 
 :::
+
+</div>
+
+<div class="impl node">
+After the application is built, check the *ams/dcl* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
+
+::: code-group
+
+``` [./ams]
+└─ dcl
+   ├─ cap
+   │  └─ basePolicies.dcl
+   └─ schema.dcl
+```
+
+:::
+</div>
 
 [Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.learn-more}
 
@@ -490,7 +552,7 @@ cds:
 
 <div class="impl node">
 
-```json
+```json [package.json]
 {
   "cds": {
     "requires": {
@@ -498,12 +560,15 @@ cds:
         "[development]": {
           "kind": "mocked",
           "users": {
-            "content-manager": {
-              "policies": ["cap.ContentManager"]
+            "content-manager": { // [!code ++:5]
+              "policies": [
+                "cap.ContentManager"
+              ]
             },
-            "stock-manager": {
-              "policies": ["cap.StockManager"]
-            }
+            "stock-manager": { // [!code ++:5]
+              "policies": [
+                "cap.StockManager"
+              ]
           }
         }
       }
@@ -581,10 +646,10 @@ You can verify in the UI that mock user `stock-manager-fiction` is restricted to
 <div class="impl node">
 
 ::: tip
-Don't miss to add the policy files in sub folders of `ams` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `/ams/dcl/local/`.
+Don't miss to add the policy files in sub folders of `ams/dcl` reflecting the namespace properly: Policy `local.StockManagerFiction` is expected to be in a file within directory `./ams/dcl/local/`.
 :::
 
-```json
+```json [package.json]
 {
   "cds": {
     "requires": {
@@ -592,8 +657,10 @@ Don't miss to add the policy files in sub folders of `ams` reflecting the namesp
         "[development]": {
           "kind": "mocked",
           "users": {
-            "stock-manager-fiction": {
-              "policies": ["local.StockManagerFiction"]
+            "stock-manager-fiction": { // [!code ++:5]
+              "policies": [
+                "local.StockManagerFiction"
+              ]
             }
           }
         }
@@ -616,13 +683,15 @@ Policies can be automatically deployed to the AMS server during deployment of th
 
 Enhancing the project with by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deyployment.
 
+<div class="impl java">
+
 ::: details AMS policy deployer task in the MTA
 
 ::: code-group
 ```yaml [mta.yaml- deployer task]
 - name: bookshop-ams-policies-deployer
    type: javascript.nodejs
-   path: srv/src/gen/policies
+   path: srv/src/gen/policies # Node.js: gen/policies
    parameters:
      buildpack: nodejs_buildpack
      no-route: true
@@ -657,6 +726,54 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
 Note that the policy deployer task requires a path to a directory structure containing the `ams` root folder with the policies to be deployed.
 By default, the path points to `srv/src/gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `srv/src/main/resources/ams`.
 In addition, `@sap/ams` needs to be referenced to add the deployer logic.
+
+</div>
+
+<div class="impl node">
+
+:: details AMS policy deployer task in the MTA
+
+::: code-group
+```yaml [mta.yaml- deployer task]
+- name: bookshop-ams-policies-deployer
+   type: javascript.nodejs
+   path: gen/policies
+   parameters:
+     buildpack: nodejs_buildpack
+     no-route: true
+     no-start: true
+     tasks:
+       - name: deploy-dcl
+         command: npm start
+         memory: 512M
+   requires:
+     - name: bookshop-ias
+       [...]
+```
+
+
+```json [srv/src/gen/policies/package.json - deyployer module]
+{
+  "name": "ams-dcl-content-deployer",
+  "version": "3.0.0",
+  "dependencies": {
+    "@sap/ams": "^3"
+  },
+  [...]
+  "scripts": {
+    "start": "npx --package=@sap/ams deploy-dcl"
+  }
+}
+```
+
+:::
+
+
+Note that the policy deployer task requires a path to a directory structure containing the `ams/dcl` root folder with the policies to be deployed.
+By default, the path points to `gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `ams/dcl`.
+In addition, `@sap/ams` needs to be referenced to add the deployer logic.
+
+<div>
 
 ::: tip
 Several microservices sharing the same IAS instance need a common folder structure the deployer task operates on. 
@@ -1546,10 +1663,35 @@ During development, it might be useful to activate logger `com.sap.cds.security.
 }
 ```
 
-This makes the runtime tracing user information of authenticated users to the application log like this:
+You can verify a valid configfuration of the AMS plugin by the following log output:
 
 ```sh
-[basic] - authenticated: { user: 'alice', tenant: 'some-tenant', features: [ 'some-feature' ] }
+[ams] - AMS Plugin loaded.
+[ams] - Added AMS middleware after 'auth' middleware.
+```
+
+... and find more information about the policy evaluation at request time:
+
+```sh
+[ams] - Determined potential actions for resource '$SCOPES': stock-manager {
+        potentialActions: Set(1) { 'stock-manager' },
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - AMS user roles added to user.is: [ 'stock-manager' ]
+[ams] - Privilege check for 'stock-manager' on '$SCOPES' was conditional. {
+        result: 'conditional',
+        dcn: "$app.genre IN ['Fantasy', 'Mystery']",
+        policies: [ 'local.StockManagerFiction' ],
+        ...
+      }
+[ams] - Resulting privileges for  READ  on  AdminService.Books : [
+        {
+          grant: 'READ',
+          to: [ 'stock-manager' ],
+          where: "genre.name  IN  ('Fantasy', 'Mystery')"
+        }
+      ]
 ```
 
 </div>
