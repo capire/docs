@@ -983,8 +983,7 @@ An `@assert` annotation may use other elements from the same entity. This annota
 ```cds
 entity Order : cuid {
         
-  @assert: (? deliveryDate < orderDate 
-            : 'DELIVERY_BEFORE_ORDER')
+  @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null)
   items : Integer;       
 }
 ```
@@ -1006,8 +1005,8 @@ You can also perform validations based on entities associated via a to-many asso
 ```cds
 entity Order : cuid {
         
-  @assert: (? exists items[book.isNotReleased = true] 
-            : 'Some ordered book is not yet released')
+  @assert: (exists items[book.isNotReleased = true] 
+    ? 'Some ordered book is not yet released' : null)
   items : Integer;       
 }
 ```
@@ -1018,7 +1017,7 @@ Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotat
 Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are avaliable in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile. 
 
 It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
-:::s
+:::
 
 #### Multiple Conditions
 
