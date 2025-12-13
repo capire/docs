@@ -939,6 +939,109 @@ Cross-service checks are not supported. It is expected that the associated entit
 The `@assert.target` check constraint relies on database locks to ensure accurate results in concurrent scenarios. However, locking is a database-specific feature, and some databases don't permit to lock certain kinds of objects. On SAP HANA, for example, views with joins or unions can't be locked. Do not use `@assert.target` on such artifacts/entities.
 :::
 
+### `@assert` <Beta/>
+
+Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database. If the validation should fail, the expression will return a String that indicates an error to the runtime, or `null` if the validation passes. 
+
+```cds
+entity OrderItems : cuid {
+        
+  @assert: (case 
+    when quantity <= 0 then 'Quantity must be greater than zero' 
+  end)
+  quantity : Integer;       
+}
+```
+
+Alternatively, the same condition can be simplified by using the [ternary conditional operator](../releases/archive/2023/march23#ternary-conditional-operator):
+
+```cds
+entity OrderItems : cuid {
+  
+  @assert: (quantity <= 0 ? 'Quantity must be greater than zero' : null)
+  quantity  : Integer;
+}
+```
+
+#### Error Messages and Message Targets
+
+If a validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The exception or error targets the annotated element, which is then highlighted on the Fiori UI.
+
+::: info Error Messages
+The error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+[Learn more about localized messages](./i18n){.learn-more}
+:::
+
+::: info Multiple Targets
+If an assert should target multiple elements you need to annotate all targeted elements.
+:::
+
+#### Complex Asserts
+
+An `@assert` annotation may use other elements from the same entity. This annotation checks that the delivery date of an order is after the order date:
+
+```cds
+entity Order : cuid {
+        
+  @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null)
+  items : Integer;       
+}
+```
+
+In an `@assert` condition you can also refer to elements of associated entities. The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned:
+
+```cds
+entity OrderItems : cuid {
+        
+  @assert: (case 
+    when book.stock <= quantity then 'Stock exceeded' 
+  end)
+  quantity : Integer;       
+}
+```
+
+You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../cds/cql#exists-predicate) in this case:
+
+```cds
+entity Order : cuid {
+        
+  @assert: (exists items[book.isNotReleased = true] 
+    ? 'Some ordered book is not yet released' : null)
+  items : Integer;       
+}
+```
+
+Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
+
+::: warning Use complex asserts on service layer
+Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are avaliable in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile. 
+
+It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
+:::
+
+#### Multiple Conditions
+
+Use multiple `when` clauses to check multiple conditions with a single `@assert` annotation. Each condition returns its own error message to precisely describe the error:
+
+```cds
+entity OrderItems : cuid {
+  
+  @assert: (case
+    when book.stock = 0 then 'Stock is zero'
+    when book.stock <= quantity then 'Stock exceeded'
+  end)
+  quantity  : Integer;
+}
+```
+
+#### Background
+
+Expressions are evaluated *after* the request has been applied to the underlying datastore. Affected are the entities of the request's payload. The runtime executes check-statements with the provided expressions and the primary key values for the given entities.
+
+::: warning Limitations
+- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update)
+- Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported
+:::
 
 ### Custom Error Messages
 
