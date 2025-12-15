@@ -504,14 +504,11 @@ For mTLS support which is mandatory for IAS, the CAP application has a second ro
 ```yaml
 modules:
   - name: bookshop-srv
-    type: java
-    path: srv
+    # [...]
     parameters:
       routes:
         - route: "${default-url}"
         - route: "${default-host}.cert.${default-domain}"
-```      
-:::  
 
 ::: tip
 Platform-level TLS termination is provided on CF out of the box via `cert.*`-domains. 
