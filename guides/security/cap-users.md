@@ -65,7 +65,7 @@ CAP users can be classified in multiple dimensions:
 
 **Authenticated users vs. anonymous users**
 - Authenticated users have successfully completed authentication by presenting valid credentials (e.g., a token).
-- Anonymous users are unidentifiable in general, as they usually do not presented any credentials.
+- Anonymous users are unidentifiable in general, as they usually do not present any credentials.
 
 **Provider vs. subscriber tenant**
 - The provider tenant includes all users of the application owner.
