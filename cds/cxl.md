@@ -178,7 +178,7 @@ FROM
 In this example, we select the names of the authors and genres of books.
 Both `author` and `genre` are associations on the `Books` entity.
 
-::: info 💡 Associations are **predefined joins**
+::: info 💡 Associations are **forward-declared joins**
 They provide a convenient way to navigate between related entities without having to define the join conditions manually.
 
 The join condition is defined **ahead of time** as part of the association.
