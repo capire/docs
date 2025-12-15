@@ -258,7 +258,7 @@ In mock user configuration you can specify:
 - [feature toggles](../extensibility/feature-toggles#feature-toggles)
 which influence request processing.
 
-To verify the properties in a user request with a dedicated mock user, activate [user tracing](./cap-users#user-tracing) and send the same request on behalf of `viewer-user`.
+To verify the user properties, activate [user tracing](./cap-users#user-tracing) and send a request using the mock user (`viewer-user` for example).
 In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
