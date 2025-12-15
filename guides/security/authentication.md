@@ -270,7 +270,11 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 </div>
 
 <div class="impl node">
-TODO
+
+```
+[basic] - authenticated: { user: 'viewer-user', tenant: 'CrazyCars', features: [ 'cruise', 'park' ] }
+```
+
 </div>
 
 <div class="impl java">
