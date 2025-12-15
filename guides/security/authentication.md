@@ -40,7 +40,7 @@ CAP [leverages platform services](overview#key-concept-platform-services) to pro
 
 - For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-auth) is an appropriate built-in authentication feature.
 
-- For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services:  
+- For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services out of the box:  
   - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
