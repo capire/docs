@@ -31,41 +31,41 @@ hero:
 
 features:
 
-- title: Focus on Domain
+- title: Rapid Development
   icon: ⭕️
   details:
-    •&nbsp; Capture intent ⇒ What, not how! <br/>
-    •&nbsp; Minimized boilerplate coding <br/>
-    •&nbsp; Minimized technical debt <br/>
-  link: about/
-  linkText: Read the Primer
-
-- title: Rapid Development
-  icon: 🌀
-  details:
-    •&nbsp; Jumpstart with minimal setup <br/>
-    •&nbsp; Fast inner loop dev & tests <br/>
+    •&nbsp; Jumpstart w/ minimal setup <br/>
+    •&nbsp; Fast inner loops <br/>
     •&nbsp; Grow as you go... <br/>
   link: get-started/in-a-nutshell
   linkText: Get Started in a Nutshell
 
 - title: Proven Best Practices
-  icon: 🧩
+  icon: 🏆
   details:
     •&nbsp; Enterprise-grade solutions <br/>
-    •&nbsp; Proven in SAP products <br/>
+    •&nbsp; Battle tested in SAP products <br/>
     •&nbsp; Served out of the box <br/>
   link: about/best-practices
   linkText: Key Concepts & Rationales
 
-- title: Cloud Native
+- title: Focus on Domain!
+  icon: 🍀
+  details:
+    •&nbsp; Capture intent → What, not how! <br/>
+    •&nbsp; Separation of concerns <br/>
+    •&nbsp; Minimized technical debts <br/>
+  link: about/
+  linkText: Read the Primer
+
+- title: Cloud Native by Design
   icon: 💯
   details:
-    •&nbsp; Multitenancy, Extensibility, ... <br/>
-    •&nbsp; Resilience, Scalability, ... <br/>
-    •&nbsp; Intrinsically taken care of <br/>
+    •&nbsp; Multitenancy, Scalability, ... <br/>
+    •&nbsp; Intrinsic Extensibility <br/>
+    •&nbsp; Evolution w/o disruption <br/>
   link: about/#cloud-native-by-design
-  linkText: Intrinsic & by Design
+  linkText: Intrinsic Cloud Qualities
 
 ---
 
