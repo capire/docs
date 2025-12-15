@@ -111,12 +111,12 @@ let m = cds.linked`
   entity Books {...}
   entity Authors {...}
 `
+
 // Function nature
 let { Books, Authors } = m.entities ('my.bookshop')
 
-
-// Object nature (uses the model's top-level namespace)
-let { Books, Authors } = m.entities
+// Object nature
+let { 'my.bookshop.Books': Books, 'my.bookshop.Authors': Authors } = m.entities
 
 // Array nature
 for (let each of m.entities) console.log (each.name)
