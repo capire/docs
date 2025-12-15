@@ -997,49 +997,42 @@ context db {
   }
   
   entity OrderItems : cuid {
-    order: Association to Orders;
-    book     : Association to Books;
+    order : Association to Orders;
+    book : Association to Books;
     quantity : Integer;
   }
+}
+
+service OrderService {
+  entity Orders as projection on db.Orders;
+  entity OrderItems as projection on db.OrderItems;
 }
 ```
 
 An `@assert` annotation may use other elements from the same entity. This annotation checks that the delivery date of an order is after the order date:
 
 ```cds
-service OrderService {
-  entity Orders as projection on db.Orders;
-  
-  annotate Orders with {
-    deliveryDate @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null); // [!code highlight]
-  };
+annotate OrderService.Orders with {
+  deliveryDate @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null); // [!code highlight]
 }
 ```
 In an `@assert` condition you can also refer to elements of associated entities. The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned:
 
 ```cds
-service OrderService {
-  entity OrderItems as projection on db.OrderItems;
-  
-  annotate OrderItems with {
-    quantity @assert: (case // [!code highlight]
-      when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
-    end); // [!code highlight]
-  };
+annotate OrderService.OrderItems with {
+  quantity @assert: (case // [!code highlight]
+    when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
+  end); // [!code highlight]
 }
 ```
 
 You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../cds/cql#exists-predicate) in this case:
 
 ```cds
-service OrderService {
-  entity OrdersItems as projection on db.OrderItems;
-  
-  annotate OrderItems with {
-    quantity @assert: (case // [!code highlight]
-      when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
-    end); // [!code highlight]
-  };
+annotate OrderService.OrderItems with {
+  quantity @assert: (case // [!code highlight]
+    when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
+  end); // [!code highlight]
 }
 ```
 
@@ -1050,13 +1043,11 @@ Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotat
 Use multiple `when` clauses to check multiple conditions with a single `@assert` annotation. Each condition returns its own error message to precisely describe the error:
 
 ```cds
-entity OrderItems : cuid {
-  
-  @assert: (case
+annotate OrderService.OrderItems with {
+  quantity @assert: (case
     when book.stock = 0 then 'Stock is zero'
     when book.stock <= quantity then 'Stock exceeded'
   end)
-  quantity  : Integer;
 }
 ```
 
