@@ -1064,7 +1064,7 @@ In the _xs-security.json_, the `attribute` entity has a property `valueRequired`
 
 CAP is not tied to any specific authentication method, nor to concrete user information such as that provided by IAS or XSUAA. 
 Instead, an abstract [user representation](cap-users#claims) is attached to the request which can be used to influence request processing.
-For example, both authorization enforcement and domain logic can depend on the current user properties.
+For example, both authorization enforcement and domain logic can depend on properties of the the current user.
 
 ::: warning
 Avoid writing custom code based on the raw authentication info, as this undermines the decoupling between authentication strategy and your business logic.
