@@ -1591,7 +1591,7 @@ cds:
         onBehalfOf: systemUserProvider
 ```
 
-The parameter `onBehalfOf` in the binding configuration section allows to define following *user propagation* strategies:
+The parameter `onBehalfOf` in the binding configuration section allows to define the following *user propagation* strategies:
 
 - `currentUser` (default): Propagate the user of the current Request Context.
 - `systemUser`: Propagate the (tenant-specific) technical user, based on the tenant set in the current Request Context.
