@@ -1029,10 +1029,9 @@ annotate OrderService.OrderItems with {
 You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../cds/cql#exists-predicate) in this case:
 
 ```cds
-annotate OrderService.OrderItems with {
-  quantity @assert: (case // [!code highlight]
-    when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
-  end); // [!code highlight]
+annotate OrderService.Orders with {
+  items @assert: ( exists items[book.isNotReleased = true] // [!code highlight]
+            ? 'Some ordered book is not yet released' : null) // [!code highlight]
 }
 ```
 
