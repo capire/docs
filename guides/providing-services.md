@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database. If the validation should fail, the expression will return a String that indicates an error to the runtime, or `null` if the validation passes. 
+Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database but _before_ it is committed. If the validation should fail, the expression will return a String that indicates an error to the runtime, or `null` if the validation passes. 
 
 ```cds
 entity OrderItems : cuid {
@@ -965,59 +965,85 @@ entity OrderItems : cuid {
 
 #### Error Messages and Message Targets
 
-If a validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The exception or error targets the annotated element, which is then highlighted on the Fiori UI.
+If a validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The error targets the annotated element, which is then highlighted on the Fiori UI.
 
 ::: info Error Messages
 The error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
 [Learn more about localized messages](./i18n){.learn-more}
 :::
 
-::: info Multiple Targets
-If an assert should target multiple elements you need to annotate all targeted elements.
-:::
 
 #### Complex Asserts
+
+::: warning Use complex asserts on service layer
+Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are available in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile.
+
+It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
+:::
+
+For the examples given in this section, consider the following CDS _domain_ model:
+
+```cds
+context db {
+  entity Books : cuid { 
+    title : String; 
+    stock : Integer; 
+    deliveryDate : Date;   
+    orderDate : Date;
+  }
+  
+  entity Orders : cuid {
+    items : Composition of many OrderItems on items.order = $self;
+  }
+  
+  entity OrderItems : cuid {
+    order: Association to Orders;
+    book     : Association to Books;
+    quantity : Integer;
+  }
+}
+```
 
 An `@assert` annotation may use other elements from the same entity. This annotation checks that the delivery date of an order is after the order date:
 
 ```cds
-entity Order : cuid {
-        
-  @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null)
-  items : Integer;       
+service OrderService {
+  entity Orders as projection on db.Orders;
+  
+  annotate Orders with {
+    deliveryDate @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null); // [!code highlight]
+  };
 }
 ```
-
 In an `@assert` condition you can also refer to elements of associated entities. The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned:
 
 ```cds
-entity OrderItems : cuid {
-        
-  @assert: (case 
-    when book.stock <= quantity then 'Stock exceeded' 
-  end)
-  quantity : Integer;       
+service OrderService {
+  entity OrderItems as projection on db.OrderItems;
+  
+  annotate OrderItems with {
+    quantity @assert: (case // [!code highlight]
+      when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
+    end); // [!code highlight]
+  };
 }
 ```
 
 You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../cds/cql#exists-predicate) in this case:
 
 ```cds
-entity Order : cuid {
-        
-  @assert: (exists items[book.isNotReleased = true] 
-    ? 'Some ordered book is not yet released' : null)
-  items : Integer;       
+service OrderService {
+  entity OrdersItems as projection on db.OrderItems;
+  
+  annotate OrderItems with {
+    quantity @assert: (case // [!code highlight]
+      when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
+    end); // [!code highlight]
+  };
 }
 ```
 
 Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
-
-::: warning Use complex asserts on service layer
-Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are avaliable in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile. 
-
-It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
-:::
 
 #### Multiple Conditions
 
