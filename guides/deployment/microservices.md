@@ -370,7 +370,7 @@ Note that we use the *--ws-pack* option for some modules. It's important for nod
 
 ### Authentication
 
-Add [security configuration](../security/authentication#authentication) using the command:
+Add [security configuration](../security/authentication) using the command:
 
 ```shell
 cds add xsuaa --for production
