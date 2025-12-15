@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an _element_ with `@assert` to define CXL expressions to be validated _after_ the data has been written to the database but _before_ it is committed. If the validation should fail, the expression will return a String that indicates an error to the runtime, or `null` if the validation passes. 
+Annotate an _element_ with `@assert` to define the CXL expressions that are validated _after_ the data has been written to the database but _before_ it is committed. If the validation fails, the expression will return a `String` that indicates an error to the runtime. If the validation passes the expression return `null` 
 
 ```cds
 entity OrderItems : cuid {
@@ -978,7 +978,7 @@ The error message returned by the CXL expression inside the annotation can be ei
 ::: warning Use complex asserts on service layer
 Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are available in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile.
 
-It is therefore recommended to use complex asserts on the highest projection, i.e. on the service layer.
+It is therefore recommended to use complex asserts on the highest projection, that is on the service layer.
 :::
 
 For the examples given in this section, consider the following CDS _domain_ and _service_ model:
@@ -1055,8 +1055,8 @@ annotate OrderService.OrderItems with {
 Expressions are evaluated *after* the request has been applied to the underlying datastore. Affected are the entities of the request's payload. The runtime executes check-statements with the provided expressions and the primary key values for the given entities.
 
 ::: warning Limitations
-- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update)
-- Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported
+- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update).
+- Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported.
 :::
 
 ### Custom Error Messages
