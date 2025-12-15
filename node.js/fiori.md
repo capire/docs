@@ -177,10 +177,36 @@ You can set the property to one of the following:
 It can occur that inactive drafts are still in the database after the configured timeout. The deletion is implemented as a side effect of creating new drafts and there's no periodic job that does the garbage collection.
 :::
 
-
 ## Bypassing Drafts
-Creating or modifying active instances directly is possible without creating drafts. This comes in handy when technical services without a UI interact with each other.
 
+The draft choreography prevents direct creation or modification of active instances of draft-enabled entities.
+However, when working with technical services not exclusively consumed through a GUI, bypassing this restriction is useful.
+The CAP Node.js runtime provides two similar but distinct options for bypassing the regular draft choreography.
+
+### Active as Default <Beta />
+
+By enabling the feature <Config keyOnly>cds.fiori.draft_new_action:true</Config>, you create new draft instances through the collection-bound action `draftNew` in the CAP Node.js runtime. That means, sending a `POST` request to the collection path, for example `/Books`, can be used to create a new active entity instance. You can leverage this behavior, for example, when working with technical services.
+
+This feature is disabled by default.
+
+:::details Learn the details of the `draft_new_action` feature:
+When you activate this feature, the runtime automatically adds the `@Common.DraftRoot.NewAction` annotation to _every_ draft-enabled entity in the background and adds a collection-bound action `draftNew` to the entity's runtime model.
+When this annotation is present, Fiori Elements triggers the action referenced by the annotation instead of sending a `POST` request to the collection path to create a new entity. The runtime internally rewrites calls to this action as a `NEW` event.
+:::
+
+:::warning No custom handlers on `draftNew`
+No custom handlers can be registered for the `draftNew` action. Instead, register such custom handlers on the regular `NEW` event.
+:::
+
+With <Config >cds.fiori.draft_new_action:true</Config>, the `POST` behaves the same as all CRUD operations: they target the active-state rather than the draft-state entity by default.
+You still can create a draft instance through a `POST` request to the collection path. When handling `POST` requests the runtime considers an `IsActiveEntity` attribute in the request body. When you explicitly specify `IsActiveEntity: false` a draft instance is created. 
+
+Activating the <Config keyOnly>cds.fiori.draft_new_action:true</Config> feature has a similar effect as the <Config keyOnly>cds.fiori.bypass_draft:true</Config> feature flag. It allows you to modify active entities without runtime restrictions.
+
+
+### Specify State
+
+Alternatively, you can choose to forcefully disable restrictions on how users interact with active instances of draft-enabled entities.
 To enable this feature, set this feature flag in your configuration:
 
 ```json
