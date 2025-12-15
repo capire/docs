@@ -97,11 +97,11 @@ An expression can hold various elements, such as references, literals, function 
 ```cds
 select from Books {
   42                     as answer,         // literal
-  title,                                    // ref
+  title,                                    // reference ("ref")
   price * quantity       as totalPrice,     // binary operator
   substring(title, 1, 3) as shortTitle,     // function call
-  author.name            as authorName,     // ref with path segment
-  chapters[number < 3]   as earlyChapters,  // infix filter
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
   exists chapters        as hasChapters,    // exists
   count(chapters)        as chapterCount,   // aggregate function
 }
@@ -131,8 +131,8 @@ referred to as a **path expression**.
 
 
 :::code-group
-```js [CQL]
-> await cds.ql`SELECT from Books { title }` // [!code focus]
+```js [CQL] {3,4,5}
+> await cds.ql`SELECT from Books { title }`
 [
   { title: 'Wuthering Heights' },
   { title: 'Jane Eyre' },
@@ -154,29 +154,29 @@ A path expression can be used to navigate to any element of the associations tar
 
 :::code-group
 ```js [CQL]
-> await cds.ql`SELECT from Books { author.name, genre.name }` // [!code focus]
+> await cds.ql`SELECT from Books { title, author.name as author }` // [!code focus]
 [
-  { author_name: 'Emily Brontë', genre_name: 'Drama' },
-  { author_name: 'Charlotte Brontë', genre_name: 'Drama' },
-  { author_name: 'Edgar Allen Poe', genre_name: 'Mystery' },
-  { author_name: 'Edgar Allen Poe', genre_name: 'Romance' },
-  { author_name: 'Richard Carpenter', genre_name: 'Fantasy' }
+  { title: 'Wuthering Heights', author: 'Emily Brontë' },
+  { title: 'Jane Eyre', author: 'Charlotte Brontë' },
+  { title: 'The Raven', author: 'Edgar Allen Poe' },
+  { title: 'Eleonora', author: 'Edgar Allen Poe' },
+  { title: 'Catweazle', author: 'Richard Carpenter' }
 ]
 ```
 
 ```sql [SQL]
 SELECT
-  author.name as author_name,
-  genre.name as genre_name
+    Books.title,
+    author.name AS author
 FROM
-  sap_capire_bookshop_Books as B
-  left JOIN sap_capire_bookshop_Authors as author ON author.ID = B.author_ID
-  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = B.genre_ID
+    sap_capire_bookshop_Books AS Books
+    LEFT JOIN sap_capire_bookshop_Authors AS author -- The table alias for association 'author'
+        ON author.ID = Books.author_ID;
 ```
 :::
 
-In this example, we select the names of the authors and genres of books.
-Both `author` and `genre` are associations on the `Books` entity.
+In this example, we select all books together with the name of their author.
+`author` is an association in the `Books` entity.
 
 ::: info 💡 Associations are **forward-declared joins**
 They provide a convenient way to navigate between related entities without having to define the join conditions manually.
@@ -192,6 +192,63 @@ The condition can manifest in multiple ways:
 - To select related entities with an additional query
 :::
 
+### path expression in the where clause
+
+A path expression can also be used as part of the where clause to filter based on elements of related entities:
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title } where genre.name = 'Fantasy'` // [!code focus]
+[ { title: 'Catweazle' } ]
+```
+
+```sql
+SELECT
+  Books.title
+FROM
+  sap_capire_bookshop_Books AS Books
+  LEFT JOIN sap_capire_bookshop_Genres AS genre
+    ON genre.ID = Books.genre_ID
+WHERE
+  genre.name = ?
+```
+:::
+
+In this example, we select all books that belong to the `Fantasy` genre.
+The table alias for the `genre` association is used in the where clause of the SQL query.
+
+### path expression in order by
+
+A path expression can also be used in the `order by` clause to sort based on elements of related entities:
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title, author.dateOfBirth as birthDate } order by author.dateOfBirth`
+[
+  { title: 'The Raven', birthDate: '1809-01-19' },
+  { title: 'Eleonora', birthDate: '1809-01-19' },
+  { title: 'Jane Eyre', birthDate: '1818-04-21' },
+  { title: 'Wuthering Heights', birthDate: '1818-07-30' },
+  { title: 'Catweazle', birthDate: '1929-08-14' }
+]
+```
+
+```sql [SQL]
+SELECT
+  Books.title,
+  author.dateOfBirth AS birthDate
+FROM
+  sap_capire_bookshop_Books AS Books
+  LEFT JOIN sap_capire_bookshop_Authors AS author
+    ON author.ID = Books.author_ID
+ORDER BY
+  author.dateOfBirth ASC
+```
+:::
+
+In this example, we select all books and order them by the date of birth of their authors.
+The table alias for the `author` association is used in the order by clause of the SQL query.
+
 ### path expression after `exists` predicate
 
 path-expressions can also be used after the `exists` predicate to check for the existence.
@@ -203,24 +260,24 @@ allows to select all authors that have written at least one book in the `Fantasy
 :::code-group
 ```js [CQL]
 > await cds.ql`
-  SELECT from ${Authors} as FantasyAuthors { name }
+  SELECT from ${Authors} { name }
   where exists books.genre[name = 'Fantasy']` // [!code focus]
 
 [ { name: 'Richard Carpenter' } ]
 ```
 
 ```sql [SQL]
-SELECT FantasyAuthors.name
-FROM sap_capire_bookshop_Authors AS FantasyAuthors
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors AS Authors
 WHERE EXISTS (
   SELECT 1
-  FROM sap_capire_bookshop_Books AS "$b"
-  WHERE "$b".author_ID = FantasyAuthors.ID
+  FROM sap_capire_bookshop_Books AS Books
+  WHERE Books.author_ID = Authors.ID
     AND EXISTS (
       SELECT 1
-      FROM sap_capire_bookshop_Genres AS "$g"
-      WHERE "$g".ID = "$b".genre_ID
-        AND "$g".name = 'Fantasy'
+      FROM sap_capire_bookshop_Genres AS Genres
+      WHERE Genres.ID = Books.genre_ID
+        AND Genres.name = 'Fantasy'
     )
 );
 ```
@@ -236,7 +293,6 @@ A `ref` can be used to reference an element.
 It is possible to navigate along [path segments](#path-segment) to reference elements within the model.
 This is not limited to an entities own elements, but can also be used to navigate associations to elements of related entities.
 
-This is only the tip of the iceberg.
 A path expression can be much more complex. For example, the individual [path segments](#path-segment)
 themselves can contain expressions by applying [infix-filters](#infix-filter).
 More samples are shown in the upcoming sections.
@@ -269,8 +325,8 @@ This allows to filter the target of an association based on certain criteria.
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
 
-:::code-group {4}  <!-- hier Zeilennummer(n) anpassen -->
-```js [CAP Style]
+:::code-group
+```js [CAP Style] {4}
 > await cds.ql`
   SELECT from ${Books} { title }
   where startswith(
@@ -391,7 +447,7 @@ TODO: some text
 ### aggregate function with [ordering term](#ordering-term)
 
 ::: code-group
-```js [CAP Style]
+```js [CAP Style] {4}
 > await cds.ql`
   SELECT from Authors {
     name,
