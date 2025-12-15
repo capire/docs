@@ -322,7 +322,7 @@ The delete operation is resolved to the underlying `Order` entity with ID *42* a
 ### Runtime Views { #runtimeviews }
 
 
-CAP Java provides two modes for resolving [runtime views](../cds/cdl#runtimeviews) during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
+CAP Java provides two modes for resolving [runtime views](../../cds/cdl#runtimeviews) during read operations: [cte](#rtview-cte) and [resolve](#rtview-resolve).
 
 On write, the restrictions for [write through views](#updatable-views) apply in the same way as for standard CDS views. However, if a runtime view cannot be resolved, a fallback to database views is not possible, and the statement fails with an error.
 
@@ -338,7 +338,7 @@ Select.from(BooksWithLowStock).hint("cds.sql.runtimeView.mode", "resolve");
 
 #### Read in `cte` mode { #rtview-cte }
 
-In [cte mode](../cds/cdl#runtimeviews), the runtime translates the view definition into a _Common Table Expression_ (CTE) and sends it with the query to the database. This is the default mode since CAP Java `4.x`.
+In [cte mode](../../cds/cdl#runtimeviews), the runtime translates the view definition into a _Common Table Expression_ (CTE) and sends it with the query to the database. This is the default mode since CAP Java `4.x`.
 
 ::: tip CAP Java 3.10
 Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
@@ -348,7 +348,7 @@ Enable *cte* mode with *cds.sql.runtimeView.mode: cte*
 
 In `resolve` mode, the runtime _resolves_ the view definition to the underlying persistence entities and executes the query directly against the corresponding tables.
 
-For example, the [view definition](../cds/cdl#runtimeviews) is resolved into the following SQL statement:
+For example, the [view definition](../../cds/cdl#runtimeviews) is resolved into the following SQL statement:
 
 ```sql
 SELECT B.ID, B.TITLE, A.NAME AS "author"
