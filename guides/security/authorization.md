@@ -433,7 +433,7 @@ So, the authorization for the requests in the example is delegated as follows:
 
 | Request Target                                         |          Authorization Entity          |
 |--------------------------------------------------------|:--------------------------------------:|
-| `IssuesService.Components`                             |           <Na/><sup>1</sup>            |
+| `IssuesService.Components`                             | `IssuesService.Components`<sup>3</sup> |
 | `IssuesService.Issues`                                 |           <Na/><sup>1</sup>            |
 | `IssuesService.Categories`                             | `IssuesService.Categories`<sup>2</sup> |
 | `IssuesService.Components[<id>].issues`                | `IssuesService.Components`<sup>3</sup> |
