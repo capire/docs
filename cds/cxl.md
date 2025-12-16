@@ -344,6 +344,22 @@ It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, 
 
 ### enhancing path expression with filter conditions
 
+> TODO: use this example or another one that results in a simple sql
+```cds
+Select from Authors { name }
+where exists books[genre.name = 'Fantasy']
+```
+
+
+### use an infix-filter to make an association more specific
+
+> TODO: Think about good example for this:
+```
+address[kind = 'home'] as homeAddress
+```
+
+### complex filter conditions
+
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
 
@@ -459,7 +475,7 @@ that operates on the single operand `price`. It negates the value of `price`.
 A binary operator is an operator that operates on two operands.
 
 E.g. in the expression `price * quantity`, the `*` operator is a binary operator
-that operates on the two operands `price` and `quantity`.
+that multiplies the two factors `price` and `quantity`.
 
 ## literal value { #literal-value }
 
@@ -468,6 +484,13 @@ that operates on the two operands `price` and `quantity`.
 </div>
 
 TODO
+
+don't forget to specify the literal formats for
+
+Date
+Time
+Timestamp
+Binary
 
 ## binding parameter { #binding-parameter }
 
