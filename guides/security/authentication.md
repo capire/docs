@@ -908,7 +908,7 @@ cds compile srv --to xsuaa > xs-security.json
 ```
 :::
 
-See [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) in the SAP HANA Platform documentation for the syntax of the _xs-security.json_ and advanced configuration options.
+See [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax) in the SAP Help documentation for the syntax of the _xs-security.json_ and advanced configuration options.
 
 <!-- REVISIT: Not ideal cds compile --to xsuaa can generate invalid xs-security.json files -->
 ::: warning Avoid invalid characters in your models
