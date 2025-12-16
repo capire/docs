@@ -820,8 +820,11 @@ You can now start the server with `cds watch` and see the hierarchical tree view
 ![Fiori UI with hierarchical tree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The compiler automatically expands the shortcut annotation `@hierarchy` to the
-following annotate and extend statements. If you cannot use the `@hierarchy` annotation,
-e.g. because you only have an unmanaged parent association, you can write them yourself.
+following annotate and extend statements. 
+
+### Manual Approach
+
+The following documents what happens behind the scenes, done by the compiler as described before. You can also use it, if you cannot use the `@hierarchy` annotation, for example, because you only have an unmanaged parent association.
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
