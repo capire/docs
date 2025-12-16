@@ -658,7 +658,6 @@ cds add approuter
 cds up
 ```
 
-adds the additional AppRouter to the deployment which is already prepared for IAS.
 The resulting setup is sketched in the diagram:
 
 ![UI-level Testing of IAS Endpoints](./assets/ias-ui-setup.svg){width="500px"}
