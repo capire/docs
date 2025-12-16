@@ -108,15 +108,22 @@ Example:
 ```js
 let m = cds.linked`
   namespace my.bookshop;
-  entity Books {...}
-  entity Authors {...}
+  entity Books {}
+  entity Authors {}
+  service CatalogService { 
+    entity Books as projection on my.bookshop.Books;
+    entity Authors as projection on my.bookshop.Authors;
+  }
 `
 
 // Function nature
 let { Books, Authors } = m.entities ('my.bookshop')
 
 // Object nature
-let { 'my.bookshop.Books': Books, 'my.bookshop.Authors': Authors } = m.entities
+let { 
+  'my.bookshop.Books': Books, 
+  'my.bookshop.Authors': Authors 
+} = m.entities
 
 // Array nature
 for (let each of m.entities) console.log (each.name)
