@@ -166,7 +166,7 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 ### 3. MTA-Based Deployment { #add-mta-yaml}
 
-We'll be using the [Cloud MTA Build Tool](https://sap.github.io/cloud-mta-build-tool/) to execute the deployment. The modules and services are configured in an `mta.yaml` deployment descriptor file, which we generate with:
+We'll be using the [Cloud MTA Build Tool](https://sap.github.io/cloud-mta-build-tool/) to execute the deployment. The modules and services are configured in an _mta.yaml_ deployment descriptor:
 
 ```sh
 cds add mta
@@ -174,41 +174,54 @@ cds add mta
 
 [Learn more about MTA-based deployment.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d04fc0e2ad894545aebfd7126384307c.html?locale=en-US){.learn-more}
 
-### 4. App Router as Gateway { #add-app-router}
-
-The _App Router_ acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
-
-Two deployment options are available:
-
-- **Managed App Router**: for SAP Build Work Zone, the Managed App Router provided by SAP Fiori Launchpad is available.
-- **Custom App Router**: for custom scenarios without SAP Fiori Launchpad, the App Router needs to be deployed along with your application.
-  In this case, use the following command to enhance the application configuration:
-
-    ```sh
-    cds add approuter
-    ```
-
-[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
-
-### 5. User Interfaces { #add-ui }
+### 4. User Interfaces { #add-ui }
 
 #### Option A: SAP Cloud Portal
 
-If you intend to deploy **multi-tenant** user interface applications, you also need to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+If you intend to deploy **multi-tenant** applications with a UI, we recommend to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
 
 ```sh
 cds add portal
 ```
+
+::: tip `cds add portal` adds an _App Router_ configuration to your project
+The App Router acts as a single point-of-entry gateway to route requests to.
+In particular, it ensures user login and authentication in combination with XSUAA or IAS.
+:::
 
 #### Option B: SAP BTP Application Frontend <Beta />
 
 For **single-tenant** applications, you can use the new [SAP BTP Application Frontend](https://help.sap.com/docs/application-frontend-service) service:
 
 ```sh
-cds add app-front
+cds add app-frontend
+```
+[Enable the service for consumption in your subaccount](https://help.sap.com/docs/application-frontend-service/application-frontend-service/enabling-service?locale=en-US){.learn-more}
+
+::: details Other deployment variants...
+
+For **single-tenant** applications, you can integrate with SAP Build Work Zone, standard edition:
+
+```sh
+cds add workzone
 ```
 
-### 6. Optional: Multitenancy { #add-multitenancy }
+This approach uses the **managed App Router** provided by SAP Fiori Launchpad&nbsp;—&nbsp;you don't need to deploy your own. Instead, destinations are configured.
+
+<br>
+
+You might also use a custom App Router setup without SAP BTP Cloud Portal service:
+
+```sh
+cds add approuter
+```
+[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
+<br>
+However, in this case, you need to create symlinks from your _app_ folders to make them visible to the deployed App Router.
+The [samples _modulith_](https://github.com/capire/samples) project uses this setup for serving a static _index.html_ consuming Vue.js via CDN.
+:::
+
+### 5. Optional: Multitenancy { #add-multitenancy }
 
 To enable multitenancy for production, run the following command:
 
