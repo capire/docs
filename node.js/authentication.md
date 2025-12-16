@@ -258,7 +258,7 @@ If you want to restrict these additional logins, you need to overwrite the defau
 ```
 
 ::: tip
-The pre-defined mock users can be deactivated by using kind `basic` instead of `mocked`.
+The pre-defined mock users can be deactivated by using kind `basic` instead of `mocked`. In that case configure users yourself, as described previously.
 :::
 
 
