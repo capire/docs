@@ -745,15 +745,13 @@ Cache Control feature is currently supported on the Java runtime only.
 
 ## Hierarchical Tree Views
 
-Recursive hierarchies are parent-child hierarchies, where each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
+Recursive hierarchies are parent-child related structures: each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
-Database support for a generic hierarchy implementation by CAP runtimes:
+A generic hierarchy implementation for hierarchies is available on all relational databases supported by the CAP runtimes.
 
-| Runtime\DB  | SAP HANA | H2 | PostgreSQL | SQLite |
-|-------------|----------|----|------------|--------|
-| CAP Java    | ✓        | ✓ | ✓          |        |
-| CAP Node.js | ✓        |    |✓          |✓       |
-
+::: warning
+On H2, only small hierarchies should be used for performance reasons.
+:::
 
 ### Example
 Let's assume we have the following domain model and its projection in a service:
@@ -763,6 +761,7 @@ Let's assume we have the following domain model and its projection in a service:
 namespace my.bookshop;
 
 entity Genres { //...
+  ID : UUID;
   parent : Association to Genres;
 }
 ```
@@ -776,42 +775,18 @@ service AdminService {
 ```
 :::
 
-
-Annotate/extend the entity in the service as follows:
+In this example, there is a managed to-one association `parent` that defines the parent-child hierarchy
+based on a single key element. In such a situation you can define the Tree View via the annotation `@hierarchy`:
 
 ```cds
-// declare a hierarchy with the qualifier "GenresHierarchy"
-annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy : {
-  NodeProperty             : ID,    // identifies a node, usually the key
-  ParentNavigationProperty : parent // navigates to a node's parent
-};
-
-extend AdminService.Genres with @(
-  // The computed properties expected by Fiori to be present in hierarchy entities
-  Hierarchy.RecursiveHierarchy #GenresHierarchy : {
-    LimitedDescendantCount : LimitedDescendantCount,
-    DistanceFromRoot       : DistanceFromRoot,
-    DrillState             : DrillState,
-    LimitedRank            : LimitedRank
-  },
-  // Disallow filtering on these properties from Fiori UIs
-  Capabilities.FilterRestrictions.NonFilterableProperties: [
-    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
-  ],
-  // Disallow sorting on these properties from Fiori UIs
-  Capabilities.SortRestrictions.NonSortableProperties    : [
-    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
-  ],
-) columns { // Ensure we can query these columns from the database
-  null as LimitedDescendantCount : Int16,
-  null as DistanceFromRoot       : Int16,
-  null as DrillState             : String,
-  null as LimitedRank            : Int16
-};
+annotate AdminService.Genres with @hierarchy : parent;
 ```
 
-> Note: When naming the hierarchy qualifier, use the following pattern: <br>
-> `<entity name in service>Hierarchy`
+If the entity contains only one such association, you can even omit the value:
+
+```cds
+annotate AdminService.Genres with @hierarchy;
+```
 
 Configure the TreeTable in UI5's _manifest.json_ file:
 
@@ -837,7 +812,53 @@ Configure the TreeTable in UI5's _manifest.json_ file:
     },
 ```
 
-> Note: use the `hierarchyQualifier` declared earlier
+> Note: construct the `hierarchyQualifier` with the following pattern: <br>
+> `<entity name in service>Hierarchy`
+
+You can now start the server with `cds watch` and see the hierarchical tree view in action in the [_Browse Genres_](http://localhost:4004/fiori-apps.html#Genres-display) app.
+
+![Fiori UI with hierarchical tree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
+
+The compiler automatically expands the shortcut annotation `@hierarchy` to the
+following `annotate` and `extend` statements. 
+
+### Manual Approach
+
+The following documents what happens behind the scenes, done by the compiler as described before. You can also use it, if you cannot use the `@hierarchy` annotation, for example, because you only have an unmanaged parent association.
+
+```cds
+// declare a hierarchy with the qualifier "GenresHierarchy"
+annotate AdminService.Genres with @Aggregation.RecursiveHierarchy #GenresHierarchy: {
+  NodeProperty             : ID,    // identifies a node, usually the key
+  ParentNavigationProperty : parent // navigates to a node's parent
+};
+
+extend AdminService.Genres with @(
+  // The computed properties expected by Fiori to be present in hierarchy entities
+  Hierarchy.RecursiveHierarchy #GenresHierarchy: {
+    LimitedDescendantCount : LimitedDescendantCount,
+    DistanceFromRoot       : DistanceFromRoot,
+    DrillState             : DrillState,
+    LimitedRank            : LimitedRank
+  },
+  // Disallow filtering on these properties from Fiori UIs
+  Capabilities.FilterRestrictions.NonFilterableProperties: [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+  // Disallow sorting on these properties from Fiori UIs
+  Capabilities.SortRestrictions.NonSortableProperties: [
+    'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
+  ],
+) columns { // Ensure we can query these columns from the database
+  null as LimitedDescendantCount : Int16,
+  null as DistanceFromRoot       : Int16,
+  null as DrillState             : String,
+  null as LimitedRank            : Int16
+};
+```
+
+> Note: When naming the hierarchy qualifier, use the following pattern: <br>
+> `<entity name in service>Hierarchy`
 
 <div id="reserved-words" />
 

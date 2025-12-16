@@ -939,9 +939,125 @@ Cross-service checks are not supported. It is expected that the associated entit
 The `@assert.target` check constraint relies on database locks to ensure accurate results in concurrent scenarios. However, locking is a database-specific feature, and some databases don't permit to lock certain kinds of objects. On SAP HANA, for example, views with joins or unions can't be locked. Do not use `@assert.target` on such artifacts/entities.
 :::
 
+### `@assert` <Beta/>
 
-<div id="assertconstraints" />
+Annotate an _element_ with `@assert` to define the CXL expressions that are validated _after_ the data has been written to the database but _before_ it is committed. If the validation fails, the expression will return a `String` that indicates an error to the runtime. If the validation passes the expression return `null` 
 
+```cds
+entity OrderItems : cuid {
+        
+  @assert: (case 
+    when quantity <= 0 then 'Quantity must be greater than zero' 
+  end)
+  quantity : Integer;       
+}
+```
+
+Alternatively, the same condition can be simplified by using the [ternary conditional operator](../releases/archive/2023/march23#ternary-conditional-operator):
+
+```cds
+entity OrderItems : cuid {
+  
+  @assert: (quantity <= 0 ? 'Quantity must be greater than zero' : null)
+  quantity  : Integer;
+}
+```
+
+#### Error Messages and Message Targets
+
+If a validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts) the error is persisted. The error targets the annotated element, which is then highlighted on the Fiori UI.
+
+::: info Error Messages
+The error message returned by the CXL expression inside the annotation can be either a static message or a message key to support i18n. If a message key is used, the message is looked up in the message bundle of the service.
+[Learn more about localized messages](./i18n){.learn-more}
+:::
+
+
+#### Complex Asserts
+
+::: warning Use complex asserts on service layer
+Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements -  from the same or an associated entity - you must ensure that these elements are available in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile.
+
+It is therefore recommended to use complex asserts on the highest projection, that is on the service layer.
+:::
+
+For the examples given in this section, consider the following CDS _domain_ and _service_ model:
+
+```cds
+context db {
+  entity Books : cuid { 
+    title : String; 
+    stock : Integer; 
+    deliveryDate : Date;   
+    orderDate : Date;
+  }
+  
+  entity Orders : cuid {
+    items : Composition of many OrderItems on items.order = $self;
+  }
+  
+  entity OrderItems : cuid {
+    order : Association to Orders;
+    book : Association to Books;
+    quantity : Integer;
+  }
+}
+
+service OrderService {
+  entity Orders as projection on db.Orders;
+  entity OrderItems as projection on db.OrderItems;
+}
+```
+
+An `@assert` annotation may use other elements from the same entity. This annotation checks that the delivery date of an order is after the order date:
+
+```cds
+annotate OrderService.Orders with {
+  deliveryDate @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null); // [!code highlight]
+}
+```
+In an `@assert` condition you can also refer to elements of associated entities. The following example ensures that the `quantity` of the ordered book is validated against the actual `stock`. If the stock level is insufficient, a static error message is returned:
+
+```cds
+annotate OrderService.OrderItems with {
+  quantity @assert: (case // [!code highlight]
+    when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
+  end); // [!code highlight]
+}
+```
+
+You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../cds/cql#exists-predicate) in this case:
+
+```cds
+annotate OrderService.Orders with {
+  items @assert: ( exists items[book.isNotReleased = true] // [!code highlight]
+            ? 'Some ordered book is not yet released' : null) // [!code highlight]
+}
+```
+
+Refer to [Expressions as Annotation Values](../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
+
+#### Multiple Conditions
+
+Use multiple `when` clauses to check multiple conditions with a single `@assert` annotation. Each condition returns its own error message to precisely describe the error:
+
+```cds
+annotate OrderService.OrderItems with {
+  quantity @assert: (case
+    when book.stock = 0 then 'Stock is zero'
+    when book.stock <= quantity then 'Stock exceeded'
+  end)
+}
+```
+
+#### Background
+
+Expressions are evaluated *after* the request has been applied to the underlying datastore. Affected are the entities of the request's payload. The runtime executes check-statements with the provided expressions and the primary key values for the given entities.
+
+::: warning Limitations
+- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update).
+- Only elements with simple types (like, `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported.
+:::
 
 ### Custom Error Messages
 
@@ -1106,7 +1222,7 @@ service Sue {
   entity Foo { key ID:Integer } actions {
     function getStock() returns Integer;
     action order (x:Integer) returns Integer;
-    //bound to the collection and not a specific instance of Foo
+    // bound to the collection and not a specific instance of Foo
     action customCreate (in: many $self, x: String) returns Foo;
     // All parameters are optional by default, unless marked with `not null`:
     action discard (reason: String not null);
@@ -1239,8 +1355,227 @@ Programmatic usage would look like this for Node.js:
 
 
 
-<br><br>
+## Status-Transition Flows <Beta />
 
+The flow feature makes it easy to define and manage state transitions in your CDS models.
+It ensures transitions are explicitly modeled, validated, and executed in a controlled and reliable way.
+For more complex requirements, you can extend flows with custom event handlers.
+
+
+### Enabling Flows
+
+Status-transition flows are supported by both CAP runtimes.
+
+In CAP Node.js support for flows is part of the CAP Node.js core (`@sap/cds`).
+
+For CAP Java, support for flows is provided by the feature [cds-feature-flow](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-flow). Enable it by adding this dependency to your _srv/pom.xml_ file:
+
+```xml
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-feature-flow</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+
+### Modeling Flows
+
+The following example, taken from [@capire/xtravels](https://github.com/capire/xtravels), shows the simplest way to model a flow.
+The annotations in the service model are sufficient to define and use the flow.
+
+![A flow diagram showing three status states connected by arrows. The leftmost oval contains the word Open. An arrow labeled accept points from Open to an oval containing Accepted at the top right. Another arrow labeled reject points from Open to an oval containing Canceled at the bottom right. The diagram illustrates a simple state transition workflow where items can move from an open state to either accepted or canceled states.](./assets/flows/xtravels-flow-simple.svg)
+
+The following is an extract of the relevant parts of the domain model:
+
+::: details `db/schema.cds`
+```cds [db/schema.cds]
+// db/schema.cds
+namespace sap.capire.travels;
+
+entity Travels : managed {
+  // [...]
+  Status       : Association to TravelStatus default 'O';
+  // [...]
+}
+
+entity TravelStatus : sap.common.CodeList {
+  key code : String(1) enum {
+    Open     = 'O';
+    Accepted = 'A';
+    Canceled = 'X';
+  }
+}
+```
+:::
+
+```cds [srv/travel-service.cds]
+// srv/travel-service.cds
+service TravelService {
+
+  // Define entity and actions
+  entity Travels as projection on db.Travels
+  actions {
+    action rejectTravel();
+    action acceptTravel();
+    action deductDiscount( percent: Percentage not null ) returns Travels;
+  };
+
+  // Define flow through actions (+ status check for "deductDiscount")
+  annotate Travels with @flow.status: Status actions {  // [!code highlight]
+    rejectTravel    @from: #Open  @to: #Canceled;       // [!code highlight]
+    acceptTravel    @from: #Open  @to: #Accepted;       // [!code highlight]
+    deductDiscount  @from: #Open;                       // [!code highlight]
+  };                                                    // [!code highlight]
+
+}
+```
+
+No custom action handlers are needed for simple transitions—the flow feature's default handlers validate that the entry state is `Open` and transition the status to `Accepted` or `Canceled` accordingly.
+For more complex scenarios, you can add custom handlers as explained later.
+
+
+### Flow Annotations
+
+Flows consist of a _status element_ and a set of _flow actions_ that define transitions between states. 
+
+#### Declare Flow Using `@flow.status`
+
+To model a flow, one of the entity fields needs to be annotated with `@flow.status`.
+This field must be one of the following:
+
+- A String or Integer enum consisting of keys and values
+- A String enum with only symbols
+- A Codelist entity with the key `code` if localization is needed (`code` must be one of the two above)
+
+::: tip The status field should be `@readonly` and have a default value.
+We recommend to always use `@flow.status` in combination with `@readonly`.
+This ensures that the status element is immutable from the client side, giving the service provider full control over all state transitions.
+As no initial state can be provided on `CREATE`, there should be a default value.
+:::
+
+When you annotate `@flow.status: <element name>` at the entity level (as in the example above), the annotation is propagated to the respective element, which is also automatically annotated with `@readonly`.
+
+**About the `@flow.status` annotation:**
+- This annotation is **mandatory**.
+- The annotated element must be either an enum or an association to a code list.
+- Only one status element per entity is supported.
+- Draft-enabled entities are supported, however flows are only applied to the active version.
+- `null` is **not** a valid state—model your empty state explicitly.
+
+::: warning Only simple projections are supported
+The entity must be _writable_, and renaming the status element is currently not supported.
+:::
+
+After declaring `@flow.status`, use the following annotations on bound actions to model transitions:
+
+#### Model Transitions Using `@from` and `to`
+
+Both annotations are optional, but at least one is required to mark an action as a flow action. Use either one or both depending on your needs. When you use both, no custom handlers are needed—generic handlers are registered automatically.
+
+**`@from`**
+
+- Defines valid entry states for the action.
+- Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here).
+- Can be a single value or an array of values (each element must be a value from the status enum).
+- UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5.
+  - Can be deactivated via <Config>cds.features.annotate_for_flows: false</Config>.
+
+**`@to`**
+
+- Defines the desired target state of the entity after executing the action.
+- Changes the state of the entity to the value defined in this annotation after executing the action.
+- Must be a single value from the status enum.
+
+
+
+### Generic Handlers
+
+Generic handlers are registered automatically, so no custom implementations are required for basic flows.
+
+#### `before`
+
+Based on the `@from` annotation, a handler validates that the entity is in a valid entry state - the current state must match one of the states specified in `@from`.
+If validation fails, the request returns a `409 Conflict` HTTP status code with an appropriate error message.
+
+#### `on`
+
+In case of a `@to` declaration and if no custom handler is provided, an empty handler is registered that completes the action for void return types, ensuring the request passes through the generic handler stack.
+This is an exception to the rule that actions must be implemented by the application.
+
+#### `after`
+
+Based on the `@to` annotation, a handler automatically updates the entity's status to the target state.
+For example, if the current state is `Open` and the target state is `Accepted`, the handler updates the status to `Accepted` after action execution.
+This ensures consistent state transitions without custom logic.
+
+::: tip Generic handlers are not executed for draft entities
+For example, if you call `acceptTravel()` on a `Travels` entity that is currently being edited (in _inactive_ state), the call has no effect.
+:::
+
+
+### Reverting to Previous State
+
+You can use the target state `$flow.previous` to restore the previous state in a workflow.
+The following example introduces a `Blocked` state with two possible previous states (`Open` and `InReview`) and an action `unblockTravel` that restores the previous state.
+For instance, if `Blocked` was transitioned to from `Open`, calling `unblockTravel` transitions back to `Open`. The same applies for `InReview`.
+
+![The graphic is explained in the accompanying text.](./assets/flows/xtravels-flow-previous.svg)
+
+```cds [srv/travel-service.cds]
+// srv/travel-service.cds
+service TravelService {
+
+  // Define entity and actions
+  entity Travels as projection on db.Travels
+  actions {
+    action reviewTravel();
+    action reopenTravel();
+    action blockTravel();
+    action unblockTravel();
+    action rejectTravel();
+    action acceptTravel();
+    action deductDiscount( percent: Percentage not null ) returns Travels;
+  };
+
+  // Define flow incl. "unblockTravel" that transitions to the previous state
+  annotate Travels with @flow.status: Status actions {
+    reviewTravel    @from: #Open               @to: #InReview;       // [!code highlight]
+    reopenTravel    @from: #InReview           @to: #Open;           // [!code highlight]
+    blockTravel     @from: [#Open, #InReview]  @to: #Blocked;        // [!code highlight]
+    unblockTravel   @from: #Blocked            @to: $flow.previous;  // [!code highlight]
+    rejectTravel    @from: #InReview           @to: #Canceled;
+    acceptTravel    @from: #InReview           @to: #Accepted;
+    deductDiscount  @from: #Open;
+  };
+
+}
+```
+
+Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
+
+::: details The `transitions_` composition
+The `transitions_` composition is meant as a technical artifact to implement transitioning to the previous state and not for exposing the transition history to business users, etc.
+For such use cases, check out the [Change Tracking plugin](../plugins/index.md#change-tracking).
+
+The automatic entity extending described above can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
+If you do so, you need to add aspect `sap.common.FlowHistory` manually in order to use `@to: $flow.previous`!
+
+Automatic history capturing can, as an experimental feature, also be enabled for all entities with a flow definition via <Config>cds.features.history_for_flows: 'all'</Config>.
+
+The `transitions_` composition automatically appended to the base entity is also automatically excluded from all projections.
+:::
+
+
+### Extending Flows
+
+Flow annotations work well for basic flows. For more complex scenarios, implement custom event handlers.
+
+Common use cases for custom handlers:
+- **Additional validation:** Implement a custom `before` handler when entry state validation depends on extra conditions
+- **Non-void return types:** Implement a custom `on` handler when the action returns data
+- **Conditional target states:** Implement a custom `on` or `after` handler (without `@to` annotation) when multiple target states depend on conditions
+
+<!-- TODO: add example -->
 
 
 ## Serving Media Data
