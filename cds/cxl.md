@@ -10,6 +10,7 @@ status: draft
 import expr from '../assets/cxl/expr.drawio.svg?raw'
 import ref from '../assets/cxl/ref.drawio.svg?raw'
 import infixFilter from '../assets/cxl/infix-filter.drawio.svg?raw'
+import infixFilterFull from '../assets/cxl/infix-filter-full.drawio.svg?raw'
 import unaryOperator from '../assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from '../assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from '../assets/cxl/literal-value.drawio.svg?raw'
@@ -129,9 +130,10 @@ referred to as a **path expression**.
 
 ### simple element reference
 
+In its simplest form, a `ref` can be used to reference an element:
 
 :::code-group
-```js [CQL] {3,4,5}
+```js [CQL] {1}
 > await cds.ql`SELECT from Books { title }`
 [
   { title: 'Wuthering Heights' },
@@ -143,7 +145,7 @@ referred to as a **path expression**.
 ```
 
 ```sql [SQL]
-SELECT "$B".title FROM sap_capire_bookshop_Books as "$B"
+SELECT Books.title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
@@ -320,13 +322,33 @@ This allows to filter the target of an association based on certain criteria.
 <div v-html="infixFilter"></div>
 </div>
 
+
+::: info 💡 infix notation as a way to influence auto-generated subqueries
+Within an infix, more than than just a simple `WHERE` condition can be specified.
+It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`.
+:::
+
+::: details see the full syntax diagram
+
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+<div v-html="infixFilterFull"></div>
+</div>
+
+  ::: warning
+  Query modifiers other than `WHERE` may only be used in the context of nested projections
+  and `exists` predicates. They are ignored for regular path expressions.
+
+
+:::
+
 ### enhancing path expression with filter conditions
 
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
 
 :::code-group
-```js [CAP Style] {4}
+```js [CQL] {4}
 > await cds.ql`
   SELECT from ${Books} { title }
   where startswith(
@@ -337,20 +359,7 @@ and the author is younger than 40 years.
 [ { title: 'Wuthering Heights' } ]
 ```
 
-```js [SQL Style]
-> await cds.ql`
-  SELECT
-    title
-  from ${Books} as B
-    left join ${Authors} as author
-    on B.author_ID = author.ID and years_between(author.dateOfBirth, author.dateOfDeath) < 40
-  where startswith(
-    author.name,
-    'Emily'
-  )`
-```
-
-```sql [SQL output]
+```sql [SQL]
 SELECT
   title
 FROM
@@ -389,7 +398,44 @@ the `years_between` and `startswith` functions are in the [set of CAPs standard 
 :::
 
 
-### use an infix-filter to make an association more specific
+### Infix notation as convenience to specify query modifiers
+
+:::code-group
+
+```js [CQL] {3,4,5}
+await cds.ql`
+  SELECT from Books[
+    where stock > 0
+    group by genre
+    order by genre asc
+  ]
+  {
+    avg(price) as avgPrice,
+    genre.name
+  }
+`
+[
+  { avgPrice: 11.725, genre_name: 'Drama' },
+  { avgPrice: 150, genre_name: 'Fantasy' },
+  { avgPrice: 14, genre_name: 'Romance' },
+  { avgPrice: 13.13, genre_name: 'Mystery' }
+]
+
+```
+
+```sql [SQL]
+SELECT
+  avg(Books.price) as avgPrice,
+  genre.name as genre_name
+FROM sap_capire_bookshop_Books as Books
+  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = Books.genre_ID
+WHERE Books.stock > 0
+GROUP BY Books.genre_ID
+ORDER BY Books.genre_ID ASC
+```
+:::
+
+> TODO: continue
 
 
 ## operators
@@ -444,7 +490,7 @@ TODO: some text
 <div v-html="functionArgs"></div>
 </div>
 
-### aggregate function with [ordering term](#ordering-term)
+### aggregate function with ordering term
 
 ::: code-group
 ```js [CAP Style] {4}
