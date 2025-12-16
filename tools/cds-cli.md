@@ -501,7 +501,7 @@ Then create an API client package for this service:
 cds export srv/data-service.cds
 ```
 
-The API client package is generated into a new folder _apis/data-service_.
+The command generates the API client package into a new folder _apis/data-service_.
 
 ![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
