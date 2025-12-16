@@ -159,7 +159,7 @@ cds add xsuaa
 ```
 
 ::: tip This will also generate an `xs-security.json` file
-The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [_Authorization_ guide](/guides/security/authorization#xsuaa-configuration) whenever there are changes to these annotations.
+The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [security guide](/guides/security/cap-users#xsuaa-roles) whenever there are changes to these annotations.
 :::
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
