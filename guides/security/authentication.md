@@ -1190,6 +1190,8 @@ will come soon
 
 ## Custom Authentication { #custom-auth }
 
+<div class="java">
+
 There are multiple reasons why customization might be required:
 1. Endpoints for non-business requests often require specific authentication methods (e.g. health check, technical services).
 2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
@@ -1197,15 +1199,9 @@ There are multiple reasons why customization might be required:
 
 ![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="380px"}
 
-<div class="java">
 
 [Advanced configuration options](../../java/security#spring-boot) allow you to control the behaviour of CAP's authentication behaviour according to your needs:
 
-</div>
-
-<div class="node">
-TODO
-</div>
 
 - For CAP endpoints you are fine to go with the [automatic authentication](#model-auth) fully derived from the CAP model.
 - For custom endpoints that should be protected by the same authentication strategy you are also fine with automatc authentication as CAP will cover these endpoints by default.
@@ -1216,6 +1212,59 @@ TODO
 **By default, CAP authenticates all endpoints of the microservice, including the endpoints which are not served by CAP itself**.
 This is the safe baseline on which minor customization steps can be applied on top.
 :::
+
+</div>
+
+<div class="node">
+
+Ideally, all authentication use-cases should be covered by the generic implementations CAP provides.
+However, your application's specific requirements may make it necessary to customize authentication.
+For these scenarios, the CAP Node.js runtime allows to specify an implementation of a custom authentication middleware in <Config>cds.requires.auth.impl</Config>, by providing a path relative to the project root.
+
+:::warning
+Be **very** careful when creating your own `auth` implementation. 
+This should be a last resort for when every other possible solution (e.g. through [modelling](./authorization.md#restrictions) or by [configuration](#pluggable-authentication)) has been investigated and dismissed.
+:::
+
+Like any other [custom middleware](../../node.js/cds-serve.md#custom-middlewares), the auth middleware you create needs to accept express's `req`, `res` and `next` and end up by sending a response, throwing an error or calling `next()`.
+Additionally, a custom auth middleware in CAP needs to set `cds.context.user` and, in a multitenant applications, `cds.context.tenant`.
+
+```js
+module.exports = function custom_auth (req, res, next) {
+  
+  // do your custom authentication
+  
+  cds.context.user = new cds.User({
+    id: '<user-id>',
+    roles: ['<role-a>', '<role-b>'],
+    attr: {
+      <user-attribute-a>: '<value>',
+      <user-attribute-b>: '<value>'
+    }
+  })
+  cds.context.tenant = '<tenant>'
+}
+```
+
+<!-- TODO: Auth Factory Public?  
+You might, for example want to expose an unauthenticated technical endpoint:
+
+```js
+const cds = requires('@sap/cds')
+module.exports = function custom_auth (req, res, next) {
+
+  if (req.url.endswith('/my-technical-endpoint')) next()
+
+  cds.auth()(req, res, next)
+}
+```
+-->
+
+:::tip
+In case you want to customize the `cds.context.user`, check out [this example](../../node.js/cds-serve#customization-of-cds-context-user).
+:::
+
+</div>
 
 
 ### Automatic Authentication { #model-auth }
