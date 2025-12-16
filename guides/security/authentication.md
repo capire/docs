@@ -651,7 +651,7 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the IAS token are done under the hood.
+In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. It will take care of fetching the required IAS tokens when forwarding requests to our test app. Adding an instance of the AppRouter and re-deploying the solution is achieved by running: 
 
 ```sh
 cds add approuter
