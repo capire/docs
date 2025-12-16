@@ -837,7 +837,7 @@ resources:
 <div class="impl java">
 
 ::: tip
-In case your application has multiple XSUAA bindings you need to [pin the binding](../java/security#bindings) which is relevant for CAP Java.
+In case your application has multiple XSUAA bindings you need to [pin the binding](../java/security#bindings).
 :::
 
 </div>
