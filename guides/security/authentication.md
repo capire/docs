@@ -709,7 +709,7 @@ The same is true for the logout flow.
 
 ## XSUAA Authentication { #xsuaa-auth }
 
-[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a proven platform service for identity and access management which provides:
+[SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a platform service for identity and access management which provides:
  - authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
