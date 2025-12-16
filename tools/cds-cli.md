@@ -510,9 +510,7 @@ In addition, there are i18n bundles with the localized metadata relevant
 for the interface, and a _data_ folder with test data
 that exactly matches the structure of the entities in the API.
 
-`cds export` also adds a _package.json_. The package name is the
-application name (from the main _package.json_) prefixed with the
-file name of the data service, in our example `@capire/xflights-data-service`.
+`cds export` also adds a _package.json_. The package name combines the application name (from the main _package.json_) with the file name of the data service. In our example, this results in `@capire/xflights-data-service`.
 You can change this name as appropriate.
 
 The generated package can then be published, e.g. via `npm publish`.
