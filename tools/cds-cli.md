@@ -515,11 +515,11 @@ You can change this name as appropriate.
 
 You can then publish the generated package, for example, via `npm publish`.
 
-For consuming the API in another CAP application
-* import the API package with `npm add`
-* define consumption views on the imported entities
-* use them in your model as if they were local entities
-* add custom code to access the data in the provider app via any of the offered protocols
+To consume the API in another CAP application:
+1. Import the API package with `npm add`
+2. Define consumption views on the imported entities
+3. Use them in your model as if they were local entities
+4. Add custom code to access the data in the provider app via any of the offered protocols
 
 Have a look at the [xtravels](https://github.com/capire/xtravels) sample app for an
 example of using an API client package.
