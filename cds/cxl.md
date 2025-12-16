@@ -31,7 +31,7 @@ and other expressions in the context of CDS models and queries.
 - In [CQL](./cql#path-expressions) (select list, where clause, …)
 - In [CDL](./cdl)
   + In [calculated elements](./cdl/#calculated-elements)
-  + In [annotations](./cdl#expressions-as-annotation-values)
+  + In [annotations](./cdl.md#expressions-as-annotation-values)
 
 ::: info 💡 expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
@@ -572,7 +572,7 @@ WHERE not exists (
 ```
 :::
 
-::: info 💡 Learn more about association-like calculated elements [here](./cdl#association-like-calculated-elements).
+::: info 💡 Learn more about association-like calculated elements [here](./cdl.md#association-like-calculated-elements).
 :::
 
 
@@ -771,7 +771,7 @@ In this example, the ordering term sorts books by price in descending order and 
 
 
 
-::: info 💡 learn more about type references [here](./cdl#type-references)
+::: info 💡 learn more about type references [here](./cdl.md#type-references)
 :::
 
 ## select-statement <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #select-statement }
