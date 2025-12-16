@@ -524,9 +524,11 @@ To consume the API in another CAP application:
 Have a look at the [xtravels](https://github.com/capire/xtravels) sample app for an
 example of using an API client package.
 
-With the possibility to export and import API packages via `cds export` and `npm add`,
-you no longer have to use EDMX (or OpenAPI) as intermediate format for exchanging API information
-between CAP applications, with the known problem of loosing information.
+:::warning Do not use EDMX to exchange API information
+Prefer exporting and importing API packages via `cds export` and `npm add`.
+**Do not use** EDMX (or OpenAPI) as intermediate format for exchanging API information
+between CAP applications, as you might loose information.
+:::
 
 
 
