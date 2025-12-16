@@ -27,10 +27,11 @@ The Core Expression Language (`CXL`) is a language to express calculations, cond
 and other expressions in the context of CDS models and queries.
 **`CXL` is based on the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
 
-`CXL` can be used in various places (TODO: Links):
-- In queries (select list, where clause, …)
-- In calculated elements
-- In annotations
+`CXL` can be used in various places:
+- In [CQL](./cql#path-expressions) (select list, where clause, …)
+- In [CDL](./cdl)
+  + In [calculated elements](./cdl/#calculated-elements)
+  + In [annotations](./cdl#expressions-as-annotation-values)
 
 ::: info 💡 expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
@@ -43,7 +44,7 @@ to the respective calculation in the generated query when the entity is queried.
 
 
 In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
-For a complete reference of the syntax, there are clickable syntax diagrams for each language construct.
+For a complete reference of the syntax, there are clickable [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram) (aka railroad diagrams) for each language construct.
 
 ### samples
 
@@ -81,9 +82,10 @@ SELECT Books.title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-### diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+### syntax diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 
-Each language construct is illustrated by a clickable syntax diagram.
+Each language construct is illustrated by a clickable [syntax diagram](https://en.wikipedia.org/wiki/Syntax_diagram).
+
 They show the syntax of CAPs expression language as a sequence of building blocks.
 By clicking on the individual blocks, you can get more information about the respective building block.
 
@@ -111,8 +113,6 @@ select from Books {
 ### syntax <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 
 <div class="diagram" v-html="expr"></div>
-
-
 
 TODO: some text and more examples
 
@@ -150,7 +150,7 @@ SELECT Books.title FROM sap_capire_bookshop_Books as Books
 :::
 
 
-### path expression in the select list
+### path expression in the select list {#path-expression-select}
 
 A path expression can be used to navigate to any element of the associations target:
 
@@ -256,37 +256,32 @@ The table alias for the `author` association is used in the order by clause of t
 path-expressions can also be used after the `exists` predicate to check for the existence.
 This is especially useful for to-many relations.
 
-In the example a path expression combined with an [infix-filter](#infix-filter),
-allows to select all authors that have written at least one book in the `Fantasy` genre.
+E.g., to select all authors that have written **at least**  one book:
 
 :::code-group
-```js [CQL]
-> await cds.ql`
-  SELECT from ${Authors} { name }
-  where exists books.genre[name = 'Fantasy']` // [!code focus]
+```js [CQL] {1}
+> await cds.ql`SELECT from Authors { name } where exists books`
 
-[ { name: 'Richard Carpenter' } ]
+[
+  { name: 'Emily Brontë' },
+  { name: 'Charlotte Brontë' },
+  { name: 'Edgar Allen Poe' },
+  { name: 'Richard Carpenter' }
+]
 ```
 
-```sql [SQL]
+```sql [SQL] {3-7}
 SELECT Authors.name
-FROM sap_capire_bookshop_Authors AS Authors
-WHERE EXISTS (
-  SELECT 1
-  FROM sap_capire_bookshop_Books AS Books
-  WHERE Books.author_ID = Authors.ID
-    AND EXISTS (
-      SELECT 1
-      FROM sap_capire_bookshop_Genres AS Genres
-      WHERE Genres.ID = Books.genre_ID
-        AND Genres.name = 'Fantasy'
-    )
-);
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+    SELECT 1 as "1"
+    FROM sap_capire_bookshop_Books as books
+    WHERE books.author_ID = Authors.ID
+  )
 ```
 :::
 
-::: info 💡 TODO
-???
+::: info 💡 Learn more about the `exists` predicate [here](./cql.md#exists-predicate)
 :::
 
 ### conclusion
@@ -342,23 +337,246 @@ It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, 
 
 :::
 
-### enhancing path expression with filter conditions
+### applied to `exists` predicate
 
-> TODO: use this example or another one that results in a simple sql
-```cds
-Select from Authors { name }
-where exists books[genre.name = 'Fantasy']
+In this example, we want to select all authors that have written at least one book in the `Fantasy` genre:
+
+> REVISIT: this does work in the node runtime, but the compiler does not yet support it. How about java?
+
+:::code-group
+```js [CQL]
+> await cds.ql`
+    SELECT from Authors { name }
+    where exists books[genre.name = 'Fantasy']` // [!code focus]
+
+[ { name: 'Richard Carpenter' } ]
 ```
 
-
-### use an infix-filter to make an association more specific
-
-> TODO: Think about good example for this:
+```sql [SQL]
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+    SELECT 1 as "1"
+    FROM sap_capire_bookshop_Books as books
+      inner JOIN sap_capire_bookshop_Genres as genre
+        ON genre.ID = books.genre_ID
+    WHERE books.author_ID = Authors.ID
+      and genre.name = 'Fantasy'
+  )
 ```
-address[kind = 'home'] as homeAddress
+:::
+
+> Note how the infix filter condition `genre.name = 'Fantasy'` is applied to the
+subquery following the `exists` predicate for the `books` association.
+
+### applied to `expand`
+
+Further narrow down the result set of a path expression by applying an infix filter condition to
+[nested-expands](./cql#nested-expands):
+
+::: code-group
+```js [CQL] {3}
+> await cds.ql`
+    SELECT from Authors { name,
+      books[ price < 19.99 ] as cheapBooks {
+        title,
+        price
+      } 
+    }`
+
+[
+  {
+    name: 'Emily Brontë',
+    cheapBooks: [ { title: 'Wuthering Heights', price: 11.11 } ]
+  },
+  {
+    name: 'Charlotte Brontë',
+    cheapBooks: [ { title: 'Jane Eyre', price: 12.34 } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    cheapBooks: [
+      { title: 'The Raven', price: 13.13 },
+      { title: 'Eleonora', price: 14 }
+    ]
+  },
+  { name: 'Richard Carpenter', cheapBooks: [] }
+]
 ```
 
-### complex filter conditions
+```sql [SQL]
+SELECT Authors.name,
+  (
+    SELECT jsonb_group_array(jsonb_insert('{}', '$."title"', title)) as _json_
+    FROM (
+        SELECT cheapBooks.title
+        FROM sap_capire_bookshop_Books as cheapBooks
+        WHERE Authors.ID = cheapBooks.author_ID
+          and cheapBooks.price < 19.99
+      )
+  ) as cheapBooks
+FROM sap_capire_bookshop_Authors as Authors
+```
+:::
+
+<div class="node">
+
+::: info 💡 JSON functions
+
+In this example, the runtime makes use of JSON functions to aggregate the related `books` into a JSON array.
+This is because SQL databases do not have a native concept of nested result sets.
+
+> TODO: Link to guide about JSON functions, What about java?
+:::
+
+</div>
+
+
+It is also possible to influence the generated subquery,
+by adding other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`:
+
+::: code-group
+```js [CQL] {3}
+> await cds.ql`
+    SELECT from Authors { name,
+      books[ price < 19.99 order by title desc ] as cheapBooks {
+        title,
+        price
+      } 
+    }`
+
+[
+  {
+    name: 'Emily Brontë',
+    cheapBooks: [ { title: 'Wuthering Heights', price: 11.11 } ]
+  },
+  {
+    name: 'Charlotte Brontë',
+    cheapBooks: [ { title: 'Jane Eyre', price: 12.34 } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    cheapBooks: [
+      { title: 'The Raven', price: 13.13 },
+      { title: 'Eleonora', price: 14 }
+    ]
+  },
+  { name: 'Richard Carpenter', cheapBooks: [] }
+]
+```
+
+```sql [SQL]
+SELECT Authors.name,
+  (
+    SELECT jsonb_group_array(jsonb_insert('{}', '$."title"', title)) as _json_
+    FROM (
+        SELECT cheapBooks.title
+        FROM sap_capire_bookshop_Books as cheapBooks
+        WHERE Authors.ID = cheapBooks.author_ID
+          and cheapBooks.price < 19.99
+        ORDER BY title DESC -- ORDER BY added to subquery
+      )
+  ) as cheapBooks
+FROM sap_capire_bookshop_Authors as Authors
+```
+:::
+
+### applied to `from` clause
+
+:::code-group
+
+```js [CQL] {3,4,5}
+await cds.ql`
+  SELECT from Books[
+    where stock > 0
+    group by genre
+    order by genre asc
+  ]
+  {
+    avg(price) as avgPrice,
+    genre.name
+  }
+`
+[
+  { avgPrice: 11.725, genre_name: 'Drama' },
+  { avgPrice: 150, genre_name: 'Fantasy' },
+  { avgPrice: 14, genre_name: 'Romance' },
+  { avgPrice: 13.13, genre_name: 'Mystery' }
+]
+
+```
+
+```sql [SQL] {6,7,8}
+SELECT
+  avg(Books.price) as avgPrice,
+  genre.name as genre_name
+FROM sap_capire_bookshop_Books as Books
+  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = Books.genre_ID
+WHERE Books.stock > 0
+GROUP BY Books.genre_ID
+ORDER BY Books.genre_ID ASC
+```
+:::
+
+::: details 💡 The above is equivalent to…
+
+Using the infix notation to specify the query modifiers is just
+syntactic sugar:
+
+```js
+await cds.ql`
+  SELECT from Books
+  {
+    avg(price) as avgPrice,
+    genre.name
+  }
+  where stock > 0
+  group by genre
+  order by genre asc`
+```
+
+:::
+
+### to define an association-like calculated element
+
+You can also use the infix filter notation to derive
+another more specific association from an existing one.
+
+In the `Authors` entity in the `Books.cds` file add a new element `cheapBooks`:
+
+```cds {2}
+  books        : Association to many Books on books.author = $self;
+  cheapBooks   = books[price < 19.99]; // based on `books` association
+```
+
+Now we can use `cheapBooks` just like any other association.
+E.g. to select the set of authors which have no cheap books:
+
+:::code-group
+```js [CQL] {1}
+> await cds.ql`SELECT from Authors { name } where not exists cheapBooks`
+[
+  { name: 'Richard Carpenter' }
+]
+```
+
+```sql [SQL]
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE not exists (
+    SELECT 1 as "1"
+    FROM sap_capire_bookshop_Books as cheapBooks
+    WHERE (cheapBooks.author_ID = Authors.ID)
+      and (cheapBooks.price < 19.99) -- here the infix filter condition is applied
+  )
+```
+:::
+
+::: info 💡 Learn more about association-like calculated elements [here](./cdl#association-like-calculated-elements).
+:::
+
+
+### to further narrow down the result set of a path expression
 
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
@@ -366,7 +584,7 @@ and the author is younger than 40 years.
 :::code-group
 ```js [CQL] {4}
 > await cds.ql`
-  SELECT from ${Books} { title }
+  SELECT from Books { title }
   where startswith(
     author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name,
     'Emily'
@@ -414,45 +632,6 @@ the `years_between` and `startswith` functions are in the [set of CAPs standard 
 :::
 
 
-### Infix notation as convenience to specify query modifiers
-
-:::code-group
-
-```js [CQL] {3,4,5}
-await cds.ql`
-  SELECT from Books[
-    where stock > 0
-    group by genre
-    order by genre asc
-  ]
-  {
-    avg(price) as avgPrice,
-    genre.name
-  }
-`
-[
-  { avgPrice: 11.725, genre_name: 'Drama' },
-  { avgPrice: 150, genre_name: 'Fantasy' },
-  { avgPrice: 14, genre_name: 'Romance' },
-  { avgPrice: 13.13, genre_name: 'Mystery' }
-]
-
-```
-
-```sql [SQL]
-SELECT
-  avg(Books.price) as avgPrice,
-  genre.name as genre_name
-FROM sap_capire_bookshop_Books as Books
-  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = Books.genre_ID
-WHERE Books.stock > 0
-GROUP BY Books.genre_ID
-ORDER BY Books.genre_ID ASC
-```
-:::
-
-> TODO: continue
-
 
 ## operators
 
@@ -463,19 +642,23 @@ ORDER BY Books.genre_ID ASC
 </div>
 
 
-A unary operator is an operator that operates on only one operand.
+::: info 💡 A unary operator is an operator that operates on exactly one operand.
+
 E.g. in the expression `-price`, the `-` operator is a unary operator
 that operates on the single operand `price`. It negates the value of `price`.
+:::
 
 ### binary operator { #binary-operator }
 
 <div class="diagram">
 <div v-html="binaryOperator"></div>
 </div>
-A binary operator is an operator that operates on two operands.
 
+
+::: info 💡 A binary operator is an operator that operates on two operands.
 E.g. in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
+:::
 
 ## literal value { #literal-value }
 
@@ -483,20 +666,14 @@ that multiplies the two factors `price` and `quantity`.
 <div v-html="literalValue"></div>
 </div>
 
-TODO
-
-don't forget to specify the literal formats for
-
-Date
-Time
-Timestamp
-Binary
+::: info 💡 Learn more about literals [here](./csn.md#literals)
+:::
 
 ## binding parameter { #binding-parameter }
 
 <div class="diagram" v-html="bindingParameter"></div>
 
-TODO: some text
+TODO: Remove for first version?
 
 💡 string and numeric literal as well as `?` are parsed as `ref`
 
@@ -537,8 +714,8 @@ await cds.ql`
   SELECT
     name,
     string_agg(books.title, ', ' ORDER BY books.title DESC) as titles
-  from ${Authors} as A
-    left join ${Books} as books on books.author_ID = A.ID
+  from Authors as A
+    left join Books as books on books.author_ID = A.ID
   GROUP BY books.author_ID
 ```
 
@@ -557,7 +734,34 @@ GROUP BY books.author_ID;
 
 <div class="diagram" v-html="orderingTerm"></div>
 
-TODO: some text
+### ordered list of book titles by price
+
+:::code-group
+```js [CQL]
+> await cds.ql`
+  SELECT from Books { title, price }
+  order by price desc nulls last` // [!code focus]
+[
+  { title: 'Catweazle', price: 150 },
+  { title: 'Eleonora', price: 14 },
+  { title: 'The Raven', price: 13.13 },
+  { title: 'Jane Eyre', price: 12.34 },
+  { title: 'Wuthering Heights', price: 11.11 },
+  { title: 'Untitled', price: null }
+]
+```
+
+```sql [SQL]
+SELECT
+  Books.title,
+  Books.price
+FROM
+  sap_capire_bookshop_Books AS Books
+ORDER BY price DESC NULLS LAST -- [!code focus]
+```
+:::
+
+In this example, the ordering term sorts books by price in descending order and places rows with `null` prices at the end.
 
 ## over-clause <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #over-clause }
 
@@ -565,7 +769,10 @@ TODO: some text
 
 ## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
-TODO
+
+
+::: info 💡 learn more about type references [here](./cdl#type-references)
+:::
 
 ## select-statement <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #select-statement }
 
