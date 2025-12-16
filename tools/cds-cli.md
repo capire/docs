@@ -474,8 +474,7 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 With `cds export` you create an API client package to be used
 for data exchange via CAP-level Service integration ("Calesi").
 
-First define a data provider service in your CDS model that serves as an
-interface to your data. Put each such data provider service in a separate file.
+Define data provider services in your CDS model that serve as an interface to your data, placing each data provider service in a separate file.
 
 For the [xflights](https://github.com/capire/xflights) sample app,
 an API that provides information about flights, airports, and airlines
