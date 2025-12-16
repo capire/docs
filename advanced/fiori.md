@@ -820,7 +820,7 @@ You can now start the server with `cds watch` and see the hierarchical tree view
 ![Fiori UI with hierarchical tree view.](assets/hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The compiler automatically expands the shortcut annotation `@hierarchy` to the
-following annotate and extend statements. 
+following `annotate` and `extend` statements. 
 
 ### Manual Approach
 
