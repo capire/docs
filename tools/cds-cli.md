@@ -505,8 +505,7 @@ The command generates the API client package into a new folder _apis/data-servic
 
 ![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
-The `service.csn` contains only the interface defined in the service,
-stripping away the query part of the entities and all the model underneath it.
+The `service.csn` contains only the interface defined in the service, removing the query part of the entities and all the underlying model.
 In addition, there are i18n bundles with the localized metadata relevant
 for the interface, and a _data_ folder with test data
 that exactly matches the structure of the entities in the API.
