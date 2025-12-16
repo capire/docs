@@ -745,7 +745,7 @@ Cache Control feature is currently supported on the Java runtime only.
 
 ## Hierarchical Tree Views
 
-Recursive hierarchies are parent-child hierarchies: each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
+Recursive hierarchies are parent-child related structures: each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
 
 A generic hierarchy implementation for hierarchies is available on all relational databases supported by the CAP runtimes.
 
