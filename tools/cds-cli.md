@@ -513,7 +513,7 @@ that exactly matches the structure of the entities in the API.
 `cds export` also adds a _package.json_. The package name combines the application name (from the main _package.json_) with the file name of the data service. In our example, this results in `@capire/xflights-data-service`.
 You can change this name as appropriate.
 
-The generated package can then be published, e.g. via `npm publish`.
+You can then publish the generated package, for example, via `npm publish`.
 
 For consuming the API in another CAP application
 * import the API package with `npm add`
