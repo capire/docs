@@ -1254,7 +1254,7 @@ With `cds.security.authentication.authenticateMetadataEndpoints: false` you can 
 </div>
 
 <div class="node">
-TODO
+Automatic authentication enforcement can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mock-user-auth) explicitly in production.
 </div>
 
 ### Overrule Partially { #partially-auth .java }
