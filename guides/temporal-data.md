@@ -163,12 +163,12 @@ GET Employees?
 $expand=jobs($select=role&$expand=dept($select=name))
 ```
 
-The values of `$at`, and so also the respective session variables, would be set to, for example:
+The values of `$valid`, and so also the respective session variables, would be set to, for example:
 
 |              |                                  |                            |
 |--------------|----------------------------------|----------------------------|
-| `$at.from` = | _session_context('valid-from')_= | _2019-03-08T22:11:00Z_     |
-| `$at.to` =   | _session_context('valid-to')_ =  | _2019-03-08T22:11:00.001Z_ |
+| `$valid.from` = | _session_context('valid-from')_= | _2019-03-08T22:11:00Z_     |
+| `$valid.to` =   | _session_context('valid-to')_ =  | _2019-03-08T22:11:00.001Z_ |
 
 The result set would be:
 
@@ -193,12 +193,12 @@ GET Employees?sap-valid-at=date'2017-01-01'
 $expand=jobs($select=role&$expand=dept($select=name))
 ```
 
-The values of `$at` and hence the respective session variables would be set to, for example:
+The values of `$valid` and hence the respective session variables would be set to, for example:
 
 |              |                                  |                            |
 |--------------|----------------------------------|----------------------------|
-| `$at.from` = | _session_context('valid-from')_= | _2017-01-01T00:00:00Z_     |
-| `$at.to` =   | _session_context('valid-to')_ =  | _2017-01-01T00:00:00.001Z_ |
+| `$valid.from` = | _session_context('valid-from')_= | _2017-01-01T00:00:00Z_     |
+| `$valid.to` =   | _session_context('valid-to')_ =  | _2017-01-01T00:00:00.001Z_ |
 
 The result set would be:
 
