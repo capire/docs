@@ -136,12 +136,27 @@ It's frequently required to define access rules that aren't based on an applicat
 For instance, a service should be accessible only for technical users, with or without user propagation. 
 Such roles are called pseudo roles as they aren't assigned by user administrators, but are added by the runtime automatically on successful authentication, reflecting the technical level:
 
-| Pseudo Role                 | User Type | Technical Indicator | User Name
-|-----------------------------|---------------------|---------------|---------------|
-| `authenticated-user`        | <Na/>  | _successful authentication_ |  _derived from the token_ |
-| `any`        | <Na/>      | <Na/>   | _derived from the token if available or `anonymous`_ |
-| `system-user` | _technical_                   | _grant type client credential_ | `system` |
-| `internal-user` | _technical_        | _grant type client credential and shared identity instance_ | `system-internal` |
+<div class="impl java">
+
+| Pseudo Role          | User Type   | Technical Indicator                                         | User Name                                            |
+|----------------------|-------------|-------------------------------------------------------------|------------------------------------------------------|
+| `authenticated-user` | <Na/>       | _successful authentication_                                 | _derived from the token_                             |
+| `any`                | <Na/>       | <Na/>                                                       | _derived from the token if available or `anonymous`_ |
+| `system-user`        | _technical_ | _grant type client credential_                              | `system`                                             |
+| `internal-user`      | _technical_ | _grant type client credential and shared identity instance_ | `system-internal`                                    |
+
+</div>
+
+<div class="impl node">
+
+| Pseudo Role          | User Type   | Technical Indicator                                         | User Name                                            |
+|----------------------|-------------|-------------------------------------------------------------|------------------------------------------------------|
+| `authenticated-user` | <Na/>       | _successful authentication_                                 | _derived from the token_                             |
+| `any`                | <Na/>       | <Na/>                                                       | _derived from the token if available or `anonymous`_ |
+| `system-user`        | _technical_ | _grant type client credential_                              | `system-user`                                        |
+| `internal-user`      | _technical_ | _grant type client credential and shared identity instance_ | `internal-user`                                      |
+
+</div>
 
 The pseudo-role `system-user` allows you to separate access by business users from _technical_ clients. 
 Note that this role does not distinguish between any technical clients sending requests to the API.
