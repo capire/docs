@@ -153,8 +153,8 @@ Such roles are called pseudo roles as they aren't assigned by user administrator
 |----------------------|-------------|-------------------------------------------------------------|------------------------------------------------------|
 | `authenticated-user` | <Na/>       | _successful authentication_                                 | _derived from the token_                             |
 | `any`                | <Na/>       | <Na/>                                                       | _derived from the token if available or `anonymous`_ |
-| `system-user`        | _technical_ | _grant type client credential_                              | `system-user`                                        |
-| `internal-user`      | _technical_ | _grant type client credential and shared identity instance_ | `internal-user`                                      |
+| `system-user`        | _technical_ | _grant type client credential_                              | `system`                                             |
+| `internal-user`      | _technical_ | _grant type client credential and shared identity instance_ | `system`                                             |
 
 </div>
 
