@@ -219,6 +219,8 @@ cds add approuter
 <br>
 However, in this case, you need to create symlinks from your _app_ folders to make them visible to the deployed App Router.
 The [samples _modulith_](https://github.com/capire/samples) project uses this setup for serving a static _index.html_ consuming Vue.js via CDN.
+
+[Find the symlink directory in the App Router's _resources_ folder](https://github.com/capire/samples/tree/main/.deploy/app-router/resources){.learn-more}
 :::
 
 ### 5. Optional: Multitenancy { #add-multitenancy }
