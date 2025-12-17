@@ -32,6 +32,12 @@
   ### [Serving Media Data](guides/providing-services#serving-media-data)
   ### [Best Practices](guides/providing-services#best-practices)
 
+
+## [Constraints](guides/constraints)
+
+## [Status Flows](guides/status-flows)
+
+
 ## [Consuming Services](guides/using-services)
 
   ### [Introduction](guides/using-services#introduction)
