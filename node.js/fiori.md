@@ -209,7 +209,7 @@ POST /Books
 ```
 
 ```http
-PATCH /Books(ID=123)
+PUT /Books(ID=123)
 
 {
   "title": "How to be more active"
