@@ -127,6 +127,10 @@ referred to as a **path expression**.
   <div v-html="ref"></div>
 </div>
 
+::: info 💡 Leaf elements
+Leaf elements as opposed to associations and structured elements represent scalar values, such as strings, numbers, dates, as well as the array and map types.
+They typically manifest as columns in database tables.
+:::
 
 ### simple element reference
 
@@ -134,7 +138,7 @@ In its simplest form, a `ref` can be used to reference an element:
 
 :::code-group
 ```js [CQL] {1}
-> await cds.ql`SELECT from Books { title }`
+> await cds.ql`SELECT from Books { title }` // [!code focus]
 [
   { title: 'Wuthering Heights' },
   { title: 'Jane Eyre' },
@@ -149,6 +153,7 @@ SELECT Books.title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
+In this example, we select the `title` element from the `Books` entity.
 
 ### path expression in the select list {#path-expression-select}
 
@@ -777,6 +782,8 @@ In this example, the ordering term sorts books by price in descending order and 
 ## subselect <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #subselect }
 
 TODO
+
+In a few places, full subselects can be used, for example with `exists` and `in` predicates. A subselect can use the full [CQL](./cql.md) syntax.
 
 <style>
 
