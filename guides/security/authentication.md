@@ -810,7 +810,7 @@ There are some mandatory configuration parameters:
 |`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
 |`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
 |`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
-|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a [multitenant application](../../guides/multitenancy#multitenancy). |
+|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a multitenant application. |
 
 ::: warning
 Upgrading the `service-plan` from type `application` to `broker` is not supported.
