@@ -143,8 +143,8 @@ In its simplest form, a `ref` can be used to reference an element:
   { title: 'Wuthering Heights' },
   { title: 'Jane Eyre' },
   { title: 'The Raven' },
-  { title: 'The Tell-Tale Heart' },
-  { title: 'The Hobbit' }
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
 ]
 ```
 
@@ -155,7 +155,7 @@ SELECT Books.title FROM sap_capire_bookshop_Books as Books
 
 In this example, we select the `title` element from the `Books` entity.
 
-### path expression in the select list {#path-expression-select}
+### path navigation {#path-navigation}
 
 A path expression can be used to navigate to any element of the associations target:
 
@@ -199,7 +199,37 @@ The condition can manifest in multiple ways:
 - To select related entities with an additional query
 :::
 
-### path expression in the where clause
+### in the from clause
+
+A path expression can also be used in the `from` clause of a query to navigate to a related entity:
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books:author { name }` // [!code focus]
+[
+  { name: 'Emily Brontë' },
+  { name: 'Charlotte Brontë' },
+  { name: 'Edgar Allen Poe' },
+  { name: 'Richard Carpenter' }
+]
+```
+
+```sql [SQL]
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+  SELECT 1
+  FROM sap_capire_bookshop_Books as Books
+  WHERE Books.author_ID = Authors.ID
+)
+```
+:::
+
+TODO explanation
+
+This is equivalent to writing `SELECT from Authors where exists books`. When combining this with [infix filters](#infix-filter), it allows for quite concise queries.
+
+### in the where clause
 
 A path expression can also be used as part of the where clause to filter based on elements of related entities:
 
@@ -224,13 +254,16 @@ WHERE
 In this example, we select all books that belong to the `Fantasy` genre.
 The table alias for the `genre` association is used in the where clause of the SQL query.
 
-### path expression in order by
+### in order by
 
 A path expression can also be used in the `order by` clause to sort based on elements of related entities:
 
 :::code-group
-```js [CQL]
-> await cds.ql`SELECT from Books { title, author.dateOfBirth as birthDate } order by author.dateOfBirth`
+```js [CQL] {4}
+> await cds.ql`
+  SELECT from Books
+  { title, author.dateOfBirth as birthDate }
+  order by author.dateOfBirth`
 [
   { title: 'The Raven', birthDate: '1809-01-19' },
   { title: 'Eleonora', birthDate: '1809-01-19' },
@@ -256,9 +289,9 @@ ORDER BY
 In this example, we select all books and order them by the date of birth of their authors.
 The table alias for the `author` association is used in the order by clause of the SQL query.
 
-### path expression after `exists` predicate
+### after `exists` predicate
 
-path-expressions can also be used after the `exists` predicate to check for the existence.
+path expressions can also be used after the `exists` predicate to check for the existence.
 This is especially useful for to-many relations.
 
 E.g., to select all authors that have written **at least**  one book:
@@ -279,7 +312,7 @@ E.g., to select all authors that have written **at least**  one book:
 SELECT Authors.name
 FROM sap_capire_bookshop_Authors as Authors
 WHERE exists (
-    SELECT 1 as "1"
+    SELECT 1
     FROM sap_capire_bookshop_Books as books
     WHERE books.author_ID = Authors.ID
   )
@@ -289,17 +322,20 @@ WHERE exists (
 ::: info 💡 Learn more about the `exists` predicate [here](./cql.md#exists-predicate)
 :::
 
-### conclusion
+### theory of path expressions
 
 A `ref` can be used to reference an element.
-It is possible to navigate along [path segments](#path-segment) to reference elements within the model.
+It is possible to navigate along path-segments to reference elements within the model.
 This is not limited to an entities own elements, but can also be used to navigate associations to elements of related entities.
 
-A path expression can be much more complex. For example, the individual [path segments](#path-segment)
+A path expression can be much more complex. For example, the individual path segments
 themselves can contain expressions by applying [infix-filters](#infix-filter).
 More samples are shown in the upcoming sections.
 
 ::: info 💡 Set theory of path expressions
+
+TODO: further polish and explain
+
 Path expressions point to a **set** of data that can be further filtered and used.
 
 A query with a filter (typically: where-clause) results in an entity set which is a subset of the complete entity. In terms of set theory: The set of elements for which the following holds true ...
@@ -314,7 +350,7 @@ The resulting set can then be used in various ways, e.g., to select elements, to
 An infix in linguistics refer to a letter or group of letters that are added in the middle of a word to make a new word.
 
 If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
-that is applied to a [path-segment](#path-segment) of a [path-expression](#ref).
+that is applied to a path-segment of a [path-expression](#ref).
 This allows to filter the target of an association based on certain criteria.
 
 <div class="diagram">
@@ -326,9 +362,10 @@ This allows to filter the target of an association based on certain criteria.
 ::: info 💡 infix notation as a way to influence auto-generated subqueries
 Within an infix, more than than just a simple `WHERE` condition can be specified.
 It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`.
-:::
 
 ::: details see the full syntax diagram
+
+TODO: make diagram more readable (use vertical dimension)
 
 <div class="diagram">
 <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
@@ -361,7 +398,7 @@ In this example, we want to select all authors that have written at least one bo
 SELECT Authors.name
 FROM sap_capire_bookshop_Authors as Authors
 WHERE exists (
-    SELECT 1 as "1"
+    SELECT 1
     FROM sap_capire_bookshop_Books as books
       inner JOIN sap_capire_bookshop_Genres as genre
         ON genre.ID = books.genre_ID
@@ -437,6 +474,8 @@ This is because SQL databases do not have a native concept of nested result sets
 </div>
 
 
+### with query modifiers
+
 It is also possible to influence the generated subquery,
 by adding other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`:
 
@@ -486,7 +525,33 @@ FROM sap_capire_bookshop_Authors as Authors
 ```
 :::
 
+
+TODO: add some short explanation and the limitations
+
 ### applied to `from` clause
+
+
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books[price > 19.99]:author { name }` // [!code focus]
+[ { name: 'Richard Carpenter' } ]
+```
+
+```sql [SQL]
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+  SELECT 1
+  FROM sap_capire_bookshop_Books as Books
+  WHERE Books.author_ID = Authors.ID
+    and Books.price > ?
+)
+```
+:::
+
+TODO: explanation and intro to the next sample with [query modifiers](#with-query-modifiers)
+
 
 :::code-group
 
@@ -523,7 +588,7 @@ ORDER BY Books.genre_ID ASC
 ```
 :::
 
-::: details 💡 The above is equivalent to…
+::: details The above is equivalent to…
 
 Using the infix notation to specify the query modifiers is just
 syntactic sugar:
@@ -542,7 +607,7 @@ await cds.ql`
 
 :::
 
-### to define an association-like calculated element
+### in calculated element
 
 You can also use the infix filter notation to derive
 another more specific association from an existing one.
@@ -569,7 +634,7 @@ E.g. to select the set of authors which have no cheap books:
 SELECT Authors.name
 FROM sap_capire_bookshop_Authors as Authors
 WHERE not exists (
-    SELECT 1 as "1"
+    SELECT 1
     FROM sap_capire_bookshop_Books as cheapBooks
     WHERE (cheapBooks.author_ID = Authors.ID)
       and (cheapBooks.price < 19.99) -- here the infix filter condition is applied
@@ -577,11 +642,61 @@ WHERE not exists (
 ```
 :::
 
+
 ::: info 💡 Learn more about association-like calculated elements [here](./cdl.md#association-like-calculated-elements).
 :::
 
+We can also use `cheapBooks` in nested expands to get all cheap books of each author:
 
-### to further narrow down the result set of a path expression
+::: code-group
+```js [CQL]
+> await cds.ql`SELECT from Authors { name, cheapBooks { title, price } }` // [!code focus]
+[
+  {
+    name: 'Emily Brontë',
+    cheapBooks: [ { title: 'Wuthering Heights', price: 11.11 } ]
+  },
+  {
+    name: 'Charlotte Brontë',
+    cheapBooks: [ { title: 'Jane Eyre', price: 12.34 } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    cheapBooks: [
+      { title: 'The Raven', price: 13.13 },
+      { title: 'Eleonora', price: 14 }
+    ]
+  },
+  { name: 'Richard Carpenter', cheapBooks: [] }
+]
+```
+
+```sql [SQL]
+SELECT Authors.name,
+(
+  SELECT jsonb_group_array(
+    jsonb_insert('{}', '$."title"', title, '$."price"', price)
+  ) as _json_
+  FROM (
+    SELECT
+      Books.title,
+      Books.price
+    FROM sap_capire_bookshop_Books as Books
+    WHERE (Authors.ID = Books.author_ID)
+      and (Books.price < ?)
+  )
+) as cheapBooks
+FROM sap_capire_bookshop_Authors as Authors
+```
+:::
+
+
+> TODO: explanation about json functions again? Learn more link? Specific additions?
+
+
+### between path segments
+
+TODO: simpler example a la `SELECT from Books { title, author[age < 40].name }`
 
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
@@ -768,9 +883,6 @@ ORDER BY price DESC NULLS LAST -- [!code focus]
 
 In this example, the ordering term sorts books by price in descending order and places rows with `null` prices at the end.
 
-## over-clause <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #over-clause }
-
-<div class="diagram" v-html="overClause"></div>
 
 ## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
