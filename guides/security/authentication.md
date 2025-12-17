@@ -684,7 +684,7 @@ The same is true for the logout flow.
 :::
 
 
-Npw re-deploy the solution by running: 
+Now re-deploy the solution by running: 
 
 ```sh
 cds up
