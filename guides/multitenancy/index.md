@@ -713,19 +713,19 @@ Now, open or refresh <http://localhost:4004/#Books-manage> again as _alice_ and 
 
 In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deployment/to-cf) and [deployment to Kyma](../deployment/to-kyma) guides.
 
-Once: Add SAP HANA Cloud, XSUAA, and [App Router](../deployment/to-cf#add-app-router) configuration. The App Router acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
+**Once**, add SAP HANA Cloud and XSUAA configuration:
 
 ```sh
 cds add hana,xsuaa
 ```
 
-If you intend to serve UIs you can easily set up the SAP Cloud Portal service:
+If you intend to serve UIs you can set up the SAP Cloud Portal service:
 
 ```sh
 cds add portal
 ```
 
-Once: add a **deployment descriptor**:
+**Once**, add a **deployment descriptor**:
 
 ::: code-group
 
@@ -739,23 +739,18 @@ cds add kyma
 
 :::
 
-::: code-group
+Now deploy the application:
 
-```sh [Cloud Foundry]
+```sh
 cds up
 ```
 
-```sh [Kyma]
-cds up --to k8s
-```
+:::tip For manual setups, ensure the metadata container (`t0`) is unique
+
+If you’re not running `cds-mtx upgrade *` as a [Cloud Foundry hook](#run-as-cloud-foundry-hook) (as set up by `cds add multitenancy`) and instead use a custom setup, deploy the MTX sidecar with a single instance for the initial rollout. This avoids conflicts when `t0` is created.
 
 :::
 
-:::tip Ensure a unique metadata container
-To prevent potential conflicts during the initial creation of the MTXS metadata container (`t0`), it is recommended to perform the initial deployment with only one instance of the MTXS sidecar.
-
-Alternatively, you can run `cds-mtx upgrade t0` beforehand, such as in a [Cloud Foundry hook](#run-as-cloud-foundry-hook).
-:::
 
 
 ### Subscribe
