@@ -774,7 +774,7 @@ In this example, the ordering term sorts books by price in descending order and 
 ::: info 💡 learn more about type references [here](./cdl.md#type-references)
 :::
 
-## select-statement <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #select-statement }
+## subselect <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #subselect }
 
 TODO
 
