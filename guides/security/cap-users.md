@@ -186,6 +186,41 @@ In the CDS model, some of the user properties can be referenced in annotations o
 | Attribute                     | `$user.<attribute>` | [@restrict](./authorization#user-attrs) |
 | Role                          | `<role>`            | [@requires](./authorization#requires) and [@restrict.to](./authorization#restrict-annotation) |
 
+### Tracing { #user-tracing }
+
+To track down issues during development, it helps to trace the properties of the request user to the application log.
+
+<div class="impl java">
+
+You can activate the log by setting logger `com.sap.cds.security.authentication` to log level `DEBUG`:
+
+```yaml
+logging.level.com.sap.cds.security.authentication: DEBUG
+```
+
+This will result in trace output (in case of mock users)
+
+```sh
+Resolved MockedUserInfo [id='mock/admin', name='admin', roles='[admin]', attributes='{tenant=[null]}'
+```
+
+or (in case of XSUAA)
+
+```sh
+c.s.c.f.i.IdentityUserInfoProvider : Resolved XsuaaUserInfo [id='be72646e-279a-4f96-ae40-05989a46b43b', name='max.muster@sap.com', roles='[openid, admin]', attributes='
+{tenant=[b2c463bd-da56-488c-8345-2632905acde3]}'
+```
+
+[Learn more about tracing](../java/operating-applications/observability#logging-configuration){.learn-more}
+
+</div>
+
+<div class="impl node">
+
+TODO
+
+</div>
+
 
 ## Role Assignment with AMS { #roles-assignment-ams }
 
@@ -1171,7 +1206,7 @@ Prefer local req objects in your handlers for accessing event context properties
 :::
 
 Setting `cds.context` usually happens in inbound authentication middlewares or in inbound protocol adapters.
-During processing, you can set it programmatically or spawn a new root transaction providing a context argument to achieve a [switch of the current user](#switching-users--switching-users-node).
+During processing, you can set it programmatically or spawn a new root transaction providing a context argument to achieve a [switch of the current user](#switching-users).
 
 Depending on the configured [authentication](./authentication) strategy, CAP derives a default set of user claims containing the user's name, tenant, attributes and assigned roles:
 
