@@ -1583,7 +1583,9 @@ const jwtToken = token.jwt                  // string
 ```
 
 ::: warning
-The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
+The `cds.User.authInfo` property depends on the authentication library that you use. 
+CAP does not guarantee the content of this property. Use it with caution. 
+Always pin your dependencies as described in the [best practices](../../node.js/best-practices#deploy).
 :::
 
 </div>

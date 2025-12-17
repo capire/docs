@@ -385,32 +385,9 @@ Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and t
 
 You also need to configure DB support:
 
-<div class="impl java">
-
-::: code-group
 ```sh [SAP HANA]
 cds add hana
 ```
-```sh [Alternative: H2 (development only)]
-cds add h2 --for production
-```
-:::
-
-</div>
-
-
-<div class="impl node">
-
-::: code-group 
-```sh [SAP HANA]
-cds add hana
-```
-```sh [Alternative: SQLite (development only)]
-cds add sqlite --for production
-```
-:::
-
-</div>
 
 
 
@@ -569,9 +546,7 @@ The client certificates are presented in the IAS binding and hence can be examin
 
 ```sh
 cf service-key bookshop-ias bookshop-ias-key
-```
 
-```sh
 {
   "credentials": {
       [...]
@@ -652,11 +627,13 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. It will take care of fetching the required IAS tokens when forwarding requests to our test app. Adding an instance of the AppRouter and re-deploying the solution is achieved by running: 
+In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. 
+It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
+
+Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an AppRouter component as well as HTML5 Application Repository:
 
 ```sh
-cds add approuter
-cds up
+cds add portal
 ```
 
 The resulting setup is sketched in the diagram:
@@ -707,6 +684,12 @@ The same is true for the logout flow.
 :::
 
 
+Npw re-deploy the solution by running: 
+
+```sh
+cds up
+```
+
 
 ## XSUAA Authentication { #xsuaa-auth }
 
@@ -750,32 +733,9 @@ to make your application ready for deployment to CF.
 
 You also need to configure DB support:
 
-<div class="impl java">
-
-::: code-group
 ```sh [SAP HANA]
 cds add hana
 ```
-```sh [Alternative: H2 (development only)]
-cds add h2 --for production
-```
-:::
-
-</div>
-
-
-<div class="impl node">
-
-::: code-group 
-```sh [SAP HANA]
-cds add hana
-```
-```sh [Alternative: SQLite (development only)]
-cds add sqlite --for production
-```
-:::
-
-</div>
 
 
 ### Adding XSUAA { #adding-xsuaa }
@@ -838,7 +798,7 @@ resources:
 <div class="impl java">
 
 ::: tip
-In case your application has multiple XSUAA bindings you need to [pin the binding](../java/security#bindings).
+In case your application has multiple XSUAA bindings you need to [pin the binding](../../java/security#bindings).
 :::
 
 </div>
@@ -850,7 +810,7 @@ There are some mandatory configuration parameters:
 |`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
 |`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
 |`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
-|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a [multitenant application](../guides/multitenancy/). |
+|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a [multitenant application](../../guides/multitenancy#multitenancy). |
 
 ::: warning
 Upgrading the `service-plan` from type `application` to `broker` is not supported.
@@ -1102,28 +1062,27 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an AppRouter as an ingress proxy for authentication simplifies testing a lot because the technical requests for fetching the XSUAA token are done under the hood.
+In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. 
+It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
+
+Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an AppRouter component as well as HTML5 Application Repository:
 
 ```sh
-cds add approuter
-cds up
+cds add portal
 ```
 
-adds the additional AppRouter to the deployment which is already prepared for XSUAA.
-The resulting setup is sketched in the diagram:
+The resulting architecture is very similar to the [IAS scenario](#ui-level-testing), but only with XSUAA service instances instead of IAS service instances.
+There is one more difference: By default, XSUAA does not enforce mTLS.
 
-![UI-level Testing of XSUAA Endpoints](./assets/ias-ui-setup.svg){width="500px"}
-
-To be able to fetch the token, the AppRouter needs a binding to the XSUAA instance as well.
+To be able to fetch the token, the AppRouter needs a binding to the XSUAA instance.
 
 ::: details AppRouter component with XSUAA binding
 ```yaml
 modules:
-  - name: bookshop
+- name: bookshop
     type: approuter.nodejs
     path: app/router
-    parameters:
-      [...]
+    [...]
     requires:
       - name: srv-api
         group: destinations
@@ -1132,11 +1091,13 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
       - name: bookshop-auth
+      [...]
     provides:
       - name: app-api
         properties:
+          app-protocol: ${protocol}
           app-uri: ${default-uri}
-          [...]
+          url: ${default-url}
 ```
 :::
 
@@ -1160,27 +1121,36 @@ The same is true for the logout flow.
 ```
 :::
 
-To check the deplyoment, run `cf apps` in the targeted space:
+
+Now update the Cloud deployment with
+
+```sh
+cds up
+```
+
+and verify it by running `cf apps` in the targeted space:
 
 ```sh
 name           requested state   processes   routes
-bookshop       started           web:1/1     <org>-<space>-bookshop.cfapps.sap.hana.ondemand.com
-bookshop-srv   started           web:1/1     <org>-<space>-bookshop-xsuaa-bookshop-srv.cfapps.sap.hana.ondemand.com
+bookshop-potal               started           web:1/1     <org>-<space>-bookshop.<landscape-domain>
+bookshop-potal-db-deployer   stopped           web:0/1
+bookshop-potal-srv           started           web:1/1     <org>-<space>-bookshop-srv.<landscape-domain>
 ```
 
 and open the route exposed by the `bookshop` UI application in a new browser session.
 
-<div class="node">
-
-E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/admin/Books`
-
-</div>
-
 <div class="java">
 
-E.g. `https://<org>-<space>-bookshop.cfapps.sap.hana.ondemand.com/odata/v4/AdminService/Books`
+E.g. `https://<org>-<space>-bookshop.<landscape-domain>>/odata/v4/AdminService/Books`
 
 </div>
+
+<div class="node">
+
+E.g. `https://<org>-<space>-bookshop.<landscape-domain>/odata/v4/admin/Books`
+
+</div>
+
 
 
 ## Hybrid Authentication { #hybrid-auth }
