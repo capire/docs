@@ -195,7 +195,9 @@ To track down issues during development, it helps to trace the properties of the
 You can activate the log by setting logger `com.sap.cds.security.authentication` to log level `DEBUG`:
 
 ```yaml
-logging.level.com.sap.cds.security.authentication: DEBUG
+logging:
+   level:
+      com.sap.cds.security.authentication: DEBUG
 ```
 
 This will result in trace output (in case of mock users)
@@ -211,7 +213,7 @@ c.s.c.f.i.IdentityUserInfoProvider : Resolved XsuaaUserInfo [id='be72646e-279a-4
 {tenant=[b2c463bd-da56-488c-8345-2632905acde3]}'
 ```
 
-[Learn more about tracing](../java/operating-applications/observability#logging-configuration){.learn-more}
+[Learn more about tracing](../../java/operating-applications/observability#logging-configuration){.learn-more}
 
 </div>
 
