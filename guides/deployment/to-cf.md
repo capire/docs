@@ -178,7 +178,7 @@ cds add mta
 
 #### Option A: SAP Cloud Portal
 
-If you intend to deploy **multi-tenant** applications with a UI, we recommend to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+If you intend to deploy **multitenant** applications with a UI, we recommend to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
 
 ```sh
 cds add portal
