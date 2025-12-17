@@ -981,7 +981,7 @@ Like other annotations, `@assert` is propagated to projections. If you annotate 
 It is therefore recommended to use complex asserts on the highest projection, that is on the service layer.
 :::
 
-For the examples given in this section, consider the following CDS _domain_ and _service_ model:
+For the examples given in this section, consider the following _domain_ and _service_ model:
 
 ```cds
 context db {
