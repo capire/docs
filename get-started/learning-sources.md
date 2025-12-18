@@ -40,7 +40,7 @@ Here's a list of the badges and their meanings:
 | <Alpha />                               | Alpha features are experimental. They may never be generally available. If released subsequently, the APIs and behavior might change                               |
 | <Beta />                                | Beta features are planned to be generally available in subsequent releases, however, APIs and their behavior are not final and may change in the general release   |
 | <Gamma />                                | Gamma features are finalized and ready to use, stable, and supported long term. Yet, as they have a broad scope and range, you should ensure to test them thoroughly. |
-| <Internal />                            | SAP specific features, processes, or infrastructure. Examples are _Deploy with Confidence_, _SAP product standards_, or _xMake_                                    |
+| <Internal />                            | SAP specific features, processes, or infrastructure.                                |
 
 
 ### CAP Notebooks Integration
