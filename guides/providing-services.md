@@ -965,7 +965,7 @@ entity OrderItems : cuid {
 
 #### Error Messages and Message Targets
 
-If validation fails, the transaction is rolled back with an exception. If you use [Fiori draft state messages](../advanced/fiori#validating-drafts), the error is persisted. The error targets the annotated element, which is then highlighted on the Fiori UI.
+In general, if validation fails, the transaction is rolled back with an exception. But, if you use [Fiori draft state messages](../advanced/fiori#validating-drafts), the error is persisted. The error targets the annotated element, which is then highlighted on the Fiori UI.
 
 ::: info Error Messages
 The CXL expression in the annotation can return either a static error message or a message key to support i18n. If you use a message key, the message is looked up in the message bundle of the service.
