@@ -2,7 +2,7 @@
 # layout: cookbook
 label: Authentication
 synopsis: >
-  This guide explains how to authenticate CAP services to resolve CAP users.
+  This guide explains how to authenticate CAP services.
 status: released
 ---
 
@@ -30,7 +30,8 @@ This guide explains how to authenticate CAP services to resolve CAP users.
 ## Pluggable Authentication
 
 In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
-Briefly, **authentication ensures _who_ is going to use the service**, in contrast to [authorization](../security/authorization#authorization) which determines _how_ the user can interact with the application's resources based on the defined access rules. 
+Briefly, **authentication ensures _who_ is going to use the service** which is technically reflected in a resulting [user](./cap-users).
+In contrast, [authorization](../security/authorization#authorization) determines _how_ the user can interact with the application's resources according to the defined access rules. 
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="550px" }
@@ -56,13 +57,12 @@ Setup and start a simple sample application:
 <div class="impl java">
 
 ```sh
-cds init bookshop --java --add sample 
-cd ./bookshop
+cds init bookshop --java --add sample && cd ./bookshop
 mvn spring-boot:run
 ```
 
 ::: tip
-CAP Java requires some Maven [dependencies](../../java/security#maven-dependencies) to enable authentication middleware support. 
+CAP Java requires certain [Maven dependencies](../../java/security#maven-dependencies) to enable authentication middleware support. 
 Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
 :::
 
@@ -101,34 +101,33 @@ MockUsersSecurityConfig  : *  Security configuration based on mock users found i
 
 <div class="impl java">
 
-Also notice the log output prints all recognized mock users such as
+Also notice that the application log contains information about all registered mock users:
 ```sh
 MockUsersSecurityConfig  :  Added mock user {"name":"admin","password":"admin", ...}
 ```
 
 </div>
 
+**You should not manually configure authentication for endpoints.**
+As the mock user authentication is active, all (CAP) andpoints are [authenticated automatically](#model-auth). 
+
 <div class="impl java">
 
-The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
-
 ::: tip
-In non-production profile, you may set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
+To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
 :::
 
 Sending OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
-This is true for all endpoints including the web application page at `/index.html`.
+This is the case for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with curl `http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with `curl http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
 
 </div>
 
 <div class="impl node">
 
-The CAP runtime will automatically authenticate all CAP endpoints - **you are not required to manually configure authentication for CAP endpoints!**
-
-::: tip
+::: info
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
 :::
 
@@ -150,54 +149,33 @@ returns successfully (HTTP response `200`).
 </div>
 
 
-::: tip
+::: info
 Mock users are deactivated in production profile by default ❗
 :::
 
-<div class="impl java">
-
-[Learn more about authentication options](../../java/security#spring-boot){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about authentication options](../../node.js/authentication#strategies){.learn-more}
-
-</div>
-
+[Learn more about advanced authentication options](../../java/security#spring-boot){.learn-more .java}
+[Learn more about advanced authentication options](../../node.js/authentication#strategies){.learn-more .node}
 
 
 ### Preconfigured Mock Users { #preconfigured-mock-users }
 
-For convenience, the runtime creates default mock users reflecting typical types of users suitable for test combinations, e.g. privileged users passing all security checks or restricted users which just pass authentication only.
-The predefined users are merged with mock users [defined by the application](#custom-mock-users). 
-The effective list of mock users is traced to startup log if mock user configuration is active.
+For convenience, the runtime creates default mock users to cover typical test scenarios, e.g. privileged users passing all security checks or users which pass authentication but do not have additional claims.
+The predefined users are added to [custom mock users](#custom-mock-users) defined by the application. 
 
-You can opt out the preconfiguration of these users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>.
-{ .java }
+You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
 
+[Learn more about predefined mock users](../../java/security#preconfigured-mock-users){.learn-more .java} 
+[Learn more about predefined mock users](../../node.js/authentication#mock-users){.learn-more .node}
 
-<div class="impl java">
-
-[Learn more about predefined mock users in CAP Java](../../java/security#preconfigured-mock-users){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about predefined mock users in CAP Node.js](../../node.js/authentication#mock-users){.learn-more}
-
-</div>
 
 ### Customization { #custom-mock-users }
 
-You can define custom mock users to simulate any type of [end users](./cap-users#claims) that will interact with your application at production time.
+You can define custom mock users to simulate any type of end users that will interact with your application at production time.
+Internally, mock users are represented as [CAP users](cap-users#claims) as well.
 Hence, you can use the mock users, to test your authorization settings or custom handlers, fully decoupled from the actual execution environment.
 
 <div class="impl java">
 
-::: details How to define a custom mock user with name `viewer-user`
 ```yaml [srv/src/main/resources/application.yaml]
 spring:
   config.activate.on-profile: default
@@ -219,13 +197,11 @@ cds:
           additional:
             email: myviewer@crazycars.com
 ```
-:::
 
 </div>
 
 <div class="impl node">
 
-::: details How to add a custom mock user with name `viewer-user`
 ```yaml [package.json]
 "cds": {
   "requires": {
@@ -247,18 +223,21 @@ cds:
   }
 }
 ```
-:::
 
 </div>
 
-In mock user configuration you can specify:
+In the mock user configuration you can specify:
 - name (mandatory) and tenant
-- CAP roles (including pseudo-roles) and attributes affecting authorization
+- [CAP roles](cap-users#roles) (including pseudo-roles) and [attributes](authorization#user-attrs) affecting authorization
 - additional attributes
 - [feature toggles](../extensibility/feature-toggles#feature-toggles)
 which influence request processing.
 
-To verify the user properties, activate [user tracing](./cap-users#user-tracing) and send a request using the mock user (`viewer-user` for example).
+::: tip
+Define the mock users in development profile only.
+:::
+
+To verify the user properties, activate [user tracing](./cap-users#user-tracing) and send a request using the mock user (such as `viewer-user`).
 In the application log you will find information about the resolved user after successful authentication:
 
 <div class="impl java">
@@ -277,27 +256,18 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 </div>
 
-<div class="impl java">
-
-[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more}
-
-</div>
+[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more .java}
+[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more .node}
 
 
 ### Automated Testing { #mock-user-testing }
 
-Mock users provide an ideal foundation for automated **unit tests, which are essential for ensuring application security**.
+Mock users provide an excellent foundation for automated **unit tests, which are essential for ensuring application security**.
 The flexibility in defining various types of mock users and the seamless integration into testing code significantly reduces the burden of covering all relevant test combinations.
 
 <div class="impl java">
 
-::: details How to use @WithMockUser in Spring-MVC to use CAP mock users
+::: details How to leverage Spring-MVC to use CAP mock users
 ```java [srv/src/test/java/customer/bookshop/handlers/CatalogServiceTest.java]
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -324,18 +294,13 @@ public class BookServiceOrdersTest {
 
 </div>
 
-<div class="impl node">
+::: tip
+Integration tests running with production profile should ensure that access by unauthenticated users is rejected from all endpoints of the application❗
+:::
 
-[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more .java}
+[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
 
-</div>
-
-
-<div class="impl java">
-
-[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
-
-</div>
 
 <div class="impl node">
 
@@ -346,13 +311,13 @@ public class BookServiceOrdersTest {
 
 ## IAS Authentication { #ias-auth }
 
-[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management which provides:
+[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing following features:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - cross-landscape user propagation (including on-premise)
  - streamlined SAP and non-SAP system [integration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/integrating-service) (due to [OpenId Connect](https://openid.net/connect/) compliance)
 
-IAS authentication is best configured and tested in the Cloud, so we're going to enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+IAS authentication is best configured and tested in the Cloud, so let's enhance the started bookshop sample application with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with IAS { #ias-ready }
@@ -377,7 +342,7 @@ to make your application ready for deployment to CF.
 
 <div class="impl java">
 
-::: tip
+::: info
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
 
@@ -393,7 +358,7 @@ cds add hana
 
 ### Adding IAS
 
-Now the application is ready to for adding IAS-support by executing
+Now the application is ready to be enhanced with IAS-support by executing
 
 ```sh
 cds add ias
@@ -427,27 +392,27 @@ resources:
 
 <div class="impl java">
 
-::: tip
-Command `add ias` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates IAS authentiaction automatically.
+::: info
+The [binding](../../java/security#bindings) to service instance of type `identity` is the trigger to automatically enforce IAS authentiaction at runtime ❗
 :::
 
 </div>
 
-Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a client.
+Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a concrete client.
 **CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS intstance. 
 
-Following properties are available:
+Service instance and binding offer the following crucial configuration properties:
 
 | Property          | Artifact            | Description         |
 |-------------------|:-------------------:|:---------------------:|
 | `name` |  _instance_   | _Name for the IAS application - unique in the tenant_  |
-| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS administrators |
+| `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS administrators_ |
 | `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
 | `credential-type` |  _binding_   | _`X509_GENERATED` generates a private-key and a signed certificate which is added to IAS application_       |
 | `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
 
 
-[Lean more about IAS service instance and binding creation options](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
+[Lean more about IAS service instance and binding configuration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
 
 <div id="learn-more-IAS-instances-bindings" />
 
@@ -457,9 +422,9 @@ cds up
 ```
 
 and wait until the application is up and running. 
-You can test the status with `cf apps` or in BTP Cockpit, alternatively.
+You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
-The following trace in the application log confirms the activated IAS authentication:
+The startup log should confirm the activated IAS authentication:
 <div class="java">
 
 ```sh
@@ -472,12 +437,12 @@ The following trace in the application log confirms the activated IAS authentica
 TODO
 </div>
 
-At startup, the CAP runtime checks the available bindings and activates IAS authentication accordingly. 
-**Therefore, the local setup (no IAS binding in the environment) is still runnable**.
+::: tip
+The local setup is still runnable on basis of mock users as there is no IAS binding in the environment.
+:::
 
-For mTLS support which is mandatory for IAS, the CAP application has a second route configured with the `cert.*` domain.
+For mTLS support which is mandatory for IAS, the CAP application has a second route configured with the `cert.*` domain:
 
-::: details Application routes with `cert.*`-domain
 ```yaml
 modules:
   - name: bookshop-srv
@@ -486,8 +451,9 @@ modules:
       routes:
         - route: "${default-url}"
         - route: "${default-host}.cert.${default-domain}"
+```
 
-::: tip
+::: info
 Platform-level TLS termination is provided on CF out of the box via `cert.*`-domains. 
 By default, the validated certificate is forwarded via HTTP header `X-Forwarded-Client-Cert` to the CAP endpoint.
 :::
@@ -503,10 +469,10 @@ In the [Administrative Console for Cloud Identity Services](https://help.sap.com
 you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
 
 In the Console you can manage the IAS tenant and IAS applications, for example: 
-- create (test) users in `Users & Authorizations` -> `User Management`
-- deactivate users
-- configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
-- inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
+- Create (test) users in `Users & Authorizations` -> `User Management`
+- Deactivate users
+- Configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
+- Inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
 
 ::: tip
 In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
@@ -515,23 +481,20 @@ In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows di
 
 ### CLI Level Testing
 
-Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the IAS application.
+Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid OAuth tokens created for the IAS application.
+
 Sending the test request 
 ```sh
-curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
+curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
+            /odata/v4/CatalogService/Books --verbose
 ```
 
 as anonymous user without a token results in a `401 Unauthorized` as expected.
 
-Now we want to fetch a token to prepare a fully authenticated test request. 
-As first step we add a new client for the IAS application by creating an appropriate service key:
+Now let's fetch a token as basis for a fully authenticated test request. 
+For doing so, you need to interact with IAS service which requires an authenticated client itself.
 
-```sh
-cf create-service-key bookshop-ias bookshop-ias-key \
-    -c '{"credential-type": "X509_GENERATED"}'
-```
-
-The overall setup with local CLI client and the Cloud services is sketched in the diagram:
+The overall setup with CLI client and the Cloud services is sketched in the diagram:
 
 ![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
 
@@ -539,6 +502,13 @@ As IAS requires mTLS-protected channels, **client certificates are mandatory** f
 - Token request to IAS in order to fetch a valid IAS token (1)
 - Business request to the CAP application presenting the token (2)
 - Initial proof token request to IAS - not required for all business requests (3)
+
+As first step add a new client for the IAS application by creating an appropriate service key:
+
+```sh
+cf create-service-key bookshop-ias bookshop-ias-key \
+    -c '{"credential-type": "X509_GENERATED"}'
+```
 
 The client certificates are presented in the IAS binding and hence can be examined via a service key accordingly.
 
@@ -616,8 +586,11 @@ The final test request needs to provide the **client certificate and the token**
 
 ```sh
 curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.cert.<landscape-domain>/odata/v4/CatalogService/Books
+  https://<org>-<space>-bookshop-srv.cert.<landscape-domain> \
+         /odata/v4/CatalogService/Books
 ```
+
+The response should contain the queried books accordingly (HTTP response code `200`).
 
 Don't forget to delete the service key after your tests:
 ```sh
@@ -627,10 +600,10 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
 It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
 
-Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an AppRouter component as well as HTML5 Application Repository:
+Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
 ```sh
 cds add portal
@@ -684,11 +657,14 @@ The same is true for the logout flow.
 :::
 
 
-Now re-deploy the solution by running: 
+Now re-deploy the solution by running 
 
 ```sh
 cds up
 ```
+
+and test the application via URL provided in the Cockpit.
+The Application Router should redirect to a login flow where you can enter the credentials of a [test user](#ias-admin) created before.
 
 
 ## XSUAA Authentication { #xsuaa-auth }
@@ -698,24 +674,21 @@ cds up
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
  
-::: tip Info
+::: tip
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
 ::: 
 
-XSUAA authentication is best configured and tested in the Cloud, so we're going to enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+XSUAA authentication is best configured and tested in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with XSUAA { #xsuaa-ready }
 
-Before working with XSUAA on CF, you need to ensure 
-- your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
+Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
 In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-- https://help.sap.com/docs/application-frontend-service/application-frontend-service/enabling-service
+You can continue with the bookshop sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
 
-You can continue with the sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
-
-If there is no deployment descriptor yet, in the project root folder, execute
+If there is no deployment descriptor yet, execute in the project root folder
 
 ```sh
 cds add mta
@@ -724,7 +697,7 @@ cds add mta
 <div class="impl java">
 
 ::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
 :::
 
 </div>
@@ -740,7 +713,7 @@ cds add hana
 
 ### Adding XSUAA { #adding-xsuaa }
 
-Now the application is ready to for adding XSUAA-support by executing
+Now the application is ready for enhancing with XSUAA-support:
 
 <div class="impl java">
 
@@ -759,15 +732,7 @@ cds add xsuaa --for production
 </div>
 
 
-which automatically adds a service instance named `bookshop-auth` of type `xsuaa` (plan: `application`) and binds the CAP application to it.
-
-<div class="impl java">
-
-::: tip Notice
-Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentication automatically.
-:::
-
-</div>
+The command automatically adds a service instance named `bookshop-auth` of type `xsuaa` (plan: `application`) and binds the CAP application to it:
 
 ```yaml [mta.yaml]
 modules:
@@ -793,6 +758,14 @@ resources:
               - '$XSAPPNAME.admin'
 ```
 
+<div class="impl java">
+
+::: info
+Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentication automatically.
+:::
+
+</div>
+
 **CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance. 
 
 <div class="impl java">
@@ -807,23 +780,25 @@ There are some mandatory configuration parameters:
 
 | Property          |  Description         |
 |-------------------|:-------------------:|
-|`service-plan`     | The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`. |
-|`path`             | File system path to the [application security descriptor](#xsuaa-security-descriptor). |
-|`xsappname`        | A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`). |
-|`tenant-mode`   | `dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a multitenant application. |
+|`service-plan`     | _The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`._ |
+|`path`             | _File system path to the [application security descriptor](#xsuaa-security-descriptor)._ |
+|`xsappname`        | _A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`)._ |
+|`tenant-mode`   | _`dedicated` is suitable for a single-tenant application. Mode `shared` is mandatory for a multitenant application._ |
 
 ::: warning
 Upgrading the `service-plan` from type `application` to `broker` is not supported.
-Hence, start with `broker` if you plan to provide technical APIs.
+Hence, start with plan `broker` in case you want to provide technical APIs in future.
 :::
 
 [Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-web-ide-full-stack/application-security-descriptor-configuration-syntax){.learn-more}
 
 #### Security Descriptor { #xsuaa-security-descriptor }
 
-The security descriptor in the `xs-security.json` file contains the [XSUAA authorization artifacts](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities).
-In general, XSUAA artifacts are managed in a hierarchy with role collections as root elements that can be assigned to users.
-For convenience, when adding XSUAA facet, these artifacts are initially derived from the CDS model:
+The security descriptor in the `xs-security.json` file contains [XSUAA authorization artifacts](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities).
+In general, XSUAA artifacts have a hierarchical relationship with role collections as root elements. 
+Role collections can be assigned to end users.
+
+For convenience, when adding the XSUAA facet, these artifacts are initially derived from the CDS model:
 
 - **XSUAA Scopes**: For every [CAP role](./cap-users#roles) in the CDS model, a dedicated scope is generated with the exact name of the CDS role.
 - **XSUAA attributes**  For every [CAP attribute](./authorization#user-attrs) in the CDS model, one attribute is generated.
@@ -854,29 +829,25 @@ For convenience, when adding XSUAA facet, these artifacts are initially derived 
 [Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
 [Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.learn-more}
 
-After successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
+At runtime, after successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
 In the [deplyoment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
 In general, role collections are [created manually](./cap-users#xsuaa-assign) at runtime by user administrators.
-But in case the underlying role template has no reference to an attribute, a corresponding role collection is prepared already.
-In the example, role collection `admin (bookshop ${org}-${space})` containing the role template `admin` is defined and can be directly assigned to users.
+But in case the underlying role template has no reference to an attribute, a corresponding role collection can be prepared already for sake of convenience.
+
+In the example, role collection `admin (bookshop <org>-<space>)` containing the role template `admin` is defined and can be directly assigned to users.
 
 
-::: tip Re-generate on model changes
-You can have such a file re-generated via
+::: tip 
+You can re-generate the file on model changes via
 ```sh
 cds compile srv --to xsuaa > xs-security.json
 ```
 :::
 
-See [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax) in the SAP Help documentation for the syntax of the _xs-security.json_ and advanced configuration options.
+Consult [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax) in the SAP Help documentation for the syntax of the _xs-security.json_ and advanced configuration options.
 
-<!-- REVISIT: Not ideal cds compile --to xsuaa can generate invalid xs-security.json files -->
-::: warning Avoid invalid characters in your models
-Roles modeled in CDS may contain characters considered invalid by the XSUAA service.
-:::
-
-::: warning
+::: tip
 If you modify the _xs-security.json_ manually, make sure that the scope names in the file exactly match the role names in the CDS model, as these scope names will be checked at runtime.
 :::
 
@@ -902,10 +873,11 @@ cds up
 </div>
 
 and wait until the application is up and running. 
-You can test the status with `cf apps` or in BTP Cockpit, alternatively.
+You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
+
+Run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
 
 <div class="java">
-The following trace in the application log confirms the activated XSUAA authentication:
 
 ```sh
 ... : Loaded feature 'IdentityUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
@@ -915,28 +887,30 @@ The following trace in the application log confirms the activated XSUAA authenti
 
 <div class="node">
 
-run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
-
 ```sh
 ... : "using auth strategy { kind: 'xsuaa' … }
 ```
 
 </div>
 
-At startup, the CAP runtime checks the available bindings and activates XSUAA authentication accordingly. 
-**Therefore, the local setup (no XSUAA binding in the environment) is still runnable**.
+
+::: tip
+The local setup is still runnable on basis of mock users as there is no IAS binding in the environment.
+:::
 
 
 
 ### CLI Level Testing
 
-Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid ID tokens generated for the XSUAA application.
-Send the test request:
+Due to CAP's autoconfiguration, all CAP endpoints are [authenticated automatically](#model-auth) and expect valid XSUAA tokens.
+
+Sending the test request
 
 <div class="java">
 
 ```sh
-curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books --verbose
+curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
+             /odata/v4/CatalogService/Books --verbose
 ```
 
 </div>
@@ -944,24 +918,30 @@ curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogServi
 <div class="node">
 
 ```sh
-curl https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books --verbose
+curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
+             /odata/v4/catalog/Books --verbose
 ```
 
 </div>
 
-…as anonymous user without a token the request results in a `401 Unauthorized` as expected.
+as anonymous user without a token the request results in a `401 Unauthorized` as expected.
 
-Now we want to fetch a token to prepare a fully authenticated test request. 
-As first step we add a new client for the XSUAA application by creating an appropriate service key:
+Now let's fetch an XSUAA token to prepare an authenticated test request.
+To do so, you need to interact with XSUAA service which requires a valid authentication as well.
+
+As first step add a new client for XSUAA by creating an appropriate service key with
 
 ```sh
 cf create-service-key bookshop-auth bookshop-auth-key
 ```
 
+You can inspect the service key credentials by executing
 
 ```sh
 cf service-key bookshop-auth bookshop-auth-key
 ```
+
+which prints the information to the console: 
 
 ```json
 {
@@ -979,7 +959,7 @@ cf service-key bookshop-auth bookshop-auth-key
 ❗ **Never share service keys or tokens** ❗
 :::
 
-As second step, assign the generated role collection with name `admin (bookshop ${org}-${space})` to your **test user**.
+As second step, assign the generated role collection with name `admin (bookshop <org>-<space>)` to your **test user**.
 Follow the instructions from step 4 onwards of [Assign Roles in SAP BTP Cockpit Step](./cap-users#xsuaa-assign).
 
 With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
@@ -1013,35 +993,52 @@ The request returns with a valid XSUAA token which is suitable to pass authentic
 {"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
 ```
 
+With the token for the technical user, you should be able to access any endpoint, which has no specific role requirements:
 
 <div class="java">
-The final test request needs to provide the token being send to the application's route:
 
 ```sh
 curl -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/CatalogService/Books
+  https://<org>-<space>-bookshop-srv.<landscape-domain> \
+         /odata/v4/CatalogService/Books
 ```
 
 </div>
 
 <div class="node">
 
-With the token for the technical user, you should be able to access any endpoint, which has no specific role requirements:
-
 ```sh
 curl -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/catalog/Books
+  https://<org>-<space>-bookshop-srv.<landscape-domain> \
+        /odata/v4/catalog/Books
 ```
 
+</div>
+
 If you also want to access the `AdminService` which requires the role `admin`,
-you need to fetch the token for the named user instead. That is the user which you have assigned the `admin (bookshop ${org}-${space})` role collection to.
+you need to fetch the token for the named user instead. That is the user which you have assigned the `admin (bookshop <org>-<space>)` role collection to.
 
 With the token for the named user, the following request should succeed:
 
+<div class="java">
+
 ```sh
 curl -H "Authorization: Bearer <access_token>" \
-  https://<org>-<space>-bookshop-srv.<landscape-domain>/odata/v4/admin/Books
+  https://<org>-<space>-bookshop-srv.<landscape-domain> \
+         /odata/v4/AdminService/Books
 ```
+
+</div>
+
+<div class="node">
+
+```sh
+curl -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.<landscape-domain> \
+         /odata/v4/admin/Books
+```
+
+</div>
 
 ::: tip
 Try out sending a request to the `admin` endpoint with the technical user token to see the expected `403 Forbidden` response:
@@ -1052,8 +1049,6 @@ Try out sending a request to the `admin` endpoint with the technical user token 
 
 :::
 
-</div>
-
 Don't forget to delete the service key after your tests:
 ```sh
 cf delete-service-key bookshop-auth bookshop-auth-key
@@ -1062,19 +1057,19 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an AppRouter as an ingress proxy to the deployment simplifies testing a lot. 
-It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
+It will take care of fetching the required XSUAA tokens when forwarding requests to the backend service. 
 
-Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an AppRouter component as well as HTML5 Application Repository:
+Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
 ```sh
 cds add portal
 ```
 
 The resulting architecture is very similar to the [IAS scenario](#ui-level-testing), but only with XSUAA service instances instead of IAS service instances.
-There is one more difference: By default, XSUAA does not enforce mTLS.
+There is one more difference: **By default, XSUAA does not enforce mTLS**.
 
-To be able to fetch the token, the AppRouter needs a binding to the XSUAA instance.
+To be able to fetch the token, the Application Router needs a binding to the XSUAA instance.
 
 ::: details AppRouter component with XSUAA binding
 ```yaml
@@ -1102,7 +1097,7 @@ modules:
 :::
 
 As the login flow is based on an HTTP redirect between the CAP application and XSUAA login page,
-XSUAA needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+XSUAA needs to know a valid callback URI which is offered by the Application Router out of the box.
 The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
@@ -1138,18 +1133,6 @@ bookshop-potal-srv           started           web:1/1     <org>-<space>-booksho
 ```
 
 and open the route exposed by the `bookshop` UI application in a new browser session.
-
-<div class="java">
-
-E.g. `https://<org>-<space>-bookshop.<landscape-domain>>/odata/v4/AdminService/Books`
-
-</div>
-
-<div class="node">
-
-E.g. `https://<org>-<space>-bookshop.<landscape-domain>/odata/v4/admin/Books`
-
-</div>
 
 
 
@@ -1341,7 +1324,7 @@ TODO
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
   Without security middleware configured, CDS services are exposed to the public. 
 
-- **Don't rely on AppRouter authentication**. AppRouter as a frontend proxy does not shield the backend from incoming traffic. Therefore, the backend must be secured independently.
+- **Don't rely on Application Router authentication**. Application Router as a frontend proxy does not shield the backend from incoming traffic. Therefore, the backend must be secured independently.
 
 - **Don't deviate from security defaults**. Only when absolutely necessary should experts make the decision to add modifications or replace parts of the standard authentication mechanisms. 
   
