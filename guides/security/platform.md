@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  This section provides an overview about the security concepts and architecture of CAP applications on different platforms.
+  This section provides an overview of the security concepts and architecture of CAP applications on different platforms.
 status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -19,9 +19,11 @@ These concepts work together to provide comprehensive security while maintaining
 
 ### Pluggable Building Blocks { #key-concept-pluggable }
 
-CAP divides the different security-related tasks into separate and independent building blocks, each with a standard CAP implementation suitable for most scenarios:
+CAP divides the different security-related tasks into separate and independent building blocks, each with a standard CAP implementation suitable for most scenarios.
 
 ![Overview Security Components with CAP](./assets/security-components.drawio.svg){width="700px" }
+
+The building blocks are:
 
 - [Authentication](./authentication )
 - [CAP Users](./cap-users)
@@ -57,7 +59,7 @@ Likewise, TLS termination is offered by the [platform infrastructure](#platform-
 
 ### Decoupled from Business Logic  { #key-concept-decoupled-coding }
 
-As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any security-related adaptions. 
+As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any security-related adaptations. 
 This ensures that business logic remains independent of platform services, which are often subject to security-hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
@@ -67,11 +69,16 @@ This abstraction layer ensures that developers do not need to worry about the de
 
 ### Secure by Default { #key-concept-secure-by-default }
 
-CAP security features are activated by default. If different behaviour is required, you must explicitly reconfigure or add custom code accordingly.
+CAP security features are configured by default. If different behavior is required, you must explicitly reconfigure or add custom code accordingly.
 CAP's security autoconfiguration approach significantly reduces the risk of misconfiguration - **override only when absolutely necessary and when all effects are safely controlled**. 
 
 For instance, endpoints of deployed CAP applications are [automatically authenticated](./authentication#model-auth), providing a secure baseline.
-Making endpoints public requires manual configuration in either the CAP model or the middleware. 
+Making endpoints public requires manual configuration in either the CAP model or the middleware.
+
+::: warning
+CAP cannot guarantee end-to-end security across all application layers by default.
+The application is responsible for coordinated overall configuration.
+:::
 
 
 
@@ -82,7 +89,7 @@ CAP requires a dedicated [platform environment](#platform-environment) to integr
 
 ### Architecture Overview { #architecture-overview }
 
-The following diagram provides a high-level overview about the security-relevant components and interfaces of a deployed CAP application in a cloud environment:
+The following diagram provides a high-level overview of the security-relevant components and interfaces of a deployed CAP application in a cloud environment:
 
 ![This TAM graphic is explained in the accompanying text.](./assets/cap-security-architecture-overview.png){width="600px"}
 
@@ -224,7 +231,7 @@ The most important services for security offered by the platform:
 #### [SAP Cloud Identity Services - Identity Authentication](https://help.sap.com/docs/IDENTITY_AUTHENTICATION) { #identity-service }
 
 The Identity Authentication service defines the user base for (CAP) applications and services, and allows to control access.
-Customers can integrate their 3rd party or on-premise identity provider (IdP) and harden security by defining multifactor authentication or by narrowing client IP ranges.
+Customers can integrate their third-party or on-premise identity provider (IdP) and harden security by defining multifactor authentication or by narrowing client IP ranges.
 This service helps to introduce a strict separation between platform users (provider) and business users (subscribers), a requirement of CAP. It supports various authentication methods, including SAML 2.0 and [OpenID Connect](https://openid.net/connect/), and allows for the configuration of single sign-on access.
 
 [Learn more in the security guide.](https://help.sap.com/docs/IDENTITY_AUTHENTICATION?#discover_task-security){.learn-more}
