@@ -1285,7 +1285,7 @@ Due to the custom configuration, all URLs matching `/public/**` are opened for p
 
 Ensure your custom configuration has higher priority than CAP's default security configuration by decorating the bean with a low order. 
 
-::: warning _❗ Warning_
+::: warning
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 
