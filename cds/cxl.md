@@ -233,7 +233,7 @@ TODO explanation
 
 This is equivalent to writing `SELECT from Authors where exists books`. When combining this with [infix filters](#infix-filter), it allows for quite concise queries.
 
-### in the where clause
+### in the where clause {#in-where-clause}
 
 A path expression can also be used as part of the where clause to filter based on elements of related entities:
 
@@ -330,34 +330,34 @@ WHERE exists (
 
 
 
-Every entity defines a set of all possible instances `{ b ∈ Books }`. A simple select query on Books returns the complete set -> all books.
+Every entity defines a set of all possible instances:
+$${ b \in \text{Books} }$$
 
+A simple select query on Books returns the complete set → all books.
 Filters progressively narrow down the set:
 
-Let `highstock = { b ∈ Books | b.stock > 100 }`.
+$$\text{highstock} = \{ b \in \text{Books} \mid b.\text{stock} > 100 \}$$
 
 With the infix filter notation, we write it as `Books[stock > 100]`.
-
 An association defines a relationship between two sets:
 
-Let `books = { (a,b) ∈ Books x Authors | b.author_id = a.id }`.
+$$\text{books} = \{ (a,b) \in \text{Books} \times \text{Authors} \mid b.\text{author\_id} = a.\text{id} \}$$
 
-We can select this set using the path expression `Authors:books` [in the from clause](#in-from-clause).
-The same can be applied to navigate via a path expression in the [select list](#path-navigation) or where clause using `books`.
-
+We can select this set using the path expression `Authors:books` in the [from clause](#in-from-clause).
+The same can be applied to navigate via a path expression in the [select list](#path-navigation) or [where clause](#in-where-clause) using `books`.
 Filtering authors by `Authors where exists books[stock > 100]` can be expressed as:
 
-`{a ∈ Authors ∣ ∃ b ∈ Books( b.author_id = a.id ∧ b.stock > 100 )}`
+$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{Books}( b.\text{author\_id} = a.\text{id} \land b.\text{stock} > 100 ) \\}$$
 
-Using the previously defined `books`, we can simplify it to:
+Using the previously defined $\text{books}$, we can simplify it to:
 
-`{a ∈ Authors ∣ ∃ b ∈ books( b.stock > 100 )}`
+$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{books}( b.\text{stock} > 100 ) \\}$$
 
-Using the `highstock` set, we can further simplify it to:
+Using the $\text{highstock}$ set, we can further simplify it to:
 
-`{a ∈ Authors ∣ ∃ b ∈ books ∩ highstock }`
+$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{books} \cap \text{highstock} \\}$$
 
-So in conclusion, the expression filters for the intersection of the two sets `books` (via association) and `highstock` (via infix filter).
+So in conclusion, the expression filters for the intersection of the two sets $\text{books}$ (via association) and $\text{highstock}$ (via infix filter).
 
 
 
