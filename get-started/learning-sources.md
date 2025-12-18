@@ -24,10 +24,6 @@ It's organized as follows:
 | [Plugins](../plugins/)                                                                   | **Curated list of plugins** that extend the capabilities of the CAP framework.                                     |
 | [Releases](../releases/)                                                                 | The place where you can stay up to date with the most recent information about new features and changes in CAP.        |
 
-
-### Node/Java Toggles
-
-
 ### Feature Status Badges
 
 Within the docs, you find badges that indicate the status of a feature, or API.
@@ -41,12 +37,6 @@ Here's a list of the badges and their meanings:
 | <Beta />                                | Beta features are planned to be generally available in subsequent releases, however, APIs and their behavior are not final and may change in the general release   |
 | <Gamma />                                | Gamma features are finalized and ready to use, stable, and supported long term. Yet, as they have a broad scope and range, you should ensure to test them thoroughly. |
 | <Internal />                            | SAP specific features, processes, or infrastructure.                                |
-
-
-### CAP Notebooks Integration
-
-
-
 
 
 ## Sample Projects
