@@ -46,7 +46,8 @@ async function cds.connect.to (
 
 Argument `name` is used to look up connect options from [configured services](#cds-env-requires), which are defined in the `cds.requires` section of your _package.json_ or _.cdsrc.json_ or _.yaml_ files.
 
-Argument `options` also allows to pass additional options such as `credentials` programmatically, and thus create services without configurations and [service bindings](#service-bindings), for example, you could connect to a local SQLite database in your tests like this:
+Argument `options` also allows to pass additional options programmatically. The available and supported properties of options depend on the selected `kind`.
+Each `kind` defines its own set of expected configuration properties (for example, `credentials`, `model`, `service`). This allows creating services without configurations and [service bindings](#service-bindings). For example, you could connect to a local SQLite database in your tests like this:
 
 ```js
 const db2 = await cds.connect.to ({
