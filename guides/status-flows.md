@@ -50,9 +50,9 @@ annotate TravelService.Travels with @flow.status: Status actions {
 
 :::
 
-In essecnce we model status flows using three annotations:
+In essence we model status flows using three annotations:
 
-- `@flow.status` designates the **status** element of an entity to be flow-controlled. 
+- `@flow.status` designates the **status** element for an entity to be flow-controlled. 
 - `@from` and `@to` define valid entry states and target states for **transitions**, 
   which are implemented by **bound** actions.
 
@@ -174,7 +174,7 @@ If validation fails, the request returns a `409 Conflict` HTTP status code with 
 
 ### To Fiori UIs
 
-When using CAP Fiori elements, status-transition flows are automatically recognized and supported in the generated UIs. 
+When using SAP Fiori elements, status-transition flows are automatically recognized and supported in the generated UIs. 
 
 UI annotations to enable/disable respective buttons and to refresh displayed data are automatically generated for UI5 as shown below:
 
@@ -206,8 +206,8 @@ UI annotations to enable/disable respective buttons and to refresh displayed dat
 
 While many use cases are covered by the generic handlers, you can add custom handlers for the actions, as usual. For example:
 
-- add `before` handlers for additional validations before entering a transition
-- add `after` handlers for conditional target states.
+- Add `before` handlers for additional validations before entering a transition.
+- Add `after` handlers for conditional target states.
 
 
 
@@ -215,6 +215,6 @@ While many use cases are covered by the generic handlers, you can add custom han
 
 Following are are some current limitations of status-transition flows, which we plan to address in future releases:
 
-1. Status Flows also work with draft-enabled entities, however when in draft state all actions are disabled. Thus, status transitions can only be performed on active entities.
+1. Status-transition flows also work with draft-enabled entities, however when in draft state all actions are disabled. Thus, status transitions can only be performed on active entities.
 
-2. CRUD and DRAFT operations can't be restricted by status flows today. Only bound actions can be flow-controlled.
+2. CRUD and DRAFT operations can't be restricted by status-transition flows today. Only bound actions can be flow-controlled.
