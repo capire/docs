@@ -941,7 +941,7 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 
 ### `@assert` <Beta/>
 
-Annotate an element with `@assert` to define CXL expressions that validate data after you write it to the database but before the system commits it. If validation fails, the expression returns a `String` that indicates an error to the runtime. If validation passes, the expression returns `null`. 
+Annotate an element with `@assert` to define CXL expressions that are validated _after_ the data has been written to the database but _before_ it is committed it. If validation fails, the expression returns a `String` that indicates an error to the runtime. If validation passes, the expression returns `null`. 
 
 ```cds
 entity OrderItems : cuid {
