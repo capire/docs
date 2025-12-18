@@ -724,7 +724,7 @@ Make sure the port matches to what the debug tunnel uses (see the message in the
 
 > [!NOTE] SapMachine is required
 > SapMachine is required as Java runtime environment for this feature to work.<br>
-> There is nothing to do if you set up your MTA deployment descriptors with [`cds mta`](../guides/deployment/to-cf#add-mta-yaml) or CAP project wizards.
+> There is nothing to do if you set up your MTA deployment descriptors with [`cds add mta`](../guides/deployment/to-cf#add-mta-yaml) or CAP project wizards.
 > See the [documentation of SapMachine](https://help.sap.com/docs/btp/sap-business-technology-platform/sapmachine) for how to configure this manually.
 
 #### Local Applications
