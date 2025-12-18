@@ -20,6 +20,10 @@ import functionArgs from '../assets/cxl/function-args.drawio.svg?raw'
 import orderingTerm from '../assets/cxl/ordering-term.drawio.svg?raw'
 import overClause from '../assets/cxl/over-clause.drawio.svg?raw'
 import intro from '../assets/cxl/intro.drawio.svg?raw'
+import setsIntersection from '../assets/cxl/sets-intersection.drawio.svg?raw'
+import setsLeftjoin from '../assets/cxl/sets-leftjoin.drawio.svg?raw'
+import setsExpand from '../assets/cxl/sets-expand.drawio.svg?raw'
+import sets from '../assets/cxl/sets.drawio.svg?raw'
 </script>
 
 # Core Expression Language (CXL) { #expressions }
@@ -199,7 +203,7 @@ The condition can manifest in multiple ways:
 - To select related entities with an additional query
 :::
 
-### in the from clause
+### in the from clause {#in-from-clause}
 
 A path expression can also be used in the `from` clause of a query to navigate to a related entity:
 
@@ -324,26 +328,57 @@ WHERE exists (
 
 ### theory of path expressions
 
-A `ref` can be used to reference an element.
-It is possible to navigate along path-segments to reference elements within the model.
-This is not limited to an entities own elements, but can also be used to navigate associations to elements of related entities.
 
-A path expression can be much more complex. For example, the individual path segments
-themselves can contain expressions by applying [infix-filters](#infix-filter).
-More samples are shown in the upcoming sections.
 
-::: info 💡 Set theory of path expressions
+Every entity defines a set of all possible instances `{ b ∈ Books }`. A simple select query on Books returns the complete set -> all books.
 
-TODO: further polish and explain
+Filters progressively narrow down the set:
 
-Path expressions point to a **set** of data that can be further filtered and used.
+Let `highstock = { b ∈ Books | b.stock > 100 }`.
 
-A query with a filter (typically: where-clause) results in an entity set which is a subset of the complete entity. In terms of set theory: The set of elements for which the following holds true ...
+With the infix filter notation, we write it as `Books[stock > 100]`.
 
-An infix filter further narrows down this set by applying additional conditions on the elements of the set.
+An association defines a relationship between two sets:
 
-The resulting set can then be used in various ways, e.g., to select elements, to check for existence, to perform aggregations... or to further navigate along associations to related entities.
-:::
+Let `books = { (a,b) ∈ Books x Authors | b.author_id = a.id }`.
+
+We can select this set using the path expression `Authors:books` [in the from clause](#in-from-clause).
+The same can be applied to navigate via a path expression in the [select list](#path-navigation) or where clause using `books`.
+
+Filtering authors by `Authors where exists books[stock > 100]` can be expressed as:
+
+`{a ∈ Authors ∣ ∃ b ∈ Books( b.author_id = a.id ∧ b.stock > 100 )}`
+
+Using the previously defined `books`, we can simplify it to:
+
+`{a ∈ Authors ∣ ∃ b ∈ books( b.stock > 100 )}`
+
+Using the `highstock` set, we can further simplify it to:
+
+`{a ∈ Authors ∣ ∃ b ∈ books ∩ highstock }`
+
+So in conclusion, the expression filters for the intersection of the two sets `books` (via association) and `highstock` (via infix filter).
+
+
+
+
+
+<div class="diagram">
+<div v-html="setsIntersection"></div>
+</div>
+
+
+
+
+
+<div class="diagram">
+<div v-html="setsLeftjoin"></div>
+</div>
+
+
+<div class="diagram">
+<div v-html="setsExpand"></div>
+</div>
 
 ## infix filter { #infix-filter }
 
@@ -802,6 +837,37 @@ TODO: Remove for first version?
 <div class="diagram" v-html="functionDef"></div>
 
 TODO: some text
+
+CAP supports a set of [standard functions](../guides/databases.md#standard-database-functions) that can be used in expressions. In addition, functions are passed through to the underlying database, allowing you to leverage database-specific functions as needed.
+
+CAP standard functions:
+| Name                              | Description                                                                                                                                             |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **String Functions**              |                                                                                                                                                         |
+| `concat(x, y, ...)`               | Concatenates the given strings or numbers `x`, `y`, ...                                                                                                 |
+| `trim(x)`                         | Removes leading and trailing whitespaces from `x`.                                                                                                      |
+| `contains(x, y)`                  | Checks whether `x` contains `y` (case-sensitive).                                                                                                       |
+| `startswith(x, y)`                | Checks whether `x` starts with `y` (case-sensitive).                                                                                                    |
+| `endswith(x, y)`                  | Checks whether `x` ends with `y` (case-sensitive).                                                                                                      |
+| `matchespattern(x, y)`            | Checks whether `x` matches the regular expression `y`.                                                                                                  |
+| `indexof(x, y)`<sup>1</sup>       | Returns the index of the first occurrence of `y` in `x` (case-sensitive).                                                                               |
+| `substring(x, i, n?)`<sup>1</sup> | Extracts a substring from `x` starting at index `i` (0-based) with an optional length `n`.                                                              |
+| `length(x)`                       | Returns the length of the string `x`.                                                                                                                   |
+| `tolower(x)`                      | Converts all characters in `x` to lowercase.                                                                                                            |
+| `toupper(x)`                      | Converts all characters in `x` to uppercase.                                                                                                            |
+| **Numeric Functions**             |                                                                                                                                                         |
+| `ceiling(x)`                      | Rounds the numeric parameter up to the nearest integer.                                                                                                 |
+| `floor(x)`                        | Rounds the numeric parameter down to the nearest integer.                                                                                               |
+| `round(x)`                        | Rounds the numeric parameter to the nearest integer. The midpoint between two integers is rounded away from zero (e.g., `0.5` → `1` and `-0.5` → `-1`). |
+| **Aggregate Functions**           |                                                                                                                                                         |
+| `min(x)`                          | Returns the minimum value of `x`.                                                                                                                       |
+| `max(x)`                          | Returns the maximum value of `x`.                                                                                                                       |
+| `sum(x)`                          | Returns the sum of all values of `x`.                                                                                                                   |
+| `average(x)`                      | Returns the average (mean) value of `x`.                                                                                                                |
+| `count(x)`                        | Returns the count of non-null values of `x`.                                                                                                            |
+| `countdistinct(x)`                | Returns the count of distinct non-null values of `x`.                                                                                                   |
+
+
 
 ## function args { #function-args }
 
