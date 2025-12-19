@@ -53,9 +53,9 @@ This guide describes a way to manage development and deployment via *[monorepos]
    git submodule add https://github.com/capire/bookstore-java
    git submodule add https://github.com/capire/reviews-java
    git submodule add https://github.com/capire/orders-java
-   git submodule add https://github.com/capire/common-java
+   git submodule add https://github.com/capire/common
    git submodule add https://github.com/capire/bookshop-java
-   git submodule add https://github.com/capire/data-viewer-java
+   git submodule add https://github.com/capire/data-viewer
    git submodule update --init
    ```
    :::
@@ -66,7 +66,6 @@ This guide describes a way to manage development and deployment via *[monorepos]
    gen
    ```
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
-
 
 3. Test-drive locally:
    
@@ -232,7 +231,7 @@ This section is about how to deploy all 3+1 projects at once with a common _mta.
 
 For Node.js, [@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
-<font color=red size=+2>TODO</font> For CAP Java, [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+For CAP Java, [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
 ### Deployment Descriptor
 
@@ -640,7 +639,7 @@ Create a new file named event-mesh.json to store the configuration for enterpris
 ```
 :::
 
-Add messaging resource in mta.yaml with parametrized `emname` and `namespace` properties:
+Add a messaging resource in mta.yaml with parameterized `emname` and `namespace` properties:
 
 ::: code-group
 ```yaml [mta.yaml]
