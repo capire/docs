@@ -1101,6 +1101,24 @@ entity Person : cuid {
 
 Next to input validation, you can add [database constraints](databases#database-constraints) to prevent invalid data from being persisted.
 
+## [Constraints](services/constraints)
+
+Declarative constraints allow you to express conditions using CXL expressions that are validated automatically whenever data is written, greatly reducing the need for extensive custom code for input validation.
+
+::: tip Read the guide
+Find additional information about constraints in this guide:
+[&rarr; **_Constraints_**](services/status-flows)
+:::
+
+## [Status-Transition Flows](services/status-flows)
+
+Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
+
+::: tip Read the guide
+Find additional information about modeling status-transition flows in this guide:<br>
+[&rarr; **_Status-Transition Flows_**](services/status-flows)
+:::
+
 ## Custom Logic
 
 
