@@ -841,7 +841,7 @@ The remaining cases that need custom handlers, reduce to real custom logic, spec
 public class FooServiceImpl implements EventHandler {...}
 ```
 
-[Learn more about Event Handler classes in Java.](../java/event-handlers#handlerclasses){.learn-more}
+[Learn more about Event Handler classes in Java.](../java/event-handlers/#handlerclasses){.learn-more}
 
 
 
@@ -874,7 +874,7 @@ public class BookshopServiceImpl implements EventHandler {
 
 [Learn more about **adding event handlers in Node.js**.](../node.js/core-services#srv-on-before-after){.learn-more}
 
-[Learn more about **adding event handlers in Java**.](../java/event-handlers#handlerclasses){.learn-more}
+[Learn more about **adding event handlers in Java**.](../java/event-handlers/#handlerclasses){.learn-more}
 
 
 
@@ -908,7 +908,7 @@ Event handlers all get a uniform _Request_/_Event Message_ context object as the
 - The `tenant` using your SaaS application, if enabled
 
 [Learn more about **implementing event handlers in Node.js**.](../node.js/events#cds-request){.learn-more}
-[Learn more about **implementing event handlers in Java**.](../java/event-handlers#eventcontext){.learn-more}
+[Learn more about **implementing event handlers in Java**.](../java/event-handlers/#eventcontext){.learn-more}
 
 
 
