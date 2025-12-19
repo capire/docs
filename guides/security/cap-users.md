@@ -552,7 +552,7 @@ After the application is built, check the *ams/dcl* folder to see the generated 
 
 The generated policies are a good starting point to add manual modifications.
 
-The generated DCL schema includes all AMS attributes exposed for filtering basically:
+The generated DCL schema includes all AMS attributes exposed for filtering:
 
 ```yaml [/ams/schema.dcl]
 SCHEMA {
