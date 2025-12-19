@@ -431,7 +431,7 @@ this.on('CREATE', Books, req => {
 ```
 
 ::: details **Best Practice:**{.good} Use the `@mandatory` annotation instead.
-The sample above is just for illustration. Instead, use the [`@mandatory`](../guides/providing-services.md#mandatory)
+The sample above is just for illustration. Instead, use the [`@mandatory`](../guides/services/constraints#mandatory)
 annotation in your CDS model to define mandatory inputs like that:
 
 ```cds

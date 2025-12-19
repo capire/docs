@@ -213,7 +213,7 @@ Elements from the `@changelog` annotation value must always be prefixed by the a
 :::warning Validation required
 If the target of the association is missing, for example, when an entity is updated with the ID for a customer
 that does not exist, the changelog entry is not created. You need to validate
-such cases in the custom code or use annotations, for example, [`@assert.target`](/guides/providing-services#assert-target).
+such cases in the custom code or use annotations, for example, [`@assert.target`](/guides/services/constraints#assert-target).
 :::
 
 ### Caveats of Identifiers

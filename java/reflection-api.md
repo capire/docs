@@ -259,7 +259,7 @@ cds:
 :::
 #### Custom Implementation
 
-Applications can implement a custom [`FeatureTogglesInfoProvider`](https://javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/FeatureTogglesInfoProvider.html) that computes a `FeatureTogglesInfo` based on the request's [`UserInfo`](https://www.javadoc.io/static/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) and [`ParameterInfo`](https://www.javadoc.io/static/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/ParameterInfo.html).
+Applications can implement a custom [`FeatureTogglesInfoProvider`](https://javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/FeatureTogglesInfoProvider.html) that computes a `FeatureTogglesInfo` based on the request's [`UserInfo`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) and [`ParameterInfo`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/ParameterInfo.html).
 
 The following example demonstrates a feature toggles info provider that enables the feature `isbn` if the user has the `expert` role:
 

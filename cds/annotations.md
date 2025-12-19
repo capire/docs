@@ -36,11 +36,11 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 | Annotation          | Description                                                          |
 |---------------------|----------------------------------------------------------------------|
-| `@readonly `        | see [Input Validation](../guides/providing-services#readonly)       |
-| `@mandatory`        | see [Input Validation](../guides/providing-services#mandatory)      |
-| `@assert.target`    | see [Input Validation](../guides/providing-services#assert-target)  |
-| `@assert.format`    | see [Input Validation](../guides/providing-services#assert-format)  |
-| `@assert.range`     | see [Input Validation](../guides/providing-services#assert-range)   |
+| `@readonly `        | see [Input Validation](../guides/services/constraints#readonly)       |
+| `@mandatory`        | see [Input Validation](../guides/services/constraints#mandatory)      |
+| `@assert.target`    | see [Input Validation](../guides/services/constraints#assert-target)  |
+| `@assert.format`    | see [Input Validation](../guides/services/constraints#assert-format)  |
+| `@assert.range`     | see [Input Validation](../guides/services/constraints#assert-range)   |
 
 
 
@@ -91,8 +91,8 @@ Intrinsically supported OData Annotations:
 
 | Annotation             | Description                                                      |
 |------------------------|------------------------------------------------------------------|
-| `@Core.Computed`       | see [Providing Services](../guides/providing-services#readonly) |
-| `@Core.Immutable`      | see [Providing Services](../guides/providing-services#readonly) |
+| `@Core.Computed`       | see [Providing Services](../guides/services/constraints#readonly) |
+| `@Core.Immutable`      | see [Providing Services](../guides/services/constraints#readonly) |
 | `@Core.MediaType`      | see [Media Data](../guides/providing-services#serving-media-data)                          |
 | `@Core.IsMediaType`    | see [Media Data](../guides/providing-services#serving-media-data)                          |
 | `@Core.IsUrl`          | see [Media Data](../guides/providing-services#serving-media-data)                          |

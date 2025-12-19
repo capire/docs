@@ -188,6 +188,9 @@ This strategy creates a user that passes all authorization checks. It's meant fo
 
 This authentication strategy uses basic authentication with pre-defined mock users during development.
 
+::: warning Mocked authentication is not suitable for production!
+:::
+
 > **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
 
 **Configuration:** Choose this strategy as follows:
@@ -254,47 +257,9 @@ If you want to restrict these additional logins, you need to overwrite the defau
   }
 ```
 
-
-### Basic Authentication {#basic }
-
-This authentication strategy uses basic authentication to use mock users during development.
-
-> **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
-
-**Configuration:** Choose this strategy as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": "basic"
-  }
-}
-```
+::: tip
+The pre-defined mock users can be deactivated by using kind `basic` instead of `mocked`. In that case configure users yourself, as described previously.
 :::
-
-You can optionally configure users as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": {
-      "kind": "basic",
-      "users": {
-        "<user.id>": {
-          "password": "<password>",
-          "roles": [ "<role-name>", ... ],
-          "attr": { ... }
-        }
-      }
-    }
-  }
-}
-```
-:::
-
-In contrast to [mocked authentication](#mocked), no default users are automatically added to the configuration.
 
 
 ### JWT-based Authentication { #jwt }

@@ -23,7 +23,7 @@ The following sections give a brief overview of CAP's core concepts.
 
 A CAP application commonly provides services defined in CDS models and served by the CAP runtimes. Every active thing in CAP is a service. They embody the behavioral aspects of a domain in terms of exposed entities, actions, and events.
 
-![This graphic is explained in the accompanying text.](assets/providing-services/service-centric-paradigm.drawio.svg)
+![This graphic is explained in the accompanying text.](./assets/providing-services/service-centric-paradigm.drawio.svg)
 
 ### Ubiquitous Events
 
@@ -95,7 +95,7 @@ This way, services become facades to encapsulated domain data, exposing differen
 
 Instead of exposing access to underlying data in a 1:1 fashion, services frequently expose denormalized views, tailored to specific use cases.
 
-For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](#readonly):
+For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](services/constraints#readonly):
 
 ```cds
 using { sap.capire.bookshop as my } from '../db/schema';
@@ -772,218 +772,8 @@ Here's an overview table:
 -  Pessimistic locking is not supported by SQLite. H2 supports exclusive locks only.
 :::
 
-## Input Validation
-
-CAP runtimes automatically validate user input, controlled by the following annotations.
-
-
-### `@readonly`
-
-Elements annotated with `@readonly`, as well as [_calculated elements_](../cds/cdl#calculated-elements), are protected against write operations. That is, if a CREATE or UPDATE operation specifies values for such fields, these values are **silently ignored**.
-
-By default [`virtual` elements](../cds/cdl#virtual-elements) are also _calculated_.
-::: tip
-The same applies for fields with the [OData Annotations](../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
-:::
-
-::: warning Not allowed on keys
-Do not use the `@readonly` annotation on keys in all variants.
-:::
-
-<div id="readonlywithexpressions"/>
-
-
-### `@mandatory`
-
-Elements marked with `@mandatory` are checked for nonempty input: `null` and (trimmed) empty strings are rejected.
-
-```cds
-service Sue {
-  entity Books {
-    key ID : UUID;
-    title  : String @mandatory;
-  }
-}
-```
-
-In addition to server-side input validation as introduced above, this adds a corresponding `@FieldControl` annotation to the EDMX so that OData / Fiori clients would enforce a valid entry, thereby avoiding unnecessary request roundtrips:
-
-```xml
-<Annotations Target="Sue.Books/title">
-  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
-</Annotations>
-```
-
-<div id="mandatorywithexpressions"/>
-
-
-### `@assert .format`
-
-Allows you to specify a regular expression string (in ECMA 262 format in CAP Node.js and java.util.regex.Pattern format in CAP Java) that all string input must match.
-
-```cds
-entity Foo {
-  bar : String @assert.format: '[a-z]ear';
-}
-```
-
-
-### `@assert .range`
-
-Allows you to specify `[ min, max ]` ranges for elements with ordinal types &mdash; that is, numeric or date/time types. For `enum` elements, `true` can be specified to restrict all input to the defined enum values.
-
-```cds
-entity Foo {
-  bar : Integer  @assert.range: [ 0, 3 ];
-  boo : Decimal  @assert.range: [ 2.1, 10.25 ];
-  car : DateTime @assert.range: ['2018-10-31', '2019-01-15'];
-  zoo : String   @assert.range enum { high; medium; low; };
-}
-```
-#### ... with open intervals
-
-By default, specified `[min,max]` ranges are interpreted as closed intervals, that means, the performed checks are `min ≤ input ≤ max`. You can also specify open intervals by wrapping the *min* and/or *max* values into parentheses like that:
-
-<!-- cds-mode: ignore; duplicate annotations -->
-```cds
-@assert.range: [(0),100]    // 0 < input ≤ 100
-@assert.range: [0,(100)]    // 0 ≤ input < 100
-@assert.range: [(0),(100)]  // 0 < input < 100
-```
-In addition, you can use an underscore `_` to represent *Infinity* like that:
-<!-- cds-mode: ignore; duplicate annotations -->
-```cds
-@assert.range: [(0),_]  // positive numbers only, _ means +Infinity here
-@assert.range: [_,(0)]  // negative number only, _ means -Infinity here
-```
->  Basically values wrapped in parentheses _`(x)`_ can be read as _excluding `x`_ for *min* or *max*. Note that the underscore `_` doesn't have to be wrapped into parentheses, as by definition no number can be equal to *Infinity* .
-
-Support for open intervals and infinity is available for CAP Node.js since `@sap/cds` version **8.5** and in CAP Java since version **3.5.0**.
-
-
-
-### `@assert .target`
-
-Annotate a [managed to-one association](../cds/cdl#managed-associations) of a CDS model entity definition with the
-`@assert.target` annotation to check whether the target entity referenced by the association (the reference's target)
-exists. In other words, use this annotation to check whether a non-null foreign key input in a table has a corresponding
-primary key in the associated/referenced target table.
-
-You can check whether multiple targets exist in the same transaction. For example, in the `Books` entity, you could
-annotate one or more managed to-one associations with the `@assert.target` annotation. However, it is assumed that
-dependent values were inserted before the current transaction. For example, in a deep create scenario, when creating a
-book, checking whether an associated author exists that was created as part of the same deep create transaction isn't
-supported, in this case, you will get an error.
-
-The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
-Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
-non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](databases#database-constraints) constraint must be used instead.
-
-If the reference's target doesn't exist, an HTTP response
-(error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
-content adheres to the standard OData specification for an error
-[response body](https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#sec_ErrorResponse).
-
-#### Example
-
-Add `@assert.target` annotation to the service definition as previously mentioned:
-
-```cds
-entity Books {
-  key ID : UUID;
-  title  : String;
-  author : Association to Authors @assert.target;
-}
-
-entity Authors {
-  key ID : UUID;
-  name   : String;
-  books  : Association to many Books on books.author = $self;
-}
-```
-
-**HTTP Request** — *assume that an author with the ID `"796e274a-c3de-4584-9de2-3ffd7d42d646"` doesn't exist in the database*
-
-```http
-POST Books HTTP/1.1
-Accept: application/json;odata.metadata=minimal
-Prefer: return=minimal
-Content-Type: application/json;charset=UTF-8
-
-{"author_ID": "796e274a-c3de-4584-9de2-3ffd7d42d646"}
-```
-
-**HTTP Response**
-
-```http
-HTTP/1.1 400 Bad Request
-odata-version: 4.0
-content-type: application/json;odata.metadata=minimal
-
-{"error": {
-  "@Common.numericSeverity": 4,
-  "code": "400",
-  "message": "Value doesn't exist",
-  "target": "author_ID"
-}}
-```
-::: tip
-In contrast to the `@assert.integrity` constraint, whose check is performed on the underlying database layer,
-the `@assert.target` check constraint is performed on the application service layer before the custom application handlers are called.
-:::
-::: warning
-Cross-service checks are not supported. It is expected that the associated entities are defined in the same service.
-:::
-::: warning
-The `@assert.target` check constraint relies on database locks to ensure accurate results in concurrent scenarios. However, locking is a database-specific feature, and some databases don't permit to lock certain kinds of objects. On SAP HANA, for example, views with joins or unions can't be locked. Do not use `@assert.target` on such artifacts/entities.
-:::
-
-
-### Custom Error Messages
-
-The annotations `@assert.range`, `@assert.format`, and `@mandatory` also support custom error messages. Use the annotation `@<anno>.message` with an error text or [text bundle key](../guides/i18n#externalizing-texts-bundles) to specify a custom error message:
-
-```cds
-entity Person : cuid {
-  name : String;
-
-  @assert.format: '/^\S+@\S+\.\S+$/'
-  @assert.format.message: 'Provide a valid email address'
-  email : String;
-
-  @assert.range: [(0),_]
-  @assert.range.message: '{i18n>person-age}'
-  age : Int16;
-}
-```
-
-Note: The above can also be written like that:
-
-```cds
-entity Person : cuid {
-  name : String;
-
-  @assert.format: {
-    $value: '/^\S+@\S+\.\S+$/', message: 'Provide a valid email address'
-  }
-  email : String;
-
-  @assert.range: {
-    $value: [(0),_], message: '{i18n>person-age}'
-  }
-  age : Int16;
-}
-```
-
-
-### Database Constraints
-
-Next to input validation, you can add [database constraints](databases#database-constraints) to prevent invalid data from being persisted.
 
 ## Custom Logic
-
-
 
 As most standard tasks and use cases are covered by [generic service providers](#generic-providers), the need to add service implementation code is greatly reduced and minified, and hence the quantity of individual boilerplate coding.
 
@@ -996,6 +786,34 @@ The remaining cases that need custom handlers, reduce to real custom logic, spec
 - And more... In general, all the things not (yet) covered by generic handlers
 
 
+
+### Declarative Custom Logic
+
+CAP supports various declarative techniques to express custom logic without coding, in particular for input validation and status-transition flows.
+
+#### Status Transition Flows
+
+- [Status-Transition Flows](./services/status-flows.md) ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
+
+
+#### Input Validation
+
+- [Declarative Constraints](./services/constraints) allow to annotate your models and have the respective checks still be executed and enforced by generic runtimes, with the following annotations:
+
+  - [`@assert`](./services/constraints#assert-constraint), incl. derivates:
+    - [`@assert.format`](./services/constraints#assert-format)
+    - [`@assert.range`](./services/constraints#assert-range)
+    - [`@assert.target`](./services/constraints#assert-target)
+  - [`@mandatory`](./services/constraints#mandatory)
+  - [`@readonly`](./services/constraints#readonly)
+
+
+> [!tip] 
+> Prefer declarative constraints over programmatic validations wherever possible, as they require no implementation coding and are automatically served by CAP runtimes in optimized ways.
+
+
+
+### Custom Service Providers
 
 **In Node.js**, the easiest way to add custom implementations for services is through equally named _.js_ files placed next to a service definition's _.cds_ file:
 
@@ -1233,230 +1051,6 @@ Programmatic usage would look like this for Node.js:
 ```
 
 > Note: Even with that typed APIs, always pass the target entity name as second argument for bound actions/functions.
-
-
-
-## Status-Transition Flows <Beta />
-
-The flow feature makes it easy to define and manage state transitions in your CDS models.
-It ensures transitions are explicitly modeled, validated, and executed in a controlled and reliable way.
-For more complex requirements, you can extend flows with custom event handlers.
-
-
-### Enabling Flows
-
-Status-transition flows are supported by both CAP runtimes.
-
-In CAP Node.js support for flows is part of the CAP Node.js core (`@sap/cds`).
-
-For CAP Java, support for flows is provided by the feature [cds-feature-flow](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-flow). Enable it by adding this dependency to your _srv/pom.xml_ file:
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-feature-flow</artifactId>
-  <scope>runtime</scope>
-</dependency>
-```
-
-### Modeling Flows
-
-The following example, taken from [@capire/xtravels](https://github.com/capire/xtravels), shows the simplest way to model a flow.
-The annotations in the service model are sufficient to define and use the flow.
-
-![A flow diagram showing three status states connected by arrows. The leftmost oval contains the word Open. An arrow labeled accept points from Open to an oval containing Accepted at the top right. Another arrow labeled reject points from Open to an oval containing Canceled at the bottom right. The diagram illustrates a simple state transition workflow where items can move from an open state to either accepted or canceled states.](./assets/flows/xtravels-flow-simple.svg)
-
-The following is an extract of the relevant parts of the domain model:
-
-::: details `db/schema.cds`
-```cds [db/schema.cds]
-// db/schema.cds
-namespace sap.capire.travels;
-
-entity Travels : managed {
-  // [...]
-  Status       : Association to TravelStatus default 'O';
-  // [...]
-}
-
-entity TravelStatus : sap.common.CodeList {
-  key code : String(1) enum {
-    Open     = 'O';
-    Accepted = 'A';
-    Canceled = 'X';
-  }
-}
-```
-:::
-
-```cds [srv/travel-service.cds]
-// srv/travel-service.cds
-service TravelService {
-
-  // Define entity and actions
-  entity Travels as projection on db.Travels
-  actions {
-    action rejectTravel();
-    action acceptTravel();
-    action deductDiscount( percent: Percentage not null ) returns Travels;
-  };
-
-  // Define flow through actions (+ status check for "deductDiscount")
-  annotate Travels with @flow.status: Status actions {  // [!code highlight]
-    rejectTravel    @from: #Open  @to: #Canceled;       // [!code highlight]
-    acceptTravel    @from: #Open  @to: #Accepted;       // [!code highlight]
-    deductDiscount  @from: #Open;                       // [!code highlight]
-  };                                                    // [!code highlight]
-
-}
-```
-
-No custom action handlers are needed for simple transitions—the flow feature's default handlers validate that the entry state is `Open` and transition the status to `Accepted` or `Canceled` accordingly.
-For more complex scenarios, you can add custom handlers as explained later.
-
-
-### Flow Annotations
-
-Flows consist of a _status element_ and a set of _flow actions_ that define transitions between states. 
-
-#### Declare Flow Using `@flow.status`
-
-To model a flow, one of the entity fields needs to be annotated with `@flow.status`.
-This field must be one of the following:
-
-- A String or Integer enum consisting of keys and values
-- A String enum with only symbols
-- A Codelist entity with the key `code` if localization is needed (`code` must be one of the two above)
-
-::: tip The status field should be `@readonly` and have a default value.
-We recommend to always use `@flow.status` in combination with `@readonly`.
-This ensures that the status element is immutable from the client side, giving the service provider full control over all state transitions.
-As no initial state can be provided on `CREATE`, there should be a default value.
-:::
-
-When you annotate `@flow.status: <element name>` at the entity level (as in the example above), the annotation is propagated to the respective element, which is also automatically annotated with `@readonly`.
-
-**About the `@flow.status` annotation:**
-- This annotation is **mandatory**.
-- The annotated element must be either an enum or an association to a code list.
-- Only one status element per entity is supported.
-- Draft-enabled entities are supported, however flows are only applied to the active version.
-- `null` is **not** a valid state—model your empty state explicitly.
-
-::: warning Only simple projections are supported
-The entity must be _writable_, and renaming the status element is currently not supported.
-:::
-
-After declaring `@flow.status`, use the following annotations on bound actions to model transitions:
-
-#### Model Transitions Using `@from` and `to`
-
-Both annotations are optional, but at least one is required to mark an action as a flow action. Use either one or both depending on your needs. When you use both, no custom handlers are needed—generic handlers are registered automatically.
-
-**`@from`**
-
-- Defines valid entry states for the action.
-- Validates whether the entity is in a valid entry state before executing the action (the current state of the entity must be included in the states defined here).
-- Can be a single value or an array of values (each element must be a value from the status enum).
-- UI annotations to allow/disallow buttons and to refresh the page are automatically generated for UI5.
-  - Can be deactivated via <Config>cds.features.annotate_for_flows: false</Config>.
-
-**`@to`**
-
-- Defines the desired target state of the entity after executing the action.
-- Changes the state of the entity to the value defined in this annotation after executing the action.
-- Must be a single value from the status enum.
-
-
-
-### Generic Handlers
-
-Generic handlers are registered automatically, so no custom implementations are required for basic flows.
-
-#### `before`
-
-Based on the `@from` annotation, a handler validates that the entity is in a valid entry state - the current state must match one of the states specified in `@from`.
-If validation fails, the request returns a `409 Conflict` HTTP status code with an appropriate error message.
-
-#### `on`
-
-In case of a `@to` declaration and if no custom handler is provided, an empty handler is registered that completes the action for void return types, ensuring the request passes through the generic handler stack.
-This is an exception to the rule that actions must be implemented by the application.
-
-#### `after`
-
-Based on the `@to` annotation, a handler automatically updates the entity's status to the target state.
-For example, if the current state is `Open` and the target state is `Accepted`, the handler updates the status to `Accepted` after action execution.
-This ensures consistent state transitions without custom logic.
-
-::: tip Generic handlers are not executed for draft entities
-For example, if you call `acceptTravel()` on a `Travels` entity that is currently being edited (in _inactive_ state), the call has no effect.
-:::
-
-
-### Reverting to Previous State
-
-You can use the target state `$flow.previous` to restore the previous state in a workflow.
-The following example introduces a `Blocked` state with two possible previous states (`Open` and `InReview`) and an action `unblockTravel` that restores the previous state.
-For instance, if `Blocked` was transitioned to from `Open`, calling `unblockTravel` transitions back to `Open`. The same applies for `InReview`.
-
-![The graphic is explained in the accompanying text.](./assets/flows/xtravels-flow-previous.svg)
-
-```cds [srv/travel-service.cds]
-// srv/travel-service.cds
-service TravelService {
-
-  // Define entity and actions
-  entity Travels as projection on db.Travels
-  actions {
-    action reviewTravel();
-    action reopenTravel();
-    action blockTravel();
-    action unblockTravel();
-    action rejectTravel();
-    action acceptTravel();
-    action deductDiscount( percent: Percentage not null ) returns Travels;
-  };
-
-  // Define flow incl. "unblockTravel" that transitions to the previous state
-  annotate Travels with @flow.status: Status actions {
-    reviewTravel    @from: #Open               @to: #InReview;       // [!code highlight]
-    reopenTravel    @from: #InReview           @to: #Open;           // [!code highlight]
-    blockTravel     @from: [#Open, #InReview]  @to: #Blocked;        // [!code highlight]
-    unblockTravel   @from: #Blocked            @to: $flow.previous;  // [!code highlight]
-    rejectTravel    @from: #InReview           @to: #Canceled;
-    acceptTravel    @from: #InReview           @to: #Accepted;
-    deductDiscount  @from: #Open;
-  };
-
-}
-```
-
-Entities with flows that include at least one transition to `$flow.previous` are automatically extended with the `sap.common.FlowHistory` aspect, which includes `transitions_` composition that captures the history of state transitions.
-
-::: details The `transitions_` composition
-The `transitions_` composition is meant as a technical artifact to implement transitioning to the previous state and not for exposing the transition history to business users, etc.
-For such use cases, check out the [Change Tracking plugin](../plugins/index.md#change-tracking).
-
-The automatic entity extending described above can be deactivated via <Config>cds.features.history_for_flows: false</Config>.
-If you do so, you need to add aspect `sap.common.FlowHistory` manually in order to use `@to: $flow.previous`!
-
-Automatic history capturing can, as an experimental feature, also be enabled for all entities with a flow definition via <Config>cds.features.history_for_flows: 'all'</Config>.
-
-The `transitions_` composition automatically appended to the base entity is also automatically excluded from all projections.
-:::
-
-
-### Extending Flows
-
-Flow annotations work well for basic flows. For more complex scenarios, implement custom event handlers.
-
-Common use cases for custom handlers:
-- **Additional validation:** Implement a custom `before` handler when entry state validation depends on extra conditions
-- **Non-void return types:** Implement a custom `on` handler when the action returns data
-- **Conditional target states:** Implement a custom `on` or `after` handler (without `@to` annotation) when multiple target states depend on conditions
-
-<!-- TODO: add example -->
 
 
 ## Serving Media Data

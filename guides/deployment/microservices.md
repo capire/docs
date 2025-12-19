@@ -571,17 +571,17 @@ npm i @sap-cloud-sdk/resilience --workspace bookstore
 ```
 :::
 
-### Approuter
+### App Router
 
-Add [approuter configuration](../deployment/to-cf#add-app-router) using the command:
+Add _App Router_ configuration using the command:
 
 ```shell
 cds add approuter
 ```
 
-The approuter serves the UIs and acts as a proxy for requests toward the different apps.
+The App Router serves the UIs and acts as a proxy for requests toward the different apps.
 
-Since the approuter folder is only necessary for deployment, we move it into a `.deploy` folder.
+Since the App Router folder is only necessary for deployment, we move it into a `.deploy` folder.
 
 ```shell
 mkdir .deploy
@@ -602,7 +602,7 @@ modules:
 
 #### Static Content
 
-The approuter can serve static content. Since our UIs are located in different NPM workspaces, we create symbolic links to them as an easy way to deploy them as part of the approuter.
+The App Router can serve static content. Since our UIs are located in different NPM workspaces, we create symbolic links to them as an easy way to deploy them as part of the App Router.
 
 ```shell
 mkdir .deploy/app-router/resources
@@ -614,7 +614,7 @@ cd ../../..
 ```
 
 ::: warning Simplified Setup
-This is a simplified setup which deploys the static content as part of the approuter.
+This is a simplified setup which deploys the static content as part of the App Router.
 See [Deploy to Cloud Foundry](./to-cf#add-ui) for a productive UI setup.
 :::
 
@@ -753,7 +753,7 @@ cds up
 
 [Learn more about `cds up`.](./to-cf#build-and-deploy){.learn-more}
 
-Once the app is deployed, you can get the url of the approuter via
+Once the app is deployed, you can get the url of the App Router via
 
 ```shell
 cf apps # [!code focus]
