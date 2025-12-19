@@ -23,7 +23,6 @@ import intro from '../assets/cxl/intro.drawio.svg?raw'
 import setsIntersection from '../assets/cxl/sets-intersection.drawio.svg?raw'
 import setsLeftjoin from '../assets/cxl/sets-leftjoin.drawio.svg?raw'
 import setsExpand from '../assets/cxl/sets-expand.drawio.svg?raw'
-import sets from '../assets/cxl/sets.drawio.svg?raw'
 </script>
 
 
