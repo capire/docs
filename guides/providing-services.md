@@ -794,7 +794,7 @@ Declarative constraints allow you to express conditions using CXL expressions th
 
 ::: tip Read the guide
 Find additional information about constraints in this guide:
-[&rarr; **_Constraints_**](services/status-flows)
+[&rarr; **_Constraints_**](services/constraints)
 :::
 
 ## [Status-Transition Flows](services/status-flows)
