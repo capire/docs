@@ -818,7 +818,7 @@ Upgrading the `service-plan` from type `application` to `broker` is not supporte
 Hence, start with plan `broker` in case you want to provide technical APIs in future.
 :::
 
-[Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-web-ide-full-stack/application-security-descriptor-configuration-syntax){.learn-more}
+[Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
 
 #### Security Descriptor { #xsuaa-security-descriptor }
 
