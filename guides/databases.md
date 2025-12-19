@@ -916,7 +916,7 @@ CREATE TABLE Books_texts (
 ::: warning Database constraints aren't intended for checking user input
 Instead, they protect the integrity of your data in the database layer against programming errors. If a constraint violation occurs, the error messages coming from the database aren't standardized by the runtimes but presented as-is.
 
-→ Use [`@assert.target`](providing-services#assert-target) for corresponding input validations.
+→ Use [`@assert.target`](services/constraints#assert-target) for corresponding input validations.
 :::
 
 ## Standard Database Functions
