@@ -66,7 +66,6 @@ This guide describes a way to manage development and deployment via *[monorepos]
    gen
    ```
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
-
 3. Test-drive locally:
    
    ::: code-group
@@ -746,7 +745,7 @@ npm i @sap-cloud-sdk/resilience --workspace bookstore
 
 ::: details CAP Java: Configure each app for cloud readiness
 
-To access remote OData services, you need to add a dependency to the *cds-feature-remote-odata* [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules) and provide the latest available version. Additionally, to retrieve destination configurations using the destination service, you must include a *com.sap.cloud.sdk.cloudplatform* dependency with artifact ID *scp-cf*, as described in the following steps: [Cloud SDK Integration](https://cap.cloud.sap/docs/java/cqn-services/remote-services#cloud-sdk-dependencies).
+To access remote OData services, add a dependency to the *cds-feature-remote-odata* [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules) and provide the latest available version. Additionally, to retrieve destination configurations using the destination service, include a *com.sap.cloud.sdk.cloudplatform* dependency with artifact ID *scp-cf*, as described in the following steps: [Cloud SDK Integration](https://cap.cloud.sap/docs/java/cqn-services/remote-services#cloud-sdk-dependencies).
 
 ::: code-group
 ```xml [bookstore/srv/pom.xml]
