@@ -32,7 +32,7 @@ In essence, [authentication](./authentication#authentication) verifies the user'
 In contrast, **authorization controls _how_ the user may interact with the application's resources**. 
 As access control depends on user information, authentication is a prerequisite for authorization.
 
-![Authorization with CAP](./assets/authorization.drawio.svg){width="500px"}
+![Authorization with CAP](./assets/authorization.drawio.svg){width="450px"}
 
 CAP authorization modeling means restricting user access to application resources in a declarative way.
 The decisive point here is that the application logic does not need to contribute any security-critical code for this, but can rely on the generic framework.
@@ -95,7 +95,7 @@ service SomeService {
 
 #### Events to Auto-Exposed Entities { #events-and-auto-expose}
 
-In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](cdl#auto-exposed-entities) by the CDS compiler for some reason.
+In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](../../cds/cdl#auto-exposed-entities) by the CDS compiler for some reason.
 Access to auto-exposed entities needs to be controlled in a specific way. Consider the following example:
 
 ```cds
