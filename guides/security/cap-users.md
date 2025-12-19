@@ -473,7 +473,7 @@ You need to make use of a compiler expression in order to ensure validity of the
 
 ::: tip
 Choose attributes exposed to AMS carefully.
-The attribute should have cross-sectional semantics in the domain.
+Attributes you choose should have cross-sectional semantics in the domain.
 :::
 
 As such attributes are usually shared by multiple entities, it is convenient to add the `@ams`-annotation at the level of a shared aspect as sketched here:
