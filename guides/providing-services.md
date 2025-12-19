@@ -95,7 +95,7 @@ This way, services become facades to encapsulated domain data, exposing differen
 
 Instead of exposing access to underlying data in a 1:1 fashion, services frequently expose denormalized views, tailored to specific use cases.
 
-For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](#readonly):
+For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](services/constraints#readonly):
 
 ```cds
 using { sap.capire.bookshop as my } from '../db/schema';
