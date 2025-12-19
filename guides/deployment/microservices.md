@@ -607,7 +607,6 @@ Create a new file named event-mesh.json to store the configuration for enterpris
 {
   "version": "1.1.0",
   "emname": "samples-emname", // [!code --]
-  "version": "1.1.0",
   "namespace": "default/samples/1", // [!code --]
   "options": {
     "management": true,
@@ -767,6 +766,7 @@ To access remote OData services, you need to add a dependency to the *cds-featur
 		</dependency>
 ...
 ```
+
 :::
 
 ### App Router
