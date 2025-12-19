@@ -27,7 +27,7 @@ entity TravelStatus : sap.common.CodeList {
   key code : String(1) enum {
     Open      = 'O';
     Accepted  = 'A';
-    Canceled  = 'X';
+    Rejected  = 'X';
     Withdrawn = 'W';  // [!code highlight]
   }
 }
@@ -46,7 +46,7 @@ service TravelService {
 
   // Define flow through actions
   annotate Travels with @flow.status: Status actions {
-    rejectTravel    @from: #Open  @to: #Canceled;
+    rejectTravel    @from: #Open  @to: #Rejected;
     acceptTravel    @from: #Open  @to: #Accepted;
     withdrawTravel  @from: [#Open, #Accepted];     // [!code highlight]
     deductDiscount  @from: #Open;
