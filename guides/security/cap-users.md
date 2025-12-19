@@ -487,7 +487,7 @@ aspect withGenre {
 entity Books : withGenre { ... }
 ```
 
-The detailed syntax of `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
+The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
 ```cds
 annotate AdminService.Books with @ams.attributes.genre: {
   attribute: 'Genre', element: (genre.name)
