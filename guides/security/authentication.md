@@ -484,10 +484,24 @@ In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows di
 Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid OAuth tokens created for the IAS application.
 
 Sending the test request 
+
+<div class="java">
+
 ```sh
 curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
             /odata/v4/CatalogService/Books --verbose
 ```
+
+</div>
+
+<div class="node">
+
+```sh
+curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
+             /odata/v4/catalog/Books --verbose
+```
+
+</div>
 
 as anonymous user without a token results in a `401 Unauthorized` as expected.
 
@@ -584,11 +598,25 @@ The request returns with a valid IAS token which is suitable for authentication 
 
 The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
 
+<div class="java">
+
 ```sh
 curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.cert.<landscape-domain> \
          /odata/v4/CatalogService/Books
 ```
+
+</div>
+
+<div class="node">
+
+```sh
+curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
+  https://<org>-<space>-bookshop-srv.cert.<landscape-domain> \
+         /odata/v4/catalog/Books
+```
+
+</div>
 
 The response should contain the queried books accordingly (HTTP response code `200`).
 
@@ -993,7 +1021,7 @@ The request returns with a valid XSUAA token which is suitable to pass authentic
 {"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
 ```
 
-With the token for the technical user, you should be able to access any endpoint, which has no specific role requirements:
+With the token for the technical user, you should be able to access endpoints, which has no specific role requirements:
 
 <div class="java">
 
