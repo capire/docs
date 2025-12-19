@@ -41,7 +41,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 ```cds
 namespace capire.bookshop;
-using { managed, cuid } from `@sap/cds/common`;
+using { managed, cuid } from '@sap/cds/common';
 aspect primary : managed, cuid {}
 
 entity Books : primary {
@@ -85,7 +85,7 @@ The following literals can be used in CDL (mostly as in JavaScript, Java, and SQ
 <!-- cds-mode: ignore; values only, no valid CDS file -->
 ```cds
 true , false , null        // as in all common languages
-11 , 2.4 , 1e3, 1.23e-11   // for numbers
+11 , 2.4 , 1e3 , 1.23e-11  // for numbers
 'A string''s literal'      // for strings
 `A string\n paragraph`     // for strings with escape sequences
 { foo:'boo', bar:'car' }   // for records
@@ -129,6 +129,10 @@ entity DocumentedEntity {
   // ...
 }
 ```
+
+::: tip
+These annotations are illustrative only and are not defined nor have any meaning beyond this example.
+:::
 
 Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`, are supported. Line endings are normalized. If you don't want a line ending at that position, end a line with a backslash (`\`). For string literals inside triple backticks, indentation is stripped and tagging is possible.
 
@@ -238,7 +242,7 @@ context scoped {
 
 You can define types and entities with other definitions' names as prefixes:
 
-```cds
+```cds [prefixes.cds]
 namespace foo.bar;
 entity Foo {}           //> foo.bar.Foo
 entity Foo.Bar {}       //> foo.bar.Foo.Bar
@@ -248,7 +252,7 @@ type Foo.Bar.Car {}     //> foo.bar.Foo.Bar.Car
 
 #### Fully Qualified Names
 
-A model ultimately is a collection of definitions with unique, fully qualified names. For example, the second model above would compile to this [CSN](./csn):
+A model ultimately is a collection of definitions with unique, fully qualified names. For example, the model in `contexts.cds` would compile to the following [CSN](./csn):
 
 ::: code-group
 
@@ -478,7 +482,7 @@ entity Bar {
 
 An element definition can be prefixed with modifier keyword `virtual`. This keyword indicates that this element isn't added to persistent artifacts, that is, tables or views in SQL databases. Virtual elements are part of OData metadata.
 
-By default, virtual elements are annotated with `@Core.Computed: true`, not writable for the client and will be [silently ignored](../guides/providing-services#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable. Further, during read requests, you need to provide values for all virtual elements. You can do this by using post-processing in an `after` handler.
+By default, virtual elements are annotated with `@Core.Computed: true`, not writable for the client and will be [silently ignored](../guides/services/constraints#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable. Further, during read requests, you need to provide values for all virtual elements. You can do this by using post-processing in an `after` handler.
 
 ```cds
 entity Employees {
@@ -635,7 +639,7 @@ type Complex {
 If the element has an enum type, you can use the enum symbol instead of a literal value:
 ```cds
 type Status : String enum {open; closed;}
-entity Order {
+entity Orders {
   status : Status default #open;
 }
 ```
@@ -646,7 +650,7 @@ entity Order {
 If you want to base an element's type on another element of the same structure, you can use the `type of` operator.
 
 ```cds
-entity Author {
+entity Authors {
   firstname : String(100);
    lastname : type of firstname; // has type "String(100)"
 }
@@ -681,7 +685,7 @@ For string types, declaration of actual values is optional; if omitted, the actu
 
 ```cds
 type Gender : String enum { male; female; non_binary = 'non-binary'; }
-entity Order {
+entity Orders {
   status : Integer enum {
     submitted =  1;
     fulfilled =  2;
@@ -691,7 +695,7 @@ entity Order {
 }
 ```
 
-To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/providing-services#assert-range).
+To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assert-range).
 For localization of enum values, model them as [code list](./common#adding-own-code-lists).
 
 <br>
@@ -852,7 +856,51 @@ Result result = service.run(Select.from("UsingView"), params);
 [Learn more about how to expose views with parameters in **Services - Exposed Entities**.](#exposed-entities){ .learn-more}
 [Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../advanced/hana){ .learn-more}
 
+### Runtime Views { #runtimeviews }
 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+
+Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
+
+In CAP Java, runtime views are enabled by default, in Node.js enable them via <Config>cds.features.runtime_views: true</Config>.
+
+[Learn more about runtime views in CAP Java.](../java/working-with-cql/query-execution#runtimeviews) {.learn-more}
+
+By default, runtime views are translated into _Common Table Expressions_ (CTEs) and sent with the query to the database.
+
+For example, given the following CDS model and query:
+
+```cds
+entity Books {
+  key ID     : UUID;
+      title  : String;
+      stock  : Integer;
+      author : Association to one Authors;
+}
+@cds.persistence.skip
+entity BooksWithLowStock as projection on Books {
+    ID, title, author.name as author
+} where stock < 10; // makes the view read only
+```
+```sql
+SELECT from BooksWithLowStock where author = 'Kafka'
+```
+
+The runtime translates the view definition into a _Common Table Expression_ (CTE) and sends it with the query to the database.
+
+```sql
+WITH BOOKSWITHLOWSTOCK_CTE AS (
+    SELECT B.ID,
+           B.TITLE,
+           A.NAME AS "AUTHOR"
+      FROM BOOKS B
+      LEFT OUTER JOIN AUTHOR A ON B.AUTHOR_ID = A.ID
+     WHERE B.STOCK < 10
+)
+SELECT ID, TITLE, AUTHOR AS "author"
+  FROM BOOKSWITHLOWSTOCK_CTE
+ WHERE A.NAME = ?
+```
 
 ## Associations
 
@@ -947,6 +995,7 @@ entity Emp2Addr {
 ```
 
 [Learn more about **Managed Compositions for Many-to-many Relationships**.](#for-many-to-many-relationships){.learn-more}
+[Watch a short video by DJ Adams to see an example of how a link entity can be used.](https://www.youtube.com/shorts/yGg3YD1weIA){.learn-more}
 
 
 <div id="aftermanytomany" />
@@ -975,13 +1024,14 @@ entity Orders.Items {
 ```
 
 :::info Contained-in relationship
-Essentially, Compositions are the same as _[associations](#associations)_, just with the additional information that this association represents a _contained-in_ relationship so the same syntax and rules apply in their base form.
+Essentially, Compositions are the same as _[associations](#associations)_, just with the additional information that this association represents a _contained-in_ relationship; so the same syntax and rules apply in their base form.
 :::
 
 ::: warning Limitations of Compositions of one
 Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
+See the [Keep it Simple, Stupid](/guides/domain-modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](/guides/domain-modeling#prefer-flat-models) section.
 :::
 
 ### Managed Compositions of Aspects {#managed-compositions}
@@ -1034,7 +1084,7 @@ aspect OrderItems {
 
 #### Default Target Cardinality
 
-If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one*.
+If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one* for the backlink.
 
 #### For Many-to-many Relationships
 
@@ -1866,19 +1916,19 @@ exposing entities.
 
 ```cds
 service CatalogService {
-  entity Product as projection on data.Products {
+  entity Products as projection on data.Products {
     *, created.at as since
   } excluding { created };
 }
 service MyOrders {
   //> $user only implemented for SAP HANA
-  entity Order as select from data.Orders { * } where buyer=$user.id;
-  entity Product as projection on CatalogService.Product;
+  entity Orders as select from data.Orders { * } where buyer=$user.id;
+  entity Products as projection on CatalogService.Products;
 }
 ```
 
 ::: tip
-You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which, will be enforced by the CAP runtimes in Java and Node.js.
+You can optionally add annotations such as `@readonly` or `@insertonly` to exposed entities, which will be enforced by the CAP runtimes in Java and Node.js.
 :::
 
 Entities can be also exposed as views with parameters:
@@ -2046,7 +2096,7 @@ Within service definitions, you can additionally specify `actions` and `function
 
 ```cds
 service MyOrders {
-  entity Order { /*...*/ };
+  entity Orders { /*...*/ };
   // unbound actions / functions
   type cancelOrderRet {
     acknowledge: String enum { succeeded; failed; };

@@ -88,8 +88,7 @@ The more we succeeded in capturing intent over imperative implementations, the m
 
 We use CDS as our ubiquitous modelling language, with CDS Aspects giving us the means to separate core domain aspects from generic aspects. CDS's human-readable nature fosters collaboration of developers and domain experts.
 
-As CDS models are used to fuel generic providers — the database as well as application services — we ensure the models are applied in the implementation. And as coding is minimized we can more easily refine and revise our models, without having to refactor large boilerplate code based.
-
+As CDS models are used to fuel generic providers — the database as well as application services — we ensure the models are applied in the implementation. And as coding is minimized we can more easily refine and revise our models, without having to refactor large boilerplate codebases.
 
 
 
@@ -230,9 +229,9 @@ Note:
 - **Namespaces are optional** — use namespaces if your models might be reused in other projects; otherwise, you can go without namespaces.
 - The **reverse domain name** approach works well for choosing namespaces.
 
-::: warning
+::: warning Avoid names that could change
 
-Avoid short-lived ingredients in namespaces, or names in general, such as your current organization's name, or project code names.
+Don't use short-lived ingredients in namespaces, or names in general, such as your current organization's name, or project code names.
 
 :::
 
@@ -341,7 +340,7 @@ It is an unfortunate anti pattern to validate UUIDs, such as for compliance to [
 
 On the same note, converting UUID values obtained as strings from the database into binary representations such as `java.lang.UUID`, only to render them back to strings in responses to HTTP requests, is useless overhead.
 
-::: warning
+::: warning In summary:
 
 * Avoid unnecessary assumptions, for example, about uppercase or lowercase
 * Avoid useless conversions, for example, from strings to binary and back
@@ -614,9 +613,9 @@ entity Books : NamedAspect { ... }
 
 [Learn more about the usage of aspects in the _Aspect-oriented Modeling_ section.](../cds/aspects).{ .learn-more}
 
-::: tip
+::: tip Consumers always see effective models
 
-Consumers always see the merged effective models, with the separation into aspects fully transparent to them.
+The separation into aspects is fully transparent to consumers.
 
 :::
 
@@ -756,7 +755,7 @@ entity Books.texts {
 
 Essentially, this is also what CAP generates behind the scenes, plus many more things to ease working with localized data and serving it out of the box.
 
-::: tip
+::: tip `localized` keeps models comprehensible
 By generating `.texts` entities and associations behind the scenes, CAP's **out-of-the-box support** for `localized` data avoids polluting your models with doubled numbers of entities, and detrimental effects on comprehensibility.
 :::
 
@@ -816,7 +815,6 @@ Managed data fields are filled in automatically and are write-protected for exte
 In case of `UPSERT` operations, the handlers for `@cds.on.update` are executed, but not the ones for `@cds.on.insert`.
 :::
 
-Domain Modeling > Managed Data {style="margin-bottom: 0; font-size:70%; font-style: italic;"}
 ### Aspect _`managed`_ {style="margin-top: 0;"}
 
 You can also use the [pre-defined aspect `managed`](../cds/common#aspect-managed) from [@sap/cds/common](../cds/common) to get the very same as by the definition above:

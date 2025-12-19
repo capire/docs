@@ -158,17 +158,17 @@ READ requests without specifying any temporal query parameter will automatically
 
 For example, assumed the following OData query to read all employees with their current work assignments is processed on March 2019:
 
-```cds
+```http
 GET Employees?
 $expand=jobs($select=role&$expand=dept($select=name))
 ```
 
-The values of `$at`, and so also the respective session variables, would be set to, for example:
+The values of `$valid`, and so also the respective session variables, would be set to, for example:
 
 |              |                                  |                            |
 |--------------|----------------------------------|----------------------------|
-| `$at.from` = | _session_context('valid-from')_= | _2019-03-08T22:11:00Z_     |
-| `$at.to` =   | _session_context('valid-to')_ =  | _2019-03-08T22:11:00.001Z_ |
+| `$valid.from` = | _session_context('valid-from')_= | _2019-03-08T22:11:00Z_     |
+| `$valid.to` =   | _session_context('valid-to')_ =  | _2019-03-08T22:11:00.001Z_ |
 
 The result set would be:
 
@@ -188,17 +188,17 @@ The result set would be:
 
 We can run the same OData query as in the previous sample to read a snapshot data as valid on January 1, 2017 using the `sap-valid-at` query parameter:
 
-```cds
+```http
 GET Employees?sap-valid-at=date'2017-01-01'
 $expand=jobs($select=role&$expand=dept($select=name))
 ```
 
-The values of `$at` and hence the respective session variables would be set to, for example:
+The values of `$valid` and hence the respective session variables would be set to, for example:
 
 |              |                                  |                            |
 |--------------|----------------------------------|----------------------------|
-| `$at.from` = | _session_context('valid-from')_= | _2017-01-01T00:00:00Z_     |
-| `$at.to` =   | _session_context('valid-to')_ =  | _2017-01-01T00:00:00.001Z_ |
+| `$valid.from` = | _session_context('valid-from')_= | _2017-01-01T00:00:00Z_     |
+| `$valid.to` =   | _session_context('valid-to')_ =  | _2017-01-01T00:00:00.001Z_ |
 
 The result set would be:
 
@@ -218,7 +218,7 @@ Time-travel queries aren't supported on SQLite due to the lack of *session_conte
 
 We can run the same OData query as in the previous sample to read all history of data as valid since 2016 using the `sap-valid-from` query parameter:
 
-```cds
+```http
 GET Employees?sap-valid-from=date'2016-01-01'
 $expand=jobs($select=role&$expand=dept($select=name))
 ```
@@ -238,7 +238,7 @@ The result set would be:
 
 > You would add `validFrom` in such time-period queries, for example:
 
-```cds
+```http
 GET Employees?sap-valid-from=date'2016-01-01'
 $expand=jobs($select=validFrom,role,dept/name)
 ```
@@ -265,7 +265,7 @@ entity Departments : temporal {/*...*/}
 
 When reading employees with all history since 2016, for example:
 
-```cds
+```http
 GET Employees?sap-valid-from=date'2016-01-01'
 $expand=jobs(
   $select=validFrom,role&$expand=dept(

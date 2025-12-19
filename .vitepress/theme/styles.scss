@@ -115,11 +115,11 @@ main {
     // Custom list styles for nested items
     ul {
       list-style-type: disc; // First level: filled circle
-      
+
       ul {
         list-style-type: circle; // Second level: empty circle
-        
-        
+
+
         ul {
           list-style-type: square; // Third level: square
         }
@@ -298,6 +298,11 @@ main {
     font-size: 95%;
     border-width: 0 0 0 7px;
     border-radius: 14px;
+
+    .learn-more {
+      margin-top: 10px;
+      margin-bottom: -5px;
+    }
 
     &.note {
       background-color: #f6f6f6;
@@ -530,7 +535,19 @@ a.learn-more, p.learn-more, .learn-more {
   }
 }
 
-.VPBadge { white-space: nowrap; }
+.VPBadge {
+  &.tip { 
+    background-color: #ced; color: #031; .dark & { 
+      background-color: #031; color: #9ca; 
+    } 
+  }
+  margin-top: 3px !important;
+  padding: 0 0.7em !important;
+  font-size: 80%;
+  line-height: 1.5em; 
+  border-radius: 1.5em;
+  white-space: nowrap; 
+}
 
 html.java {
   & .node {
@@ -551,15 +568,14 @@ html.node {
   pre.log:focus {
     min-width: fit-content;
     padding-right: 40px;
-    z-index: 1;  // draw over outline
+    z-index: 1; position: relative; // draw over outline
   }
   table:hover,
   table:focus {
     min-width: fit-content;
   }
-  tr { // make wide rows go over outline, not below it
-    z-index: 1;
-    position: relative;
+  tr {
+    z-index: 1; position: relative;  // draw wide rows over outline
   }
   [class*='language-'] pre {
     overflow: hidden !important;

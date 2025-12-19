@@ -188,6 +188,9 @@ This strategy creates a user that passes all authorization checks. It's meant fo
 
 This authentication strategy uses basic authentication with pre-defined mock users during development.
 
+::: warning Mocked authentication is not suitable for production!
+:::
+
 > **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
 
 **Configuration:** Choose this strategy as follows:
@@ -254,47 +257,9 @@ If you want to restrict these additional logins, you need to overwrite the defau
   }
 ```
 
-
-### Basic Authentication {#basic }
-
-This authentication strategy uses basic authentication to use mock users during development.
-
-> **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
-
-**Configuration:** Choose this strategy as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": "basic"
-  }
-}
-```
+::: tip
+The pre-defined mock users can be deactivated by using kind `basic` instead of `mocked`. In that case configure users yourself, as described previously.
 :::
-
-You can optionally configure users as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": {
-      "kind": "basic",
-      "users": {
-        "<user.id>": {
-          "password": "<password>",
-          "roles": [ "<role-name>", ... ],
-          "attr": { ... }
-        }
-      }
-    }
-  }
-}
-```
-:::
-
-In contrast to [mocked authentication](#mocked), no default users are automatically added to the configuration.
 
 
 ### JWT-based Authentication { #jwt }
@@ -486,7 +451,7 @@ Both caches are enabled by default.
 
 The _signature cache_ can be configured or deactivated via <Config keyOnly>cds.requires.auth.config</Config> (which is passed through to `@sap/xssec`).
 
-[Learn more about signature cache and its configuration.](https://www.npmjs.com/package/@sap/xssec#signature-cache)[.learn-more]
+[Learn more about signature cache and its configuration.](https://www.npmjs.com/package/@sap/xssec#signature-cache){}.learn-more}
 
 The _token decode cache_, on the other hand, can only be configured programmatically during bootstrapping, for example in a [custom `server.js`](cds-server#custom-server-js) file, as follows:
 ```js

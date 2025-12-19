@@ -472,6 +472,16 @@ In the third terminal, subscribe to two tenants using one of the following metho
 
    :::
 
+   ::: tip Username defaults to `yves` on localhost
+   When subscribing to tenants on localhost, you can omit the `-u` option. The command automatically uses `yves` (the default mock user) with an empty password:
+
+   ```sh
+   cds subscribe t1 --to http://localhost:4005
+   ```
+
+   If you've logged in with `cds login`, that user takes precedence. To override, explicitly specify `-u <username>`.
+   :::
+
    > Run `cds help subscribe` to see all available options.
 
 <!--
@@ -703,19 +713,19 @@ Now, open or refresh <http://localhost:4004/#Books-manage> again as _alice_ and 
 
 In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deployment/to-cf) and [deployment to Kyma](../deployment/to-kyma) guides.
 
-Once: Add SAP HANA Cloud, XSUAA, and [App Router](../deployment/to-cf#add-app-router) configuration. The App Router acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
+**Once**, add SAP HANA Cloud and XSUAA configuration:
 
 ```sh
 cds add hana,xsuaa
 ```
 
-If you intend to serve UIs you can easily set up the SAP Cloud Portal service:
+If you intend to serve UIs you can set up the SAP Cloud Portal service:
 
 ```sh
 cds add portal
 ```
 
-Once: add a **deployment descriptor**:
+**Once**, add a **deployment descriptor**:
 
 ::: code-group
 
@@ -729,23 +739,18 @@ cds add kyma
 
 :::
 
-::: code-group
+Now deploy the application:
 
-```sh [Cloud Foundry]
+```sh
 cds up
 ```
 
-```sh [Kyma]
-cds up --to k8s
-```
+:::tip For manual setups, ensure the metadata container (`t0`) is unique
+
+If you’re not running `cds-mtx upgrade *` as a [Cloud Foundry hook](#run-as-cloud-foundry-hook) (as set up by `cds add multitenancy`) and instead use a custom setup, deploy the MTX sidecar with a single instance for the initial rollout. This avoids conflicts when `t0` is created.
 
 :::
 
-:::tip Ensure a unique metadata container
-To prevent potential conflicts during the initial creation of the MTXS metadata container (`t0`), it is recommended to perform the initial deployment with only one instance of the MTXS sidecar.
-
-Alternatively, you can run `cds-mtx upgrade t0` beforehand, such as in a [Cloud Foundry hook](#run-as-cloud-foundry-hook).
-:::
 
 
 ### Subscribe
@@ -897,14 +902,14 @@ For faster turnaround cycles in development and testing, you can run the app loc
 To achieve this, bind your SaaS app and the MTX sidecar to its required cloud services, for example:
 
 ```sh
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-srv
 ```
 
 For testing the sidecar, make sure to run the command there as well:
 
 ```sh
 cd mtx/sidecar
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-mtx
 ```
 
 To generate the SAP HANA HDI files for deployment, go to your project root and run the build:
@@ -1172,7 +1177,7 @@ modules:
       TENANT_HOST_PATTERN: ^(.*)-${default-uri}
 ```
 
-[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more style="margin-top: 10px;"}
+[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more}
 
 
 :::
@@ -1208,8 +1213,8 @@ In this case, the application can use its static local model without requesting 
 cds:
   model:
     provider:
-      extensibility: false // [!code focus]
-      toggles: false // [!code focus]
+      extensibility: false # [!code focus]
+      toggles: false # [!code focus]
 
 ```
 
@@ -1264,63 +1269,6 @@ The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
 
-<!--
-
-## Multiple Microservices
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
-
-## Sharing One Database
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
--->
-
-<!--
-<div class="impl node">
-
-Use CLI option `--without-sidecar` to do so, e.g.:
-
-```sh
-cds add multitenancy --without-sidecar
-```
-
-::: details See what this adds to your Node.js project...
-
-1. Adds package `@sap/cds-mtxs` to your project:
-
-   ```jsonc
-   {
-      "dependencies": { // [!code focus]
-         "@sap/cds-mtxs": "^1" // [!code focus]
-      },
-   }
-   ```
-
-2. Adds these lines to your project's _package.json_ to enable multitenancy with sidecar:
-
-   ```jsonc
-   {
-      "cds": {  // [!code focus]
-         "requires": { "multitenancy": true }, // [!code focus]
-         "profile": "with-mtx-sidecar" // [!code --]
-      },
-      "dependencies": {
-         "@sap/cds-mtxs": "^1"
-      },
-   }
-   ```
-
-3. ~~**Doesn't** add a sidecar subproject at `mtx/sidecar`~~
-:::
-
-</div>
- -->
 
 ## Next Steps
 

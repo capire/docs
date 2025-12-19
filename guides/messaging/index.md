@@ -644,3 +644,17 @@ S4Bupa.on ('BusinessPartner.Changed', msg => {...})
 Find more detailed information specific to receiving events from SAP S/4HANA in this separate guide:
 [&rarr; **_Receiving Events from SAP S/4HANA_**](./s4)
 :::
+
+
+## [Task Queues](task-queues)
+
+The _Outbox Pattern_ is a reliable strategy used in distributed systems to ensure that messages or events are consistently recorded and delivered, even in the face of failures.
+This pattern, however, can not only be applied to outbound messages, but to inbound messages and server-internal background tasks as well.
+The core principle remains the same:
+1. Persist the message (or _task_) in the database -- using the same transaction as the triggering action, if applicable
+2. Process it asynchronously afterwards -- incl. retries, if necessary
+
+::: tip Read the guide
+Find additional information about modeling task queues in this guide:
+[&rarr; **_Task Queues_**](task-queues)
+:::

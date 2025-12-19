@@ -458,10 +458,10 @@ cds bind --to my-service,redis-cache:my-key,bookshop-xsuaa --credentials \
   '{ "my-service": { "onpremise_proxy_host": "localhost" }, "redis-cache:my-key":{ "hostname": "localhost", "port": 1234 }}'
 ```
 
-Use the service instance name in combination with the option `--to-app-services` if you want to create bindings for all service instances of your application:
+Use the service instance name in combination with the option `-a` if you want to create bindings for all service instances of your application:
 
 ```sh
-cds bind --to-app-services bookshop-srv --credentials \
+cds bind -a bookshop-srv --credentials \
   '{ "my-service": { "onpremise_proxy_host": "localhost" }, "redis-cache":{ "hostname": "localhost", "port": 1234 }}'
 ```
 

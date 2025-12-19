@@ -433,7 +433,7 @@ So, the authorization for the requests in the example is delegated as follows:
 
 | Request Target                                         |          Authorization Entity          |
 |--------------------------------------------------------|:--------------------------------------:|
-| `IssuesService.Components`                             |           <Na/><sup>1</sup>            |
+| `IssuesService.Components`                             | `IssuesService.Components`<sup>3</sup> |
 | `IssuesService.Issues`                                 |           <Na/><sup>1</sup>            |
 | `IssuesService.Categories`                             | `IssuesService.Categories`<sup>2</sup> |
 | `IssuesService.Components[<id>].issues`                | `IssuesService.Components`<sup>3</sup> |
@@ -830,19 +830,16 @@ service CustomerService {
 <!--- % include _code sample='services-auth.cds' %} -->
 ::: code-group
 ```cds [services-auth.cds]
-service ReviewsService @(requires: 'authenticated-user'){
-  /*...*/
-}
+annotate ReviewsService with @(requires: 'authenticated-user');
 
-service CustomerService @(requires: 'authenticated-user'){
-  entity Orders @(restrict: [
-    { grant: ['READ','WRITE'], to: 'admin' },
-    { grant: 'READ', where: 'buyer = $user' },
-  ]){/*...*/}
-  entity Approval @(restrict: [
-    { grant: 'WRITE', where: '$user.level > 2' }
-  ]){/*...*/}
-}
+annotate CustomerService with @(requires: 'authenticated-user');
+annotate CustomerService.Orders with @(restrict: [
+  { grant: ['READ','WRITE'], to: 'admin' },
+  { grant: 'READ', where: 'buyer = $user' },
+]);
+annotate CustomerService.Approval with @(restrict: [
+  { grant: 'WRITE', where: '$user.level > 2' }
+]);
 ```
 :::
 
