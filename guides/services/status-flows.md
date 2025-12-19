@@ -32,7 +32,7 @@ In CAP Node.js support for flows is built-in and available out of the box. For C
 
 The following example is taken from the [@capire/xtravels](https://github.com/capire/xtravels) sample application, in which we want to model a status flow for travel requests as depicted below:
 
-![A flow diagram showing three status states connected by arrows. The leftmost oval contains the word Open. An arrow labeled accept points from Open to an oval containing Accepted at the top right. Another arrow labeled reject points from Open to an oval containing Canceled at the bottom right.](assets/flows/xtravels-flow-simple.svg)
+![A flow diagram showing three status states connected by arrows. The leftmost oval contains the word Open. An arrow labeled accept points from Open to an oval containing Accepted at the top right. Another arrow labeled reject points from Open to an oval containing Canceled at the bottom right.](../assets/flows/xtravels-flow-simple.svg)
 
 We can easily model this flow in CDS as follows:
 
@@ -136,7 +136,7 @@ Use the target state `$flow.previous` to return a previous state from a current 
 
 The following example introduces a `Blocked` state with two possible previous states, `Open` and `InReview`, and an `unblock` action that restores the previous state.
 
-![The graphic is explained in the accompanying text.](assets/flows/xtravels-flow-previous.svg)
+![The graphic is explained in the accompanying text.](../assets/flows/xtravels-flow-previous.svg)
 
 ::: code-group
 ```cds [srv/flow-previous.cds]

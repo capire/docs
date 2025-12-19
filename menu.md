@@ -22,20 +22,15 @@
 
 ## [Providing Services](guides/providing-services)
 
-  ### [Intro: Core Concepts](guides/providing-services#introduction)
+  ### [Core Concepts](guides/providing-services#introduction)
   ### [Service Definitions](guides/providing-services#service-definitions)
-  ### [Generic Providers](guides/providing-services#generic-providers)
-  ### [Input Validation](guides/providing-services#input-validation)
+  ### [Served out-of-the-box](guides/providing-services#generic-providers)
+  ### [Constraints](guides/services/constraints)
+  ### [Status Flows](guides/services/status-flows)
   ### [Custom Logic](guides/providing-services#custom-logic)
   ### [Actions & Functions](guides/providing-services#actions-functions)
   ### [Serving Media Data](guides/providing-services#serving-media-data)
   ### [Best Practices](guides/providing-services#best-practices)
-
-
-## [Constraints](guides/constraints)
-
-## [Status Flows](guides/status-flows)
-
 
 ## [Consuming Services](guides/using-services)
 
