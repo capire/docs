@@ -800,7 +800,7 @@ CAP supports various declarative techniques to express custom logic without codi
 
 - [Declarative Constraints](./services/constraints) allow to annotate your models and have the respective checks still be executed and enforced by generic runtimes, with the following annotations:
 
-  - [`@assert`](./services/constraints#assert), incl. derivates:
+  - [`@assert`](./services/constraints#assert-constraint), incl. derivates:
     - [`@assert.format`](./services/constraints#assert-format)
     - [`@assert.range`](./services/constraints#assert-range)
     - [`@assert.target`](./services/constraints#assert-target)
