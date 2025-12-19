@@ -639,7 +639,7 @@ type Complex {
 If the element has an enum type, you can use the enum symbol instead of a literal value:
 ```cds
 type Status : String enum {open; closed;}
-entity Order {
+entity Orders {
   status : Status default #open;
 }
 ```
@@ -650,7 +650,7 @@ entity Order {
 If you want to base an element's type on another element of the same structure, you can use the `type of` operator.
 
 ```cds
-entity Author {
+entity Authors {
   firstname : String(100);
    lastname : type of firstname; // has type "String(100)"
 }
@@ -685,7 +685,7 @@ For string types, declaration of actual values is optional; if omitted, the actu
 
 ```cds
 type Gender : String enum { male; female; non_binary = 'non-binary'; }
-entity Order {
+entity Orders {
   status : Integer enum {
     submitted =  1;
     fulfilled =  2;
@@ -1916,14 +1916,14 @@ exposing entities.
 
 ```cds
 service CatalogService {
-  entity Product as projection on data.Products {
+  entity Products as projection on data.Products {
     *, created.at as since
   } excluding { created };
 }
 service MyOrders {
   //> $user only implemented for SAP HANA
-  entity Order as select from data.Orders { * } where buyer=$user.id;
-  entity Product as projection on CatalogService.Product;
+  entity Orders as select from data.Orders { * } where buyer=$user.id;
+  entity Products as projection on CatalogService.Products;
 }
 ```
 
@@ -2096,7 +2096,7 @@ Within service definitions, you can additionally specify `actions` and `function
 
 ```cds
 service MyOrders {
-  entity Order { /*...*/ };
+  entity Orders { /*...*/ };
   // unbound actions / functions
   type cancelOrderRet {
     acknowledge: String enum { succeeded; failed; };
