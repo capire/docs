@@ -400,7 +400,7 @@ For local development, `@sap/ams-dev` needs to compile the DCL files to Data Con
 
 Additionally, `@sap/ams` provides multiple build-time features:
 
-- Validate `ams.attributes` annotations for type coherence against the AMS schema.
+- Validate `ams.attributes` annotations for type coherence against the DCL schema.
 - Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
@@ -491,11 +491,8 @@ aspect withGenre {
 entity Books : withGenre { ... }
 ```
 
-<<<<<<< Updated upstream
-The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
-=======
 <!--
-The detailed syntax of `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
+The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
 >>>>>>> Stashed changes
 ```cds
 annotate AdminService.Books with @ams.attributes.genre: {
