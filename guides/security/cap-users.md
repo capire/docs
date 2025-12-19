@@ -30,7 +30,7 @@ This guide introduces to CAP user abstraction and role assignments.
 ## CAP User Abstraction { #claims }
 
 A successful authentication results in a CAP user representation reflecting the request user in a uniform way.
-Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to fully decouple authorization and business logic from pluggable authentication strategies.
+Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to completely decouple authorization and business logic from pluggable authentication strategies.
 It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
 
 ![CAP Userse](./assets/cap-users.drawio.svg){width="650px" }
@@ -95,7 +95,7 @@ The user types are designed to support various flows, such as:
 - UI requests executed on behalf of a business user interacting with the CAP backend service.
 - Backend processing that utilizes platform services on behalf of the technical user of the subscriber tenant.
 - Asynchronously received messages that process data on behalf of the technical user of a subscriber tenant.
-- Background tasks that operate on behalf of the technical provider tenant.
+- Background tasks that operate on behalf of the technical user of the provider tenant.
 - etc.
 
 Find more details about how to [switch the user context](#switching-users) during request processing.
@@ -103,25 +103,28 @@ Find more details about how to [switch the user context](#switching-users) durin
 
 ### Roles { #roles}
 
-As a basis for access control, you can design application specific CAP roles which are assigned to users at runtime.
-**A CAP role should reflect _how_ a user can interact with the application at an operational level**, rather than a fine-grained event at a purely technical level.
+CAP roles, which are defined on CDS resources such as services and entities, down to the events allowed on them, form the basis of [static access control](authorization#role-based-access-control).
+Technically, the request user is restricted to the resources for which an appropriate CAP role is assiged.
+**Such roles should reflect basic operations performed by users interacting with the application**.
+
+In the following example, there are two different basic operations defined on domain level: 
+- `ReportIssues` describes users which view existing issues, report new issues and confirm provided solutions.
+- `ProcessIssues` describes users which process issues. They also write notes for customers.
 
 ```cds
 annotate Issues with @(restrict: [
-    { grant: ['READ','WRITE'],
-      to: 'ReportIssues',
-      where: ($user = CreatedBy) },
-    { grant: ['READ'],
-      to: 'ReviewIssues' },
-    { grant: ['READ', 'WRITE'], 
-      to: 'ManageIssues' }
+    { grant: ['READ','report', 'confirm'], to: 'ReportIssues' },
+    { grant: ['READ', 'WRITE'], to: 'ProcessIssues' }
+]);
+
+annotate Notes with @(restrict: [
+    { grant: ['READ'] }, // any
+    { grant: ['READ', 'WRITE'], to: 'ProcessIssues' }
 ]);
 ```
 
-For instance, the role `ReportIssues` allows to work with the `Issues` created by the own user, whereas a user with role `ReviewIssues` restricted to read `Issues`.
-
-CAP roles represent basic building blocks for authorization rules that are defined by the application developers who have in-depth domain knowledge.
-Independently of that, user administrators combine CAP roles in higher-level policies and assign them to business users in the platform's central authorization management solution.
+CAP roles represent basic building blocks of authorization rules that are defined by application developers _at design time_.
+Independently of that, user administrators combine CAP roles in higher-level policies and assign them to business users in the platform's central authorization management solution _at runtime_.
 
 Dynamic assignments of roles to users can be done by 
 - [AMS roles](#roles-assignment-ams) in case of [IAS authentication](./authentication#ias-auth).
@@ -130,6 +133,7 @@ Dynamic assignments of roles to users can be done by
 ::: info
 CDS-based authorization deliberately avoids technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the business domain of applications.
 :::
+
 
 #### Pseudo Roles { #pseudo-roles}
  
@@ -174,7 +178,7 @@ All technical clients that have access to the application's XSUAA or IAS service
 
 ### Model References
 
-The object representation of the resolved CAP user is attached to the current request context and has an impact on the request flow for instance with regards to
+The object representation of the resolved CAP user is attached to the current request context and has an impact on the request flow, for instance with regard to
 - [authorizations](./authorization#restrictions)
 - [enriching business data](../domain-modeling#managed-data) with user data
 - setting [DB session variables](../db-feature-comparison#session-variables)
@@ -227,7 +231,7 @@ TODO
 </div>
 
 ::: warning
-Refreign from activating user tracing in productive systems.
+Refrain from activating user tracing in productive systems.
 :::
 
 ## Role Assignment with AMS { #roles-assignment-ams }
@@ -408,11 +412,11 @@ In general, AMS provides highly flexible APIs to define and enforce authorizatio
 ### Prepare CDS Model
 
 On the level of application domain, you can declaratively introduce access rules in the CDS model, enabling higher-level interaction flows with the entire application domain:
- - a [CAP role for AMS](#roles-for-ams) can span multiple domain services and entities, providing a holistic perspective on _how a user interacts with the domain data_.
+ - a [CAP role for AMS](#roles-for-ams) can span multiple services and entities, providing a holistic perspective on _how a user interacts with the domain data_.
  - a [CAP attribute for AMS](#attributes-for-ams) is typically cross-sectional and hence is defined on a domain-global level.
 
 The CDS model is fully decoupled from AMS policies which are defined on business level on top by external administrators.
-Hence, the **rules in the CAP model act as basic building blocks for higher-level businness rules** and therefore should have appropriate granularity.
+Hence, the **rules in the CAP model act as basic building blocks for higher-level business rules** and therefore should have appropriate granularity.
 
 
 #### CAP Roles for AMS { #roles-for-ams }
@@ -487,12 +491,18 @@ aspect withGenre {
 entity Books : withGenre { ... }
 ```
 
+<<<<<<< Updated upstream
 The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
+=======
+<!--
+The detailed syntax of `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
+>>>>>>> Stashed changes
 ```cds
 annotate AdminService.Books with @ams.attributes.genre: {
   attribute: 'Genre', element: (genre.name)
 };
 ```
+-->
 
 
 ### Prepare Base Policies { #policies }
@@ -739,11 +749,11 @@ Don't miss to add the policy files in sub folders of `ams/dcl` reflecting the na
 
 ### Cloud Deployment { #ams-deployment }
 
-If not done yet, prepare your project Cloud deployment as [eplained before](./authentication#ias-ready).
+If not done yet, prepare your project Cloud deployment as [explained before](./authentication#ias-ready).
 
 Policies can be automatically deployed to the AMS server during deployment of the application by means of AMS deployer provided by module `@sap/ams`.
 
-Enhancing the project with by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deyployment.
+Enhancing the project by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deployment.
 
 <div class="impl java">
 
@@ -768,7 +778,7 @@ Enhancing the project with by `cds add ams` automatically adds task e.g. in the 
 ```
 
 
-```json [srv/src/gen/policies/package.json - deyployer module]
+```json [srv/src/gen/policies/package.json - deployer module]
 {
   "name": "ams-dcl-content-deployer",
   "version": "3.0.0",
@@ -814,7 +824,7 @@ In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 ```
 
 
-```json [gen/policies/package.json - deyployer module]
+```json [gen/policies/package.json - deployer module]
 {
   "name": "ams-dcl-content-deployer",
   "version": "3.0.0",
@@ -895,7 +905,7 @@ You can log on to the bookshop test application with the test user and check tha
 
 ### Tracing
 
-You can verify a valid configfuration of the AMS plugin by the following log output:
+You can verify a valid configuration of the AMS plugin by the following log output:
 
 <div class="impl java">
 
@@ -984,7 +994,7 @@ c.s.c.s.a.l.PolicyEvaluationSlf4jLogger  : Policy evaluation result: {...,
 You can add general user information by applying [user tracing](#user-tracing).
 
 ::: tip
-It might be useful to investiagte the injected filter conditions by activating the query-trace (logger `com.sap.cds.persistence.sql`).
+It might be useful to investigate the injected filter conditions by activating the query-trace (logger `com.sap.cds.persistence.sql`).
 :::
 
 
@@ -1124,12 +1134,12 @@ Instead, an abstract [user representation](cap-users#claims) is attached to the 
 For example, both authorization enforcement and domain logic can depend on properties of the the current user.
 
 ::: warning
-Avoid writing custom code based on the raw authentication information such as dedicated XSUAA properties. 
+Avoid writing custom code against the raw authentication information such as dedicated XSUAA properties. 
 This undermines the decoupling between authentication strategy and your business logic.
 :::
 
 ::: tip
-In most casese, there is no need to write custom code dependent on the CAP user - **leverage CDS modelling whenever possible**.
+In most cases, there is no need to write custom code dependent on the CAP user - **leverage CDS modelling whenever possible**.
 :::
 
 
@@ -1308,7 +1318,7 @@ Here a combination of `user_name` and `origin` mapped to `$user` might be a feas
 
 This can be done by modifying `cds.middlewares`. 
 To modify the `cds.context.user` while still relying on existing generic middlewares, a new middleware must be registered after the `auth` middleware. 
-If you intend to manipulate the `cds.context.tenant` as well, the new middlware must run before `cds.context.model` is set for the current request.
+If you intend to manipulate the `cds.context.tenant` as well, the new middleware must run before `cds.context.model` is set for the current request.
 
 ::: details Sample implementation to override the user id
 
