@@ -95,7 +95,7 @@ service SomeService {
 
 #### Events to Auto-Exposed Entities { #events-and-auto-expose}
 
-In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be **auto-exposed** by the CDS compiler for some reason.
+In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](cdl#auto-exposed-entities) by the CDS compiler for some reason.
 Access to auto-exposed entities needs to be controlled in a specific way. Consider the following example:
 
 ```cds
