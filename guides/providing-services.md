@@ -772,43 +772,8 @@ Here's an overview table:
 -  Pessimistic locking is not supported by SQLite. H2 supports exclusive locks only.
 :::
 
-## Input Validation
-
-CAP runtimes provide generic input validation for incoming requests out of the box, based on the data types and constraints defined in CDS models. You can add custom input validation by...
-
-- [Declarative Constraints](./services/constraints) with the following annotations:
-  - [`@assert`](./services/constraints#assert), incl. derivates:
-    - [`@assert.format`](./services/constraints#assert-format)
-    - [`@assert.range`](./services/constraints#assert-range)
-    - [`@assert.target`](./services/constraints#assert-target)
-  - [`@mandatory`](./services/constraints#mandatory)
-  - [`@readonly`](./services/constraints#readonly)
-- [Programmatic Validations](#custom-logic) in custom event handlers
-
-> [!tip] 
-> Prefer declarative constraints over programmatic validations wherever possible, as they require no implementation coding and are automatically served by CAP runtimes in optimized ways.
-
-## [Constraints](services/constraints)
-
-Declarative constraints allow you to express conditions using CXL expressions that are validated automatically whenever data is written, greatly reducing the need for extensive custom code for input validation.
-
-::: tip Read the guide
-Find additional information about constraints in this guide:
-[&rarr; **_Constraints_**](services/constraints)
-:::
-
-## [Status-Transition Flows](services/status-flows)
-
-Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
-
-::: tip Read the guide
-Find additional information about modeling status-transition flows in this guide:<br>
-[&rarr; **_Status-Transition Flows_**](services/status-flows)
-:::
 
 ## Custom Logic
-
-
 
 As most standard tasks and use cases are covered by [generic service providers](#generic-providers), the need to add service implementation code is greatly reduced and minified, and hence the quantity of individual boilerplate coding.
 
@@ -821,6 +786,34 @@ The remaining cases that need custom handlers, reduce to real custom logic, spec
 - And more... In general, all the things not (yet) covered by generic handlers
 
 
+
+### Declarative Custom Logic
+
+CAP supports various declarative techniques to express custom logic without coding, in particular for input validation and status-transition flows.
+
+#### Status Transition Flows
+
+- [Status-Transition Flows](./services/status-flows.md) ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
+
+
+#### Input Validation
+
+- [Declarative Constraints](./services/constraints) allow to annotate your models and have the respective checks still be executed and enforced by generic runtimes, with the following annotations:
+
+  - [`@assert`](./services/constraints#assert), incl. derivates:
+    - [`@assert.format`](./services/constraints#assert-format)
+    - [`@assert.range`](./services/constraints#assert-range)
+    - [`@assert.target`](./services/constraints#assert-target)
+  - [`@mandatory`](./services/constraints#mandatory)
+  - [`@readonly`](./services/constraints#readonly)
+
+
+> [!tip] 
+> Prefer declarative constraints over programmatic validations wherever possible, as they require no implementation coding and are automatically served by CAP runtimes in optimized ways.
+
+
+
+### Custom Service Providers
 
 **In Node.js**, the easiest way to add custom implementations for services is through equally named _.js_ files placed next to a service definition's _.cds_ file:
 

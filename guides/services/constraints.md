@@ -243,7 +243,7 @@ annotate TravelService.Travels with {
 
 
 
-### `@assert .format`
+### `@assert.format`
 
 Allows you to specify a regular expression string (in ECMA 262 format in CAP Node.js and java.util.regex.Pattern format in CAP Java) that all string input must match.
 
@@ -254,7 +254,7 @@ entity Foo {
 ```
 
 
-### `@assert .range`
+### `@assert.range`
 
 Allows you to specify `[ min, max ]` ranges for elements with ordinal types &mdash; that is, numeric or date/time types. For `enum` elements, `true` can be specified to restrict all input to the defined enum values.
 
@@ -287,32 +287,9 @@ Support for open intervals and infinity is available for CAP Node.js since `@sap
 
 
 
-### `@assert .target`
+### `@assert.target`
 
-Annotate a [managed to-one association](../../cds/cdl#managed-associations) of a CDS model entity definition with the
-`@assert.target` annotation to check whether the target entity referenced by the association (the reference's target)
-exists. In other words, use this annotation to check whether a non-null foreign key input in a table has a corresponding
-primary key in the associated/referenced target table.
-
-You can check whether multiple targets exist in the same transaction. For example, in the `Books` entity, you could
-annotate one or more managed to-one associations with the `@assert.target` annotation. However, it is assumed that
-dependent values were inserted before the current transaction. For example, in a deep create scenario, when creating a
-book, checking whether an associated author exists that was created as part of the same deep create transaction isn't
-supported, in this case, you will get an error.
-
-The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
-Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
-non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](../databases#database-constraints) constraint must be used instead.
-
-If the reference's target doesn't exist, an HTTP response
-(error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
-content adheres to the standard OData specification for an error
-[response body](https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#sec_ErrorResponse).
-
-#### Example
-
-Add `@assert.target` annotation to the service definition as previously mentioned:
+Annotate a [managed to-one association](../../cds/cdl#managed-associations) with `@assert.target` to check whether the target entity referenced by the association (the reference's target) exists for a given input.
 
 ```cds
 entity Books {
@@ -328,7 +305,19 @@ entity Authors {
 }
 ```
 
-**HTTP Request** — *assume that an author with the ID `"796e274a-c3de-4584-9de2-3ffd7d42d646"` doesn't exist in the database*
+You can check whether multiple targets exist in the same transaction. For example, in the `Books` entity, you could
+annotate one or more managed to-one associations with the `@assert.target` annotation. However, it is assumed that
+dependent values were inserted before the current transaction. For example, in a deep create scenario, when creating a book, checking whether an associated author exists that was created as part of the same deep create transaction isn't supported, in this case, you will get an error.
+
+The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
+Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
+non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
+(ensure referential integrity), the [`@assert.integrity`](../databases#database-constraints) constraint must be used instead.
+
+If the reference's target doesn't exist, an HTTP response
+(error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
+content adheres to the standard OData specification for an error
+[response body](https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#sec_ErrorResponse).
 
 ```http
 POST Books HTTP/1.1

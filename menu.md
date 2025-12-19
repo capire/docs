@@ -24,9 +24,9 @@
 
   ### [Core Concepts](guides/providing-services#introduction)
   ### [Service Definitions](guides/providing-services#service-definitions)
-  ### [Served out-of-the-box](guides/providing-services#generic-providers)
-  ### [Constraints](guides/services/constraints)
+  ### [Served Out-of-the-Box](guides/providing-services#generic-providers)
   ### [Status Flows](guides/services/status-flows)
+  ### [Constraints](guides/services/constraints)
   ### [Custom Logic](guides/providing-services#custom-logic)
   ### [Actions & Functions](guides/providing-services#actions-functions)
   ### [Status-Transition Flows](guides/providing-services#status-transition-flows)
