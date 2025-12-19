@@ -2,7 +2,7 @@
 # layout: cds-ref
 shorty: Expressions
 synopsis: >
-  Specification of the Core Expression Language (CXL) used to capture expressions in CDS.
+  Specification of the CDS Expression Language (CXL) used to capture expressions in CDS.
 status: draft
 ---
 
@@ -26,8 +26,12 @@ import setsExpand from '../assets/cxl/sets-expand.drawio.svg?raw'
 import sets from '../assets/cxl/sets.drawio.svg?raw'
 </script>
 
-# Core Expression Language (CXL) { #expressions }
-The Core Expression Language (`CXL`) is a language to express calculations, conditions,
+
+::: danger This documentation is a work in progress and will change over time.
+:::
+
+# CDS Expression Language (CXL) { #expressions }
+The CDS Expression Language (`CXL`) is a language to express calculations, conditions,
 and other expressions in the context of CDS models and queries.
 **`CXL` is based on the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
 
@@ -97,6 +101,12 @@ The following diagram illustrates how to read the diagrams:
 
 <div class="diagram" v-html="intro"></div>
 
+### theoretical background
+
+CAP did not re-invent when it comes to expressions.
+It rather builds upon well-known concepts from relational databases and SQL.
+
+In the [final chapter](#foundation) of this guide, we provide some theoretical background.
 
 ## expr { #expr }
 
@@ -114,11 +124,17 @@ select from Books {
 }
 ```
 
-### syntax <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 
-<div class="diagram" v-html="expr"></div>
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+<div  v-html="expr"></div>
+</div>
 
-TODO: some text and more examples
+TODO: Some samples --> Where can we use expressions?
+
+- annotation expression
+- calculated element
+- one in select
 
 ## ref (path expression) { #ref }
 
@@ -243,7 +259,7 @@ A path expression can also be used as part of the where clause to filter based o
 [ { title: 'Catweazle' } ]
 ```
 
-```sql
+```sql [SQL]
 SELECT
   Books.title
 FROM
@@ -325,60 +341,6 @@ WHERE exists (
 
 ::: info 💡 Learn more about the `exists` predicate [here](./cql.md#exists-predicate)
 :::
-
-### theory of path expressions
-
-
-
-Every entity defines a set of all possible instances:
-$${ b \in \text{Books} }$$
-
-A simple select query on Books returns the complete set → all books.
-Filters progressively narrow down the set:
-
-$$\text{highstock} = \{ b \in \text{Books} \mid b.\text{stock} > 100 \}$$
-
-With the infix filter notation, we write it as `Books[stock > 100]`.
-An association defines a relationship between two sets:
-
-$$\text{books} = \{ (a,b) \in \text{Books} \times \text{Authors} \mid b.\text{author\_id} = a.\text{id} \}$$
-
-We can select this set using the path expression `Authors:books` in the [from clause](#in-from-clause).
-The same can be applied to navigate via a path expression in the [select list](#path-navigation) or [where clause](#in-where-clause) using `books`.
-Filtering authors by `Authors where exists books[stock > 100]` can be expressed as:
-
-$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{Books}( b.\text{author\_id} = a.\text{id} \land b.\text{stock} > 100 ) \\}$$
-
-Using the previously defined $\text{books}$, we can simplify it to:
-
-$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{books}( b.\text{stock} > 100 ) \\}$$
-
-Using the $\text{highstock}$ set, we can further simplify it to:
-
-$$\\{ a \in \text{Authors} \mid \exists \space b \in \text{books} \cap \text{highstock} \\}$$
-
-So in conclusion, the expression filters for the intersection of the two sets $\text{books}$ (via association) and $\text{highstock}$ (via infix filter).
-
-
-
-
-
-<div class="diagram">
-<div v-html="setsIntersection"></div>
-</div>
-
-
-
-
-
-<div class="diagram">
-<div v-html="setsLeftjoin"></div>
-</div>
-
-
-<div class="diagram">
-<div v-html="setsExpand"></div>
-</div>
 
 ## infix filter { #infix-filter }
 
@@ -832,11 +794,15 @@ TODO: Remove for first version?
 
 💡 string and numeric literal as well as `?` are parsed as `ref`
 
-## function <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #function }
+## function { #function }
 
+
+<div class="diagram" >
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 <div class="diagram" v-html="functionDef"></div>
+</div>
 
-TODO: some text
+
 
 CAP supports a set of [standard functions](../guides/databases.md#standard-database-functions) that can be used in expressions. In addition, functions are passed through to the underlying database, allowing you to leverage database-specific functions as needed.
 
@@ -868,53 +834,6 @@ CAP standard functions:
 | `countdistinct(x)`                | Returns the count of distinct non-null values of `x`.                                                                                                   |
 
 
-
-## function args { #function-args }
-
-<div class="diagram">
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-<div v-html="functionArgs"></div>
-</div>
-
-### aggregate function with ordering term
-
-::: code-group
-```js [CAP Style] {4}
-> await cds.ql`
-  SELECT from Authors {
-    name,
-    string_agg(books.title, ', ' ORDER BY books.title DESC) as titles
-  }
-  GROUP BY books.author.ID`
-
-[
-  { name: 'Emily Brontë', titles: 'Wuthering Heights' },
-  { name: 'Charlotte Brontë', titles: 'Jane Eyre' },
-  { name: 'Edgar Allen Poe', titles: 'The Raven, Eleonora' },
-  { name: 'Richard Carpenter', titles: 'Catweazle' }
-]
-```
-
-```js [SQL Style]
-await cds.ql`
-  SELECT
-    name,
-    string_agg(books.title, ', ' ORDER BY books.title DESC) as titles
-  from Authors as A
-    left join Books as books on books.author_ID = A.ID
-  GROUP BY books.author_ID
-```
-
-```sql [SQL output]
-SELECT
-  "$A".name,
-  string_agg(books.title, ? ORDER BY books.title DESC) AS titles
-FROM sap_capire_bookshop_Authors AS "$A"
-LEFT JOIN sap_capire_bookshop_Books AS books
-  ON books.author_ID = "$A".ID
-GROUP BY books.author_ID;
-```
-:::
 
 ## ordering term <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ordering-term }
 
@@ -952,16 +871,61 @@ In this example, the ordering term sorts books by price in descending order and 
 
 ## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
-
-
 ::: info 💡 learn more about type references [here](./cdl.md#type-references)
 :::
 
-## subselect <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #subselect }
+## Scientific Background {#foundation}
 
-TODO
+Every entity defines a set of all possible instances:
+$${ b \in \text{Books} }$$
 
-In a few places, full subselects can be used, for example with `exists` and `in` predicates. A subselect can use the full [CQL](./cql.md) syntax.
+A simple select query on Books returns the complete set → all books.
+Filters progressively narrow down the set:
+
+$$\text{highstock} = \{ b \in \text{Books} \mid b.\text{stock} > 100 \}$$
+
+With the infix filter notation, we write it as `Books[stock > 100]`.
+An association defines a relationship between two sets:
+
+$$\text{books} = \{ (a,b) \in \text{Books} \times \text{Authors} \mid b.\text{author\_id} = a.\text{id} \}$$
+
+We can select this set using the path expression `Authors:books` in the [from clause](#in-from-clause).
+The same can be applied to navigate via a path expression in the [select list](#path-navigation) or [where clause](#in-where-clause) using `books`.
+Filtering authors by `Authors where exists books[stock > 100]` can be expressed as:
+
+$$\{ a \in \text{Authors} \mid \exists \space b \in \text{Books}( b.\text{author\_id} = a.\text{id} \land b.\text{stock} > 100 ) \}$$
+
+Using the previously defined $\text{books}$, we can simplify it to:
+
+$$\{ a \in \text{Authors} \mid \exists \space b \in \text{books}( b.\text{stock} > 100 ) \}$$
+
+Using the $\text{highstock}$ set, we can further simplify it to:
+
+$$\{ a \in \text{Authors} \mid \exists \space b \in \text{books} \cap \text{highstock} \}$$
+
+So in conclusion, the expression filters for the intersection of the two sets $\text{books}$ (via association) and $\text{highstock}$ (via infix filter).
+
+
+
+
+
+<div class="diagram">
+<div v-html="setsIntersection"></div>
+</div>
+
+
+
+
+
+<div class="diagram">
+<div v-html="setsLeftjoin"></div>
+</div>
+
+
+<div class="diagram">
+<div v-html="setsExpand"></div>
+</div>
+
 
 <style>
 
