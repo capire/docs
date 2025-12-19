@@ -995,6 +995,7 @@ entity Emp2Addr {
 ```
 
 [Learn more about **Managed Compositions for Many-to-many Relationships**.](#for-many-to-many-relationships){.learn-more}
+[Watch a short video by DJ Adams to see an example of how a link entity can be used.](https://www.youtube.com/shorts/yGg3YD1weIA){.learn-more}
 
 
 <div id="aftermanytomany" />
@@ -1023,13 +1024,14 @@ entity Orders.Items {
 ```
 
 :::info Contained-in relationship
-Essentially, Compositions are the same as _[associations](#associations)_, just with the additional information that this association represents a _contained-in_ relationship so the same syntax and rules apply in their base form.
+Essentially, Compositions are the same as _[associations](#associations)_, just with the additional information that this association represents a _contained-in_ relationship; so the same syntax and rules apply in their base form.
 :::
 
 ::: warning Limitations of Compositions of one
 Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
+See the [Keep it Simple, Stupid](/guides/domain-modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](/guides/domain-modeling#prefer-flat-models) section.
 :::
 
 ### Managed Compositions of Aspects {#managed-compositions}
@@ -1082,7 +1084,7 @@ aspect OrderItems {
 
 #### Default Target Cardinality
 
-If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one*.
+If not otherwise specified, a managed composition of an aspect has the default target cardinality *to-one* for the backlink.
 
 #### For Many-to-many Relationships
 
