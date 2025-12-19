@@ -716,7 +716,7 @@ In order to get your multitenant application deployed, follow this excerpt from 
 **Once**, add SAP HANA Cloud and XSUAA configuration:
 
 ```sh
-cds add hana,xsuaa
+cds add hana,xsuaa,approuter
 ```
 
 If you intend to serve UIs you can set up the SAP Cloud Portal service:
