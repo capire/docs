@@ -181,7 +181,7 @@ Use annotations like `@assert` and `@mandatory` to declaratively add constraints
 
 
 
-### `@assert:` *(constraint)* <Beta/>
+### `@assert:` *(constraint)* <Gamma/>
 
 Annotate an element with `@assert: (<constraints>)` to specify checks to be applied on respective input and errors to be raised if they fail. The `<constraints>` are standard SQL `case` expressions with one or more `when` branches, as shown in this example:
 
@@ -582,4 +582,3 @@ And this works fine for these constraints in this example. However, it may be da
 > [!danger]
 >
 > Only add invariant constraints to underlying entities that **do not refer to other elements**!
-
