@@ -41,7 +41,7 @@ and other expressions in the context of CDS models and queries.
   + In [calculated elements](./cdl/#calculated-elements)
   + In [annotations](./cdl.md#expressions-as-annotation-values)
 
-::: info 💡 expressions in CAP are materialized in the context of queries
+::: info 💡 Expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
 For example, [a calculated element](./cdl/#calculated-elements) defined in an entity will be resolved
 to the respective calculation in the generated query when the entity is queried.
@@ -871,8 +871,7 @@ In this example, the ordering term sorts books by price in descending order and 
 
 ## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
-::: info 💡 learn more about type references [here](./cdl.md#type-references)
-:::
+[Learn more about type references in CDL](./cdl#type-references){ .learn-more }
 
 ## Scientific Background {#foundation}
 
