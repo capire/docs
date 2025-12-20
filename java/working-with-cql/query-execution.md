@@ -193,7 +193,7 @@ entity Author {
 ::: warning _Warning_
 - For inactive draft entities `@cascade` annotations are ignored.
 
-- The `@cascade` annotation is not respected by foreign key constraints on the database. To avoid unexpected behaviour you might have to disable a foreign key constraint with [`@assert.integrity:false`](../../guides/databases#database-constraints).
+- The `@cascade` annotation is not respected by foreign key constraints on the database. To avoid unexpected behaviour you might have to disable a foreign key constraint with [`@assert.integrity:false`](../../guides/databases/index#database-constraints).
 :::
 
 #### Deep Insert / Upsert { #deep-insert-upsert}
@@ -226,7 +226,7 @@ long deleteCount = service.run(delete).rowCount();
 
 With CDS [views](../../cds/cdl#views-projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
 
-From the CDS model the CDS compiler generates [DDL](../../guides/databases?impl-variant=java#generating-sql-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
+From the CDS model the CDS compiler generates [DDL](../../guides/databases/index#generating-sql-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
 
 For *read-only* views, you can use the full feature set of [selects](../../cds/cdl#as-select-from), including *aggregations* to summarize, as well as *joins* and *unions* to combine data from multiple entities. However, such complex views are *not writable* and require a schema redeployment if the view definition is changed.
 

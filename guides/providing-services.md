@@ -162,7 +162,7 @@ In effect, a service definition [as introduced above](#service-definitions) is a
 
 ### Serving CRUD Requests {#serving-crud}
 
-The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide generic handlers, which automatically serve all CRUD requests to entities for CDS-modelled services on top of a default [primary database](databases).
+The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide generic handlers, which automatically serve all CRUD requests to entities for CDS-modelled services on top of a default [primary database](databases/index).
 
 This comprises read and write operations like that:
 

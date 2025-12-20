@@ -148,7 +148,7 @@ While we used SQLite or H2 as a low-cost stand-in during development, we're goin
 cds add hana
 ```
 
-[Learn more about using SAP HANA for production.](../databases-hana){.learn-more}
+[Learn more about using SAP HANA for production.](../databases/hana){.learn-more}
 
 ### 2. Authorization/Authentication
 
@@ -447,7 +447,7 @@ cds build --production
 
 [Learn how `cds build` can be configured.](custom-builds#build-config){.learn-more}
 
-The `--production` parameter ensures that the cloud deployment-related artifacts are created by `cds build`. See section [SAP HANA database deployment](../databases-hana) for more details.
+The `--production` parameter ensures that the cloud deployment-related artifacts are created by `cds build`. See section [SAP HANA database deployment](../databases/hana) for more details.
 
 ### Push the Application { #push-the-application}
 

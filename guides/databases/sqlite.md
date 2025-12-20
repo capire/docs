@@ -3,7 +3,7 @@ status: released
 impl-variants: true
 ---
 
-# Using SQLite for Development {#sqlite}
+# Using SQLite for Development
 
 CAP provides extensive support for [SQLite](https://www.sqlite.org/index.html), which allows projects to speed up development by magnitudes at minimized costs. We strongly recommend using this option as much as possible during development and testing.
 
@@ -17,7 +17,7 @@ This guide focuses on the new SQLite Service provided through *[@cap-js/sqlite](
 
 <div class="impl java">
 
-[Learn more about the features and limitations of using CAP with SQlite.](../java/cqn-services/persistence-services#sqlite){.learn-more}
+[Learn more about the features and limitations of using CAP with SQlite.](../../java/cqn-services/persistence-services#sqlite){.learn-more}
 
 
 </div>
@@ -57,14 +57,14 @@ Output:
 }
 ```
 
-[See also the general information on installing database packages.](databases#setup-configuration){.learn-more}
+[See also the general information on installing database packages.](index#setup-configurationmore}
 
 </div>
 
 
 ### Using the Maven Archetype {.java}
 
-When a new CAP Java project is created with the [Maven Archetype](../java/developing-applications/building#the-maven-archetype),
+When a new CAP Java project is created with the [Maven Archetype](../../java/developing-applications/building#the-maven-archetype),
 you can specify the in-memory database to be used. Use the option `-DinMemoryDatabase=sqlite` to create a project that uses
 SQLite as in-memory database.
 
@@ -162,7 +162,7 @@ spring:
 :::
 
 
-[Learn how to configure an in-memory SQLite database.](../java/cqn-services/persistence-services#in-memory-storage){.learn-more}
+[Learn how to configure an in-memory SQLite database.](../../java/cqn-services/persistence-services#in-memory-storage){.learn-more}
 
 </div>
 
@@ -245,7 +245,7 @@ spring:
 ```
 :::
 
-[Learn how to configure a file-based SQLite database](../java/cqn-services/persistence-services#file-based-storage){.learn-more}
+[Learn how to configure a file-based SQLite database](../../java/cqn-services/persistence-services#file-based-storage){.learn-more}
 
 </div>
 
@@ -287,7 +287,7 @@ While drop-create is most appropriate for development, it isn't suitable for dat
 
 
 
-[Learn more about automatic schema evolution in the PostgreSQL guide. <br>The information in there is also applicable to SQLite with persistent databases.](databases-postgres#schema-evolution) {.learn-more}
+[Learn more about automatic schema evolution in the PostgreSQL guide. <br>The information in there is also applicable to SQLite with persistent databases.](postgres#schema-evolution) {.learn-more}
 
 
 
@@ -297,13 +297,13 @@ While drop-create is most appropriate for development, it isn't suitable for dat
 
 CAP supports most of the major features on SQLite:
 
-* [Path Expressions](../java/working-with-cql/query-api#path-expressions) & Filters
-* [Expands](../java/working-with-cql/query-api#projections)
-* [Localized Queries](../guides/localized-data#read-operations)
-* [Comparison Operators](../java/working-with-cql/query-api#comparison-operators)
-* [Predicate Functions](../java/working-with-cql/query-api#predicate-functions)
+* [Path Expressions](../../java/working-with-cql/query-api#path-expressions) & Filters
+* [Expands](../../java/working-with-cql/query-api#projections)
+* [Localized Queries](../localized-data#read-operations)
+* [Comparison Operators](../../java/working-with-cql/query-api#comparison-operators)
+* [Predicate Functions](../../java/working-with-cql/query-api#predicate-functions)
 
-[Learn about features and limitations of SQLite.](../java/cqn-services/persistence-services#sqlite){.learn-more}
+[Learn about features and limitations of SQLite.](../../java/cqn-services/persistence-services#sqlite){.learn-more}
 
 </div>
 
@@ -317,7 +317,7 @@ The following is an overview of advanced features supported by the new database 
 
 ### Path Expressions & Filters {.node}
 
-The new database service provides **full support** for all kinds of [path expressions](../cds/cql#path-expressions), including [infix filters](../cds/cql#with-infix-filters) and [exists predicates](../cds/cql#exists-predicate). For example, you can try this out with *[@capire/samples](https://github.com/capire/samples)* as follows:
+The new database service provides **full support** for all kinds of [path expressions](../../cds/cql#path-expressions), including [infix filters](../../cds/cql#with-infix-filters) and [exists predicates](../../cds/cql#exists-predicate). For example, you can try this out with *[@capire/samples](https://github.com/capire/samples)* as follows:
 
 ```js
 // $ cds repl --profile better-sqlite

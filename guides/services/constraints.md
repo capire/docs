@@ -6,10 +6,10 @@ status: released
 
 # Declarative Constraints
 
-Declarative constraints allow you to express conditions using [CDS Expression Language (CXL)](/cds/cxl) that are validated automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
+Declarative constraints allow you to express conditions using [CDS Expression Language (CXL)](../../cds/cxl) that are validated automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
 
 > [!note] 
-> Don't confuse declarative constraints as discussed in here with [database constraints](../databases#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
+> Don't confuse declarative constraints as discussed in here with [database constraints](../databases/index#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
 
 
 
@@ -81,7 +81,7 @@ Some of the checks, e.g. the static `@mandatory` checks, are validated directly 
 
 ::: details Behind the scenes...
 
-The automatically compiled and executed validation query would look like that (in [CQL](/cds/cql)) for the constraints from the sample above: 
+The automatically compiled and executed validation query would look like that (in [CQL](../../cds/cql)) for the constraints from the sample above: 
 
 ```sql
 SELECT from TravelService.Travels {
@@ -312,7 +312,7 @@ dependent values were inserted before the current transaction. For example, in a
 The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
 Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
 non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](../databases#database-constraints) constraint must be used instead.
+(ensure referential integrity), the [`@assert.integrity`](../databases/index#database-constraints) constraint must be used instead.
 
 If the reference's target doesn't exist, an HTTP response
 (error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
@@ -534,7 +534,7 @@ Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it
 @UI.Hidden: (status <> 'visible')
 ```
 
-[Learn more about that in the *OData guide*](/advanced/odata#expression-annotations) {.learn-more}
+[Learn more about that in the *OData guide*](../../advanced/odata#expression-annotations) {.learn-more}
 
 
 

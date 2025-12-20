@@ -197,12 +197,12 @@ Following is an index of the features currently covered by CAP, with status and 
 
 |                                                                 | CDS/deploy | Node.js | Java |
 |-----------------------------------------------------------------|:----------:|:-------:|:----:|
-| [SAP HANA](../guides/databases)                                 |    <X/>    |  <X/>   | <X/> |
-| [SAP HANA Cloud](../guides/databases-hana)                      |    <X/>    |  <X/>   | <X/> |
-| [PostgreSQL](../guides/databases-postgres)                      |    <X/>    |  <X/>   | <X/> |
-| [SQLite](../guides/databases-sqlite) <sup>1</sup>               |    <X/>    |  <X/>   | <X/> |
+| [SAP HANA](../guides/databases/index)                                 |    <X/>    |  <X/>   | <X/> |
+| [SAP HANA Cloud](../guides/databases/hana)                      |    <X/>    |  <X/>   | <X/> |
+| [PostgreSQL](../guides/databases/postgres)                      |    <X/>    |  <X/>   | <X/> |
+| [SQLite](../guides/databases/sqlite) <sup>1</sup>               |    <X/>    |  <X/>   | <X/> |
 | [H2](../java/cqn-services/persistence-services#h2) <sup>1</sup> |    <X/>    |  <Na/>  | <X/> |
-| [MongoDB](../guides/databases) out of the box                   |   <Na/>    |  <Na/>  | <D/> |
+| [MongoDB](../guides/databases/index) out of the box                   |   <Na/>    |  <Na/>  | <D/> |
 | Pluggable drivers architecture                                  |    <D/>    |  <D/>   | <X/> |
 | Out-of-the-box support for other databases?                     |    <C/>    |  <C/>   | <C/> |
 

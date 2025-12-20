@@ -525,7 +525,7 @@ SELECT.from(Books.drafts) //returns all drafts of the Books entity
 
 In addition to adding [restrictions on services, entities, and actions/functions](/guides/security/authorization#restrictions), there are use cases where you only want to hide certain parts of the UI for specific users. This is possible by using the respective UI annotations like `@UI.Hidden` or `@UI.CreateHidden` in conjunction with `$edmJson` pointing to a singleton.
 
-First, you define the [singleton](../advanced/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../guides/databases#cds-persistence-skip) so that no database artefact is created:
+First, you define the [singleton](../advanced/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../guides/databases/index#cds-persistence-skip) so that no database artefact is created:
 
 ```cds
 @odata.singleton @cds.persistence.skip
@@ -861,4 +861,3 @@ extend AdminService.Genres with @(
 > `<entity name in service>Hierarchy`
 
 <div id="reserved-words" />
-

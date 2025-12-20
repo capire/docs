@@ -59,13 +59,13 @@
 ## [Serving UIs](advanced/fiori)
   ### [SAP Fiori UIs](advanced/fiori)
 
-## [Databases](guides/databases)
+## [Databases](guides/databases/)
 
-  ### [Common](guides/databases)
-  ### [SQLite](guides/databases-sqlite)
-  ### [H2 (Java)](guides/databases-h2)
-  ### [PostgreSQL](guides/databases-postgres)
-  ### [SAP HANA Cloud](guides/databases-hana)
+  ### [Common](guides/databases/index.md)
+  ### [SQLite](guides/databases/sqlite)
+  ### [H2 (Java)](guides/databases/h2)
+  ### [PostgreSQL](guides/databases/postgres)
+  ### [SAP HANA Cloud](guides/databases/hana)
   ### [SAP HANA Native](advanced/hana)
 
 ## [Analytics](advanced/analytics)

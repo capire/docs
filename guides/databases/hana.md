@@ -44,16 +44,16 @@ Package `@cap-js/hana` uses the [`hdb`](https://www.npmjs.com/package/hdb) drive
 :::
 
 :::details In CAP Java ...
-The [modules](../java/developing-applications/building#standard-modules) `cds-starter-cloudfoundry` and `cds-starter-k8s` include `cds-feature-hana`.
+The [modules](../../java/developing-applications/building#standard-modules) `cds-starter-cloudfoundry` and `cds-starter-k8s` include `cds-feature-hana`.
 
 The datasource for SAP HANA is then auto-configured based on available service bindings of type *service-manager* and *hana*.
 
-[Learn more about the configuration of an SAP HANA Cloud Database](../java/cqn-services/persistence-services#sap-hana){ .learn-more}
+[Learn more about the configuration of an SAP HANA Cloud Database](../../java/cqn-services/persistence-services#sap-hana){ .learn-more}
 :::
 
 ::: tip Prefer `cds add`
 
-... as documented in the [deployment guide](deployment/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
+... as documented in the [deployment guide](../deployment/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
 
 :::
 
@@ -164,9 +164,9 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
 
 ## Deploying to SAP HANA
 
-There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](deployment/) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
+There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deployment) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
 
-To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../get-started/troubleshooting#get-hana) to learn about your options.
+To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/troubleshooting#get-hana) to learn about your options.
 
 ### Prepare for Production { #configure-hana }
 
@@ -178,8 +178,8 @@ cds add hana --for hybrid
 
 This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
-::: tip The profile `hybrid` relates to [the hybrid testing](../advanced/hybrid-testing) scenario
-If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud Foundry](deployment/) guide.
+::: tip The profile `hybrid` relates to [the hybrid testing](../../advanced/hybrid-testing) scenario
+If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud Foundry](../deployment) guide.
 :::
 
 No further configuration is necessary for Node.js. For Java, see the [Use SAP HANA as the Database for a CAP Java Application](https://developers.sap.com/tutorials/cp-cap-java-hana-db.html#880cf07a-1788-4fda-b6dd-b5a6e5259625) tutorial for the rest of the configuration.
@@ -190,19 +190,19 @@ No further configuration is necessary for Node.js. For Java, see the [Use SAP HA
 
 `cds deploy` lets you deploy _just the database parts_ of the project to an SAP HANA instance. The server application (the Node.js or Java part) still runs locally and connects to the remote database instance, allowing for fast development roundtrips.
 
-Make sure that you're [logged in to Cloud Foundry](deployment/to-cf#build-and-deploy) with the correct target, that is, org and space.
+Make sure that you're [logged in to Cloud Foundry](../deployment/to-cf#build-and-deploy) with the correct target, that is, org and space.
 Then in the project root folder, just execute:
 
 ```sh
 cds deploy --to hana
 ```
 
-> To connect to your SAP HANA Cloud instance use `cds watch --profile hybrid` in Node.js or[ `mvn cds:watch` in Java](../java/developing-applications/running#local-development-support) projects.
+> To connect to your SAP HANA Cloud instance use `cds watch --profile hybrid` in Node.js or[ `mvn cds:watch` in Java](../../java/developing-applications/running#local-development-support) projects.
 
 Behind the scenes, `cds deploy` does the following:
 
 * Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
-* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the [CSV files](databases#providing-initial-data) in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
+* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the [CSV files](#providing-initial-data) in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
 * Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
 * Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
 * Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
@@ -216,9 +216,9 @@ cds deploy --to hana --profile hybrid
 Based on these profile settings, `cds deploy` executes `cds build` and also resolves additionally binding information. If a corresponding binding exists, its service name and service key are used. The development profile is used by default.
 
 [Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
-[Learn more about hybrid testing using service bindings to Cloud services.](../advanced/hybrid-testing#run-with-service-bindings){.learn-more}
+[Learn more about hybrid testing using service bindings to Cloud services.](../../advanced/hybrid-testing#run-with-service-bindings){.learn-more}
 
-If you run into issues, see the [Troubleshooting](../get-started/troubleshooting#hana) guide.
+If you run into issues, see the [Troubleshooting](../../get-started/troubleshooting#hana) guide.
 
 #### Deploy Parameters
 
@@ -244,7 +244,7 @@ This is equivalent to `cds deploy --to hana:myservice` and ignores information c
 
 ### Using `cf deploy` or `cf push`
 
-See the [Deploying to Cloud Foundry](deployment/) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
+See the [Deploying to Cloud Foundry](../deployment) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
 
 
 
@@ -252,7 +252,7 @@ See the [Deploying to Cloud Foundry](deployment/) guide for information about ho
 
 The HANA Service provides dedicated support for native SAP HANA features as follows.
 
-### Vector Embeddings { #vector-embeddings }
+### Vector Embeddings
 
 Vector embeddings let you add semantic search, recommendations, and generative AI features to your CAP application. Embeddings are numeric arrays that represent the meaning of unstructured data (text, images, etc.), making it possible to compare and search for items that are semantically related to each other or a user query.
 
@@ -328,7 +328,7 @@ Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access
 
 [Learn more about the SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) {.learn-more}
 
-[Learn more about Vector Embeddings in CAP Java](../java/cds-data#vector-embeddings) {.learn-more}
+[Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
 
 [Learn more about the SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
@@ -422,7 +422,7 @@ first_value(name order by price desc)
 
 Restriction: `COLLATE` isn't supported.
 
-For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](../advanced/hana) for more details.
+For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](../../advanced/hana) for more details.
 
 
 
@@ -490,7 +490,7 @@ For all transitions you want to execute in HDI, you need to specify an undeploy 
 :::tip Moving From _.hdbcds_ To _.hdbtable_
 There a migration guide providing you step-by-step instructions for making the switch.
 
-[Learn more about Moving From _.hdbcds_ To _.hdbtable_](../cds/compiler/hdbcds-to-hdbtable){.learn-more}
+[Learn more about Moving From _.hdbcds_ To _.hdbtable_](../../cds/compiler/hdbcds-to-hdbtable){.learn-more}
 :::
 
 #### Enabling hdbmigrationtable Generation for Selected Entities During CDS Build {#enabling-hdbmigrationtable-generation}
@@ -543,7 +543,7 @@ We recommend keeping _.hdbtable_ deployment for entities where you expect low da
 You can switch large-volume tables to _.hdbmigrationtable_ at any time, keeping in mind that the existing _.hdbtable_ design-time artifact needs to be undeployed.
 
 When choosing to use _.hdbmigrationtable_ for an entity with
-[localized elements](../guides/localized-data#localized-data) or [compositions of aspects](../cds/cdl#managed-compositions),
+[localized elements](../localized-data#localized-data) or [compositions of aspects](../../cds/cdl#managed-compositions),
 the generated `.texts` and composition child entities are automatically handled via _.hdbmigrationtable_, too.
 If this is not desired, annotate these generated entities with `@cds.persistence.journal: false`.
 
@@ -557,7 +557,7 @@ CDS build performs rudimentary checks on generated _.hdmigrationtable_ files:
 - CDS build fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
-Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](databases#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
+Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
 
 Schema evolution requires that any changes are applied by corresponding ALTER statements. See [ALTER TABLE statement reference](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alter-table-statement-data-definition?version=2024_1_QRC) for more information. A new migration version is generated whenever an `@sql.append` or `@sql.prepend` annotation is added, changed, or removed. ALTER statements define the individual changes that create the final database schema. This schema has to match the schema defined by the TABLE statement in the _.hdbmigrationtable_ artifact.
 Please note that the compiler doesn't evaluate or process these SQL snippets. Any snippet is taken as is and inserted into the TABLE statement and the corresponding ALTER statement. The deployment fails in case of syntax errors.
@@ -689,7 +689,7 @@ If you need to remove deployed CSV files, also add this entry:
 
 :::
 
-*See this [troubleshooting](../get-started/troubleshooting#hana-csv) entry for more information.*{.learn-more}
+*See this [troubleshooting](../../get-started/troubleshooting#hana-csv) entry for more information.*{.learn-more}
 
 ### SAP HANA Cloud System Limits
 
