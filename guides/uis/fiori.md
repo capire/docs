@@ -423,7 +423,7 @@ SAP Fiori drafts required single keys of type `UUID`, which isn't the case by de
 Adding the annotation `@fiori.draft.enabled` won't work if the corresponding `_texts` entities contain any entries, because existing entries don't have a value for the new key field `ID_texts`.
 :::
 
-![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](../../assets/draft-for-localized-data.png){style="margin:0"}
+![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
 
 [See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
 

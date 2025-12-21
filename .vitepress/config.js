@@ -41,7 +41,7 @@ const config = defineConfig({
   themeConfig: {
     sidebar: menu.items,
     nav: menu.navbar,
-    logo: '/cap-logo.svg',
+    logo: '/logos/cap.svg',
     outline: [2,3],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/capire/docs' }
@@ -65,7 +65,7 @@ const config = defineConfig({
     ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'" }],
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'cap-logo.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
     ['script', { src: base+'script.js' } ]
   ],
 

@@ -6,7 +6,7 @@ title: Home
 
 hero:
   name: "SAP Cloud Application Programming Model"
-  image: /cap-logo.svg
+  image: /logos/cap.svg
 
   tagline:
     Build cloud-native applications

@@ -50,20 +50,20 @@ In here, we collected several interesting sample projects for you. Not all of th
     transition: opacity 0.2s;
    }
    main .vp-doc a.node img {
-      content: url(../assets/logos/nodejs.svg);
+      content: url(/logos/nodejs.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;
       padding-top:11px;
    }
    main .vp-doc a.java img {
-      content: url(../assets/logos/java.svg);
+      content: url(/logos/java.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;
       padding-bottom:5px;
    }main .vp-doc a.github img {
-      content: url(../assets/logos/github.svg);
+      content: url(/logos/github.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;
