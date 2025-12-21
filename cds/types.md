@@ -48,7 +48,7 @@ These types are used to define the structure of entities and services, and are m
 
 > <sup>(1)</sup> Concrete mappings to specific databases may differ.
 >
-> <sup>(2)</sup> See also [Best Practices](../guides/domain-modeling#don-t-interpret-uuids).
+> <sup>(2)</sup> See also [Best Practices](../guides/domain/modeling#don-t-interpret-uuids).
 >
 > <sup>(3)</sup> _SMALLINT_ on PostgreSQL and H2.
 >

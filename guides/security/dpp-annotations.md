@@ -30,7 +30,7 @@ So, let's annotate the data model to identify personal data.
 In essence, in all our entities we search for elements which carry personal data, such as person names, birth dates, etc., and tag them accordingly.
 All found entities are classified as either *Data Subjects*, *Subject Details* or *Related Data Objects*.
 
-Following the [best practice of separation of concerns](../domain-modeling#separation-of-concerns), we annotate our domain model in a separate file *srv/data-privacy.cds*, which we add to our project and fill it with the following content:
+Following the [best practice of separation of concerns](../domain/modeling#separation-of-concerns), we annotate our domain model in a separate file *srv/data-privacy.cds*, which we add to our project and fill it with the following content:
 
 > For the time beeing also replace the data in _data/sap.capire.incidents-Customers.csv_.
 

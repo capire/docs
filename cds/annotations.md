@@ -56,7 +56,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 | `@cds.api.ignore`    | see [OData](../guides/advanced/odata#omitting-elements-from-apis)                         |
 | `@cds.query.limit`   | see [Providing Services](../guides/services/providing-services#annotation-cds-query-limit) |
 | `@cds.localized`     | see [Localized Data](../guides/uis/localized-data#read-operations)                     |
-| `@cds.valid.from/to` | see [Temporal Data](../guides/temporal-data#using-annotations-cds-valid-from-to)   |
+| `@cds.valid.from/to` | see [Temporal Data](../guides/domain/temporal-data#using-annotations-cds-valid-from-to)   |
 | `@cds.search`        | see [Search Capabilities](../guides/services/providing-services#searching-data)            |
 
 ## Persistence
@@ -80,7 +80,7 @@ Shortcuts:
 
 | Annotation          | Description                                          |
 |---------------------|------------------------------------------------------|
-| `@ValueList.entity` | see [Domain Modeling](../guides/domain-modeling)     |
+| `@ValueList.entity` | see [Domain Modeling](../guides/domain/modeling)     |
 | `@odata.Type`       | see [OData](../guides/advanced/odata#override-type-mapping) |
 | `@odata.MaxLength`  | see [OData](../guides/advanced/odata#override-type-mapping) |
 | `@odata.Precision`  | see [OData](../guides/advanced/odata#override-type-mapping) |

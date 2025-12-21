@@ -132,7 +132,7 @@ While CDS in principle allows you to add such annotations everywhere in your mod
 
 [See this also in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/services.cds){.learn-more}
 
-**Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../domain-modeling#domain-driven-design) and [Separation of Concerns](../domain-modeling#separation-of-concerns).
+**Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../domain/modeling#domain-driven-design) and [Separation of Concerns](../domain/modeling#separation-of-concerns).
 
 
 ### Maintaining Annotations

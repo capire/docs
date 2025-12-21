@@ -33,7 +33,7 @@ Following the CAP principles, we recommend adding a new dedicated CAP service th
 
 ### CAP Service Model for SAP Personal Data Manager
 
-Following the [best practice of separation of concerns](../domain-modeling#separation-of-concerns), we create a dedicated service for the integration with SAP Personal Data Manager:
+Following the [best practice of separation of concerns](../domain/modeling#separation-of-concerns), we create a dedicated service for the integration with SAP Personal Data Manager:
 
 ::: code-group
 ```cds [srv/pdm-service.cds]

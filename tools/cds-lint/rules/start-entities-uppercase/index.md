@@ -15,7 +15,7 @@ status: released
 ## Rule Details
 
 
-According to our [naming conventions](../../../../guides/domain-modeling#naming-conventions), to easily distinguish entity names from element names we recommend starting entity names with *capital* letters, which this rule ensures.
+According to our [naming conventions](../../../../guides/domain/modeling#naming-conventions), to easily distinguish entity names from element names we recommend starting entity names with *capital* letters, which this rule ensures.
 
 ## Examples
 

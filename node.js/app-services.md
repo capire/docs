@@ -9,7 +9,7 @@ status: released
 
 ## Class `cds.ApplicationService`
 
-Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/services/providing-services), [Localized Data](../guides/uis/localized-data.md) and [Temporal Data](../guides/temporal-data.md).
+Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/services/providing-services), [Localized Data](../guides/uis/localized-data.md) and [Temporal Data](../guides/domain/temporal-data.md).
 
 Take this service definition for example:
 
@@ -93,7 +93,7 @@ This method is adding request handlers for input validation based in `@assert` a
 
 ### _static_ handle_temporal_data() {.method}
 
-This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/temporal-data.md).
+This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/domain/temporal-data.md).
 
 
 
@@ -107,7 +107,7 @@ This method is adding request handlers for handling localized data, as documente
 
 ### _static_ handle_managed_data() {.method}
 
-This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain-modeling#managed-data).
+This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/modeling#managed-data).
 
 
 

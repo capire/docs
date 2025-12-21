@@ -149,7 +149,7 @@ entity Genres : sap.common.CodeList { // [!code focus]
 :::
 
 _Find this source also in the GitHub repos [for Node.js](https://github.com/capire/bookshop/tree/main/db/schema.cds), and [for Java](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/db/books.cds)_{ .learn-more}
-[Learn more about **Domain Modeling**.](../guides/domain-modeling){ .learn-more}
+[Learn more about **Domain Modeling**.](../guides/domain/modeling){ .learn-more}
 [Learn more about **CDS Modeling Languages**.](../cds/){ .learn-more}
 
 
@@ -828,7 +828,7 @@ Authorization: Basic authenticated:
 
 With this getting started guide we introduced many of the basics of CAP, such as:
 
-- [Domain Modeling](../guides/domain-modeling)
+- [Domain Modeling](../guides/domain/modeling)
 - [Providing Services](../guides/services/providing-services)
 - [Consuming Services](../guides/services/using-services)
 - [Using Databases](../guides/databases/index)

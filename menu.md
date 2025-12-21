@@ -12,14 +12,14 @@
 
 # [Develop](guides/index.md)
 
-## [Domain Modeling](guides/domain-modeling)
+## [Domain Modeling](guides/domain/modeling)
 
-  ### [Domain Entities](guides/domain-modeling#domain-entities)
-  ### [Associations](guides/domain-modeling#associations)
-  ### [Aspects](guides/domain-modeling#aspects)
-  ### [Managed Data](guides/domain-modeling#managed-data)
-  ### [Best Practices](guides/domain-modeling#best-practices)
-  ### [Temporal Data](guides/temporal-data)
+  ### [Domain Entities](guides/domain/modeling#domain-entities)
+  ### [Associations](guides/domain/modeling#associations)
+  ### [Aspects](guides/domain/modeling#aspects)
+  ### [Managed Data](guides/domain/modeling#managed-data)
+  ### [Best Practices](guides/domain/modeling#best-practices)
+  ### [Temporal Data](guides/domain/temporal-data)
 
 ## [Providing Services](guides/services/providing-services)
 

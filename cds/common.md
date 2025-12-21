@@ -24,19 +24,19 @@ CDS ships with a prebuilt model *`@sap/cds/common`* that provides common types a
 [ISO/IEC 15897]: https://en.wikipedia.org/wiki/ISO/IEC_15897
 [tzdata]: https://en.wikipedia.org/wiki/Tz_database
 [localized data]: ../guides/uis/localized-data
-[temporal data]: ../guides/temporal-data
+[temporal data]: ../guides/domain/temporal-data
 
 ## Why Use _@sap/cds/common_?
 
 It's recommended that all applications use the common types and aspects provided through _@sap/cds/common_ to benefit from these features:
 
-* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain-modeling)
+* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/modeling)
 * **Foster interoperability** between all applications
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
 * **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
-* **Extensibility** using [Aspects](../guides/domain-modeling#aspect-oriented-modeling)
+* **Extensibility** using [Aspects](../guides/domain/modeling#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 
 For example, usage is as simple as indicated in the following sample:
@@ -83,7 +83,7 @@ entity Foo {
 
 > The service provider runtimes automatically fill in UUID-typed keys like these with auto-generated UUIDs.
 
-[Learn more about **canonical keys** and **UUIDs**.](../guides/domain-modeling#prefer-canonic-keys){ .learn-more}
+[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/modeling#prefer-canonic-keys){ .learn-more}
 
 
 ### Aspect `managed`
@@ -110,12 +110,12 @@ entity Foo {
 
 The annotations `@cds.on.insert/update` are handled in generic service providers so to fill in those fields automatically.
 
-[Learn more about **generic service features**.](../guides/domain-modeling#managed-data){ .learn-more}
+[Learn more about **generic service features**.](../guides/domain/modeling#managed-data){ .learn-more}
 
 
 ### Aspect `temporal`
 
-This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you've to do is, add the temporal aspect to respective entities as follows:
+This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/domain/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you've to do is, add the temporal aspect to respective entities as follows:
 
 ```cds
 entity Contract : temporal {...}

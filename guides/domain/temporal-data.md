@@ -60,7 +60,7 @@ entity Departments {
 
 A set of sample data entries for this model, which only captures the latest state, can look like this:
 
-![Alice has the job a a developer and consultant. Bob is a builder. Alice works in her roles for the departments core development and app development. Bob's work assignment is linked to the construction department.](assets/temporal-data/timeless-data.drawio.svg)
+![Alice has the job a a developer and consultant. Bob is a builder. Alice works in her roles for the departments core development and app development. Bob's work assignment is linked to the construction department.](./timeless-data.drawio.svg)
 
 > Italic titles indicate to-one associations; actual names of the respective foreign key columns in SQL are `job1_ID`, `empl_ID`, and `dept_ID`.
 
@@ -69,7 +69,7 @@ A set of sample data entries for this model, which only captures the latest stat
 
 _Temporal Entities_ represent _logical_ records of information for which we track changes over time by recording each change as individual _time slices_ in the database with valid from/to boundaries. For example, we could track the changes of Alice's primary work assignment _WA1_ over time:
 
-![Alice progressed from developer to senior developer to architect.](assets/temporal-data/time-slices.drawio.svg)
+![Alice progressed from developer to senior developer to architect.](./time-slices.drawio.svg)
 
 ::: tip
 Validity periods are expected to be **non-overlapping** and **closed-open** intervals; same as in SQL:2011.
@@ -91,14 +91,14 @@ The annotation pair `@cds.valid.from/to` actually triggers the built-in mechanis
 
 ### Using Common Aspect `temporal`
 
-Alternatively, use the predefined aspect [`temporal`](../cds/common#aspect-temporal) to declare temporal entities:
+Alternatively, use the predefined aspect [`temporal`](../../cds/common#aspect-temporal) to declare temporal entities:
 
 ```cds
 using { temporal } from '@sap/cds/common';
 entity WorkAssignments : temporal {/*...*/}
 ```
 
-Aspect [`temporal`](../cds/common#aspect-temporal) is defined in _[@sap/cds/common](../cds/common)_ as follows:
+Aspect [`temporal`](../../cds/common#aspect-temporal) is defined in _[@sap/cds/common](../../cds/common)_ as follows:
 
 ```cds
 aspect temporal {
@@ -127,7 +127,7 @@ entity WorkDetails : temporal {   // temporal details entity
 
 The data situation would change as follows:
 
-![Alice has two work assignments. Her first work assignment is stable but the roles in this assignment change over time. She progressed from developer to senior developer to architect. Each role has specific validity defined.](assets/temporal-data/temporal-details.drawio.svg)
+![Alice has two work assignments. Her first work assignment is stable but the roles in this assignment change over time. She progressed from developer to senior developer to architect. Each role has specific validity defined.](./temporal-details.drawio.svg)
 
 
 ## Serving Temporal Data
@@ -146,7 +146,7 @@ service HRService {
 :::
 
 > You can omit composed entities like _WorkAssignments_ from the service, as they would get
-[auto-exposed](services/providing-services#auto-exposed-entities) automatically.
+[auto-exposed](../services/providing-services#auto-exposed-entities) automatically.
 
 <div id="beforereadingtempdata" />
 

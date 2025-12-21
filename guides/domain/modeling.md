@@ -7,7 +7,7 @@ status: released
 
 # Domain Modeling
 
-Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](./databases/index)* deployed to databases as well as for *[service definitions](./services/providing-services)*.
+Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](../databases/index)* deployed to databases as well as for *[service definitions](../services/providing-services)*.
 
 [[toc]]
 
@@ -28,7 +28,7 @@ entity Books : cuid, managed {
 }
 ```
 
-In that model we used the [pre-defined aspects](../cds/common.md) `cuid` and `managed`, as well as the [qualifier `localized`](./uis/localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
+In that model we used the [pre-defined aspects](../../cds/common.md) `cuid` and `managed`, as well as the [qualifier `localized`](../uis/localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
 
 In all these cases, we focus on capturing our intent, while leaving it to generic implementations to provide best-possible implementations.
 
@@ -72,7 +72,7 @@ CDS Aspects and Annotations provide powerful means for **separation of concerns*
 
 As depicted in the illustration below, domain models serve as the sources for persistence models, deployed to databases, as well as the underlying model for services acting as API facades to access data.
 
-![This graphic is explained in the accompanying text.](./assets/domain-modeling/cds-fueling-generic-providers.drawio.svg)
+![This graphic is explained in the accompanying text.](cds-fueling-generic-providers.drawio.svg)
 
 The more we succeeded in capturing intent over imperative implementations, the more we can provide optimized generic implementations.
 
@@ -208,7 +208,7 @@ In general always prefer conciseness, comprehensibility and readability, and avo
 
 ### Namespaces
 
-You can use [namespaces](../cds/cdl#namespaces) to get to unique names without bloating your code with fully qualified names. For example:
+You can use [namespaces](../../cds/cdl#namespaces) to get to unique names without bloating your code with fully qualified names. For example:
 
 ```cds
 namespace foo.bar;
@@ -251,7 +251,7 @@ entity name {
 }
 ```
 
-[Learn more about entity definitions.](../cds/cdl.md#entities-type-definitions){.learn-more}
+[Learn more about entity definitions.](../../cds/cdl.md#entities-type-definitions){.learn-more}
 
 
 
@@ -265,7 +265,7 @@ entity ProjectedEntity as select from BaseEntity {
 };
 ```
 
-[Learn more about views and projections.](../cds/cdl.md#views-projections){.learn-more}
+[Learn more about views and projections.](../../cds/cdl.md#views-projections){.learn-more}
 
 
 
@@ -299,7 +299,7 @@ Moreover, primary keys should be immutable, that means once assigned on creation
 
 #### Prefer Canonic Keys
 
-We recommend using canonically named and typed primary keys, as promoted [by aspect `cuid` from @sap/cds/common](../cds/common.md#aspect-cuid).
+We recommend using canonically named and typed primary keys, as promoted [by aspect `cuid` from @sap/cds/common](../../cds/common.md#aspect-cuid).
 
 ```cds
 // @sap/cds/common
@@ -348,9 +348,9 @@ On the same note, converting UUID values obtained as strings from the database i
 
 :::
 
-[See also: Mapping UUIDs to OData](advanced/odata#override-type-mapping) {.learn-more}
+[See also: Mapping UUIDs to OData](../advanced/odata#override-type-mapping) {.learn-more}
 
-[See also: Mapping UUIDs to SQL](databases/hana-native#mapping-uuids-to-sql) {.learn-more}
+[See also: Mapping UUIDs to SQL](../databases/hana-native#mapping-uuids-to-sql) {.learn-more}
 
 
 
@@ -370,11 +370,11 @@ CDS comes with a small set of built-in types:
 - `String`, `LargeString`
 - `Binary`, `LargeBinary`
 
-[See list of **Built-in Types** in the CDS reference docs.](../cds/types){.learn-more}
+[See list of **Built-in Types** in the CDS reference docs.](../../cds/types){.learn-more}
 
 #### Common Reuse Types
 
-In addition, a set of common reuse types and aspects is provided with package [_`@sap/cds/common`_](../cds/common.md), such as:
+In addition, a set of common reuse types and aspects is provided with package [_`@sap/cds/common`_](../../cds/common.md), such as:
 
 - Types `Country`, `Currency`, `Language` with corresponding value list entities
 - Aspects `cuid`, `managed`, `temporal`
@@ -390,7 +390,7 @@ entity Addresses : managed { //> using reuse aspect
 }
 ```
 
-[Learn more about reuse types provided by _`@sap/cds/common`_.](../cds/common.md){.learn-more}
+[Learn more about reuse types provided by _`@sap/cds/common`_.](../../cds/common.md){.learn-more}
 
 ::: tip **Use common reuse types and aspects**...
 
@@ -449,7 +449,7 @@ entity Authors { ...
 }
 ```
 
-[Learn more about Associations in the _CDS Language Reference_.](../cds/cdl#associations){ .learn-more}
+[Learn more about Associations in the _CDS Language Reference_.](../../cds/cdl#associations){ .learn-more}
 
 #### Managed :1 Associations
 
@@ -552,7 +552,7 @@ entity OrderItems { // to be accessed through Orders only
 }
 ```
 
-[Learn more about Compositions in the _CDS Language Reference_.](../cds/cdl#compositions){ .learn-more}
+[Learn more about Compositions in the _CDS Language Reference_.](../../cds/cdl#compositions){ .learn-more}
 
 #### Composition of Aspects
 
@@ -567,7 +567,7 @@ entity Orders { ...
 }
 ```
 
-[Learn more about Compositions of Aspects in the _CDS Language Reference_.](../cds/cdl#managed-compositions){ .learn-more}
+[Learn more about Compositions of Aspects in the _CDS Language Reference_.](../../cds/cdl#managed-compositions){ .learn-more}
 
 Behind the scenes this will add an entity named `Orders.Items` with a backlink association named `up_`, so effectively generating the same model as above. You can annotate the inline composition with UI annotations as follows:
 
@@ -582,7 +582,7 @@ annotate Orders.Items with @(
 
 ## Aspects
 
-CDS's [Aspects](../cds/cdl.md#aspects) provide powerful mechanisms to separate concerns. It allows decomposing models and definitions into separate files with potentially different life cycles, contributed by different _people_.
+CDS's [Aspects](../../cds/cdl.md#aspects) provide powerful mechanisms to separate concerns. It allows decomposing models and definitions into separate files with potentially different life cycles, contributed by different _people_.
 
 The basic mechanism use the `extend` or `annotate` directives to add secondary aspects to a core domain entity like so:
 
@@ -611,7 +611,7 @@ We can also apply named aspects as **includes** in an inheritance-like syntax:
 entity Books : NamedAspect { ... }
 ```
 
-[Learn more about the usage of aspects in the _Aspect-oriented Modeling_ section.](../cds/aspects).{ .learn-more}
+[Learn more about the usage of aspects in the _Aspect-oriented Modeling_ section.](../../cds/aspects).{ .learn-more}
 
 ::: tip Consumers always see effective models
 
@@ -759,7 +759,7 @@ Essentially, this is also what CAP generates behind the scenes, plus many more t
 By generating `.texts` entities and associations behind the scenes, CAP's **out-of-the-box support** for `localized` data avoids polluting your models with doubled numbers of entities, and detrimental effects on comprehensibility.
 :::
 
-[Learn more in the **Localized Data** guide.](./uis/localized-data){.learn-more}
+[Learn more in the **Localized Data** guide.](../uis/localized-data){.learn-more}
 
 
 
@@ -791,7 +791,7 @@ These **rules** apply:
 - Data *cannot* be filled in from external clients → payloads are cleansed
 - Data *can* be filled in from custom handlers or from `.csv` files
 
-::: details Note the differences to [defaults](../cds/cdl#default-values)...
+::: details Note the differences to [defaults](../../cds/cdl#default-values)...
 
 ... for example, given this model:
 
@@ -817,14 +817,14 @@ In case of `UPSERT` operations, the handlers for `@cds.on.update` are executed, 
 
 ### Aspect _`managed`_ {style="margin-top: 0;"}
 
-You can also use the [pre-defined aspect `managed`](../cds/common#aspect-managed) from [@sap/cds/common](../cds/common) to get the very same as by the definition above:
+You can also use the [pre-defined aspect `managed`](../../cds/common#aspect-managed) from [@sap/cds/common](../../cds/common) to get the very same as by the definition above:
 
 ```cds
 using { managed } from '@sap/cds/common';
 entity Foo : managed { /*...*/ }
 ```
 
-[Learn more about `@sap/cds/common`.](../cds/common){.learn-more}
+[Learn more about `@sap/cds/common`.](../../cds/common){.learn-more}
 
 With this we keep our core domain model clean and comprehensible.
 
@@ -839,5 +839,5 @@ The pseudo variables used in the annotations above are resolved as follows:
 - `$user.<attr>` is replaced by the value of the respective attribute of the current user
 - `$uuid` is replaced by a version 4 UUID
 
-[Learn more about **Authentication** in Node.js.](../node.js/authentication){.learn-more}
-[Learn more about **Authentication** in Java.](../java/security#authentication){.learn-more}
+[Learn more about **Authentication** in Node.js.](../../node.js/authentication){.learn-more}
+[Learn more about **Authentication** in Java.](../../java/security#authentication){.learn-more}
