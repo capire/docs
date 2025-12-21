@@ -288,7 +288,7 @@ Here's a rough checklist what this guide should cover:
 Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/#test-locally).
 Prepare this by going back to your app with `cd orders`.
 
-With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deployment/).
+With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deploy/).
 
 ## As a SaaS Customer {#prep-as-operator}
 
@@ -299,7 +299,7 @@ All steps are based on our Orders Management sample which can be [started locall
 
 To extend a SaaS app deployed to BTP, you'll need to subscribe to it [through the BTP cockpit](../multitenancy/#subscribe).
 
-Refer to the [Deployment Guide](../deployment/to-cf) for more details on remote deployments.
+Refer to the [Deployment Guide](../deploy/to-cf) for more details on remote deployments.
 
 Also, you have to replace local URLs used in `cds` commands later with the URL of the deployed App Router.
 Use a passcode to authenticate and authorize you.

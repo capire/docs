@@ -964,7 +964,7 @@ resources:
 
 Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_ file are merged. If there are conflicts, the [MTA security configuration](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) has priority.
 
-[Learn more about **building and deploying MTA applications**.](/guides/deployment/){ .learn-more}
+[Learn more about **building and deploying MTA applications**.](/guides/deploy/){ .learn-more}
 
 ### 3. Assembling Roles and Assigning Roles to Users
 

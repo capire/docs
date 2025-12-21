@@ -157,7 +157,7 @@ cds build     # to create the js files
 cd gen/srv && npm start
 ```
 
-[Learn more on running a project from build results.](../guides/deployment/build.md){.learn-more}
+[Learn more on running a project from build results.](../guides/deploy/build.md){.learn-more}
 
 ## TypeScript APIs in `@sap/cds` <Since version="8.0.0" of="@sap/cds" />
 

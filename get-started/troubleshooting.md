@@ -750,7 +750,7 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 1. The route really does not exist or is not bound to an app.
   You can check this in SAP BTP cockpit either in the app details view or in the list of routes in the Cloud Foundry space.
 2. The app (or all app instances, in case of horizontal scale-out) failed the readiness check.
-  Please see [Health Checks](../guides/deployment/health-checks.md) and [Using Cloud Foundry health checks](https://docs.cloudfoundry.org/devguide/deploy-apps/healthchecks.html) for details on how to set up the check.
+  Please see [Health Checks](../guides/deploy/health-checks.md) and [Using Cloud Foundry health checks](https://docs.cloudfoundry.org/devguide/deploy-apps/healthchecks.html) for details on how to set up the check.
 
     ::: details Troubleshoot using the Cloud Foundry CLI
 
@@ -772,7 +772,7 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 For security reasons, the **index page is not served in production** by default in both [Node.js](../node.js/cds-server#toggle-generic-index-page) and [Java](../java/developing-applications/configuring#production-profile).
 
 If you try to access your backend URL, you will therefore see a _404 Cannot GET /_ error.
-This also means you **cannot use the `/` path as a health status indicator**.  See the [Health Checks guide](../guides/deployment/health-checks) for the correct paths.
+This also means you **cannot use the `/` path as a health status indicator**.  See the [Health Checks guide](../guides/deploy/health-checks) for the correct paths.
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
 

@@ -218,7 +218,7 @@ Add initial multitarget application configuration for deployment to Cloud Foundr
 cds add mta
 ```
 
-[Learn more about **how to deploy to Cloud Foundry**.](../deployment/to-cf){.learn-more}
+[Learn more about **how to deploy to Cloud Foundry**.](../deploy/to-cf){.learn-more}
 
 ### Database
 

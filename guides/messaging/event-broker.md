@@ -88,10 +88,10 @@ Therefore we recommend to use a messaging service of kind [`local-messaging`](..
 
 ## Prepare for MTA Deployment {#deploy}
 
-A general description of how to deploy CAP applications to SAP BTP Cloud Foundry, can be found in the [Deploy to Cloud guide](../deployment/).
+A general description of how to deploy CAP applications to SAP BTP Cloud Foundry, can be found in the [Deploy to Cloud guide](../deploy/).
 As documented there, MTA is frequently used to deploy to SAP BTP.
 
-[Learn more about using MTA.](../deployment/){.learn-more}
+[Learn more about using MTA.](../deploy/){.learn-more}
 
 Follow these steps to ensure proper binding of your deployed application to the SAP Cloud Application Event Hub instance.
 The guide makes use of the [@capire/incidents](https://github.com/cap-js/incidents-app) reference application.

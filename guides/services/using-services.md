@@ -1336,7 +1336,7 @@ With Istio, you can further secure the communication [by configuring authenticat
 
 Your micro service needs bindings to the **XSUAA** and **Destination** service to access destinations on SAP BTP. If you want to access an on-premise service using **Cloud Connector**, then you need a binding to the **Connectivity** service as well.
 
-[Learn more about deploying CAP applications.](../deployment/index){.learn-more}
+[Learn more about deploying CAP applications.](../deploy/index){.learn-more}
 [Learn more about deploying an application using the end-to-end tutorial.](https://developers.sap.com/group.btp-app-cap-deploy.html){.learn-more}
 
 <!-- #### Add Required Services to Cloud Foundry Manifest Deployment
@@ -1387,7 +1387,7 @@ cf create-service-push  # or `cf cspush` in short from 1.3.2 onwards
 
 #### Add Required Services to MTA Deployments
 
-The MTA-based deployment is described in [the deployment guide](../deployment/index.md). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](../deployment/to-cf#add-mta-yaml) file.
+The MTA-based deployment is described in [the deployment guide](../deploy/index.md). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](../deploy/to-cf#add-mta-yaml) file.
 
 
 ```sh

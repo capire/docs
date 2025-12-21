@@ -542,7 +542,7 @@ When deploying new versions of your app, you also need to upgrade your tenants' 
 
 ## Deploy to Cloud
 
-In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deployment/to-cf) and [deployment to Kyma](../deployment/to-kyma) guides.
+In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deploy/to-cf) and [deployment to Kyma](../deploy/to-kyma) guides.
 
 1. Prepare your application for production, **once**:
     ::: code-group
@@ -1043,7 +1043,7 @@ You can also selectively use these properties to enable only extensibility or fe
 
 Software-as-a-Service (SaaS) solutions are deployed once by a SaaS provider, and then used by multiple SaaS customers subscribing to the software.
 
-SaaS applications need to register with the [_SAP BTP SaaS Provisioning service_](https://discovery-center.cloud.sap/serviceCatalog/saas-provisioning-service) to handle `subscribe` and `unsubscribe` events. In contrast to [single-tenant deployments](../deployment/to-cf), databases or other _tenant-specific_ resources aren't created and bootstrapped upon deployment, but upon subscription per tenant.
+SaaS applications need to register with the [_SAP BTP SaaS Provisioning service_](https://discovery-center.cloud.sap/serviceCatalog/saas-provisioning-service) to handle `subscribe` and `unsubscribe` events. In contrast to [single-tenant deployments](../deploy/to-cf), databases or other _tenant-specific_ resources aren't created and bootstrapped upon deployment, but upon subscription per tenant.
 
 CAP includes the **MTX services**, which provide out-of-the-box handlers for `subscribe`/`unsubscribe` events, for example to manage SAP HANA database containers.
 <!-- , as well as automated updates of subscribed tenants. (Not sure what this means here) -->

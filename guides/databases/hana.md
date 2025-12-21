@@ -53,7 +53,7 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 ::: tip Prefer `cds add`
 
-... as documented in the [deployment guide](../deployment/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
+... as documented in the [deployment guide](../deploy/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
 
 :::
 
@@ -164,7 +164,7 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
 
 ## Deploying to SAP HANA
 
-There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deployment/index.md) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
+There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deploy/index.md) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
 
 To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/troubleshooting#get-hana) to learn about your options.
 
@@ -179,7 +179,7 @@ cds add hana --for hybrid
 This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
 ::: tip The profile `hybrid` relates to [the hybrid testing](../advanced/hybrid-testing) scenario
-If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deployment/index.md) guide.
+If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deploy/index.md) guide.
 :::
 
 No further configuration is necessary for Node.js. For Java, see the [Use SAP HANA as the Database for a CAP Java Application](https://developers.sap.com/tutorials/cp-cap-java-hana-db.html#880cf07a-1788-4fda-b6dd-b5a6e5259625) tutorial for the rest of the configuration.
@@ -190,7 +190,7 @@ No further configuration is necessary for Node.js. For Java, see the [Use SAP HA
 
 `cds deploy` lets you deploy _just the database parts_ of the project to an SAP HANA instance. The server application (the Node.js or Java part) still runs locally and connects to the remote database instance, allowing for fast development roundtrips.
 
-Make sure that you're [logged in to Cloud Foundry](../deployment/to-cf#build-and-deploy) with the correct target, that is, org and space.
+Make sure that you're [logged in to Cloud Foundry](../deploy/to-cf#build-and-deploy) with the correct target, that is, org and space.
 Then in the project root folder, just execute:
 
 ```sh
@@ -244,7 +244,7 @@ This is equivalent to `cds deploy --to hana:myservice` and ignores information c
 
 ### Using `cf deploy` or `cf push`
 
-See the [Deploying to Cloud](../deployment/index.md) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
+See the [Deploying to Cloud](../deploy/index.md) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
 
 
 

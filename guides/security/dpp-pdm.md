@@ -171,7 +171,7 @@ npm install @sap/xssec
 
 The Personal Data Manager can't connect to your application running locally. Therefore, you first need to deploy your application. In our sample, we added two manifest files using `cds add cf-manifest` and SAP HANA configuration using `cds add hana`.
 
-The general deployment is described in detail in [Deploy Using Manifest Files](../deployment/to-cf).
+The general deployment is described in detail in [Deploy Using Manifest Files](../deploy/to-cf).
 
 Make a production build:
 

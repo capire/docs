@@ -26,7 +26,7 @@ hero:
       theme: alt
 
     - text: Deploy
-      link: /guides/deployment/
+      link: /guides/deploy/
       theme: alt
 
     - text: What's New?

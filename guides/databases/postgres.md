@@ -352,7 +352,7 @@ cds add postgres
 
 ### Deploy
 
-You can package and deploy that application, for example using [MTA-based deployment](../deployment/to-cf#add-mta-yaml).
+You can package and deploy that application, for example using [MTA-based deployment](../deploy/to-cf#add-mta-yaml).
 
 ## Automatic Schema Evolution { #schema-evolution }
 

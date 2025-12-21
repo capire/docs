@@ -95,20 +95,20 @@
 
 ## Advanced
 
-  ### [Hybrid Testing w/ cds bind](../advanced/hybrid-testing)
+  ### [Hybrid Testing w/ cds bind](guides/advanced/hybrid-testing)
   ### [Reuse & Compose](guides/extensibility/composition)
-  ### [Performance](advanced/performance-modeling)
+  ### [Performance](guides/advanced/performance-modeling)
 
-# [Deploy](guides/deployment/index.md)
+# [Deploy](guides/deploy/index.md)
 
  ## [Multi-tenant SaaS Apps](guides/multitenancy/index.md)
- ## [Deploy to Cloud Foundry](guides/deployment/to-cf)
- ## [Deploy to Kyma/K8s](guides/deployment/to-kyma)
- ## [Deploy with CI/CD](guides/deployment/cicd)
- ## [Deploy with Confidence](guides/deployment/dwc)
- ## [Custom Build Tasks](guides/deployment/build)
- ## [Health Checks](guides/deployment/health-checks)
- ## [Microservices](guides/deployment/microservices)
+ ## [Deploy to Cloud Foundry](guides/deploy/to-cf)
+ ## [Deploy to Kyma/K8s](guides/deploy/to-kyma)
+ ## [Deploy with CI/CD](guides/deploy/cicd)
+ ## [Deploy with Confidence](../guides/deploy/dwc)
+ ## [Custom Build Tasks](guides/deploy/build)
+ ## [Health Checks](guides/deploy/health-checks)
+ ## [Microservices](guides/deploy/microservices)
  ## [MTX Services Reference](guides/multitenancy/mtxs)
 
 # [CDS](cds/_menu.md)

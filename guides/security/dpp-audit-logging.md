@@ -155,7 +155,7 @@ A more comprehensive guide, incl. tutorials, is currently under development.
 
 <span id="audit-logging-in-saas" />
 
-For deployment in general, please follow the [deployment guide](../deployment/index.md). Check the rest of this guide before actually triggering the deployment (that is, executing `cf deploy`).
+For deployment in general, please follow the [deployment guide](../deploy/index.md). Check the rest of this guide before actually triggering the deployment (that is, executing `cf deploy`).
 
 Here is what you need to do additionally,  to integrate with SAP Audit Log Service:
 

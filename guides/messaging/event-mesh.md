@@ -148,7 +148,7 @@ In both cases — automatically chosen queue names or explicitly configured ones
 
 ## Deploy to the Cloud (with MTA)
 
-A general description of how to deploy CAP applications to SAP BTP's Cloud Foundry, can be found in the [Deploy to Cloud* guide](../deployment/). As documented there, MTA is frequently used to deploy to SAP BTP. Follow these steps to ensure binding of your deployed application to the SAP Event Mesh instance.
+A general description of how to deploy CAP applications to SAP BTP's Cloud Foundry, can be found in the [Deploy to Cloud* guide](../deploy/). As documented there, MTA is frequently used to deploy to SAP BTP. Follow these steps to ensure binding of your deployed application to the SAP Event Mesh instance.
 
 
 ### 1. Specify Binding to SAP Event Mesh Instance
@@ -170,7 +170,7 @@ resources:
       service-plan: <Event Mesh Service Instance - Plan>
 ```
 
-[Learn more about using MTA.](../deployment/){.learn-more}
+[Learn more about using MTA.](../deploy/){.learn-more}
 
 ::: warning
 Make sure to use the exact `name` and `service-plan` used at the time creating the service instance you want to use.

@@ -412,7 +412,7 @@ The first *.cdsrc.json* file goes into the root folder of your project and speci
 You only need to change this configuration if you named your project folders, `app`, `db`, `srv`, and `mtx-sidecar` differently.
 :::
 
-A detailed description of this configuration file can be found in section [Build Configuration](../guides/deployment/build.md). In the following, you find a short summary of this example:
+A detailed description of this configuration file can be found in section [Build Configuration](../guides/deploy/build.md). In the following, you find a short summary of this example:
 
 The `build` section defines the build `tasks` that should be executed. Three build tasks are defined in this example:
 
