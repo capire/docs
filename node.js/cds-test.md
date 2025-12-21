@@ -580,7 +580,7 @@ describe(() => { cds.test(...) })
 ```
 :::
 
-[Learn how to setup integration tests with `cds bind`.](../advanced/hybrid-testing#integration-tests){.learn-more}
+[Learn how to setup integration tests with `cds bind`.](../guides/advanced/hybrid-testing#integration-tests){.learn-more}
 
 
 ## Using `cds.test` in REPL

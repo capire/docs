@@ -106,7 +106,7 @@ Before [deploying to the cloud](#deploy-to-the-cloud-with-mta), you may want to 
     ```
 
 
-    [Learn more about `cds bind` and hybrid testing.](../../advanced/hybrid-testing){.learn-more}
+    [Learn more about `cds bind` and hybrid testing.](../advanced/hybrid-testing){.learn-more}
 
 5. Run your services in separate terminal shells with the `hybrid` profile:
 

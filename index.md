@@ -49,7 +49,7 @@ features:
     •&nbsp; Enterprise-grade solutions <br/>
     •&nbsp; Battle tested in SAP products <br/>
     •&nbsp; Served out of the box <br/>
-  link: about/best-practices
+  link: get-started/best-practices
   linkText: Key Concepts & Rationales
 
 - title: Focus on Domain!
@@ -58,7 +58,7 @@ features:
     •&nbsp; Capture intent → What, not how! <br/>
     •&nbsp; Separation of concerns <br/>
     •&nbsp; Minimized technical debts <br/>
-  link: about/
+  link: get-started/about
   linkText: Read the Primer
 
 - title: Cloud Native by Design
@@ -67,7 +67,7 @@ features:
     •&nbsp; Multitenancy, Scalability, ... <br/>
     •&nbsp; Intrinsic Extensibility <br/>
     •&nbsp; Evolution w/o disruption <br/>
-  link: about/#cloud-native-by-design
+  link: get-started/about#cloud-native-by-design
   linkText: Intrinsic Cloud Qualities
 
 ---

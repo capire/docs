@@ -19,7 +19,7 @@ It's organized as follows:
 
 | Section                                                                                  | Description                                                                                                        |
 |------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| [Getting&nbsp;Started](./) <br/> [Cookbook](../guides/) <br/> [Advanced](../advanced/)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
+| [Getting&nbsp;Started](./) <br/> [Cookbook](../guides/)) <br/> [Advanced](../guides/advanced/)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
 | [CDS](../cds/) <br/> [Java](../java/) <br/> [Node](../node.js/) <br/> [Tools](../tools/) | **Reference docs** for respective areas.                                                                           |
 | [Plugins](../plugins/)                                                                   | **Curated list of plugins** that extend the capabilities of the CAP framework.                                     |
 | [Releases](../releases/)                                                                 | The place where you can stay up to date with the most recent information about new features and changes in CAP.        |

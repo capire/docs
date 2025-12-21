@@ -62,6 +62,6 @@ These types are used to define the structure of entities and services, and are m
 
 [Additional Reuse Types and Aspects by `@sap/cds/common`](common) {.learn-more}
 
-[Mapping to OData EDM types](../advanced/odata#type-mapping) {.learn-more}
+[Mapping to OData EDM types](../guides/advanced/odata#type-mapping) {.learn-more}
 
 [HANA-native Data Types](../guides/databases/hana-native#hana-types){.learn-more}

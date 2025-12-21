@@ -4,9 +4,10 @@ import filter from '../../.vitepress/theme/components/indexFilter.ts'
 
 const basePath = basename(__dirname)
 export default createContentLoader([
-  `**/${basePath}/*.md`,
-  `**/advanced/odata.md`
-], {
+    `**/${basePath}/*.md`,
+    `**/${basePath}/publishing-apis/*.md`,
+    `**/guides/security/*.md`,
+  ], {
   transform(rawData) {
     return filter(rawData, `/${basePath}/`)
   }

@@ -1,13 +1,13 @@
 
 # [Get Started](get-started/)
 
- ## [Introduction — What is CAP?](about/)
+ ## [Introduction — What is CAP?](get-started/about)
  ## [Bookshop by capire](get-started/in-a-nutshell)
- ## [Best Practices](about/best-practices)
- ## [Anti Patterns](about/bad-practices)
+ ## [Best Practices](get-started/best-practices)
+ ## [Anti Patterns](get-started/bad-practices)
  ## [Next Steps](get-started/#next-steps)
  ## [Learn More](get-started/learning-sources)
- ## [Features Matrix](about/features)
+ ## [Features Matrix](get-started/features)
  ## [Troubleshooting](get-started/troubleshooting)
 
 # [Develop](guides/index.md)
@@ -50,7 +50,7 @@
   ### [Events from S/4](guides/messaging/s4)
   ### [Task Queues](guides/messaging/task-queues)
 
-## [Protocols/APIs](advanced/publishing-apis/index.md)
+## [Protocols/APIs](guides/advanced/publishing-apis/index.md)
 
   ### [OData APIs](advanced/odata)
   ### [OpenAPI](advanced/publishing-apis/openapi)
@@ -62,8 +62,8 @@
   ### [I18n, Localization](guides/uis/i18n)
   ### [Localized Data](guides/uis/localized-data)
   
-## [Analytics](advanced/analytics)
-  ### [Embedded Analytics](../advanced/embedded-analytics)
+## [Analytics](guides/advanced/analytics)
+  ### [Embedded Analytics](../guides/advanced/embedded-analytics)
 
 
 ## [Databases](guides/databases/)

@@ -96,7 +96,7 @@ Use one of the support channels below, in this order:
 
    This applies to all plugins, especially those without public repositories. Or if you're not quite sure that the problem is caused by the plugin.
 
-3. Open incidents through [SAP Support Portal](/resources/#support-channels).
+3. Open incidents through [SAP Support Portal](/resources/index#support-channels).
 
    Note that plugins by external parties, like the [CAP JS](https://github.com/cap-js-community/) community, are out of scope for incidents.
 
@@ -122,7 +122,7 @@ Available for:
 [![Node.js](../public/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/odata-v2-adapter#readme)
 [![Java](../public/logos/java.svg 'Link to the documentation of the OData feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/migration#v2adapter)
 
-See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../advanced/odata#v2-support) {.learn-more}
+See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../guides/advanced/odata#v2-support) {.learn-more}
 
 ## WebSocket
 

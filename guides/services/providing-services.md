@@ -536,7 +536,7 @@ The reliable pagination is available with following limitations:
 - Results of functions or arithmetic expressions can't be used in the `$orderby` option (explicit ordering).
 - The elements used in the `$orderby` of the request must be of simple type.
 - All elements used in `$orderby` must also be included in the `$select` option, if it's set.
-- Complex [concatenations](../../advanced/odata#concat) of result sets aren't supported.
+- Complex [concatenations](../advanced/odata#concat) of result sets aren't supported.
 ::: warning
 Don't use reliable pagination if an entity set is sorted by elements that contain sensitive information, the skip token could reveal the values of these elements.
 :::

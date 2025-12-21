@@ -754,7 +754,7 @@ mvn cds:watch -Dspring-boot.run.profiles=hybrid
 :::
 
 
-Learn more about [Hybrid Testing](../../advanced/hybrid-testing).{.learn-more}
+Learn more about [Hybrid Testing](../advanced/hybrid-testing).{.learn-more}
 
 ::: tip Manage multiple deployments
 Use a dedicated profile for each deployment landscape if you are using several, such as `dev`, `test`, `prod`. For example, after logging in to your `dev` space:

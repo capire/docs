@@ -442,7 +442,7 @@ Now that we have a connected, fully capable SQL database, filled with some initi
 > Note: Use [_authenticated_](../java/security#mock-users) to query the `admin` service. You don't need to enter a password. {.impl .java}
 
 [Learn more about **Generic Providers**.](../guides/services/providing-services){.learn-more}
-[Learn more about **OData's Query Options**.](../advanced/odata){.learn-more}
+[Learn more about **OData's Query Options**.](../guides/advanced/odata){.learn-more}
 
 
 

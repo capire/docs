@@ -633,7 +633,7 @@ This can be achieved automatically by consuming [Application Autoscaler](https:/
 <!-- #SEC-278 #SEC-238 #SEC-235 #SEC-282 -->
 
 There are additional attack vectors to consider. For instance, naive URL handling in the server endpoints frequently introduces security gaps.
-Luckily, CAP applications don't have to implement HTTP/URL processing on their own as CAP offers sophisticated [protocol adapters](../../about/features#consuming-services) such as OData V2/V4 that have the necessary security validations in place.
+Luckily, CAP applications don't have to implement HTTP/URL processing on their own as CAP offers sophisticated [protocol adapters](../../get-started/features#consuming-services) such as OData V2/V4 that have the necessary security validations in place.
 The adapters also transform the HTTP requests into a corresponding CQN statement.
 Access control is performed on basis of CQN level according to the CDS model and hence HTTP Verb Tampering attacks are avoided. Also HTTP method override, using `X-Http-Method-Override` or `X-Http-Method` header, is not accepted by the runtime.
 

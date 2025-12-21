@@ -348,9 +348,9 @@ On the same note, converting UUID values obtained as strings from the database i
 
 :::
 
-[See also: Mapping UUIDs to OData](../advanced/odata#override-type-mapping) {.learn-more}
+[See also: Mapping UUIDs to OData](advanced/odata#override-type-mapping) {.learn-more}
 
-[See also: Mapping UUIDs to SQL](./databases/hana-native#mapping-uuids-to-sql) {.learn-more}
+[See also: Mapping UUIDs to SQL](databases/hana-native#mapping-uuids-to-sql) {.learn-more}
 
 
 

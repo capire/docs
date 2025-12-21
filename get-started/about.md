@@ -30,7 +30,7 @@ Someone once said:
 
 ### Jumpstarting Projects
 
-To get started with CAP, there's only a [minimalistic initial setup](../get-started/index.md) required. Starting a project is a matter of seconds. No tedious long lasting platform onboarding ceremonies are required; instead you can (and should):
+To get started with CAP, there's only a [minimalistic initial setup](./index.md) required. Starting a project is a matter of seconds. No tedious long lasting platform onboarding ceremonies are required; instead you can (and should):
 
 - Start new CAP projects within seconds.
 - Create functional apps with full-fledged servers within minutes.
@@ -74,7 +74,7 @@ cds add hana,redis,mta,helm,mtx,multitenancy,extensibility...
 
 Most of your development happens in inner loops, where developers would **code**, **run**, and **test** in **fast iteration**. However, at least in mediocre cloud-based development approaches, this is slowed down drastically, for example, by the need to always be connected to platform services, up to the need to always deploy to the cloud to see and test the effects of recent changes.
 
-![inner-loop](assets/inner-loop.png){.zoom75}
+![inner-loop](./assets/inner-loop.png){.zoom75}
 
 CAP applications are [**agnostic by design**](best-practices#agnostic-by-design), which allows to stay in fast inner loops by using local mock variants as stand-ins for many platform services and features, thereby eliminating the need to always connect to or deploy to the cloud; developers can stay in fast inner loops, without connection to cloud – aka. ***airplane*** mode development. Only when necessary, they can test in ***hybrid*** mode or do ad-hoc deployments to the cloud.
 
@@ -103,9 +103,9 @@ Assumed you plan for a microservices architecture, the team developing microserv
 
 With CAP, you can (and should) instead just run both services in the same local process at development, basically by using `B` as a plain old library in `A`, and only deploy them to separate microservices in production, **without having to touch your models or code** (given `A` uses `B` through public APIs, which should always be the case anyways).
 
-![modulith](assets/modulith.png){.zoom66}
+![modulith](./assets/modulith.png){.zoom66}
 
-![late-cut-microservices](assets/late-cut-microservices.png){.zoom66}
+![late-cut-microservices](./assets/late-cut-microservices.png){.zoom66}
 
 If service `A` and `B` are developed in different runtimes, for example, Node.js and Java, you can't run them in the same process. But even then you can (and should) leverage CAP's ability to easily serve a service generically based on a service definition in CDS. So during development, `A`  would use a mocked variant of `B` served automatically by CAP's generic providers.
 
@@ -139,7 +139,7 @@ In general, we always propose that approach:
 
 
 
-As shown in the [*Bookshop by capire*](../get-started/in-a-nutshell) walkthrough, a simple service definition in CDS is all we need to run a full-fledged REST, or OData, or GraphQL server
+As shown in the [*Bookshop by capire*](./in-a-nutshell) walkthrough, a simple service definition in CDS is all we need to run a full-fledged REST, or OData, or GraphQL server
 
 There are more options to parallelize workflows. Fueled by service definition is all that is required to get a full-fledged REST or OData service **served out of the box** by generic providers.
 
@@ -159,7 +159,6 @@ The CAP runtimes in Node.js and Java provide many generic implementations for re
 
 - [Serving CRUD Requests](../guides/services/providing-services#generic-providers)
 - [Serving Nested Documents](../guides/services/providing-services#deep-reads-and-writes)
-- [Serving Variable Data](../releases/archive/2024/oct24#basic-support-for-cds-map) <Alpha/>
 - [Serving (Fiori) Drafts](../guides/uis/fiori#draft-support)
 - [Serving Media Data](../guides/services/providing-services#serving-media-data)
 - [Searching Data](../guides/services/providing-services#searching-data)
@@ -178,7 +177,7 @@ The CAP runtimes in Node.js and Java provide many generic implementations for re
 >
 > This set of automatically served requests and covered related requirements, means that CAP's generic providers automatically serve the vast majority, if not all of the requests showing up in your applications, without you having to code anything for that, except for true custom domain logic.
 
-[See also the *Features Overview*](./features) {.learn-more}
+[See also the *Features Overview*](features) {.learn-more}
 
 
 
@@ -193,7 +192,7 @@ On top of the common request-serving related things handled by CAP's generic pro
 - [Localized Data](../guides/uis/localized-data)
 - [Temporal Data](../guides/temporal-data)
 - [Data Federation](https://github.com/SAP-samples/teched2022-AD265/wiki) → hands-on tutorial; capire guide in the making...
-- [Verticalization & Extensibility](../guides/extensibility/)
+- [Verticalization & Extensibility](../guides/extensibility/index.md)
 
 <br/>
 
@@ -216,23 +215,23 @@ On top of the common request-serving related things handled by CAP's generic pro
 
 That initiative happened to be successful, and gave a boost to a steadily **growing ecosystem** around CAP with an active **inner source** and **open source** community on the one hand side. On the other hand, it resulted into an impressive collection of production-level add-ons. Here are some highlights **maintained by SAP teams**:
 
-- [GraphQL Adapter](../plugins/#graphql-adapter)
-- [OData V2 Adapter](../plugins/#odata-v2-proxy)
-- [WebSockets Adapter](../plugins/#websocket)
-- [UI5 Dev Server](../plugins/#ui5-dev-server)
-- [Open Telemetry → SAP Cloud Logging, Dynatrace, ...](../plugins/#telemetry)
-- [Attachments → SAP Object Store /S3](../plugins/#attachments)
-- [Attachments → SAP Document Management Service](../plugins/#@cap-js/sdm)
-- [Messaging → SAP Cloud Application Event Hub](../plugins/#event-hub)
-- [Change Tracking](../plugins/#change-tracking)
-- [Notifications](../plugins/#notifications)
-- [Audit Logging → SAP Audit Logging](../plugins/#audit-logging)
+- [GraphQL Adapter](../plugins/index.md#graphql-adapter)
+- [OData V2 Adapter](../plugins/index.md#odata-v2-proxy)
+- [WebSockets Adapter](../plugins/index.md#websocket)
+- [UI5 Dev Server](../plugins/index.md#ui5-dev-server)
+- [Open Telemetry → SAP Cloud Logging, Dynatrace, ...](../plugins/index.md#telemetry)
+- [Attachments → SAP Object Store /S3](../plugins/index.md#attachments)
+- [Attachments → SAP Document Management Service](../plugins/index.md#@cap-js/sdm)
+- [Messaging → SAP Cloud Application Event Hub](../plugins/index.md#event-hub)
+- [Change Tracking](../plugins/index.md#change-tracking)
+- [Notifications](../plugins/index.md#notifications)
+- [Audit Logging → SAP Audit Logging](../plugins/index.md#audit-logging)
 - [Personal Data Management → SAP DPI Services](../guides/security/data-privacy)
-- [Open Resource Discovery (ORD)](../plugins/#ord-open-resource-discovery)
+- [Open Resource Discovery (ORD)](../plugins/index.md#ord-open-resource-discovery)
 
 >  [!tip]
 >
-> This is just a subset and a snapshot of the growing number of plugins <br/>→ find more in the [***CAP Plugins***](../plugins/) page, as well in the [***CAP Commmunity***](../resources/community-sap) spaces.
+> This is just a subset and a snapshot of the growing number of plugins <br/>→ find more in the [***CAP Plugins***](../plugins/index.md) page, as well in the [***CAP Commmunity***](/resources/community-sap.md) spaces.
 
 
 
@@ -294,7 +293,7 @@ That might sound like a contradiction, but it isn't: While CAP certainly gives *
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | **Platform-agnostic APIs** to avoid lock-ins to low-level stuff. | All abstractions follow a glass-box pattern that allows unrestricted access to lower-level things, if necessary |
 | **Best practices**, served out of the box by generic providers | You're free to do things your way in [custom handlers](../guides/services/providing-services#custom-logic), ... while CAP simply tries to get the tedious tasks out of your way. |
-| **Out-of-the-box support** for <br> **[SAP Fiori](https://developers.sap.com/topics/ui-development.html)** and **[SAP HANA](https://developers.sap.com/topics/hana.html)** | You can also choose other UI technologies, like [Vue.js](../get-started/in-a-nutshell#vue). Other databases are supported as well. |
+| **Out-of-the-box support** for <br> **[SAP Fiori](https://developers.sap.com/topics/ui-development.html)** and **[SAP HANA](https://developers.sap.com/topics/hana.html)** | You can also choose other UI technologies, like [Vue.js](./in-a-nutshell#vue). Other databases are supported as well. |
 | **Tools support** in [SAP Build Code](../tools/cds-editors#bas) or [VS Code](../tools/cds-editors#vscode). | Everything in CAP can be done using the [`@sap/cds-dk`](../tools/cds-cli) CLI and any editor or IDE of your choice. |
 
 <br/>

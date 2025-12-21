@@ -1175,7 +1175,7 @@ cds:
 
 ### Connect to Remote Services Locally
 
-If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../../advanced/hybrid-testing) with the following procedure:
+If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../advanced/hybrid-testing) with the following procedure:
 
 #### Bind to Remote Destinations
 
@@ -1202,7 +1202,7 @@ Your local application needs access to an XSUAA and Destination service instance
     cds bind -2 cpapp-xsuaa,cpapp-destination
     ```
 
-    [Learn more about `cds bind`.](../../advanced/hybrid-testing#services-on-cloud-foundry){.learn-more}
+    [Learn more about `cds bind`.](../advanced/hybrid-testing#services-on-cloud-foundry){.learn-more}
 
 #### Run a Node.js Application with a Destination {.node}
 
@@ -1265,7 +1265,7 @@ cds bind --exec -- mvn spring-boot:run \
   -Dspring-boot.run.profiles=default,hybrid
 ```
 
-[Learn more about `cds bind --exec`.](../../advanced/hybrid-testing#run-arbitrary-commands-with-service-bindings){.learn-more}
+[Learn more about `cds bind --exec`.](../advanced/hybrid-testing#run-arbitrary-commands-with-service-bindings){.learn-more}
 
 ::: tip
 If you are developing in the Business Application Studio and want to connect to an on-premise system, you will need to do so via Business Application Studio's built-in proxy, for which you need to add configuration to your destination environment variable. See [Reach On-Premise Service from the SAP Business Application Studio](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/destination-service#reach-on-premise-service-from-the-sap-business-application-studio) for more details.

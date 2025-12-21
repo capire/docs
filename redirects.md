@@ -4,10 +4,11 @@
 - [get-started/tools](tools)
 - [get-started/samples](get-started/learning-sources)
 - [get-started/using-typescript](node.js/typescript)
-- [get-started/jumpstart](about#jumpstarting-projects)
+- [get-started/jumpstart](get-started/about#jumpstarting-projects)
 - [get-started/hello-world](get-started/in-a-nutshell)
-- [about/glossary](about)
-- [get-started/grow-as-you-go](about#growing-as-you-go)
+- [about](get-started/about)
+- [about/glossary](get-started/about)
+- [get-started/grow-as-you-go](get-started/about#growing-as-you-go)
 
 ## Cookbook Guides
 

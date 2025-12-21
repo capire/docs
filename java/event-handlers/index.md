@@ -13,12 +13,12 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
   }
 </style>
 
-This section describes how to register event handlers on services. In CAP everything that happens at runtime is an [event](../../about/best-practices#events) that is sent to a [service](../../about/best-practices#services).
+This section describes how to register event handlers on services. In CAP everything that happens at runtime is an [event](../../get-started/best-practices#events) that is sent to a [service](../../get-started/best-practices#services).
 With event handlers, the processing of these events can be extended or overridden. Event handlers can be used to handle CRUD events, implement actions and functions, and to handle asynchronous events from a messaging service.
 
 ## Introduction to Event Handlers
 
-CAP allows you to register event handlers for [events](../../about/best-practices#events) on [services](../../about/best-practices#services). An event handler is simply a Java method.
+CAP allows you to register event handlers for [events](../../get-started/best-practices#events) on [services](../../get-started/best-practices#services). An event handler is simply a Java method.
 Event handlers enable you to add custom business logic to your application by either extending the processing of an event, or by completely overriding its default implementation.
 
 ::: tip

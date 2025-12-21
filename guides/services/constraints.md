@@ -389,7 +389,7 @@ Elements annotated with `@readonly`, as well as [_calculated elements_](../../cd
 
 By default [`virtual` elements](../../cds/cdl#virtual-elements) are also _calculated_.
 ::: tip
-The same applies for fields with the [OData Annotations](../../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
+The same applies for fields with the [OData Annotations](../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
 :::
 
 ::: warning Not allowed on keys
@@ -536,7 +536,7 @@ Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it
 @UI.Hidden: (status <> 'visible')
 ```
 
-[Learn more about that in the *OData guide*](../../advanced/odata#expression-annotations) {.learn-more}
+[Learn more about that in the *OData guide*](../advanced/odata#expression-annotations) {.learn-more}
 
 
 

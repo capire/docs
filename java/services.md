@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-[Services](../about/best-practices#services) are one of the core concepts of CAP. This section describes how services are represented in the CAP Java SDK and how their event-based APIs can be used. One of the key APIs provided by services is the uniform query API based on [CQN statements](working-with-cql/query-api).
+[Services](../get-started/best-practices#services) are one of the core concepts of CAP. This section describes how services are represented in the CAP Java SDK and how their event-based APIs can be used. One of the key APIs provided by services is the uniform query API based on [CQN statements](working-with-cql/query-api).
 
 ## An Event-Based API
 

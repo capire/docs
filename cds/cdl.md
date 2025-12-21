@@ -322,7 +322,7 @@ cds.compile(..., { docs: true })
 
 ::: tip Doc comments are automatically enabled in CAP Java.
 In CAP Java, doc comments are automatically enabled by the [CDS Maven Plugin](../java/developing-applications/building#cds-maven-plugin).
-In generated interfaces they are [converted to corresponding Javadoc comments](../java/assets/cds-maven-plugin-site/generate-mojo.html#documentation){target="_blank"}.
+In generated interfaces they are converted to corresponding Javadoc comments.
 :::
 
 When generating output for deployment to SAP HANA, the first paragraph of a doc comment is translated
@@ -838,9 +838,9 @@ entity UsingView ( bar: Boolean )
 as SELECT * from SomeView(foo: 17, bar: :bar);
 ```
 
-For Node.js, there's no programmatic API yet. You need to provide a [CQN snippet](/cds/cqn#select).
+For Node.js, there's no programmatic API yet. You need to provide a [CQN snippet](cqn#select).
 
-In CAP Java, run a select statement against the view with named [parameter values](/java/working-with-cql/query-execution#querying-views):
+In CAP Java, run a select statement against the view with named [parameter values](../java/working-with-cql/query-execution#querying-views):
 
 ::: code-group
 ```js [Node]
@@ -1031,7 +1031,7 @@ Essentially, Compositions are the same as _[associations](#associations)_, just 
 Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
-See the [Keep it Simple, Stupid](/guides/domain-modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](/guides/domain-modeling#prefer-flat-models) section.
+See the [Keep it Simple, Stupid](../guides/domain-modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](../guides/domain-modeling#prefer-flat-models) section.
 :::
 
 ### Managed Compositions of Aspects {#managed-compositions}
@@ -1180,7 +1180,7 @@ Publishing a _composition_ with a filter is similar, with an important differenc
 in a deep Update, Insert, or Delete statement the respective operation does not cascade to the target entities.
 Thus the type of the resulting element is set to `cds.Association`.
 
-[Learn more about `cds.Association`.](/cds/csn#associations){.learn-more}
+[Learn more about `cds.Association`.](csn#associations){.learn-more}
 
 In [SAP Fiori Draft](../guides/uis/fiori#draft-support), it behaves
 like an "enclosed" association, that means, it points to the target draft entity.
@@ -1199,7 +1199,7 @@ entity P_orders as projection on Orders {
 
 ## Annotations
 
-This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../advanced/odata#annotations) guide.
+This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/advanced/odata#annotations) guide.
 
 - [Annotation Syntax](#annotation-syntax)
 - [Annotation Targets](#annotation-targets)
@@ -1602,7 +1602,7 @@ the annotations.
 #### OData Annotations
 
 The OData backend of the CAP CDS compiler supports expression-valued annotations.
-See [Expressions in OData Annotations](../advanced/odata#expression-annotations).
+See [Expressions in OData Annotations](../guides/advanced/odata#expression-annotations).
 
 
 
