@@ -7,7 +7,7 @@ status: released
 
 # Domain Modeling
 
-Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](./databases/index)* deployed to databases as well as for *[service definitions](./providing-services)*.
+Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](./databases/index)* deployed to databases as well as for *[service definitions](./services/providing-services)*.
 
 [[toc]]
 
@@ -28,7 +28,7 @@ entity Books : cuid, managed {
 }
 ```
 
-In that model we used the [pre-defined aspects](../cds/common.md) `cuid` and `managed`, as well as the [qualifier `localized`](./localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
+In that model we used the [pre-defined aspects](../cds/common.md) `cuid` and `managed`, as well as the [qualifier `localized`](./uis/localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
 
 In all these cases, we focus on capturing our intent, while leaving it to generic implementations to provide best-possible implementations.
 
@@ -350,7 +350,7 @@ On the same note, converting UUID values obtained as strings from the database i
 
 [See also: Mapping UUIDs to OData](../advanced/odata#override-type-mapping) {.learn-more}
 
-[See also: Mapping UUIDs to SQL](../advanced/hana#mapping-uuids-to-sql) {.learn-more}
+[See also: Mapping UUIDs to SQL](./databases/hana-native#mapping-uuids-to-sql) {.learn-more}
 
 
 
@@ -759,7 +759,7 @@ Essentially, this is also what CAP generates behind the scenes, plus many more t
 By generating `.texts` entities and associations behind the scenes, CAP's **out-of-the-box support** for `localized` data avoids polluting your models with doubled numbers of entities, and detrimental effects on comprehensibility.
 :::
 
-[Learn more in the **Localized Data** guide.](./localized-data){.learn-more}
+[Learn more in the **Localized Data** guide.](./uis/localized-data){.learn-more}
 
 
 

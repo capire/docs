@@ -292,7 +292,7 @@ While `cds build` is already ran as part of `mbt build` in `cds up`, you can als
 cds build --production
 ```
 
-[Learn more about running and customizing `cds build`.](custom-builds){.learn-more}
+[Learn more about running and customizing `cds build`.](build){.learn-more}
 
 :::
 
@@ -317,7 +317,7 @@ Share the generic App-Router URL with SaaS consumers for logging in as extension
 :::
 
 ::: tip No index page and SAP Fiori preview in the cloud
-The default index page and [SAP Fiori preview](../../advanced/fiori#sap-fiori-preview), that you are used to seeing during local development, are only meant for the development profile and not available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through on of the [user interface options](#add-ui) outlined before.
+The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you are used to seeing during local development, are only meant for the development profile and not available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through on of the [user interface options](#add-ui) outlined before.
 :::
 
 ### Inspect Apps in BTP Cockpit
@@ -333,7 +333,7 @@ In order to access the admin APIs you need to assign the _admin_ role required b
 [Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#cflogs-recent){.learn-more}
 
 
-## Keep Dependencies Up-to-date { #freeze-dependencies }
+## Staying Up-to-date { #freeze-dependencies }
 
 Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
 
@@ -396,96 +396,3 @@ sed -i 's/org.springframework.boot.loader.JarLauncher/-Dloader.main=com.sap.cds.
 ```
 
 :::
-
-## Next Up...
-
-You would then [set up your CI/CD](../deployment/cicd) for automating deployments, for example after merging pull requests.
-
-
-<!--
----
-{style="margin-top:11em"}
-
-# Appendices
-
-## Deploy using `cf push`
-
-As an alternative to MTA-based deployment, you can choose Cloud Foundry-native deployment using [`cf push`](https://docs.cloudfoundry.org/devguide/push.html), or `cf create-service-push` respectively.
-
-### Prerequisites
-
-Install the [_Create-Service-Push_ plugin](https://github.com/dawu415/CF-CLI-Create-Service-Push-Plugin):
-
-```sh
-cf install-plugin Create-Service-Push
-```
-
-This plugin acts the same way as `cf push`, but extends it such that services are _created_ first.  With the plain `cf push` command, this is not possible.
-
-### Add a `manifest.yml` {#add-manifest}
-
-```sh
-cds add cf-manifest
-```
-
-This creates two files, a _manifest.yml_ and _services-manifest.yml_ in the project root folder.
-
-- _manifest.yml_ holds the applications. In the default layout, one application is the actual server holding the service implementations, and the other one is a 'DB deployer' application, whose sole purpose is to start the SAP HANA deployment.
-- _services-manifest.yml_ defines which Cloud Foundry services shall be created. The services are derived from the service bindings in _package.json_ using the [`cds.requires` configuration](../../node.js/cds-env#services).
-
-::: tip Version-control manifest files
-Unlike the files in the _gen_ folders, these manifest files are genuine sources and should be added to the version control system. This way, you can adjust them to your needs as you evolve your application.
-:::
-
-### Build the Project
-
-This prepares everything for deployment, and -- by default -- writes the build output, that is the deployment artifacts, to folder _./gen_ in your project root.
-
-```sh
-cds build --production
-```
-
-[Learn how `cds build` can be configured.](custom-builds#build-config){.learn-more}
-
-The `--production` parameter ensures that the cloud deployment-related artifacts are created by `cds build`. See section [SAP HANA database deployment](../databases/hana) for more details.
-
-### Push the Application { #push-the-application}
-
-This command creates service instances, pushes the applications and binds the services to the application with a single call:
-
-```sh
-cf create-service-push
-```
-
-During deployment, the plugin reads the _services-manifest.yml_ file and creates the services listed there. It then reads _manifest.yml_, pushes the applications defined there, and binds these applications to service instances created before. If the service instances already exist, only the `cf push` operation will be executed.
-
-You can also apply some shortcuts:
-
-- Use `cf push` directly to deploy either all applications, or `cf push <app-name>` to deploy a single application.
-- Use `cf create-service-push --no-push` to only create or update service-related data without pushing the applications.
-
-In the deployment log, find the application URL in the `routes` line at the end:
-
-```log{3}
-name:              bookshop-srv
-requested state:   started
-routes:            bookshop-srv.cfapps.sap.hana.ondemand.com
-```
-
-Open this URL in the browser and try out the provided links, for example, `…/browse/Books`. Application data is fetched from SAP HANA.
-::: tip Ensure successful SAP HANA deployment
-Check the deployment logs of the database deployer application using
-
-```sh
-cf logs <app-name>-db-deployer --recent
-```
-
-to ensure that SAP HANA deployment was successful. The application itself is by default in state `started` after HDI deployment has finished, even if the HDI deployer returned an error. To save resources, you can explicitly stop the deployer application afterwards.
-:::
-
-
-::: warning
-Multitenant applications are not supported yet as multitenancy-related settings are not added to the generated descriptors. The data has to be entered manually.
-:::
-
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#aborted-deployment-with-the-create-service-push-plugin){.learn-more} -->

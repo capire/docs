@@ -27,6 +27,7 @@ const config = defineConfig({
     '**/CONTRIBUTING.md',
     '**/CODE_OF_CONDUCT.md',
     '**/menu.md',
+    '**/redirects.md',
     '**/-*.md'
   ],
 

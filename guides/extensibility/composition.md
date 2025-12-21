@@ -359,7 +359,7 @@ cds.once('bootstrap',(app)=>{
 ```
 :::
 
-[More about Vue.js in our _Getting Started in a Nutshell_](../../get-started/in-a-nutshell#uis){.learn-more} [Learn more about serving Fiori UIs.](../../advanced/fiori){.learn-more}
+[More about Vue.js in our _Getting Started in a Nutshell_](../../get-started/in-a-nutshell#uis){.learn-more} [Learn more about serving Fiori UIs.](../uis/fiori){.learn-more}
 
 This ensures all static content for the app is served from the imported package.
 

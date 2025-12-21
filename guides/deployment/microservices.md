@@ -502,7 +502,7 @@ Enable messaging for the modules that use it:
 
 ### Destinations
 
-Add [destination configuration](https://cap.cloud.sap/docs/guides/using-services#using-destinations) for connectivity between the apps:
+Add [destination configuration](https://cap.cloud.sap/docs/guides/services/using-services#using-destinations) for connectivity between the apps:
 
 ```shell
 cds add destination

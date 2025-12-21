@@ -164,7 +164,7 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
 
 ## Deploying to SAP HANA
 
-There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deployment) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
+There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deployment/index.md) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
 
 To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/troubleshooting#get-hana) to learn about your options.
 
@@ -179,7 +179,7 @@ cds add hana --for hybrid
 This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
 ::: tip The profile `hybrid` relates to [the hybrid testing](../../advanced/hybrid-testing) scenario
-If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud Foundry](../deployment) guide.
+If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deployment/index.md) guide.
 :::
 
 No further configuration is necessary for Node.js. For Java, see the [Use SAP HANA as the Database for a CAP Java Application](https://developers.sap.com/tutorials/cp-cap-java-hana-db.html#880cf07a-1788-4fda-b6dd-b5a6e5259625) tutorial for the rest of the configuration.
@@ -244,7 +244,7 @@ This is equivalent to `cds deploy --to hana:myservice` and ignores information c
 
 ### Using `cf deploy` or `cf push`
 
-See the [Deploying to Cloud Foundry](../deployment) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
+See the [Deploying to Cloud](../deployment/index.md) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
 
 
 
@@ -422,7 +422,7 @@ first_value(name order by price desc)
 
 Restriction: `COLLATE` isn't supported.
 
-For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](../../advanced/hana) for more details.
+For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](./hana-native) for more details.
 
 
 
@@ -543,7 +543,7 @@ We recommend keeping _.hdbtable_ deployment for entities where you expect low da
 You can switch large-volume tables to _.hdbmigrationtable_ at any time, keeping in mind that the existing _.hdbtable_ design-time artifact needs to be undeployed.
 
 When choosing to use _.hdbmigrationtable_ for an entity with
-[localized elements](../localized-data#localized-data) or [compositions of aspects](../../cds/cdl#managed-compositions),
+[localized elements](../uis/localized-data#localized-data) or [compositions of aspects](../../cds/cdl#managed-compositions),
 the generated `.texts` and composition child entities are automatically handled via _.hdbmigrationtable_, too.
 If this is not desired, annotate these generated entities with `@cds.persistence.journal: false`.
 

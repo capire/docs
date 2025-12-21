@@ -23,7 +23,7 @@ CDS ships with a prebuilt model *`@sap/cds/common`* that provides common types a
 [ISO 4217]: https://en.wikipedia.org/wiki/ISO_4217
 [ISO/IEC 15897]: https://en.wikipedia.org/wiki/ISO/IEC_15897
 [tzdata]: https://en.wikipedia.org/wiki/Tz_database
-[localized data]: ../guides/localized-data
+[localized data]: ../guides/uis/localized-data
 [temporal data]: ../guides/temporal-data
 
 ## Why Use _@sap/cds/common_?
@@ -35,7 +35,7 @@ It's recommended that all applications use the common types and aspects provided
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
-* **Automatic** support for [localized](../guides/localized-data) code lists and [value helps](../advanced/fiori#pre-defined-types-in-sap-cds-common)
+* **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
 * **Extensibility** using [Aspects](../guides/domain-modeling#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 
@@ -213,7 +213,7 @@ aspect sap.common.CodeList {
   descr : localized String(1111);
 }
 ```
-[Learn more about **localized** keyword.](../guides/localized-data){ .learn-more}
+[Learn more about **localized** keyword.](../guides/uis/localized-data){ .learn-more}
 
 
 ### Entity `Countries`
@@ -249,7 +249,7 @@ entity sap.common.Languages : CodeList {
   key code : sap.common.Locale; //> for example, en_GB
 }
 ```
-[Learn more on **normalized locales**.](../guides/i18n#normalized-locales){ .learn-more}
+[Learn more on **normalized locales**.](../guides/uis/i18n#normalized-locales){ .learn-more}
 
 ### Entity `Timezones`
 
@@ -297,7 +297,7 @@ Assumption is that ~80% of all apps don't need more than what is already covered
 
 ## Aspects for Localized Data
 
-Following are types and aspects mostly used behind the scenes for [localized data](../guides/localized-data). <br>
+Following are types and aspects mostly used behind the scenes for [localized data](../guides/uis/localized-data). <br>
 For example given this entity definition:
 
 ```cds
@@ -355,7 +355,7 @@ aspect sap.common.TextsAspect {
 }
 ```
 
-[Learn more about **Extending .texts entities**.](../guides/localized-data#extending-texts-entities){ .learn-more}
+[Learn more about **Extending .texts entities**.](../guides/uis/localized-data#extending-texts-entities){ .learn-more}
 
 ### Type `Locale` {#locale-type}
 
@@ -365,7 +365,7 @@ type sap.common.Locale : String(14) @title: '{i18n>LanguageCode}';
 
 The reuse type `sap.common.Locale` is used when generating `.texts` entities for the unfolding of *localized* elements.
 
-[Learn more about **localized data**.](../guides/localized-data){ .learn-more}
+[Learn more about **localized data**.](../guides/uis/localized-data){ .learn-more}
 
 ### SQL Persistence
 
@@ -395,7 +395,7 @@ FROM Foo (
 )
 ```
 
-[Learn more about **localized data**.](../guides/localized-data){ .learn-more}
+[Learn more about **localized data**.](../guides/uis/localized-data){ .learn-more}
 
 ## Providing Initial Data
 
@@ -446,7 +446,7 @@ EU;de;Europäische Union;Europäische Union
 ```
 :::
 
-[Learn more about **Localization/i18n**.](../guides/localized-data){ .learn-more}
+[Learn more about **Localization/i18n**.](../guides/uis/localized-data){ .learn-more}
 
 
 ### Using Tools like Excel

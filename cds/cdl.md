@@ -450,12 +450,12 @@ type EmailAddress : { kind:String; address:String; }
 
 > Keywords `many` and `array of` are mere syntax variants with identical semantics and implementations.
 
-When deployed to SQL databases, such fields are mapped to [LargeString](types) columns and the data is stored denormalized as JSON array.
+When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array. 
 With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
 ::: warning
-Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/providing-services#searching-data) are not supported on arrayed elements.
+Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/providing-services#searching-data) are not supported on arrayed elements.
 :::
 
 #### Null Values
@@ -854,7 +854,7 @@ Result result = service.run(Select.from("UsingView"), params);
 
 
 [Learn more about how to expose views with parameters in **Services - Exposed Entities**.](#exposed-entities){ .learn-more}
-[Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../advanced/hana){ .learn-more}
+[Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../guides/databases/hana-native){ .learn-more}
 
 ### Runtime Views { #runtimeviews }
 
@@ -1182,7 +1182,7 @@ Thus the type of the resulting element is set to `cds.Association`.
 
 [Learn more about `cds.Association`.](/cds/csn#associations){.learn-more}
 
-In [SAP Fiori Draft](../advanced/fiori#draft-support), it behaves
+In [SAP Fiori Draft](../guides/uis/fiori#draft-support), it behaves
 like an "enclosed" association, that means, it points to the target draft entity.
 
 In the following example, `singleItem` has type `cds.Association`.
@@ -1935,7 +1935,7 @@ Entities can be also exposed as views with parameters:
 
 ```cds
 service MyOrders {
-  entity OrderWithParameter( foo: Integer ) as select from data.Orders where id=:foo;
+  entity OrderWithParameter( foo: Integer, bar: Boolean ) as select from data.Orders where id=:foo;
 }
 ```
 A parametrized view like modeled in the section on [`view with parameter`](#views-with-parameters) can be exposed as follows:
@@ -2076,8 +2076,8 @@ extend service Zoo with { // auto-exposed entities:
 You can still expose such entities explicitly, for example, to make them read-write:
 
 ```cds
-service Sue {
-  entity Foo { /*...*/ }
+service MyOrders {
+  entity Orders { /*...*/ }
   entity Bar as projection on my.Bar;
 }
 ```
@@ -2147,7 +2147,7 @@ Explicitly modelled binding parameters are ignored for OData V2.
 
 #### Returning Media Data Streams { #actions-returning-media}
 
-Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](/guides/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
 
 ```cds
 service CatalogService {
@@ -2204,5 +2204,3 @@ extend entity CatalogService.Products with actions {
   function getRatings() returns Integer;
 }
 ```
-
-<div id="beforenamespaces" />

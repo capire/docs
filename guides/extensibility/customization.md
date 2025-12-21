@@ -662,7 +662,7 @@ entity x_Remarks : cuid, managed {
 ```
 
 ::: tip
-This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../providing-services#input-validation).
+This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/providing-services#input-validation).
 :::
 Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#annotate) {.learn-more}
 
@@ -670,7 +670,7 @@ Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#an
 
 In the existing in `OrdersService`, the new entities `x_CustomerPostalAddresses` and `x_Remarks` are automatically included since they are targets of the corresponding _compositions_.
 
-The new entities `x_Customers` and `x_SalesRegion` are [autoexposed](../providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
+The new entities `x_Customers` and `x_SalesRegion` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
 
 ```cds
 using { OrdersService } from '@capire/fiori';
@@ -909,7 +909,7 @@ Properties files must be placed in the `i18n` folder.  If an entry with the same
 
 > This feature is available with `@sap/cds` 6.3.0 or higher.
 
-[Learn more about localization](../i18n){.learn-more}
+[Learn more about localization](../uis/i18n){.learn-more}
 
 ## Simplify Your Workflow With `cds login` {#cds-login}
 

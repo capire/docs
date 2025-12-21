@@ -27,7 +27,7 @@ Event handlers are a powerful means to extend CAP. Did you know that most of the
 
 Common events are the CRUD events (`CREATE`, `READ`, `UPDATE`, `DELETE`), which are handled by the different kinds of [CQN-based services](../cqn-services/#cdsservices).
 These events are most typically triggered when an HTTP-based protocol adapter (for example OData V4) executes a CQN statement on an Application Service to fulfill the HTTP request.
-The CAP Java SDK provides a lot of built-in event handlers (also known as [Generic Providers](../../guides/providing-services)) that handle CRUD operations out of the box and implement the handling of many CDS annotations.
+The CAP Java SDK provides a lot of built-in event handlers (also known as [Generic Providers](../../guides/services/providing-services)) that handle CRUD operations out of the box and implement the handling of many CDS annotations.
 Applications most commonly use event handlers on CRUD events to _extend_ the event processing by using the [`Before`](#before) and [`After`](#after) phase.
 
 [Actions](../../cds/cdl#actions) and [Functions](../../cds/cdl#actions) that are defined by an Application Service in its model definition are mapped to events as well.

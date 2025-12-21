@@ -79,7 +79,7 @@ Lastly, in case you want to run your application on a 3rd party application fram
 
 
 The CAP runtime is based on an [event](../../about/best-practices#events) driven approach.
-Generally, [Service](../../about/best-practices#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/providing-services#event-handlers).
+Generally, [Service](../../about/best-practices#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/services/providing-services#event-handlers).
 During execution, services can send events to other service providers and consume the results.
 The native query language in CAP is [CQN](../../cds/cqn), which is accepted by all services that deal with data query and manipulation.
 Inbound requests therefore need to be mapped to corresponding CQN events, which are sent to an accepting Application Service (see concept [details](../../about/best-practices#querying)) afterwards.

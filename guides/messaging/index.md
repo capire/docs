@@ -25,7 +25,7 @@ We're starting with an introduction to the core concepts in CAP. If you want to 
 
 ### Intrinsic Eventing in CAP Core
 
-As introduced in [About CAP](../../about/best-practices#events), everything happening at runtime is in response to events, and all service implementations take place in [event handlers](../providing-services#event-handlers). All CAP services intrinsically support emitting and reacting to events, as shown in this simple code snippet (you can copy & run it in `cds repl`):
+As introduced in [About CAP](../../about/best-practices#events), everything happening at runtime is in response to events, and all service implementations take place in [event handlers](../services/providing-services#event-handlers). All CAP services intrinsically support emitting and reacting to events, as shown in this simple code snippet (you can copy & run it in `cds repl`):
 
 ```js
 let srv = new cds.Service
@@ -631,7 +631,7 @@ extend service S4 with {
 }
 ```
 
-[Learn more about importing SAP S/4HANA service APIs.](../using-services#external-service-api){.learn-more}
+[Learn more about importing SAP S/4HANA service APIs.](../services/using-services#external-service-api){.learn-more}
 
 With that gap filled, we can easily receive events from SAP S/4HANA the same way as from CAP services as explained in this guide, for example:
 

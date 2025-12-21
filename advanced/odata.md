@@ -43,7 +43,7 @@ OData is an OASIS standard that enhances plain REST with standardized system que
 | [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
 | [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
-- <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../guides/providing-services#searching-data).
+- <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../guides/services/providing-services#searching-data).
 - <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
 - <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
 - <sup>(4)</sup> Supported for key values and for parameters of functions only.
@@ -113,7 +113,7 @@ Use PATCH on entity collections to upload mass data using a dedicated service se
 ```
 
 Limitations:
- * Conflict detection via [ETags](../guides/providing-services#etag) is not supported.
+ * Conflict detection via [ETags](../guides/services/providing-services#etag) is not supported.
  * The system bypasses [draft flow](../java/fiori-drafts#bypassing-draft-flow). `IsActiveEntity` must be `true`.
  * The system ignores [draft locks](../java/fiori-drafts#draft-lock). Active entities are updated or deleted without canceling drafts.
  * [Added and deleted links](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_IteminaDeltaPayloadResponse) are not supported.
@@ -168,7 +168,7 @@ Use the annotation `@odata.Type` first to override standard type mappings, then 
 
 `@odata.Type` is effective on scalar CDS types only and the value must be a valid OData (EDM) primitive type for the specified protocol version. Unknown types and non-matching facets are silently ignored. No further value constraint checks are applied.
 
-These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../guides/using-services#external-service-api).
+These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../guides/services/using-services#external-service-api).
 
 ```cds
 entity Foo {

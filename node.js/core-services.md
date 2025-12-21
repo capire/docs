@@ -33,7 +33,7 @@ service CatalogService {
 }
 ```
 
-[Learn more about defining services using CDS](../guides/providing-services) {.learn-more}
+[Learn more about defining services using CDS](../guides/services/providing-services) {.learn-more}
 
 
 
@@ -258,7 +258,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/providing-services#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/providing-services#calling-actions-functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -802,7 +802,7 @@ Use this method to send synchronous requests to a service for execution.
 -  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
 
-To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/providing-services#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/providing-services#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 

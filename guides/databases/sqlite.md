@@ -9,9 +9,8 @@ CAP provides extensive support for [SQLite](https://www.sqlite.org/index.html), 
 
 <div class="impl node">
 
-::: tip New SQLite Service
-This guide focuses on the new SQLite Service provided through *[@cap-js/sqlite](https://www.npmjs.com/package/@cap-js/sqlite)*, which has many advantages over the former one, as documented in the [*Features*](#features) section. To migrate from the old service, find instructions in the [*Migration*](#migration) section.
-:::
+> [!TIP] New SQLite Service
+> This guide focuses on the new SQLite Service provided through *[@cap-js/sqlite](https://www.npmjs.com/package/@cap-js/sqlite)*, which has many advantages over the former one, as documented in the [*Features*](#features) section. To migrate from the old service, find instructions in the [*Migration*](#migration) section.
 
 </div>
 
@@ -299,7 +298,7 @@ CAP supports most of the major features on SQLite:
 
 * [Path Expressions](../../java/working-with-cql/query-api#path-expressions) & Filters
 * [Expands](../../java/working-with-cql/query-api#projections)
-* [Localized Queries](../localized-data#read-operations)
+* [Localized Queries](../uis/localized-data#read-operations)
 * [Comparison Operators](../../java/working-with-cql/query-api#comparison-operators)
 * [Predicate Functions](../../java/working-with-cql/query-api#predicate-functions)
 

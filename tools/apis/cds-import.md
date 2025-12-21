@@ -110,7 +110,7 @@ module.exports = async (srv) => {
 
 ## OData Type Mappings
 
-The following mapping is used during the import of an external service API, see [Using Services](../../guides/using-services#external-service-api). In addition, the [Mapping of CDS Types](../../advanced/odata#type-mapping) shows import-related mappings.
+The following mapping is used during the import of an external service API, see [Using Services](../../guides/services/using-services#external-service-api). In addition, the [Mapping of CDS Types](../../advanced/odata#type-mapping) shows import-related mappings.
 
 | OData                                                  | CDS Type                                                                     |
 |--------------------------------------------------------|------------------------------------------------------------------------------|

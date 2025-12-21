@@ -17,16 +17,19 @@ hero:
 
   actions:
 
-    - theme: alt
-      text: Get Started
+    - text: Get Started
       link: /get-started/
+      theme: alt
+      
+    - text: Develop
+      link: /guides/
+      theme: alt
 
-    - theme: alt
-      text: Learn More
-      link: /about/
+    - text: Deploy
+      link: /guides/deployment/
+      theme: alt
 
-    - theme: brand
-      text: What's New?
+    - text: What's New?
       link: /releases
 
 features:

@@ -17,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Overview { #draftevents}
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 ## Reading Drafts
 

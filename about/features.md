@@ -43,7 +43,7 @@ Following is an index of the features currently covered by CAP, with status and 
 |----------------------------------------------------------------------------|----------------------------|
 | [Jump-start cds-based projects](../get-started/)                           | `cds init <project>`       |
 | [Add a feature to an existing project](../tools/cds-cli#cds-add)           | `cds add <facets>`         |
-| [Add models from external sources](../guides/using-services#local-mocking) | `cds import <api>`         |
+| [Add models from external sources](../guides/services/using-services#local-mocking) | `cds import <api>`         |
 | [Compile cds models to different outputs](../node.js/cds-compile)          | `cds compile <models>`     |
 | [Run your services in local server](../node.js/cds-serve)                  | `cds serve <services>`     |
 | [Run and restart on file changes](../get-started/in-a-nutshell)            | `cds watch`                |
@@ -104,16 +104,16 @@ Following is an index of the features currently covered by CAP, with status and 
 
 | Core Framework Features                                                                    |  CDS  | Node.js | Java |
 |--------------------------------------------------------------------------------------------|:-----:|:-------:|:----:|
-| [Automatically Serving CRUD Requests](../guides/providing-services#generic-providers)      | <Na/> |  <X/>   | <X/> |
-| [Deep-Read/Write Structured Documents](../guides/providing-services#deep-reads-and-writes) | <X/>  |  <X/>   | <X/> |
-| [Automatic Input Validation](../guides/providing-services#input-validation)                | <X/>  |  <X/>   | <X/> |
+| [Automatically Serving CRUD Requests](../guides/services/providing-services#generic-providers)      | <Na/> |  <X/>   | <X/> |
+| [Deep-Read/Write Structured Documents](../guides/services/providing-services#deep-reads-and-writes) | <X/>  |  <X/>   | <X/> |
+| [Automatic Input Validation](../guides/services/providing-services#input-validation)                | <X/>  |  <X/>   | <X/> |
 | [Auto-filled Primary Keys](../guides/domain-modeling#prefer-uuids-for-keys)                | <X/>  |  <X/>   | <X/> |
-| [Implicit Paging](../guides/providing-services#implicit-pagination)                        | <X/>  |  <X/>   | <X/> |
-| [Implicit Sorting](../guides/providing-services#implicit-sorting)                          | <X/>  |  <X/>   | <X/> |
+| [Implicit Paging](../guides/services/providing-services#implicit-pagination)                        | <X/>  |  <X/>   | <X/> |
+| [Implicit Sorting](../guides/services/providing-services#implicit-sorting)                          | <X/>  |  <X/>   | <X/> |
 | [Access Control](../guides/security/authorization)                                         | <X/>  |  <X/>   | <X/> |
 | [Arrayed Elements](../cds/cdl#arrayed-types)                                               | <X/>  |  <X/>   | <X/> |
-| [Streaming & Media Types](../guides/providing-services#serving-media-data)                 | <X/>  |  <X/>   | <X/> |
-| [Conflict Detection through _ETags_](../guides/providing-services#etag)                    | <X/>  |  <X/>   | <X/> |
+| [Streaming & Media Types](../guides/services/providing-services#serving-media-data)                 | <X/>  |  <X/>   | <X/> |
+| [Conflict Detection through _ETags_](../guides/services/providing-services#etag)                    | <X/>  |  <X/>   | <X/> |
 | [Authentication via JWT](../guides/security/authorization#prerequisite-authentication)     | <Na/> |  <X/>   | <X/> |
 | [Mocked Authentication](../guides/security/authorization#prerequisite-authentication)      | <Na/> |  <X/>   | <X/> |
 
@@ -124,13 +124,13 @@ Following is an index of the features currently covered by CAP, with status and 
 |--------------------------------------------------------------------------------------------------------------------|:-----:|:-------:|:----:|
 | [Authorization](../guides/security/authorization)                                                                  | <X/>  |  <X/>   | <X/> |
 | [Analytics in Fiori](../advanced/odata#data-aggregation)                                                           | <X/>  |  <D/>   | <X/> |
-| [Localization/i18n](../guides/i18n)                                                                                | <X/>  |  <X/>   | <X/> |
-| [Localized Data](../guides/localized-data)                                                                         | <X/>  |  <X/>   | <X/> |
+| [Localization/i18n](../guides/uis/i18n)                                                                                | <X/>  |  <X/>   | <X/> |
+| [Localized Data](../guides/uis/localized-data)                                                                         | <X/>  |  <X/>   | <X/> |
 | [Temporal Data](../guides/temporal-data)                                                                           | <X/>  |  <X/>   | <X/> |
 | [Managed Data](../guides/domain-modeling#managed-data)                                                             | <X/>  |  <X/>   | <X/> |
 | [Dynamic Extensibility](../guides/extensibility/)                                                                  | <X/>  |  <X/>   | <X/> |
 | Monitoring / Logging [[Node.js](../node.js/cds-log)\|[Java](../java/operating-applications/observability#logging)] | <Na/> |  <X/>   | <X/> |
-| Audit Logging [[Node.js](../guides/data-privacy/audit-logging)\|[Java](../java/auditlog)]                          | <Na/> |  <X/>   | <X/> |
+| Audit Logging [[Node.js](../guides/security/dpp-audit-logging.md)\|[Java](../java/auditlog)]                          | <Na/> |  <X/>   | <X/> |
 
 
 <br>
@@ -156,7 +156,7 @@ Following is an index of the features currently covered by CAP, with status and 
 
 ### Consuming Services
 
-| [Service Consumption APIs](../guides/using-services) | Node.js | Java |
+| [Service Consumption APIs](../guides/services/using-services) | Node.js | Java |
 |------------------------------------------------------|:-------:|:----:|
 | Uniform Consumption APIs → Hexagonal Architecture    |  <X/>   | <X/> |
 | Dynamic Querying                                     |  <X/>   | <X/> |
@@ -177,7 +177,7 @@ Following is an index of the features currently covered by CAP, with status and 
 > <sup>1</sup> Import API to CSN <br>
 > <sup>2</sup> Could be a good case for 3rd-party contribution <br>
 
-[Learn more about supported features for consuming services.](../guides/using-services){.learn-more}
+[Learn more about supported features for consuming services.](../guides/services/using-services){.learn-more}
 
 ### Events / Messaging
 
@@ -211,8 +211,8 @@ Following is an index of the features currently covered by CAP, with status and 
 
 > Note: You can already integrate your database of choice in a project or a contribution level. The last two are meant to further facilitate this by out-of-the-box features in CAP.
 
-<!--| [Migration to SAP HANA Cloud](../guides/databases)            |   <D/>    | <Na/>  | <Na/> |
-| [Streamlined Schema Evolution](../guides/databases)       |   <D/>    | <Na/>  | <Na/> |
+<!--| [Migration to SAP HANA Cloud](../guides/databases/index)            |   <D/>    | <Na/>  | <Na/> |
+| [Streamlined Schema Evolution](../guides/databases/index)       |   <D/>    | <Na/>  | <Na/> |
 | &mdash; using Liquibase                                        |   <C/>    | <Na/>  | <Na/> |
 | &mdash; using Flyway                                           |   <C/>    | <Na/>  | <Na/> |-->
 
@@ -223,11 +223,11 @@ Following is an index of the features currently covered by CAP, with status and 
 
 |                                                                                                         | CDS  | Node.js | Java |
 |---------------------------------------------------------------------------------------------------------|:----:|:-------:|:----:|
-| [Serving Fiori UIs](../advanced/fiori)                                                                  | <X/> |  <X/>   | <X/> |
-| [Fiori Annotations in CDS](../advanced/fiori#fiori-annotations)                                         | <X/> |  <X/>   | <X/> |
-| [Advanced Value Help](../advanced/fiori#value-helps)                                                    | <X/> |  <X/>   | <X/> |
-| [Draft Support](../advanced/fiori#draft-support)                                                        | <X/> |  <X/>   | <X/> |
-| [Draft for Localized Data](../advanced/fiori#draft-for-localized-data)                                  | <X/> |  <X/>   | <X/> |
+| [Serving Fiori UIs](../guides/uis/fiori)                                                                  | <X/> |  <X/>   | <X/> |
+| [Fiori Annotations in CDS](../guides/uis/fiori#fiori-annotations)                                         | <X/> |  <X/>   | <X/> |
+| [Advanced Value Help](../guides/uis/fiori#value-helps)                                                    | <X/> |  <X/>   | <X/> |
+| [Draft Support](../guides/uis/fiori#draft-support)                                                        | <X/> |  <X/>   | <X/> |
+| [Draft for Localized Data](../guides/uis/fiori#draft-for-localized-data)                                  | <X/> |  <X/>   | <X/> |
 | [Support for Fiori Analytics](../advanced/analytics)                                                    | <X/> |  <D/>   | <X/> |
 | [Support for other UI technologies, for example Vue.js](../get-started/in-a-nutshell#vue)  <sup>1</sup> | <X/> |  <X/>   | <X/> |
 
@@ -261,7 +261,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Extension Namespaces](../guides/extensibility/customization)                            | <X/> |
 | [Extension Templates](../guides/extensibility/customization#templates)                   | <X/> |
 | Custom Governance Checks                                                                 | <D/> |
-| [Generic Input Validations](../guides/providing-services#input-validation)               | <X/> |
+| [Generic Input Validations](../guides/services/providing-services#input-validation)               | <X/> |
 | Declarative Constraints                                                                  | <O/> |
 | Execute Sandboxed Code                                                                   | <O/> |
 | Runtime API for In-App Extensibility                                                     | <D/> |

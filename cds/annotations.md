@@ -51,13 +51,13 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 |----------------------|------------------------------------------------------------------------------------|
 | `@path`              | see [Services](./cdl#service-definitions)                                          |
 | `@impl`              | see [Reuse & Compose](../guides/extensibility/composition#reuse-code)              |
-| `@odata.etag`        | see [Providing Services](../guides/providing-services#etag)                       |
-| `@cds.autoexpose`    | see [Providing Services](../guides/providing-services#auto-exposed-entities)      |
+| `@odata.etag`        | see [Providing Services](../guides/services/providing-services#etag)                       |
+| `@cds.autoexpose`    | see [Providing Services](../guides/services/providing-services#auto-exposed-entities)      |
 | `@cds.api.ignore`    | see [OData](../advanced/odata#omitting-elements-from-apis)                         |
-| `@cds.query.limit`   | see [Providing Services](../guides/providing-services#annotation-cds-query-limit) |
-| `@cds.localized`     | see [Localized Data](../guides/localized-data#read-operations)                     |
+| `@cds.query.limit`   | see [Providing Services](../guides/services/providing-services#annotation-cds-query-limit) |
+| `@cds.localized`     | see [Localized Data](../guides/uis/localized-data#read-operations)                     |
 | `@cds.valid.from/to` | see [Temporal Data](../guides/temporal-data#using-annotations-cds-valid-from-to)   |
-| `@cds.search`        | see [Search Capabilities](../guides/providing-services#searching-data)            |
+| `@cds.search`        | see [Search Capabilities](../guides/services/providing-services#searching-data)            |
 
 ## Persistence
 
@@ -67,8 +67,8 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 | `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases/index#cds-persistence-table)  |
 | `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases/index#cds-persistence-skip)   |
 | `@cds.persistence.mock`   | `false` excludes this entity from automatic mocking                    |
-| `@cds.on.insert`          | see [Providing Services](../guides/providing-services)                 |
-| `@cds.on.update`          | see [Providing Services](../guides/providing-services)                 |
+| `@cds.on.insert`          | see [Providing Services](../guides/services/providing-services)                 |
+| `@cds.on.update`          | see [Providing Services](../guides/services/providing-services)                 |
 | `@sql.prepend`            | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
 | `@sql.append`             | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
 
@@ -93,7 +93,7 @@ Intrinsically supported OData Annotations:
 |------------------------|------------------------------------------------------------------|
 | `@Core.Computed`       | see [Providing Services](../guides/services/constraints#readonly) |
 | `@Core.Immutable`      | see [Providing Services](../guides/services/constraints#readonly) |
-| `@Core.MediaType`      | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Core.IsMediaType`    | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Core.IsUrl`          | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Capabilities...`     | see [Fiori](../advanced/fiori)                                   |
+| `@Core.MediaType`      | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Core.IsMediaType`    | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Core.IsUrl`          | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Capabilities...`     | see [Fiori](../guides/uis/fiori)                                   |

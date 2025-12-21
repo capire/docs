@@ -1,4 +1,6 @@
 ---
+synopsis: >
+  In order to automate audit logging, personal data management, and data retention management as much as possible, the first and frequently only task to do as an application developer is to identify entities and elements (potentially) holding personal data using `@PersonalData` annotations. 
 status: released
 ---
 
@@ -22,7 +24,7 @@ In order to automate audit logging, personal data management, and data retention
 
 In the remainder of this guide, we use the [Incidents Management reference sample app](https://github.com/cap-js/incidents-app) as the base to add data privacy and audit logging to.
 
-![Shows the connections between the entities in the sample app.](./assets/Incidents-App.drawio.svg){style="zoom:111%;"}
+![Shows the connections between the entities in the sample app.](./assets/data-privacy/Incidents-App.drawio.svg){style="zoom:111%;"}
 
 So, let's annotate the data model to identify personal data.
 In essence, in all our entities we search for elements which carry personal data, such as person names, birth dates, etc., and tag them accordingly.
@@ -94,7 +96,7 @@ Learn more about these annotations in the [@PersonalData OData vocabulary](https
 
 The entity-level annotation `@PersonalData.EntitySemantics` signifies relevant entities as *Data Subject*, *Data Subject Details*, or *Other* in data privacy terms, as depicted in the following graphic.
 
-![Shows the connections between the entities in the sample app. In addition via color coding it makes clear how entities are annotated: customers are data subject, addresses are data subject details and incidents are other.](./assets/Data-Subjects.drawio.svg){style="zoom:111%;"}
+![Shows the connections between the entities in the sample app. In addition via color coding it makes clear how entities are annotated: customers are data subject, addresses are data subject details and incidents are other.](./assets/data-privacy/Data-Subjects.drawio.svg){style="zoom:111%;"}
 
 The following table provides some further details.
 
@@ -197,6 +199,6 @@ annotate my.Customers with {
 
 Having annotated your data model with `@PersonalData` annotations, you can now go on to the respective tasks that leverage these annotations to automate as much as possible:
 
-- [*Automated Audit Logging*](audit-logging)
-- [*Personal Data Management*](pdm)
-- [*Data Retention Management*](drm)
+- [*Automated Audit Logging*](dpp-audit-logging)
+- [*Personal Data Management*](dpp-pdm)
+- [*Data Retention Management*](dpp-drm)

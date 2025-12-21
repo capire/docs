@@ -1,4 +1,6 @@
 ---
+synopsis: >
+  The Audit Logging plugin provides out-of-the box support for automatic audit logging of data privacy-related events, in particular changes to personal data and reads of sensitive data.
 status: released
 ---
 
@@ -12,7 +14,7 @@ The  [`@cap-js/audit-logging`](https://www.npmjs.com/package/@cap-js/audit-loggi
 
 :::warning
 
-_The following is mainly written from a Node.js perspective. For Java's perspective, please see [Java - Audit Logging](../../java/auditlog)._
+_The following is mainly written from a Node.js perspective. For Java's perspective, please see [Java - Audit Logging](../../java/auditlog.md)._
 
 :::
 
@@ -24,7 +26,7 @@ _The following is mainly written from a Node.js perspective. For Java's perspect
 
 ## Annotate Personal Data
 
-First identify entities and elements (potentially) holding personal data using `@PersonalData` annotations, as explained in detail in the [*Annotating Personal Data* chapter](annotations) of these guides.
+First identify entities and elements (potentially) holding personal data using `@PersonalData` annotations, as explained in detail in the [*Annotating Personal Data* chapter](dpp-annotations) of these guides.
 
 > We keep using the [Incidents Management reference sample app](https://github.com/cap-js/incidents-app).
 
@@ -153,7 +155,7 @@ A more comprehensive guide, incl. tutorials, is currently under development.
 
 <span id="audit-logging-in-saas" />
 
-For deployment in general, please follow the [deployment guide](../deployment/). Check the rest of this guide before actually triggering the deployment (that is, executing `cf deploy`).
+For deployment in general, please follow the [deployment guide](../deployment/index.md). Check the rest of this guide before actually triggering the deployment (that is, executing `cf deploy`).
 
 Here is what you need to do additionally,  to integrate with SAP Audit Log Service:
 
@@ -183,7 +185,7 @@ There are two options to access audit logs:
 
 ### Behind the Scenes...
 
-For all [defined services](../providing-services#service-definitions), the generic audit logging implementation does the following:
+For all [defined services](../services/providing-services#service-definitions), the generic audit logging implementation does the following:
 
 - Intercept all write operations potentially involving personal data.
 - Intercept all read operations potentially involving sensitive data.
@@ -211,7 +213,7 @@ await audit.log('Foo', { bar: 'baz' })
 ```
 
 ::: tip Audit Logging as Just Another CAP Service
-The Audit Log Service API is implemented as a CAP service, with the service API defined in CDS as shown in the next section. In effect, the common patterns of [*CAP Service Consumption*](../using-services) apply, as well as all the usual benefits like *mocking*, *late-cut µ services*, *resilience* and *extensibility*.
+The Audit Log Service API is implemented as a CAP service, with the service API defined in CDS as shown in the next section. In effect, the common patterns of [*CAP Service Consumption*](../services/using-services) apply, as well as all the usual benefits like *mocking*, *late-cut µ services*, *resilience* and *extensibility*.
 :::
 
 
@@ -443,7 +445,7 @@ await audit.log ('SecurityEvent', {
 
 
 
-## Custom Implementation { #custom-implementation }
+## Custom Implementation 
 
 In addition, everybody could provide new implementations in the same way as we implement the mock variant:
 
@@ -477,11 +479,11 @@ As always, custom implementations need to be configured in `cds.requires.<>.impl
 
 
 
-## Transactional Outbox { #transactional-outbox }
+## Transactional Outbox
 
 By default, all log messages are sent through a transactional outbox. This means, when sent, log messages are first stored in a local outbox table, which acts like a queue for outbound messages. Only when requests are fully and successfully processed, these messages are forwarded to the audit log service.
 
-![This graphic is explained in the accompanying text.](./assets/Transactional-Outbox.drawio.svg)
+![This graphic is explained in the accompanying text.](./assets/data-privacy/Transactional-Outbox.drawio.svg)
 
 This provides an ultimate level of resiliency, plus additional benefits:
 
@@ -491,4 +493,4 @@ This provides an ultimate level of resiliency, plus additional benefits:
 
 - **False log messages are avoided** &mdash;  messages are forwarded to the audit log service on successfully committed requests; and skipped in case of rollbacks.
 
-This transparently applies to all implementations, even [custom implementations](#custom-implementation). You can opt out of this default by configuring <Config>cds.audit-log.[development].outbox = false</Config>.
+This transparently applies to all implementations, even [custom implementations](#custom-implementation). You can opt out of this default by configuring <Config>cds.audit-log.\[development\].outbox = false</Config>.

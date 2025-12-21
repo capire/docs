@@ -7,7 +7,6 @@ export default createContentLoader([
     `**/${basePath}/*.md`,
     `**/${basePath}/publishing-apis/*.md`,
     `**/guides/security/*.md`,
-    `**/guides/data-privacy/*.md`
   ], {
   transform(rawData) {
     return filter(rawData, `/${basePath}/`)

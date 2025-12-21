@@ -2,7 +2,6 @@
 label: Native SAP HANA
 synopsis: >
   Create or use an existing database object (table, view, table function, calculation view) and make use of it in your CDS model, for instance for exposing it in an OData service.
-permalink: advanced/hana
 status: released
 ---
 
@@ -63,7 +62,7 @@ We can distinguish two types of names - __plain__ and __quoted__.
 |Quoted    | If the existing database name also contains lower-case characters or characters that can't occur in regular SQL identifiers, it's not possible to choose a name in the CDS model that matches this name. Let's call such a database name "quoted", as the only possibility to create such a name is to quote it in the CREATE statement. In this case, it's necessary to introduce an additional database object (a synonym or a view) on top of the existing database object and construct the facade entity for this newly introduced mapping object.
 
 
-[Find here troubleshooting related to SAP HANA.](../get-started/troubleshooting#hana){.learn-more}
+[Find here troubleshooting related to SAP HANA.](../../get-started/troubleshooting#hana){.learn-more}
 
 
 ### Tables and Views Without Parameters
@@ -499,7 +498,7 @@ By composing `ItemSelection` instead of `Items`, it's possible to use this compo
 
 ## SAP HANA-Specific Data Types { #hana-types}
 
-The following SAP HANA-specific data types are primarily intended for porting existing SAP HANA CDS models into the CAP domain if the old SAP HANA types must be preserved in the existing database tables. If you're starting from scratch, these types shouldn't be used but only the [predefined CDS types](../cds/types).
+The following SAP HANA-specific data types are primarily intended for porting existing SAP HANA CDS models into the CAP domain if the old SAP HANA types must be preserved in the existing database tables. If you're starting from scratch, these types shouldn't be used but only the [predefined CDS types](../../cds/types).
 
 | CDS Type | Arguments / Remarks | SQL | OData (V4) |
 | --- | --- |--- | --- |
@@ -526,7 +525,7 @@ By default, `cds` maps UUIDs to `nvarchar(36)` in SQL databases. The length is t
 > If the client side needs to work with the UUID, VARBINARY would lead to CAST operations or binary array handling at the client side. Here **NVARCHAR would be the data type of choice** to avoid handling binary arrays on the client side.
 ### Example Index
 
-> [Download from here](assets/native-hana-samples.zip) a fully fledged model with even more examples.
+> [Download from here](../../advanced/assets/native-hana-samples.zip) a fully fledged model with even more examples.
 
 | What            | Database Object               | Mapping Object                | Facade Entity          |
 | ---             | ---                           | ---                           | ---                    |

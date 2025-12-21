@@ -149,7 +149,7 @@ public class SampleHandler implements EventHandler {
 }
 ```
 
-The shown handler code is registered for any entity type on any [ApplicationService](../guides/providing-services). Depending on the use case the target scope could be narrowed to specific entities and/or services. The handler registration applies to the same rules as custom handlers that are directly packaged with a CAP Java application.
+The shown handler code is registered for any entity type on any [ApplicationService](../guides/services/providing-services). Depending on the use case the target scope could be narrowed to specific entities and/or services. The handler registration applies to the same rules as custom handlers that are directly packaged with a CAP Java application.
 
 [Learn more about event handling in our EventHandler documentation](event-handlers/){.learn-more}
 

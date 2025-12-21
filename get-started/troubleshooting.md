@@ -534,7 +534,7 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 
 #### Deployment fails — _In USING declarations only main artifacts can be accessed, not sub artifacts of \<name\>_
 This error occurs if all of the following applies:
-+ You [added native SAP HANA objects](../advanced/hana#add-native-objects) to your CAP model.
++ You [added native SAP HANA objects](../guides/databases/hana-native#add-native-objects) to your CAP model.
 + You used deploy format `hdbcds`.
 + You didn't use the default naming mode `plain`.
 

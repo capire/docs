@@ -24,7 +24,7 @@ The major building blocks are as follows:
 
 - [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
 
-- [**Service Runtimes**](../guides/providing-services.md) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
+- [**Service Runtimes**](../guides/services/providing-services.md) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
 
 - [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
 
@@ -94,7 +94,7 @@ entity Authors : cuid, managed {
 
 We use CDS's [*Conceptual Definition Language (CDL)*](../cds/cdl) as a *human-readable* way to express CDS models. Think of it as a *concise*, and more *expressive* derivate of [SQL DDL](https://wikipedia.org/wiki/Data_definition_language).
 
-For processing at runtime CDS models are compiled into a *machine-readable* plain object notation, called *CSN*, which stands for [*Core Schema Notation (CSN)*](../cds/csn). For deployment to databases, CSN models are translated into native SQL DDL. Supported databases are [*SQLite*](../guides/databases-sqlite.md) and *[H2](../guides/databases-h2.md)* for development, and [_SAP HANA_](../guides/databases-hana.md) and [_PostgreSQL_](../guides/databases-postgres.md) for production.
+For processing at runtime CDS models are compiled into a *machine-readable* plain object notation, called *CSN*, which stands for [*Core Schema Notation (CSN)*](../cds/csn). For deployment to databases, CSN models are translated into native SQL DDL. Supported databases are [*SQLite*](../guides/databases/sqlite.md) and *[H2](../guides/databases/h2.md)* for development, and [_SAP HANA_](../guides/databases/hana.md) and [_PostgreSQL_](../guides/databases/postgres.md) for production.
 
 ![cdl-csn.drawio](assets/cdl-csn.drawio.svg)
 
@@ -260,7 +260,7 @@ service CatalogService {
 :::
 
 ::: tip **Single-purposed Services**
-The previous example follows the recommended best practice of a *[single-purposed service](../guides/providing-services#single-purposed-services)* which is specialized on *one* specific use case and group of users. Learn more about that in the [Providing Services](../guides/providing-services) guide.
+The previous example follows the recommended best practice of a *[single-purposed service](../guides/services/providing-services#single-purposed-services)* which is specialized on *one* specific use case and group of users. Learn more about that in the [Providing Services](../guides/services/providing-services) guide.
 :::
 
 ### Service Providers

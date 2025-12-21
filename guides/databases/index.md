@@ -24,7 +24,7 @@ impl-variants: true
 
 ### Migrating to the `@cap-js/` Database Services?  {.node}
 
-With CDS 8, the [`@cap-js`](https://github.com/cap-js/cds-dbs) database services for SQLite, PostgreSQL, and SAP HANA are generally available. It's highly recommended to migrate. You can find instructions in the [migration guide](../databases/sqlite#migration). Although the guide is written in the context of the SQLite Service, the same hints apply to PostgreSQL and SAP HANA.
+With CDS 8, the [`@cap-js`](https://github.com/cap-js/cds-dbs) database services for SQLite, PostgreSQL, and SAP HANA are generally available. It's highly recommended to migrate. You can find instructions in the [migration guide](./sqlite#migration). Although the guide is written in the context of the SQLite Service, the same hints apply to PostgreSQL and SAP HANA.
 
 ### Adding Database Packages  {.node}
 
@@ -32,9 +32,9 @@ Following are cds-plugin packages for CAP Node.js runtime that support the respe
 
 | Database                       | Package                                                      | Remarks                            |
 | ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
-| **[SAP HANA Cloud](../databases/hana)**     | [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) | recommended for production         |
-| **[SQLite](../databases/sqlite)**       | [`@cap-js/sqlite`](https://www.npmjs.com/package/@cap-js/sqlite) | recommended for development        |
-| **[PostgreSQL](../databases/postgres)** | [`@cap-js/postgres`](https://www.npmjs.com/package/@cap-js/postgres) | maintained by community + CAP team |
+| **[SAP HANA Cloud](./hana)**     | [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) | recommended for production         |
+| **[SQLite](./sqlite)**       | [`@cap-js/sqlite`](https://www.npmjs.com/package/@cap-js/sqlite) | recommended for development        |
+| **[PostgreSQL](./postgres)** | [`@cap-js/postgres`](https://www.npmjs.com/package/@cap-js/postgres) | maintained by community + CAP team |
 
 <!-- Do we really need to say that? -->
 > Follow the preceding links to find specific information for each.
@@ -153,10 +153,10 @@ Database support is enabled by adding a Maven dependency to the JDBC driver, as 
 
 | Database                       | JDBC Driver                                                 | Remarks                            |
 | ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
-| **[SAP HANA Cloud](../databases/hana)**     | `com.sap.cloud.db.jdbc:ngdbc` | Recommended for productive use         |
-| **[H2](h2-h2)**       | `com.h2database:h2` | Recommended for development and CI     |
-| **[SQLite](../databases/sqlite)**       | `org.xerial:sqlite-jdbc` | Supported for development and CI <br> Recommended for local MTX |
-| **[PostgreSQL](../databases/postgres)** | `org.postgresql:postgresql` | Supported for productive use |
+| **[SAP HANA Cloud](./hana)**     | `com.sap.cloud.db.jdbc:ngdbc` | Recommended for productive use         |
+| **[H2](./h2)**       | `com.h2database:h2` | Recommended for development and CI     |
+| **[SQLite](./sqlite)**       | `org.xerial:sqlite-jdbc` | Supported for development and CI <br> Recommended for local MTX |
+| **[PostgreSQL](./postgres)** | `org.postgresql:postgresql` | Supported for productive use |
 
 [Learn more about supported databases in CAP Java and their configuration](../../java/cqn-services/persistence-services#database-support){ .learn-more}
 
@@ -231,7 +231,7 @@ ID,title,descr
 
 ::: danger
 On SAP HANA, only use CSV files for _configuration data_ that can't be changed by application users.
-→ See [CSV data gets overridden in the SAP HANA guide for details](../databases/hana#csv-data-gets-overridden).
+→ See [CSV data gets overridden in the SAP HANA guide for details](./hana#csv-data-gets-overridden).
 :::
 
 ### Use `cds add data`
@@ -306,7 +306,7 @@ cds:
 
 
 
-Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../providing-services#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
+Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../services/providing-services#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
 
 
 
@@ -669,7 +669,7 @@ entity Bar as select from Foo;   //> The SQL view will be generated
 
 ::: details On SAP HANA ...
 
-If the respective entity is a user-defined function or a calculation view, one of the annotations `@cds.persistence.udf` or `@cds.persistence.calcview` also needs to be assigned. See [Calculated Views and User-Defined Functions](../../advanced/hana#calculated-views-and-user-defined-functions) for more details.
+If the respective entity is a user-defined function or a calculation view, one of the annotations `@cds.persistence.udf` or `@cds.persistence.calcview` also needs to be assigned. See [Calculated Views and User-Defined Functions](./hana-native#calculated-views-and-user-defined-functions) for more details.
 
 :::
 
@@ -735,7 +735,7 @@ The following rules apply:
 
 * Both `@sql.prepend` and `@sql.append` are disallowed in SaaS extension projects.
 
-If you use native database clauses in combination with `@cds.persistence.journal`, see [Schema Evolution Support of Native Database Clauses](../databases/hana#schema-evolution-native-db-clauses).
+If you use native database clauses in combination with `@cds.persistence.journal`, see [Schema Evolution Support of Native Database Clauses](./hana#schema-evolution-native-db-clauses).
 
 
 
@@ -772,7 +772,7 @@ Find here a collection of resources on selected databases and their reference do
 * [H2 Keywords/Reserved Words](https://www.h2database.com/html/advanced.html#keywords)
 * [PostgreSQL SQL Key Words](https://www.postgresql.org/docs/current/sql-keywords-appendix.html)
 
-[There are also reserved words related to SAP Fiori.](../../advanced/fiori#reserved-words){.learn-more}
+[There are also reserved words related to SAP Fiori.](../uis/fiori#reserved-words){.learn-more}
 
 
 
@@ -884,7 +884,7 @@ entity Genres {
 ```
 
 As a special case, a referential constraint with `delete cascade` is also generated
-for the text table of a [localized entity](../localized-data#localized-data),
+for the text table of a [localized entity](../uis/localized-data#localized-data),
 although no managed association is present in the `texts` entity.
 
 Add a localized element to entity `Books` from the previous example:
@@ -1075,7 +1075,7 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtime** pr
 
 - `search(x, y)`
   Checks whether `y` is contained in any element of `x` (fuzzy matching may apply).
-  See [Searching Data](../providing-services#searching-data) for more details.
+  See [Searching Data](../services/providing-services#searching-data) for more details.
 
 - `session_context(<var>)`
   Utilizes standard variable names to maintain session context.

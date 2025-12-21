@@ -1,12 +1,6 @@
 ---
-breadcrumbs:
-  - Cookbook
-  - Deployment
-  - More Options
-label: Deploy with CI/CD
 synopsis: >
   A comprehensive guide to implementing continuous integration and continuous deployment (CI/CD) for CAP projects using best practices, tools, and services.
-# layout: cookbook
 status: released
 ---
 

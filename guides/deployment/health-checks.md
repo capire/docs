@@ -1,11 +1,6 @@
 ---
-breadcrumbs:
-  - Cookbook
-  - Deployment
-  - Health Checks
 synopsis: >
   The guide provides an overview of health checks that are available on Cloud Foundry and Kubernetes, how to configure them, as well as the respective defaults of the two CAP stacks.
-# layout: cookbook
 status: released
 ---
 

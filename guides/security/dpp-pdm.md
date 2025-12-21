@@ -1,12 +1,6 @@
 ---
-label: Personal Data Management
-shorty: PDM
 synopsis: >
-  Use the SAP Personal Data Manager (PDM) with a CAP application.
-breadcrumbs:
-  - Cookbook
-  - Data Privacy
-  - PDM
+  The Personal Data Management (PDM) guide explains how to integrate your CAP application with the SAP Personal Data Manager service to respond to data subject requests about their personal data stored in your application.
 status: released
 ---
 
@@ -26,7 +20,7 @@ SAP BTP provides the [*SAP Personal Data Manager (PDM)*](https://help.sap.com/do
 
 ## Annotate Personal Data
 
-First identify entities and elements (potentially) holding personal data using `@PersonalData` annotations, as explained in detail in the [*Annotating Personal Data* chapter](annotations) of these guides.
+First identify entities and elements (potentially) holding personal data using `@PersonalData` annotations, as explained in detail in the [*Annotating Personal Data* chapter](dpp-annotations) of these guides.
 
 > We keep using the [Incidents Management reference sample app](https://github.com/cap-js/incidents-app).
 
@@ -92,7 +86,7 @@ service PDMService @(path: '/pdm') {
 :::
 
 ::: tip
-Make sure to have [indicated all relevant entities and elements in your domain model](annotations).
+Make sure to have [indicated all relevant entities and elements in your domain model](dpp-annotations).
 :::
 
 
@@ -197,7 +191,7 @@ cf create-service-push
 
 [Subscribe to the service](https://help.sap.com/docs/PERSONAL_DATA_MANAGER/620a3ea6aaf64610accdd05cca9e3de2/ef10215655a540b6ba1c02a96e118d66.html) from the _Service Marketplace_ in the SAP BTP cockpit.
 
-![A screenshot of the tile in the cockpit for the SAP Personal Data Manager service.](assets/pdmCockpitCreate.png){width="300"}
+![A screenshot of the tile in the cockpit for the SAP Personal Data Manager service.](assets/data-privacy/pdmCockpitCreate.png){width="300"}
 
 Follow the wizard to create your subscription.
 
@@ -288,8 +282,8 @@ cf bind-service incidents-mgmt-srv incidents-mgmt-pdm -c ./pdm-binding-config.js
 
 Open the SAP Personal Data Manager application from the _Instances and Subscriptions_ page in the SAP BTP cockpit.
 
-![To open the application, open the three dot menu and select "Go to Application".](assets/pdmCockpit.png){width="500"}
+![To open the application, open the three dot menu and select "Go to Application".](assets/data-privacy/pdmCockpit.png){width="500"}
 
 In the personal data manager application you can search for data subjects with _First Name_, _Last Name_, and _Date of Birth_, or alternatively with their _ID_.
 
-![A screenshot of the SAP Personal Data Manager application.](assets/pdmApplication.png){width="500"}
+![A screenshot of the SAP Personal Data Manager application.](assets/data-privacy/pdmApplication.png){width="500"}

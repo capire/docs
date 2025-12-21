@@ -505,7 +505,7 @@ Most of the following use cases are shown for Node.js, but can be easily adapted
 
 ### Destinations
 
-Learn how to [connect to remote services locally](../guides/using-services#connect-to-remote-services-locally) using SAP BTP destinations.
+Learn how to [connect to remote services locally](../guides/services/using-services#connect-to-remote-services-locally) using SAP BTP destinations.
 
 ### Authentication and Authorization using XSUAA
 

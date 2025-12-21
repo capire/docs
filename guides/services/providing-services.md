@@ -23,13 +23,13 @@ The following sections give a brief overview of CAP's core concepts.
 
 A CAP application commonly provides services defined in CDS models and served by the CAP runtimes. Every active thing in CAP is a service. They embody the behavioral aspects of a domain in terms of exposed entities, actions, and events.
 
-![This graphic is explained in the accompanying text.](./assets/providing-services/service-centric-paradigm.drawio.svg)
+![This graphic is explained in the accompanying text.](./service-centric-paradigm.drawio.svg)
 
 ### Ubiquitous Events
 
 At runtime, everything happening is in response to events. CAP features a ubiquitous notion of events, which represent both, *requests* coming in through **synchronous** APIs, as well as **asynchronous** *event messages*, blurring the line between both worlds.
 
-![This graphic shows that consumers send events to services and that there are hooks, so that event handlers can react on those events.](assets/providing-services/services-events.drawio.svg)
+![This graphic shows that consumers send events to services and that there are hooks, so that event handlers can react on those events.](./services-events.drawio.svg)
 
 ### Event Handlers
 
@@ -69,7 +69,7 @@ service BookshopService {
 
 This definition effectively defines the API served by `BookshopService`.
 
-![This graphic is explained in the accompanying text.](assets/providing-services/service-apis.drawio.svg)
+![This graphic is explained in the accompanying text.](./service-apis.drawio.svg)
 
 Simple service definitions like that are all we need to run full-fledged servers out of the box, served by CAP's generic runtimes, without any implementation coding required.
 
@@ -88,14 +88,14 @@ service BookshopService {
 
 This way, services become facades to encapsulated domain data, exposing different aspects tailored to respective use cases.
 
-![This graphic is explained in the accompanying text.](assets/providing-services/service-as-facades.drawio.svg)
+![This graphic is explained in the accompanying text.](./service-as-facades.drawio.svg)
 
 
 ### Denormalized Views
 
 Instead of exposing access to underlying data in a 1:1 fashion, services frequently expose denormalized views, tailored to specific use cases.
 
-For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](services/constraints#readonly):
+For example, the following service definition, undiscloses information about maintainers from end users and also [marks the entities as `@readonly`](constraints#readonly):
 
 ```cds
 using { sap.capire.bookshop as my } from '../db/schema';
@@ -115,7 +115,7 @@ service CatalogService @(path:'/browse') {
 }
 ```
 
-[Learn more about **CQL** the language used for `projections`.](../cds/cql){.learn-more}
+[Learn more about **CQL** the language used for `projections`.](../../cds/cql){.learn-more}
 [See also: Prefer Single-Purposed Services!](#single-purposed-services){.learn-more}
 [Find above sources in **capire/bookshop**.](https://github.com/capire/bookshop/blob/main/srv/cat-service.cds){ .learn-more}
 
@@ -134,7 +134,7 @@ service Zoo {
 @cds.autoexpose entity SomeCodeList {...}
 ```
 
-[Learn more about Auto-Exposed Entities in the CDS reference docs.](../cds/cdl#auto-expose){.learn-more}
+[Learn more about Auto-Exposed Entities in the CDS reference docs.](../../cds/cdl#auto-expose){.learn-more}
 
 
 ### Redirected Associations
@@ -149,20 +149,20 @@ service AdminService {
 }
 ```
 
-[Learn more about Redirected Associations in the CDS reference docs.](../cds/cdl#auto-redirect){.learn-more}
+[Learn more about Redirected Associations in the CDS reference docs.](../../cds/cdl#auto-redirect){.learn-more}
 
 
 
 ## Generic Providers
 
-The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide a wealth of generic implementations, which serve most requests automatically, with out-of-the-box solutions to recurring tasks such as search, pagination, or input validation — the majority of this guide focuses on these generic features.
+The CAP runtimes for [Node.js](../../node.js/index) and [Java](../../java/index) provide a wealth of generic implementations, which serve most requests automatically, with out-of-the-box solutions to recurring tasks such as search, pagination, or input validation — the majority of this guide focuses on these generic features.
 
 In effect, a service definition [as introduced above](#service-definitions) is all we need to run a full-fledged server out of the box. The need for coding reduces to real custom logic specific to a project's domain &rarr; section [Custom Logic](#custom-logic) picks that up.
 
 
 ### Serving CRUD Requests {#serving-crud}
 
-The CAP runtimes for [Node.js](../node.js/) and [Java](../java/) provide generic handlers, which automatically serve all CRUD requests to entities for CDS-modelled services on top of a default [primary database](databases/index).
+The CAP runtimes for [Node.js](../../node.js/index) and [Java](../../java/index) provide generic handlers, which automatically serve all CRUD requests to entities for CDS-modelled services on top of a default [primary database](../databases/index).
 
 This comprises read and write operations like that:
 
@@ -202,7 +202,7 @@ SELECT.from ('Orders', o => {
   })
 })
 ```
-[Learn more about `cds.ql`](../node.js/cds-ql){.learn-more}
+[Learn more about `cds.ql`](../../node.js/cds-ql){.learn-more}
 :::
 
 Both would return an array of nested structures as follows:
@@ -368,7 +368,7 @@ That would basically search for occurrences of `"Heights"` in all text fields of
 
 #### The `@cds.search` Annotation {#cds-search}
 
-By default search is limited to the elements of type `String` of an entity that aren't [calculated](../cds/cdl#calculated-elements) or [virtual](../cds/cdl#virtual-elements). Yet, sometimes you may want to deviate from this default and specify a different set of searchable elements, or to extend the search to associated entities. Use the `@cds.search` annotation to do so. The general usage is:
+By default search is limited to the elements of type `String` of an entity that aren't [calculated](../../cds/cdl#calculated-elements) or [virtual](../../cds/cdl#virtual-elements). Yet, sometimes you may want to deviate from this default and specify a different set of searchable elements, or to extend the search to associated entities. Use the `@cds.search` annotation to do so. The general usage is:
 
 ```cds
 @cds.search: {
@@ -381,7 +381,7 @@ By default search is limited to the elements of type `String` of an entity that 
 entity E { }
 ```
 
-[Learn more about the syntax of annotations.](../cds/cdl#annotations){.learn-more}
+[Learn more about the syntax of annotations.](../../cds/cdl#annotations){.learn-more}
 
 #### Including Fields
 
@@ -453,7 +453,7 @@ To illustrate the above:
 
 #### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
 
-> Prerequisite: For CAP Java, you need to run in [`HEX` optimization mode](../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
+> Prerequisite: For CAP Java, you need to run in [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
 
 Fuzzy search is a fault-tolerant search feature of SAP HANA Cloud, which returns records even if the search term contains additional characters, is missing characters, or has typographical errors.
 
@@ -536,12 +536,12 @@ The reliable pagination is available with following limitations:
 - Results of functions or arithmetic expressions can't be used in the `$orderby` option (explicit ordering).
 - The elements used in the `$orderby` of the request must be of simple type.
 - All elements used in `$orderby` must also be included in the `$select` option, if it's set.
-- Complex [concatenations](../advanced/odata#concat) of result sets aren't supported.
+- Complex [concatenations](../../advanced/odata#concat) of result sets aren't supported.
 ::: warning
 Don't use reliable pagination if an entity set is sorted by elements that contain sensitive information, the skip token could reveal the values of these elements.
 :::
 
-The feature can be enabled with the following [configuration options](../node.js/cds-env#project-settings) set to `true`:
+The feature can be enabled with the following [configuration options](../../node.js/cds-env#project-settings) set to `true`:
 - Java: <Config java keyOnly>cds.query.limit.reliablePaging.enabled: true</Config>
 - Node.js: <Config keyOnly>cds.query.limit.reliablePaging: true</Config>
 
@@ -549,7 +549,7 @@ The feature can be enabled with the following [configuration options](../node.js
 #### Paging Limits
 
 
-You can configure default and maximum page size limits in your [project configuration](../node.js/cds-env#project-settings) as follows:
+You can configure default and maximum page size limits in your [project configuration](../../node.js/cds-env#project-settings) as follows:
 
 ```json
 "cds": {
@@ -698,7 +698,7 @@ annotate Foo with { modifiedAt @odata.etag }
 ```
 
 > The value of an ETag element should uniquely change with each update per row.
-> The `modifiedAt` element from the [pre-defined `managed` aspect](../cds/common#aspect-managed) is a good candidate, as this is automatically updated.
+> The `modifiedAt` element from the [pre-defined `managed` aspect](../../cds/common#aspect-managed) is a good candidate, as this is automatically updated.
 > You could also use update counters or UUIDs, which are recalculated on each update.
 
 You use ETags when updating, deleting, or invoking the action bound to an entity by using the ETag value in an `If-Match` or `If-None-Match` header.
@@ -762,9 +762,9 @@ Here's an overview table:
 | exclusive lock | passes | waits  | waits |
 
 
-[Learn more about using the `SELECT ... FOR UPDATE` statement in the Node.js runtime.](../node.js/cds-ql#forupdate){.learn-more}
+[Learn more about using the `SELECT ... FOR UPDATE` statement in the Node.js runtime.](../../node.js/cds-ql#forupdate){.learn-more}
 
-[Learn more about using the `Select.lock()` method in the Java runtime.](../java/working-with-cql/query-api#write-lock){.learn-more}
+[Learn more about using the `Select.lock()` method in the Java runtime.](../../java/working-with-cql/query-api#write-lock){.learn-more}
 
 
 ::: warning Restrictions
@@ -793,19 +793,19 @@ CAP supports various declarative techniques to express custom logic without codi
 
 #### Status Transition Flows
 
-- [Status-Transition Flows](./services/status-flows.md) ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
+- [Status-Transition Flows](./flows) ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
 
 
 #### Input Validation
 
-- [Declarative Constraints](./services/constraints) allow to annotate your models and have the respective checks still be executed and enforced by generic runtimes, with the following annotations:
+- [Declarative Constraints](./constraints) allow to annotate your models and have the respective checks still be executed and enforced by generic runtimes, with the following annotations:
 
-  - [`@assert`](./services/constraints#assert-constraint), incl. derivates:
-    - [`@assert.format`](./services/constraints#assert-format)
-    - [`@assert.range`](./services/constraints#assert-range)
-    - [`@assert.target`](./services/constraints#assert-target)
-  - [`@mandatory`](./services/constraints#mandatory)
-  - [`@readonly`](./services/constraints#readonly)
+  - [`@assert`](./constraints#assert-constraint), incl. derivates:
+    - [`@assert.format`](./constraints#assert-format)
+    - [`@assert.range`](./constraints#assert-range)
+    - [`@assert.target`](./constraints#assert-target)
+  - [`@mandatory`](./constraints#mandatory)
+  - [`@readonly`](./constraints#readonly)
 
 
 > [!tip] 
@@ -824,7 +824,7 @@ CAP supports various declarative techniques to express custom logic without codi
 ...
 ```
 
-[Learn more about providing service implementations in Node.js.](../node.js/core-services#implementing-services){.learn-more}
+[Learn more about providing service implementations in Node.js.](../../node.js/core-services#implementing-services){.learn-more}
 
 **In Java**, you'd assign `EventHandler` classes using dependency injection as follows:
 
@@ -834,7 +834,7 @@ CAP supports various declarative techniques to express custom logic without codi
 public class FooServiceImpl implements EventHandler {...}
 ```
 
-[Learn more about Event Handler classes in Java.](../java/event-handlers/#handlerclasses){.learn-more}
+[Learn more about Event Handler classes in Java.](../../java/event-handlers/index.md#handlerclasses){.learn-more}
 
 
 
@@ -865,9 +865,9 @@ public class BookshopServiceImpl implements EventHandler {
 
 :::
 
-[Learn more about **adding event handlers in Node.js**.](../node.js/core-services#srv-on-before-after){.learn-more}
+[Learn more about **adding event handlers in Node.js**.](../../node.js/core-services#srv-on-before-after){.learn-more}
 
-[Learn more about **adding event handlers in Java**.](../java/event-handlers/#handlerclasses){.learn-more}
+[Learn more about **adding event handlers in Java**.](../../java/event-handlers/index.md#handlerclasses){.learn-more}
 
 
 
@@ -895,13 +895,13 @@ Event handlers all get a uniform _Request_/_Event Message_ context object as the
 
 - The `event` name — that is, a CRUD method name, or a custom-defined one
 - The `target` entity, if any
-- The `query` in [CQN](../cds/cqn) format, for CRUD requests
+- The `query` in [CQN](../../cds/cqn) format, for CRUD requests
 - The `data` payload
 - The `user`, if identified/authenticated
 - The `tenant` using your SaaS application, if enabled
 
-[Learn more about **implementing event handlers in Node.js**.](../node.js/events#cds-request){.learn-more}
-[Learn more about **implementing event handlers in Java**.](../java/event-handlers/#eventcontext){.learn-more}
+[Learn more about **implementing event handlers in Node.js**.](../../node.js/events#cds-request){.learn-more}
+[Learn more about **implementing event handlers in Java**.](../../java/event-handlers/index.md#eventcontext){.learn-more}
 
 
 
@@ -929,7 +929,7 @@ service Sue {
 }
 ```
 
-[Learn more about modeling actions and functions in CDS.](../cds/cdl#actions){.learn-more}
+[Learn more about modeling actions and functions in CDS.](../../cds/cdl#actions){.learn-more}
 
 
 
@@ -1124,7 +1124,7 @@ entity Authors { //...
 }
 ```
 
-[Learn more about the syntax of annotations.](../cds/cdl#annotations){.learn-more}
+[Learn more about the syntax of annotations.](../../cds/cdl#annotations){.learn-more}
 
 ::: warning
 In case you rename the properties holding the media type or content disposition information in a projection, you need to update the annotation's value as well.
@@ -1152,7 +1152,7 @@ GET ../Authors(201)/image
 
 > The media data is streamed automatically.
 
-[Learn more about returning a custom streaming object (Node.js - beta).](../node.js/best-practices#custom-streaming-beta){.learn-more}
+[Learn more about returning a custom streaming object (Node.js - beta).](../../node.js/best-practices#custom-streaming-beta){.learn-more}
 
 ### Creating a Media Resource
 

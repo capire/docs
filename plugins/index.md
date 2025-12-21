@@ -34,7 +34,7 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 
 ## As _cds-plugins_ for Node.js
 
-For Node.js all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/data-privacy/audit-logging) plugin:
+For Node.js all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/security/dpp-audit-logging.md) plugin:
 
 1. Add the plugin:
 
@@ -271,7 +271,7 @@ Available for:
 [![Node.js logo](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/audit-logging#readme)
 ![Java](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
 
-Learn more about audit logging in [Node.js](../guides/data-privacy/audit-logging) and in [Java](../java/auditlog) {.learn-more}
+Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging.md) and in [Java](../java/auditlog) {.learn-more}
 
 
 ## Change Tracking
@@ -423,4 +423,3 @@ Available for:
 <div id="upcoming-plugins" />
 
 <div id="planned-plugins" />
-

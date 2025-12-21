@@ -67,13 +67,10 @@ You have all your answers and know your scenario, go on reading about [external 
 
 #### Sample Scenario from End-to-End Tutorial
 
-<!-- Bookshop, SFlight, Incidents Mgmt, Orders Mgmt. etc. -> we might want to cut down on our sample scenarios  -->
+![A graphic showing the flow for one possible scenario. A user can either view risks or view the suppliers. The suppliers master data is already available from a system and is consumed in an application that enables the user to add the risks. From the maintained risks the user can get information about the supplier connected to a risk. From the supplier view, it's also possible to get details about a risk that is associated with a supplier. The user can block/unblock suppliers from the risk view.](./risk-mgmt.drawio.svg){style="width: 500px"}
 
-![A graphic showing the flow for one possible scenario. A user can either view risks or view the suppliers. The suppliers master data is already available from a system and is consumed in an application that enables the user to add the risks. From the maintained risks the user can get information about the supplier connected to a risk. From the supplier view, it's also possible to get details about a risk that is associated with a supplier. The user can block/unblock suppliers from the risk view.](./assets/using-services/risk-mgmt.drawio.svg){style="width: 500px"}
-
-::: info _User Story_
-A company wants to ensure that goods are only sourced from suppliers with acceptable risks. There shall be a software system, that allows a clerk to maintain risks for suppliers and their mitigations. The system shall block the supplier used if risks can't be mitigated.
-:::
+> [!info] _User Story_
+> A company wants to ensure that goods are only sourced from suppliers with acceptable risks. There shall be a software system, that allows a clerk to maintain risks for suppliers and their mitigations. The system shall block the supplier used if risks can't be mitigated.
 
 The application is an extension for SAP S/4HANA. It deals with _risks_ and _mitigations_ that are local entities in the application and _suppliers_ that are stored in SAP S/4HANA Cloud. The application helps to reduce risks associated with suppliers by automatically blocking suppliers with a high risk using a [remote API Call](#execute-queries).
 
@@ -205,7 +202,7 @@ When importing the specification files, the `kind` is set according to the follo
 | OpenAPI         | `rest`                         |
 | AsyncAPI        | `odata`                        |
 
-[Learn more about type mappings from OData to CDS and vice versa.](../tools/apis/cds-import#odata-type-mappings){.learn-more}
+[Learn more about type mappings from OData to CDS and vice versa.](../../tools/apis/cds-import#odata-type-mappings){.learn-more}
 
 ::: tip
 Always use OData V4 (`odata`) when calling another CAP service.
@@ -239,7 +236,7 @@ To work with remote services, add the following dependency to your Maven project
 </dependency>
 ```
 
-[Learn about all `cds.remote.services` configuration possibilities.](../java/developing-applications/properties#cds-remote-services){.learn-more}
+[Learn about all `cds.remote.services` configuration possibilities.](../../java/developing-applications/properties#cds-remote-services){.learn-more}
 
 </div>
 
@@ -479,7 +476,7 @@ Connect to the service before sending a request, as usual in CAP:
 const bupa = await cds.connect.to('API_BUSINESS_PARTNER');
 ```
 
-Then execute your queries using the [Querying API](../node.js/core-services#srv-run-query):
+Then execute your queries using the [Querying API](../../node.js/core-services#srv-run-query):
 
 ```js
 const { A_BusinessPartner } = bupa.entities;
@@ -514,7 +511,7 @@ You can use dependency injection to get access to the remote service:
 CqnService bupa;
 ```
 
-Then execute your queries using the [Querying API](../java/working-with-cql/query-execution):
+Then execute your queries using the [Querying API](../../java/working-with-cql/query-execution):
 
 ```java
 CqnSelect select = Select.from(ABusinessPartner_.class).limit(100);
@@ -584,7 +581,7 @@ bupa.send({
 })
 ```
 
-[Learn more about the `send` API.](../node.js/core-services#srv-send-request){.learn-more}
+[Learn more about the `send` API.](../../node.js/core-services#srv-send-request){.learn-more}
 
 ### Building Custom Requests with Java {.java}
 
@@ -1029,7 +1026,7 @@ cds:
         suffix: "/sap/opu/odata/sap"
 ```
 :::
-[Learn more about configuring destinations for Java.](../java/cqn-services/remote-services#destination-based-scenarios){.learn-more}
+[Learn more about configuring destinations for Java.](../../java/cqn-services/remote-services#destination-based-scenarios){.learn-more}
 
 #### Use Application Defined Destinations { #app-defined-destinations}
 
@@ -1173,12 +1170,12 @@ cds:
         name: "reviews-destination"
 ```
 :::
-[Learn more about programmatic destination registration.](../java/cqn-services/remote-services#programmatic-destination-registration){.learn-more} [See examples for different authentication types.](../java/cqn-services/remote-services#programmatic-destinations){.learn-more}
+[Learn more about programmatic destination registration.](../../java/cqn-services/remote-services#programmatic-destination-registration){.learn-more} [See examples for different authentication types.](../../java/cqn-services/remote-services#programmatic-destinations){.learn-more}
 
 
 ### Connect to Remote Services Locally
 
-If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../advanced/hybrid-testing) with the following procedure:
+If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../../advanced/hybrid-testing) with the following procedure:
 
 #### Bind to Remote Destinations
 
@@ -1205,7 +1202,7 @@ Your local application needs access to an XSUAA and Destination service instance
     cds bind -2 cpapp-xsuaa,cpapp-destination
     ```
 
-    [Learn more about `cds bind`.](../advanced/hybrid-testing#services-on-cloud-foundry){.learn-more}
+    [Learn more about `cds bind`.](../../advanced/hybrid-testing#services-on-cloud-foundry){.learn-more}
 
 #### Run a Node.js Application with a Destination {.node}
 
@@ -1268,7 +1265,7 @@ cds bind --exec -- mvn spring-boot:run \
   -Dspring-boot.run.profiles=default,hybrid
 ```
 
-[Learn more about `cds bind --exec`.](../advanced/hybrid-testing#run-arbitrary-commands-with-service-bindings){.learn-more}
+[Learn more about `cds bind --exec`.](../../advanced/hybrid-testing#run-arbitrary-commands-with-service-bindings){.learn-more}
 
 ::: tip
 If you are developing in the Business Application Studio and want to connect to an on-premise system, you will need to do so via Business Application Studio's built-in proxy, for which you need to add configuration to your destination environment variable. See [Reach On-Premise Service from the SAP Business Application Studio](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/destination-service#reach-on-premise-service-from-the-sap-business-application-studio) for more details.
@@ -1339,7 +1336,7 @@ With Istio, you can further secure the communication [by configuring authenticat
 
 Your micro service needs bindings to the **XSUAA** and **Destination** service to access destinations on SAP BTP. If you want to access an on-premise service using **Cloud Connector**, then you need a binding to the **Connectivity** service as well.
 
-[Learn more about deploying CAP applications.](deployment/){.learn-more}
+[Learn more about deploying CAP applications.](../deployment/index){.learn-more}
 [Learn more about deploying an application using the end-to-end tutorial.](https://developers.sap.com/group.btp-app-cap-deploy.html){.learn-more}
 
 <!-- #### Add Required Services to Cloud Foundry Manifest Deployment
@@ -1390,7 +1387,7 @@ cf create-service-push  # or `cf cspush` in short from 1.3.2 onwards
 
 #### Add Required Services to MTA Deployments
 
-The MTA-based deployment is described in [the deployment guide](deployment/). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](deployment/to-cf#add-mta-yaml) file.
+The MTA-based deployment is described in [the deployment guide](../deployment/index.md). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](../deployment/to-cf#add-mta-yaml) file.
 
 
 ```sh
@@ -1583,8 +1580,8 @@ Kyma clusters run an [Istio](https://istio.io/) service mesh. Istio allows to [c
 
 CAP adds headers for request correlation to its outbound requests that allows logging and tracing across micro services.
 
-[Learn more about request correlation in Node.js.](../node.js/cds-log#node-observability-correlation){.learn-more .node}
-[Learn more about request correlation in Java.](../java/operating-applications/observability#correlation-ids){.learn-more .java}
+[Learn more about request correlation in Node.js.](../../node.js/cds-log#node-observability-correlation){.learn-more .node}
+[Learn more about request correlation in Java.](../../java/operating-applications/observability#correlation-ids){.learn-more .java}
 
 <div id="aftertracing" />
 
@@ -1671,5 +1668,5 @@ This list specifies the properties for application defined destinations.
 | NoAuthentication        |                                  <Y/>                                   |              <Y/>              |
 | BasicAuthentication     |                                  <Y/>                                   |              <Y/>              |
 | TokenForwarding         |                                  <Y/>                                   | <X/><br>Use `forwardAuthToken` |
-| OAuth2ClientCredentials | [code only](../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
-| UserTokenAuthentication | [code only](../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
+| OAuth2ClientCredentials | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
+| UserTokenAuthentication | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |

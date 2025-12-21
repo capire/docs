@@ -44,8 +44,8 @@ If you want to use the `localized` modifier, the entity's keys must not be assoc
 ## Behind the Scenes
 
 The `cds` compiler automatically unfolds the previous definition as follows,
-applying the basic mechanisms of [Managed Compositions](../cds/cdl#managed-compositions),
-and [Scoped Names](../cds/cdl#scoped-names):
+applying the basic mechanisms of [Managed Compositions](../../cds/cdl#managed-compositions),
+and [Scoped Names](../../cds/cdl#scoped-names):
 
 First, a separate _Books.texts_ entity is added to hold translated texts:
 
@@ -58,7 +58,7 @@ entity Books.texts {
 }
 ```
 
-[See the definition of `sap.common.Locale`.](../cds/common#locale-type){ .learn-more}
+[See the definition of `sap.common.Locale`.](../../cds/common#locale-type){ .learn-more}
 
 Second, the source entity is extended with associations to _Books.texts_:
 
@@ -135,7 +135,7 @@ In contrast to similar strategies, all texts aren't externalized but the origina
 ### Extending *.texts* Entities { #extending-texts-entities}
 
 It's possible to collectively extend all generated *.texts* entities by extending
-the aspect `sap.common.TextsAspect`, which is defined in [*common.cds*](../cds/common#texts-aspects).
+the aspect `sap.common.TextsAspect`, which is defined in [*common.cds*](../../cds/common#texts-aspects).
 
 For example, the aspect can be used to add an association to the `Languages` code list entity,
 or to add flags that help you to control the translation process.
@@ -175,7 +175,7 @@ entity Books.texts {
 ```
 
 It isn't allowed to extend `sap.common.TextsAspect` with
-* [Managed Compositions of Aspects](../cds/cdl#managed-compositions)
+* [Managed Compositions of Aspects](../../cds/cdl#managed-compositions)
 * localized elements
 * key elements
 
@@ -256,7 +256,7 @@ SELECT ID, texts.locale, texts.title, texts.descr from Books
 
 The generic handlers of the service runtimes automatically serve read requests from `localized` views. Users see all texts in their preferred language or the fallback language.
 
-[See also **Enabling Draft for Localized Data**.](../advanced/fiori#draft-for-localized-data){ .learn-more}
+[See also **Enabling Draft for Localized Data**.](./fiori#draft-for-localized-data){ .learn-more}
 
 For example, given this service definition:
 
@@ -383,7 +383,7 @@ DELETE /Entity(<entity_key>)/texts(ID=<entity_key>,locale='<locale>') HTTP/1.1
 
 ## Nested Localized Data
 
-The definition of books has a `currency` element that is effectively an association to the `sap.common.Currencies` code list entity, which in turn has localized texts. Find the respective definitions in the reference docs for `@sap/cds/common`, in the section on [Common Code Lists](../cds/common#code-lists).
+The definition of books has a `currency` element that is effectively an association to the `sap.common.Currencies` code list entity, which in turn has localized texts. Find the respective definitions in the reference docs for `@sap/cds/common`, in the section on [Common Code Lists](../../cds/common#code-lists).
 
 Upon unfolding, all associations to other entities with localized texts are automatically redirected as follows:
 

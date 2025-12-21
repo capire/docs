@@ -146,7 +146,7 @@ service HRService {
 :::
 
 > You can omit composed entities like _WorkAssignments_ from the service, as they would get
-[auto-exposed](providing-services#auto-exposed-entities) automatically.
+[auto-exposed](services/providing-services#auto-exposed-entities) automatically.
 
 <div id="beforereadingtempdata" />
 

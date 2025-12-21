@@ -93,7 +93,7 @@ The maximum batch size for update and delete can be configured via `cds.sql.max-
 
 #### Querying Parameterized Views on SAP HANA { #querying-views}
 
-To query [views with parameters](../../advanced/hana#views-with-parameters) on SAP HANA, build a select statement and execute it with [named parameter](#named-parameters) values that correspond to the view's parameters.
+To query [views with parameters](../../guides/databases/hana-native#views-with-parameters) on SAP HANA, build a select statement and execute it with [named parameter](#named-parameters) values that correspond to the view's parameters.
 
 Let's consider the following `Books` entity and a parameterized view `BooksView`, which returns the `ID` and `title` of `Books` with `stock` greater or equal to the value of the parameter `minStock`:
 
@@ -239,7 +239,7 @@ To [write data](#updatable-views) or [delete](#delete-via-view) through views, o
 For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL views can be avoided by using [runtime views](#runtimeviews). This allows you to change the view definition without redeploying the database schema and is the prerequisite for lightweight extensibility via predefined extension fields.
 
 ::: tip Prefer simple views
-Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Single-Purposed Services](../../guides/providing-services#single-purposed-services)), rather than one complex view for many scenarios.
+Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Single-Purposed Services](../../guides/services/providing-services#single-purposed-services)), rather than one complex view for many scenarios.
 :::
 ::: warning Avoid selecting paths over to-many Associations
 Do not use [path expressions](../../cds/cql#path-expressions-in-all-other-clauses) over [*to-many associations*](../../cds/cdl#to-many-associations) in the select clause of CDS views. This blocks write operations and may cause performance issues due to record duplication on read.
@@ -406,9 +406,9 @@ Use _optimistic_ concurrency control to detect concurrent modification of data _
 
 #### Optimistic Concurrency Control in OData
 
-In the [OData protocol](../../guides/providing-services#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
+In the [OData protocol](../../guides/services/providing-services#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
 
-The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/providing-services#etag):
+The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/services/providing-services#etag):
 
 {#on-update-example}
 
@@ -468,7 +468,7 @@ entity Order : cuid {
 
 Compared to `@cds.on.update`, which allows for ETag elements with type `Timestamp` or `UUID` only, `@cds.java.version` additionally supports all integral types `Uint8`, ... `Int64`. For timestamp, the value is set to `$now` upon update, for elements of type UUID a new UUID is generated, and for elements of integral type the value is incremented.
 
-Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/providing-services#etag) in OData.
+Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/services/providing-services#etag) in OData.
 
 ##### Expected Version from Data
 

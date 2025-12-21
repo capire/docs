@@ -173,7 +173,7 @@ service BookshopService {
 }
 ```
 
-Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](/guides/providing-services#input-validation), you can also use `@readonly` on a property level.
+Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](/guides/services/providing-services#input-validation), you can also use `@readonly` on a property level.
 
 In addition, annotation `@Capabilities` from standard OData vocabulary is enforced by the runtimes analogously:
 
@@ -225,7 +225,7 @@ In general, **implicitly auto-exposed entities cannot be accessed directly**, th
 
 In contrast, **explicitly auto-exposed entities can be accessed directly, but only as `@readonly`**. The rationale behind that is that entities representing value lists need to be readable at the service level, for instance to support value help lists.
 
-See details about `@cds.autoexpose` in [Auto-Exposed Entities](/guides/providing-services#auto-exposed-entities).
+See details about `@cds.autoexpose` in [Auto-Exposed Entities](/guides/services/providing-services#auto-exposed-entities).
 
 This results in the following access matrix:
 
