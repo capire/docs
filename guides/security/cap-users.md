@@ -508,7 +508,8 @@ annotate AdminService.Books with @ams.attributes.genre: {
 ### Prepare Base Policies { #policies }
 
 CAP roles and attribute filters cannot be directly assigned to business users.
-Instead, the application defines AMS base policies that include CAP roles and attributes, allowing user administrators to assign them to users or create custom policies based on them.
+Instead, the application defines AMS base policies that include CAP roles and attributes at design time. 
+This allows user administrators to assign them to users or create custom policies based on the base policies at runtime.
 
 :::tip
 AMS policies represent the business-level roles of end users interacting with the application.
@@ -579,14 +580,6 @@ POLICY ContentManager {
 In contrast to a `StockManager` who is responsible for the books offering, a `ContentManager` additionally makes the author selection.
 In addition, a `StockManager` with CAP role `ManageBooks` may be restricted to specific genres by applying appropriate filters prepared in [custom policies](#local-testing).
 As a `ContentManager` there is no genre-based restriction.
-
-There are several options for the attribute declarations that have an impact on the effect of filters:
-
-| Attribute Statement | Description | Attribute Filter |
-|:-----------------------:|:--------------------:|:---------------:|
-| `WHERE Genre IS NOT RESTRICTED` | _Offers `Genre` as filterable attribute in the scope of the role_ | _Filter restriction could be provided in a custom policy, but no filter applied by default (potentially restricted)_  |
-| `WHERE Genre IS RESTRICTED` | _Enforces `Genre` as filtered attribute in the scope for the role_ | _Filter restriction must be provided in a custom policy and is applied (restricted)_ |
-| _- no defintion -_ | _The role does not offer any attribute for filtering_ | _No restriction filter is applied (unrestricted)_ |
 
 ::: info
 The attribute statement is defined in the scope of a dedicated CAP role and filters are applied on matching entites accordingly.
