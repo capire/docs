@@ -525,7 +525,7 @@ By default, `cds` maps UUIDs to `nvarchar(36)` in SQL databases. The length is t
 > If the client side needs to work with the UUID, VARBINARY would lead to CAST operations or binary array handling at the client side. Here **NVARCHAR would be the data type of choice** to avoid handling binary arrays on the client side.
 ### Example Index
 
-> [Download from here](../advanced/assets/native-hana-samples.zip) a fully fledged model with even more examples.
+> [Download from here](native-hana-samples.zip) a fully fledged model with even more examples.
 
 | What            | Database Object               | Mapping Object                | Facade Entity          |
 | ---             | ---                           | ---                           | ---                    |
