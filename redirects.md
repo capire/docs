@@ -2,7 +2,7 @@
 
 - [get-started/dev-tools](tools)
 - [get-started/tools](tools)
-- [get-started/samples](get-started/learning-sources)
+- [get-started/samples](get-started/learn-more)
 - [get-started/using-typescript](node.js/typescript)
 - [get-started/jumpstart](get-started/about#jumpstarting-projects)
 - [get-started/hello-world](get-started/in-a-nutshell)
@@ -12,7 +12,7 @@
 
 ## Cookbook Guides
 
-- [guides/analytics](advanced/analytics)
+- [guides/analytics](guides/advanced/analytics)
 - [guides/as-saas](guides/multitenancy)
 - [guides/authorization](guides/security/authorization)
 - [guides/consuming-services](guides/services/using-services)
@@ -38,19 +38,19 @@
 - [security/overview](guides/security/overview)
 
 - [advanced/fiori](guides/uis/fiori)
-- [advanced/asyncapi](advanced/publishing-apis/asyncapi)
+- [advanced/asyncapi](guides/advanced/publishing-apis/asyncapi)
 - [advanced/deploy-to-cloud](guides/deploy/index)
 - [advanced/deploy-to-kyma](guides/deploy/to-kyma)
 - [advanced/enable-mtx](guides/extensibility)
 - [advanced/extensibility](guides/extensibility)
 - [advanced/mtx](guides/extensibility)
-- [advanced/openapi](advanced/publishing-apis/openapi)
+- [advanced/openapi](guides/advanced/publishing-apis/openapi)
 - [advanced/troubleshooting](get-started/troubleshooting)
 
 ## CDS
 
 - [cds/js-api](node.js/cds-compile)
-- [cds/odata-annotations](advanced/odata)
+- [cds/odata-annotations](guides/advanced/odata)
 - [releases/compiler-v2](cds/compiler/v2)
 
 ## Java

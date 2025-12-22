@@ -19,10 +19,10 @@ It's organized as follows:
 
 | Section                                                                                  | Description                                                                                                        |
 |------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| [Getting&nbsp;Started](./) <br/> [Cookbook](../guides/)) <br/> [Advanced](../guides/advanced/)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
-| [CDS](../cds/) <br/> [Java](../java/) <br/> [Node](../node.js/) <br/> [Tools](../tools/) | **Reference docs** for respective areas.                                                                           |
-| [Plugins](../plugins/)                                                                   | **Curated list of plugins** that extend the capabilities of the CAP framework.                                     |
-| [Releases](../releases/)                                                                 | The place where you can stay up to date with the most recent information about new features and changes in CAP.        |
+| [Getting&nbsp;Started](./index) <br/> [Cookbook](../guides)) <br/> [Advanced](../guides/advanced)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
+| [CDS](../cds) <br/> [Java](../java) <br/> [Node](../node.js) <br/> [Tools](../tools) | **Reference docs** for respective areas.                                                                           |
+| [Plugins](../plugins)                                                                   | **Curated list of plugins** that extend the capabilities of the CAP framework.                                     |
+| [Releases](../releases)                                                                 | The place where you can stay up to date with the most recent information about new features and changes in CAP.        |
 
 ### Feature Status Badges
 
@@ -93,7 +93,7 @@ In here, we collected several interesting sample projects for you. Not all of th
 > [![]()](https://github.com/sap-samples/cloud-cap-samples-java){.java}
 > [![]()](https://github.com/capire/bookshop){.node}
 
-The bookshop sample is our original sample provided by the CAP team and featured in the [getting started guides](../get-started/in-a-nutshell).
+The bookshop sample is our original sample provided by the CAP team and featured in the [getting started guides](./in-a-nutshell).
 It's available in both Node.js and Java. The Node.js variant contains additional samples besides bookshop that demonstrate various features of CAP.
 
 

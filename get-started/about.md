@@ -131,8 +131,6 @@ In general, we always propose that approach:
 >   3. loosely coupled, coarse-grained subsystems with separate lifecycles
 >  - **False** reasons are: distributed development, modularization, isolation, ... → there are well established and proven better ways to address these things, without the pain which comes with microservices.
 
-[See also the anti pattern of *Microservices Mania*](bad-practices#microservices-mania) {.learn-more}
-
 
 
 ### Parallelized Workflows
@@ -349,7 +347,6 @@ Of course, we also make mistakes and errors in CAP, but ...
 - And this effect increases with steadily growing adoption of CAP that we see, ...
 - And with the open culture we established successfully, for example, **open issue reports** in GitHub, that is, the standard out there, instead of private support tickets — a relict of the past.
 
-> Note that all of this is in contrast to code generators, where you can't fix code generated in the past → see also [*Avoid Code Generators*](bad-practices#code-generators) in the anti patterns guide.
 
 ### Minimized Lock-Ins
 
@@ -378,7 +375,7 @@ Keeping pace with a rapidly changing world of volatile cloud technologies and pl
 
 - AI provides tremendous boosts to productivity → for example:
   - **Coding Assists** → for example, by [GitHub Copilot](https://github.com/features/copilot) in `.cds`, `.js`, even `.md` sources
-  - **Code Analysis** → detecting [bad practices](bad-practices) → guiding to [best practices](best-practices)
+  - **Code Analysis** → detecting bad practices → guiding to [best practices](best-practices)
   - **Code Generation** → for example, for tests, test data, ...
   - **Project Scaffolding** → for quick head starts
   - **Search & Learning Assists** → like SAP Joule, ...

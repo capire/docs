@@ -4,9 +4,8 @@
  ## [Introduction — What is CAP?](get-started/about)
  ## [Bookshop by capire](get-started/in-a-nutshell)
  ## [Best Practices](get-started/best-practices)
- ## [Anti Patterns](get-started/bad-practices)
  ## [Next Steps](get-started/index#next-steps)
- ## [Learn More](get-started/learning-sources)
+ ## [Learn More](get-started/learn-more)
  ## [Features Matrix](get-started/features)
  ## [Troubleshooting](get-started/troubleshooting)
 
@@ -103,7 +102,7 @@
   <!-- ### [Data Retention Management](guides/security/dpp-drm) -->
 
 
-## [Intrinsic Extensibility](guides/extensibility)
+## [Intrinsic Extensibility](guides/extensibility/)
 
   ### [Extending SaaS Apps](guides/extensibility/customization)
   ### [Feature Toggles](guides/extensibility/feature-toggles)

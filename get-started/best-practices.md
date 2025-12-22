@@ -280,7 +280,6 @@ Don't confuse CAP services with Microservices:
 
 CAP services are important for how you *design* and *implement* your applications in clean and modularized ways on a fine-granular use case-oriented level. The primary focus of Microservices is on how to cut your whole application into independent coarse-grained(!) deployment units, to release and scale them independently.
 
-[Learn more about that in the *Anti Patterns* section on Microservices](bad-practices#microservices-mania) {.learn-more}
 
 ## Events
 
@@ -636,7 +635,6 @@ Not only do we address the very same goals, we can also identify several symmetr
 >
 > CAP is very much in line with both, the intent and goals of Hexagonal Architecture, as well as with the fundamental concepts. Actually, CAP *is an implementation* of Hexagonal Architecture, in particular with respect to the [*Adapters*](#protocol-adapters) in the outer hexagon, but also regarding [*Application Models*](#application-domain) and [*(Core) Domain Models*](#application-domain) in the inner hexagon.
 
-[Also take notice of the *Squared Hexagons* section in the Anti Patterns guide](bad-practices#squared-hexagons) {.learn-more}
 
 
 
