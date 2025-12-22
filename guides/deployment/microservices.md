@@ -168,7 +168,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 2. Add a `shared-db/db/schema.cds` file as a mashup to actually collect the models:
 
   ::: code-group
-   ```cds [Node-js]
+   ```cds [Node.js]
    using from '@capire/bookstore';
    using from '@capire/reviews';
    using from '@capire/orders';
