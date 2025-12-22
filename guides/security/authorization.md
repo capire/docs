@@ -42,8 +42,8 @@ From perspective of CAP, the authentication method is freely customizable. For c
 
 Find detailed instructions for setting up authentication in these runtime-specific guides:
 
-- [Set up authentication in Node.js.](/node.js/authentication)
-- [Set up authentication in Java.](/java/security#authentication)
+- [Set up authentication in Node.js.](../../node.js/authentication)
+- [Set up authentication in Java.](../../java/security#authentication)
 
 
 In _productive_ environment with security middleware activated, **all protocol adapter endpoints are authenticated by default**<sup>1</sup>, even if no [restrictions](#restrictions) are configured. Multi-tenant SaaS-applications require authentication to provide tenant isolation out of the box. In case there is the business need to expose open endpoints for anonymous users, it's required to take extra measures depending on runtime and security middleware capabilities.
@@ -110,7 +110,7 @@ For XSUAA or IAS authentication, the request user is attached with the pseudo ro
 :::
 
 #### internal-user
-Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](/guides/security/overview#application-zone).
+Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](../../guides/security/overview#application-zone).
 
 ::: tip
 For XSUAA or IAS authentication, the request user is attached with the pseudo role `internal-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` on basis of the **identical** XSUAA or IAS service instance.
@@ -137,8 +137,8 @@ CAP does not make any assumptions on the presented claims given in the token. St
 In most cases, CAP's default mapping will match your requirements, but CAP also allows you to customize the mapping according to specific needs. For instance, `user_name` in XSUAA tokens is generally not unique if several customer IdPs are connected to the underlying identity service.
 Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you implement in a custom adaptation. Similarly, attribute values can be normalized and prepared for [instance-based authorization](#instance-based-auth). Find details and examples how to programmatically redefine the user mapping here:
 
-- [Set up Authentication in Node.js.](/node.js/authentication)
-- [Custom Authentication in Java.](/java/security#custom-authentication)
+- [Set up Authentication in Node.js.](../../node.js/authentication)
+- [Custom Authentication in Java.](../../java/security#custom-authentication)
 
 ::: warning Be very careful when redefining `$user`
 The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. Also consider data protection and privacy regulations when storing user data.
@@ -173,7 +173,7 @@ service BookshopService {
 }
 ```
 
-Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](/guides/services/providing-services#input-validation), you can also use `@readonly` on a property level.
+Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../../guides/services/providing-services#input-validation), you can also use `@readonly` on a property level.
 
 In addition, annotation `@Capabilities` from standard OData vocabulary is enforced by the runtimes analogously:
 
@@ -225,7 +225,7 @@ In general, **implicitly auto-exposed entities cannot be accessed directly**, th
 
 In contrast, **explicitly auto-exposed entities can be accessed directly, but only as `@readonly`**. The rationale behind that is that entities representing value lists need to be readable at the service level, for instance to support value help lists.
 
-See details about `@cds.autoexpose` in [Auto-Exposed Entities](/guides/services/providing-services#auto-exposed-entities).
+See details about `@cds.autoexpose` in [Auto-Exposed Entities](../../guides/services/providing-services#auto-exposed-entities).
 
 This results in the following access matrix:
 
@@ -278,7 +278,7 @@ The following values are supported:
 
 - The `to` property lists all [user roles](#roles) or [pseudo roles](#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
-- The `where`-clause can contain a Boolean expression in [CQL](/cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
+- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
 
 A privilege is met, if and only if **all properties are fulfilled** for the current request. In the following example, orders can only be read by an `Auditor` who meets `AuditBy` element of the instance:
 
@@ -509,7 +509,7 @@ annotate Articles with @(restrict: [
   { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
 ```
 
-You can define `where`-conditions in restrictions based on [CQL](/cds/cql)-where-clauses.<br>
+You can define `where`-conditions in restrictions based on [CQL](../../cds/cql)-where-clauses.<br>
 Supported features are:
 * Predicates with arithmetic operators.
 * Combining predicates to expressions with `and` and `or` logical operators.
@@ -641,7 +641,7 @@ Be aware that deep paths might introduce a performance bottleneck. Access Contro
 
 ### Association Paths { #association-paths}
 
-The `where`-condition in a restriction can also contain [CQL path expressions](/cds/cql#path-expressions) that navigate to elements of associated entities:
+The `where`-condition in a restriction can also contain [CQL path expressions](../../cds/cql#path-expressions) that navigate to elements of associated entities:
 
 ```cds
 service SalesOrderService @(requires: 'authenticated-user') {
@@ -811,7 +811,7 @@ As shown before, defining an adequate authorization strategy has a deep impact o
 
 ### Separation of Concerns
 
-Consider using [CDS Aspects](/cds/cdl#aspects) to separate the actual service definitions from authorization annotations as follows:
+Consider using [CDS Aspects](../../cds/cdl#aspects) to separate the actual service definitions from authorization annotations as follows:
 
 <!--- % include _code sample='services.cds' %} -->
 ::: code-group
@@ -855,8 +855,8 @@ The service provider frameworks **automatically enforce** restrictions in generi
 
 If generic enforcement doesn't fit your needs, you can override or adapt it with **programmatic enforcement** in custom handlers:
 
-- [Authorization Enforcement in Node.js](/node.js/authentication#enforcement)
-- [Enforcement API & Custom Handlers in Java](/java/security#enforcement-api)
+- [Authorization Enforcement in Node.js](../../node.js/authentication#enforcement)
+- [Enforcement API & Custom Handlers in Java](../../java/security#enforcement-api)
 
 ## Role Assignments with IAS and AMS
 
@@ -968,7 +968,7 @@ Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_
 
 ### 3. Assembling Roles and Assigning Roles to Users
 
-This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](/node.js/authentication#auth-in-cockpit) for more details. If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
+This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](../../node.js/authentication#auth-in-cockpit) for more details. If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
 In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.
 
 

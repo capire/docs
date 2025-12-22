@@ -969,7 +969,7 @@ Obtain these two from the `VCAP_SERVICES` environment variable in your deployed 
 
 **Note:** The `key` and `clientsecret` properties are secrets that should not be stored in an unsafe location in productive scenarios!
 
-[Learn more about environment variables / `VCAP_Services`.](/node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
+[Learn more about environment variables / `VCAP_Services`.](../../node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
 
 If you leave out the respective secret (enclosed in square brackets above), you will be prompted to enter it interactively.
 This can be used to feed the secret from the environment to `cds login` via standard input, like so:

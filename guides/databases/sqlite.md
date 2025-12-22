@@ -106,7 +106,7 @@ Configure the build to create an initial _schema.sql_ file for SQLite using `cds
 :::
 
 
-[Learn more about creating an initial database schema](/java/cqn-services/persistence-services#initial-database-schema-1){.learn-more}
+[Learn more about creating an initial database schema](../../java/cqn-services/persistence-services#initial-database-schema-1){.learn-more}
 
 </div>
 

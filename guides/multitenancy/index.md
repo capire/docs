@@ -329,7 +329,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - [ terminate with ^C ]
    ```
 
-   [If you get an error on server start, read the troubleshooting information.](/get-started/troubleshooting#why-do-i-get-an-error-on-server-start){.learn-more}
+   [If you get an error on server start, read the troubleshooting information.](../../get-started/troubleshooting#why-do-i-get-an-error-on-server-start){.learn-more}
    :::
 
 
@@ -667,7 +667,7 @@ You should now see the route mapped to your application.
 
 There are several ways to update the database schema of a multitenant application.
 
-* For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](/java/multitenancy#database-update)
+* For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update)
 * For **CAP Node.js** applications, you can use either of:
   - the `cds-mtx upgrade` command from a terminal
   - the [MTX Sidecar API](mtxs#upgrade-tenants-→-jobs)
@@ -778,7 +778,7 @@ For CAP Java, all these services are supported natively and SaaS dependencies ar
 :::tip Explicitly activate the Destination service
 SaaS dependency for Destination service needs to be activated explicitly in the `application.yaml` due to security reasons. SaaS dependencies for some of the other services can be **de**activated by setting the corresponding property to `false` in the `application.yaml`.
 
-Refer to the `cds.multiTenancy.dependencies` section in the [CDS properties](/java/developing-applications/properties#cds-properties).
+Refer to the `cds.multiTenancy.dependencies` section in the [CDS properties](../../java/developing-applications/properties#cds-properties).
 :::
 
 For CAP Node.js, all these services are supported natively and can be activated individually by providing configuration in `cds.requires`. In the most common case, you simply activate service dependencies like so:
