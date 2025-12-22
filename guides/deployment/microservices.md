@@ -611,7 +611,7 @@ Enable messaging for the modules that use it:
 
 #### In CAP Java
 
-Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the `emname` and `namespace` properties, as the mta.yaml file parameterizes these dynamically:
+Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the `emname` and `namespace` properties because the mta.yaml file parameterizes these dynamically:
 
 ::: code-group
 ```json [event-mesh.json]
