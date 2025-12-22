@@ -72,6 +72,18 @@
   ### [SAP HANA Native](guides/databases/hana-native)
   ### [PostgreSQL](guides/databases/postgres)
 
+## [Integration](guides/integration/)
+
+  ### [CAP-level Service Integration](guides/integration/)
+  ### [CAP-level Data Integration](guides/integration/)
+  ### [Platform Service Integration](guides/integration/)
+  #### [Identity & Authentication](guides/integration/)
+  #### [Audit Logging](guides/integration/)
+  #### [Attachments](guides/integration/)
+  #### [Documents](guides/integration/)
+  #### [Notifications](guides/integration/)
+  #### [Telemetry](guides/integration/)
+
 ## [Protocols/APIs](guides/advanced/publishing-apis/)
 
   ### [OData APIs](guides/advanced/odata)
