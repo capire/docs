@@ -183,19 +183,14 @@ cds:
   security:
     mock:
       users:
-        # [... other users ...]
         viewer-user:
-          password: pass
           tenant: CrazyCars
           roles:
             - Viewer
           attributes:
             Country: [GER, FR]
           features:
-            - cruise
             - park
-          additional:
-            email: myviewer@crazycars.com
 ```
 
 </div>
@@ -280,7 +275,7 @@ public class BookServiceOrdersTest {
   private MockMvc mockMvc;
 
   @Test
-  @WithMockUser(username = "viewer-user", password = "pass")
+  @WithMockUser(username = "viewer-user")
   public void testViewer() throws Exception {
     mockMvc.perform(get(BOOKS_URL)).andExpect(status().isOk());
   }
@@ -295,11 +290,11 @@ public class BookServiceOrdersTest {
 </div>
 
 ::: tip
-Integration tests running with production profile should ensure that access by unauthenticated users is rejected from all endpoints of the application❗
+Integration tests running in production profile should verify that unauthenticated users cannot access any application endpoints❗
 :::
 
 [Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more .java}
-[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
+[Learn more about testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
 
 
 <div class="impl node">
