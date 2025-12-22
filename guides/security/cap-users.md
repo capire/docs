@@ -431,7 +431,10 @@ A CAP role describes a **capability on technical domain level** defined by appli
 In contrast, an AMS policy reflects a coarser-grained **business role on application level** defined by user administrators.
 :::
 
-For instance, you can enhance the bookshop sample by replacing the `admin` role with more fine-grained CAP roles:
+Imagine you want to provide two different CAP roles in the bookshop example:
+`ManageAuthors` allows users to manage the authors of the books being sold. 
+Users with `ManageBooks` work only with the book inventory. 
+As each book has an association to an author, they can only manage books from authors that have already been created before:
 
 ```cds
 service AdminService @(requires: ['ManageAuthors', 'ManageBooks']) {
@@ -448,8 +451,6 @@ service AdminService @(requires: ['ManageAuthors', 'ManageBooks']) {
 }
 ```
 
-Role `ManageBooks` allows a user to mange books _for the authors already in sale_, as well as offering new books.
-In contrast, users with `ManageAuthors` are allowed to decide which authors' books should be offered, but they do not define the range of books.
 Both CAP roles are ready to be used in higher-level [AMS policies](#policies).
 
 ::: tip
