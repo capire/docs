@@ -50,11 +50,11 @@ This guide describes a way to manage development and deployment via *[monorepos]
    ```
    ```sh [Java]
    git init
-   git submodule add https://github.com/capire/bookstore-java
-   git submodule add https://github.com/capire/reviews-java
-   git submodule add https://github.com/capire/orders-java
+   git submodule add https://github.com/capire/bookstore-java bookstore
+   git submodule add https://github.com/capire/reviews-java reviews
+   git submodule add https://github.com/capire/orders-java orders
    git submodule add https://github.com/capire/common
-   git submodule add https://github.com/capire/bookshop-java
+   git submodule add https://github.com/capire/bookshop-java bookshop
    git submodule add https://github.com/capire/data-viewer
    git submodule update --init
    ```
@@ -67,7 +67,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
    ```
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
 3. Test-drive locally:
-   
+
    ::: code-group
    ```sh [Node.js]
    npm install
