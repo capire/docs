@@ -150,21 +150,33 @@ These are the (not so beneficial) side effects you when using a shared persisten
    cds init shared-db --add hana
    ```
 
-   ```sh
+   ::: code-group
+   ```sh [Node.js]
    npm add --workspace shared-db @capire/bookstore
    npm add --workspace shared-db @capire/reviews
    npm add --workspace shared-db @capire/orders
    ```
+   ```sh [Java]
+   npm add --workspace shared-db @capire/bookstore-java
+   npm add --workspace shared-db @capire/reviews-java
+   npm add --workspace shared-db @capire/orders-java
+   ```
+   :::
 
    > Note how *NPM workspaces* allows us to use the package names of the projects, and nicely creates symlinks in *node_modules* accordingly.
 
 2. Add a `shared-db/db/schema.cds` file as a mashup to actually collect the models:
 
   ::: code-group
-   ```cds [shared-db/db/schema.cds]
+   ```cds [Node-js]
    using from '@capire/bookstore';
    using from '@capire/reviews';
    using from '@capire/orders';
+   ```
+   ```cds [Java]
+   using from '@capire/bookstore-java';
+   using from '@capire/reviews-java';
+   using from '@capire/orders-java';
    ```
    :::
 
