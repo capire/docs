@@ -1,10 +1,10 @@
 ---
-# # layout: cookbook
-shorty: SAP Cloud Application Event Hub
+synopsis: >
+  Using SAP Cloud Application Event Hub service on SAP Business Technology Platform (BTP) as a messaging channel in CAP applications.
 status: released
 ---
 
-# Using SAP Cloud Application Event Hub in Cloud Foundry
+# Messaging via SAP Cloud Application Event Hub 
 
 [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker) is the new default offering for messaging in SAP Business Technology Platform (SAP BTP).
 CAP provides out-of-the-box support for SAP Cloud Application Event Hub, and automatically handles many things behind the scenes, so that application coding stays agnostic and focused on conceptual messaging.
@@ -28,7 +28,7 @@ Follow guides [Initial Setup](https://help.sap.com/docs/sap-cloud-application-ev
 
 ### Use `event-broker` in Node.js
 
-Install plugin [`@cap-js/event-broker`](../../plugins/#event-hub):
+Install plugin [`@cap-js/event-broker`](../../plugins/index.md#event-hub):
 
 ```sh
 npm add @cap-js/event-broker
@@ -55,7 +55,7 @@ And add the following to your _package.json_ to use SAP Cloud Application Event 
 
 ### Use `event-hub` in Java
 
-Install plugin [`com.sap.cds:cds-feature-event-hub`](../../plugins/#event-hub) and add the following to your _application.yaml_ to use SAP Cloud Application Event Hub:
+Install plugin [`com.sap.cds:cds-feature-event-hub`](../../plugins/index.md#event-hub) and add the following to your _application.yaml_ to use SAP Cloud Application Event Hub:
 
 ::: code-group
 ```xml [srv/pom.xml]

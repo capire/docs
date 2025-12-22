@@ -131,7 +131,7 @@ Learn more about user model and identity providers here:
 
 CAP microservices consume remote services and hence need to be authenticated as technical client as well.
 Similar to [request authentication](#authenticate-requests), CAP saves applications from having to implement secure setup of service to service communication:
-- CAP interacts with platform services such as [Event Mesh](../messaging/index.md) or [SaaS Provisioning Service](../deploy/to-cf) on basis of platform-injected service bindings.
+- CAP interacts with platform services such as [Event Mesh](../events/index.md) or [SaaS Provisioning Service](../deploy/to-cf) on basis of platform-injected service bindings.
 - CAP offers consumption of [Remote Services](../services/using-services) on basis of [SAP BTP destinations](../services/using-services#btp-destinations).
 
 Note that the applied authentication strategy is specified by server offering and resp. configuration and not limited by CAP.
@@ -655,7 +655,7 @@ In addition, CAP runs on a virtual machine with a managed heap that protects fro
 
 CAP also brings some tools to effectively reduce the attack vector of race condition vulnerabilities.
 These might be exposed when the state of resources can be manipulated concurrently and a consumer faces an unexpected state.
-CAP provides basic means of [concurrency control](../services/providing-services#concurrency-control) on different layers, for example [ETags](../services/providing-services#etag) and [pessimistic locks](../services/providing-services#select-for-update). Moreover, Messages received from the [message queue](../messaging/index.md) are always in order.
+CAP provides basic means of [concurrency control](../services/providing-services#concurrency-control) on different layers, for example [ETags](../services/providing-services#etag) and [pessimistic locks](../services/providing-services#select-for-update). Moreover, Messages received from the [message queue](../events/index.md) are always in order.
 
 ::: tip
 Applications have to ensure a consistent data processing taking concurrency into account.

@@ -42,13 +42,16 @@
   ### [Mashups](guides/services/using-services#integrate-and-extend)
   ### [Deployment](guides/services/using-services#connect-and-deploy)
 
-## [Events & Messaging](guides/messaging/)
+## [Events & Messaging](guides/events/index.md)
 
-  ### [SAP Cloud Appl. Event Hub](guides/messaging/event-broker)
-  ### [SAP Event Mesh](guides/messaging/event-mesh)
-  ### [Apache Kafka](../guides/messaging/apache-kafka)
-  ### [Events from S/4](guides/messaging/s4)
-  ### [Task Queues](guides/messaging/task-queues)
+  ### [Core Eventing](guides/events/core-concepts)
+  ### [Event Queues](guides/events/event-queues)
+  ### [Messaging](guides/events/messaging)
+  ### [Apache Kafka](../guides/events/apache-kafka)
+  ### [Advanced Event Mesh](guides/events/is-aem)
+  ### [SAP Event Mesh](guides/events/event-mesh)
+  ### [SAP Event Hub](guides/events/event-hub)
+  ### [Events from S/4](guides/events/s4)
 
 ## [Protocols/APIs](guides/advanced/publishing-apis/index.md)
 
@@ -101,14 +104,14 @@
 
 # [Deploy](guides/deploy/index.md)
 
- ## [Multi-tenant SaaS Apps](guides/multitenancy/index.md)
+ ## [Multi-tenant SaaS Applications](guides/multitenancy/index.md)
  ## [Deploy to Cloud Foundry](guides/deploy/to-cf)
  ## [Deploy to Kyma/K8s](guides/deploy/to-kyma)
  ## [Deploy with CI/CD](guides/deploy/cicd)
  ## [Deploy with Confidence](../guides/deploy/dwc)
  ## [Custom Build Tasks](guides/deploy/build)
  ## [Health Checks](guides/deploy/health-checks)
- ## [Microservices](guides/deploy/microservices)
+ ## [Microservice Layouts](guides/deploy/microservices)
  ## [MTX Services Reference](guides/multitenancy/mtxs)
 
 # [CDS](cds/_menu.md)

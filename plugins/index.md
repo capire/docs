@@ -389,7 +389,7 @@ S4bupa.on ('BusinessPartner.Changed', msg => {...})
 
 <div id="eh-plugin-mt" />
 
-For more details, please see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/messaging/#sap-event-broker).
+For more details, please see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/events/#sap-event-broker).
 
 Available for:
 

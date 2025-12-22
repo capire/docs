@@ -129,7 +129,7 @@ There is only one active message processor per service, tenant, app instance, an
 This ensures that no duplicate emits happen, except in the highly unlikely case of an app crash right after successful processing but  before the message could be deleted.
 
 ::: tip Unrecoverable errors
-Some errors during the emit are identified as unrecoverable, for example in [SAP Event Mesh](../guides/messaging/event-mesh) if the used topic is forbidden.
+Some errors during the emit are identified as unrecoverable, for example in [SAP Event Mesh](../guides/events/event-mesh) if the used topic is forbidden.
 The respective message is then updated and the `attempts` field is set to `maxAttempts` to prevent further processing.
 [Programming errors](./best-practices#error-types) crash the server instance and must be fixed.
 To mark your own errors as unrecoverable, you can set `unrecoverable = true` on the error object.

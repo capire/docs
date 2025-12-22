@@ -879,7 +879,7 @@ return this.dispatch(msg)
 
 All *cds.Services* are intrinsically events & messaging-enabled. The core implementation provides local in-process messaging, while [*cds.MessagingService*](messaging) plugs in to that to extend it to cross-process messaging via common message brokers.
 
-[**⇨ Read the Messaging Guide**](../guides/messaging/index) for the complete story.
+[**⇨ Read the Messaging Guide**](../guides/events/index) for the complete story.
 
 :::
 
