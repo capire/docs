@@ -7,7 +7,7 @@ status: released
 
 # Domain Modeling
 
-Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](./databases)* deployed to databases as well as for *[service definitions](./providing-services)*.
+Domain Models capture the static, data-related aspects of a problem domain in terms of entity-relationship models. They serve as the basis for *[persistence models](./databases/index)* deployed to databases as well as for *[service definitions](./providing-services)*.
 
 [[toc]]
 

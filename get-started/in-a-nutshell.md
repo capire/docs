@@ -423,7 +423,7 @@ c.s.c.s.impl.persistence.CsvDataLoader   : Filling sap.capire.bookshop.Books fro
 
 </span>
 
-[Learn more about **Using Databases**.](../guides/databases){.learn-more}
+[Learn more about **Using Databases**.](../guides/databases/index){.learn-more}
 
 
 ### Querying via OData
@@ -491,7 +491,7 @@ cds deploy --to hana
 ```
 :::
 
-[Learn more about deploying to SAP HANA.](../guides/databases){.learn-more .impl .node}
+[Learn more about deploying to SAP HANA.](../guides/databases/index){.learn-more .impl .node}
 
 
 
@@ -831,7 +831,7 @@ With this getting started guide we introduced many of the basics of CAP, such as
 - [Domain Modeling](../guides/domain-modeling)
 - [Providing Services](../guides/providing-services)
 - [Consuming Services](../guides/using-services)
-- [Using Databases](../guides/databases)
+- [Using Databases](../guides/databases/index)
 - [Serving UIs](../advanced/fiori)
 
 Visit the [***Cookbook***](../guides/) for deep dive guides on these topics and more. Also see the reference documentations for [***CDS***](../cds/), as well as [***Node.js***](../node.js/) and [***Java***](../java/) Service SDKs and runtimes.

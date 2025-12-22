@@ -63,14 +63,14 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 | Annotation                | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
-| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases#cds-persistence-exists) |
-| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases#cds-persistence-table)  |
-| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases#cds-persistence-skip)   |
+| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases/index#cds-persistence-exists) |
+| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases/index#cds-persistence-table)  |
+| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases/index#cds-persistence-skip)   |
 | `@cds.persistence.mock`   | `false` excludes this entity from automatic mocking                    |
 | `@cds.on.insert`          | see [Providing Services](../guides/providing-services)                 |
 | `@cds.on.update`          | see [Providing Services](../guides/providing-services)                 |
-| `@sql.prepend`            | see [Generating DDL Files](../guides/databases#sql-prepend-append)     |
-| `@sql.append`             | see [Generating DDL Files](../guides/databases#sql-prepend-append)     |
+| `@sql.prepend`            | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
+| `@sql.append`             | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
 
 ## OData
 

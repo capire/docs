@@ -447,10 +447,7 @@ The effective foreign keys of [*managed* association](../cds/cdl#managed-associa
 
 
 
-## cds. linked .classes {#cds-linked-classes .property}
-
-[`cds.linked.classes`]: #cds-linked-classes
-
+## cds. linked .classes {.property}
 
 This property gives you access to the very roots of `cds`'s type system. When a model is passed through [`cds.linked`] all definitions effectively become instances of one of these classes.
 In essence they are defined as follows:
@@ -533,7 +530,7 @@ m.foreach (d => console.log(d.toCDL()))
 
 
 
-## cds. builtin. types {#cds-builtin-types .property}
+## cds. builtin. types {.property}
 [`cds.builtin.types`]: #cds-builtin-types
 
 

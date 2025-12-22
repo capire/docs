@@ -510,7 +510,7 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 |  | Explanation |
 | --- | ---- |
 | _Root Cause_ | Your configuration isn't properly set. |
-| _Solution_ | Configure your project as described in [Using Databases](../guides/databases).
+| _Solution_ | Configure your project as described in [Using Databases](../guides/databases/index).
 
 
 #### Deployment fails — _Connection failed (RTE:[89008] Socket closed by peer_ {#connection-failed-89008}

@@ -90,7 +90,7 @@ th { min-width: 160px; }
 
 | Property         | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| `hana`           | SAP HANA Development Infrastructure (HDI) artifacts<br><br>[Learn more about **configuring SAP HANA**](../databases-hana#configure-hana){.learn-more} |
+| `hana`           | SAP HANA Development Infrastructure (HDI) artifacts<br><br>[Learn more about **configuring SAP HANA**](../databases/hana#configure-hana){.learn-more} |
 | `nodejs`         | Node.js applications |
 | `java`           | Java applications |
 | `mtx-sidecar`    | [MTX](../multitenancy/mtxs)-enabled projects _with_ sidecar architecture.<br><br>[Learn more about **Multitenant Saas Application Deployment**](./to-cf){.learn-more} |

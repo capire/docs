@@ -6,176 +6,244 @@ status: released
 
 # Declarative Constraints
 
-Declarative constraints allow you to express conditions using CXL expressions that are validated automatically whenever data is written, greatly reducing the need for extensive custom code for input validation.
+Declarative constraints allow you to express conditions using [CDS Expression Language (CXL)](../../cds/cxl) that are validated automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
+
+> [!note] 
+> Don't confuse declarative constraints as discussed in here with [database constraints](../databases/index#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
+
+
 
 [[toc]]
 
 
-## `@mandatory`
 
-Elements marked with `@mandatory` are checked for missing and empty input and respective requests are rejected.
+## Introduction
 
-```cds
-service Sue {
-  entity Books {
-    key ID : UUID;
-    title  : String @mandatory;
-  }
+Use annotations like `@assert` and `@mandatory` to declaratively add constraints for the primary purpose of input validation. Add them to the elements of the entities exposed by respective services, which accept input to be validated.
+
+### Constraints Annotations
+
+Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample: 
+
+::: code-group
+
+```cds [srv/travel-constraints.cds]
+using { TravelService } from './travel-service';
+annotate TravelService.Travels with {
+
+  Description @assert: (case 
+    when length(Description) < 3 then 'Description too short' 
+  end);
+
+  Agency @mandatory @assert: (case 
+    when not exists Agency then 'Agency does not exist' 
+  end);
+
+  Customer @assert: (case 
+    when Customer is null then 'Customer must be specified' 
+    when not exists Customer then 'Customer does not exist' 
+  end);
+
+  BeginDate @mandatory @assert: (case 
+    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' 
+    when exists Bookings [Flight.date < Travel.BeginDate] 
+      then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
+  end);
+
+  BookingFee @assert: (case 
+    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' 
+  end);
+
 }
 ```
 
-In addition to server-side input validation as introduced above, this adds a corresponding `@FieldControl` annotation to the EDMX so that OData / Fiori clients would enforce a valid entry, thereby avoiding unnecessary request roundtrips:
-
-```xml
-<Annotations Target="Sue.Books/title">
-  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
-</Annotations>
-```
-
-<div id="mandatorywithexpressions"/>
-
-
-
-## `@readonly`
-
-Elements annotated with `@readonly`, as well as [_calculated elements_](../../cds/cdl#calculated-elements), are protected against write operations. That is, if a CREATE or UPDATE operation specifies values for such fields, these values are **silently ignored**.
-
-By default [`virtual` elements](../../cds/cdl#virtual-elements) are also _calculated_.
-::: tip
-The same applies for fields with the [OData Annotations](../../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
 :::
 
-::: warning Not allowed on keys
-Do not use the `@readonly` annotation on keys in all variants.
-:::
+> [!tip] BEST PRACTICES
+>
+> **Separation of Concerns** – always put secondary concerns, such as  constraints in this case, into separate files as in the example, instead of polluting your core service definitions.
+>
+> **Concise and comprehensible** – in contrast to imperative coding, constraints expressed in expression languages as shown here are easy to read and understand. 
+>
+> **Fueling AI** – Not the least, this also fuels AI-based approaches: AIs can easily generate such constraints, and you as a developer using such AIs can easily validate what was generated.
 
-<div id="readonlywithexpressions"/>
+
+
+### Served Out-of-the-Box
 
 
 
-## `@assert` <Beta/>
+The constraints are enforced automatically by the CAP runtimes on any input, and if failures occur, the request is ultimately rejected and the transaction rolled back. 
 
-Annotate an element with `@assert` to define CXL expressions that are validated _after_ the data has been written to the database but _before_ it is committed it. If validation fails, the expression returns a `String` that indicates an error to the runtime. If validation passes, the expression returns `null`. 
+Some of the checks, e.g. the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
 
-```cds
-entity OrderItems : cuid {
-        
-  @assert: (case 
-    when quantity <= 0 then 'Quantity must be greater than zero' 
-  end)
-  quantity : Integer;       
+
+
+::: details Behind the scenes...
+
+The automatically compiled and executed validation query would look like that (in [CQL](../../cds/cql)) for the constraints from the sample above: 
+
+```sql
+SELECT from TravelService.Travels {
+
+  (case 
+    when length(Description) < 3 then 'Description too short' 
+  end) as Description,
+
+  (case 
+    when not exists Agency then 'Agency does not exist' 
+  end) as Agency,
+
+  (case 
+    when Customer is null then 'Customer must be specified' 
+    when not exists Customer then 'Customer does not exist' 
+  end) as Customer,
+
+  (case 
+    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' 
+    when exists Bookings [Flight.date < Travel.BeginDate] 
+      then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
+  end) as BeginDate,
+
+  (case 
+    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' 
+  end) as BookingFee,
+
 }
 ```
 
-You can simplify the same condition by using the [ternary conditional operator](../../releases/archive/2023/march23#ternary-conditional-operator):
+:::
+
+
+
+> [!tip] BEST PRACTICES
+>
+> **Push down to the database** is a general principle applied in CAP. Applied to input validation with declarative constraints it means that instead of reading a lot of related data into the service layer to do the checks there, we push down the respective checks to where the data is (in the database). 
+>
+> **What, not how!** – This in turn boils down to the even more general principle that we share with functional programming: tell us *what* to do (= *intentional*), not how (= *imperative*), because then generic runtimes can apply advanced optimized ways to execute things, which is impossible with imperative code. 
+
+
+
+
+
+### Served to Fiori UIs
+
+For Fiori UIs as clients the error messages will be automatically be equiped with relevant `target` properties to attach them to the respective fields on the UIs. For example a Fiori UI for the sample above, would display returned errors like that:
+
+![image-20251219115646302](./assets/constraints/fiori-errors.png)
+
+::: details Behind the scenes ...
+
+A sample response for such errors displayed in Fiori UIs would look like that:
+
+```json
+{
+  "@odata.context": "$metadata#Travels/$entity",
+  "ID": 4132,
+  "DraftMessages": [
+    {
+      "target": "/Travels(ID=4132,IsActiveEntity=false)/EndDate", // [!code focus]
+      "numericSeverity": 4,
+      "@Common.numericSeverity": 4,
+      "message": "Alle Buchungen müssen innerhalb des Reisezeitraums liegen",
+      "code": "ASSERT_BOOKINGS_IN_TRAVEL_PERIOD"
+    },
+    {
+      "target": "/Travels(ID=4132,IsActiveEntity=false)/Customer_ID", // [!code focus]
+      "numericSeverity": 4,
+      "@Common.numericSeverity": 4,
+      "message": "Customer does not exist",
+      "code": "400"
+    },
+    {
+      "target": "/Travels(ID=4132,IsActiveEntity=false)/Bookings(Travel_ID=4132,Pos=1,IsActiveEntity=false)/Flight_date", // [!code focus]
+      "numericSeverity": 4,
+      "@Common.numericSeverity": 4,
+      "message": "Das Flugdatum dieser Buchung liegt nicht innerhalb des Reisezeitraums",
+      "code": "ASSERT_BOOKING_IN_TRAVEL_PERIOD"
+    }
+  ],
+  "IsActiveEntity": false
+}
+```
+
+:::
+
+
+
+
+
+## Input Validation
+
+
+
+Use annotations like `@assert` and `@mandatory` to declaratively add constraints for the primary purpose of input validation. Add them to the elements of the entities exposed by respective services, which accept input to be validated.
+
+
+
+### `@assert:` *(constraint)* <Gamma/>
+
+Annotate an element with `@assert: (<constraints>)` to specify checks to be applied on respective input and errors to be raised if they fail. The `<constraints>` are standard SQL `case` expressions with one or more `when` branches, as shown in this example:
 
 ```cds
-entity OrderItems : cuid {
+annotate TravelService.Travels with {
+
+  Description @assert: (case                                          // [!code focus]
+    when Description then 'Description must be specified'             // [!code focus]
+    when trim(Description) = '' then 'Description must not be empty'  // [!code focus]
+    when length(Description) < 3 then 'Description too short'         // [!code focus]
+  end);                                                               // [!code focus]
+
+}
+```
+
+[Refer to _Expressions as Annotation Values_ for details on syntax.](../../cds/cdl.md#expressions-as-annotation-values) {.learn-more}
+
+
+Conditions can also **refer to other data elements** in the same entity as shown in this example which validated input for `BeginDate` with the related `EndDate`:
+
+```cds
+annotate TravelService.Travels with {
+
+  BeginDate @assert: (case                                               // [!code focus]
+    when BeginDate > EndDate then 'Begin date must be before end date'   // [!code focus]
+  end);                                                                  // [!code focus]
   
-  @assert: (quantity <= 0 ? 'Quantity must be greater than zero' : null)
-  quantity  : Integer;
 }
 ```
 
-### Error Messages and Message Targets
-
-In general, if validation fails, the transaction is rolled back with an exception. But, if you use [Fiori draft state messages](../../advanced/fiori#validating-drafts), the error is persisted. The error targets the annotated element, which is then highlighted on the Fiori UI.
-
-::: info Error Messages
-The CXL expression in the annotation can return either a static error message or a message key to support i18n. If you use a message key, the message is looked up in the message bundle of the service.
-[Learn more about localized messages.](../i18n){.learn-more}
-:::
-
-
-### Complex Asserts
-
-::: warning Use complex asserts on service layer
-Like other annotations, `@assert` is propagated to projections. If you annotate an element with `@assert` and the condition uses other elements from the same or an associated entity, you must ensure that these elements are available in all projections to which the annotated element is propagated. Otherwise the CDS model won't compile.
-
-It is therefore recommended to use complex asserts on the highest projection, that is on the service layer.
-:::
-
-For the examples given in this section, consider the following _domain_ and _service_ model:
+We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association: 
 
 ```cds
-context db {
-  entity Books : cuid { 
-    title : String; 
-    stock : Integer; 
-    deliveryDate : Date;   
-    orderDate : Date;
-  }
+annotate TravelService.Bookings with {
+
+  Currency @assert: (case                                           // [!code focus]
+    when Currency != Travel.Currency then 'Currencies must match'   // [!code focus]
+  end);                                                             // [!code focus]
+
+}
+
+```
+
+We can also do checks with sets of related data using path expressions which navigate along **to-many associations** or compositions, combined with SQL's `exists` quantifier, and optional [infix filters](../..//cds/cql#with-infix-filters), as shown in this example:
+
+```cds
+annotate TravelService.Travels with {
+
+  BeginDate @assert: (case                                              // [!code focus]
+    when exists Bookings [Flight.date < Travel.BeginDate]               // [!code focus]
+      then 'All bookings must be within travel period'                  // [!code focus]
+  end);                                                                 // [!code focus]
   
-  entity Orders : cuid {
-    items : Composition of many OrderItems on items.order = $self;
-  }
-  
-  entity OrderItems : cuid {
-    order : Association to Orders;
-    book : Association to Books;
-    quantity : Integer;
-  }
-}
-
-service OrderService {
-  entity Orders as projection on db.Orders;
-  entity OrderItems as projection on db.OrderItems;
 }
 ```
 
-An `@assert` annotation can use other elements from the same entity. This annotation checks that the delivery date of an order is after the order date:
-
-```cds
-annotate OrderService.Orders with {
-  deliveryDate @assert: (deliveryDate < orderDate ? 'DELIVERY_BEFORE_ORDER' : null); // [!code highlight]
-}
-```
-
-In an `@assert` condition, you can also refer to elements of associated entities. The following example validates the `quantity` of the ordered book against the actual `stock`. If the stock level is insufficient, a static error message is returned:
-
-```cds
-annotate OrderService.OrderItems with {
-  quantity @assert: (case // [!code highlight]
-    when book.stock <= quantity then 'Stock exceeded' // [!code highlight]
-  end); // [!code highlight]
-}
-```
-
-You can also perform validations based on entities associated via a to-many association. Use an [exists predicate](../../cds/cql#exists-predicate) in this case:
-
-```cds
-annotate OrderService.Orders with {
-  items @assert: ( exists items[book.isNotReleased = true] // [!code highlight]
-            ? 'Some ordered book is not yet released' : null) // [!code highlight]
-}
-```
-
-Refer to [Expressions as Annotation Values](../../cds/cdl.md#expressions-as-annotation-values) for detailed rules on expression syntax.
-
-### Multiple Conditions
-
-Use multiple `when` clauses to check multiple conditions with a single `@assert` annotation. Each condition returns its own error message to precisely describe the error:
-
-```cds
-annotate OrderService.OrderItems with {
-  quantity @assert: (case
-    when book.stock = 0 then 'Stock is zero'
-    when book.stock <= quantity then 'Stock exceeded'
-  end)
-}
-```
-
-### Background
-
-The system evaluates expressions after it applies the request to the underlying datastore. This affects the entities in the request's payload. The runtime executes check statements with the provided expressions and the primary key values for the given entities.
-
-::: warning Limitations
-- All primary key fields need to be contained in the CQN statement for validations to be enforced (including deep insert and deep update).
-- Only elements with simple types (like `String`, `Integer`, `Boolean`) can be annotated with `@assert`. Elements typed with structured or arrayed types are not supported.
-:::
 
 
-## `@assert .format`
+
+
+
+### `@assert.format`
 
 Allows you to specify a regular expression string (in ECMA 262 format in CAP Node.js and java.util.regex.Pattern format in CAP Java) that all string input must match.
 
@@ -186,7 +254,7 @@ entity Foo {
 ```
 
 
-## `@assert .range`
+### `@assert.range`
 
 Allows you to specify `[ min, max ]` ranges for elements with ordinal types &mdash; that is, numeric or date/time types. For `enum` elements, `true` can be specified to restrict all input to the defined enum values.
 
@@ -219,32 +287,9 @@ Support for open intervals and infinity is available for CAP Node.js since `@sap
 
 
 
-## `@assert .target`
+### `@assert.target`
 
-Annotate a [managed to-one association](../../cds/cdl#managed-associations) of a CDS model entity definition with the
-`@assert.target` annotation to check whether the target entity referenced by the association (the reference's target)
-exists. In other words, use this annotation to check whether a non-null foreign key input in a table has a corresponding
-primary key in the associated/referenced target table.
-
-You can check whether multiple targets exist in the same transaction. For example, in the `Books` entity, you could
-annotate one or more managed to-one associations with the `@assert.target` annotation. However, it is assumed that
-dependent values were inserted before the current transaction. For example, in a deep create scenario, when creating a
-book, checking whether an associated author exists that was created as part of the same deep create transaction isn't
-supported, in this case, you will get an error.
-
-The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
-Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
-non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](../databases#database-constraints) constraint must be used instead.
-
-If the reference's target doesn't exist, an HTTP response
-(error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
-content adheres to the standard OData specification for an error
-[response body](https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#sec_ErrorResponse).
-
-#### Example
-
-Add `@assert.target` annotation to the service definition as previously mentioned:
+Annotate a [managed to-one association](../../cds/cdl#managed-associations) with `@assert.target` to check whether the target entity referenced by the association (the reference's target) exists for a given input.
 
 ```cds
 entity Books {
@@ -260,7 +305,19 @@ entity Authors {
 }
 ```
 
-**HTTP Request** — *assume that an author with the ID `"796e274a-c3de-4584-9de2-3ffd7d42d646"` doesn't exist in the database*
+You can check whether multiple targets exist in the same transaction. For example, in the `Books` entity, you could
+annotate one or more managed to-one associations with the `@assert.target` annotation. However, it is assumed that
+dependent values were inserted before the current transaction. For example, in a deep create scenario, when creating a book, checking whether an associated author exists that was created as part of the same deep create transaction isn't supported, in this case, you will get an error.
+
+The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
+Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
+non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
+(ensure referential integrity), the [`@assert.integrity`](../databases/index#database-constraints) constraint must be used instead.
+
+If the reference's target doesn't exist, an HTTP response
+(error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
+content adheres to the standard OData specification for an error
+[response body](https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#sec_ErrorResponse).
 
 ```http
 POST Books HTTP/1.1
@@ -297,9 +354,70 @@ The `@assert.target` check constraint relies on database locks to ensure accurat
 :::
 
 
-## Custom Error Messages
 
-The annotations `@assert.range`, `@assert.format`, and `@mandatory` also support custom error messages. Use the annotation `@<anno>.message` with an error text or [text bundle key](../i18n#externalizing-texts-bundles) to specify a custom error message:
+
+### `@mandatory`
+
+Elements marked with `@mandatory` are checked for missing and empty input and respective requests are rejected.
+
+```cds
+service Sue {
+  entity Books {
+    key ID : UUID;
+    title  : String @mandatory;
+  }
+}
+```
+
+In addition to server-side input validation as introduced above, this adds a corresponding `@FieldControl` annotation to the EDMX so that OData / Fiori clients would enforce a valid entry, thereby avoiding unnecessary request roundtrips:
+
+```xml
+<Annotations Target="Sue.Books/title">
+  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+</Annotations>
+```
+
+<div id="mandatorywithexpressions"/>
+
+
+
+### `@readonly`
+
+Elements annotated with `@readonly`, as well as [_calculated elements_](../../cds/cdl#calculated-elements), are protected against write operations. That is, if a CREATE or UPDATE operation specifies values for such fields, these values are **silently ignored**.
+
+By default [`virtual` elements](../../cds/cdl#virtual-elements) are also _calculated_.
+::: tip
+The same applies for fields with the [OData Annotations](../../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
+:::
+
+::: warning Not allowed on keys
+Do not use the `@readonly` annotation on keys in all variants.
+:::
+
+<div id="readonlywithexpressions"/>
+
+
+## Error Messages
+
+### Custom Messages
+
+For `@assert: (<constraints>)` annotations you always specify custom error messages, specific to the individual checks:
+
+```cds 
+annotate TravelService.Travels with {
+
+  Description @assert: (case                                          // [!code focus]
+    when Description then 'Description must be specified'             // [!code focus]
+    when trim(Description) = '' then 'Description must not be empty'  // [!code focus]
+    when length(Description) < 3 then 'Description too short'         // [!code focus]
+  end);                                                               // [!code focus]
+
+}
+```
+
+
+
+The annotations `@assert.range`, `@assert.format`, and `@mandatory` also support custom error messages, just not as elegant, as the above: Use the annotation `@<anno>.message` to specify a custom error message:
 
 ```cds
 entity Person : cuid {
@@ -334,6 +452,122 @@ entity Person : cuid {
 ```
 
 
-## Database Constraints
 
-Next to input validation, you can add [database constraints](../databases#database-constraints) to prevent invalid data from being persisted.
+### Localized Messages
+
+Whenever you specify an error message with the annotations above, i.e., in the `then` part of an `@assert: (<constraints>)` or in `@mandatory.message`,  `@assert.format.message`, or  `@assert.range.message`, you can either specify a plain text, or a [I18n text bundle key](../i18n#externalizing-texts-bundles).
+
+Actually, we saw this already in the [sample in the introduction](#introduction):
+
+::: code-group
+
+```cds [srv/travel-constraints.cds]
+using { TravelService } from './travel-service';
+annotate TravelService.Travels with {
+
+  Description @assert: (case 
+    when length(Description) < 3 
+      then 'Description too short' // [!code focus]
+  end);
+
+  Agency @mandatory @assert: (case 
+    when not exists Agency 
+      then 'Agency does not exist' // [!code focus]
+  end);
+
+  BeginDate @mandatory @assert: (case 
+    when BeginDate > EndDate 
+      then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' // [!code focus]
+    when exists Bookings [Flight.date < Travel.BeginDate] 
+      then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD' // [!code focus]
+  end);
+
+  BookingFee @assert: (case 
+    when BookingFee < 0 
+      then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' // [!code focus]
+  end);
+
+}
+```
+
+:::
+
+If you use a message key, the message is automatically looked up in the message bundle of the service with the current user's preferred locale.
+
+[Learn more about localized messages.](../i18n){.learn-more}
+
+
+
+## Field Control
+
+Declarative constraints can also be used to do field control in Fiori UIs, i.e. to add visual indicators to mandatory or readonly fields, or to hide fields. In particular, CAP automatically adds respective OData annotations to generated EDMX $metadata documents for the CDS listed below.
+
+
+### `@mandatory`
+
+Currently only static `@mandatory` annotations are supported for field control in Fiori UIs. They result in the addition of the following OData annotation to the EDMX $metadata:
+
+```xml
+<Annotations Target=".../EntitySet/EntityType/Property">
+  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+</Annotations>
+```
+
+
+
+### `@readonly`
+
+Currently only static `@readonly` annotations are supported for field control in Fiori UIs. They result in the addition of the following OData annotation to the EDMX $metadata:
+
+```xml
+<Annotations Target=".../EntitySet/EntityType/Property">
+  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/ReadOnly"/>
+</Annotations>
+```
+
+
+### `@UI.Hidden`
+
+Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it with expressions as values, for example like that:
+
+```cds
+@UI.Hidden: (status <> 'visible')
+```
+
+[Learn more about that in the *OData guide*](../../advanced/odata#expression-annotations) {.learn-more}
+
+
+
+## Invariant Constraints
+
+
+
+Annotations in general are propagated from underlying entities to views on top. This also applies to the annotations like `@assert` and `@mandatory` introduced in here, which can be used to declare invariant constraints on base entities, which are then inherited to and hence enforced on all interface views on top. 
+
+Picking up the [sample from the introduction](#introduction) again, we could extract some of the constraints and add them to the `sap.capire.travels.Travels` entity from the domain model, with is the underlying entity of  `TravelService.Travels`: 
+
+::: code-group
+
+```cds [srv/travel-invariants.cds]
+using { sap.capire.travels.Travels } from '../db/schema';
+annotate Travels with {
+
+  Description @assert: (case 
+    when length(Description) < 3 then 'Description too short' 
+  end);
+
+  Customer @assert: (case 
+    when Customer is null then 'Customer must be specified' 
+    when not exists Customer then 'Customer does not exist' 
+  end);
+
+}
+```
+
+:::
+
+And this works fine for these constraints in this example. However, it may be dangerous if you do that for constraints which refer to other fields, as views on top might not expose these fields. This would immediately lead to compiler errors. Note also, that even though you might think you know all your views, and ensure all related fields are included in all views, somebody that you never meet, builds a new view on top of one of your entity. Hence always **adhere to this strict rule**:  
+
+> [!danger]
+>
+> Only add invariant constraints to underlying entities that **do not refer to other elements**!

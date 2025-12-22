@@ -331,7 +331,7 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases-hana#vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector`:
 
 ```cds
 entity Books : cuid { // [!code focus]

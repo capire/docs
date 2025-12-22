@@ -7,7 +7,7 @@ impl-variants: true
 
 <div class="impl node">
 
-This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](databases-sqlite). This architecture brings significantly enhanced feature sets and feature parity, as documented in the [*Features* section of the SQLite guide](databases-sqlite#features).
+This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](sqliteite). This architecture brings significantly enhanced feature sets and feature parity, as documented in the [*Features* section of the SQLite guidsqlite#featuresatures).
 
 *Learn about migrating from the former `cds-pg` in the [Migration](#migration) chapter.*{.learn-more}
 
@@ -17,7 +17,7 @@ This guide focuses on the new PostgreSQL Service provided through *[@cap-js/post
 
 CAP Java 3 is tested on [PostgreSQL](https://www.postgresql.org/) 16 and most CAP features are supported on PostgreSQL.
 
-[Learn more about features and limitations of using CAP with PostgreSQL](../java/cqn-services/persistence-services#postgresql){.learn-more}
+[Learn more about features and limitations of using CAP with PostgreSQL](../../java/cqn-services/persistence-services#postgresql){.learn-more}
 
 </div>
 
@@ -80,7 +80,7 @@ Output:
 }
 ```
 
-[See also the general information on installing database packages](databases#setup-configuration){.learn-more}
+[See also the general information on installing database packages](index#setup-configurationmore}
 
 ## Provisioning a DB Instance
 
@@ -160,7 +160,7 @@ In the cloud, use given techniques to bind a cloud-based instance of PostgreSQL 
 
 <div class="impl node">
 
-For local development provide the credentials using a suitable [`cds env`](../node.js/cds-env) technique, like one of the following.
+For local development provide the credentials using a suitable [`cds env`](../../node.js/cds-env) technique, like one of the following.
 
 </div>
 
@@ -168,7 +168,7 @@ For local development provide the credentials using a suitable [`cds env`](../no
 
 If a PostgreSQL service binding exists, the corresponding `DataSource` is auto-configured.
 
-You can also explicitly [configure the connection data](../java/cqn-services/persistence-services#postgres-connection) of your PostgreSQL database in the _application.yaml_ file.
+You can also explicitly [configure the connection data](../../java/cqn-services/persistence-services#postgres-connection) of your PostgreSQL database in the _application.yaml_ file.
 If you run the PostgreSQL database in a [docker container](#using-docker) your connection data might look like this:
 
 ::: code-group
@@ -184,7 +184,7 @@ spring:
 :::
 To start the application with the new profile `postgres-docker`, the `spring-boot-maven-plugin` can be used: `mvn spring-boot:run -Dspring-boot.run.profiles=postgres-docker`.
 
-[Learn more about the configuration of a PostgreSQL database](../java/cqn-services/persistence-services#postgresql-1){ .learn-more}
+[Learn more about the configuration of a PostgreSQL database](../../java/cqn-services/persistence-services#postgresql-1){ .learn-more}
 
 ### Service Bindings for CDS Tooling {.java}
 
@@ -282,7 +282,7 @@ cds.requires.db.[pg].credentials.database = postgres
 
 ::: tip Using Profiles
 
-The previous configuration examples use the [`cds.env` profile](../node.js/cds-env#profiles) `[pg]` to allow selectively testing with PostgreSQL databases from the command line as follows:
+The previous configuration examples use the [`cds.env` profile](../../node.js/cds-env#profiles) `[pg]` to allow selectively testing with PostgreSQL databases from the command line as follows:
 
 ```sh
 cds watch --profile pg
@@ -352,7 +352,7 @@ cds add postgres
 
 ### Deploy
 
-You can package and deploy that application, for example using [MTA-based deployment](deployment/to-cf#add-mta-yaml).
+You can package and deploy that application, for example using [MTA-based deployment](../deployment/to-cf#add-mta-yaml).
 
 ## Automatic Schema Evolution { #schema-evolution }
 
@@ -618,7 +618,7 @@ If the changes in the model could lead to data loss, an error is raised.
 
 ## Migration { .node }
 
-Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. Nevertheless, please check the instructions in the [SQLite Migration guide](databases-sqlite#migration), with by and large applies also to the new PostgreSQL service.
+Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. Nevertheless, please check the instructions in the [SQLite Migration guide](sqlite#migrationion), with by and large applies also to the new PostgreSQL service.
 
 ### `cds deploy --model-only`
 
@@ -651,6 +651,6 @@ When you have a SaaS application, upgrade all your tenants using the [deployer a
 
 ::: warning
 
-[Multitenancy](../guides/multitenancy/) and [extensibility](../guides/extensibility/) aren't yet supported on PostgreSQL.
+[Multitenancy](../multitenancy) and [extensibility](../extensibility) aren't yet supported on PostgreSQL.
 
 :::

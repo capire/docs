@@ -24,7 +24,7 @@ impl-variants: true
 
 ### Migrating to the `@cap-js/` Database Services?  {.node}
 
-With CDS 8, the [`@cap-js`](https://github.com/cap-js/cds-dbs) database services for SQLite, PostgreSQL, and SAP HANA are generally available. It's highly recommended to migrate. You can find instructions in the [migration guide](databases-sqlite#migration). Although the guide is written in the context of the SQLite Service, the same hints apply to PostgreSQL and SAP HANA.
+With CDS 8, the [`@cap-js`](https://github.com/cap-js/cds-dbs) database services for SQLite, PostgreSQL, and SAP HANA are generally available. It's highly recommended to migrate. You can find instructions in the [migration guide](../databases/sqlite#migration). Although the guide is written in the context of the SQLite Service, the same hints apply to PostgreSQL and SAP HANA.
 
 ### Adding Database Packages  {.node}
 
@@ -32,9 +32,9 @@ Following are cds-plugin packages for CAP Node.js runtime that support the respe
 
 | Database                       | Package                                                      | Remarks                            |
 | ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
-| **[SAP HANA Cloud](databases-hana)**     | [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) | recommended for production         |
-| **[SQLite](databases-sqlite)**       | [`@cap-js/sqlite`](https://www.npmjs.com/package/@cap-js/sqlite) | recommended for development        |
-| **[PostgreSQL](databases-postgres)** | [`@cap-js/postgres`](https://www.npmjs.com/package/@cap-js/postgres) | maintained by community + CAP team |
+| **[SAP HANA Cloud](../databases/hana)**     | [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) | recommended for production         |
+| **[SQLite](../databases/sqlite)**       | [`@cap-js/sqlite`](https://www.npmjs.com/package/@cap-js/sqlite) | recommended for development        |
+| **[PostgreSQL](../databases/postgres)** | [`@cap-js/postgres`](https://www.npmjs.com/package/@cap-js/postgres) | maintained by community + CAP team |
 
 <!-- Do we really need to say that? -->
 > Follow the preceding links to find specific information for each.
@@ -56,7 +56,7 @@ npm add @cap-js/hana
 <!-- REVISIT: A bit confusing to prefer the non-copiable variant that doesn't get its own code fence -->
 ::: details Prefer `cds add hana` ...
 
-... which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources as documented in the [deployment guide](deployment/to-cf#_1-sap-hana-database).
+... which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources as documented in the [deployment guide](../deployment/to-cf#_1-sap-hana-database).
 
 :::
 
@@ -153,12 +153,12 @@ Database support is enabled by adding a Maven dependency to the JDBC driver, as 
 
 | Database                       | JDBC Driver                                                 | Remarks                            |
 | ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
-| **[SAP HANA Cloud](databases-hana)**     | `com.sap.cloud.db.jdbc:ngdbc` | Recommended for productive use         |
-| **[H2](databases-h2)**       | `com.h2database:h2` | Recommended for development and CI     |
-| **[SQLite](databases-sqlite)**       | `org.xerial:sqlite-jdbc` | Supported for development and CI <br> Recommended for local MTX |
-| **[PostgreSQL](databases-postgres)** | `org.postgresql:postgresql` | Supported for productive use |
+| **[SAP HANA Cloud](../databases/hana)**     | `com.sap.cloud.db.jdbc:ngdbc` | Recommended for productive use         |
+| **[H2](h2-h2)**       | `com.h2database:h2` | Recommended for development and CI     |
+| **[SQLite](../databases/sqlite)**       | `org.xerial:sqlite-jdbc` | Supported for development and CI <br> Recommended for local MTX |
+| **[PostgreSQL](../databases/postgres)** | `org.postgresql:postgresql` | Supported for productive use |
 
-[Learn more about supported databases in CAP Java and their configuration](../java/cqn-services/persistence-services#database-support){ .learn-more}
+[Learn more about supported databases in CAP Java and their configuration](../../java/cqn-services/persistence-services#database-support){ .learn-more}
 
 ## Providing Initial Data
 
@@ -231,7 +231,7 @@ ID,title,descr
 
 ::: danger
 On SAP HANA, only use CSV files for _configuration data_ that can't be changed by application users.
-→ See [CSV data gets overridden in the SAP HANA guide for details](databases-hana#csv-data-gets-overridden).
+→ See [CSV data gets overridden in the SAP HANA guide for details](../databases/hana#csv-data-gets-overridden).
 :::
 
 ### Use `cds add data`
@@ -281,7 +281,7 @@ Quite frequently you need to distinguish between sample data and real initial da
 
 <div class="impl java">
 
-Use the properties [cds.dataSource.csv.*](../java/developing-applications/properties#cds-dataSource-csv) to configure the location of the CSV files. You can configure different sets of CSV files in different [Spring profiles](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.profiles). This configuration reads CSV data from `test/data` if the profile `test` is active:
+Use the properties [cds.dataSource.csv.*](../../java/developing-applications/properties#cds-dataSource-csv) to configure the location of the CSV files. You can configure different sets of CSV files in different [Spring profiles](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.profiles). This configuration reads CSV data from `test/data` if the profile `test` is active:
 
 ::: code-group
 
@@ -306,7 +306,7 @@ cds:
 
 
 
-Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](providing-services#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
+Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../providing-services#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
 
 
 
@@ -331,7 +331,7 @@ SELECT.from (Authors, a => {
 
 <div class="impl java">
 
-At runtime, we usually construct queries using the [CQL Query Builder API](../java/working-with-cql/query-api) in a database-agnostic way. For example, queries like this are supported for all databases:
+At runtime, we usually construct queries using the [CQL Query Builder API](../../java/working-with-cql/query-api) in a database-agnostic way. For example, queries like this are supported for all databases:
 
 ```java
 Select.from(AUTHOR)
@@ -381,7 +381,7 @@ cds.db.run (`SELECT from sqlite_schema where name like ?`, name)
 
 <div class="impl java">
 
-Use Spring's [JDBC Template](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) to [leverage native database features](../java/cqn-services/persistence-services#jdbctemplate) as follows:
+Use Spring's [JDBC Template](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) to [leverage native database features](../../java/cqn-services/persistence-services#jdbctemplate) as follows:
 
 ```java
 @Autowired
@@ -402,7 +402,7 @@ SELECT(['image1', 'image2']).from(Books) //> [{ image1, image2 }] // [!code --]
 SELECT(['image1', 'image2']).from(Books) //> [{ image1: Readable, image2: Readable }]
 ```
 
-[Read more about custom streaming in Node.js.](../node.js/best-practices#custom-streaming-beta){.learn-more}
+[Read more about custom streaming in Node.js.](../../node.js/best-practices#custom-streaming-beta){.learn-more}
 
 
 ## Generating DDL Files {#generating-sql-ddl}
@@ -418,9 +418,9 @@ You can also do this manually with the CLI command `cds compile --to <dialect>`.
 
 <div class="impl java">
 
-When you've created a CAP Java application with `cds init --java` or with CAP Java's [Maven archetype](../java/developing-applications/building#the-maven-archetype), the Maven build invokes the CDS compiler to generate a `schema.sql` file for your target database. In the `default` profile (development mode), an in-memory database is [initialized by Spring](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.data-initialization) and the schema is bootstrapped from the `schema.sql` file.
+When you've created a CAP Java application with `cds init --java` or with CAP Java's [Maven archetype](../../java/developing-applications/building#the-maven-archetype), the Maven build invokes the CDS compiler to generate a `schema.sql` file for your target database. In the `default` profile (development mode), an in-memory database is [initialized by Spring](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.data-initialization) and the schema is bootstrapped from the `schema.sql` file.
 
-[Learn more about adding an initial database schema.](../java/cqn-services/persistence-services#initial-database-schema){.learn-more}
+[Learn more about adding an initial database schema.](../../java/cqn-services/persistence-services#initial-database-schema){.learn-more}
 
 </div>
 
@@ -632,7 +632,7 @@ Use the specific SQL dialect (`hana`, `sqlite`, `h2`, `postgres`) with `cds comp
 A few observations on the generated SQL DDL output:
 
 1. **Tables / Views** — Declared entities become tables, projected entities become views.
-2. **Type Mapping** — [CDS types are mapped to database-specific SQL types](../cds/types).
+2. **Type Mapping** — [CDS types are mapped to database-specific SQL types](../../cds/types).
 3. **Slugified FQNs** — Dots in fully qualified CDS names become underscores in SQL names.
 4. **Flattened Structs** — Structured elements like `Books:price` are flattened with underscores.
 5. **Generated Foreign Keys** — For managed to-one Associations, foreign key columns are created. For example, this applies to `Books:author`.
@@ -669,7 +669,7 @@ entity Bar as select from Foo;   //> The SQL view will be generated
 
 ::: details On SAP HANA ...
 
-If the respective entity is a user-defined function or a calculation view, one of the annotations `@cds.persistence.udf` or `@cds.persistence.calcview` also needs to be assigned. See [Calculated Views and User-Defined Functions](../advanced/hana#calculated-views-and-user-defined-functions) for more details.
+If the respective entity is a user-defined function or a calculation view, one of the annotations `@cds.persistence.udf` or `@cds.persistence.calcview` also needs to be assigned. See [Calculated Views and User-Defined Functions](../../advanced/hana#calculated-views-and-user-defined-functions) for more details.
 
 :::
 
@@ -723,7 +723,7 @@ CREATE VIEW V AS SELECT ... FROM E WITH DDL ONLY;
 
 The following rules apply:
 
-- The value of the annotation must be a [string literal](../cds/cdl#multiline-literals).
+- The value of the annotation must be a [string literal](../../cds/cdl#multiline-literals).
 
 - The compiler doesn't check or process the provided SQL snippets in any way. You're responsible to ensure that the resulting statement is valid and doesn't negatively impact your database or your application. We don't provide support for problems caused by using this feature.
 
@@ -735,7 +735,7 @@ The following rules apply:
 
 * Both `@sql.prepend` and `@sql.append` are disallowed in SaaS extension projects.
 
-If you use native database clauses in combination with `@cds.persistence.journal`, see [Schema Evolution Support of Native Database Clauses](databases-hana#schema-evolution-native-db-clauses).
+If you use native database clauses in combination with `@cds.persistence.journal`, see [Schema Evolution Support of Native Database Clauses](../databases/hana#schema-evolution-native-db-clauses).
 
 
 
@@ -772,7 +772,7 @@ Find here a collection of resources on selected databases and their reference do
 * [H2 Keywords/Reserved Words](https://www.h2database.com/html/advanced.html#keywords)
 * [PostgreSQL SQL Key Words](https://www.postgresql.org/docs/current/sql-keywords-appendix.html)
 
-[There are also reserved words related to SAP Fiori.](../advanced/fiori#reserved-words){.learn-more}
+[There are also reserved words related to SAP Fiori.](../../advanced/fiori#reserved-words){.learn-more}
 
 
 
@@ -782,7 +782,7 @@ Find here a collection of resources on selected databases and their reference do
 
 ### Not Null
 
-You can specify that a column's value must not be `NULL` by adding the [`not null` constraint](../cds/cdl#null-values) to the element, for example:
+You can specify that a column's value must not be `NULL` by adding the [`not null` constraint](../../cds/cdl#null-values) to the element, for example:
 
 ```cds
 entity Books {
@@ -884,7 +884,7 @@ entity Genres {
 ```
 
 As a special case, a referential constraint with `delete cascade` is also generated
-for the text table of a [localized entity](../guides/localized-data#localized-data),
+for the text table of a [localized entity](../localized-data#localized-data),
 although no managed association is present in the `texts` entity.
 
 Add a localized element to entity `Books` from the previous example:
@@ -916,7 +916,7 @@ CREATE TABLE Books_texts (
 ::: warning Database constraints aren't intended for checking user input
 Instead, they protect the integrity of your data in the database layer against programming errors. If a constraint violation occurs, the error messages coming from the database aren't standardized by the runtimes but presented as-is.
 
-→ Use [`@assert.target`](services/constraints#assert-target) for corresponding input validations.
+→ Use [`@assert.target`](../services/constraints#assert-target) for corresponding input validations.
 :::
 
 ## Standard Database Functions
@@ -1075,7 +1075,7 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtime** pr
 
 - `search(x, y)`
   Checks whether `y` is contained in any element of `x` (fuzzy matching may apply).
-  See [Searching Data](../guides/providing-services#searching-data) for more details.
+  See [Searching Data](../providing-services#searching-data) for more details.
 
 - `session_context(<var>)`
   Utilizes standard variable names to maintain session context.

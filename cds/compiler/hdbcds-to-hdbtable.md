@@ -69,7 +69,7 @@ If the table doesn't contain much data, this process won't significantly impact 
 
 ## Annotations
 
-Annotations [`@sql.append/prepend`](../../guides/databases#sql-prepend-append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
+Annotations [`@sql.append/prepend`](../../guides/databases/index#sql-prepend-append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
 
 If you have used these annotations in your model, a simple switchover from `hdbcds` to `hdbtable` is unlikely as such an annotation written for `hdbcds` in general is not valid for `hdbtable`. You'll have to adapt your model before the migration.
 
