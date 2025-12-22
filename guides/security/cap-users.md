@@ -360,7 +360,12 @@ The `@sap/ams` plugin provides multiple build-time features:
 - Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
-::: tip
+
+AM provides highly flexible APIs to define and enforce authorization rules at runtime. A relevant subset of these APIs is available for consumption in CAP apps by way of the AMS CAP integration plugin.
+
+::: warn
+Make sure not to mix native AMS APIs with those provided by the CAP plugin. 
+:::
 In general, AMS provides highly flexible APIs to define and enforce authorization rules at runtime suitable for native Cloud applications. 
 **In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
 :::
