@@ -119,7 +119,7 @@ Before [deploying to the cloud](#deploy-to-the-cloud-with-mta), you may want to 
 
     [Learn more about `cds.env` profiles.](../../node.js/cds-env#profiles){.learn-more}
 
-6. Test your app [as described in the messaging guide](./#add-or-update-reviews).
+6. Test your app [as described in the messaging guide](messaging#add-or-update-reviews).
 
 
 ### CAP Automatically Creates Queues and Subscriptions

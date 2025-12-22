@@ -285,7 +285,7 @@ Here's a rough checklist what this guide should cover:
 
 ### 5. Deploy Application
 
-Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/#test-locally).
+Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
 Prepare this by going back to your app with `cd orders`.
 
 With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deploy/).
@@ -293,11 +293,11 @@ With your application enabled and prepared for extensibility, you are ready to d
 ## As a SaaS Customer {#prep-as-operator}
 
 The following sections provide step-by-step instructions on adding extensions.
-All steps are based on our Orders Management sample which can be [started locally for testing](../multitenancy/#test-locally).
+All steps are based on our Orders Management sample which can be [started locally for testing](../multitenancy/index#test-drive-locally).
 
 ::: details On BTP…
 
-To extend a SaaS app deployed to BTP, you'll need to subscribe to it [through the BTP cockpit](../multitenancy/#subscribe).
+To extend a SaaS app deployed to BTP, you'll need to subscribe to it [through the BTP cockpit](../multitenancy/index#subscribe-via-btp-cockpit).
 
 Refer to the [Deployment Guide](../deploy/to-cf) for more details on remote deployments.
 
@@ -456,7 +456,7 @@ annotate OrdersService.Orders with @UI.LineItem: [
 Make sure **no syntax errors** are shown in the [CDS editor](../../tools/cds-editors#vscode) before going on to the next steps.
 :::
 
-### 7. Test-Drive Locally {#test-locally }
+### 7. Test-Drive Locally {#test-locally}
 
 To conduct an initial test of your extension, run it locally with `cds watch`:
 

@@ -18,6 +18,6 @@
 # [Core / Built-in Types](types)
 # [Common Reuse Types](common)
 # [Common Annotations](annotations)
-# [Compiler Messages](../compiler/messages)
+# [Compiler Messages](/cds/compiler/messages)
 # [Aspect-oriented Modelling](aspects)
 # [The Nature of CDS Models](models)

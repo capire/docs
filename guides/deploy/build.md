@@ -48,7 +48,7 @@ You can use them as a blue print – copy & paste them into your CDS configurati
 
 
 
-## Custom Build Tasks {#build-config}
+## Custom Build Tasks
 
 If custom build tasks are configured, those properties have precedence
 For example, you want to configure the _src_ folder and add the default models. To achieve this, do not define the _model_ option in your build task:

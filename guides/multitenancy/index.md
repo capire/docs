@@ -245,7 +245,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
   You can always inspect the _effective_ configuration with `cds env`.
   :::
 
-## Test-Drive Locally {#test-locally}
+## Test-Drive Locally
 
 
 Before deploying to the cloud, you can test-drive common SaaS operations with your app locally, including SaaS startup, subscribing tenants, and upgrading tenants.
@@ -565,7 +565,7 @@ In order to get your multitenant application deployed, follow this excerpt from 
 
 :::tip For manual setups, ensure the metadata container (`t0`) is unique
 
-If you’re not running `cds-mtx upgrade *` as a [Cloud Foundry hook](#run-as-cloud-foundry-hook) (as set up by `cds add multitenancy`) and instead use a custom setup, deploy the MTX sidecar with a single instance for the initial rollout. This avoids conflicts when `t0` is created.
+If you’re not running [`cds-mtx upgrade *`](#update-database-schema) as a Cloud Foundry hook (as set up by `cds add multitenancy`) and instead use a custom setup, deploy the MTX sidecar with a single instance for the initial rollout. This avoids conflicts when `t0` is created.
 
 :::
 
@@ -735,7 +735,7 @@ Each time you update your model or any SAP HANA source file, you need repeat the
 
 > Make sure to stop any running CAP servers left over from local testing.
 
-By passing `--profile hybrid` you can now run the app with cloud bindings and interact with it as you would while [testing your app locally](#test-locally). Run this in your project root:
+By passing `--profile hybrid` you can now run the app with cloud bindings and interact with it as you would while [testing your app locally](#test-drive-locally). Run this in your project root:
 
 ```sh
 cds watch mtx/sidecar --profile hybrid

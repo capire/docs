@@ -183,7 +183,7 @@ As emitting and handling events is an intrinsic feature of the CAP core runtimes
 
 Let's see that in action...
 
-### 1. Run CAP Server
+### 1. Run CAP Server {#start-server}
 
 Run the following command to start a reviews-enhanced bookshop as an all-in-one server process:
 
