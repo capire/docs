@@ -361,13 +361,11 @@ The `@sap/ams` plugin provides multiple build-time features:
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 
-AM provides highly flexible APIs to define and enforce authorization rules at runtime. A relevant subset of these APIs is available for consumption in CAP apps by way of the AMS CAP integration plugin.
+AM provides highly flexible APIs to define and enforce authorization rules at runtime. 
+A relevant subset of these APIs is consumed by CAP apps by way of the AMS CAP integration plugin.
 
-::: warn
+::: warning
 Make sure not to mix native AMS APIs with those provided by the CAP plugin. 
-:::
-In general, AMS provides highly flexible APIs to define and enforce authorization rules at runtime suitable for native Cloud applications. 
-**In the context of CAP projects, only a limited subset of these APIs is relevant and is offered in a streamlined way via the CAP integration plugins**.
 :::
 
 ### Adding AMS Support { .node }
@@ -429,7 +427,7 @@ Hence, the **rules in the CAP model act as basic building blocks for higher-leve
 You can define CAP roles in the CDS model as [described before](#roles).
 
 ::: tip
-A CAP role describes a **conceptual role on technical domain level** defined by application developers.
+A CAP role describes a **capability on technical domain level** defined by application developers.
 In contrast, an AMS policy reflects a coarser-grained **business role on application level** defined by user administrators.
 :::
 
@@ -590,7 +588,7 @@ There are several options for the attribute declarations that have an impact on 
 | `WHERE Genre IS RESTRICTED` | _Enforces `Genre` as filtered attribute in the scope for the role_ | _Filter restriction must be provided in a custom policy and is applied (restricted)_ |
 | _- no defintion -_ | _The role does not offer any attribute for filtering_ | _No restriction filter is applied (unrestricted)_ |
 
-::: tip
+::: info
 The attribute statement is defined in the scope of a dedicated CAP role and filters are applied on matching entites accordingly.
 :::
 
@@ -608,12 +606,12 @@ cds:
   security:
     mock:
       users:
-        content-manager: // [!code ++]
-          policies: // [!code ++]
-            - cap.ContentManager // [!code ++]
-        stock-manager: // [!code ++]
-          policies: // [!code ++]
-            - cap.StockManager // [!code ++]
+        content-manager: // [!code ++:3]
+          policies:
+            - cap.ContentManager
+        stock-manager: // [!code ++:3]
+          policies:
+            - cap.StockManager
 ```
 
 </div>
