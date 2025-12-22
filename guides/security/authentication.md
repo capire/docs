@@ -393,7 +393,7 @@ The [binding](../../java/security#bindings) to service instance of type `identit
 
 </div>
 
-Whereas the service instance represents the IAS application itself, the binding provides access to the identity services on behalf of a concrete client.
+The binding provides access to the identity services on behalf of a concrete client.
 **CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS intstance. 
 
 Service instance and binding offer the following crucial configuration properties:
