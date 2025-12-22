@@ -148,7 +148,7 @@ cds.sql.hana.optimizationMode: legacy
 Use the [hints](../working-with-cql/query-execution#hana-hints) `hdb.USE_HEX_PLAN` and `hdb.NO_USE_HEX_PLAN` to overrule the configured optimization mode per statement.
 
 ::: warning Rare error in `HEX` mode
-In some corner cases, particularly when using [native HANA views](../../advanced/hana#create-native-sap-hana-objects), queries in `HEX` optimization mode may fail with a "hex enforced but cannot be selected" error. This is the case if the statement execution requires the combination of HEX only features with other features that are not yet supported by the HEX engine. If CAP detects this error it will, as a fallback, execute the query in _legacy_ mode.
+In some corner cases, particularly when using [native HANA views](../../guides/databases/hana-native#create-native-sap-hana-objects), queries in `HEX` optimization mode may fail with a "hex enforced but cannot be selected" error. This is the case if the statement execution requires the combination of HEX only features with other features that are not yet supported by the HEX engine. If CAP detects this error it will, as a fallback, execute the query in _legacy_ mode.
 If you know upfront that a query can't be executed by the HEX engine, you can add a `hdb.NO_USE_HEX_PLAN` hint to the query, so the SQL generator won't use features that require the HEX engine.
 :::
 
@@ -545,7 +545,7 @@ cds:
 
 ### Native SQL with JDBC Templates { #jdbctemplate}
 
-The JDBC template is the Spring API, which in contrast to the CQN APIs allows executing native SQL statements and call stored procedures (alternative to [Native HANA Object](../../advanced/hana#create-native-sap-hana-objects)). It seamlessly integrates with Spring's transaction and connection management. The following example shows the usage of `JdbcTemplate` in the custom handler of a Spring Boot enabled application. It demonstrates the execution of the stored procedure and native SQL statement.
+The JDBC template is the Spring API, which in contrast to the CQN APIs allows executing native SQL statements and call stored procedures (alternative to [Native HANA Object](../../guides/databases/hana-native#create-native-sap-hana-objects)). It seamlessly integrates with Spring's transaction and connection management. The following example shows the usage of `JdbcTemplate` in the custom handler of a Spring Boot enabled application. It demonstrates the execution of the stored procedure and native SQL statement.
 
 ```java
 @Autowired

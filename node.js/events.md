@@ -110,7 +110,7 @@ On outgoing HTTP messages, it's propagated as `x-correlation-id` header.
 
 ### . locale {.property}
 
-The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/i18n#normalized-locales).
+The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/uis/i18n#normalized-locales).
 
 
 
@@ -127,7 +127,7 @@ A unique string identifying the current tenant, or `undefined` if not in multite
 
 A constant timestamp for the current request being processed, as an instance of [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). The CAP framework uses that to fill in values for the CDS pseudo variable `$now`, with the guaranteed same value.
 
-[Learn more in the **Managed Data** guide.](../guides/domain-modeling#managed-data){.learn-more}
+[Learn more in the **Managed Data** guide.](../guides/domain/modeling#managed-data){.learn-more}
 
 
 
@@ -629,4 +629,3 @@ For the following annotations/error codes, the runtime provides default translat
 <sup>(1)</sup> Falls back to error code `ASSERT_NOT_NULL` if provided in custom translations.
 
 These can be overridden by the known technique of providing [custom i18n messages](cds-i18n#localized-messages).
-

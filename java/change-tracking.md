@@ -111,7 +111,7 @@ annotate Bookshop.Books {
 ```
 
 :::warning Personal data is ignored
-Elements with [personal data](../guides/data-privacy/annotations#personaldata), that is, elements that are annotated
+Elements with [personal data](../guides/security/dpp-annotations.md#personaldata), that is, elements that are annotated
 with @PersonalData and hence subject to audit logging, are ignored by the change tracking.
 :::
 
@@ -256,7 +256,7 @@ your own presentation for it as the changes are exposed only as part of the chan
 must be read-only and shouldn't be writable via OData requests.
 
 The change log is extended with the texts coming from your entities' `@title` annotation and the element. Otherwise, the change log contains only the technical names of the entities and the elements.
-Titles are translated, if they're annotated as translatable. See [Externalizing Texts Bundles](../guides/i18n#localization-i18n) for more information.
+Titles are translated, if they're annotated as translatable. See [Externalizing Texts Bundles](../guides/uis/i18n#localization-i18n) for more information.
 
 You can customize the standard UI on the entity itself:
 

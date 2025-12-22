@@ -359,7 +359,7 @@ cds.once('bootstrap',(app)=>{
 ```
 :::
 
-[More about Vue.js in our _Getting Started in a Nutshell_](../../get-started/in-a-nutshell#uis){.learn-more} [Learn more about serving Fiori UIs.](../../advanced/fiori){.learn-more}
+[More about Vue.js in our _Getting Started in a Nutshell_](../../get-started/in-a-nutshell#uis){.learn-more} [Learn more about serving Fiori UIs.](../uis/fiori){.learn-more}
 
 This ensures all static content for the app is served from the imported package.
 
@@ -480,7 +480,7 @@ GET http://localhost:4004/browse/Books/201?
 
 ### Testing Remote Integration Locally {#testing-locally}
 
-As a next step, following CAP's [Grow-as-you-go](../../about/#grow-as-you-go) philosophy, we can run the services as separate processes to test the remote integration, but still locally in a low-complexity setup. We use the [_automatic binding by `cds watch`_](#bindings-via-cds-watch) as follows:
+As a next step, following CAP's [Grow-as-you-go](../../get-started/about#grow-as-you-go) philosophy, we can run the services as separate processes to test the remote integration, but still locally in a low-complexity setup. We use the [_automatic binding by `cds watch`_](#bindings-via-cds-watch) as follows:
 
 1. Start the three servers separately, each in a separate shell (from within the root folder in your cloned projects):
     ```sh

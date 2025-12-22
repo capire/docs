@@ -19,7 +19,7 @@ It's organized as follows:
 
 | Section                                                                                  | Description                                                                                                        |
 |------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| [Getting&nbsp;Started](./) <br/> [Cookbook](../guides/) <br/> [Advanced](../advanced/)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
+| [Getting&nbsp;Started](./) <br/> [Cookbook](../guides/)) <br/> [Advanced](../guides/advanced/)   | **Task-oriented guides** that walk you through the most common tasks and advanced topics in CAP-based development. |
 | [CDS](../cds/) <br/> [Java](../java/) <br/> [Node](../node.js/) <br/> [Tools](../tools/) | **Reference docs** for respective areas.                                                                           |
 | [Plugins](../plugins/)                                                                   | **Curated list of plugins** that extend the capabilities of the CAP framework.                                     |
 | [Releases](../releases/)                                                                 | The place where you can stay up to date with the most recent information about new features and changes in CAP.        |
@@ -50,20 +50,20 @@ In here, we collected several interesting sample projects for you. Not all of th
     transition: opacity 0.2s;
    }
    main .vp-doc a.node img {
-      content: url(../assets/logos/nodejs.svg);
+      content: url(/logos/nodejs.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;
       padding-top:11px;
    }
    main .vp-doc a.java img {
-      content: url(../assets/logos/java.svg);
+      content: url(/logos/java.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;
       padding-bottom:5px;
    }main .vp-doc a.github img {
-      content: url(../assets/logos/github.svg);
+      content: url(/logos/github.svg);
       height:3em;
       display:inline;
       margin:0 0.2em;

@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-According to our [naming conventions](../../../../guides/domain-modeling#naming-conventions), to easily distinguish entity names from element names we recommend starting elements with a *lowercase* letter, which this rule ensures.
+According to our [naming conventions](../../../../guides/domain/modeling#naming-conventions), to easily distinguish entity names from element names we recommend starting elements with a *lowercase* letter, which this rule ensures.
 
 ## Examples
 

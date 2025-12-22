@@ -157,7 +157,7 @@ messaging.on('*', async msg => { /*...*/ })
 ```
 
 ::: tip
-In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
+In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/@external/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
 :::
 
 ### Inbox <Beta />
@@ -242,7 +242,7 @@ Example:
 
 <span id="beforeeventmesh" />
 
-#### [SAP Event Mesh](../guides/messaging/#sap-event-mesh)
+#### [SAP Event Mesh](../guides/events/#sap-event-mesh)
 
 If you specify your format to be `cloudevents`, the following default prefixes are set:
 
@@ -269,13 +269,13 @@ To safely send and receive messages between applications, you need a message bro
 
 In CDS, you can configure one of the available broker services in your [`requires` section](cds-connect#cds-env-requires).
 
-According to our [grow as you go principle](../about/#grow-as-you-go), it makes sense to first test your application logic without a message broker and enable it later. Therefore, we provide support for [local messaging](#local-messaging) (if everything is inside one Node.js process) as well as [file-based messaging](#file-based).
+According to our [grow as you go principle](../get-started/about#grow-as-you-go), it makes sense to first test your application logic without a message broker and enable it later. Therefore, we provide support for [local messaging](#local-messaging) (if everything is inside one Node.js process) as well as [file-based messaging](#file-based).
 
 ### Configuring Message Brokers
 
 You must provide all necessary credentials by [binding](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/296cd5945fd84d7d91061b2b2bcacb93.html) the message broker to your app.
 
-For local environments, use [`cds bind`](../advanced/hybrid-testing#cds-bind-usage) in a [hybrid setup](../guides/messaging/event-mesh#run-tests-in-hybrid-setup).
+For local environments, use [`cds bind`](../guides/advanced/hybrid-testing#cds-bind-usage) in a [hybrid setup](../guides/events/event-mesh#run-tests-in-hybrid-setup).
 
 ::: tip
 For local testing use [`kind`: `enterprise-messaging-shared`](#event-mesh-shared) to avoid the complexity of HTTP-based messaging.
