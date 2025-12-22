@@ -213,7 +213,7 @@ The database schema resulting from CDS build at design time contains *all* featu
 
 ### The Model Provider Service
 
-![This graphic is explained in the accompanying text.](../assets/feature-toggles.drawio.svg)
+![This graphic is explained in the accompanying text.](../guides/extensibility/assets/feature-toggles.drawio.svg)
 
 At runtime, per request, an effective CDS model is used that reflects the active feature set. To obtain the effective model that the runtime delegates to the *Model Provider Service*, which uses this feature set to resolve the CDS model code located in the `fts` folder of the active features and compiles to effective CSN and EDMX models for the current request to operate on.
 
@@ -223,7 +223,7 @@ The active feature set can't be changed within an active transaction.
 
 ### Toggling SAP Fiori UI Elements
 
-In an [SAP Fiori elements](https://experience.sap.com/fiori-design-web/smart-templates/) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../advanced/fiori#what-are-sap-fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
+In an [SAP Fiori elements](https://experience.sap.com/fiori-design-web/smart-templates/) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../guides/uis/fiori#what-are-sap-fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
 
 ### Features on the Database
 

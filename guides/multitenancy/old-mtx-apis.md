@@ -1,12 +1,6 @@
 ---
-shorty: Old MTX
 synopsis: >
   API reference documentation for MTX Services.
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - Old MTX
-# layout: cookbook
 status: released
 search: false
 ---
@@ -506,9 +500,6 @@ Configure your App Router as follows.
 
 <div id="shared-service-manager" />
 
-## [Old SaaS Extensibility Guide](../extensibility/assets/customization-old) {.toc-redirect}
-
-[See the old guide for Extending and Customizing SaaS Solutions.](../extensibility/assets/customization-old)
 
 ## Further Readings
 

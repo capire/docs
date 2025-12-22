@@ -152,11 +152,10 @@ After the [initial setup](#setup), we recommend continuing as follows while you 
 
 | # | Guide                                     | Description                                            |
 |---|-------------------------------------------|--------------------------------------------------------|
-| 1 | [Introduction – What is CAP?](../about/)  | Learn about key benefits and value propositions.       |
+| 1 | [Introduction – What is CAP?](about)  | Learn about key benefits and value propositions.       |
 | 2 | [Bookshop by capire](in-a-nutshell)       | Build your first CAP application within 4-44 minutes.  |
-| 3 | [Best Practices](../about/best-practices) | Key concepts & rationales to understand → *must read*. |
-| 4 | [Anti Patterns](../about/bad-practices)   | Misconceptions & bad practices to avoid → *must read*. |
-| 5 | [Learn More](learning-sources)            | Find samples, videos, blogs, tutorials, and so on.     |
+| 3 | [Best Practices](best-practices) | Key concepts & rationales to understand → *must read*. |
+| 4 | [Learn More](learn-more)            | Find samples, videos, blogs, tutorials, and so on.     |
 
 
 
@@ -170,7 +169,7 @@ After these getting started-level introductions, you would continuously revisit 
 |  7 | [CDS](../cds/)<br/>[Java](../java/)<br/>[Node.js](../node.js/)<br/>[Tools](../tools/) | The reference docs for these respective areas. |
 |  8 | [Plugins](../plugins/)                                                                | Curated list of recommended Calesi plugins.    |
 |  9 | [Releases](../releases/)                                                              | Your primary source to stay up to date.        |
-| 10 | [Resources](../resources/)                                                            | About support channels, community, ...         |
+| 10 | [Resources](/resources/)                                                            | About support channels, community, ...         |
 
 
-This also reflects the overall structure of [this documentation](./learning-sources.md#this-documentation).
+This also reflects the overall structure of [this documentation](./learn-more#this-documentation).

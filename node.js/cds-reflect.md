@@ -382,12 +382,12 @@ Their values are [`LinkedDefinitions`].
 
 ### . texts {.property}
 
-If the entity has *[localized](../guides/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
+If the entity has *[localized](../guides/uis/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
 {.indent}
 
 ### . drafts {.property}
 
-If draft is enabled, a definition to easily refer to *[draft](../advanced/fiori#draft-support)* data for the current entity is returned.
+If draft is enabled, a definition to easily refer to *[draft](../guides/uis/fiori#draft-support)* data for the current entity is returned.
 {.indent}
 
 

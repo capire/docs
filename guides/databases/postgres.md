@@ -7,7 +7,7 @@ impl-variants: true
 
 <div class="impl node">
 
-This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](sqliteite). This architecture brings significantly enhanced feature sets and feature parity, as documented in the [*Features* section of the SQLite guidsqlite#featuresatures).
+This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite). This architecture brings significantly enhanced feature sets and feature parity, as documented in the [*Features* section of the SQLite guidsqlite#featuresatures).
 
 *Learn about migrating from the former `cds-pg` in the [Migration](#migration) chapter.*{.learn-more}
 
@@ -352,7 +352,7 @@ cds add postgres
 
 ### Deploy
 
-You can package and deploy that application, for example using [MTA-based deployment](../deployment/to-cf#add-mta-yaml).
+You can package and deploy that application, for example using [MTA-based deployment](../deploy/to-cf#add-mta-yaml).
 
 ## Automatic Schema Evolution { #schema-evolution }
 
@@ -651,6 +651,6 @@ When you have a SaaS application, upgrade all your tenants using the [deployer a
 
 ::: warning
 
-[Multitenancy](../multitenancy) and [extensibility](../extensibility) aren't yet supported on PostgreSQL.
+[Multitenancy](../multitenancy//index.md) and [extensibility](../extensibility/index.md) aren't yet supported on PostgreSQL.
 
 :::

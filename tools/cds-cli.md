@@ -167,7 +167,7 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 
 ### sample {.add}
 
-Creates a bookshop application including custom code (Node.js or Java) and a UI with [SAP Fiori Elements](../advanced/fiori).
+Creates a bookshop application including custom code (Node.js or Java) and a UI with [SAP Fiori Elements](../guides/uis/fiori).
 
 ```sh
 cds add sample
@@ -260,7 +260,7 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
 - Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
-- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/providing-services#input-validation) are respected as well, in a best effort way.
+- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/providing-services#input-validation) are respected as well, in a best effort way.
 :::
 
 #### Interactively in VS Code <Since version="7.9.0" of="@sap/cds-dk" />
@@ -619,7 +619,7 @@ There a couple of shortcuts and convenience functions:
 
 ::: tip Repl for Java
 `cds repl` does not run Java code, but can still be useful:
-For example, if you work on Node.js things like [building plugins](../guides/deployment/custom-builds#custom-build-plugins) that make use of Node.js APIs.
+For example, if you work on Node.js things that make use of Node.js APIs.
 :::
 
 
@@ -724,7 +724,7 @@ Make sure the port matches to what the debug tunnel uses (see the message in the
 
 > [!NOTE] SapMachine is required
 > SapMachine is required as Java runtime environment for this feature to work.<br>
-> There is nothing to do if you set up your MTA deployment descriptors with [`cds add mta`](../guides/deployment/to-cf#add-mta-yaml) or CAP project wizards.
+> There is nothing to do if you set up your MTA deployment descriptors with [`cds add mta`](../guides/deploy/to-cf#add-mta-yaml) or CAP project wizards.
 > See the [documentation of SapMachine](https://help.sap.com/docs/btp/sap-business-technology-platform/sapmachine) for how to configure this manually.
 
 #### Local Applications
