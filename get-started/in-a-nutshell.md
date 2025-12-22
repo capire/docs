@@ -43,7 +43,7 @@ Note: When comparing the code from the repo in GitHub to the snippets given in t
 
 
 
-After you completed the [*Initial Setup*](./), you jumpstart a project as follows:
+After you completed the [*Initial Setup*](index.md#setup), you jumpstart a project as follows:
 
 - Create a new project using `cds init`
 
@@ -68,7 +68,7 @@ After you completed the [*Initial Setup*](./), you jumpstart a project as follow
    ```sh
    code bookshop
    ```
-   [Assumes you activated the `code` command on macOS as documented](/tools/cds-editors#vscode) {.learn-more}
+   [Assumes you activated the `code` command on macOS as documented](../tools/cds-editors#vscode) {.learn-more}
 
    For Java development in VS Code you need to [install extensions](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack). {.learn-more .java}
 
@@ -781,7 +781,7 @@ Books book = persistenceService.run(byId).single(Books.class);
 
 ### Sample HTTP Requests
 
-Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](/tools/cds-editors#add-useful-plugins).
+Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](../tools/cds-editors#add-useful-plugins).
 
 <span class="impl node">
 

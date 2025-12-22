@@ -5,12 +5,12 @@
  ## [Bookshop by capire](get-started/in-a-nutshell)
  ## [Best Practices](get-started/best-practices)
  ## [Anti Patterns](get-started/bad-practices)
- ## [Next Steps](get-started/#next-steps)
+ ## [Next Steps](get-started/index#next-steps)
  ## [Learn More](get-started/learning-sources)
  ## [Features Matrix](get-started/features)
  ## [Troubleshooting](get-started/troubleshooting)
 
-# [Develop](guides/index.md)
+# [Develop](guides/)
 
 ## [Domain Modeling](guides/domain/modeling)
 
@@ -23,7 +23,7 @@
 
 ## [Providing Services](guides/services/providing-services)
 
-  ### [Core Concepts](guides/services/providing-services#introduction)
+  ### [Core Concepts](guides/services/providing-services#intro-core-concepts)
   ### [Service Definitions](guides/services/providing-services#service-definitions)
   ### [Served Out-of-the-Box](guides/services/providing-services#generic-providers)
   ### [Status Flows](guides/services/flows)
@@ -42,7 +42,7 @@
   ### [Mashups](guides/services/using-services#integrate-and-extend)
   ### [Deployment](guides/services/using-services#connect-and-deploy)
 
-## [Events & Messaging](guides/events/index.md)
+## [Events & Messaging](guides/events/)
 
   ### [Core Eventing](guides/events/core-concepts)
   ### [Event Queues](guides/events/event-queues)
@@ -52,12 +52,6 @@
   ### [SAP Event Mesh](guides/events/event-mesh)
   ### [SAP Event Hub](guides/events/event-hub)
   ### [Events from S/4](guides/events/s4)
-
-## [Protocols/APIs](guides/advanced/publishing-apis/index.md)
-
-  ### [OData APIs](advanced/odata)
-  ### [OpenAPI](advanced/publishing-apis/openapi)
-  ### [AsyncAPI](advanced/publishing-apis/asyncapi)
 
 ## [Serving UIs](guides/uis/fiori)
 
@@ -74,11 +68,17 @@
   ### [Common](guides/databases/index.md)
   ### [SQLite](guides/databases/sqlite)
   ### [H2 (Java)](guides/databases/h2)
-  ### [PostgreSQL](guides/databases/postgres)
   ### [SAP HANA Cloud](guides/databases/hana)
   ### [SAP HANA Native](guides/databases/hana-native)
+  ### [PostgreSQL](guides/databases/postgres)
 
-## [Security & Data Privacy](guides/security/index.md)
+## [Protocols/APIs](guides/advanced/publishing-apis/)
+
+  ### [OData APIs](guides/advanced/odata)
+  ### [OpenAPI](guides/advanced/publishing-apis/openapi)
+  ### [AsyncAPI](guides/advanced/publishing-apis/asyncapi)
+
+## [Security & Data Privacy](guides/security/)
 
   ### [Product Standards Coverage](../guides/security/product-standards)
   ### [CDS-based Authorization](guides/security/authorization)
@@ -91,20 +91,20 @@
   <!-- ### [Data Retention Management](guides/security/dpp-drm) -->
 
 
-## [Extensibility](guides/extensibility/index.md)
+## [Intrinsic Extensibility](guides/extensibility)
 
   ### [Extending SaaS Apps](guides/extensibility/customization)
   ### [Feature Toggles](guides/extensibility/feature-toggles)
 
-## Advanced
+## [Advanced Topics](guides/advanced)
 
   ### [Hybrid Testing w/ cds bind](guides/advanced/hybrid-testing)
   ### [Reuse & Compose](guides/extensibility/composition)
   ### [Performance](guides/advanced/performance-modeling)
 
-# [Deploy](guides/deploy/index.md)
+# [Deploy](guides/deploy/)
 
- ## [Multi-tenant SaaS Applications](guides/multitenancy/index.md)
+ ## [Multi-tenant SaaS Applications](guides/multitenancy/)
  ## [Deploy to Cloud Foundry](guides/deploy/to-cf)
  ## [Deploy to Kyma/K8s](guides/deploy/to-kyma)
  ## [Deploy with CI/CD](guides/deploy/cicd)

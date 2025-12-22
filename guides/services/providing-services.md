@@ -15,7 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 [[toc]]
 
 
-## Intro: Core Concepts {#introduction}
+## Intro: Core Concepts
 
 The following sections give a brief overview of CAP's core concepts.
 
@@ -781,7 +781,7 @@ The remaining cases that need custom handlers, reduce to real custom logic, spec
 
 - Domain-specific programmatic [Validations](#input-validation)
 - Augmenting result sets, for example to add computed fields for frontends
-- Programmatic [Authorization Enforcements](/guides/security/authorization#enforcement)
+- Programmatic [Authorization Enforcements](../../guides/security/authorization#enforcement)
 - Triggering follow-up actions, for example calling other services or emitting outbound events in response to inbound events
 - And more... In general, all the things not (yet) covered by generic handlers
 

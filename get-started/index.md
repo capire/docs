@@ -170,7 +170,7 @@ After these getting started-level introductions, you would continuously revisit 
 |  7 | [CDS](../cds/)<br/>[Java](../java/)<br/>[Node.js](../node.js/)<br/>[Tools](../tools/) | The reference docs for these respective areas. |
 |  8 | [Plugins](../plugins/)                                                                | Curated list of recommended Calesi plugins.    |
 |  9 | [Releases](../releases/)                                                              | Your primary source to stay up to date.        |
-| 10 | [Resources](../resources/)                                                            | About support channels, community, ...         |
+| 10 | [Resources](/resources/)                                                            | About support channels, community, ...         |
 
 
 This also reflects the overall structure of [this documentation](./learning-sources.md#this-documentation).
