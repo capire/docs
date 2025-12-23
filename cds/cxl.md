@@ -85,7 +85,7 @@ cds repl --run .
 ```
 
 ```sql [SQL]
-SELECT Books.title FROM sap_capire_bookshop_Books as Books
+SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
@@ -168,7 +168,7 @@ In its simplest form, a `ref` can be used to reference an element:
 ```
 
 ```sql [SQL]
-SELECT Books.title FROM sap_capire_bookshop_Books as Books
+SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
@@ -192,7 +192,7 @@ A path expression can be used to navigate to any element of the associations tar
 
 ```sql [SQL]
 SELECT
-    Books.title,
+    title,
     author.name AS author
 FROM
     sap_capire_bookshop_Books AS Books
@@ -260,7 +260,7 @@ A path expression can also be used as part of the where clause to filter based o
 
 ```sql [SQL]
 SELECT
-  Books.title
+  title
 FROM
   sap_capire_bookshop_Books AS Books
   LEFT JOIN sap_capire_bookshop_Genres AS genre
@@ -294,7 +294,7 @@ A path expression can also be used in the `order by` clause to sort based on ele
 
 ```sql [SQL]
 SELECT
-  Books.title,
+  title,
   author.dateOfBirth AS birthDate
 FROM
   sap_capire_bookshop_Books AS Books
@@ -857,8 +857,8 @@ CAP standard functions:
 
 ```sql [SQL]
 SELECT
-  Books.title,
-  Books.price
+  title,
+  price
 FROM
   sap_capire_bookshop_Books AS Books
 ORDER BY price DESC NULLS LAST -- [!code focus]
