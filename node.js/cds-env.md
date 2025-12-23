@@ -238,7 +238,7 @@ CDS_REQUIRES_DB_KIND=sql cds run
 
 ### In _./default-env.json_
 
-The use of _default-env.json_ is deprecated. Please use [`cds bind`](../advanced/hybrid-testing#run-with-service-bindings).
+The use of _default-env.json_ is deprecated. Please use [`cds bind`](../guides/advanced/hybrid-testing#run-with-service-bindings).
 
 
 ### In `./.env`

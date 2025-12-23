@@ -6,7 +6,7 @@ title: Home
 
 hero:
   name: "SAP Cloud Application Programming Model"
-  image: /cap-logo.svg
+  image: /logos/cap.svg
 
   tagline:
     Build cloud-native applications
@@ -17,16 +17,19 @@ hero:
 
   actions:
 
-    - theme: alt
-      text: Get Started
+    - text: Get Started
       link: /get-started/
+      theme: alt
+      
+    - text: Develop
+      link: /guides/
+      theme: alt
 
-    - theme: alt
-      text: Learn More
-      link: /about/
+    - text: Deploy
+      link: /guides/deploy/
+      theme: alt
 
-    - theme: brand
-      text: What's New?
+    - text: What's New?
       link: /releases
 
 features:
@@ -46,7 +49,7 @@ features:
     •&nbsp; Enterprise-grade solutions <br/>
     •&nbsp; Battle tested in SAP products <br/>
     •&nbsp; Served out of the box <br/>
-  link: about/best-practices
+  link: get-started/best-practices
   linkText: Key Concepts & Rationales
 
 - title: Focus on Domain!
@@ -55,7 +58,7 @@ features:
     •&nbsp; Capture intent → What, not how! <br/>
     •&nbsp; Separation of concerns <br/>
     •&nbsp; Minimized technical debts <br/>
-  link: about/
+  link: get-started/about
   linkText: Read the Primer
 
 - title: Cloud Native by Design
@@ -64,7 +67,7 @@ features:
     •&nbsp; Multitenancy, Scalability, ... <br/>
     •&nbsp; Intrinsic Extensibility <br/>
     •&nbsp; Evolution w/o disruption <br/>
-  link: about/#cloud-native-by-design
+  link: get-started/about#cloud-native-by-design
   linkText: Intrinsic Cloud Qualities
 
 ---

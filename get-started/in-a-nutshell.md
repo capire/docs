@@ -43,7 +43,7 @@ Note: When comparing the code from the repo in GitHub to the snippets given in t
 
 
 
-After you completed the [*Initial Setup*](./), you jumpstart a project as follows:
+After you completed the [*Initial Setup*](index.md#setup), you jumpstart a project as follows:
 
 - Create a new project using `cds init`
 
@@ -68,7 +68,7 @@ After you completed the [*Initial Setup*](./), you jumpstart a project as follow
    ```sh
    code bookshop
    ```
-   [Assumes you activated the `code` command on macOS as documented](/tools/cds-editors#vscode) {.learn-more}
+   [Assumes you activated the `code` command on macOS as documented](../tools/cds-editors#vscode) {.learn-more}
 
    For Java development in VS Code you need to [install extensions](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack). {.learn-more .java}
 
@@ -149,7 +149,7 @@ entity Genres : sap.common.CodeList { // [!code focus]
 :::
 
 _Find this source also in the GitHub repos [for Node.js](https://github.com/capire/bookshop/tree/main/db/schema.cds), and [for Java](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/db/books.cds)_{ .learn-more}
-[Learn more about **Domain Modeling**.](../guides/domain-modeling){ .learn-more}
+[Learn more about **Domain Modeling**.](../guides/domain/modeling){ .learn-more}
 [Learn more about **CDS Modeling Languages**.](../cds/){ .learn-more}
 
 
@@ -248,7 +248,7 @@ service CatalogService @(path:'/browse') { // [!code focus]
 
 *Find this source also on GitHub [for Node.js](https://github.com/capire/bookshop/tree/main/srv), and [for Java](https://github.com/sap-samples/cloud-cap-samples-java/blob/main/srv)*{.learn-more}
 
-[Learn more about **Defining Services**.](../guides/providing-services){ .learn-more}
+[Learn more about **Defining Services**.](../guides/services/providing-services){ .learn-more}
 
 
 
@@ -303,7 +303,7 @@ mvn com.sap.cds:cds-maven-plugin:add -Dfeature=SECURITY
 >
 >  CAP-based services are full-fledged OData services out of the box. Without adding any provider implementation code, they translate OData request into corresponding database requests, and return the results as OData responses.
 
-[Learn more about **Generic Providers**.](../guides/providing-services){.learn-more}
+[Learn more about **Generic Providers**.](../guides/services/providing-services){.learn-more}
 
 
 
@@ -423,7 +423,7 @@ c.s.c.s.impl.persistence.CsvDataLoader   : Filling sap.capire.bookshop.Books fro
 
 </span>
 
-[Learn more about **Using Databases**.](../guides/databases){.learn-more}
+[Learn more about **Using Databases**.](../guides/databases/index){.learn-more}
 
 
 ### Querying via OData
@@ -441,8 +441,8 @@ Now that we have a connected, fully capable SQL database, filled with some initi
 
 > Note: Use [_authenticated_](../java/security#mock-users) to query the `admin` service. You don't need to enter a password. {.impl .java}
 
-[Learn more about **Generic Providers**.](../guides/providing-services){.learn-more}
-[Learn more about **OData's Query Options**.](../advanced/odata){.learn-more}
+[Learn more about **Generic Providers**.](../guides/services/providing-services){.learn-more}
+[Learn more about **OData's Query Options**.](../guides/advanced/odata){.learn-more}
 
 
 
@@ -491,7 +491,7 @@ cds deploy --to hana
 ```
 :::
 
-[Learn more about deploying to SAP HANA.](../guides/databases){.learn-more .impl .node}
+[Learn more about deploying to SAP HANA.](../guides/databases/index){.learn-more .impl .node}
 
 
 
@@ -508,7 +508,7 @@ CAP provides out-of-the-box support for SAP Fiori UIs, for example, with respect
 
 ![Shows the famous bookshop catalog service in an SAP Fiori UI.](assets/fiori-app.png)
 
-[Learn more about **Serving Fiori UIs**.](../advanced/fiori){.learn-more}
+[Learn more about **Serving Fiori UIs**.](../guides/uis/fiori){.learn-more}
 
 
 ### Vue.js UIs {#vue .impl .node}
@@ -781,7 +781,7 @@ Books book = persistenceService.run(byId).single(Books.class);
 
 ### Sample HTTP Requests
 
-Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](/tools/cds-editors#add-useful-plugins).
+Test the implementation by submitting orders until you see the error messages. Create a file called _test.http_ and copy the request into it. Send requests from your IDE supporting `*.http` files with, for example, a [REST Client](../tools/cds-editors#add-useful-plugins).
 
 <span class="impl node">
 
@@ -828,10 +828,10 @@ Authorization: Basic authenticated:
 
 With this getting started guide we introduced many of the basics of CAP, such as:
 
-- [Domain Modeling](../guides/domain-modeling)
-- [Providing Services](../guides/providing-services)
-- [Consuming Services](../guides/using-services)
-- [Using Databases](../guides/databases)
-- [Serving UIs](../advanced/fiori)
+- [Domain Modeling](../guides/domain/modeling)
+- [Providing Services](../guides/services/providing-services)
+- [Consuming Services](../guides/services/using-services)
+- [Using Databases](../guides/databases/index)
+- [Serving UIs](../guides/uis/fiori)
 
 Visit the [***Cookbook***](../guides/) for deep dive guides on these topics and more. Also see the reference documentations for [***CDS***](../cds/), as well as [***Node.js***](../node.js/) and [***Java***](../java/) Service SDKs and runtimes.

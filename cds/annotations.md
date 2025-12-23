@@ -36,11 +36,11 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 | Annotation          | Description                                                          |
 |---------------------|----------------------------------------------------------------------|
-| `@readonly `        | see [Input Validation](../guides/providing-services#readonly)       |
-| `@mandatory`        | see [Input Validation](../guides/providing-services#mandatory)      |
-| `@assert.target`    | see [Input Validation](../guides/providing-services#assert-target)  |
-| `@assert.format`    | see [Input Validation](../guides/providing-services#assert-format)  |
-| `@assert.range`     | see [Input Validation](../guides/providing-services#assert-range)   |
+| `@readonly `        | see [Input Validation](../guides/services/constraints#readonly)       |
+| `@mandatory`        | see [Input Validation](../guides/services/constraints#mandatory)      |
+| `@assert.target`    | see [Input Validation](../guides/services/constraints#assert-target)  |
+| `@assert.format`    | see [Input Validation](../guides/services/constraints#assert-format)  |
+| `@assert.range`     | see [Input Validation](../guides/services/constraints#assert-range)   |
 
 
 
@@ -51,49 +51,48 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 |----------------------|------------------------------------------------------------------------------------|
 | `@path`              | see [Services](./cdl#service-definitions)                                          |
 | `@impl`              | see [Reuse & Compose](../guides/extensibility/composition#reuse-code)              |
-| `@odata.etag`        | see [Providing Services](../guides/providing-services#etag)                       |
-| `@cds.autoexpose`    | see [Providing Services](../guides/providing-services#auto-exposed-entities)      |
-| `@cds.api.ignore`    | see [OData](../advanced/odata#omitting-elements-from-apis)                         |
-| `@cds.query.limit`   | see [Providing Services](../guides/providing-services#annotation-cds-query-limit) |
-| `@cds.localized`     | see [Localized Data](../guides/localized-data#read-operations)                     |
-| `@cds.valid.from/to` | see [Temporal Data](../guides/temporal-data#using-annotations-cds-valid-from-to)   |
-| `@cds.search`        | see [Search Capabilities](../guides/providing-services#searching-data)            |
+| `@odata.etag`        | see [Providing Services](../guides/services/providing-services#etag)                       |
+| `@cds.autoexpose`    | see [Providing Services](../guides/services/providing-services#auto-exposed-entities)      |
+| `@cds.api.ignore`    | see [OData](../guides/advanced/odata#omitting-elements-from-apis)                         |
+| `@cds.query.limit`   | see [Providing Services](../guides/services/providing-services#annotation-cds-query-limit) |
+| `@cds.localized`     | see [Localized Data](../guides/uis/localized-data#read-operations)                     |
+| `@cds.valid.from/to` | see [Temporal Data](../guides/domain/temporal-data#using-annotations-cds-valid-from-to)   |
+| `@cds.search`        | see [Search Capabilities](../guides/services/providing-services#searching-data)            |
 
 ## Persistence
 
 | Annotation                | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
-| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases#cds-persistence-exists) |
-| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases#cds-persistence-table)  |
-| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases#cds-persistence-skip)   |
+| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases/index#cds-persistence-exists) |
+| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases/index#cds-persistence-table)  |
+| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases/index#cds-persistence-skip)   |
 | `@cds.persistence.mock`   | `false` excludes this entity from automatic mocking                    |
-| `@cds.on.insert`          | see [Providing Services](../guides/providing-services)                 |
-| `@cds.on.update`          | see [Providing Services](../guides/providing-services)                 |
-| `@sql.prepend`            | see [Generating DDL Files](../guides/databases#sql-prepend-append)     |
-| `@sql.append`             | see [Generating DDL Files](../guides/databases#sql-prepend-append)     |
+| `@cds.on.insert`          | see [Providing Services](../guides/services/providing-services)                 |
+| `@cds.on.update`          | see [Providing Services](../guides/services/providing-services)                 |
+| `@sql.prepend`            | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
+| `@sql.append`             | see [Generating DDL Files](../guides/databases/index#sql-prepend-append)     |
 
 ## OData
 
-[Learn more about **OData Annotations in CDS**.](../advanced/odata#annotations){.learn-more}
+[Learn more about **OData Annotations in CDS**.](../guides/advanced/odata#annotations){.learn-more}
 
 Shortcuts:
 
 | Annotation          | Description                                          |
 |---------------------|------------------------------------------------------|
-| `@ValueList.entity` | see [Domain Modeling](../guides/domain-modeling)     |
-| `@odata.Type`       | see [OData](../advanced/odata#override-type-mapping) |
-| `@odata.MaxLength`  | see [OData](../advanced/odata#override-type-mapping) |
-| `@odata.Precision`  | see [OData](../advanced/odata#override-type-mapping) |
-| `@odata.Scale`      | see [OData](../advanced/odata#override-type-mapping) |
-| `@odata.singleton`  | see [OData](../advanced/odata#singletons)            |
-
+| `@ValueList.entity` | see [Domain Modeling](../guides/domain/modeling)     |
+| `@odata.Type`       | see [OData](../guides/advanced/odata#override-type-mapping) |
+| `@odata.MaxLength`  | see [OData](../guides/advanced/odata#override-type-mapping) |
+| `@odata.Precision`  | see [OData](../guides/advanced/odata#override-type-mapping) |
+| `@odata.Scale`      | see [OData](../guides/advanced/odata#override-type-mapping) |
+| `@odata.singleton`  | see [OData](../guides/advanced/odata#singletons)            |
 Intrinsically supported OData Annotations:
 
 | Annotation             | Description                                                      |
 |------------------------|------------------------------------------------------------------|
-| `@Core.Computed`       | see [Providing Services](../guides/providing-services#readonly) |
-| `@Core.Immutable`      | see [Providing Services](../guides/providing-services#readonly) |
-| `@Core.MediaType`      | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Core.IsMediaType`    | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Core.IsUrl`          | see [Media Data](../guides/providing-services#serving-media-data)                          |
-| `@Capabilities...`     | see [Fiori](../advanced/fiori)                                   |
+| `@Core.Computed`       | see [Providing Services](../guides/services/constraints#readonly) |
+| `@Core.Immutable`      | see [Providing Services](../guides/services/constraints#readonly) |
+| `@Core.MediaType`      | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Core.IsMediaType`    | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Core.IsUrl`          | see [Media Data](../guides/services/providing-services#serving-media-data)                          |
+| `@Capabilities...`     | see [Fiori](../guides/uis/fiori)                                   |

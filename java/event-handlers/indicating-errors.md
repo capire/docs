@@ -106,7 +106,7 @@ You can localize these strings, by putting them into property files and passing 
 When running your application on Spring, the CAP Java SDK integrates with [Spring's support for handling text resource bundles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.internationalization). This handling by default expects translated texts in a `messages.properties` file under `src/main/resources`.
 
 The texts defined in the resource bundles can be formatted based on the syntax defined by `java.text.MessageFormat`.
-When the message or exception text is sent to the client it's localized using the client's locale, as described [in the Localization Cookbook](../../guides/i18n#user-locale).
+When the message or exception text is sent to the client it's localized using the client's locale, as described [in the Localization Cookbook](../../guides/uis/i18n#user-locale).
 
 ::: code-group
 ```properties [messages.properties]
@@ -149,7 +149,7 @@ To know which error codes and messages are available by default, you can have a 
 ## Target
 
 When SAP Fiori interprets messages it can handle an additional `target` property, which, for example, specifies which element of an entity the message refers to. SAP Fiori can use this information to display the message along the corresponding field on the UI.
-SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../advanced/fiori#validating-drafts). You can specify the `target` when throwing a `ServiceException` or when setting a validation error using the [Messages API](#messages).
+SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../guides/uis/fiori#validating-drafts). You can specify the `target` when throwing a `ServiceException` or when setting a validation error using the [Messages API](#messages).
 
 A message target is always relative to an input parameter in the event context.
 For CRUD-based events this is always the `cqn` parameter, which represents and carries the payload of the request.
@@ -161,7 +161,7 @@ By default a message target always refers to the CQN statement of the event. In 
 As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
-When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../advanced/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
+When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../guides/uis/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
 :::
 
 Let's illustrate this with the following example:

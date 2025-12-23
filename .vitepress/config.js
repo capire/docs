@@ -26,6 +26,7 @@ const config = defineConfig({
     '**/LICENSE.md',
     '**/CONTRIBUTING.md',
     '**/CODE_OF_CONDUCT.md',
+    '**/redirects.md',
     '**/menu.md',
     '**/-*.md'
   ],
@@ -41,7 +42,7 @@ const config = defineConfig({
   themeConfig: {
     sidebar: menu.items,
     nav: menu.navbar,
-    logo: '/cap-logo.svg',
+    logo: '/logos/cap.svg',
     outline: [2,3],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/capire/docs' }
@@ -65,7 +66,7 @@ const config = defineConfig({
     ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'" }],
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'cap-logo.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
     ['script', { src: base+'script.js' } ]
   ],
 
@@ -207,13 +208,6 @@ config.buildEnd = async ({ outDir, site }) => {
 
   // disabled by default to avoid online fetches during local build
   if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-    // zip assets aren't copied automatically, and `vite.assetInclude` doesn't work either
-    const hanaAssetDir = 'advanced/assets'
-    const hanaAsset = path.join(hanaAssetDir, 'native-hana-samples.zip')
-    await fs.mkdir(path.join(outDir, hanaAssetDir), {recursive: true})
-    console.debug('✓ copying HANA assets to ', path.join(outDir, hanaAsset)) // eslint-disable-line no-console
-
-    await fs.copyFile(path.join(__dirname, '..', hanaAsset), path.join(outDir, hanaAsset))
     await cdsMavenSite.copySiteAssets(path.join(outDir, 'java/assets/cds-maven-plugin-site'), site)
   }
 }

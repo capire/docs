@@ -88,7 +88,7 @@ In section [CDS-Declared Events](#cds-declared-events), we show how to declare e
 The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
 
 You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/messaging/#using-multiple-channels).
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
@@ -877,6 +877,6 @@ private void ratingChanged(ReviewedContext context) {
 }
 ```
 
-[Learn more about **CloudEvents**.](../guides/messaging/#cloudevents){.learn-more}
+[Learn more about **CloudEvents**.](../guides/events/messaging#cloudevents){.learn-more}
 
 <span id="aftercloudevents" />

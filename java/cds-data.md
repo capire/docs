@@ -47,7 +47,7 @@ The [predefined CDS types](../cds/types) are mapped to Java types and as follows
 
 ### SAP HANA-Specific Data Types
 
-To facilitate using legacy CDS models, the following [SAP HANA-specific data types](../advanced/hana#hana-types) are supported:
+To facilitate using legacy CDS models, the following [SAP HANA-specific data types](../guides/databases/hana-native#hana-types) are supported:
 
 | CDS Type            | Java Type              | Remark                                                              |
 | ------------------- | ---------------------- | ------------------------------------------------------------------- |
@@ -141,7 +141,7 @@ aspect OrderItems {
 In this model, there is a bidirectional many-to-one association between `Books` and `Authors`, which is managed by the `Books.author` association. The `Orders` entity owns the composition `header`, which relates it to the `OrderHeaders` entity, and the composition `items`, which relates the order to the `OrderItems`. The items are modeled using a managed composition of aspects.
 
 ::: tip
-Use [Managed Compositions of Aspects](../guides/domain-modeling#composition-of-aspects) to model unidirectional one-to-many compositions.
+Use [Managed Compositions of Aspects](../guides/domain/modeling#composition-of-aspects) to model unidirectional one-to-many compositions.
 :::
 
 ### Relationships to other entities
@@ -331,7 +331,7 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases-hana#vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector`:
 
 ```cds
 entity Books : cuid { // [!code focus]
@@ -1295,7 +1295,7 @@ It's useful, when you want to track the additions and removals of certain entiti
 
 ## Media Type Processing { #mediatypeprocessing}
 
-The data for [media type entity properties](../guides/providing-services#serving-media-data) (annotated with `@Core.MediaType`) - as with any other CDS property with primitive type - can be retrieved by their CDS name from the [entity data argument](./event-handlers/#pojoarguments). See also [Structured Data](#structured-data) and [Typed Access](#typed-access) for more details. The Java data type for such byte-based properties is `InputStream`, and for character-based properties it is `Reader` (see also [Predefined Types](#predefined-types)).
+The data for [media type entity properties](../guides/services/providing-services#serving-media-data) (annotated with `@Core.MediaType`) - as with any other CDS property with primitive type - can be retrieved by their CDS name from the [entity data argument](./event-handlers/#pojoarguments). See also [Structured Data](#structured-data) and [Typed Access](#typed-access) for more details. The Java data type for such byte-based properties is `InputStream`, and for character-based properties it is `Reader` (see also [Predefined Types](#predefined-types)).
 
 Processing such elements within a custom event handler requires some care though, as such an `InputStream` or `Reader` is *non-resettable*. That means, the data can only be read once. This has some implications you must be aware of, depending on what you want to do.
 

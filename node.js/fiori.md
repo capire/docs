@@ -5,7 +5,7 @@ status: released
 
 # Fiori Support
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 [[toc]]
 
@@ -209,7 +209,7 @@ POST /Books
 ```
 
 ```http
-PATCH /Books(ID=123)
+PUT /Books(ID=123)
 
 {
   "title": "How to be more active"
