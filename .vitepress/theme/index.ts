@@ -16,6 +16,7 @@ import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
 
 import '@shikijs/vitepress-twoslash/style.css'
 import './styles.scss'
+import './alerts.scss'
 
 /**
  * @type {import('vitepress/theme')}

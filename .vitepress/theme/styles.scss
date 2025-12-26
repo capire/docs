@@ -18,10 +18,10 @@
 
 :root {
   // add Avenir Next first
-  --vp-font-family-base: 'Avenir Next', 'Inter var', 'Inter', ui-sans-serif,
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Helvetica, Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  // --vp-font-family-base: 'Avenir Next', 'Inter var', 'Inter', ui-sans-serif,
+  //   system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  //   'Helvetica Neue', Helvetica, Arial, 'Noto Sans', sans-serif,
+  //   'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   --vp-c-brand-1: #db8b0b;
   --vp-c-brand-2: #db8b0b;
@@ -42,19 +42,19 @@
 
   --vp-sidebar-width: 300px;
   --vp-nav-height: 44px;
-
   --vp-c-text-1: #000;
+
   .VPHomeHero {
     h1 span.name { line-height: 1.2em; }
   }
-  h1, h2, h3, h4, h5 { color: rgba(60, 60, 67) }
+  h2, h3, h4, h5 { color: var(--vp-c-text-2) }
   h6 { color: transparent; position: absolute; margin-top: -7.7em; right: 0px; } // we use h6 for alternative anchor targets
-
 
   /* inverts image colors in dark mode */
   &.dark {
-    h1, h2, h3, h4, h5 { color: var(--vp-c-text-1) }
-    --vp-c-text-1: rgba(255, 255, 245, 0.86);
+
+    h1, .subtitle, h2, h3, h4, h5 { color: #bbb; font-family: 'Avenir Next'; }
+    --vp-c-text-1: #ccc;
 
     /* brightness fine-tuned to turn #fff into --vp-c-bg */
     img, svg.adapt-dark,
@@ -74,6 +74,7 @@ main {
 
   // Headings
   .vp-doc {
+
     h1, .h1 { font-size: 48px; margin: 1em 0 1em; font-weight: 400; line-height: 1.2em }
     h2, .h2 { font-size: 24px; margin: 4em 0 2em; padding-top: 12px; }
     h3, .h3 { font-size: 20px; margin: 3em 0 1em; }
@@ -293,79 +294,6 @@ main {
     }
   }
 
-  // Custom Blocks
-  .custom-block {
-    font-size: 95%;
-    border-width: 0 0 0 7px;
-    border-radius: 14px;
-
-    .learn-more {
-      margin-top: 10px;
-      margin-bottom: -5px;
-    }
-
-    &.note {
-      background-color: #f6f6f6;
-      border-color: #bbb;
-      .dark & {
-        border-color: #666;
-        background-color: #222;
-      }
-    }
-    &.tip {
-      background-color: #dfe;
-      border-color: #096;
-      &, & code, & a { color: #041 };
-      .dark & {
-        background-color: #021;
-        &, & code, & a { color: #ced; }
-      }
-    }
-    &.info {
-      .dark & {
-        background-color: #222;
-      }
-    }
-    &.warning {
-      background-color: #fff7f0;
-      border-color: #ea0;
-      &, & code, & a { color: #960; }
-      .dark & {
-        background-color: #210;
-        &, & code, & a { color: #ea0; }
-      }
-    }
-    &.danger, &.caution {
-      background-color: #fee;
-      border-color: #900;
-      &, & code, & a { color: #600; }
-      .dark & {
-        background-color: #300;
-        &, & code, & a { color: #fcc; }
-      }
-    }
-    a {
-      font-weight: inherit !important;
-      text-decoration-style: dotted;
-      text-decoration: underline;
-    }
-  }
-
-  // Details Blocks
-  details.custom-block.details {
-    padding: 11px 14px 1px;
-    .dark & {
-      background-color: #222;
-    }
-    summary {
-      font-weight: 500;
-      font-style: italic;
-      a { color: darkcyan }
-    }
-    &[open] {
-      padding: 11px 14px 11px;
-    }
-  }
 
   img:not(.avatar-img) {
     margin: 30px auto;
@@ -386,7 +314,7 @@ main {
   .avoid::before { content: 'Avoid: '; color: #e00 }
 
   .good, .green { color:#0a0; .dark & { color:#0a0 } };
-  .bad, .red, .important { color:darkred; .dark & { color:#e00 } }
+  .bad, .red { color:darkred; .dark & { color:#e00 } }
   .grey { color:#777 };
 
   .constructor::before { content: 'Constructor: '; color: #999 }
@@ -452,12 +380,6 @@ aside.VPSidebar {
 // "On this page" outlines
 div.aside nav {
 
-  .outline-title {
-    &:hover { color: var(--vp-c-brand-1) }
-    transition: color 0.3s;
-    cursor: pointer;
-  }
-
   .outline-link {
     font-weight: inherit;
   };
@@ -469,6 +391,28 @@ div.aside nav {
       li a {
         line-height: 1.9em !important;
       }
+    }
+  }
+}
+
+footer {
+  div.edit-link {
+    .edit-link-button {
+      font-size: 100%;
+    }
+  }
+  div.last-updated {
+    display: none;
+  }
+  nav.prev-next {
+    padding-top: none;
+    .pager-link {
+      .title {
+        font-weight: 500;
+        font-size: 100%;
+      }
+      border: none;
+      padding: 0;
     }
   }
 }
