@@ -165,7 +165,7 @@ The `byId` method isn't supported for entities with compound keys.
 
 ```java
 Map<String, Object> filter = new HashMap<>();
-filter.put("author.name", "Edgar Allen Poe");
+filter.put("author.name", "Edgar Allan Poe");
 filter.put("stock", 0);
 
 Select.from("bookshop.Books").matching(filter);
@@ -412,7 +412,7 @@ Select.from(AUTHORS)
              a -> a.books()
                    .filter(b -> b.year().eq(1897))
                    .expand(b -> b.title()))
-    .where(a -> name().in("Bram Stroker", "Edgar Allen Poe"));
+    .where(a -> name().in("Bram Stroker", "Edgar Allan Poe"));
 ```
 
 This query expands only books that were written in 1897:
@@ -424,7 +424,7 @@ This query expands only books that were written in 1897:
     "books" : [ { "title" : "Dracula" } ]
   },
   {
-    "name" : "Edgar Allen Poe",
+    "name" : "Edgar Allan Poe",
     "books" : [ ]
   }
 ]
@@ -641,21 +641,21 @@ entity Book {
 
 * Use search terms {#search-term}
 
-The following Select statement shows how to search for an entity containing the single _search term_ "Allen".
+The following Select statement shows how to search for an entity containing the single _search term_ "Allan".
 
 ```java
 // Book record - (ID, title, name) VALUES (1, "The greatest works of James Allen", "Unwin")
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search("Allen");
+        .search("Allan");
 ```
 
 > The element `title` is [searchable](#searchable-elements), even though `title` isn't selected.
 
 * Use search expressions {#search-expression}
 
-It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allen" or "Heights".
+It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allan" or "Heights".
 
 ```java
 // Book records -
@@ -664,7 +664,7 @@ It's also possible to create a more complex _search expression_ using `AND`, `OR
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search(term -> term.has("Allen").or(term.has("Heights")));
+        .search(term -> term.has("Allan").or(term.has("Heights")));
 ```
 
 #### Search in Sub-Elements of Map Data <Beta />
