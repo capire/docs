@@ -22,15 +22,15 @@ The CAP framework features a mix of proven and broadly adopted open-source and S
 
 The major building blocks are as follows:
 
-- [**Core Data Services** (CDS)](../cds/index.md) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
+- [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
 
-- [**Service Runtimes**](../guides/services/providing-services.md) for [Node.js](../node.js) and [Java](../java/index.md) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
+- [**Service Runtimes**](../guides/services/providing-services.md) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
 
-- [**Platform Integrations**](../plugins/index.md) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
+- [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
 
-- [**Command-Line Interface** (CLI)](../tools/index.md) — the Swiss army knife on the tools and development kit front, complemented by integrations and support in [*SAP Build Code*](https://www.sap.com/germany/products/technology-platform/developer-tools.html), *Visual Studio Code*, *IntelliJ*, and *Eclipse*.
+- [**Command-Line Interface** (CLI)](../tools/) — the Swiss army knife on the tools and development kit front, complemented by integrations and support in [*SAP Build Code*](https://www.sap.com/germany/products/technology-platform/developer-tools.html), *Visual Studio Code*, *IntelliJ*, and *Eclipse*.
 
-In addition, there's a fast-growing number of [plugins](../plugins/index.md) contributed by open-source and inner-source [communities](/resources/index#public-resources) that enhance CAP in various ways, and integrate with additional tools and environments; the [*Calesi* plugins](about.md#the-calesi-effect) are among them.
+In addition, there's a fast-growing number of [plugins](../plugins/) contributed by open-source and inner-source [communities](/resources/index#public-resources) that enhance CAP in various ways, and integrate with additional tools and environments; the [*Calesi* plugins](about.md#the-calesi-effect) are among them.
 
 
 

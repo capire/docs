@@ -1575,8 +1575,7 @@ rewritten to `@Common.Text: (descr)`.
 
 ::: info
 
-There may be situations where automatic rewriting doesn't work, resulting in the compiler error
-[`anno-missing-rewrite`](https://cap.cloud.sap/docs/cds/compiler/messages#anno-missing-rewrite).
+There may be situations where automatic rewriting doesn't work, resulting in a compiler error, with message ID `anno-missing-rewrite`.
 In these cases you can overwrite the annotation with the correct expression in the new location.
 
 :::

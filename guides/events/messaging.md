@@ -61,7 +61,7 @@ For quick tests during development, CAP provides a simple file-based messaging s
 In our samples, you find that in [@capire/reviews/package.json](https://github.com/capire/reviews/blob/main/package.json) as well as [@capire/bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json), which you'll run in the next step as separate processes.
 
 
-### 2. Start the `reviews` Service and `bookstore` Separately
+### 2. Start the `reviews` Service and `bookstore` Separately 
 
 First start the `reviews` service separately:
 
@@ -85,7 +85,7 @@ Then, in a separate terminal start the `bookstore` server as before:
 cds watch bookstore
 ```
 
-This time the trace output is different to [when you started all in a single server](#start-single-server). The output confirms that you're using `file-based-messaging`, and that you now *connected* to the separately started `ReviewsService` at port 4005:
+This time the trace output is different to [when you started all in a single server](./core-concepts#start-server). The output confirms that you're using `file-based-messaging`, and that you now *connected* to the separately started `ReviewsService` at port 4005:
 
 ```log
 [cds] - connect to messaging > file-based-messaging { file: '~/.cds-msg-box' }
@@ -98,7 +98,7 @@ This time the trace output is different to [when you started all in a single ser
 [cds] - launched at 5/25/2023, 4:55:46 PM, version: 7.0.0, in: 1.053s
 ```
 
-### 3. Add or Update Reviews {#add-or-update-reviews-2}
+### 3. Add or Update Reviews {#add-or-update-reviews}
 
 Similar to before, open [http://localhost:4005/vue/index.html](http://localhost:4005/vue/index.html) to add or update reviews.
 

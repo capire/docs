@@ -36,7 +36,17 @@ const config = defineConfig({
     toc: {
       level: [2,3]
     },
-  },
+    container: { // Doesn't seem to work yet
+      infoLabel: 'Info',
+      noteLabel: 'Note',
+      tipLabel: 'Tip',
+      warningLabel: 'Warning',
+      dangerLabel: 'Danger!',
+      cautionLabel: 'Caution!',
+      importantLabel: 'Important!',
+      detailsLabel: 'Details'
+    }
+ },
 
   themeConfig: {
     sidebar: menu.items,

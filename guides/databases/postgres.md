@@ -618,7 +618,7 @@ If the changes in the model could lead to data loss, an error is raised.
 
 ## Migration { .node }
 
-Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. Nevertheless, please check the instructions in the [SQLite Migration guide](sqlite#migrationion), with by and large applies also to the new PostgreSQL service.
+Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. Nevertheless, please check the instructions in the [SQLite Migration guide](sqlite#migration), with by and large applies also to the new PostgreSQL service.
 
 ### `cds deploy --model-only`
 

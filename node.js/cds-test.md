@@ -121,7 +121,7 @@ describe('my test suite', ()=>{
     const { data } = await GET ('/browse/Books')
     expect(data.value).to.eql([ // chai style expect
       { ID: 201, title: 'Wuthering Heights', author: 'Emily Brontë' },
-      { ID: 252, title: 'Eleonora', author: 'Edgar Allen Poe' },
+      { ID: 252, title: 'Eleonora', author: 'Edgar Allan Poe' },
       //...
     ])
   })
@@ -634,8 +634,8 @@ Welcome to cds repl v7.1
 [
   { title: 'Wuthering Heights', author: 'Emily Brontë' },
   { title: 'Jane Eyre', author: 'Charlotte Brontë' },
-  { title: 'The Raven', author: 'Edgar Allen Poe' },
-  { title: 'Eleonora', author: 'Edgar Allen Poe' },
+  { title: 'The Raven', author: 'Edgar Allan Poe' },
+  { title: 'Eleonora', author: 'Edgar Allan Poe' },
   { title: 'Catweazle', author: 'Richard Carpenter' }
 ]
 ```

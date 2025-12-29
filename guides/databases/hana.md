@@ -202,7 +202,7 @@ cds deploy --to hana
 Behind the scenes, `cds deploy` does the following:
 
 * Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
-* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the [CSV files](#providing-initial-data) in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
+* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the CSV files in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
 * Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
 * Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
 * Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
@@ -557,7 +557,7 @@ CDS build performs rudimentary checks on generated _.hdmigrationtable_ files:
 - CDS build fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
-Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
+Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](index#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
 
 Schema evolution requires that any changes are applied by corresponding ALTER statements. See [ALTER TABLE statement reference](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alter-table-statement-data-definition?version=2024_1_QRC) for more information. A new migration version is generated whenever an `@sql.append` or `@sql.prepend` annotation is added, changed, or removed. ALTER statements define the individual changes that create the final database schema. This schema has to match the schema defined by the TABLE statement in the _.hdbmigrationtable_ artifact.
 Please note that the compiler doesn't evaluate or process these SQL snippets. Any snippet is taken as is and inserted into the TABLE statement and the corresponding ALTER statement. The deployment fails in case of syntax errors.

@@ -157,7 +157,7 @@ messaging.on('*', async msg => { /*...*/ })
 ```
 
 ::: tip
-In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/@external/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
+In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
 :::
 
 ### Inbox <Beta />
@@ -242,7 +242,7 @@ Example:
 
 <span id="beforeeventmesh" />
 
-#### [SAP Event Mesh](../guides/events/#sap-event-mesh)
+#### [SAP Event Mesh](../guides/events/event-mesh)
 
 If you specify your format to be `cloudevents`, the following default prefixes are set:
 

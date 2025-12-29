@@ -480,7 +480,7 @@ CAP generates side-effect annotations in the EDMX to instruct UI5 to fetch state
   annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
   ```
 
-For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](/@external/guides/security/data-privacy#personal-data-stored-by-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
+For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](../security/data-privacy#personal-data-stored-by-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
 
 ::: warning Requires Schema Update
 This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.

@@ -1450,7 +1450,7 @@ to customize the annotation as follows:
   "value":[
     {"ID": 201,"title": "Wuthering Heights","author": "Emily Brontë"},
     {"ID": 207,"title": "Jane Eyre","author": "Charlotte Brontë"},
-    {"ID": 251,"title": "The Raven","author": "Edgar Allen Poe"}
+    {"ID": 251,"title": "The Raven","author": "Edgar Allan Poe"}
   ]
 }
 ```
