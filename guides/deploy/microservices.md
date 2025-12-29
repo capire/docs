@@ -869,7 +869,7 @@ modules:
 ```
 :::
 
-The _xs-app.json_ file describes how to forward incoming request to the API endpoint / OData services and is located in the _.deploy/app-router_ folder. Each exposed CAP Service endpoint needs to be directed to the corresponding application which is providing this CAP service. Modify the file _.deploy/app-router/xs-app.json_ as follows:
+The _xs-app.json_ file describes how to forward incoming request to the API endpoint / OData services and is located in the _.deploy/app-router_ folder. Each exposed CAP Service endpoint needs to be directed to the corresponding application that provides this CAP service. Modify the _.deploy/app-router/xs-app.json_ file as follows:
 
 ::: code-group
 ```json [Node.js]
