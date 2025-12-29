@@ -401,6 +401,7 @@ modules:
       builder: custom
       commands:
         - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
     provides: # [!code focus]
       - name: bookstore-api # [!code focus]
         properties:
