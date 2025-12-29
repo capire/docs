@@ -226,7 +226,28 @@ for XSUAA users.
 
 <div class="impl node">
 
-TODO
+You can activate user tracing by setting log level <Config>cds.log.levels.auth: "debug"</Config>:
+
+```json
+{
+  "cds": {
+    "log": {
+      "levels": {
+        "auth": "debug"
+      }
+    }
+  }
+}
+```
+
+This will result in trace output like
+
+```sh
+[basic] - 401 > login required
+[basic] - authenticated: { user: 'alice', tenant: ..., features: [ ... ] }
+```
+
+for mock users.
 
 </div>
 
