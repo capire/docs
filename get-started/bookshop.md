@@ -542,7 +542,9 @@ await AdminService .read `Authors {
 
 ###### Pushed down to DB 1
 > [!tip] Pushed down to Database
-> CAP services push down queries to the primary database whenever possible, to leverage its full power and performance for data-intensive operations. They basically just delegate all queries to the database services as shown below.
+> CAP services push down queries to the primary database whenever possible, to leverage its full power and performance for data-intensive operations. They basically just delegate all queries to the database services as shown below.\
+> See also: [_Pushed down to Database_](#pushed-down-to-db-2) in the _Constraints_ section.
+
 
 ![](assets/bookshop/pushdown.drawio.svg)
 
@@ -889,7 +891,7 @@ Thereby we touched upon some best practices of CAP, such as:
 :::
 ::: tip [Served Out-of-the-Box](#served-out-of-the-box)
 :::
-::: tip [Pushdown to Database](#pushed-down-to-database) 
+::: tip [Pushdown to Database](#pushed-down-to-db-1) 
 :::
 
 Learn more about these practices and guiding principles in the [_Core Concepts_](./concepts) guide following next, and the [_Key Features_](./features) guide thereafter. After that, go ahead and explore further on your own in the respective deep dive guides in the [_Develop_ section](../guides/).
