@@ -74,6 +74,10 @@ html {
   font-weight: 600;
   font-size: 48px;
   font-family: var(--vp-font-family-avenir);
+  .VPBadge {
+    -webkit-text-fill-color: initial;
+    font-size: .7em;
+  }
 }
 
 
