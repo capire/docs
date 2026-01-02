@@ -164,6 +164,11 @@ main .vp-doc {
     }
   }
 
+  dl {
+    dt { font-size: 111%; .index-page & { font-size: 123%; } }
+    dd { margin: 11px 0 22px 22px; }
+  }
+  
   sup {
     line-height: 0px; // remove the space between the line and the superscript
     font-size: 80%;
@@ -325,6 +330,11 @@ img, video.bright {
   .group {
     padding-top: 5px !important;
     .VPSidebarItem {
+      .caret { // reposition caret
+        margin-right: initial;
+        width: initial;
+        height: initial;
+      }
       &.level-0 {
         padding-bottom: 15px;
         &.collapsed {
@@ -335,6 +345,10 @@ img, video.bright {
         }
       }
       &.level-1 {
+        .items {
+          padding: 0 0 5px 15px;
+          border: none;
+        }
         padding-left: 15px;
         h2, h3, p {
           padding: 2px 0;

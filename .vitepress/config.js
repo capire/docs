@@ -193,9 +193,12 @@ config.markdown.codeTransformers = [
 // Add custom markdown renderers...
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
+import { dl } from '@mdit/plugin-dl'
+
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
+  md.use(dl)
 }
 
 // Add sitemap
