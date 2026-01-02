@@ -1,18 +1,31 @@
 ---
-synopsis: >
-  Find here common solutions to frequently occurring issues.
 status: released
 outline: 2
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d2ee648522044ea19d3b5126c29692b5.html
 ---
 
-# Troubleshooting
 
-{{ $frontmatter.synopsis }}
+# Getting Help 
+Support Channels & Troubleshooting FAQs {.subtitle}
+
+<div id="support-channels">
+
+| In order to...              | External                                                                                                                                     |
+|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| Ask Questions / Get Answers | [SAP Community](https://community.sap.com/t5/c-khhcw49343/SAP+Cloud+Application+Programming+Model/pd-p/9f13aee1-834c-4105-8e43-ee442775e5ce) |
+| Create issues / bug reports | [SAP Support Portal](https://support.sap.com)                                                                                                |
+| File feature requests       | [SAP Influence Portal](https://influence.sap.com/sap/ino/#/campaign/2280)                                                                    |
+
+</div>
+
+> [!tip] 
+> If you encounter issues, check the Troubleshooting FAQs below.
+> Do that first before posting questions to or creating issues in the other channels.
 
 [[toc]]
 
-## Setup {#setup}
+
+## Setup
 
 
 ### Can't start VS Code from Command Line on macOS {#vscode-macos}
@@ -23,7 +36,7 @@ In order to start VS Code via the `code` CLI, users on macOS must first run a co
 
 ### Check the Node.js version { #node-version}
 
-Make sure you run the latest long-term support (LTS) version of Node.js with an even number like `20`. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
+Make sure you run the latest long-term support (LTS) version of Node.js with an even number like `20`, `22`, `24`, and so on. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
 
 ```sh
 node -v
@@ -61,7 +74,7 @@ Make sure that your `PATH`-environment variable contains this path.
 In addition, set the variable `NODE_PATH` to: <br /> ``C:\Users\<your-username>\AppData\Roaming\npm\node_modules``.
 
 
-### How Do I Consume a New Version of CDS? { #cds-versions}
+### How to consume a new version of CDS? { #cds-versions}
 
 * Design time tools like `cds init`:
 
@@ -84,21 +97,19 @@ In addition, set the variable `NODE_PATH` to: <br /> ``C:\Users\<your-username>\
 
 ### How can I start Node.js apps on different ports?
 
-By default, Node.js apps started with `cds run` or `cds watch` use port 4004, which might be occupied if other app instances are still running. In this case, `cds watch` now asks you if it should pick a different port.
+By default, CAP Node.js servers listen on port 4004, which might be occupied if other CAP servers are running in parallel. In this case, `cds watch` offers to pick a different port.
 
-```log
-$ cds watch
+```shell
+cds watch
+```
+```zsh
 ...
-[cds] - serving CatalogService ...
-
-EADDRINUSE - port 4004 is already in use. Restart with new port? (Y/n) // [!code highlight]
-> y
-restart
+  EADDRINUSE - port 4004 is already in use by another server process.
+  Press Return to restart with an arbitrary port.
 ...
-[cds] - server listening on { url: 'http://localhost:4005' }
 ```
 
-Ports can be explicitly set with the `PORT` environment variable or the `--port` argument.  See `cds help run` for more.
+Ports can be explicitly set with the `PORT` environment variable, the <Config> cds.server.port = 4005 </Config> config option, or the `--port` argument to `cds serve` and `cds watch`; see `cds help watch` for more.
 
 
 ### Why do I lose registered event handlers?
@@ -125,13 +136,18 @@ cds.on('served', async ()=>{
 })
 ```
 
-### My app isn't showing up in Dynatrace
+### Why does my app not show up in Dynatrace?
 
 Make sure that:
 - Your app's start script is `cds-serve` instead of `npx cds run`.
 - You have the dependency `@dynatrace/oneagent-sdk` in your _package.json_.
 
-### Why are requests occasionally rejected with "Acquiring client from pool timed out" or "ResourceRequest timed out"?
+### Why are requests rejected with HANA timeout errors?
+
+... with error messages like these:
+
+- _Acquiring client from pool timed out_
+- _ResourceRequest timed out_
 
 **First of all**, make sure the SAP HANA database is accessible in your application's environment.
 This includes making sure the SAP HANA is either part of or mapped to your Cloud Foundry space or Kyma cluster and the IP addresses are [in an allowed range](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). Connectivity issues are likely the root cause if you experience this error during application startup.
@@ -140,11 +156,11 @@ This includes making sure the SAP HANA is either part of or mapped to your Cloud
 
 If you frequently get this error during normal runtime operation your database client pool settings likely don't match the application's requirements. There are two possible root causes:
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause 1_ | The maximum number of database clients in the pool is reached and additional requests wait too long for the next client.
-| _Root Cause 2_ | The creation of a new connection to the database takes too long.
-| _Solution_ | Adapt `max` or `acquireTimeoutMillis` with more appropriate values, according to the [documentation](../node.js/databases#databaseservice-configuration).
+|                | Explanation                                                                                                                                               |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause 1_ | The maximum number of database clients in the pool is reached and additional requests wait too long for the next client.                                  |
+| _Root Cause 2_ | The creation of a new connection to the database takes too long.                                                                                          |
+| _Solution_     | Adapt `max` or `acquireTimeoutMillis` with more appropriate values, according to the [documentation](../node.js/databases#databaseservice-configuration). |
 
 Always make sure that database transactions are either committed or rolled back. This can work in two ways:
 1. Couple it to your request (this happens automatically): Once the request is succeeded, the database service commits the transaction. If there was an error in one of the handlers, the database service performs a rollback.
@@ -153,7 +169,9 @@ Always make sure that database transactions are either committed or rolled back.
 If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), make sure to adjust the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) which specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
 
 
-### Why are requests rejected with status `502` and do not seem to reach the application?
+### Why are requests rejected with `502`?
+
+... and do not even seem to reach the application?
 
 If you have long running requests, you may experience intermittent `502` errors that are characterized by being logged by the platform's router, but not by your CAP application.
 In most cases, this behavior is caused by the server having just closed the TCP connection without waiting for acknowledgement, so that the platform's load balancer still considers it open and uses it to forward the request.
@@ -172,41 +190,47 @@ module.exports = cds.server
 
 [Watch the video to learn more about **Best Practices for CAP Node.js Apps**.](https://www.youtube.com/watch?v=WTOOse-Flj8&t=87s){.learn-more}
 
-### Why are long running requests rejected with status `504` after 30 seconds even though the application continues processing the request?
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Most probably, this error is caused by the destination timeout of the App Router.
-| _Solution_ | Set your own `timeout` configuration of [@sap/approuter](https://www.npmjs.com/package/@sap/approuter#destinations).
 
-### Why does the server crash with `No service definition found for <srv-name>`?
+### Why are requests rejected with `504`?
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Most probably, the service name in the `requires` section does not match the served service definition.
-| _Solution_ | Set the `.service` property in the respective `requires` entry. See [cds.connect()](../node.js/cds-connect#cds-requires-srv-service) for more details.
+... mostly after 30 seconds, even though the application continues processing the request?
 
-### Why is the destination of a remote service not correctly retrieved by SAP Cloud SDK and returns a status code 404?
+|              | Explanation                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Most probably, this error is caused by the destination timeout of the App Router.                                    |
+| _Solution_   | Set your own `timeout` configuration of [@sap/approuter](https://www.npmjs.com/package/@sap/approuter#destinations). |
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | In case the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritized the service binding. This service of course does have different endpoints than the originally targeted remote service. For more information, please refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name).
-| _Solution_ | Use different names for the service binding and the destination.
+
+### How to fix `no service definition found for <xyz>`?
+
+|              | Explanation                                                                                                                                            |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Most probably, the service name in the `requires` section does not match the served service definition.                                                |
+| _Solution_   | Set the `.service` property in the respective `requires` entry. See [cds.connect()](../node.js/cds-connect#cds-requires-srv-service) for more details. |
+
 
 ### Why does my remote service call not work?
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | The destination, the remote system or the request details are not configured correctly.
-| _Solution_ | To further troubleshoot the root cause, you can enable logging with environment variables `SAP_CLOUD_SDK_LOG_LEVEL=silly` and `DEBUG=remote`.
+|              | Explanation                                                                                                                                   |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | The destination, the remote system or the request details are not configured correctly.                                                       |
+| _Solution_   | To further troubleshoot the root cause, you can enable logging with environment variables `SAP_CLOUD_SDK_LOG_LEVEL=silly` and `DEBUG=remote`. |
 
-## TypeScript
 
-### Type definitions for `@sap/cds` not found or incomplete
+### Why is a destination not correctly retrieved by SAP Cloud SDK?
+
+|              | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | In case the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritized the service binding. This service of course does have different endpoints than the originally targeted remote service. For more information, please refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name). |
+| _Solution_   | Use different names for the service binding and the destination.                                                                                                                                                                                                                                                                                                                                                                          |
+
+
+### Why are type definitions for `@sap/cds` not found or incomplete?
 
 |                | Explanation                                                           |
 |----------------|-----------------------------------------------------------------------|
-| _Root Cause 1_ | The package `@cap-js/cds-typer` is not installed.                     |
+| _Root Cause 1_ | The package `@cap-js/cds-types` is not installed.                     |
 | _Solution 1_   | Install the package as a dev dependency.                              |
 | _Root Cause 2_ | Symlink is missing.                                                   |
 | _Solution 2_   | Try `npm rebuild` or add `@cap-js/cds-types` in your _tsconfig.json_. |
@@ -242,6 +266,23 @@ If the symlink still does not persist, you can explicitly point the type resolut
 
 If you find that the types are still incomplete, open a bug report in [the `@cap-js/cds-types` repository](https://github.com/cap-js/cds-types/issues/new/choose).
 
+
+
+
+### How to fix "`tar: Error is not recoverable: exiting now`"?
+
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) 
+you can try installing the tar library for better compatibility with Windows systems.
+
+Add it to your devDependencies like so:
+
+```sh
+npm add -D tar
+```
+On macOS and Linux, the built-in implementation will continue to be used.
+
+
+
 ## Java
 
 ### How can I make sure that a user passes all authorization checks?
@@ -250,10 +291,10 @@ A new option `privilegedUser()` can be leveraged when [defining](../java/event-h
 
 ### Why do I get a "User should not exist" error during build time?
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | You've [explicitly configured a mock](../java/security#explicitly-defined-mock-users) user with a name that is already used by a [preconfigured mock user](../java/security#preconfigured-mock-users).
-| _Solution_ | Rename the mock user and build your project again.
+|              | Explanation                                                                                                                                                                                            |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | You've [explicitly configured a mock](../java/security#explicitly-defined-mock-users) user with a name that is already used by a [preconfigured mock user](../java/security#preconfigured-mock-users). |
+| _Solution_   | Rename the mock user and build your project again.                                                                                                                                                     |
 
 ### Why do I get an "Error on server start"?
 
@@ -392,10 +433,10 @@ On trial, your SAP HANA Cloud instance will be automatically stopped overnight, 
 
 ### I removed sample data (_.csv_ file) from my project. Still, the data is deployed and overwrites existing data. { #hana-csv}
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | SAP HANA still claims exclusive ownership of the data that was once deployed through `hdbtabledata` artifacts, even though the CSV files are now deleted in your project.
-| _Solution_ | Add an _undeploy.json_ file to the root of your database module (the _db_ folder by default). This file defines the files **and data** to be deleted. See section [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c2b99f19e9264c4d9ae9221b22f6f589/ebb0a1d1d41e4ab0a06ea951717e7d3d.html) for more details.
+|              | Explanation                                                                                                                                                                                                                                                                                                                                              |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | SAP HANA still claims exclusive ownership of the data that was once deployed through `hdbtabledata` artifacts, even though the CSV files are now deleted in your project.                                                                                                                                                                                |
+| _Solution_   | Add an _undeploy.json_ file to the root of your database module (the _db_ folder by default). This file defines the files **and data** to be deleted. See section [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c2b99f19e9264c4d9ae9221b22f6f589/ebb0a1d1d41e4ab0a06ea951717e7d3d.html) for more details. |
 
 
 #### How do I keep existing data?
@@ -461,24 +502,24 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 
 #### Deployment fails — _Cyclic dependencies found_ or _Cycle between files_
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | This is a known issue with older HDI/HANA versions, which are offered on trial landscapes.
-| _Solution_ | Apply the workaround of adding `--treat-unmodified-as-modified` as argument to the `hdi-deploy` command in _db/package.json_. This option redeploys files, even if they haven't changed. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.
+|              | Explanation                                                                                                                                                                                                                                                                             |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | This is a known issue with older HDI/HANA versions, which are offered on trial landscapes.                                                                                                                                                                                              |
+| _Solution_   | Apply the workaround of adding `--treat-unmodified-as-modified` as argument to the `hdi-deploy` command in _db/package.json_. This option redeploys files, even if they haven't changed. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance. |
 
 #### Deployment fails — _Version incompatibility_
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | An error like `Version incompatibility for the ... build plugin: "2.0.x" (installed) is incompatible with "2.0.y" (requested)` indicates that your project demands a higher version of SAP HANA than what is available in your org/space on SAP BTP, Cloud Foundry environment. The error might not occur on other landscapes for the same project.
-| _Solution_ | Lower the version in file `db/src/.hdiconfig` to the one given in the error message. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.
+|              | Explanation                                                                                                                                                                                                                                                                                                                                         |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | An error like `Version incompatibility for the ... build plugin: "2.0.x" (installed) is incompatible with "2.0.y" (requested)` indicates that your project demands a higher version of SAP HANA than what is available in your org/space on SAP BTP, Cloud Foundry environment. The error might not occur on other landscapes for the same project. |
+| _Solution_   | Lower the version in file `db/src/.hdiconfig` to the one given in the error message. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.                                                                                                                                                                 |
 
 #### Deployment fails — _Cannot create certificate store_ {#cannot-create-certificate-store}
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | If you deploy to SAP HANA from a local Windows machine, this error might occur if the SAP CommonCryptoLib isn't installed on this machine. |
-| _Solution_ | To install it, follow these [instructions](https://help.sap.com/docs/SAP_DATA_SERVICES/e54136ab6a4a43e6a370265bf0a2d744/c049e28431ee4e8280cd6f5d1a8937d8.html). If this doesn't solve the problem, also set the environment variables as [described here](https://help.sap.com/docs/SAP_HANA_PLATFORM/e7e79e15f5284474b965872bf0fa3d63/463d3ceeb7404eca8762dfe74e9cff62.html).
+|              | Explanation                                                                                                                                                                                                                                                                                                                                                                    |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | If you deploy to SAP HANA from a local Windows machine, this error might occur if the SAP CommonCryptoLib isn't installed on this machine.                                                                                                                                                                                                                                     |
+| _Solution_   | To install it, follow these [instructions](https://help.sap.com/docs/SAP_DATA_SERVICES/e54136ab6a4a43e6a370265bf0a2d744/c049e28431ee4e8280cd6f5d1a8937d8.html). If this doesn't solve the problem, also set the environment variables as [described here](https://help.sap.com/docs/SAP_HANA_PLATFORM/e7e79e15f5284474b965872bf0fa3d63/463d3ceeb7404eca8762dfe74e9cff62.html). |
 
 
 #### Deployment fails —
@@ -486,50 +527,50 @@ After you have successfully deployed these changes to all affected HDI (tenant) 
 + _Connection failed (RTE:[300015] SSL certificate validation failed_
 + _Cannot create SSL engine: Received invalid SSL Record Header_
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your SAP HANA Cloud instance is stopped. |
-| _Solution_ | [Start your SAP HANA Cloud instance.](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/fe8cbc3a13b4425990880bac3a5d50d9.html)
+|              | Explanation                                                                                                                                        |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Your SAP HANA Cloud instance is stopped.                                                                                                           |
+| _Solution_   | [Start your SAP HANA Cloud instance.](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/fe8cbc3a13b4425990880bac3a5d50d9.html) |
 
 #### Deployment fails — SSL certificate validation failed: error code: 337047686
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | The `@sap/hana-client` can't verify the certificate because of missing system toolchain dependencies. |
-| _Solution_ | Make sure [`ca-certificates`](https://packages.ubuntu.com/focal/ca-certificates) is installed on your Docker container.
+|              | Explanation                                                                                                             |
+|--------------|-------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | The `@sap/hana-client` can't verify the certificate because of missing system toolchain dependencies.                   |
+| _Solution_   | Make sure [`ca-certificates`](https://packages.ubuntu.com/focal/ca-certificates) is installed on your Docker container. |
 
 #### Deployment fails — _Cannot create SSL engine: Received invalid SSL Record Header_
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your SAP HANA Cloud instance is stopped. |
-| _Solution_ | [Start your SAP HANA Cloud instance.](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/fe8cbc3a13b4425990880bac3a5d50d9.html)
+|              | Explanation                                                                                                                                        |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Your SAP HANA Cloud instance is stopped.                                                                                                           |
+| _Solution_   | [Start your SAP HANA Cloud instance.](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/fe8cbc3a13b4425990880bac3a5d50d9.html) |
 
 #### Deployment fails — _Error: HDI make failed_
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your configuration isn't properly set. |
-| _Solution_ | Configure your project as described in [Using Databases](../guides/databases/index).
+|              | Explanation                                                                          |
+|--------------|--------------------------------------------------------------------------------------|
+| _Root Cause_ | Your configuration isn't properly set.                                               |
+| _Solution_   | Configure your project as described in [Using Databases](../guides/databases/index). |
 
 
 #### Deployment fails — _Connection failed (RTE:[89008] Socket closed by peer_ {#connection-failed-89008}
 
 #### Hybrid testing connectivity issue — _ResourceRequest timed out_ {style="margin-top: 0;"}
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your IP isn't part of the filtering you configured when you created an SAP HANA Cloud instance. This error can also happen if you exceed the [maximum number of simultaneous connections to SAP HANA Cloud (1000)](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c1d3f60099654ecfb3fe36ac93c121bb/20a760537519101497e3cfe07b348f3c.html). |
-| _Solution_ | Configure your SAP HANA Cloud instance [to accept your IP](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). If configured correctly, check if the number of database connections are exceeded. Make sure your [pool configuration](../node.js/databases#pool) does not allow more than 1000 connections.
+|              | Explanation                                                                                                                                                                                                                                                                                                                                                                |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Your IP isn't part of the filtering you configured when you created an SAP HANA Cloud instance. This error can also happen if you exceed the [maximum number of simultaneous connections to SAP HANA Cloud (1000)](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c1d3f60099654ecfb3fe36ac93c121bb/20a760537519101497e3cfe07b348f3c.html).                                  |
+| _Solution_   | Configure your SAP HANA Cloud instance [to accept your IP](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). If configured correctly, check if the number of database connections are exceeded. Make sure your [pool configuration](../node.js/databases#pool) does not allow more than 1000 connections. |
 
 <div id="hana-ips" />
 
 #### Deployment fails — _... build plugin for file suffix "hdbmigrationtable" [8210015]_ {#missingPlugin}
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your project configuration is missing some configuration in your _.hdiconfig_ file. |
-| _Solution_ | Use `cds add hana` to add the needed configuration to your project. Or maintain the _hdbmigrationtable_ plugin in your _.hdiconfig_ file manually: `"hdbmigrationtable": { "plugin_name": "com.sap.hana.di.table.migration" }`
+|              | Explanation                                                                                                                                                                                                                    |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Your project configuration is missing some configuration in your _.hdiconfig_ file.                                                                                                                                            |
+| _Solution_   | Use `cds add hana` to add the needed configuration to your project. Or maintain the _hdbmigrationtable_ plugin in your _.hdiconfig_ file manually: `"hdbmigrationtable": { "plugin_name": "com.sap.hana.di.table.migration" }` |
 
 
 #### Deployment fails — _In USING declarations only main artifacts can be accessed, not sub artifacts of \<name\>_
@@ -538,10 +579,10 @@ This error occurs if all of the following applies:
 + You used deploy format `hdbcds`.
 + You didn't use the default naming mode `plain`.
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.
-| _Solution_ | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause).
+|              | Explanation                                                                                                                                                                                                                                                                                                                                                                                      |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.                                                                                                                                                                                                                                                                                                  |
+| _Solution_   | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause). |
 
 ### How do I pass additional HDI deployment options to the multitenancy tenant deployment of the `cds-mtx` library
 
@@ -555,6 +596,8 @@ avoid deployment problems. For example, make sure to not exclude generated SAP H
 The _cds runtime_ sets the session variable `APPLICATIONUSER`. This should always reflect the logged in user.
 
 Do not use a `XS_` prefix.
+
+
 
 ## MTXS
 
@@ -571,6 +614,16 @@ Please check the [configuration for extensibility](../guides/extensibility/custo
 ::: danger
 If data loss is intended, you can disable the check by adding <Config>cds.requires.cds.xt.DeploymentService.upgrade.skipExtensionCheck = true</Config> to the configuration.
 :::
+
+
+### Potential problems on Windows 
+
+Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems. When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
+
+
+
+
+
 
 ## MTA { #mta}
 
@@ -635,7 +688,7 @@ mbt build -t gen --mtar mta.tar -e less.mtaext
 
 
 
-## CAP on Cloud Foundry
+## Cloud Foundry
 
 
 ### How Do I Get Started with SAP Business Technology Platform, Cloud Foundry environment?
@@ -657,10 +710,10 @@ This is the same issue as with the installation error above.
 
 ### Why Can't My _xs-security.json_ File Be Used to Create an XSUAA Service Instance? { #pws-encoding}
 
-|  | Explanation |
-| --- | ---- |
-| _Root Cause_ | Your file isn't UTF-8 encoded. If you executed `cds compile` with Windows PowerShell, the encoding of your _xs-security.json_ file is wrong.
-| _Solution_ | Make sure, you execute `cds compile` in a command prompt that encodes in UTF-8 when piping output into a file.
+|              | Explanation                                                                                                                                  |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | Your file isn't UTF-8 encoded. If you executed `cds compile` with Windows PowerShell, the encoding of your _xs-security.json_ file is wrong. |
+| _Solution_   | Make sure, you execute `cds compile` in a command prompt that encodes in UTF-8 when piping output into a file.                               |
 
 [You can find related information on **Stack Overflow**.](https://stackoverflow.com/questions/40098771/changing-powershells-default-output-encoding-to-utf-8){.learn-more}
 
@@ -778,7 +831,7 @@ Only if absolutely required and you understand the security implications to your
 
 Learn more about the generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
-## CAP on Kyma
+## Kyma / K8s
 
 ### Pack Command Fails with Error `package.json and package-lock.json aren't in sync`
 
@@ -790,22 +843,5 @@ To fix this error, run `npm i --package-lock-only` to update your `package-lock.
 For SAP HANA deployment errors see [The HANA section](#how-do-i-resolve-deployment-errors).
 :::
 
-
-## CAP on Windows
-
-Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems.
-When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
-
-### tar: Error is not recoverable: exiting now
-
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) you can try installing the `tar` library for better compatibility with Windows systems.
-
-Add it to your `devDependencies` like so:
-
-```sh
-npm add -D tar
-```
-
-> On macOS and Linux, the built-in implementation will continue to be used.
 
 <div id="end" />

@@ -13,10 +13,6 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 [[toc]]
 
 <style scoped>
-   main .vp-doc h2 + .subtitle {
-      font-style: italic;
-      margin: -44px 0 40px;
-   }
    main .vp-doc a:has(> img) {
       display: inline-flex;
       align-items: center;

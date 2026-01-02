@@ -329,7 +329,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - [ terminate with ^C ]
    ```
 
-   [If you get an error on server start, read the troubleshooting information.](../../get-started/troubleshooting#why-do-i-get-an-error-on-server-start){.learn-more}
+   [If you get an error on server start, read the troubleshooting information.](../../get-started/get-help#why-do-i-get-an-error-on-server-start){.learn-more}
    :::
 
 

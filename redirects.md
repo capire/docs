@@ -4,11 +4,9 @@
 - [get-started/tools](tools)
 - [get-started/samples](get-started/learn-more)
 - [get-started/using-typescript](node.js/typescript)
-- [get-started/jumpstart](get-started/about#jumpstarting-projects)
-- [get-started/hello-world](get-started/in-a-nutshell)
-- [about](get-started/about)
-- [about/glossary](get-started/about)
-- [get-started/grow-as-you-go](get-started/about#growing-as-you-go)
+- [about](get-started/features)
+- [about/glossary](get-started/features)
+- [get-started/grow-as-you-go](get-started/features#growing-as-you-go)
 
 ## Cookbook Guides
 
@@ -45,7 +43,7 @@
 - [advanced/extensibility](guides/extensibility)
 - [advanced/mtx](guides/extensibility)
 - [advanced/openapi](guides/advanced/publishing-apis/openapi)
-- [advanced/troubleshooting](get-started/troubleshooting)
+- [advanced/troubleshooting](get-started/get-help)
 
 ## CDS
 
@@ -99,4 +97,4 @@
 ## Miscellaneous
 
 - [resources/ask-question-vscode](https://community.sap.com/t5/forums/postpage/choose-node/true/product-id/9f13aee1-834c-4105-8e43-ee442775e5ce/board-id/technology-questions)
-- [resources/troubleshooting](get-started/troubleshooting)
+- [resources/troubleshooting](get-started/get-help)

@@ -477,7 +477,7 @@ cf l -a <api-endpoint>
 ```
 If you don't know the API endpoint, have a look at section [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
 
-2. Go to the project you have created in [Getting started in a Nutshell](../get-started/in-a-nutshell).
+2. Go to the project you have created in [Getting started in a Nutshell](../get-started/bookshop).
 
 3. Configure your app for XSUAA-based authentication if not done yet:
     ```sh

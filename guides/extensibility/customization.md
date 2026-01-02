@@ -211,8 +211,6 @@ annotate OrdersService.Orders with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-[Learn more about project layouts.](../../get-started/#project-structure){.learn-more}
-
 ::: tip Keep it simple
 We recommend putting all extension files into `./app` and removing `./srv` and `./db` from extension projects.
 

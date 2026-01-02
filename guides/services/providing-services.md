@@ -905,11 +905,11 @@ Event handlers all get a uniform _Request_/_Event Message_ context object as the
 
 
 
-## Actions & Functions
+## Custom Actions
 
 In addition to common CRUD operations, you can declare domain-specific custom operations as shown below. These custom operations always need custom implementations in corresponding events handlers.
 
-You can define actions and functions in CDS models like that:
+You can define `actions` and `functions` in CDS models like that:
 ```cds
 service Sue {
   // unbound actions & functions

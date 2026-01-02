@@ -21,7 +21,7 @@ status: released
 
 ## Intro & Overview
 
-After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/in-a-nutshell) or [Cookbook](../) guides, you would finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
+After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/bookshop) or [Cookbook](../) guides, you would finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
 
 ![First prepare for production (once) and then freeze your dependencies (once and on upgrades). Next build and assemble and then deploy.](assets/deploy-setps.drawio.svg){style="margin: 30px auto"}
 
@@ -296,8 +296,8 @@ cds build --production
 
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more}
-[Learn how to reduce the MTA archive size **during development**.](../../get-started/troubleshooting#reduce-mta-size){.learn-more}
+[Got errors? See the troubleshooting guide.](../../get-started/get-help#mta){.learn-more}
+[Learn how to reduce the MTA archive size **during development**.](../../get-started/get-help#reduce-mta-size){.learn-more}
 
 This process can take some minutes and finally logs an output like this:
 
@@ -330,7 +330,7 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 In order to access the admin APIs you need to assign the _admin_ role required by `AdminService`. Create a role collection and [assign the role and your user](https://developers.sap.com/tutorials/btp-app-role-assignment.html) to get access.
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#cflogs-recent){.learn-more}
+[Got errors? See the troubleshooting guide.](../../get-started/get-help#cflogs-recent){.learn-more}
 
 
 ## Staying Up-to-date { #freeze-dependencies }

@@ -166,7 +166,7 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
 
 There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deploy/index.md) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
 
-To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/troubleshooting#get-hana) to learn about your options.
+To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/get-help#get-hana) to learn about your options.
 
 ### Prepare for Production { #configure-hana }
 
@@ -218,7 +218,7 @@ Based on these profile settings, `cds deploy` executes `cds build` and also reso
 [Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
 [Learn more about hybrid testing using service bindings to Cloud services.](../advanced/hybrid-testing#run-with-service-bindings){.learn-more}
 
-If you run into issues, see the [Troubleshooting](../../get-started/troubleshooting#hana) guide.
+If you run into issues, see the [Troubleshooting](../../get-started/get-help#hana) guide.
 
 #### Deploy Parameters
 
@@ -689,7 +689,7 @@ If you need to remove deployed CSV files, also add this entry:
 
 :::
 
-*See this [troubleshooting](../../get-started/troubleshooting#hana-csv) entry for more information.*{.learn-more}
+*See this [troubleshooting](../../get-started/get-help#hana-csv) entry for more information.*{.learn-more}
 
 ### SAP HANA Cloud System Limits
 

@@ -173,7 +173,7 @@ Creates a bookshop application including custom code (Node.js or Java) and a UI 
 cds add sample
 ```
 
-This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/in-a-nutshell).
+This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/bookshop).
 
 ### tiny-sample {.add}
 
@@ -398,7 +398,7 @@ Also, the [multitenancy sidecar](../java/multitenancy) is a Node.js application,
 
 Compiles the specified models to [CSN](../cds/csn) or other formats.
 
-[See simple examples in the getting started page](../get-started/in-a-nutshell#cli).{.learn-more}
+[See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
 [For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
 

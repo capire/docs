@@ -30,7 +30,7 @@ If no service key for your service `<srv>` is specified, a `<srv>-key` is automa
 The service name `db` can be omitted as it represents the default value for the service kind `hana`.
 :::
 
-[Got errors? See our troubleshooting for connection issues with SAP HANA Cloud.](../../get-started/troubleshooting#connection-failed-89008){.learn-more}
+[Got errors? See our troubleshooting for connection issues with SAP HANA Cloud.](../../get-started/get-help#connection-failed-89008){.learn-more}
 
 Output:
 

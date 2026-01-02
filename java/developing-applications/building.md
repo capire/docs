@@ -13,7 +13,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-One of the key [CAP design principles](../../get-started/about#open-and-opinionated) is to be an opinionated but yet open framework.
+One of the key [CAP design principles](../../get-started/features#open-and-opinionated) is to be an opinionated but yet open framework.
 Giving a clear guidance for cutting-edge technologies on the one hand and still keeping the door wide open for custom choice on the other hand, demands a highly flexible CAP Java runtime stack.
 The [modular architecture](#modular_architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack_configuration) based on standard or custom modules.
 
@@ -24,7 +24,7 @@ The [modular architecture](#modular_architecture) reflects this requirement, all
 One of the basic design principle of the CAP Java is to keep orthogonal functionality separated in independent components.
 The obvious advantage of this decoupling is that it makes concrete components exchangeable independently.
 Hence, it reduces the risk of expensive adaptions in custom code, which can be necessary due to new requirements with regards to the platform environment or used version of platform services.
-Hence, the application is [platform **and** service agnostic](../../get-started/best-practices#agnostic-by-design).
+Hence, the application is [platform **and** service agnostic](../../get-started/concepts#agnostic-by-design).
 
 For instance, custom code doesn't need to be written against the chosen type of persistence service, but can use the generic persistence service based on [CQL](../working-with-cqn/../working-with-cql/query-api).
 Likewise, the application isn't aware of the concrete (cloud) platform environment in which it gets embedded.
@@ -78,11 +78,11 @@ Lastly, in case you want to run your application on a 3rd party application fram
 ### Protocol Adapters
 
 
-The CAP runtime is based on an [event](../../get-started/best-practices#events) driven approach.
-Generally, [Service](../../get-started/best-practices#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/services/providing-services#event-handlers).
+The CAP runtime is based on an [event](../../get-started/concepts#events) driven approach.
+Generally, [Service](../../get-started/concepts#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/services/providing-services#event-handlers).
 During execution, services can send events to other service providers and consume the results.
 The native query language in CAP is [CQN](../../cds/cqn), which is accepted by all services that deal with data query and manipulation.
-Inbound requests therefore need to be mapped to corresponding CQN events, which are sent to an accepting Application Service (see concept [details](../../get-started/best-practices#querying)) afterwards.
+Inbound requests therefore need to be mapped to corresponding CQN events, which are sent to an accepting Application Service (see concept [details](../../get-started/concepts#querying)) afterwards.
 Mapping the ingress protocol to CQN essentially summarizes the task of protocol adapters depicted in the diagram.
 Most prominent example is the [OData V4](https://www.odata.org/documentation/) protocol adapter, which is fully supported by the CAP Java.
 Further HTTP-based protocols can be added in future, but often applications require specific protocols, most notably [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) ones.
@@ -96,7 +96,7 @@ Note that different endpoints can be served by different protocol adapters at th
 
 Services have different purposes. For instance, CDS model services provide an interface to work with persisted data of your [domain model](../../guides/domain/modeling).
 Other services are rather technical, for example, hiding the consumption API of external services behind a generic interface.
-As described in CAPs [core concepts](../../get-started/best-practices#services), services share the same generic provider interface and are implemented by event handlers.
+As described in CAPs [core concepts](../../get-started/concepts#services), services share the same generic provider interface and are implemented by event handlers.
 The service provider layer contains all generic services, which are auto-exposed by CAP Java according to the appropriate CDS model.
 In addition, technical services are offered such as the [Persistence Service](../cqn-services/#persistenceservice) or [Auditlog Service](../auditlog#auditlog-service), which can be consumed in custom service handlers.
 
@@ -622,7 +622,7 @@ By default, the build is configured to download a Node.js runtime and the `@sap/
 This step makes the build self-contained, but the build also takes more time. You can omit these steps and speed up the Maven build, using the Maven profile `cdsdk-global`.
 
 Prerequisites:
-* `@sap/cds-dk` is [globally installed](../../get-started/#setup).
+* `@sap/cds-dk` is [globally installed](../../get-started/index#initial-setup).
 * Node.js installation is available in current *PATH* environment.
 
 If these prerequisites are met, you can use the profile `cdsdk-global` by executing:

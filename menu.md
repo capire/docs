@@ -1,13 +1,12 @@
 
 # [Get Started](get-started/)
 
- ## [Introduction — What is CAP?](get-started/about)
- ## [Bookshop by capire](get-started/in-a-nutshell)
- ## [Best Practices](get-started/best-practices)
- ## [Next Steps](get-started/index#next-steps)
+ ## [In a Nutshell...](get-started/)
+ ## [Bookshop Sample](get-started/bookshop)
+ ## [Core Concepts](get-started/concepts)
+ ## [Key Features](get-started/features)
  ## [Learn More](get-started/learn-more)
- ## [Features Matrix](get-started/features)
- ## [Troubleshooting](get-started/troubleshooting)
+ ## [Get Help](get-started/get-help)
 
 # [Develop](guides/)
 
@@ -28,7 +27,7 @@
   ### [Status Flows](guides/services/flows)
   ### [Constraints](guides/services/constraints)
   ### [Custom Logic](guides/services/providing-services#custom-logic)
-  ### [Actions & Functions](guides/services/providing-services#actions-functions)
+  ### [Custom Actions](guides/services/providing-services#custom-actions)
   ### [Serving Media Data](guides/services/providing-services#serving-media-data)
   ### [Best Practices](guides/services/providing-services#best-practices)
 

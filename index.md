@@ -37,20 +37,11 @@ features:
 - title: Rapid Development
   icon: ⭕️
   details:
-    •&nbsp; Jumpstart w/ minimal setup <br/>
-    •&nbsp; Fast inner loops <br/>
-    •&nbsp; Grow as you go... <br/>
-  link: get-started/in-a-nutshell
-  linkText: Get Started in a Nutshell
-
-- title: Proven Best Practices
-  icon: 🏆
-  details:
-    •&nbsp; Enterprise-grade solutions <br/>
-    •&nbsp; Battle tested in SAP products <br/>
-    •&nbsp; Served out of the box <br/>
-  link: get-started/best-practices
-  linkText: Key Concepts & Rationales
+    •&nbsp; Jumpstart & grow as you go... <br/>
+    •&nbsp; Fast, local inner loops <br/>
+    •&nbsp; Minimized boilerplate <br/>
+  link: get-started/
+  linkText: Getting Started
 
 - title: Focus on Domain!
   icon: 🍀
@@ -58,8 +49,17 @@ features:
     •&nbsp; Capture intent → What, not how! <br/>
     •&nbsp; Separation of concerns <br/>
     •&nbsp; Minimized technical debts <br/>
-  link: get-started/about
-  linkText: Read the Primer
+  link: get-started/features
+  linkText: Features Overview
+
+- title: Proven Best Practices
+  icon: 🏆
+  details:
+    •&nbsp; Enterprise-grade solutions <br/>
+    •&nbsp; Battle-tested in real products <br/>
+    •&nbsp; Served out of the box <br/>
+  link: get-started/concepts
+  linkText: Core Concepts
 
 - title: Cloud Native by Design
   icon: 💯
@@ -67,7 +67,7 @@ features:
     •&nbsp; Multitenancy, Scalability, ... <br/>
     •&nbsp; Intrinsic Extensibility <br/>
     •&nbsp; Evolution w/o disruption <br/>
-  link: get-started/about#cloud-native-by-design
+  link: get-started/features#cloud-native-by-design
   linkText: Intrinsic Cloud Qualities
 
 ---
