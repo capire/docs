@@ -1,19 +1,16 @@
 ---
-synopsis: >
-  Declarative constraints allow you to express conditions using CXL expressions that are validated automatically whenever data is written, greatly reducing the need for extensive custom code for input validation.
 status: released
 ---
 
 # Declarative Constraints
 
-Declarative constraints allow you to express conditions using [CDS Expression Language (CXL)](../../cds/cxl.md) that are validated automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
-
-> [!note]
-> Don't confuse declarative constraints as discussed in here with [database constraints](../databases/index#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
-
-
+Declarative constraints allow you to express data validity conditions using [CDS Expression Language (CXL)](../../cds/cxl.md) that are enforced automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation. 
+{.abstract}
 
 [[toc]]
+
+> [!note]
+> Don't confuse constraints as discussed in here with [database constraints](../databases/index#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
 
 
 
@@ -132,7 +129,7 @@ SELECT from TravelService.Travels {
 
 For Fiori UIs as clients the error messages will be automatically be equiped with relevant `target` properties to attach them to the respective fields on the UIs. For example a Fiori UI for the sample above, would display returned errors like that:
 
-![image-20251219115646302](./fiori-errors.png)
+![image-20251219115646302](./assets/fiori-errors.png)
 
 ::: details Behind the scenes ...
 
@@ -389,7 +386,7 @@ Elements annotated with `@readonly`, as well as [_calculated elements_](../../cd
 
 By default [`virtual` elements](../../cds/cdl#virtual-elements) are also _calculated_.
 ::: tip
-The same applies for fields with the [OData Annotations](../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
+The same applies for fields with the [OData Annotations](../protocols/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
 :::
 
 ::: warning Not allowed on keys
@@ -536,7 +533,7 @@ Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it
 @UI.Hidden: (status <> 'visible')
 ```
 
-[Learn more about that in the *OData guide*](../advanced/odata#expression-annotations) {.learn-more}
+[Learn more about that in the *OData guide*](../protocols/odata#expression-annotations) {.learn-more}
 
 
 

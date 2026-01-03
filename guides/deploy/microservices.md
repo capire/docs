@@ -70,7 +70,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
 
    Each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
 
-   [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
+   [Learn more about Automatic Bindings by `cds watch`](../integration/composition#bindings-via-cds-watch){.learn-more}
 
 
 ::: details The project structure
@@ -502,7 +502,7 @@ Enable messaging for the modules that use it:
 
 ### Destinations
 
-Add [destination configuration](https://cap.cloud.sap/docs/guides/services/using-services#using-destinations) for connectivity between the apps:
+Add [destination configuration](https://cap.cloud.sap/docs/guides/services/consuming-services#using-destinations) for connectivity between the apps:
 
 ```shell
 cds add destination

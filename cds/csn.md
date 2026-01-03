@@ -15,7 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 CSN (pronounced as "_Season_") is a notation for compact representations of CDS models — tailored to serve as an optimized format to share and interpret models with minimal footprint and dependencies.
 
-It's similar to [JSON Schema] but goes beyond JSON's abilities, in order to capture full-blown _Entity-Relationship Models_ and [Extensions](#aspects). This makes CSN models a perfect source to generate target models, such as [OData/EDM](../guides/advanced/odata) or [OpenAPI] interfaces, as well as persistence models for SQL or NoSQL databases.
+It's similar to [JSON Schema] but goes beyond JSON's abilities, in order to capture full-blown _Entity-Relationship Models_ and [Extensions](#aspects). This makes CSN models a perfect source to generate target models, such as [OData/EDM](../guides/protocols/odata) or [OpenAPI] interfaces, as well as persistence models for SQL or NoSQL databases.
 
 [[toc]]
 

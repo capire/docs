@@ -1199,7 +1199,7 @@ entity P_orders as projection on Orders {
 
 ## Annotations
 
-This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/advanced/odata#annotations) guide.
+This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/protocols/odata#annotations) guide.
 
 - [Annotation Syntax](#annotation-syntax)
 - [Annotation Targets](#annotation-targets)
@@ -1601,7 +1601,7 @@ the annotations.
 #### OData Annotations
 
 The OData backend of the CAP CDS compiler supports expression-valued annotations.
-See [Expressions in OData Annotations](../guides/advanced/odata#expression-annotations).
+See [Expressions in OData Annotations](../guides/protocols/odata#expression-annotations).
 
 
 

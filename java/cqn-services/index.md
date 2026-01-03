@@ -63,7 +63,7 @@ Additionally, the default ON event handler of Application Services delegates CQN
 
 ## Remote Services
 
-[Remote Services](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/RemoteService.html) are CQN-based clients for remote APIs, for example OData. They're backed by a [CDS Service](../../cds/cdl#services) definition, that reflects the structure of the remote API. The CDS service definition is usually [imported](../../guides/services/using-services#external-service-api), for example from an EDMX specification.
+[Remote Services](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/RemoteService.html) are CQN-based clients for remote APIs, for example OData. They're backed by a [CDS Service](../../cds/cdl#services) definition, that reflects the structure of the remote API. The CDS service definition is usually [imported](../../guides/services/consuming-services#external-service-api), for example from an EDMX specification.
 
 They can be used when integrating APIs provided by the application with APIs provided by other applications or micro-services. This integration can happen synchronously by delegating CQN statements from Application Services to Remote Services or asynchronously by using Remote Services to replicate data into the applications own persistence.
 

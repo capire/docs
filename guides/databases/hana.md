@@ -178,7 +178,7 @@ cds add hana --for hybrid
 
 This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
-::: tip The profile `hybrid` relates to [the hybrid testing](../advanced/hybrid-testing) scenario
+::: tip The profile `hybrid` relates to [the hybrid testing](../../tools/cds-bind) scenario
 If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deploy/index.md) guide.
 :::
 
@@ -216,7 +216,7 @@ cds deploy --to hana --profile hybrid
 Based on these profile settings, `cds deploy` executes `cds build` and also resolves additionally binding information. If a corresponding binding exists, its service name and service key are used. The development profile is used by default.
 
 [Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
-[Learn more about hybrid testing using service bindings to Cloud services.](../advanced/hybrid-testing#run-with-service-bindings){.learn-more}
+[Learn more about hybrid testing using service bindings to Cloud services.](../../tools/cds-bind#run-with-service-bindings){.learn-more}
 
 If you run into issues, see the [Troubleshooting](../../get-started/get-help#hana) guide.
 

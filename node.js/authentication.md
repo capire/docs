@@ -611,7 +611,7 @@ The resulting JWT token is sent to the application where it's used to enforce au
     ```
     :::
 
-    [Learn more about `cds bind --exec`.](../guides/advanced/hybrid-testing#cds-bind-exec){.learn-more}
+    [Learn more about `cds bind --exec`.](../tools/cds-bind#cds-bind-exec){.learn-more}
 
     This starts an [App Router](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/0117b71251314272bfe904a2600e89c0.html) instance on [http://localhost:5000](http://localhost:5000) with the credentials for the XSUAA service that you have bound using `cds bind`.
 

@@ -275,7 +275,7 @@ According to our [grow as you go principle](../get-started/features#grow-as-you-
 
 You must provide all necessary credentials by [binding](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/296cd5945fd84d7d91061b2b2bcacb93.html) the message broker to your app.
 
-For local environments, use [`cds bind`](../guides/advanced/hybrid-testing#cds-bind-usage) in a [hybrid setup](../guides/events/event-mesh#run-tests-in-hybrid-setup).
+For local environments, use [`cds bind`](../tools/cds-bind#cds-bind-usage) in a [hybrid setup](../guides/events/event-mesh#run-tests-in-hybrid-setup).
 
 ::: tip
 For local testing use [`kind`: `enterprise-messaging-shared`](#event-mesh-shared) to avoid the complexity of HTTP-based messaging.

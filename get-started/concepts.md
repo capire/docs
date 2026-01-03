@@ -277,8 +277,8 @@ service CatalogService {
 
 :::
 
-::: tip **Single-purposed Services**
-The previous example follows the recommended best practice of a *[single-purposed service](../guides/services/providing-services#single-purposed-services)* which is specialized on *one* specific use case and group of users. Learn more about that in the [Providing Services](../guides/services/providing-services) guide.
+::: tip **Use Case-Oriented Services**
+The previous example follows the recommended best practice of a *[use case-oriented service](../guides/services/providing-services#use-case-oriented-services)* which is specialized on *one* specific use case and group of users. Learn more about that in the [Providing Services](../guides/services/providing-services) guide.
 :::
 
 ### Service Providers

@@ -239,7 +239,7 @@ To [write data](#updatable-views) or [delete](#delete-via-view) through views, o
 For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL views can be avoided by using [runtime views](#runtimeviews). This allows you to change the view definition without redeploying the database schema and is the prerequisite for lightweight extensibility via predefined extension fields.
 
 ::: tip Prefer simple views
-Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Single-Purposed Services](../../guides/services/providing-services#single-purposed-services)), rather than one complex view for many scenarios.
+Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Use Case-Oriented Services](../../guides/services/providing-services#use-case-oriented-services)), rather than one complex view for many scenarios.
 :::
 ::: warning Avoid selecting paths over to-many Associations
 Do not use [path expressions](../../cds/cql#path-expressions-in-all-other-clauses) over [*to-many associations*](../../cds/cdl#to-many-associations) in the select clause of CDS views. This blocks write operations and may cause performance issues due to record duplication on read.

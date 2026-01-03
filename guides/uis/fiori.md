@@ -1,15 +1,11 @@
 ---
-synopsis: >
-  CAP provides out-of-the-box support for SAP Fiori elements front ends.
 status: released
 impl-variants: true
 ---
 
 # Serving SAP Fiori UIs
 
-{{ $frontmatter.synopsis }}
-
-This guide explains how to add one or more SAP Fiori elements apps to a CAP project, how to add SAP Fiori elements annotations to respective service definitions, and more. In the following sections, when mentioning Fiori, we always mean SAP Fiori elements.
+CAP provides out-of-the-box support for SAP Fiori elements. This guide explains how to add one or more SAP Fiori elements apps to a CAP project, how to add SAP Fiori elements annotations to respective service definitions, and more. In the following sections, when mentioning Fiori, we always mean SAP Fiori elements.
 
 [Learn more about developing SAP Fiori elements and OData V4 (since 1.84.)](https://sapui5.hana.ondemand.com/#/topic/62d3f7c2a9424864921184fd6c7002eb){.learn-more}
 
@@ -110,7 +106,7 @@ annotate CatalogService.Books with @(
 
 
 [Find this source and many more in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more target="_blank"}
-[Learn more about **OData Annotations in CDS**.](../advanced/odata#annotations){.learn-more}
+[Learn more about **OData Annotations in CDS**.](../protocols/odata#annotations){.learn-more}
 
 
 ### Where to Put Them?
@@ -145,7 +141,7 @@ Maintaining OData annotations in _.cds_ files is accelerated by the SAP Fiori to
 -   Quick view of vocabulary information
 -   Internationalization support
 
-These assisting features are provided for [OData annotations in CDS syntax](../advanced/odata#annotations) and can't be used yet for the [core data services common annotations](../../cds/annotations).
+These assisting features are provided for [OData annotations in CDS syntax](../protocols/odata#annotations) and can't be used yet for the [core data services common annotations](../../cds/annotations).
 
 The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) module doesn't require any manual installation. The latest version is fetched by default from [npmjs.com](https://npmjs.com) as indicated in the user preference setting **CDS > Contributions: Registry**.
 
@@ -334,7 +330,7 @@ When you open an annotation file, all language-dependent string values are check
 
 ### Prefer `@title` and `@description`
 
-Influenced by the [JSON Schema](https://json-schema.org), CDS supports the [common annotations](../../cds/annotations#common-annotations) `@title` and `@description`, which are mapped to corresponding [OData annotations](../advanced/odata#annotations) as follows:
+Influenced by the [JSON Schema](https://json-schema.org), CDS supports the [common annotations](../../cds/annotations#common-annotations) `@title` and `@description`, which are mapped to corresponding [OData annotations](../protocols/odata#annotations) as follows:
 
 | CDS            | JSON Schema   | OData               |
 |----------------|---------------|---------------------|
@@ -353,7 +349,7 @@ annotate my.Books with { //...
 
 ### Prefer `@readonly`, `@mandatory`, ...
 
-CDS supports `@readonly` as a common annotation, which translates to respective [OData annotations](../advanced/odata#annotations) from the `@Capabilities` vocabulary. We recommend using the former for reasons of conciseness and comprehensibility as shown in this example:
+CDS supports `@readonly` as a common annotation, which translates to respective [OData annotations](../protocols/odata#annotations) from the `@Capabilities` vocabulary. We recommend using the former for reasons of conciseness and comprehensibility as shown in this example:
 
 ```cds
 @readonly entity Foo {   // entity-level
@@ -522,7 +518,7 @@ SELECT.from(Books.drafts) //returns all drafts of the Books entity
 
 In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are use cases where you only want to hide certain parts of the UI for specific users. This is possible by using the respective UI annotations like `@UI.Hidden` or `@UI.CreateHidden` in conjunction with `$edmJson` pointing to a singleton.
 
-First, you define the [singleton](../advanced/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/index.md#cds-persistence-skip) so that no database artefact is created:
+First, you define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/index.md#cds-persistence-skip) so that no database artefact is created:
 
 ```cds
 @odata.singleton @cds.persistence.skip
@@ -543,7 +539,7 @@ srv.on('READ', 'Configuration', async req => {
 });
 ```
 
-Finally, refer to the singleton in the annotation by using a [dynamic expression](../advanced/odata#dynamic-expressions):
+Finally, refer to the singleton in the annotation by using a [dynamic expression](../protocols/odata#dynamic-expressions):
 
 ```cds
 annotate service.Books with @(
@@ -565,7 +561,7 @@ annotate service.Books with @(
 
 ## Value Helps
 
-In addition to supporting the standard `@Common.ValueList` annotations as defined in the [OData Vocabularies](../advanced/odata#annotations), CAP provides advanced, convenient support for Value Help as understood and supported by SAP Fiori.
+In addition to supporting the standard `@Common.ValueList` annotations as defined in the [OData Vocabularies](../protocols/odata#annotations), CAP provides advanced, convenient support for Value Help as understood and supported by SAP Fiori.
 
 
 ### Convenience Option `@cds.odata.valuelist`
@@ -715,7 +711,7 @@ annotate TravelService.Travel with actions {
    },
    Common.SideEffects.TargetProperties : ['in/TravelStatus_code'], ) };
 ```
-This annotation uses [dynamic expressions](../advanced/odata#dynamic-expressions) to control the buttons for each action. And the status of a travel on the UI is updated, triggered by the `@Common.SideEffects.TargetProperties` annotation.
+This annotation uses [dynamic expressions](../protocols/odata#dynamic-expressions) to control the buttons for each action. And the status of a travel on the UI is updated, triggered by the `@Common.SideEffects.TargetProperties` annotation.
 
 :::info More complex calculation
 If you have the need for a more complex calculation, then the interesting parts in (an older version of) SFLIGHT are [virtual fields in _field-control.cds_](https://github.com/SAP-samples/cap-sflight/blob/dfc7827da843ace0ea126f76fc78a6591b325c67/app/travel_processor/field-control.cds#L10-L16) (also lines 37-44) and [custom code in _travel-service.js_](https://github.com/SAP-samples/cap-sflight/blob/dfc7827da843ace0ea126f76fc78a6591b325c67/srv/travel-service.js#L13-L22).

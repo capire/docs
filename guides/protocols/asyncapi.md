@@ -34,7 +34,7 @@ If you want to generate one AsyncAPI document for all the services, you can use 
 cds compile srv --service all -o docs --to asyncapi --asyncapi:merged
 ```
 
-[Learn how to programmatically convert the CSN file into an AsyncAPI Document](../../../node.js/cds-compile#to-asyncapi){.learn-more}
+[Learn how to programmatically convert the CSN file into an AsyncAPI Document](../../node.js/cds-compile#to-asyncapi){.learn-more}
 
 ## Presets { #presets}
 

@@ -50,10 +50,10 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 | Annotation           | Description                                                                        |
 |----------------------|------------------------------------------------------------------------------------|
 | `@path`              | see [Services](./cdl#service-definitions)                                          |
-| `@impl`              | see [Reuse & Compose](../guides/extensibility/composition#reuse-code)              |
+| `@impl`              | see [Reuse & Compose](../guides/integration/composition#reuse-code)              |
 | `@odata.etag`        | see [Providing Services](../guides/services/providing-services#etag)                       |
 | `@cds.autoexpose`    | see [Providing Services](../guides/services/providing-services#auto-exposed-entities)      |
-| `@cds.api.ignore`    | see [OData](../guides/advanced/odata#omitting-elements-from-apis)                         |
+| `@cds.api.ignore`    | see [OData](../guides/protocols/odata#omitting-elements-from-apis)                         |
 | `@cds.query.limit`   | see [Providing Services](../guides/services/providing-services#annotation-cds-query-limit) |
 | `@cds.localized`     | see [Localized Data](../guides/uis/localized-data#read-operations)                     |
 | `@cds.valid.from/to` | see [Temporal Data](../guides/domain/temporal-data#using-annotations-cds-valid-from-to)   |
@@ -74,18 +74,18 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 ## OData
 
-[Learn more about **OData Annotations in CDS**.](../guides/advanced/odata#annotations){.learn-more}
+[Learn more about **OData Annotations in CDS**.](../guides/protocols/odata#annotations){.learn-more}
 
 Shortcuts:
 
 | Annotation          | Description                                          |
 |---------------------|------------------------------------------------------|
 | `@ValueList.entity` | see [Domain Modeling](../guides/domain/modeling)     |
-| `@odata.Type`       | see [OData](../guides/advanced/odata#override-type-mapping) |
-| `@odata.MaxLength`  | see [OData](../guides/advanced/odata#override-type-mapping) |
-| `@odata.Precision`  | see [OData](../guides/advanced/odata#override-type-mapping) |
-| `@odata.Scale`      | see [OData](../guides/advanced/odata#override-type-mapping) |
-| `@odata.singleton`  | see [OData](../guides/advanced/odata#singletons)            |
+| `@odata.Type`       | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.MaxLength`  | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.Precision`  | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.Scale`      | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.singleton`  | see [OData](../guides/protocols/odata#singletons)            |
 Intrinsically supported OData Annotations:
 
 | Annotation             | Description                                                      |

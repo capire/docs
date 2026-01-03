@@ -67,7 +67,7 @@ You have all your answers and know your scenario, go on reading about [external 
 
 #### Sample Scenario from End-to-End Tutorial
 
-![A graphic showing the flow for one possible scenario. A user can either view risks or view the suppliers. The suppliers master data is already available from a system and is consumed in an application that enables the user to add the risks. From the maintained risks the user can get information about the supplier connected to a risk. From the supplier view, it's also possible to get details about a risk that is associated with a supplier. The user can block/unblock suppliers from the risk view.](./risk-mgmt.drawio.svg){style="width: 500px"}
+![A graphic showing the flow for one possible scenario. A user can either view risks or view the suppliers. The suppliers master data is already available from a system and is consumed in an application that enables the user to add the risks. From the maintained risks the user can get information about the supplier connected to a risk. From the supplier view, it's also possible to get details about a risk that is associated with a supplier. The user can block/unblock suppliers from the risk view.](./assets/risk-mgmt.drawio.svg){style="width: 500px"}
 
 > [!info] _User Story_
 > A company wants to ensure that goods are only sourced from suppliers with acceptable risks. There shall be a software system, that allows a clerk to maintain risks for suppliers and their mitigations. The system shall block the supplier used if risks can't be mitigated.
@@ -1175,7 +1175,7 @@ cds:
 
 ### Connect to Remote Services Locally
 
-If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../advanced/hybrid-testing) with the following procedure:
+If you use SAP BTP destinations, you can access them locally using [CAP's hybrid testing capabilities](../../tools/cds-bind) with the following procedure:
 
 #### Bind to Remote Destinations
 
@@ -1202,7 +1202,7 @@ Your local application needs access to an XSUAA and Destination service instance
     cds bind -2 cpapp-xsuaa,cpapp-destination
     ```
 
-    [Learn more about `cds bind`.](../advanced/hybrid-testing#services-on-cloud-foundry){.learn-more}
+    [Learn more about `cds bind`.](../../tools/cds-bind#services-on-cloud-foundry){.learn-more}
 
 #### Run a Node.js Application with a Destination {.node}
 
@@ -1265,7 +1265,7 @@ cds bind --exec -- mvn spring-boot:run \
   -Dspring-boot.run.profiles=default,hybrid
 ```
 
-[Learn more about `cds bind --exec`.](../advanced/hybrid-testing#run-arbitrary-commands-with-service-bindings){.learn-more}
+[Learn more about `cds bind --exec`.](../../tools/cds-bind#run-arbitrary-commands-with-service-bindings){.learn-more}
 
 ::: tip
 If you are developing in the Business Application Studio and want to connect to an on-premise system, you will need to do so via Business Application Studio's built-in proxy, for which you need to add configuration to your destination environment variable. See [Reach On-Premise Service from the SAP Business Application Studio](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/destination-service#reach-on-premise-service-from-the-sap-business-application-studio) for more details.
@@ -1387,7 +1387,7 @@ cf create-service-push  # or `cf cspush` in short from 1.3.2 onwards
 
 #### Add Required Services to MTA Deployments
 
-The MTA-based deployment is described in [the deployment guide](../deploy/index.md). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](../deploy/to-cf#add-mta-yaml) file.
+The MTA-based deployment is described in [the deployment guide](../deploy/index). You can follow this guide and make some additional adjustments to the [generated _mta.yml_](../deploy/to-cf#add-mta-yaml) file.
 
 
 ```sh

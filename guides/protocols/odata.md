@@ -1,8 +1,4 @@
 ---
-shorty: OData
-synopsis: >
-  Find details about CAP's support for the OData protocol.
-permalink: advanced/odata
 status: released
 ---
 
@@ -43,7 +39,7 @@ OData is an OASIS standard that enhances plain REST with standardized system que
 | [Lambda Operators](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361024)   | Boolean expressions on a collection       | <X/>      | <X/> <sup>(3)</sup> |
 | [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
-- <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../../guides/services/providing-services#searching-data).
+- <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../services/providing-services#searching-data).
 - <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
 - <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
 - <sup>(4)</sup> Supported for key values and for parameters of functions only.
@@ -106,14 +102,14 @@ Content-Type: application/json
 
 The system executes PATCH requests with a delta payload using batch delete and [upsert](../../java/working-with-cql/query-api#bulk-upsert) statements. These requests are more efficient than OData [batch requests](https://docs.oasis-open.org/odata/odata/v4.01/csprd02/part1-protocol/odata-v4.01-csprd02-part1-protocol.html#sec_BatchRequests).
 
-Use PATCH on entity collections to upload mass data using a dedicated service secured with [role-based authorization](../../guides/security/authorization#requires). Enable delta updates explicitly by annotating the entity with
+Use PATCH on entity collections to upload mass data using a dedicated service secured with [role-based authorization](../security/authorization#requires). Enable delta updates explicitly by annotating the entity with
 
 ```cds
 @Capabilities.UpdateRestrictions.DeltaUpdateSupported
 ```
 
 Limitations:
- * Conflict detection via [ETags](../../guides/services/providing-services#etag) is not supported.
+ * Conflict detection via [ETags](../services/providing-services#etag) is not supported.
  * The system bypasses [draft flow](../../java/fiori-drafts#bypassing-draft-flow). `IsActiveEntity` must be `true`.
  * The system ignores [draft locks](../../java/fiori-drafts#draft-lock). Active entities are updated or deleted without canceling drafts.
  * [Added and deleted links](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_IteminaDeltaPayloadResponse) are not supported.
@@ -168,7 +164,7 @@ Use the annotation `@odata.Type` first to override standard type mappings, then 
 
 `@odata.Type` is effective on scalar CDS types only and the value must be a valid OData (EDM) primitive type for the specified protocol version. Unknown types and non-matching facets are silently ignored. No further value constraint checks are applied.
 
-These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../../guides/services/using-services#external-service-api).
+These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../services/consuming-services#external-service-api).
 
 ```cds
 entity Foo {
@@ -1211,7 +1207,7 @@ entity Sales {
 }
 ```
 
-All properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` are exposed as a [custom aggregate](../advanced/odata#custom-aggregates) with the property's name that returns:
+All properties annotated with `@Semantics.currencyCode` or `@Semantics.unitOfMeasure` are exposed as a [custom aggregate](./odata#custom-aggregates) with the property's name that returns:
 
 * The property's value if it's unique within a group of dimensions
 * `null` otherwise

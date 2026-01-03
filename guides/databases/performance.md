@@ -1,15 +1,10 @@
 ---
-index: 84
-synopsis: >
-  Here are some considerations and advice for CDS modeling.
-permalink: advanced/performance-modeling
 status: released
-# uacp: Used as link target from Help Portal at
 ---
 
-# Performance Modeling
+# Performance Considerations for CDS Modeling
 
-{{ $frontmatter.synopsis }}
+  Here are some considerations and advice for CDS modeling.
 
 ## Avoid UNION
 

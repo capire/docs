@@ -1,17 +1,11 @@
 ---
-index: 52
-# layout: cookbook
-synopsis: >
-  This guide extends the localization/i18n of static content, such as labels or messages, to serve localized versions of actual application data.
+uacp: Linked from https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 status: released
-uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
 # Localized Data
 
-{{ $frontmatter.synopsis }}
-
-Localized data refers to the maintenance of different translations of textual data and automatically fetching the translations matching the users' preferred language, with per-row fallback to default languages, if the required translations aren't available. Language codes are in ISO 639-1 format.
+Localized data refers to the maintenance of different translations of textual data and automatically fetching the translations matching the users' preferred language, with per-row fallback to default languages, if the required translations aren't available. It extends the localization/i18n of static labels or messages, to serve localized versions of actual application data. {.abstract}
 
 > Find a **working sample** at <https://github.com/capire/bookshop>.
 

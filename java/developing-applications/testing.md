@@ -323,7 +323,7 @@ Besides the limitations mentioned above, it is not possible to use H2 database w
 
 Although CAP Java enables running and testing applications with a local H2 database, still there are cases when it is not possible, due to some limitations mentioned previously. In that case, hybrid testing capabilities help you to stay in a local development environment avoiding long turnaround times of cloud deployments. You just selectively connect to services in the cloud.
 
-The section [Hybrid Testing](../../guides//advanced/hybrid-testing#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in a local environment.
+The section [Hybrid Testing](../../tools/cds-bind#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in a local environment.
 
 ### H2 and Spring Dev Tools Integration
 

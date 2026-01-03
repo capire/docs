@@ -43,7 +43,7 @@ Following is an index of the features currently covered by CAP, with status and 
 |-------------------------------------------------------------------------------------|----------------------------|
 | [Jump-start cds-based projects](./)                                                 | `cds init <project>`       |
 | [Add a feature to an existing project](../tools/cds-cli#cds-add)                    | `cds add <facets>`         |
-| [Add models from external sources](../guides/services/using-services#local-mocking) | `cds import <api>`         |
+| [Add models from external sources](../guides/services/consuming-services#local-mocking) | `cds import <api>`         |
 | [Compile cds models to different outputs](../node.js/cds-compile)                   | `cds compile <models>`     |
 | [Run your services in local server](../node.js/cds-serve)                           | `cds serve <services>`     |
 | [Run and restart on file changes](./bookshop)                                  | `cds watch`                |
@@ -85,7 +85,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Custom-defined Types](../cds/cdl#types)                                                                                  | <X/> |
 | [Views / Projections ](../cds/cdl#views)                                                                                  | <X/> |
 | [Associations & Compositions](../cds/cdl#associations)                                                                    | <X/> |
-| [Annotations](../cds/cdl#annotations) &rarr; [Common](../cds/annotations), [OData](../guides/advanced/odata#annotations) | <X/> |
+| [Annotations](../cds/cdl#annotations) &rarr; [Common](../cds/annotations), [OData](../guides/protocols/odata#annotations) | <X/> |
 | [Aspects](../guides/domain/modeling#aspects)                                                                              | <X/> |
 | [Services...](../cds/cdl#services)                                                                                        | <X/> |
 | [&mdash; w/ Redirected Associations](../cds/cdl#auto-redirect)                                                            | <X/> |
@@ -123,7 +123,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | Enterprise Features                                                                                                |  CDS  | Node.js | Java |
 |--------------------------------------------------------------------------------------------------------------------|:-----:|:-------:|:----:|
 | [Authorization](../guides/security/authorization)                                                                  | <X/>  |  <X/>   | <X/> |
-| [Analytics in Fiori](../guides/advanced/odata#data-aggregation)                                                   | <X/>  |  <D/>   | <X/> |
+| [Analytics in Fiori](../guides/protocols/odata#data-aggregation)                                                   | <X/>  |  <D/>   | <X/> |
 | [Localization/i18n](../guides/uis/i18n)                                                                            | <X/>  |  <X/>   | <X/> |
 | [Localized Data](../guides/uis/localized-data)                                                                     | <X/>  |  <X/>   | <X/> |
 | [Temporal Data](../guides/domain/temporal-data)                                                                           | <X/>  |  <X/>   | <X/> |
@@ -137,8 +137,8 @@ Following is an index of the features currently covered by CAP, with status and 
 
 | Inbound Protocol Support                                     | CDS <sup>1</sup> |      Node.js      |       Java        |
 |--------------------------------------------------------------|:----------------:|:-----------------:|:-----------------:|
-| [REST/OpenAPI](../guides/advanced/publishing-apis/openapi)   |       <X/>       |       <X/>        |       <X/>        |
-| [OData V2](../guides/advanced/odata#v2-support) <sup>2</sup> |       <X/>       | <X/> <sup>3</sup> |       <X/>        |
+| [REST/OpenAPI](../guides/protocols/openapi)   |       <X/>       |       <X/>        |       <X/>        |
+| [OData V2](../guides/protocols/odata#v2-support) <sup>2</sup> |       <X/>       | <X/> <sup>3</sup> |       <X/>        |
 | OData V4                                                     |       <X/>       |       <X/>        |       <X/>        |
 | OData V4 for APIs                                            |       <D/>       |       <D/>        |       <D/>        |
 | GraphQL<sup>4</sup>                                          |       <C/>       | <X/><sup>5</sup>  | <C/> <sup>6</sup> |
@@ -148,7 +148,7 @@ Following is an index of the features currently covered by CAP, with status and 
 
 > <sup>1</sup> Export CDS models to ... <br>
 > <sup>2</sup> To support customers with existing OData V2 UIs<br>
-> <sup>3</sup> Through [V2 proxy](../guides/advanced/odata#odata-v2-adapter-node)  <br>
+> <sup>3</sup> Through [V2 proxy](../guides/protocols/odata#odata-v2-adapter-node)  <br>
 > <sup>4</sup> Could be a good case for 3rd-party contribution <br>
 > <sup>5</sup> For Node.js try out the [GraphQL Adapter](/plugins/#graphql-adapter) <br>
 > <sup>6</sup> For Java try out the provided [sample code](https://github.com/SAP-samples/cloud-cap-samples-java/commit/16dc5d9a1f103eb1336405ee601dc7004f70538f). <br>
@@ -156,7 +156,7 @@ Following is an index of the features currently covered by CAP, with status and 
 
 ### Consuming Services
 
-| [Service Consumption APIs](../guides/services/using-services) | Node.js | Java |
+| [Service Consumption APIs](../guides/services/consuming-services) | Node.js | Java |
 |---------------------------------------------------------------|:-------:|:----:|
 | Uniform Consumption APIs → Hexagonal Architecture             |  <X/>   | <X/> |
 | Dynamic Querying                                              |  <X/>   | <X/> |
@@ -177,7 +177,7 @@ Following is an index of the features currently covered by CAP, with status and 
 > <sup>1</sup> Import API to CSN <br>
 > <sup>2</sup> Could be a good case for 3rd-party contribution <br>
 
-[Learn more about supported features for consuming services.](../guides/services/using-services){.learn-more}
+[Learn more about supported features for consuming services.](../guides/services/consuming-services){.learn-more}
 
 ### Events / Messaging
 
@@ -228,7 +228,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Advanced Value Help](../guides/uis/fiori#value-helps)                                     | <X/> |  <X/>   | <X/> |
 | [Draft Support](../guides/uis/fiori#draft-support)                                         | <X/> |  <X/>   | <X/> |
 | [Draft for Localized Data](../guides/uis/fiori#draft-for-localized-data)                   | <X/> |  <X/>   | <X/> |
-| [Support for Fiori Analytics](../guides/advanced/analytics)                                | <X/> |  <D/>   | <X/> |
+| [Support for Fiori Analytics](../guides/uis/analytics)                                | <X/> |  <D/>   | <X/> |
 | [Support for other UI technologies, for example Vue.js](./bookshop#vuejs-uis)  <sup>1</sup> | <X/> |  <X/>   | <X/> |
 
 >  <sup>1</sup> through standard REST/AJAX

@@ -30,7 +30,7 @@ If no service key for your service `<srv>` is specified, a `<srv>-key` is automa
 The service name `db` can be omitted as it represents the default value for the service kind `hana`.
 :::
 
-[Got errors? See our troubleshooting for connection issues with SAP HANA Cloud.](../../get-started/get-help#connection-failed-89008){.learn-more}
+[Got errors? See our troubleshooting for connection issues with SAP HANA Cloud.](../get-started/get-help#connection-failed-89008){.learn-more}
 
 Output:
 
@@ -477,7 +477,7 @@ This can be overwritten using the `--out` option.
 
 You can start arbitrary command line programs with your bindings.
 
-The service bindings are [resolved from the cloud](#node) and [provided in the `VCAP_SERVICES` env variable](../../node.js/cds-connect#provide-service-bindings) to the application. So it works with every application that can consume Cloud Foundry credentials.
+The service bindings are [resolved from the cloud](#node) and [provided in the `VCAP_SERVICES` env variable](../node.js/cds-connect#provide-service-bindings) to the application. So it works with every application that can consume Cloud Foundry credentials.
 
 ```sh
 cds bind --exec [--] <command> <args ...>
@@ -505,11 +505,11 @@ Most of the following use cases are shown for Node.js, but can be easily adapted
 
 ### Destinations
 
-Learn how to [connect to remote services locally](../../guides/services/using-services#connect-to-remote-services-locally) using SAP BTP destinations.
+Learn how to [connect to remote services locally](../guides/services/consuming-services#connect-to-remote-services-locally) using SAP BTP destinations.
 
 ### Authentication and Authorization using XSUAA
 
-Learn how to do hybrid testing using the XSUAA service in the [CAP Node.js authentication documentation](../../node.js/authentication#xsuaa-setup).
+Learn how to do hybrid testing using the XSUAA service in the [CAP Node.js authentication documentation](../node.js/authentication#xsuaa-setup).
 ### Integration Tests
 
 `cds bind` can be handy for testing with real cloud services in your CI/CD pipeline.
@@ -541,9 +541,9 @@ npm run integration-test  # [!code highlight]
 ```
 
 Some comments to the previous snippet:
-- With `CDS_ENV` you specify the [configuration profile](../../node.js/cds-env#profiles) for the test, where you previously put the service binding configuration.
-- [`cds env get requires`](../../node.js/cds-env#services) prints the `requires` section of the configuration as a JSON string. Through `--resolve-bindings`, it includes the credentials of the service bindings from the cloud. To make the credentials available for all subsequent `cds` commands and the tests, the `requires` JSON string is put into the `cds_requires` script variable.
-- In `npm run integration-test` any test code can run, for example, [`cds.test`](../../node.js/cds-test).
+- With `CDS_ENV` you specify the [configuration profile](../node.js/cds-env#profiles) for the test, where you previously put the service binding configuration.
+- [`cds env get requires`](../node.js/cds-env#services) prints the `requires` section of the configuration as a JSON string. Through `--resolve-bindings`, it includes the credentials of the service bindings from the cloud. To make the credentials available for all subsequent `cds` commands and the tests, the `requires` JSON string is put into the `cds_requires` script variable.
+- In `npm run integration-test` any test code can run, for example, [`cds.test`](../node.js/cds-test).
 
 
 <!-- TODO: "cds deploy" should take the existing bindings for hana -->

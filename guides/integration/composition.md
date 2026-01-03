@@ -23,7 +23,7 @@ CAP promotes reuse and composition by importing content from reuse packages. Reu
 By applying CAP's techniques for reuse, composition, and integration, you can address several different usage scenarios, as depicted in the following illustration.
 
 
-![This graphic is explained in the accompanying text.](assets/scenarios.drawio.svg)
+![This graphic is explained in the accompanying text.](../extensibility/assets/scenarios.drawio.svg)
 
 
 1. **Verticalized/Composite Solutions** — Pick one or more reuse packages/services. Enhance them, mash them up into a composite solution, and offer this as a new packaged solution to clients.
@@ -41,7 +41,7 @@ By applying CAP's techniques for reuse, composition, and integration, you can ad
 
 In the following sections, we frequently refer to examples from the [capire org](https://github.com/capire):
 
-![The screenshot is explained in the following text.](assets/cap-samples.drawio.svg)
+![The screenshot is explained in the following text.](../extensibility/assets/cap-samples.drawio.svg)
 
 
 - **[@capire/bookshop](https://github.com/capire/bookshop)** provides a basic bookshop app and **reuse services** .
@@ -76,7 +76,7 @@ npm i
 
 CAP and CDS promote reuse of prebuilt content based on `npm` or `Maven` techniques. The following figure shows the basic procedure for `npm`.
 
-![This graphic shows how packages are used, provided, and deployed. ALl the details around that are explained in the following sections.](assets/reuse-overview.drawio.svg)
+![This graphic shows how packages are used, provided, and deployed. ALl the details around that are explained in the following sections.](../extensibility/assets/reuse-overview.drawio.svg)
 
 > We use `npm` and `Maven` as package managers simply because we didn't want to reinvent the wheel here.
 
@@ -430,7 +430,7 @@ Let's start from the following use case: The bookshop app exposed through [@capi
 
 To avoid [CORS issues](https://developer.mozilla.org/de/docs/Web/HTTP/CORS), the request from the UI goes to the main `CatalogService` serving the end user's UI and is delegated from that to the remote `ReviewsService`, as shown in this sequence diagram:
 
- ![This TAM graphic shows how the requests are routed between services.](assets/delegate-requests.drawio.svg)
+ ![This TAM graphic shows how the requests are routed between services.](../extensibility/assets/delegate-requests.drawio.svg)
 
 And this is how we do that in [@cap/bookstore](https://github.com/capire/bookstore/blob/main/srv/mashup.js):
 
@@ -785,4 +785,4 @@ The main difference is how and from where the import happens:
 3. The imported package is named according to the `cds.extends` entry in package.json
 4. The extensions are applied via `cds push`.
 
-[Learn more in the **SaaS Extensibility** guide.](customization){.learn-more}
+[Learn more in the **SaaS Extensibility** guide.](../extensibility/customization){.learn-more}
