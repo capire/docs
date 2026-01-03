@@ -39,8 +39,8 @@ The most essential requests you have to answer are those in the following table.
 
 | Question / Request                          | Obligation                                      | Solution                            |
 | ------------------------------------------- | ----------------------------------------------- | ----------------------------------- |
-| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Personal Data Management](dpp-pdm.md)  |
-| *Please delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Data Retention Management](dpp-drm.md) |
+| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Personal Data Mgmt](dpp-pdm.md)  |
+| *Delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Data Retention Mgmt](dpp-drm.md) |
 | *When was personal data stored/changed?*    | [Transparency](#transparency)                   | [Audit Logging](dpp-audit-logging.md)   |
 
 
