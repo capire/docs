@@ -876,7 +876,7 @@ Send that request repeatedly until stock is depleted and an according error retu
 
 We have now built a simple bookshop application step-by-step, thereby following a subset of typical CAP development workflows as depicted in the illustration below.
 
-![](assets/bookshop/playbook.drawio.svg)
+![](../guides/playbook.drawio.svg)
 
 
 Thereby we touched upon some best practices of CAP, such as:
