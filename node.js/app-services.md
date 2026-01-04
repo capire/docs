@@ -80,13 +80,13 @@ This method is adding request handlers for initial authorization checks, as docu
 
 ### _static_ handle_etags() {.method}
 
-This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/providing-services#concurrency-control).
+This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/served-ootb#concurrency-control).
 
 
 
 ### _static_ handle_validations() {.method}
 
-This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/services/providing-services#input-validation).
+This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/services/constraints).
 
 
 
@@ -113,7 +113,7 @@ This method is adding request handlers for handling managed data, as documented 
 
 ### _static_ handle_paging() {.method}
 
-This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/providing-services#pagination-sorting).
+This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
 
 
 
@@ -125,7 +125,7 @@ This method is adding request handlers for handling Fiori Drafts and other Fiori
 
 ### _static_ handle_crud() {.method}
 
-This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/providing-services#generic-providers).
+This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/served-ootb).
 
 
 

@@ -158,19 +158,19 @@ So, projects could spawn two teams in parallel: one working on the frontend usin
 
 The CAP runtimes in Node.js and Java provide many generic implementations for recurring tasks and best practices, distilled from proven SAP applications. This is a list of the most common tasks covered by the core frameworks:
 
-- [Serving CRUD Requests](../guides/services/providing-services#generic-providers)
-- [Serving Nested Documents](../guides/services/providing-services#deep-reads-and-writes)
+- [Serving CRUD Requests](../guides/services/served-ootb)
+- [Serving Nested Documents](../guides/services/served-ootb#deep-reads-and-writes)
 - [Serving (Fiori) Drafts](../guides/uis/fiori#draft-support)
-- [Serving Media Data](../guides/services/providing-services#serving-media-data)
-- [Searching Data](../guides/services/providing-services#searching-data)
-- [Pagination](../guides/services/providing-services#implicit-pagination)
-- [Sorting](../guides/services/providing-services#implicit-sorting)
+- [Serving Media Data](../guides/services/media-data)
+- [Searching Data](../guides/services/served-ootb#searching-data)
+- [Pagination](../guides/services/served-ootb#implicit-pagination)
+- [Sorting](../guides/services/served-ootb#implicit-sorting)
 - [Authentication](../node.js/authentication)
 - [Authorization](../guides/security/authorization)
 - [Localization / i18n](../guides/uis/i18n)
-- [Basic Input Validation](../guides/services/providing-services#input-validation)
-- [Auto-generated Keys](../guides/services/providing-services#auto-generated-keys)
-- [Concurrency Control](../guides/services/providing-services#concurrency-control)
+- [Basic Input Validation](../guides/services/constraints)
+- [Auto-generated Keys](../guides/services/served-ootb#auto-generated-keys)
+- [Concurrency Control](../guides/services/served-ootb#concurrency-control)
 
 <br/>
 
@@ -293,7 +293,7 @@ That might sound like a contradiction, but it isn't: While CAP certainly gives *
 | CAP is *Opinionated* in...                                   | CAP is *Open* as...                                          |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | **Platform-agnostic APIs** to avoid lock-ins to low-level stuff. | All abstractions follow a glass-box pattern that allows unrestricted access to lower-level things, if necessary |
-| **Best practices**, served out of the box by generic providers | You're free to do things your way in [custom handlers](../guides/services/providing-services#custom-logic), ... while CAP simply tries to get the tedious tasks out of your way. |
+| **Best practices**, served out of the box by generic providers | You're free to do things your way in [custom handlers](../guides/services/custom-code), ... while CAP simply tries to get the tedious tasks out of your way. |
 | **Out-of-the-box support** for <br> **[SAP Fiori](https://developers.sap.com/topics/ui-development.html)** and **[SAP HANA](https://developers.sap.com/topics/hana.html)** | You can also choose other UI technologies, like [Vue.js](./bookshop#vuejs-uis). Other databases are supported as well. |
 | **Tools support** in [VS Code](../tools/cds-editors#vscode). | Everything in CAP can be done using the [`@sap/cds-dk`](../tools/cds-cli) CLI and any editor or IDE of your choice. |
 

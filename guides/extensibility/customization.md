@@ -660,7 +660,7 @@ entity x_Remarks : cuid, managed {
 ```
 
 ::: tip
-This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/providing-services#input-validation).
+This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/constraints).
 :::
 Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#annotate) {.learn-more}
 

@@ -489,7 +489,7 @@ To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
 
 #### Custom Validations
 
-You can add [custom handlers](../services/providing-services#custom-logic) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
+You can add [custom handlers](../services/custom-code) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
 
 
 ##### ... in Java
@@ -648,7 +648,7 @@ Here is an example showing how this ends up as OData `Common.ValueList` annotati
 
 In our SFLIGHT sample application, we showcase how to use actions covering the definition in your CDS model, the needed custom code and the UI implementation.
 
-[Learn more about Custom Actions & Functions.](../services/providing-services#custom-actions){.learn-more}
+[Learn more about Custom Actions & Functions.](../services/custom-actions){.learn-more}
 
 
 We're going to look at three things.

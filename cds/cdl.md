@@ -454,7 +454,7 @@ With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
 ::: warning
-Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/providing-services#searching-data) are not supported on arrayed elements.
+Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/served-ootb#searching-data) are not supported on arrayed elements.
 :::
 
 #### Null Values
@@ -2145,7 +2145,7 @@ Explicitly modelled binding parameters are ignored for OData V2.
 
 #### Returning Media Data Streams { #actions-returning-media}
 
-Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/media-data#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
 
 ```cds
 service CatalogService {

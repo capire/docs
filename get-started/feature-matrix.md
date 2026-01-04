@@ -104,16 +104,16 @@ Following is an index of the features currently covered by CAP, with status and 
 
 | Core Framework Features                                                                             |  CDS  | Node.js | Java |
 |-----------------------------------------------------------------------------------------------------|:-----:|:-------:|:----:|
-| [Automatically Serving CRUD Requests](../guides/services/providing-services#generic-providers)      | <Na/> |  <X/>   | <X/> |
-| [Deep-Read/Write Structured Documents](../guides/services/providing-services#deep-reads-and-writes) | <X/>  |  <X/>   | <X/> |
-| [Automatic Input Validation](../guides/services/providing-services#input-validation)                | <X/>  |  <X/>   | <X/> |
+| [Automatically Serving CRUD Requests](../guides/services/served-ootb)      | <Na/> |  <X/>   | <X/> |
+| [Deep-Read/Write Structured Documents](../guides/services/served-ootb#deep-reads-and-writes) | <X/>  |  <X/>   | <X/> |
+| [Automatic Input Validation](../guides/services/constraints)                | <X/>  |  <X/>   | <X/> |
 | [Auto-filled Primary Keys](../guides/domain/index#prefer-uuids-for-keys)                         | <X/>  |  <X/>   | <X/> |
-| [Implicit Paging](../guides/services/providing-services#implicit-pagination)                        | <X/>  |  <X/>   | <X/> |
-| [Implicit Sorting](../guides/services/providing-services#implicit-sorting)                          | <X/>  |  <X/>   | <X/> |
+| [Implicit Paging](../guides/services/served-ootb#implicit-pagination)                        | <X/>  |  <X/>   | <X/> |
+| [Implicit Sorting](../guides/services/served-ootb#implicit-sorting)                          | <X/>  |  <X/>   | <X/> |
 | [Access Control](../guides/security/authorization)                                                  | <X/>  |  <X/>   | <X/> |
 | [Arrayed Elements](../cds/cdl#arrayed-types)                                                        | <X/>  |  <X/>   | <X/> |
-| [Streaming & Media Types](../guides/services/providing-services#serving-media-data)                 | <X/>  |  <X/>   | <X/> |
-| [Conflict Detection through _ETags_](../guides/services/providing-services#etag)                    | <X/>  |  <X/>   | <X/> |
+| [Streaming & Media Types](../guides/services/media-data)                 | <X/>  |  <X/>   | <X/> |
+| [Conflict Detection through _ETags_](../guides/services/served-ootb#etag)                    | <X/>  |  <X/>   | <X/> |
 | [Authentication via JWT](../guides/security/authorization#prerequisite-authentication)              | <Na/> |  <X/>   | <X/> |
 | [Mocked Authentication](../guides/security/authorization#prerequisite-authentication)               | <Na/> |  <X/>   | <X/> |
 
@@ -261,7 +261,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Extension Namespaces](../guides/extensibility/customization)                            | <X/> |
 | [Extension Templates](../guides/extensibility/customization#templates)                   | <X/> |
 | Custom Governance Checks                                                                 | <D/> |
-| [Generic Input Validations](../guides/services/providing-services#input-validation)      | <X/> |
+| [Generic Input Validations](../guides/services/constraints)      | <X/> |
 | Declarative Constraints                                                                  | <O/> |
 | Execute Sandboxed Code                                                                   | <O/> |
 | Runtime API for In-App Extensibility                                                     | <D/> |

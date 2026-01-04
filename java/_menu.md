@@ -35,8 +35,8 @@
 # [Operating Applications](operating-applications/)
   ## [Optimizing](operating-applications/optimizing)
   ## [Observability](operating-applications/observability)
-  ## [Developer Dashboard](../../java/operating-applications/dashboard)
+  ## [Developer Dashboard](operating-applications/dashboard)
 # [Integrating Applications](../../java/integrating-applications/) <!-- INTERNAL -->
   ## [Unified Customer Landscape](../../java/integrating-applications/ucl) <!-- INTERNAL -->
-# [Building Plugins](../../java/building-plugins)
+# [Building Plugins](building-plugins)
 # [Migration Guides](migration)

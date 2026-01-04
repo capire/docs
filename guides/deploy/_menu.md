@@ -6,5 +6,5 @@
 # [Deploy with CI/CD](cicd)
 # [Custom Build Tasks](build)
 # [Microservice Layouts](microservices)
-# [Deploy with Confidence](dwc) <!-- INTERNAL -->
+# [Deploy with Confidence](../../../guides/deploy/dwc) <!-- INTERNAL -->
 # [Monitoring / Health Checks](health-checks)

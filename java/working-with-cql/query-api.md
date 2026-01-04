@@ -600,7 +600,7 @@ The `search` method adds a predicate to the query that filters out all entities 
 
 1. Define searchable elements {#searchable-elements}
 
-By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/services/providing-services#searching-data).
+By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/services/served-ootb#searching-data).
 
 Consider following CDS Entity. There are two elements, `title` and `name`, of type String, making them both searchable by default.
 
@@ -924,7 +924,7 @@ Depending on the database, sorting by content of map data is expensive and can l
 
 ### Pessimistic Locking { #write-lock}
 
-Use the `lock()` method to enforce [Pessimistic Locking](../../guides/services/providing-services#select-for-update).
+Use the `lock()` method to enforce [Pessimistic Locking](../../guides/services/served-ootb#select-for-update).
 
 The following example shows how to build a select query with an _exclusive_ (write) lock. The query tries to acquire a lock for a maximum of 5 seconds, as specified by an optional parameter `timeout`:
 

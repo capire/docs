@@ -384,7 +384,7 @@ Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that
 
 ## Custom Streaming <Beta /> { #custom-streaming-beta }
 
-[Media Data](../guides/services/providing-services#serving-media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
+[Media Data](../guides/services/media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
 Actions and functions support the same set of `media data` annotations.
 ```cds
 @(Core.MediaType: 'text/csv', Core.ContentDisposition.Filename: 'Books.csv')

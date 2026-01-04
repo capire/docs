@@ -461,7 +461,7 @@ Moreover, deserialization errors terminate the request and are tracked in the ap
 In general, to achieve perfect injection resistance, applications should have input validation, output validation, and a proper Content-Security-Policy in place.
 
 - CAP provides built-in support for **input validation**.
-Developers can use the [`@assert`](../services/providing-services#input-validation) annotation to define field-specific input checks.
+Developers can use the [`@assert`](../services/constraints) annotation to define field-specific input checks.
 
   ::: warning
   Applications need to validate or sanitize all input variables according to the business context.
@@ -522,7 +522,7 @@ If you want to apply an application-specific sizing, consult the corresponding f
 See section [Maximum Request Body Size](../../node.js/cds-server#maximum-request-body-size) to find out how to restrict incoming requests to a CAP Node.js application depending on the body size.
 :::
 
-Moreover, CAP adapters automatically introduce query results pagination in order to limit memory peaks (customize with [`@cds.query.limit`](../services/providing-services#annotation-cds-query-limit)).
+Moreover, CAP adapters automatically introduce query results pagination in order to limit memory peaks (customize with [`@cds.query.limit`](../services/served-ootb#annotation-cds-query-limit)).
 The total number of request of OData batches can be limited by application configuration.
 
 <div class="impl java">
@@ -637,8 +637,8 @@ The adapters also transform the HTTP requests into a corresponding CQN statement
 Access control is performed on basis of CQN level according to the CDS model and hence HTTP Verb Tampering attacks are avoided. Also HTTP method override, using `X-Http-Method-Override` or `X-Http-Method` header, is not accepted by the runtime.
 
 The OData protocol allows to encode field values in query parameters of the request URL or in the response headers. This is, for example, used to specify:
-- [Pagination (implicit sort order)](../services/providing-services#pagination-sorting)
-- [Searching Data](../services/providing-services#searching-data)
+- [Pagination (implicit sort order)](../services/served-ootb#pagination-sorting)
+- [Searching Data](../services/served-ootb#searching-data)
 - Filtering
 
 ::: warning
@@ -654,7 +654,7 @@ In addition, CAP runs on a virtual machine with a managed heap that protects fro
 
 CAP also brings some tools to effectively reduce the attack vector of race condition vulnerabilities.
 These might be exposed when the state of resources can be manipulated concurrently and a consumer faces an unexpected state.
-CAP provides basic means of [concurrency control](../services/providing-services#concurrency-control) on different layers, for example [ETags](../services/providing-services#etag) and [pessimistic locks](../services/providing-services#select-for-update). Moreover, Messages received from the [message queue](../events/index.md) are always in order.
+CAP provides basic means of [concurrency control](../services/served-ootb#concurrency-control) on different layers, for example [ETags](../services/served-ootb#etag) and [pessimistic locks](../services/served-ootb#select-for-update). Moreover, Messages received from the [message queue](../events/index.md) are always in order.
 
 ::: tip
 Applications have to ensure a consistent data processing taking concurrency into account.

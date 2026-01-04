@@ -405,9 +405,9 @@ Use _optimistic_ concurrency control to detect concurrent modification of data _
 
 #### Optimistic Concurrency Control in OData
 
-In the [OData protocol](../../guides/services/providing-services#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
+In the [OData protocol](../../guides/services/served-ootb#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
 
-The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/services/providing-services#etag):
+The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/services/served-ootb#etag):
 
 {#on-update-example}
 
@@ -467,7 +467,7 @@ entity Order : cuid {
 
 Compared to `@cds.on.update`, which allows for ETag elements with type `Timestamp` or `UUID` only, `@cds.java.version` additionally supports all integral types `Uint8`, ... `Int64`. For timestamp, the value is set to `$now` upon update, for elements of type UUID a new UUID is generated, and for elements of integral type the value is incremented.
 
-Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/services/providing-services#etag) in OData.
+Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/services/served-ootb#etag) in OData.
 
 ##### Expected Version from Data
 

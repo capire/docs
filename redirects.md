@@ -25,7 +25,7 @@
 - [guides/consuming-services](guides/services/consuming-services)
 - [guides/using-services](guides/services/consuming-services)
 - [guides/services](guides/services/providing-services)
-- [guides/media-data](guides/services/providing-services#serving-media-data)
+- [guides/media-data](guides/services/media-data)
 - [guides/flows](guides/services/status-flows)
 
 ## Advanced Guides

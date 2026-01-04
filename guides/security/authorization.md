@@ -169,7 +169,7 @@ service BookshopService {
 }
 ```
 
-Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../services/providing-services#input-validation), you can also use `@readonly` on a property level.
+Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../services/constraints), you can also use `@readonly` on a property level.
 
 In addition, annotation `@Capabilities` from standard OData vocabulary is enforced by the runtimes analogously:
 

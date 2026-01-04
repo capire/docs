@@ -661,7 +661,7 @@ Some CdsProperties were already marked as deprected in CAP Java 1.x and are now 
 
 ### Removed Annotations Overview
 
-- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/services/providing-services#cds-search).
+- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/services/served-ootb#cds-search).
 
 ### Changed Behavior
 
