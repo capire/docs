@@ -8,7 +8,19 @@
    ## [Learn More](get-started/learn-more)
    ## [Get Help](get-started/get-help)
 
-# [Develop](guides/_menu.md)
+# [Develop](guides/)
+
+   ## [Domain Modeling](guides/domain/_menu.md)
+   ## [Services & APIs](guides/services/_menu.md)
+   ## [Serving UIs](guides/uis/_menu.md)
+   ## [Protocols](guides/protocols/_menu.md)
+   ## [Databases](guides/databases/_menu.md)
+   ## [Data Federation](guides/federation/_menu.md)
+   ## [Service Integration](guides/integration/_menu.md)
+   ## [Events & Messaging](guides/events/_menu.md)
+   ## [Security & Data Privacy](guides/security/_menu.md)
+   ## [Extensibility](guides/extensibility/_menu.md)
+
 # [Deploy](guides/deploy/_menu.md)
 # [CDS](cds/_menu.md)
 # [Node.js](node.js/_menu.md)

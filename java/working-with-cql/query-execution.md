@@ -143,7 +143,7 @@ CqnUpdate update = Update.entity("bookshop.Books").data(book).byId(101);
 Result updateResult = service.run(update);
 ```
 
-The update `Result` contains the data that is written by the statement execution. Additionally to the given data, it may contain values generated for [managed data](../../guides/domain/modeling#managed-data) and foreign key values.
+The update `Result` contains the data that is written by the statement execution. Additionally to the given data, it may contain values generated for [managed data](../../guides/domain/index#managed-data) and foreign key values.
 
 The [row count](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#rowCount()) of the update `CdsResult` indicates how many rows where updated during the statement execution:
 
@@ -166,7 +166,7 @@ It's possible to work with structured data as the insert, update, and delete ope
 
 #### Cascading over Associations { #cascading-over-associations}
 
-By default, *insert*, *update* and *delete* operations cascade over [compositions](../../guides/domain/modeling#compositions) only. For associations, this can be enabled using the `@cascade` annotation.
+By default, *insert*, *update* and *delete* operations cascade over [compositions](../../guides/domain/index#compositions) only. For associations, this can be enabled using the `@cascade` annotation.
 
 ::: warning Avoid cascading over associations
 Cascading operations over associations isn't considered good practice and should be avoided.
@@ -449,7 +449,7 @@ No exception is thrown if an ETag validation does not match. Instead, the execut
 
 #### Providing new ETag Values with Update Data
 
-A convenient option to determine a new ETag value upon update is the [@cds.on.update](../../guides/domain/modeling#cds-on-update) annotation as in the [example above](#on-update-example). The CAP Java runtime automatically handles the `@cds.on.update` annotation and sets a new value in the data before the update is executed. Such _managed data_ can be used with ETags of type `Timestamp` or `UUID` only.
+A convenient option to determine a new ETag value upon update is the [@cds.on.update](../../guides/domain/index#cds-on-update) annotation as in the [example above](#on-update-example). The CAP Java runtime automatically handles the `@cds.on.update` annotation and sets a new value in the data before the update is executed. Such _managed data_ can be used with ETags of type `Timestamp` or `UUID` only.
 
 We do not recommend providing a new ETag value by custom code in a `@Before`-update handler. If you do set a value explicitly in custom code and an ETag element is annotated with `@cds.on.update`, the runtime does not generate a new value upon update for this element. Instead, the value that comes from your custom code is used.
 

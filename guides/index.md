@@ -9,7 +9,7 @@ The following figure illustrates a walkthrough of the most prominent tasks durin
 ![](playbook.drawio.svg) {style="margin: 4em 0;"}
 
 
-[ Domain Modeling ](domain/modeling)
+[ Domain Modeling ](domain/index)
    : Most projects start with capturing the essential objects of their domain in a respective domain model. Find here an introduction to the basics of domain modeling with CDS, complemented with recommended best practices.
 
 [ Services & APIs ](services/index.md  )

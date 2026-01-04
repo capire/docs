@@ -141,7 +141,7 @@ aspect OrderItems {
 In this model, there is a bidirectional many-to-one association between `Books` and `Authors`, which is managed by the `Books.author` association. The `Orders` entity owns the composition `header`, which relates it to the `OrderHeaders` entity, and the composition `items`, which relates the order to the `OrderItems`. The items are modeled using a managed composition of aspects.
 
 ::: tip
-Use [Managed Compositions of Aspects](../guides/domain/modeling#composition-of-aspects) to model unidirectional one-to-many compositions.
+Use [Managed Compositions of Aspects](../guides/domain/index#composition-of-aspects) to model unidirectional one-to-many compositions.
 :::
 
 ### Relationships to other entities

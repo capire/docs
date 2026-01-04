@@ -80,7 +80,7 @@ Shortcuts:
 
 | Annotation          | Description                                          |
 |---------------------|------------------------------------------------------|
-| `@ValueList.entity` | see [Domain Modeling](../guides/domain/modeling)     |
+| `@ValueList.entity` | see [Domain Modeling](../guides/domain/index)     |
 | `@odata.Type`       | see [OData](../guides/protocols/odata#override-type-mapping) |
 | `@odata.MaxLength`  | see [OData](../guides/protocols/odata#override-type-mapping) |
 | `@odata.Precision`  | see [OData](../guides/protocols/odata#override-type-mapping) |

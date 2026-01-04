@@ -53,7 +53,7 @@ A Persistence Service isn't bound to a specific service definition in the CDS mo
 
 Transaction management is built in to Persistence Services. They take care of lazily initializing and maintaining database transactions as part of the active changeset context.
 
-Some generic providers are registered on Persistence Services instead of on Application Services, like the ones for [managed data](../../guides/domain/modeling#managed-data).
+Some generic providers are registered on Persistence Services instead of on Application Services, like the ones for [managed data](../../guides/domain/index#managed-data).
 This ensures that the functionality is also triggered, when directly interacting with a Persistence Service.
 
 The Persistence Service is used when implementing event handlers for Application Services, for example when additional data needs to be read when performing custom validations.

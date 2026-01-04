@@ -94,7 +94,7 @@ Note that different endpoints can be served by different protocol adapters at th
 
 ### Service Providers { #service-providers}
 
-Services have different purposes. For instance, CDS model services provide an interface to work with persisted data of your [domain model](../../guides/domain/modeling).
+Services have different purposes. For instance, CDS model services provide an interface to work with persisted data of your [domain model](../../guides/domain/index).
 Other services are rather technical, for example, hiding the consumption API of external services behind a generic interface.
 As described in CAPs [core concepts](../../get-started/concepts#services), services share the same generic provider interface and are implemented by event handlers.
 The service provider layer contains all generic services, which are auto-exposed by CAP Java according to the appropriate CDS model.

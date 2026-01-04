@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { dirname, relative, resolve, join, normalize } from 'node:path'
-import { promises as fs } from 'node:fs'
+import { existsSync, promises as fs } from 'node:fs'
 import rewrites from './rewrites.js'
 
 const DEBUG = process.env.DEBUG?.match(/\bmenu\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
@@ -51,6 +51,7 @@ export class MenuItem {
     const children = this.items ??= []; children.push (...items)
     this.link = '/'+folder+'/'
     this.collapsed = true
+    // if (!existsSync(join(cwd,folder+'/index.md'))) delete this.link
   }
 }
 

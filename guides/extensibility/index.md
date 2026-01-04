@@ -14,7 +14,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 {{ $frontmatter.synopsis }}
 
-Extensibility of CAP applications is greatly fueled by **CDS Aspects**, which allow to easily extend existing models with new fields, entities, relationships, or new or overridden annotations [&rarr; Learn more about using CDS Aspects in the Domain Modeling guide](../domain/modeling#separation-of-concerns).
+Extensibility of CAP applications is greatly fueled by **CDS Aspects**, which allow to easily extend existing models with new fields, entities, relationships, or new or overridden annotations [&rarr; Learn more about using CDS Aspects in the Domain Modeling guide](../domain/index#separation-of-concerns).
 
 ![This screenshot is explained in the accompanying text.](assets/extensibility.drawio.svg)
 

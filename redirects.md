@@ -17,7 +17,7 @@
 - [guides/deploy-to-cloud](guides/deploy/index.md)
 - [guides/deploy/deploy-to-kyma](guides/deploy/to-kyma)
 - [guides/deploy/mtx-apis](guides/multitenancy/old-mtx-apis)
-- [guides/domain-models](guides/domain/modeling)
+- [guides/domain-models](guides/domain/index)
 - [guides/fiori](guides/uis/fiori)
 - [guides/generic](guides/services/providing-services)
 - [guides/reuse-and-compose](guides/integration/composition)

@@ -28,7 +28,7 @@ entity Books : cuid, managed {
 }
 ```
 
-In that model we used the [pre-defined aspects](../../cds/common.md) `cuid` and `managed`, as well as the [qualifier `localized`](../uis/localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
+In that model we used the [pre-defined aspects](../../cds/common) `cuid` and `managed`, as well as the [qualifier `localized`](../uis/localized-data#declaring-localized-data) to capture generic aspects. We also used [managed associations](#associations).
 
 In all these cases, we focus on capturing our intent, while leaving it to generic implementations to provide best-possible implementations.
 
@@ -251,7 +251,7 @@ entity name {
 }
 ```
 
-[Learn more about entity definitions.](../../cds/cdl.md#entities-type-definitions){.learn-more}
+[Learn more about entity definitions.](../../cds/cdl#entities-type-definitions){.learn-more}
 
 
 
@@ -265,7 +265,7 @@ entity ProjectedEntity as select from BaseEntity {
 };
 ```
 
-[Learn more about views and projections.](../../cds/cdl.md#views-projections){.learn-more}
+[Learn more about views and projections.](../../cds/cdl#views-projections){.learn-more}
 
 
 
@@ -299,7 +299,7 @@ Moreover, primary keys should be immutable, that means once assigned on creation
 
 #### Prefer Canonic Keys
 
-We recommend using canonically named and typed primary keys, as promoted [by aspect `cuid` from @sap/cds/common](../../cds/common.md#aspect-cuid).
+We recommend using canonically named and typed primary keys, as promoted [by aspect `cuid` from @sap/cds/common](../../cds/common#aspect-cuid).
 
 ```cds
 // @sap/cds/common
@@ -374,7 +374,7 @@ CDS comes with a small set of built-in types:
 
 #### Common Reuse Types
 
-In addition, a set of common reuse types and aspects is provided with package [_`@sap/cds/common`_](../../cds/common.md), such as:
+In addition, a set of common reuse types and aspects is provided with package [_`@sap/cds/common`_](../../cds/common), such as:
 
 - Types `Country`, `Currency`, `Language` with corresponding value list entities
 - Aspects `cuid`, `managed`, `temporal`
@@ -390,7 +390,7 @@ entity Addresses : managed { //> using reuse aspect
 }
 ```
 
-[Learn more about reuse types provided by _`@sap/cds/common`_.](../../cds/common.md){.learn-more}
+[Learn more about reuse types provided by _`@sap/cds/common`_.](../../cds/common){.learn-more}
 
 ::: tip **Use common reuse types and aspects**...
 
@@ -582,7 +582,7 @@ annotate Orders.Items with @(
 
 ## Aspects
 
-CDS's [Aspects](../../cds/cdl.md#aspects) provide powerful mechanisms to separate concerns. It allows decomposing models and definitions into separate files with potentially different life cycles, contributed by different _people_.
+CDS's [Aspects](../../cds/cdl#aspects) provide powerful mechanisms to separate concerns. It allows decomposing models and definitions into separate files with potentially different life cycles, contributed by different _people_.
 
 The basic mechanism use the `extend` or `annotate` directives to add secondary aspects to a core domain entity like so:
 

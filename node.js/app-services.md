@@ -107,7 +107,7 @@ This method is adding request handlers for handling localized data, as documente
 
 ### _static_ handle_managed_data() {.method}
 
-This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/modeling#managed-data).
+This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/index#managed-data).
 
 
 

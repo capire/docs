@@ -86,7 +86,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Views / Projections ](../cds/cdl#views)                                                                                  | <X/> |
 | [Associations & Compositions](../cds/cdl#associations)                                                                    | <X/> |
 | [Annotations](../cds/cdl#annotations) &rarr; [Common](../cds/annotations), [OData](../guides/protocols/odata#annotations) | <X/> |
-| [Aspects](../guides/domain/modeling#aspects)                                                                              | <X/> |
+| [Aspects](../guides/domain/index#aspects)                                                                              | <X/> |
 | [Services...](../cds/cdl#services)                                                                                        | <X/> |
 | [&mdash; w/ Redirected Associations](../cds/cdl#auto-redirect)                                                            | <X/> |
 | [&mdash; w/ Auto-exposed Targets](../cds/cdl#auto-expose)                                                                 | <X/> |
@@ -107,7 +107,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Automatically Serving CRUD Requests](../guides/services/providing-services#generic-providers)      | <Na/> |  <X/>   | <X/> |
 | [Deep-Read/Write Structured Documents](../guides/services/providing-services#deep-reads-and-writes) | <X/>  |  <X/>   | <X/> |
 | [Automatic Input Validation](../guides/services/providing-services#input-validation)                | <X/>  |  <X/>   | <X/> |
-| [Auto-filled Primary Keys](../guides/domain/modeling#prefer-uuids-for-keys)                         | <X/>  |  <X/>   | <X/> |
+| [Auto-filled Primary Keys](../guides/domain/index#prefer-uuids-for-keys)                         | <X/>  |  <X/>   | <X/> |
 | [Implicit Paging](../guides/services/providing-services#implicit-pagination)                        | <X/>  |  <X/>   | <X/> |
 | [Implicit Sorting](../guides/services/providing-services#implicit-sorting)                          | <X/>  |  <X/>   | <X/> |
 | [Access Control](../guides/security/authorization)                                                  | <X/>  |  <X/>   | <X/> |
@@ -127,7 +127,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | [Localization/i18n](../guides/uis/i18n)                                                                            | <X/>  |  <X/>   | <X/> |
 | [Localized Data](../guides/uis/localized-data)                                                                     | <X/>  |  <X/>   | <X/> |
 | [Temporal Data](../guides/domain/temporal-data)                                                                           | <X/>  |  <X/>   | <X/> |
-| [Managed Data](../guides/domain/modeling#managed-data)                                                             | <X/>  |  <X/>   | <X/> |
+| [Managed Data](../guides/domain/index#managed-data)                                                             | <X/>  |  <X/>   | <X/> |
 | [Dynamic Extensibility](../guides/extensibility/index)                                                          | <X/>  |  <X/>   | <X/> |
 | Monitoring / Logging [[Node.js](../node.js/cds-log)\|[Java](../java/operating-applications/observability#logging)] | <Na/> |  <X/>   | <X/> |
 | Audit Logging [[Node.js](../guides/security/dpp-audit-logging)\|[Java](../java/auditlog)]                       | <Na/> |  <X/>   | <X/> |

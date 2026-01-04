@@ -30,13 +30,13 @@ CDS ships with a prebuilt model *`@sap/cds/common`* that provides common types a
 
 It's recommended that all applications use the common types and aspects provided through _@sap/cds/common_ to benefit from these features:
 
-* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/modeling)
+* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/index)
 * **Foster interoperability** between all applications
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
 * **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
-* **Extensibility** using [Aspects](../guides/domain/modeling#aspect-oriented-modeling)
+* **Extensibility** using [Aspects](../guides/domain/index#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 
 For example, usage is as simple as indicated in the following sample:
@@ -83,7 +83,7 @@ entity Foo {
 
 > The service provider runtimes automatically fill in UUID-typed keys like these with auto-generated UUIDs.
 
-[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/modeling#prefer-canonic-keys){ .learn-more}
+[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/index#prefer-canonic-keys){ .learn-more}
 
 
 ### Aspect `managed`
@@ -110,7 +110,7 @@ entity Foo {
 
 The annotations `@cds.on.insert/update` are handled in generic service providers so to fill in those fields automatically.
 
-[Learn more about **generic service features**.](../guides/domain/modeling#managed-data){ .learn-more}
+[Learn more about **generic service features**.](../guides/domain/index#managed-data){ .learn-more}
 
 
 ### Aspect `temporal`

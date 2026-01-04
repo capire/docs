@@ -100,7 +100,7 @@ Connect an adequate logging service to meet compliance requirements such as [SAP
 
 - Draft-enabled entities store user information for the time periods when drafts are created or modified.
 
-- When using the [managed](../domain/modeling#managed-data) aspect, you decided to store metadata such as who created or modified an entity instance.
+- When using the [managed](../domain/index#managed-data) aspect, you decided to store metadata such as who created or modified an entity instance.
 
 - Messages temporarily written to transaction outbox might contain personal data. 
 If necessary, applications can process these messages by standard CAP functionality (CDS model `@sap/cds/srv/outbox`).

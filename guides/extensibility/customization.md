@@ -214,7 +214,7 @@ The name of the _.cds_ file can be freely chosen. Yet, for the build system to w
 ::: tip Keep it simple
 We recommend putting all extension files into `./app` and removing `./srv` and `./db` from extension projects.
 
-You may want to consider [separating concerns](../domain/modeling#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
+You may want to consider [separating concerns](../domain/index#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
 :::
 
 #### Add Test Data

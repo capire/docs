@@ -189,7 +189,7 @@ The CAP runtimes in Node.js and Java provide many generic implementations for re
 On top of the common request-serving related things handled by CAP's generic providers, we provide out of the box solutions for these higher-level topic fields:
 
 - [Common Reuse Types & Aspects](../cds/common)
-- [Managed Data](../guides/domain/modeling#managed-data)
+- [Managed Data](../guides/domain/index#managed-data)
 - [Localized Data](../guides/uis/localized-data)
 - [Temporal Data](../guides/domain/temporal-data)
 - [Data Federation](https://github.com/SAP-samples/teched2022-AD265/wiki) → hands-on tutorial; capire guide in the making...
