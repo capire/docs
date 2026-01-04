@@ -1,8 +1,8 @@
 
-# [Core Concepts](core-concepts)
+# [CAP-level Messaging](core-concepts)
 # [Event Queues](event-queues)
 # [Messaging](messaging)
-# [Apache Kafka](../../guides/apache-kafka)
+# [Apache Kafka](../../../guides/events/apache-kafka)
 # [Advanced Event Mesh](is-aem)
 # [SAP Event Mesh](event-mesh)
 # [SAP Event Hub](event-hub)
