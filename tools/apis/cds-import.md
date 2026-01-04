@@ -1,5 +1,4 @@
 ---
-status: released
 synopsis: >
   Programmatically use <code>cds.import</code>.
 ---

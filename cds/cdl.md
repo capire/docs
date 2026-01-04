@@ -3,7 +3,6 @@
 synopsis: >
   Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 

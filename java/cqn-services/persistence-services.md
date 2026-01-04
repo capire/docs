@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Persistence Services are CQN-based database clients. This section describes which database types are supported, how datasources to these databases are created and how they are turned into Persistence Services.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 

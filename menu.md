@@ -14,6 +14,12 @@
    ## [Services & APIs](guides/services/_menu.md)
    ## [Serving UIs](guides/uis/_menu.md)
    ## [Protocols](guides/protocols/_menu.md)
+
+   ## Querying <!-- UNRELEASED -->
+      ### [CDS Query Language (CQL)](cds/cql) <!-- UNRELEASED -->
+      ### [CAP-level Querying](guides/querying/cap-level.md) <!-- UNRELEASED -->
+      ### [Pushdown to Database](guides/querying/pushdown.md) <!-- UNRELEASED -->
+
    ## [Databases](guides/databases/_menu.md)
    ## [Data Federation](guides/federation/_menu.md)
    ## [Service Integration](guides/integration/_menu.md)

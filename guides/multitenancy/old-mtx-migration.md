@@ -7,7 +7,6 @@ breadcrumbs:
   - Multitenancy
   - Migration
 # layout: cookbook
-status: released
 impl-variants: true
 ---
 

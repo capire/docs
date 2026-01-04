@@ -2,7 +2,6 @@
 synopsis: >
   This section describes how to register event handlers on services. In CAP everything that happens at runtime is an event that is sent to a service.
   With event handlers the processing of these events can be extended or overridden. Event handlers can be used to handle CRUD events, implement actions and functions and to handle asynchronous events from a messaging service.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 

@@ -1,5 +1,4 @@
 ---
-status: released
 synopsis: >
   APIs of the <code>@sap/cds-dk</code> package like <code>cds.import</code>.
 ---

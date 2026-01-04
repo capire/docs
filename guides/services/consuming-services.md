@@ -2,7 +2,6 @@
 index: 22
 synopsis: >
   Learn how to use uniform APIs to consume local or remote services.
-status: released
 impl-variants: true
 # uacp: Used as link target from Help Portal at
 ---

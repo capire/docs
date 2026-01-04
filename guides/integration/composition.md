@@ -1,17 +1,9 @@
----
-shorty: Reuse & Compose
-synopsis: >
-    Learn how to compose enhanced, verticalized solutions by reusing content from other projects, and adapt them to your needs by adding extensions or projections.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Composition
-status: released
----
 
-# Reuse and Compose
+# CAP Service Composition
 
-{{$frontmatter?.synopsis}}
+Explore in this guide how to compose enhanced solutions by reusing services and other content from modular projects, and adapt them to your needs with solution-specific projections and extensions.
+{.abstract}
+
 
 ## Introduction and Overview
 

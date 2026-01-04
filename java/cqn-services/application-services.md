@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Application Services define the APIs that a CAP application exposes to its clients, for example through OData. This section describes how to add business logic to these services, by extending CRUD events and implementing actions and functions.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 

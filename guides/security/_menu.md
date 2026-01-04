@@ -1,4 +1,4 @@
-# [SAP Product Standards](../../../guides/security/product-standards)
+# [SAP Product Standards](../../../guides/security/product-standards) <!-- INTERNAL -->
 # [CAP-level Authorization](authorization)
 # [Platform Security](platform)
 # [Data Protection](data-protection)

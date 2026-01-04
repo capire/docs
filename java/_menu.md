@@ -22,7 +22,7 @@
 # [Change Tracking](change-tracking)
 # [Transactional Outbox](outbox)
 # [Multitenancy](multitenancy)
-  ## [Multitenancy (Classic)](multitenancy-classic)
+  ## [Multitenancy (Classic)](multitenancy-classic) <!-- INTERNAL -->
 # [Security](security)
   ## [IAS and AMS](../../java/ams)
 # [Spring Boot Integration](spring-boot-integration)
@@ -36,7 +36,7 @@
   ## [Optimizing](operating-applications/optimizing)
   ## [Observability](operating-applications/observability)
   ## [Developer Dashboard](../../java/operating-applications/dashboard)
-# [Integrating Applications](../../java/integrating-applications/)
-  ## [Unified Customer Landscape](../../java/integrating-applications/ucl)
+# [Integrating Applications](../../java/integrating-applications/) <!-- INTERNAL -->
+  ## [Unified Customer Landscape](../../java/integrating-applications/ucl) <!-- INTERNAL -->
 # [Building Plugins](../../java/building-plugins)
 # [Migration Guides](migration)
