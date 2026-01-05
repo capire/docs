@@ -2,17 +2,17 @@
 status: released
 ---
 
-# Getting Started 
+# Getting Started
 Jumpstart & Grow as You Go... {.subtitle}
 
 [[toc]]
 
 
-## Initial Setup 
+## Initial Setup
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-On macOS (and Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up. 
+On macOS (and Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
 
 ```shell
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
@@ -49,8 +49,8 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node@24                              # Node.js latest LTS
-npm add --global @sap/cds-dk                      # CAP's cds-dk
+brew install node@24             # Node.js latest LTS
+npm add --global @sap/cds-dk     # CAP's cds-dk
 ```
 
 
@@ -91,7 +91,7 @@ code --install-extension dbaeumer.vscode-eslint   # for linting```
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
 
 
-## Command Line Interface 
+## Command Line Interface
 
 ### The `cds` command
 Run the `cds` command in your terminal to check whether installation was successful, and to see an overview of available commands, as shown below:
@@ -111,7 +111,7 @@ Run the `cds` command in your terminal to check whether installation was success
     a | add         add facets to projects to grow as you go
     s | serve       run your services in local server
     w | watch       run with auto-restarts on changes
-      | mock        mock a single service 
+      | mock        mock a single service
     r | repl        read-eval-event loop
     e | env         inspect effective configuration
     c | compile     compile cds models to various outputs
@@ -120,10 +120,10 @@ Run the `cds` command in your terminal to check whether installation was success
       | up          one stop build and deploy to cloud
     v | version     get detailed version information
     ? | help        get detailed usage information
-    
+
   Learn more about each command using:
-  cds <cmd> --help 
-  cds help <cmd> 
+  cds <cmd> --help
+  cds help <cmd>
   ```
 > Use `cds help` to get help on any command.
 
@@ -134,10 +134,10 @@ Use `cds version` to check your installed versions of _cds-dk_ , as well as your
   cds version
   ```
   ```zsh
-  @sap/cds-dk       9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
-  npm root -l                ~/cap/bookshop/node_modules
-  npm root -g                /opt/homebrew/lib/node_modules
-  Node.js           24.12.0  /opt/homebrew/bin/node
+  @sap/cds-dk  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
+  npm root -l           ~/cap/bookshop/node_modules
+  npm root -g           /opt/homebrew/lib/node_modules
+  Node.js      24.12.0  /opt/homebrew/bin/node
   ```
 
 
@@ -148,15 +148,15 @@ Use `cds version` to check your installed versions of _cds-dk_ , as well as your
 Use `cds init` to jumpstart CAP projects, which creates a project root folder with a default layout as shown below:
 
 ```shell
-cds init bookshop   # creates a new project
-cd bookshop         # change into the project folder
+cds init bookshop
+cd bookshop
 ```
 ```zsh
 bookshop/           # the project's root folder
 ├─ app/             # UI-related content
 ├─ srv/             # Service-related content
 ├─ db/              # Domain models and database-related content
-└─ readme.md        # Project readme file  
+└─ readme.md        # Project readme file
 ```
 
 > [!info] Convention over configuration
@@ -172,7 +172,7 @@ cds watch
 ```
 ```zsh
   No models found in db/,srv/,app/,app/*.
-  Waiting for some to arrive...    
+  Waiting for some to arrive...
 ```
 
 Let's feed it with a simple service definition by running that in a secondary terminal, which adds a simple service definition as shown below:
@@ -182,10 +182,10 @@ cds add tiny-sample
 :::code-group
 ```cds [srv/cat-service.cds]
 service CatalogService {
-  entity Books { 
+  entity Books {
     key ID:Integer; title:String; author:String;
   }
-} 
+}
 ```
 :::
 
@@ -206,58 +206,58 @@ service CatalogService {
 
 When your project evolves, you'd use `cds add` to add features and facets as needed, for example, to add initial data, Java-specific setups, or deployment options, as outlined below. And finally, use `cds up` to build and deploy your project in one go.
 
-### `cds add` 
+### `cds add`
 
 Use `cds add` to grow your project as you go:
 
 ```shell
-cds add data           # to add test data to your project
-cds add java           # for CAP Java projects
-cds add ui5            # for SAP UI5 freestyle apps
-cds add fiori-tools    # add Fiori tools to your project
+cds add data
+cds add java
+cds add ui5
+cds add fiori-tools
 ```
 
 Use `cds add` to add deployment options
 
 ```shell
-cds add multitenancy   # to deploy as a multi-tenant SaaS app
-cds add hana           # add SAP HANA as database option
-cds add mta            # for deployment to Cloud Foundry
-cds add kyma           # for deployment to Kyma/K8s
-cds add github-actions # for deployment to Kyma/K8s
+cds add multitenancy
+cds add hana
+cds add mta
+cds add kyma
+cds add github-actions
 ```
 
 ### `cds up`
 Use `cds up` to build and deploy your project in one go:
 
 ```shell
-cds up                 # build and deploy locally
-cds up --to hana       # build and deploy to SAP HANA
-cds up --to cf         # build and deploy to Cloud Foundry
-cds up --to kyma       # build and deploy to Kyma/K8s
+cds up
+cds up --to hana
+cds up --to cf
+cds up --to kyma
 ```
 
 ## Stay up to Date!
 
-> [!important] 
+> [!important]
 > In order to benefit from the latest features and improvements, as well as receiving crucial security fixes, it's of utter importance to stay up to date with latest releases of CAP. Regularly run the following commands to do so.
 
-> [!caution] Staying up to date is crucial to receive important security fixes. 
+> [!caution] Staying up to date is crucial to receive important security fixes.
 
 Keep your development environment up to date:
 
 ```shell
 brew upgrade
-npm upgrade --global 
+npm upgrade --global
 ```
 Keep your project dependencies up to date:
 ```shell
 # within your project folder
 npm upgrade
 ```
-> Use `npm outdated` to check which dependencies are outdated before upgrading. 
+> Use `npm outdated` to check which dependencies are outdated before upgrading.
 
-> [!warning] 
+> [!warning]
 > For such upgrades to work, **do not use pinned versions** in your project dependencies. Always use open semver ranges instead – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
 
 ::: code-group
@@ -270,10 +270,10 @@ npm upgrade
 ```
 :::
 
-> [!tip] 
+> [!tip]
 > Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are highly recommended for managing Maven dependencies in CAP Java projects.
 
 
 ## Next: Bookshop
 
-Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside. 
+Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.
