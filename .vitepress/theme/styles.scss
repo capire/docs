@@ -1,11 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////
-// 
+//
 //   Custom CSS styles for VitePress documentation site.
 //   Based on default variables from VitePress:
 //   https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
-// 
+//
 //////////////////////////////////////////////////////////////////////////////
-
 
 
 html {
@@ -67,7 +66,7 @@ html {
 
 .VPHome { font-family: var(--vp-font-family-avenir); }
 .VPHero .tagline { font-weight: 400 }
-.VPHero .name, main .vp-doc h1 { 
+.VPHero .name, main .vp-doc h1 {
   -webkit-text-fill-color: transparent;
   background: -webkit-linear-gradient(-60deg,#098 20%,#fa0 50%);
   background-clip: text;
@@ -83,7 +82,7 @@ html {
 
 // Styling for documentation panes
 main .vp-doc {
-  
+
   // Table of Contents
   nav.table-of-contents {
     line-height: 150%;
@@ -105,13 +104,13 @@ main .vp-doc {
 
 
   // font-family: var(--vp-font-family-avenir);
-  h1, h2, h3, h4, h5 { 
+  h1, h2, h3, h4, h5 {
     font-family: var(--vp-font-family-avenir);
     .header-anchor { top: auto } // undo the hard-wired 24px of vitepress
   }
 
 
-  h1 { 
+  h1 {
     line-height: 1.2em; margin: 1em 0 1em;
     + .subtitle {
       color: var(--vp-c-text-2);
@@ -127,27 +126,27 @@ main .vp-doc {
     font-size: 123%;
   }
   h2 { font-size: 24px; margin: 4em 0 2em; padding-top: 12px; }
-  h3 { font-size: 20px; margin: 3em 0 1em; 
+  h3 { font-size: 20px; margin: 3em 0 1em;
     margin-bottom: 0em; // reduce margin-bottom to group series of h3 together
     & + p { margin-top: 1.5em; }
   }
-  h4 { font-size: 17px; margin: 2em 0 1em; 
+  h4 { font-size: 17px; margin: 2em 0 1em;
     margin-bottom: 0em; // reduce margin-bottom to group series of h4 together
     & + p { margin-top: 1.1em; }
   }
 
-  h6 { 
+  h6 {
     // we use h6 for alternative anchor targets
-    color: transparent; 
-    position: absolute; 
-    left:0px; 
-    margin-top:0px; 
-  } 
+    color: transparent;
+    position: absolute;
+    left:0px;
+    margin-top:0px;
+  }
 
   p {
     line-height: 1.5em
   }
-  
+
   ol {
     padding-left: 2.5em;
   }
@@ -168,7 +167,7 @@ main .vp-doc {
     dt { font-size: 111%; .index-page & { font-size: 123%; } }
     dd { margin: 11px 0 22px 22px; }
   }
-  
+
   sup {
     line-height: 0px; // remove the space between the line and the superscript
     font-size: 80%;
@@ -295,8 +294,8 @@ main .vp-doc span.centered table {
 
 // Images & video adaptations
 img, video.bright {
-  main .vp-doc & { 
-    margin: 30px auto; // center images and videos 
+  main .vp-doc & {
+    margin: 30px auto; // center images and videos
     .dark & { // recolor in dark mode
       filter: brightness(.884) invert(1) hue-rotate(177deg);
       &.ignore-dark { // class to skip recoloring
@@ -309,17 +308,17 @@ img, video.bright {
 
 
 .VPBadge {
-  &.tip { 
-    background-color: #ced; color: #031; .dark & { 
-      background-color: #031; color: #9ca; 
-    } 
+  &.tip {
+    background-color: #ced; color: #031; .dark & {
+      background-color: #031; color: #9ca;
+    }
   }
   margin-top: 3px !important;
   padding: 0 0.7em !important;
   font-size: 80%;
-  line-height: 1.5em; 
+  line-height: 1.5em;
   border-radius: 1.5em;
-  white-space: nowrap; 
+  white-space: nowrap;
 }
 
 
@@ -353,6 +352,9 @@ img, video.bright {
         h2, h3, p {
           padding: 2px 0;
         }
+      }
+      &.level-1.is-active > .item > .indicator {
+        background-color: var(--vp-c-brand-1);
       }
     }
   }
