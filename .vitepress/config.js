@@ -111,7 +111,7 @@ if (process.cwd() === path.dirname(__dirname)) {
 // Add custom capire info to the theme config
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.0',
+    java_services: '4.6.1',
     java_cds4j: '4.6.0'
   },
   gotoLinks: []
