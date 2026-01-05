@@ -171,7 +171,7 @@ The message payload is in the `data` property of the inbound `msg` object.
 
 
 ::: tip
-To have more control over imported service definitions, you can set the `model` configuration of your external service to a cds file where you define the external service and only use the imported definitions your app needs. This way, plugins like [Open Resource Discovery (ORD)](../../plugins/index.md#ord-open-resource-discovery) know which parts of the external service you actually use in your application.
+To have more control over imported service definitions, you can set the `model` configuration of your external service to a cds file where you define the external service and only use the imported definitions your app needs. This way, plugins like [Open Resource Discovery (ORD)](../../plugins/index#ord-open-resource-discovery) know which parts of the external service you actually use in your application.
 :::
 
 
