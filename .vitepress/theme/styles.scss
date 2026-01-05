@@ -353,6 +353,10 @@ img, video.bright {
           padding: 2px 0;
         }
       }
+
+      // reposition indicators to keep within padding 
+      .item > .indicator { left: -14px;  }
+      // also enable indicators for level-1 items
       &.level-1.is-active > .item > .indicator {
         background-color: var(--vp-c-brand-1);
       }
