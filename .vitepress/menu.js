@@ -50,9 +50,9 @@ export class MenuItem {
     const rewrite = link => link[0] === '/' ? link : _rewrite (normalize(join(folder,link)))
     const {items} = await Menu.from (join(root,filename), rewrite, include, exclude)
     if (items) (this.items ??= []).push (...items)
-    this.link = '/'+folder+'/'
+    const index = existsSync (join (root,folder,'index.md'))
+    if (index) this.link = `/${folder}/`; else delete this.link
     this.collapsed = true
-    // if (!existsSync(join(cwd,folder+'/index.md'))) delete this.link
   }
 }
 
