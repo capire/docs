@@ -135,7 +135,7 @@ The event must return a list of all of the dependent services' `xsappname` value
 
 CAP automatically adds dependencies of services to the list, for which it provides dedicated integrations.
 
-[Learn more about automatically added SaaS dependencies.](/guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
+[Learn more about automatically added SaaS dependencies.](../guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
 
 ::: tip
 The `xsappname` of an SAP reuse service that is bound to your application is part of the service binding. The structure of the service binding, and hence the exact location of the `xsappname` field, may vary between services.

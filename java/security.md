@@ -369,12 +369,12 @@ CAP Java supports the consumption of IAS-based services of various kinds:
 
 ![The TAM graphic is explained in the accompanying text.](./assets/java-ias.png){width="800px" }
 
-Regardless of the kind of service, CAP provides a [unified integration as Remote Service](/java/cqn-services/remote-services#remote-odata-services).
+Regardless of the kind of service, CAP provides a [unified integration as Remote Service](cqn-services/remote-services#remote-odata-services).
 Basic communication setup and user propagation is addressed under the hood, for example, an mTLS handshake is performed in case of service-2-service communication.
 
 ### Internal Services {#internal-app}
 
-For communication between adjacent CAP applications, these are CAP applications which are bound to the same identity instance, simplified configuration is explained in [Binding to a Service with Shared Identity](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity).
+For communication between adjacent CAP applications, these are CAP applications which are bound to the same identity instance, simplified configuration is explained in [Binding to a Service with Shared Identity](cqn-services/remote-services#binding-to-a-service-with-shared-identity).
 
 ### External Services (IAS App-to-App)  {#app-to-app}
 
@@ -385,7 +385,7 @@ For connection setup, it uses [IAS App-2-App flows](https://help.sap.com/docs/cl
 
 The CAP Java application as a _provider app_ needs to:
 
-1. Configure [IAS authentication](/java/security#xsuaa-ias).
+1. Configure [IAS authentication](#xsuaa-ias).
 2. Expose an API in the IAS service instance.
 
     ::: details Sample IAS instance of provider (mta.yaml)
@@ -486,7 +486,7 @@ To activate the App-2-App connection as a *consumer*, you need to:
 
 [Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
 
-[Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
+[Learn more about simplified Remote Service configuration with destinations](cqn-services/remote-services#destination-based-scenarios) {.learn-more}
 
 
 ### BTP Reuse Services {#ias-reuse}
@@ -495,7 +495,7 @@ IAS-based BTP reuse services can be created/consumed with CAP Java even more eas
 
 The CAP reuse service (provider) needs to:
 
-1. Configure [IAS authentication](/java/security#xsuaa-ias).
+1. Configure [IAS authentication](#xsuaa-ias).
 2. Bind an IAS instance that exposes services and service plans.
 
     ::: details Sample IAS instance for provider
@@ -578,7 +578,7 @@ The CAP consumer application (client) needs to:
 
 4. Use CQN queries to consume the reuse service (optional)
 
-[Learn more about simplified Remote Service configuration with bindings](/java/cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
+[Learn more about simplified Remote Service configuration with bindings](cqn-services/remote-services#service-binding-based-scenarios) {.learn-more}
 
 ::: tip Service plan name as CAP role
 The service plan names as specified in `consumed-services` in the IAS instance are granted as CAP roles after successful authentication.
@@ -645,10 +645,10 @@ entity Orders {
 ```
 
 For the following OData request `GET Orders(ID='1')/items?$expand=book`, authorizations for `Orders` and for `Books` are checked.
-If the entity `Books` has a `where` clause for [instance-based authorization](/java/security#instance-based-auth),
+If the entity `Books` has a `where` clause for [instance-based authorization](../guides/security/authorization#instance-based-auth),
 it will be added as a filter to the sub-request with the expand.
 
-Custom CQL statements submitted to the [Application Service](/java/cqn-services/application-services) instances
+Custom CQL statements submitted to the [Application Service](cqn-services/application-services) instances
 are also authorized by the same rules including the path expressions and subqueries used in them.
 
 For example, the following statement checks role-based authorizations for both `Orders` and `Books`,
@@ -679,11 +679,11 @@ Make sure you keep the filters for authorization.
 Starting with CAP Java `4.0`, deep authorization is on by default.
 It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
 
-[Learn more about `@restrict.where` in the instance-based authorization guide.](/guides/security/authorization#instance-based-auth){.learn-more}
+[Learn more about `@restrict.where` in the instance-based authorization guide.](../guides/security/authorization#instance-based-auth){.learn-more}
 
 ### Forbidden on Rejected Entity Selection { #reject-403 }
 
-Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
+Entities that have an instance-based authorization condition, that is [`@restrict.where`](../guides/security/authorization#restrict-annotation),
 are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
 Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
 
@@ -697,7 +697,7 @@ To avoid to disclosure the existence of such entities to unauthorized users, mak
 Starting with CAP Java `4.0`, the reject behaviour is on by default.
 It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
 
-[Learn more about `@restrict.where` in the instance-based authorization guide.](/guides/security/authorization#instance-based-auth){.learn-more}
+[Learn more about `@restrict.where` in the instance-based authorization guide.](../guides/security/authorization#instance-based-auth){.learn-more}
 
 ### Authorization Checks On Input Data { #input-data-auth }
 
@@ -717,7 +717,7 @@ Note that the `UPDATE` on instances _not matching the request user's accounting 
 Starting with CAP Java `4.0`, deep authorization is on by default.
 It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
-[Learn more about `@restrict.where` in the instance-based authorization guide.](/guides/security/authorization#instance-based-auth){.learn-more}
+[Learn more about `@restrict.where` in the instance-based authorization guide.](../guides/security/authorization#instance-based-auth){.learn-more}
 
 
 ### Enforcement API & Custom Handlers { #enforcement-api}

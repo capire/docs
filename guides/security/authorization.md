@@ -871,7 +871,6 @@ There is one use case where currently an XSUAA based authorization management is
 For example, SAP Task Center you want to consume an XSUAA-based service that requires own end user role. Apart from this, most services should be technical services that do not require an own authorization management that is not yet integrated in AMS.
 
 
-<!-- [Learn more about using IAS and AMS with CAP Java.](/java/ams){.learn-more} -->
 [Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
 
 
@@ -960,7 +959,7 @@ resources:
 
 Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_ file are merged. If there are conflicts, the [MTA security configuration](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) has priority.
 
-[Learn more about **building and deploying MTA applications**.](/guides/deploy/){ .learn-more}
+[Learn more about **building and deploying MTA applications**.](../deploy/){ .learn-more}
 
 ### 3. Assembling Roles and Assigning Roles to Users
 
