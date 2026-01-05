@@ -2,7 +2,7 @@
 status: released
 ---
 
-# Getting Started in a Nutshell
+# Getting Started 
 Jumpstart & Grow as You Go... {.subtitle}
 
 [[toc]]
