@@ -204,13 +204,78 @@ FROM
 In this example, we select all books together with the name of their author.
 `author` is an association in the `Books` entity.
 
+When navigating along a to-many association to a leaf element, the result is flattened:
+
+:::code-group
+```js [CQL]
+> await cds.ql `SELECT from Authors { books.title as title, name as author }` // [!code focus]
+[
+  { title: 'Wuthering Heights', author: 'Emily Brontë' },
+  { title: 'Jane Eyre', author: 'Charlotte Brontë' },
+  { title: 'Eleonora', author: 'Edgar Allen Poe' },
+  { title: 'The Raven', author: 'Edgar Allen Poe' },
+  { title: 'Catweazle', author: 'Richard Carpenter' }
+]
+```
+
+```sql [SQL]
+SELECT
+  books.title as title,
+  name as author
+FROM sap_capire_bookshop_Authors as Authors
+  LEFT JOIN sap_capire_bookshop_Books as books
+  ON books.author_ID = Authors.ID
+```
+:::
+
+In this example, we select the book titles together with each author.
+Since books is a to-many association, we get a flattened result: one entry per author and book title.
+
+In annotation expressions, the result should often only contain one entry per entry in the annotated entity.
+This can be achieved using the [exists](#after-exists-predicate) predicate.
+
+
 ::: info 💡 Associations are **forward-declared joins**
 They provide a convenient way to navigate between related entities without having to define the join conditions manually.
 
 The join condition is defined **ahead of time** as part of the association.
 Typically, this is a foreign key relationship between two entities, but other conditions are also possible.
 
+
+```cds
+entity Books {
+  key ID : Integer;
+  title  : String;
+  author : Assocition to Author;
+                   // implicit: on author.ID = author_ID
+}
+
+entity Authors {
+  key ID : Integer;
+  name   : String;
+  books  : Association to many Books on books.author = $self;
+                             // for: on books.author_ID = $self.ID
+}
+```
+
+
 It then manifests whenever the association is used in a path expression as part of a query.
+
+```cds
+SELECT from Books { title, author.name as author }
+```
+
+```sql
+SELECT
+  title,
+  author.name AS author
+FROM
+  sap_capire_bookshop_Books
+LEFT JOIN
+  sap_capire_bookshop_Authors AS author -- The table alias for association 'author'
+  ON author.ID = author_ID;             -- Join condition from association
+```
+
 
 The condition can manifest in multiple ways:
 - In the on condition of a join
