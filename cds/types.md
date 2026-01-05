@@ -48,7 +48,7 @@ These types are used to define the structure of entities and services, and are m
 
 > <sup>(1)</sup> Concrete mappings to specific databases may differ.
 >
-> <sup>(2)</sup> See also [Best Practices](../guides/domain/modeling#don-t-interpret-uuids).
+> <sup>(2)</sup> See also [Best Practices](../guides/domain/index#don-t-interpret-uuids).
 >
 > <sup>(3)</sup> _SMALLINT_ on PostgreSQL and H2.
 >
@@ -62,6 +62,6 @@ These types are used to define the structure of entities and services, and are m
 
 [Additional Reuse Types and Aspects by `@sap/cds/common`](common) {.learn-more}
 
-[Mapping to OData EDM types](../guides/advanced/odata#type-mapping) {.learn-more}
+[Mapping to OData EDM types](../guides/protocols/odata#type-mapping) {.learn-more}
 
 [HANA-native Data Types](../guides/databases/hana-native#hana-types){.learn-more}

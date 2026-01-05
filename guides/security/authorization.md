@@ -1,10 +1,6 @@
 ---
-index: 44
-# layout: cookbook
-label: Authorization
 synopsis: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
@@ -21,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 
-# CDS-based Authorization
+# CAP-level Authorization & Access Control
 
 Authorization means restricting access to data by adding respective declarations to CDS models, which are then enforced in service implementations. By adding such declarations, we essentially revoke all default access and then grant individual privileges.
 
@@ -110,7 +106,7 @@ For XSUAA or IAS authentication, the request user is attached with the pseudo ro
 :::
 
 #### internal-user
-Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](../../guides/security/overview#application-zone).
+Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](platform#application-zone).
 
 ::: tip
 For XSUAA or IAS authentication, the request user is attached with the pseudo role `internal-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` on basis of the **identical** XSUAA or IAS service instance.
@@ -173,7 +169,7 @@ service BookshopService {
 }
 ```
 
-Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../../guides/services/providing-services#input-validation), you can also use `@readonly` on a property level.
+Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../services/constraints), you can also use `@readonly` on a property level.
 
 In addition, annotation `@Capabilities` from standard OData vocabulary is enforced by the runtimes analogously:
 
@@ -225,7 +221,7 @@ In general, **implicitly auto-exposed entities cannot be accessed directly**, th
 
 In contrast, **explicitly auto-exposed entities can be accessed directly, but only as `@readonly`**. The rationale behind that is that entities representing value lists need to be readable at the service level, for instance to support value help lists.
 
-See details about `@cds.autoexpose` in [Auto-Exposed Entities](../../guides/services/providing-services#auto-exposed-entities).
+See details about `@cds.autoexpose` in [Auto-Exposed Entities](../services/providing-services#auto-exposed-entities).
 
 This results in the following access matrix:
 
@@ -274,7 +270,7 @@ whereas the properties are:
 * `where`: a filter condition that further restricts access on an instance level (optional).
 
 The following values are supported:
-- `grant` accepts all standard [CDS events](../../get-started/best-practices#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
+- `grant` accepts all standard [CDS events](../../get-started/concepts#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
 
 - The `to` property lists all [user roles](#roles) or [pseudo roles](#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
@@ -875,7 +871,6 @@ There is one use case where currently an XSUAA based authorization management is
 For example, SAP Task Center you want to consume an XSUAA-based service that requires own end user role. Apart from this, most services should be technical services that do not require an own authorization management that is not yet integrated in AMS.
 
 
-<!-- [Learn more about using IAS and AMS with CAP Java.](/java/ams){.learn-more} -->
 [Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
 
 
@@ -964,7 +959,7 @@ resources:
 
 Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_ file are merged. If there are conflicts, the [MTA security configuration](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) has priority.
 
-[Learn more about **building and deploying MTA applications**.](/guides/deploy/){ .learn-more}
+[Learn more about **building and deploying MTA applications**.](../deploy/){ .learn-more}
 
 ### 3. Assembling Roles and Assigning Roles to Users
 

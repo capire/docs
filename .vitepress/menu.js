@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 
 import { dirname, relative, resolve, join, normalize } from 'node:path'
-import { promises as fs } from 'node:fs'
+import { existsSync, promises as fs } from 'node:fs'
 import rewrites from './rewrites.js'
 
-const DEBUG = process.env.DEBUG?.match(/\bmenu\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
+const DEBUG = process.env.DEBUG?.match(/\b(menu|all)\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
+const EXTERNAL = process.env.VITE_CAPIRE_ENV === 'external'
 const cwd = process.cwd()
 
 
@@ -48,9 +49,10 @@ export class MenuItem {
     const root = dirname(parent), folder = dirname(filename)
     const rewrite = link => link[0] === '/' ? link : _rewrite (normalize(join(folder,link)))
     const {items} = await Menu.from (join(root,filename), rewrite, include, exclude)
-    const children = this.items ??= []; children.push (...items)
+    if (items) (this.items ??= []).push (...items)
     this.link = '/'+folder+'/'
     this.collapsed = true
+    // if (!existsSync(join(cwd,folder+'/index.md'))) delete this.link
   }
 }
 
@@ -76,6 +78,15 @@ export class Menu extends MenuItem {
         /^\s*(#+)\s(.*)/.exec(each) || []          // without link
       if (!hashes) continue //> skip lines not starting with #es
 
+
+      if (EXTERNAL) {
+        let unreleased = each.match(/<!-- (UNRELEASED|INTERNAL) -->/)
+        if (unreleased) {
+          DEBUG?.('skipped:', unreleased[0], text, 'at', relative(cwd,file)+':'+(i+1))
+          continue
+        }
+      }
+
       // Get parent from stack -> it's the recent stack entry with less hashes
       let parent = children [hashes.length-1]
       if (!parent) throw new Error (`Missing parent for: ${each.trim()} at ${relative(cwd,file)}:${i+1}`)
@@ -85,7 +96,7 @@ export class Menu extends MenuItem {
       if (link) {
         if (link[0] !== '/' && !is_submenu) link = rewrite(link)
         if (exclude(link) || !include(link)) {
-          DEBUG?.('skipped:', each.trim(), 'at', relative(cwd,file)+'.'+(i+1))
+          DEBUG?.('excluded:', each.trim(), 'at', relative(cwd,file)+':'+(i+1))
           continue
         }
       }

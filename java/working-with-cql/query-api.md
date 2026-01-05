@@ -1,7 +1,6 @@
 ---
 synopsis: >
   API to fluently build CQL statements in Java.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -94,7 +93,7 @@ The CQL query accesses the `name` element of the `Authors` entity, which is reac
 
 ### Target Entity Sets {#target-entity-sets}
 
-All [CDS Query Language (CQL)](/cds/cql) statements operate on a _target entity set_, which is specified via the `from`, `into`, and `entity` methods of `Select`/`Delete`, `Insert`/`Upsert`, and `Update` statements.
+All [CDS Query Language (CQL)](../../cds/cql) statements operate on a _target entity set_, which is specified via the `from`, `into`, and `entity` methods of `Select`/`Delete`, `Insert`/`Upsert`, and `Update` statements.
 
 In the simplest case, the target entity set identifies a complete CDS entity set:
 
@@ -126,7 +125,7 @@ Select.from(ORDERS, o -> o.filter(o.id().eq(3)).items())
 
 The _target entity set_ in the query is defined by the entity reference in the from clause. The reference targets the `items` of the `Order` with ID 3 via an _infix filter_. From this target entity set (of type `OrderItems`), the query selects the `quantity` and the `title` of the `book`. Infix filters can be defined on any path segment using the `filter` method, which overwrites any existing filter on the path segment. Defining an infix filter on the last path segment is equivalent to adding the filter via the statement's `where` method. However, inside infix filters, path expressions are not supported.
 
-In the [CDS Query Language (CQL)](/cds/cql) builder, the lambda expression `o -> o.filter(o.id().eq(3)).items()` is evaluated relative to the root entity `Orders` (o). All lambda expressions that occur in the other clauses of the query are relative to the target entity set `OrderItems`, for example, `i -> i.quantity()` accesses the element `quantity` of `OrderItems`.
+In the [CDS Query Language (CQL)](../../cds/cql) builder, the lambda expression `o -> o.filter(o.id().eq(3)).items()` is evaluated relative to the root entity `Orders` (o). All lambda expressions that occur in the other clauses of the query are relative to the target entity set `OrderItems`, for example, `i -> i.quantity()` accesses the element `quantity` of `OrderItems`.
 ::: tip
 To target components of a structured document, we recommend using path expressions with infix filters.
 :::
@@ -165,7 +164,7 @@ The `byId` method isn't supported for entities with compound keys.
 
 ```java
 Map<String, Object> filter = new HashMap<>();
-filter.put("author.name", "Edgar Allen Poe");
+filter.put("author.name", "Edgar Allan Poe");
 filter.put("stock", 0);
 
 Select.from("bookshop.Books").matching(filter);
@@ -412,7 +411,7 @@ Select.from(AUTHORS)
              a -> a.books()
                    .filter(b -> b.year().eq(1897))
                    .expand(b -> b.title()))
-    .where(a -> name().in("Bram Stroker", "Edgar Allen Poe"));
+    .where(a -> name().in("Bram Stroker", "Edgar Allan Poe"));
 ```
 
 This query expands only books that were written in 1897:
@@ -424,7 +423,7 @@ This query expands only books that were written in 1897:
     "books" : [ { "title" : "Dracula" } ]
   },
   {
-    "name" : "Edgar Allen Poe",
+    "name" : "Edgar Allan Poe",
     "books" : [ ]
   }
 ]
@@ -477,7 +476,7 @@ The `distinct` clause removes duplicate rows from the root entity and effectivel
 :::
 
 ::: tip Resolving duplicates in to-many expands
-Duplicates in to-many expands can occur on associations that are mapped as many-to-many without using a [link entity](../../guides/domain/modeling#many-to-many-associations) and don't correctly define the source cardinality. This can be resolved by adding the cardinality in the CDS model: `Association [*,*] to Entity`.
+Duplicates in to-many expands can occur on associations that are mapped as many-to-many without using a [link entity](../../guides/domain/index#many-to-many-associations) and don't correctly define the source cardinality. This can be resolved by adding the cardinality in the CDS model: `Association [*,*] to Entity`.
 :::
 
 ##### Optimized Expand Execution {#expand-optimization}
@@ -601,7 +600,7 @@ The `search` method adds a predicate to the query that filters out all entities 
 
 1. Define searchable elements {#searchable-elements}
 
-By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/services/providing-services#searching-data).
+By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/services/served-ootb#searching-data).
 
 Consider following CDS Entity. There are two elements, `title` and `name`, of type String, making them both searchable by default.
 
@@ -641,21 +640,21 @@ entity Book {
 
 * Use search terms {#search-term}
 
-The following Select statement shows how to search for an entity containing the single _search term_ "Allen".
+The following Select statement shows how to search for an entity containing the single _search term_ "Allan".
 
 ```java
 // Book record - (ID, title, name) VALUES (1, "The greatest works of James Allen", "Unwin")
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search("Allen");
+        .search("Allan");
 ```
 
 > The element `title` is [searchable](#searchable-elements), even though `title` isn't selected.
 
 * Use search expressions {#search-expression}
 
-It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allen" or "Heights".
+It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allan" or "Heights".
 
 ```java
 // Book records -
@@ -664,7 +663,7 @@ It's also possible to create a more complex _search expression_ using `AND`, `OR
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search(term -> term.has("Allen").or(term.has("Heights")));
+        .search(term -> term.has("Allan").or(term.has("Heights")));
 ```
 
 #### Search in Sub-Elements of Map Data <Beta />
@@ -694,7 +693,7 @@ Including the entire map element in the search scope triggers a full-text search
 
 #### Using `where` Clause {#where-clause}
 
-In a where clause, leverage the full power of [CDS Query Language (CQL)](/cds/cql) [expressions](#expressions) to compose the query's filter:
+In a where clause, leverage the full power of [CDS Query Language (CQL)](../../cds/cql) [expressions](#expressions) to compose the query's filter:
 
 ```java
 Select.from("bookshop.Books")
@@ -714,7 +713,7 @@ You can aggregate data in two ways:
 
 #### Aggregation Functions { #aggregation-functions }
 
-Use [aggregation functions](../../guides//databases//index.md#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+Use [aggregation functions](../../guides/databases//index.md#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
 
 
 #### Grouping { #grouping }
@@ -779,7 +778,7 @@ If we execute the query on our dataset, we get the following result:
 Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
 
 ::: tip
-Use [infix filters](/cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
+Use [infix filters](../../cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
 :::
 
 ##### min
@@ -925,7 +924,7 @@ Depending on the database, sorting by content of map data is expensive and can l
 
 ### Pessimistic Locking { #write-lock}
 
-Use the `lock()` method to enforce [Pessimistic Locking](../../guides/services/providing-services#select-for-update).
+Use the `lock()` method to enforce [Pessimistic Locking](../../guides/services/served-ootb#select-for-update).
 
 The following example shows how to build a select query with an _exclusive_ (write) lock. The query tries to acquire a lock for a maximum of 5 seconds, as specified by an optional parameter `timeout`:
 
@@ -1115,7 +1114,7 @@ Bulk upserts with entries updating/inserting the same set of elements can be exe
 
 ### Deep Upsert { #deep-upsert}
 
-Upsert can operate on deep [document structures](../cds-data#nested-structures-and-associations) modeled via [compositions](../../guides/domain/modeling#compositions), such as an `Order` with many `OrderItems`.
+Upsert can operate on deep [document structures](../cds-data#nested-structures-and-associations) modeled via [compositions](../../guides/domain/index#compositions), such as an `Order` with many `OrderItems`.
 Such a _Deep Upsert_ is similar to [Deep Update](#deep-update), but it creates the root entity if it doesn't exist and comes with some [limitations](#upsert) as already mentioned.
 
 The [full set](#deep-update-full-set) and [delta](#deep-update-delta) representation for to-many compositions are supported as well.
@@ -1191,9 +1190,9 @@ Update.entity(BOOKS).where(b -> b.stock().eq(0))
 
 ### Deep Update { #deep-update}
 
-Use deep updates to update _document structures_. A document structure comprises a single root entity and one or multiple related entities that are linked via compositions into a [contained-in-relationship](../../guides/domain/modeling#compositions). Linked entities can have compositions to other entities, which become also part of the document structure.
+Use deep updates to update _document structures_. A document structure comprises a single root entity and one or multiple related entities that are linked via compositions into a [contained-in-relationship](../../guides/domain/index#compositions). Linked entities can have compositions to other entities, which become also part of the document structure.
 
-By default, only target entities of [compositions](../../guides/domain/modeling#compositions) are updated in deep updates. Nested data for managed to-one associations is used only to [set the reference](../cds-data#setting-managed-associations-to-existing-target-entities) to the given target entity. This can be changed via the [@cascade](query-execution#cascading-over-associations) annotation.
+By default, only target entities of [compositions](../../guides/domain/index#compositions) are updated in deep updates. Nested data for managed to-one associations is used only to [set the reference](../cds-data#setting-managed-associations-to-existing-target-entities) to the given target entity. This can be changed via the [@cascade](query-execution#cascading-over-associations) annotation.
 
 For to-many compositions there are two ways to represent changes in the nested entities of a structured document: *full set* and *delta*.  In contrast to *full set* representation which describes the target state of the entities explicitly, a change request with *delta* payload describes only the differences that need to be applied to the structured document to match the target state. For instance, in deltas, entities that are not included remain untouched, whereas in full set representation they are deleted.
 

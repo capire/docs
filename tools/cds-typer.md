@@ -282,7 +282,7 @@ Note that (iii) through (v) are specific to TypeScript, while (i) and (ii) can a
 
 ## Fine Tuning
 ### Singular/ Plural
-The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/modeling#naming-conventions).
+The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/index#naming-conventions).
 
 Naturally, this best practice can't be enforced on every model. Even for names that do follow best practices, the heuristic can fail. If you find that you would like to specify custom identifiers for singular or plural forms, you can do so using the `@singular` or `@plural` annotations.
 

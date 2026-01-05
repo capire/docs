@@ -21,7 +21,7 @@ status: released
 
 ## Intro & Overview
 
-After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/in-a-nutshell) or [Cookbook](../) guides, you would finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
+After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/bookshop) or [Cookbook](../) guides, you would finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
 
 ![First prepare for production (once) and then freeze your dependencies (once and on upgrades). Next build and assemble and then deploy.](assets/deploy-setps.drawio.svg){style="margin: 30px auto"}
 
@@ -296,8 +296,8 @@ cds build --production
 
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more}
-[Learn how to reduce the MTA archive size **during development**.](../../get-started/troubleshooting#reduce-mta-size){.learn-more}
+[Got errors? See the troubleshooting guide.](../../get-started/get-help#mta){.learn-more}
+[Learn how to reduce the MTA archive size **during development**.](../../get-started/get-help#reduce-mta-size){.learn-more}
 
 This process can take some minutes and finally logs an output like this:
 
@@ -327,10 +327,8 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 ![The screenshot shows the SAP BTP cockpit, when a user navigates to his dev space in the trial account and looks at all deployed applications.](./assets/apps-cockpit.png)
 
 ::: tip Next up: Assign the _admin_ role
-In order to access the admin APIs you need to assign the _admin_ role required by `AdminService`. Create a role collection and [assign the role and your user](https://developers.sap.com/tutorials/btp-app-role-assignment.html) to get access.
+To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
 :::
-
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#cflogs-recent){.learn-more}
 
 
 ## Staying Up-to-date { #freeze-dependencies }

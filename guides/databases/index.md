@@ -2,7 +2,6 @@
 synopsis: >
   This guide provides instructions on how to use databases with CAP applications.
   Out of the box-support is provided for SAP HANA, SQLite, H2 (Java only), and PostgreSQL.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 impl-variants: true
 ---
@@ -306,7 +305,7 @@ cds:
 
 
 
-Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../services/providing-services#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
+Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../services/served-ootb#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
 
 
 
@@ -1075,7 +1074,7 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtime** pr
 
 - `search(x, y)`
   Checks whether `y` is contained in any element of `x` (fuzzy matching may apply).
-  See [Searching Data](../services/providing-services#searching-data) for more details.
+  See [Searching Data](../services/served-ootb#searching-data) for more details.
 
 - `session_context(<var>)`
   Utilizes standard variable names to maintain session context.

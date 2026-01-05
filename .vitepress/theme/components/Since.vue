@@ -1,11 +1,11 @@
 <template>
   <StatusBadge
     type="tip"
-    :text="`Since ${of} ${version}`"
-    :title="`This feature is only available as of ${of} version ${version} or higher.`"
+    :text="`Since ${package||''} ${version}`"
+    :title="`This feature is available since version ${version}${package ? ' of ' + package : ''}.`"
   />
 </template>
 
 <script setup lang="ts">
-  defineProps(['version', 'of'])
+  defineProps(['version', 'package'])
 </script>

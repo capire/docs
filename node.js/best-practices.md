@@ -2,7 +2,6 @@
 label: Best Practices
 synopsis: >
   Learn about Node.js best practices.
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -385,7 +384,7 @@ Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that
 
 ## Custom Streaming <Beta /> { #custom-streaming-beta }
 
-[Media Data](../guides/services/providing-services#serving-media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
+[Media Data](../guides/services/media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
 Actions and functions support the same set of `media data` annotations.
 ```cds
 @(Core.MediaType: 'text/csv', Core.ContentDisposition.Filename: 'Books.csv')

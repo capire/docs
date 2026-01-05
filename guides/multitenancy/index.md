@@ -2,7 +2,6 @@
 synopsis: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
 label: Multitenancy
-status: released
 impl-variants: true
 ---
 
@@ -329,7 +328,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - [ terminate with ^C ]
    ```
 
-   [If you get an error on server start, read the troubleshooting information.](../../get-started/troubleshooting#why-do-i-get-an-error-on-server-start){.learn-more}
+   [If you get an error on server start, read the troubleshooting information.](../../get-started/get-help#why-do-i-get-an-error-on-server-start){.learn-more}
    :::
 
 
@@ -754,7 +753,7 @@ mvn cds:watch -Dspring-boot.run.profiles=hybrid
 :::
 
 
-Learn more about [Hybrid Testing](../advanced/hybrid-testing).{.learn-more}
+Learn more about [Hybrid Testing](../../tools/cds-bind).{.learn-more}
 
 ::: tip Manage multiple deployments
 Use a dedicated profile for each deployment landscape if you are using several, such as `dev`, `test`, `prod`. For example, after logging in to your `dev` space:
