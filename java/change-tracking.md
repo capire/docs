@@ -30,7 +30,7 @@ To use the change tracking feature, you need to add a dependency to [cds-feature
 ```
 
 - Your POM must also include the goal to resolve the CDS model delivered from the feature.
-See [Reference the New CDS Model in an Existing CAP Java Project](/java/building-plugins#reference-the-new-cds-model-in-an-existing-cap-java-project).
+See [Reference the New CDS Model in an Existing CAP Java Project](building-plugins#reference-the-new-cds-model-in-an-existing-cap-java-project).
 
 - If you use SAP Fiori elements as your UI framework and intend to use the built-in UI, update your SAP UI5 version to 1.121.2 or higher.
 
@@ -213,7 +213,7 @@ Elements from the `@changelog` annotation value must always be prefixed by the a
 :::warning Validation required
 If the target of the association is missing, for example, when an entity is updated with the ID for a customer
 that does not exist, the changelog entry is not created. You need to validate
-such cases in the custom code or use annotations, for example, [`@assert.target`](/guides/services/constraints#assert-target).
+such cases in the custom code or use annotations, for example, [`@assert.target`](../guides/services/constraints#assert-target).
 :::
 
 ### Caveats of Identifiers
@@ -337,7 +337,7 @@ values of the entity: data that weren't present in the old values are considered
 the new values are considered as deleted. Elements that are present in both old and new values but have different values
 are considered as modified. Each change detected by the change tracking feature is stored in the change log as a separate entry.
 
-As a rule, specify primary keys to modify change tracked entities and avoid using [searched updates](/java/working-with-cql/query-api#searched-update).
+As a rule, specify primary keys to modify change tracked entities and avoid using [searched updates](working-with-cql/query-api#searched-update).
 
 ### Changes in Deeply Structured Documents
 
@@ -346,7 +346,7 @@ the changes across the complete document and stores them in the change log with 
 
 Take the order and item model used previously in this guide as an example.
 
-For deep updates, use the [delta representation](/java/working-with-cql/query-api#deep-update-delta) for its items or the [full set representation](/java/working-with-cql/query-api#deep-update-full-set) to overwrite complete document.
+For deep updates, use the [delta representation](working-with-cql/query-api#deep-update-delta) for its items or the [full set representation](working-with-cql/query-api#deep-update-full-set) to overwrite complete document.
 
 The following example yields two changelog entries: one for the order and one for the item. The change log entry for the item reflects that the root of the change is an order. Both changes are reachable through the association `changes` of the order entity.
 

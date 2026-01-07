@@ -31,7 +31,7 @@ The following build tasks represent the default configuration dynamically determ
 
 Build tasks are derived from the CDS configuration and project context. By default, CDS models are resolved from these sources:
 
-- _db/_, _srv/_, _app/_ — [default root folders](../../get-started/index.md#project-structure)
+- _db/_, _srv/_, _app/_ — default root folders of a CAP project
 - _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
 - CDS model folders and files defined by [required services](../../node.js/cds-env#services), including built-in ones
   - Examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)

@@ -211,12 +211,10 @@ annotate OrdersService.Orders with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-[Learn more about project layouts.](../../get-started/#project-structure){.learn-more}
-
 ::: tip Keep it simple
 We recommend putting all extension files into `./app` and removing `./srv` and `./db` from extension projects.
 
-You may want to consider [separating concerns](../domain/modeling#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
+You may want to consider [separating concerns](../domain/index#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
 :::
 
 #### Add Test Data
@@ -662,7 +660,7 @@ entity x_Remarks : cuid, managed {
 ```
 
 ::: tip
-This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/providing-services#input-validation).
+This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/constraints).
 :::
 Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#annotate) {.learn-more}
 

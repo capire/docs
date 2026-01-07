@@ -39,8 +39,8 @@ The most essential requests you have to answer are those in the following table.
 
 | Question / Request                          | Obligation                                      | Solution                            |
 | ------------------------------------------- | ----------------------------------------------- | ----------------------------------- |
-| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Personal Data Management](dpp-pdm.md)  |
-| *Please delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Data Retention Management](dpp-drm.md) |
+| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Personal Data Mgmt](dpp-pdm.md)  |
+| *Delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Data Retention Mgmt](dpp-drm.md) |
 | *When was personal data stored/changed?*    | [Transparency](#transparency)                   | [Audit Logging](dpp-audit-logging.md)   |
 
 
@@ -100,7 +100,7 @@ Connect an adequate logging service to meet compliance requirements such as [SAP
 
 - Draft-enabled entities store user information for the time periods when drafts are created or modified.
 
-- When using the [managed](../domain/modeling#managed-data) aspect, you decided to store metadata such as who created or modified an entity instance.
+- When using the [managed](../domain/index#managed-data) aspect, you decided to store metadata such as who created or modified an entity instance.
 
 - Messages temporarily written to transaction outbox might contain personal data. 
 If necessary, applications can process these messages by standard CAP functionality (CDS model `@sap/cds/srv/outbox`).

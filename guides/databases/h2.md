@@ -1,5 +1,4 @@
 ---
-status: released
 impl-variants: true
 ---
 

@@ -1,5 +1,4 @@
 
-# [Overview](index.md)
 # [OData v2 Adapter](index#odata-v2-proxy)
 # [WebSocket](index#websocket)
 # [UI5 Dev Server](index#ui5-dev-server)

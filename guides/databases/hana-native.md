@@ -62,7 +62,7 @@ We can distinguish two types of names - __plain__ and __quoted__.
 |Quoted    | If the existing database name also contains lower-case characters or characters that can't occur in regular SQL identifiers, it's not possible to choose a name in the CDS model that matches this name. Let's call such a database name "quoted", as the only possibility to create such a name is to quote it in the CREATE statement. In this case, it's necessary to introduce an additional database object (a synonym or a view) on top of the existing database object and construct the facade entity for this newly introduced mapping object.
 
 
-[Find here troubleshooting related to SAP HANA.](../../get-started/troubleshooting#hana){.learn-more}
+[Find here troubleshooting related to SAP HANA.](../../get-started/get-help#hana){.learn-more}
 
 
 ### Tables and Views Without Parameters

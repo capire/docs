@@ -7,7 +7,6 @@ breadcrumbs:
   - Cookbook
   - Extensibility
   - Feature Toggles
-status: released
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 

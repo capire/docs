@@ -1,7 +1,6 @@
 ---
 synopsis: >
   API reference documentation for MTX Services.
-status: released
 search: false
 ---
 

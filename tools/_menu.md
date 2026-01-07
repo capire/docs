@@ -1,9 +1,10 @@
 
 # [Command Line Interface](cds-cli)
+# [Hybrid Testing w/ cds bind](./cds-bind)
 # [Editors & IDEs](cds-editors)
 # [CDS 2 TypeScript](cds-typer)
 
-# [Design Time APIs](apis/)
+# [CLI Plugin APIs](apis/)
 
   ## [cds. add()](apis/cds-add)
   ## [cds. import()](apis/cds-import)

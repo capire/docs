@@ -1,5 +1,4 @@
 ---
-status: released
 synopsis: >
   About supported development environments (IDEs) and features of the CDS language editor.
 ---

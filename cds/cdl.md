@@ -3,7 +3,6 @@
 synopsis: >
   Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -455,7 +454,7 @@ With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
 ::: warning
-Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/providing-services#searching-data) are not supported on arrayed elements.
+Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/served-ootb#searching-data) are not supported on arrayed elements.
 :::
 
 #### Null Values
@@ -1031,7 +1030,7 @@ Essentially, Compositions are the same as _[associations](#associations)_, just 
 Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
-See the [Keep it Simple, Stupid](../guides/domain/modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](../guides/domain/modeling#prefer-flat-models) section.
+See the [Keep it Simple, Stupid](../guides/domain/index#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](../guides/domain/index#prefer-flat-models) section.
 :::
 
 ### Managed Compositions of Aspects {#managed-compositions}
@@ -1199,7 +1198,7 @@ entity P_orders as projection on Orders {
 
 ## Annotations
 
-This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/advanced/odata#annotations) guide.
+This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/protocols/odata#annotations) guide.
 
 - [Annotation Syntax](#annotation-syntax)
 - [Annotation Targets](#annotation-targets)
@@ -1601,7 +1600,7 @@ the annotations.
 #### OData Annotations
 
 The OData backend of the CAP CDS compiler supports expression-valued annotations.
-See [Expressions in OData Annotations](../guides/advanced/odata#expression-annotations).
+See [Expressions in OData Annotations](../guides/protocols/odata#expression-annotations).
 
 
 
@@ -2146,7 +2145,7 @@ Explicitly modelled binding parameters are ignored for OData V2.
 
 #### Returning Media Data Streams { #actions-returning-media}
 
-Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/media-data#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
 
 ```cds
 service CatalogService {

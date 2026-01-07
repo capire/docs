@@ -7,8 +7,6 @@ import languages from './languages'
 import path from 'node:path'
 import { Menu } from './menu.js'
 
-const menu = await Menu.from ('./menu.md')
-
 const config = defineConfig({
 
   title: 'capire',
@@ -49,8 +47,6 @@ const config = defineConfig({
  },
 
   themeConfig: {
-    sidebar: menu.items,
-    nav: menu.navbar,
     logo: '/logos/cap.svg',
     outline: [2,3],
     socialLinks: [
@@ -106,18 +102,16 @@ import rewrites from './rewrites'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
-// if (process.cwd() === path.dirname(__dirname)) {
-//   const menu_md = path.resolve (__filename,'../../menu.md')
-//   const Menu = await import('./menu')
-//   const menu = await Menu.from (menu_md, rewrites)
-//   config.themeConfig.sidebar = menu.items
-//   config.themeConfig.nav = menu.navbar
-// }
+if (process.cwd() === path.dirname(__dirname)) {
+  const menu = await Menu.from ('./menu.md', rewrites)
+  config.themeConfig.sidebar = menu.items
+  config.themeConfig.nav = menu.navbar
+}
 
 // Add custom capire info to the theme config
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.0',
+    java_services: '4.6.1',
     java_cds4j: '4.6.0'
   },
   gotoLinks: []
@@ -193,9 +187,12 @@ config.markdown.codeTransformers = [
 // Add custom markdown renderers...
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
+import { dl } from '@mdit/plugin-dl'
+
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
+  md.use(dl)
 }
 
 // Add sitemap
