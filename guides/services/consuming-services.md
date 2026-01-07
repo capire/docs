@@ -1064,7 +1064,9 @@ This is an example of a destination using basic authentication:
 }
 ```
 
-[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more} [See all the supported destination properties.](#destination-properties){.learn-more}
+[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more} 
+
+[See all the supported destination properties.](#destination-properties){.learn-more}  
 
 ::: warning Warning: You should not put any sensitive information here!
 
