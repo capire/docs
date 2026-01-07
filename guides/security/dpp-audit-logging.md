@@ -185,7 +185,7 @@ There are two options to access audit logs:
 
 ### Behind the Scenes...
 
-For all [defined services](../services/providing-services#service-definitions), the generic audit logging implementation does the following:
+For all [defined services](../services/providing-services), the generic audit logging implementation does the following:
 
 - Intercept all write operations potentially involving personal data.
 - Intercept all read operations potentially involving sensitive data.
@@ -213,7 +213,7 @@ await audit.log('Foo', { bar: 'baz' })
 ```
 
 ::: tip Audit Logging as Just Another CAP Service
-The Audit Log Service API is implemented as a CAP service, with the service API defined in CDS as shown in the next section. In effect, the common patterns of [*CAP Service Consumption*](../services/using-services) apply, as well as all the usual benefits like *mocking*, *late-cut µ services*, *resilience* and *extensibility*.
+The Audit Log Service API is implemented as a CAP service, with the service API defined in CDS as shown in the next section. In effect, the common patterns of [*CAP Service Consumption*](../services/consuming-services) apply, as well as all the usual benefits like *mocking*, *late-cut µ services*, *resilience* and *extensibility*.
 :::
 
 

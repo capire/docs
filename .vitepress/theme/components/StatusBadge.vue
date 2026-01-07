@@ -12,6 +12,6 @@ defineProps<{ type: string, text:string, title:string  }>()
 
 import { withBase } from 'vitepress'
 function click() {
-  location.href = withBase('../releases/index#feature-status-badges')
+  location.href = withBase('/releases/index#status-badges')
 }
 </script>

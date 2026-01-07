@@ -14,7 +14,7 @@ status: released
 
 ## Rule Details
 
-The `where` property of a [`@restrict`](/guides/security/authorization#restrict-annotation) privilege defines a filter expression that restricts access on an instance level (optional). This rule checks that the values of `@restrict.where` are valid, that is, the filter expression must be a valid expression that compiles without any errors.
+The `where` property of a `@restrict` privilege defines a filter expression that restricts access on an instance level (optional). This rule checks that the values of `@restrict.where` are valid, that is, the filter expression must be a valid expression that compiles without any errors.
 
 ## Examples
 

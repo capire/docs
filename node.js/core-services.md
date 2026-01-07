@@ -1,5 +1,4 @@
 ---
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -258,7 +257,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/services/providing-services#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions-functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -802,7 +801,7 @@ Use this method to send synchronous requests to a service for execution.
 -  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
 
-To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/providing-services#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 

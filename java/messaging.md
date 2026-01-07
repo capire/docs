@@ -303,7 +303,7 @@ cds:
 ```
 :::
 
-Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/#event-hub).
+Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/index#event-hub).
 
 #### Configuring SAP Integration Suite, Advanced Event Mesh Support <Beta />: { #configuring-advanced-event-mesh-support}
 
@@ -323,7 +323,7 @@ cds:
 ```
 :::
 
-[Support for SAP Integration Suite, advanced event mesh is provided via plugin.](../plugins/#advanced-event-mesh){.learn-more}
+[Support for SAP Integration Suite, advanced event mesh is provided via plugin.](../plugins/index#advanced-event-mesh){.learn-more}
 
 <span id="beforeredispubsub" />
 

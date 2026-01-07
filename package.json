@@ -29,7 +29,7 @@
     "eslint": "^9.0.0",
     "eslint-plugin-vue": "^10.0.0",
     "fflate": "^0.8.2",
-    "gray-matter": "^4.0.3",
+    "@mdit/plugin-dl": ">=0.22.2",
     "markdownlint-cli": ">=0.35.0",
     "markdownlint-rule-search-replace": "^1.1.1",
     "sass": "^1.62.1",

@@ -13,10 +13,6 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 [[toc]]
 
 <style scoped>
-   main .vp-doc h2 + .subtitle {
-      font-style: italic;
-      margin: -44px 0 40px;
-   }
    main .vp-doc a:has(> img) {
       display: inline-flex;
       align-items: center;
@@ -122,7 +118,7 @@ Available for:
 [![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/odata-v2-adapter#readme)
 [![Java](/logos/java.svg 'Link to the documentation of the OData feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/migration#v2adapter)
 
-See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../guides/advanced/odata#v2-support) {.learn-more}
+See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../guides/protocols/odata#v2-support) {.learn-more}
 
 ## WebSocket
 
