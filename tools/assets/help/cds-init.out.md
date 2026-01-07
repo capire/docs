@@ -66,6 +66,7 @@
       <em>lint</em>                         - configure cds lint
       <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
       <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
+      <em>console</em>                      - installs the CAP console plugin
 
     <em>--java</em>
 

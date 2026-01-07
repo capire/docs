@@ -59,6 +59,7 @@
       <em>lint</em>                         - configure cds lint
       <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
       <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
+      <em>console</em>                      - installs the CAP console plugin
 
 <strong>OPTIONS</strong>
     <em>--for | -4</em> &lt;profile&gt;
@@ -184,6 +185,13 @@
       --dry
 
         Print the generated requests to the console instead of writing them to a file.
+
+
+    <em>cds add kyma</em>
+
+
+
+
 
 
     <em>cds add test</em>
