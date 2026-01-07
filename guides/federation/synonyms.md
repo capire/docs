@@ -13,7 +13,7 @@ Where `<synonym_name>` is the name you want to assign to the synonym, and `<exte
 ## Using HANA Synonyms in CAP Applications
 Once you have created a synonym, you can use it in your CAP application's CDS models and queries just like any other database object. For example, you can define an entity in your CDS model that references a synonym:   
 ```cds
-entity ExternalData @cds.persistence.table: 'SYNONYM_NAME' {
+entity ExternalData @(cds.persistence.table: 'SYNONYM_NAME') {
   key ID : UUID;
   Name   : String;         
   Description : String;
