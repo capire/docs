@@ -26,9 +26,6 @@ import setsExpand from '../assets/cxl/sets-expand.drawio.svg?raw'
 </script>
 
 
-::: danger This documentation is a work in progress and will change over time.
-:::
-
 # CDS Expression Language (CXL) { #expressions }
 The CDS Expression Language (`CXL`) is a language to express calculations, conditions,
 and other expressions in the context of CDS models and queries.
