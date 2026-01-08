@@ -51,13 +51,6 @@ The message flow follows a clear path through both layers:
 | With `@topic: 'foo.bar'`     | `'reviewed'`           | `'foo.bar'`                   | `foo.bar`            | `'reviewed'`           | `'foo.bar'`                  |
 
 
-### Key Points
-
-- Logical service API (srv.emit, srv.on) uses the event name as declared in CDS.
-- Technical messaging API (messaging.emit, messaging.on) uses the resolved topic name.
-- If no @topic is specified, the topic defaults to the event’s fully qualified name.
-- If @topic is specified, it overrides the default topic name.
-
 ## cds.**MessagingService**  <i>  class </i>
 
 Class `cds.MessagingService` and subclasses thereof are technical services representing asynchronous messaging channels.
