@@ -29,7 +29,8 @@ The **logical layer** consists of three primary components:
 
 The **technical layer** handles the actual message transport and delivery:
 
-**CAP Messaging Service**: Acts as the translation layer between logical events and technical infrastructure. It converts service-level event names to fully qualified names (e.g., `'OrderSrv.reviewed'`), manages topic resolution, message serialization, and routing logic.
+**CAP Messaging Service**: Acts as the translation layer between logical events and technical infrastructure. It manages topic resolution, message serialization, and routing logic.
+For topic resolution the logical events are delegated to the messaging service, the corresponding event name on the technical service is either the fully qualified event name or the value of the @topic annotation if given.
 
 **Message Brokers**: Form the core of the technical infrastructure, handling message persistence, delivery guarantees, and cross-service communication. Examples include SAP Event Mesh, Apache Kafka, or Redis Streams.
 
