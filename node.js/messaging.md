@@ -17,7 +17,7 @@ status: released
 ## Overview
 
 Messaging enables decoupled communication between services using events. 
-CAP distinguishes between the logical and technical messaging layers, separating business concerns from technical infrastructure and enabling both flexibility and scalability.
+CAP distinguishes between the logical and technical messaging layers, separating business concerns from technical infrastructure.
 
 The **logical layer** consists of three primary components: 
 
