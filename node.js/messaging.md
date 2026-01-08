@@ -114,7 +114,9 @@ service OwnService {
 }
 ```
 
-In _srv/own.js_:
+The implementation can use CAP application services or bypass them and work directly with the messaging service.
+
+In _srv/own.js_ (CAP Application Services):
 
 ```js
 module.exports = async srv => {
@@ -125,7 +127,18 @@ module.exports = async srv => {
 }
 ```
 
-#### Custom Topics with Declared Events
+In _srv/own.js_ (CAP Messaging Services):
+```js
+module.exports = async srv => {
+  const externalService = await cds.connect.to('messaging')
+  messaging.on('ExternalService.ExternalEvent', async msg => {
+    await srv.emit('OwnService.OwnEvent', msg.data)
+  })
+}
+```
+
+
+### Custom Topics with Declared Events
 
 You can specify topics to modeled events using the `@topic` annotation.
 ::: tip
@@ -138,86 +151,6 @@ Example:
 service OwnService {
     @topic: 'my.custom.topic'
     event OwnEvent { ID: UUID; rating: Decimal; }
-}
-```
-
-
-## Emitting Events
-
-To send a message to the message broker, you can use the `emit` method on a transaction for the connected service.
-
-Example:
-
-```js
-const messaging = await cds.connect.to('messaging')
-
-this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
-  const { ID } = req.data
-  const { rating } = await cds.run(
-    SELECT.one(['round(avg(rating),2) as rating'])
-    .from(Reviews)
-    .where({ ID }))
-
-  // send to a topic
-  await messaging.emit('cap/msg/system/my/custom/topic',
-   { ID, rating })
-
-  // alternative if you want to send custom headers
-  await messaging.emit({ event: 'cap/msg/system/my/custom/topic',
-    data: { ID, rating },
-    headers: { 'X-Correlation-ID': req.headers['X-Correlation-ID'] }})
-})
-```
-::: tip
-The messages are sent once the transaction is successful.
-Per default, a persistent queue is used. See [Messaging - Queue](./queue) for more information.
-:::
-
-## Receiving Events
-
-To listen to messages from a message broker, you can use the `on` method on the connected service.
-This also creates the necessary topic subscriptions.
-
-Example:
-
-```js
-const messaging = await cds.connect.to('messaging')
-
-// listen to a topic
-messaging.on('cap/msg/system/my/custom/topic', msg => {
-  const { ID, rating } = msg.data
-  return cds.run(UPDATE(Books, ID).with({ rating }))
-})
-```
-
-Once all handlers are executed successfully, the message is acknowledged.
-If one handler throws an error, the message broker will be informed that the message couldn't be consumed properly and might send the message again. To avoid endless cycles, consider catching all errors.
-
-If you want to receive all messages without creating topic subscriptions, you can register on `'*'`. This is useful when consuming messages from a dead letter queue.
-
-```js
-messaging.on('*', async msg => { /*...*/ })
-```
-
-::: tip
-In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
-:::
-
-### Inbox <Beta />
-
-You can store received messages in an inbox before they're processed. Under the hood, it uses the [task queue](./queue) for reliable asynchronous processing.
-Enable it by setting the `inboxed` option to `true`, for example:
-
-```js
-{
-  cds: {
-    requires: {
-      messaging: {
-        kind: 'enterprise-messaging',
-        inboxed: true
-      }
-    }
-  }
 }
 ```
 
@@ -305,6 +238,85 @@ Examples:
 | `my/own/namespace/ce/`   | `/my/own/namespace` |
 | `my/own.namespace/-/ce/` | `/my/own.namespace` |
 
+
+## Emitting Events
+
+To send a message to the message broker, you can use the `emit` method on a transaction for the connected service.
+
+Example:
+
+```js
+const messaging = await cds.connect.to('messaging')
+
+this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
+  const { ID } = req.data
+  const { rating } = await cds.run(
+    SELECT.one(['round(avg(rating),2) as rating'])
+    .from(Reviews)
+    .where({ ID }))
+
+  // send to a topic
+  await messaging.emit('my/custom/topic',
+   { ID, rating })
+
+  // alternative if you want to send custom headers
+  await messaging.emit({ event: 'my/custom/topic',
+    data: { ID, rating },
+    headers: { 'X-Correlation-ID': req.headers['X-Correlation-ID'] }})
+})
+```
+::: tip
+The messages are sent once the transaction is successful.
+Per default, a persistent queue is used. See [Messaging - Queue](./queue) for more information.
+:::
+
+## Receiving Events
+
+To listen to messages from a message broker, you can use the `on` method on the connected service.
+This also creates the necessary topic subscriptions.
+
+Example:
+
+```js
+const messaging = await cds.connect.to('messaging')
+
+// listen to a topic
+messaging.on('my/custom/topic', msg => {
+  const { ID, rating } = msg.data
+  return cds.run(UPDATE(Books, ID).with({ rating }))
+})
+```
+
+Once all handlers are executed successfully, the message is acknowledged.
+If one handler throws an error, the message broker will be informed that the message couldn't be consumed properly and might send the message again. To avoid endless cycles, consider catching all errors.
+
+If you want to receive all messages without creating topic subscriptions, you can register on `'*'`. This is useful when consuming messages from a dead letter queue.
+
+```js
+messaging.on('*', async msg => { /*...*/ })
+```
+
+::: tip
+In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
+:::
+
+### Inbox <Beta />
+
+You can store received messages in an inbox before they're processed. Under the hood, it uses the [task queue](./queue) for reliable asynchronous processing.
+Enable it by setting the `inboxed` option to `true`, for example:
+
+```js
+{
+  cds: {
+    requires: {
+      messaging: {
+        kind: 'enterprise-messaging',
+        inboxed: true
+      }
+    }
+  }
+}
+```
 
 ## Message Brokers
 
