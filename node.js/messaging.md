@@ -40,18 +40,7 @@ The message flow follows a clear path through both layers:
 
 **Inbound Flow (Subscriber)**: Event Broker delivers message from subscribed topic → CAP Messaging Service receives the message → Service name and event name are resolved from the topic → Message is routed to the appropriate CAP service handler via `srv.on('reviewed', handler)`. Registering a modeled `srv.on(...)` event handler causes the broker to listen to those events, e.g. creates a subscription for Event Mesh.
 
-**Alternatively** custom handlers can bypass the service layer and work directly with the messaging service:
-
-```javascript
-// Direct access to messaging service
-const messaging = await cds.connect.to('messaging');
-
-// Send messages directly with full topic control
-await messaging.emit('custom.topic', data);
-
-// Receive messages directly from any topic
-messaging.on('external.system.events', handler);
-```
+**Alternatively** custom handlers can bypass the service layer and work directly with the messaging service.
 
 ### Topic Resolution
 
