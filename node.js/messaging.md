@@ -260,6 +260,11 @@ this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
    { ID, rating })
 
   // alternative if you want to send custom headers
+  await messaging.emit('my/custom/topic',
+    { ID, rating },
+    { 'X-Correlation-ID': req.headers['X-Correlation-ID'] })
+
+  // or use the object parameter
   await messaging.emit({ event: 'my/custom/topic',
     data: { ID, rating },
     headers: { 'X-Correlation-ID': req.headers['X-Correlation-ID'] }})
