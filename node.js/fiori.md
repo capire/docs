@@ -68,7 +68,7 @@ As a result `MyEntity.drafts` is created in the database.
 You can modify the initial draft data in a `before` handler.
 
 :::warning Known Limitation
-Due to an implementation detail of the [`hdb` HANA driver](https://www.npmjs.com/package/hdb), trying to `INSERT` draft entities with fields that use the [`LargeBinary` type](https://cap.cloud.sap/docs/cds/types#core-built-in-types) will cause a deadlock.
+With the [`hdb` SAP HANA driver](https://www.npmjs.com/package/hdb), trying to `INSERT` draft entities with fields that use the [`LargeBinary` type](../cds/types#core-built-in-types) will cause a deadlock.
 The known workaround is to [configure your CAP app](../guides/databases/hana#setup-configuration) to use the [`hana-client` SAP HANA driver](https://www.npmjs.com/package/@sap/hana-client) instead.
 :::
 
