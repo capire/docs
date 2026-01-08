@@ -16,7 +16,7 @@ status: released
 
 ## Overview
 
-In SAP Cloud Application Programming Model (CAP), messaging enables decoupled communication between services using events. 
+Messaging enables decoupled communication between services using events. 
 CAP distinguishes between the logical and technical messaging layers, separating business concerns from technical infrastructure and enabling both flexibility and scalability.
 
 The **logical layer** consists of three primary components: 
