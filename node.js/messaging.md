@@ -23,7 +23,7 @@ The **logical layer** consists of three primary components:
 
 **Modeled Events**: Events are defined in CDS models with typed schemas, providing compile-time validation and IDE support. These events represent business occurrences like `'orderProcessed'`, or `'stockUpdated'`.
 
-**Event Topics**: Topics organize events into logical channels and are responsible for event routing. Topics can be explicitly defined as anootation or derived from service and event names.
+**Event Topics**: Topics organize events into logical channels and are responsible for event routing. Topics can be explicitly defined as annotation or derived from service and event names.
 
 **CAP Services**: Services act as event producers or consumers, using simple APIs like `srv.emit('reviewed', data)` or `srv.on('orderProcessed', handler)`. Services communicate using logical event names without needing to know the underlying infrastructure details.
 
