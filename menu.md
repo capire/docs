@@ -16,7 +16,7 @@
    ## [Protocols](guides/protocols/_menu.md)
    ## [Querying](guides/querying/_menu.md) <!-- UNRELEASED -->
    ## [Databases](guides/databases/_menu.md)
-   ## [Data Federation](guides/federation/_menu.md)
+   ## [Data Federation](guides/federation/_menu.md) <!-- UNRELEASED -->
    ## [Service Integration](guides/integration/_menu.md)
    ## [Events & Messaging](guides/events/_menu.md)
    ## [Security & Data Privacy](guides/security/_menu.md)
