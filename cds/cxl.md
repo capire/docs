@@ -620,9 +620,12 @@ CAP standard functions:
 
 
 
-## ordering term <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #ordering-term }
+## ordering term { #ordering-term }
 
+<div class="diagram" >
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 <div class="diagram" v-html="orderingTerm"></div>
+</div>
 
 ### ordered list of book titles by price
 
@@ -654,7 +657,7 @@ ORDER BY price DESC NULLS LAST -- [!code focus]
 In this example, the ordering term sorts books by price in descending order and places rows with `null` prices at the end.
 
 
-## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
+## type-ref { #type-ref }
 
 [Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
 
