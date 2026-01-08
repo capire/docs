@@ -42,44 +42,6 @@ The message flow follows a clear path through both layers:
 
 **Alternatively** custom handlers can bypass the service layer and work directly with the messaging service.
 
-### Topic Resolution
-
-Topic resolution is an important part of the integration between logical and technical messaging layers.
-
-Every technical message requires a topic. If a CDS event is declared without an @topic annotation, CAP uses the event’s fully qualified name (FQN) as the topic (e.g., OrderSrv.reviewed). If an event is declared with an @topic: 'foo.bar' annotation, the specified string is used as the topic (e.g., foo.bar).
-
-### Emitting and Receiving Events
-
-#### Scenario 1: No @topic Annotation
-
-When a CDS event is declared without an @topic annotation in a service (for example, an event called 'reviewed' in the OrderSrv service), the messaging behavior follows this pattern:
-
-**Emitting Events:**
-• Using the logical service API, you emit the event with just the event name ('reviewed')
-• Using the technical messaging API, you emit using the fully qualified name ('OrderSrv.reviewed')
-
-**Broker Handling:**
-• The message broker receives and routes the message using the topic 'OrderSrv.reviewed'
-
-**Receiving Events:**
-• Using the logical service API, you listen for the event with just the event name ('reviewed')
-• Using the technical messaging API, you listen using the fully qualified name ('OrderSrv.reviewed')
-
-#### Scenario 2: With @topic Annotation
-
-When a CDS event is declared with a custom @topic annotation (for example, an event called 'reviewed' with @topic: 'foo.bar' in the OrderSrv service), the messaging behavior follows this pattern:
-
-**Emitting Events:**
-• Using the logical service API, you still emit the event with the event name ('reviewed')
-• Using the technical messaging API, you emit using the custom topic name ('foo.bar')
-
-**Broker Handling:**
-• The message broker receives and routes the message using the custom topic 'foo.bar'
-
-**Receiving Events:**
-• Using the logical service API, you listen for the event with the event name ('reviewed')
-• Using the technical messaging API, you listen using the custom topic name ('foo.bar')
-
 ### Summary Table
 
  
