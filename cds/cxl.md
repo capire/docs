@@ -3,26 +3,19 @@
 shorty: Expressions
 synopsis: >
   Specification of the CDS Expression Language (CXL) used to capture expressions in CDS.
-status: draft
+status: released
 ---
 
 <script setup>
 import expr from '../assets/cxl/expr.drawio.svg?raw'
 import ref from '../assets/cxl/ref.drawio.svg?raw'
 import infixFilter from '../assets/cxl/infix-filter.drawio.svg?raw'
-import infixFilterFull from '../assets/cxl/infix-filter-full.drawio.svg?raw'
 import unaryOperator from '../assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from '../assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from '../assets/cxl/literal-value.drawio.svg?raw'
-import bindingParameter from '../assets/cxl/binding-parameter.drawio.svg?raw'
 import functionDef from '../assets/cxl/function-def.drawio.svg?raw'
-import functionArgs from '../assets/cxl/function-args.drawio.svg?raw'
 import orderingTerm from '../assets/cxl/ordering-term.drawio.svg?raw'
-import overClause from '../assets/cxl/over-clause.drawio.svg?raw'
 import intro from '../assets/cxl/intro.drawio.svg?raw'
-import setsIntersection from '../assets/cxl/sets-intersection.drawio.svg?raw'
-import setsLeftjoin from '../assets/cxl/sets-leftjoin.drawio.svg?raw'
-import setsExpand from '../assets/cxl/sets-expand.drawio.svg?raw'
 </script>
 
 
@@ -34,12 +27,12 @@ and other expressions in the context of CDS models and queries.
 `CXL` can be used in various places:
 - In [CQL](./cql#path-expressions) (select list, where clause, …)
 - In [CDL](./cdl)
-  + In [calculated elements](./cdl/#calculated-elements)
+  + In [calculated elements](./cdl#calculated-elements)
   + In [annotations](./cdl.md#expressions-as-annotation-values)
 
 ::: tip Expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
-For example, [a calculated element](./cdl/#calculated-elements) defined in an entity will be resolved
+For example, [a calculated element](./cdl#calculated-elements) defined in an entity will be resolved
 to the respective calculation in the generated query when the entity is queried.
 :::
 
@@ -586,7 +579,7 @@ that multiplies the two factors `price` and `quantity`.
 
 
 
-CAP supports a set of [standard functions](../guides/databases.md#standard-database-functions) that can be used in expressions. In addition, functions are passed through to the underlying database, allowing you to leverage database-specific functions as needed.
+CAP supports a set of [standard functions](../guides/databases/index#standard-database-functions) that can be used in expressions. In addition, functions are passed through to the underlying database, allowing you to leverage database-specific functions as needed.
 
 CAP standard functions:
 | Name                              | Description                                                                                                                                             |

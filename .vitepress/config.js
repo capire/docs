@@ -31,7 +31,6 @@ const config = defineConfig({
 
   markdown: {
     languages,
-    math: true,
     toc: {
       level: [2,3]
     },
