@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes how CDS data is represented and used in CAP Java.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -47,7 +46,7 @@ The [predefined CDS types](../cds/types) are mapped to Java types and as follows
 
 ### SAP HANA-Specific Data Types
 
-To facilitate using legacy CDS models, the following [SAP HANA-specific data types](../advanced/hana#hana-types) are supported:
+To facilitate using legacy CDS models, the following [SAP HANA-specific data types](../guides/databases/hana-native#hana-types) are supported:
 
 | CDS Type            | Java Type              | Remark                                                              |
 | ------------------- | ---------------------- | ------------------------------------------------------------------- |
@@ -141,7 +140,7 @@ aspect OrderItems {
 In this model, there is a bidirectional many-to-one association between `Books` and `Authors`, which is managed by the `Books.author` association. The `Orders` entity owns the composition `header`, which relates it to the `OrderHeaders` entity, and the composition `items`, which relates the order to the `OrderItems`. The items are modeled using a managed composition of aspects.
 
 ::: tip
-Use [Managed Compositions of Aspects](../guides/domain-modeling#composition-of-aspects) to model unidirectional one-to-many compositions.
+Use [Managed Compositions of Aspects](../guides/domain/index#composition-of-aspects) to model unidirectional one-to-many compositions.
 :::
 
 ### Relationships to other entities
@@ -331,7 +330,7 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings <Beta /> { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases-hana#vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector`:
 
 ```cds
 entity Books : cuid { // [!code focus]
@@ -529,7 +528,7 @@ For all structured types of the CDS model, accessor interfaces can be generated 
    Books.create().author(author).title("Wuthering Heights");
 ```
 
-The generation mode is configured by the property [`<methodStyle>`](./assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+The generation mode is configured by the property [`<methodStyle>`](/java/assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
 
 Once, when starting a project, decide on the style of the interfaces that is best for your team and project. We recommend the default JavaBeans style.
 
@@ -537,7 +536,7 @@ The way the interfaces are generated determines only how data is accessed by cus
 
 Moreover, it doesn't change the way how event contexts and entities, delivered by CAP, look like. Such interfaces from CAP are always modelled in the default JavaBeans style.
 
-See more in [Configuring Code Generation for Typed Access](/java/developing-applications/building#codegen-config) for advanced options. {.learn-more}
+See more in [Configuring Code Generation for Typed Access](developing-applications/building#codegen-config) for advanced options. {.learn-more}
 
 #### Renaming Elements in Java
 
@@ -666,7 +665,7 @@ Note, that the propagated annotation `@cds.java.name` creates attribute and meth
 
 
 ::: warning
-This feature requires version 8.2.0 of the [CDS Command Line Interface](/tools/cds-cli).
+This feature requires version 8.2.0 of the [CDS Command Line Interface](../tools/cds-cli).
 :::
 
 #### Entity Inheritance in Java
@@ -915,7 +914,7 @@ processor.addGenerator(
 
 ## Diff Processor
 
-To react on changes in entity data, you need to compare the image of an entity after a certain operation with the image before the operation. To facilitate this task, use the [`CdsDiffProcessor`](https://www.javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsDiffProcessor.html), similar to the [Data Processor](/java/cds-data#cds-data-processor). The Diff Processor traverses through two images (entity data maps) and allows to register handlers that react on changed values.
+To react on changes in entity data, you need to compare the image of an entity after a certain operation with the image before the operation. To facilitate this task, use the [`CdsDiffProcessor`](https://www.javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsDiffProcessor.html), similar to the [Data Processor](#cds-data-processor). The Diff Processor traverses through two images (entity data maps) and allows to register handlers that react on changed values.
 
 Create an instance of the `CdsDiffProcessor` using the `create()` method:
 
@@ -923,14 +922,14 @@ Create an instance of the `CdsDiffProcessor` using the `create()` method:
 CdsDiffProcessor diff = CdsDiffProcessor.create();
 ```
 
-You can compare the data represented as [structured data](/java/cds-data#structured-data), which is a result of the CQN statements or arguments of event handlers. For a comparison with the `CdsDiffProcessor`, the data maps that are compared need to adhere to the following requirements:
+You can compare the data represented as [structured data](#structured-data), which is a result of the CQN statements or arguments of event handlers. For a comparison with the `CdsDiffProcessor`, the data maps that are compared need to adhere to the following requirements:
 
 - The data map must include values for all key elements.
 - The names in the data map must match the elements of the entity.
-- Associations must be represented as [nested structures and associations](/java/cds-data#nested-structures-and-associations) according to the associations` cardinalities.
+- Associations must be represented as [nested structures and associations](#nested-structures-and-associations) according to the associations` cardinalities.
 
-The [delta representation](/java/working-with-cql/query-api#deep-update-delta) of collections is also supported.
-Results of the CQN statements fulfill these conditions if the type [that comes with the result](/java/working-with-cql/query-execution#introspecting-the-row-type) is used, not the entity type.
+The [delta representation](working-with-cql/query-api#deep-update-delta) of collections is also supported.
+Results of the CQN statements fulfill these conditions if the type [that comes with the result](working-with-cql/query-execution#introspecting-the-row-type) is used, not the entity type.
 
 To run the comparison, call the `process()` method and provide the new and old image of the data as a `Map` (or a collection of them) and the type of the compared entity:
 
@@ -978,7 +977,7 @@ diff.add(new DiffVisitor() {
 });
 ```
 
-The visitor can be added together with the [element filter](/java/cds-data#element-filters) that limits the subset of changes reported to the visitor.
+The visitor can be added together with the [element filter](#element-filters) that limits the subset of changes reported to the visitor.
 
 ```java
 diff.add(
@@ -1295,7 +1294,7 @@ It's useful, when you want to track the additions and removals of certain entiti
 
 ## Media Type Processing { #mediatypeprocessing}
 
-The data for [media type entity properties](../guides/providing-services#serving-media-data) (annotated with `@Core.MediaType`) - as with any other CDS property with primitive type - can be retrieved by their CDS name from the [entity data argument](./event-handlers/#pojoarguments). See also [Structured Data](#structured-data) and [Typed Access](#typed-access) for more details. The Java data type for such byte-based properties is `InputStream`, and for character-based properties it is `Reader` (see also [Predefined Types](#predefined-types)).
+The data for [media type entity properties](../guides/services/media-data) (annotated with `@Core.MediaType`) - as with any other CDS property with primitive type - can be retrieved by their CDS name from the [entity data argument](./event-handlers/#pojoarguments). See also [Structured Data](#structured-data) and [Typed Access](#typed-access) for more details. The Java data type for such byte-based properties is `InputStream`, and for character-based properties it is `Reader` (see also [Predefined Types](#predefined-types)).
 
 Processing such elements within a custom event handler requires some care though, as such an `InputStream` or `Reader` is *non-resettable*. That means, the data can only be read once. This has some implications you must be aware of, depending on what you want to do.
 

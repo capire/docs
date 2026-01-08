@@ -1,5 +1,4 @@
 ---
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -33,7 +32,7 @@ service CatalogService {
 }
 ```
 
-[Learn more about defining services using CDS](../guides/providing-services) {.learn-more}
+[Learn more about defining services using CDS](../guides/services/providing-services) {.learn-more}
 
 
 
@@ -258,7 +257,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/providing-services#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions-functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -396,19 +395,23 @@ var srv.options : { //> from cds.requires config
 
 
 
-### . entities {.property alt="The following documentation on operations also applies to entities. "}
+### . entities {.property alt="The following documentation on actions also applies to entities. "}
 
-### . events {.property alt="The following documentation on operations also applies to events. "}
+### . events {.property alt="The following documentation on actions also applies to events. "}
 
-### . operations {.property}
+### . operations {.property .deprecated alt="The following documentation on actions also applies to operations. "}
+
+Use [`.actions`](#actions) instead.
+
+### . actions {.property}
 
 ```tsx
-var srv.entities/events/operations : Iterable <{
+var srv.entities/events/actions : Iterable <{
   name : CSN definition
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and operations — that is *actions* and *functions* — exposed by this service.
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service.
 
 They are *iterable* objects, which means you can use them in all of these ways:
 
@@ -419,7 +422,6 @@ let all_entities = [ ... this.entities ]
 for (let k in this.entities) //... k is a CSN definition's name
 for (let d of this.entities) //... d is a CSN definition
 ```
-
 
 
 
@@ -799,7 +801,7 @@ Use this method to send synchronous requests to a service for execution.
 -  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
 
-To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/providing-services#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 
@@ -876,7 +878,7 @@ return this.dispatch(msg)
 
 All *cds.Services* are intrinsically events & messaging-enabled. The core implementation provides local in-process messaging, while [*cds.MessagingService*](messaging) plugs in to that to extend it to cross-process messaging via common message brokers.
 
-[**⇨ Read the Messaging Guide**](../guides/messaging/index) for the complete story.
+[**⇨ Read the Messaging Guide**](../guides/events/index) for the complete story.
 
 :::
 

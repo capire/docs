@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This chapter contains comprehensive guides that help you to work through migrations such as from CAP Java 1.x to CAP Java 2.x.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -165,7 +164,7 @@ In addition, the deprecated `MtSubscriptionService` API, has been removed. It ha
 As part of this change the compatibility mode for the `MtSubscriptionService` API has been removed. Besides the removal of the Java APIs this includes the following behavioural changes:
 
 - During unsubscribe, the tenant's content (like HDI container) is now deleted by default when using the new `DeploymentService` API.
-- The HTTP-based tenant upgrade APIs provided by the CAP Java app have been removed, use the [`Deploy` main method](/java/multitenancy#deploy-main-method) instead. This includes the following endpoints:
+- The HTTP-based tenant upgrade APIs provided by the CAP Java app have been removed, use the [`Deploy` main method](multitenancy#deploy-main-method) instead. This includes the following endpoints:
   - `/mt/v1.0/subscriptions/deploy/**` (GET & POST)
   - `/messaging/v1.0/em/<tenant>` (PUT)
 
@@ -662,7 +661,7 @@ Some CdsProperties were already marked as deprected in CAP Java 1.x and are now 
 
 ### Removed Annotations Overview
 
-- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/providing-services#cds-search).
+- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/services/served-ootb#cds-search).
 
 ### Changed Behavior
 
@@ -761,11 +760,11 @@ The following table summarizes the behaviour of associations between different d
 
 #### cds-maven-plugin
 
-The deprecated parameters `generateMode` and `parserMode` are removed from the [goal generate](./assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"}.
+The deprecated parameters `generateMode` and `parserMode` are removed from the [goal generate](/java/assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"}.
 
 #### cds4j-maven-plugin
 
-The deprecated Maven plugin `cds4j-maven-plugin` is removed and no longer available. It's replaced by the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html){target="_blank"} which provides the same functionality and more.
+The deprecated Maven plugin `cds4j-maven-plugin` is removed and no longer available. It's replaced by the [`cds-maven-plugin`](/java/assets/cds-maven-plugin-site/plugin-info.html){target="_blank"} which provides the same functionality and more.
 
 
 ## Classic MTX to Streamlined MTX
@@ -907,7 +906,7 @@ If this Maven build finishes successfully, you can optionally try to deploy your
 cds deploy --to hana
 ```
 
-[See section **SAP HANA Cloud** for more details about deploying to SAP HANA.](../guides/databases-hana){.learn-more}
+[See section **SAP HANA Cloud** for more details about deploying to SAP HANA.](../guides/databases/hana){.learn-more}
 
 
 ### Migrate Java Business Logic

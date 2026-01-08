@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Application Services define the APIs that a CAP application exposes to its clients, for example through OData. This section describes how to add business logic to these services, by extending CRUD events and implementing actions and functions.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -337,7 +336,7 @@ This section summarizes some best practices for implementing event handlers and 
 
     If you're implementing an event handler of an Application Service, and require additional data of other entities part of that service for validation purposes, it's a good practice to read this data from the database using the [Persistence Service](../cqn-services/#persistenceservice). When using the Persistence Service, no user authentication checks are performed.
 
-    If you're mashing up your service with another Application Service and also return data from that service to the client, it's a good practice to consume the other service through its service API. This keeps you decoupled from the possibility that the service might be moved into a dedicated micro-service in the future ([late-cut micro services](../../about/best-practices#agnostic-by-design)) and automatically lets you consume the business or domain logic of that service.
+    If you're mashing up your service with another Application Service and also return data from that service to the client, it's a good practice to consume the other service through its service API. This keeps you decoupled from the possibility that the service might be moved into a dedicated micro-service in the future ([late-cut micro services](../../get-started/concepts#agnostic-by-design)) and automatically lets you consume the business or domain logic of that service.
     If you do not require this decoupling, you can also access the service's entities directly from the database.
 
     In case you're working with draft-enabled entities and your event handler requires access to draft states, you should use the [Draft Service](../fiori-drafts#draftservices) to query and interact with drafts.

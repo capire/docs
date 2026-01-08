@@ -2,11 +2,10 @@
 synopsis: >
   CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
   Optionally, subscriber tenants may also extend their CDS models being served.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
-# Multitenancy { #multitenancy}
+# Multitenancy 
 
 {{ $frontmatter.synopsis }}
 
@@ -136,7 +135,7 @@ The event must return a list of all of the dependent services' `xsappname` value
 
 CAP automatically adds dependencies of services to the list, for which it provides dedicated integrations.
 
-[Learn more about automatically added SaaS dependencies.](/guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
+[Learn more about automatically added SaaS dependencies.](../guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
 
 ::: tip
 The `xsappname` of an SAP reuse service that is bound to your application is part of the service binding. The structure of the service binding, and hence the exact location of the `xsappname` field, may vary between services.
