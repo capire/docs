@@ -25,7 +25,7 @@ The **logical layer** consists of three primary components:
 
 **Event Topics**: Topics organize events into logical channels and are responsible for event routing. Topics can be explicitly defined as anootation or derived from service and event names.
 
-**CAP Services**: Services act as event producers or consumers, using simple APIs like `srv.emit('reviewed', data)` or `srv.on('orderProcessed', handler)`. Services communicate using friendly event names without needing to know the underlying infrastructure details.
+**CAP Services**: Services act as event producers or consumers, using simple APIs like `srv.emit('reviewed', data)` or `srv.on('orderProcessed', handler)`. Services communicate using logical event names without needing to know the underlying infrastructure details.
 
 The **technical layer** handles the actual message transport and delivery:
 
