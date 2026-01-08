@@ -1064,11 +1064,11 @@ This is an example of a destination using basic authentication:
 }
 ```
 
-[Supported destination properties.](#destination-properties){.learn-more}
+[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more} 
 
-::: warning
-You shouldn't put any sensitive information here.
-:::
+[See all the supported destination properties.](#destination-properties){.learn-more}  
+
+::: warning Warning: You should not put any sensitive information here!
 
 Instead, set the properties in the bootstrap code of your CAP application:
 
@@ -1081,6 +1081,7 @@ if (cds.env.requires?.credentials?.authentication === "BasicAuthentication") {
   cds.env.requires.credentials.password = credentials.password;
 }
 ```
+:::
 
 You might also want to set some values in the application deployment. This can be done using env variables. For this example, the env variable for the URL would be `cds_requires_REVIEWS_credentials_destination_url`.
 
