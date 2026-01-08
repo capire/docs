@@ -40,7 +40,7 @@ and other expressions in the context of CDS models and queries.
   + In [calculated elements](./cdl/#calculated-elements)
   + In [annotations](./cdl.md#expressions-as-annotation-values)
 
-::: info 💡 Expressions in CAP are materialized in the context of queries
+::: tip Expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
 For example, [a calculated element](./cdl/#calculated-elements) defined in an entity will be resolved
 to the respective calculation in the generated query when the entity is queried.
@@ -68,7 +68,7 @@ Just create the sample app as described above and start a repl session within th
 cds repl --run .
 ```
 
-:::info 💡 All of the example expressions follow the same pattern:
+:::info All of the example expressions follow the same pattern:
 1. A **`CXL`** is shown in the context of a query.
 2. The resulting **`SQL`** is shown.
 
@@ -89,7 +89,7 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-### syntax diagrams <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+### syntax diagrams
 
 Each language construct is illustrated by a clickable [syntax diagram](https://en.wikipedia.org/wiki/Syntax_diagram).
 
@@ -98,14 +98,11 @@ By clicking on the individual blocks, you can get more information about the res
 
 The following diagram illustrates how to read the diagrams:
 
-<div class="diagram" v-html="intro"></div>
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+<div  v-html="intro"></div>
+</div>
 
-### theoretical background
-
-CAP did not re-invent when it comes to expressions.
-It rather builds upon well-known concepts from relational databases and SQL.
-
-In the [final chapter](#foundation) of this guide, we provide some theoretical background.
 
 ## expr { #expr }
 
@@ -129,11 +126,29 @@ select from Books {
 <div  v-html="expr"></div>
 </div>
 
-TODO: Some samples --> Where can we use expressions?
+Expressions can be used in various places, for example in annotations:
 
-- annotation expression
-- calculated element
-- one in select
+```cds
+annotate AdminService.Authors:dateOfDeath with @assert: (case
+  when dateOfDeath > $now then 'Cannot be in the future'
+  when dateOfDeath < dateOfBirth then 'Enter a date after date of birth'
+end);
+```
+
+Or in entity defintions for adding calculated elements:
+
+```cds
+extend Authors with {
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, $now));
+}
+```
+
+Or as part of a query:
+
+```cds
+SELECT from Books { title } where genre.name = 'Fantasy'
+```
+
 
 ## ref (path expression) { #ref }
 
@@ -146,7 +161,7 @@ referred to as a **path expression**.
   <div v-html="ref"></div>
 </div>
 
-::: info 💡 Leaf elements
+::: info Leaf elements
 Leaf elements as opposed to associations and structured elements represent scalar values, such as strings, numbers, dates, as well as the array and map types.
 They typically manifest as columns in database tables.
 :::
@@ -235,7 +250,7 @@ In annotation expressions, the result should often only contain one entry per en
 This can be achieved using the [exists](#after-exists-predicate) predicate.
 
 
-::: info 💡 Associations are **forward-declared joins**
+::: tip Associations are **forward-declared joins**
 They provide a convenient way to navigate between related entities without having to define the join conditions manually.
 
 The join condition is defined **ahead of time** as part of the association.
@@ -246,8 +261,8 @@ Typically, this is a foreign key relationship between two entities, but other co
 entity Books {
   key ID : Integer;
   title  : String;
-  author : Assocition to Author;
-                   // implicit: on author.ID = author_ID
+  author : Association to Authors;
+                      // implicit: on author.ID = author_ID
 }
 
 entity Authors {
@@ -259,7 +274,7 @@ entity Authors {
 ```
 
 
-It then manifests whenever the association is used in a path expression as part of a query.
+It is applied whenever the association is used in a path expression.
 
 ```cds
 SELECT from Books { title, author.name as author }
@@ -272,7 +287,7 @@ SELECT
 FROM
   sap_capire_bookshop_Books
 LEFT JOIN
-  sap_capire_bookshop_Authors AS author -- The table alias for association 'author'
+  sap_capire_bookshop_Authors AS author -- Table alias for association 'author'
   ON author.ID = author_ID;             -- Join condition from association
 ```
 
@@ -329,25 +344,6 @@ This allows to filter the target of an association based on certain criteria.
 </div>
 
 
-::: info 💡 infix notation as a way to influence auto-generated subqueries
-Within an infix, more than than just a simple `WHERE` condition can be specified.
-It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`.
-
-::: details see the full syntax diagram
-
-TODO: make diagram more readable (use vertical dimension)
-
-<div class="diagram">
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-<div v-html="infixFilterFull"></div>
-</div>
-
-  ::: warning
-  Query modifiers other than `WHERE` may only be used in the context of nested projections
-  and `exists` predicates. They are ignored for regular path expressions.
-
-
-:::
 
 ### applied to `exists` predicate
 
@@ -403,62 +399,6 @@ WHERE exists (
 ```
 :::
 
-TODO: explanation and intro to the next sample with [query modifiers](#with-query-modifiers)
-
-
-:::code-group
-
-```js [CQL] {3,4,5}
-await cds.ql`
-  SELECT from Books[
-    where stock > 0
-    group by genre
-    order by genre asc
-  ]
-  {
-    avg(price) as avgPrice,
-    genre.name
-  }
-`
-[
-  { avgPrice: 11.725, genre_name: 'Drama' },
-  { avgPrice: 150, genre_name: 'Fantasy' },
-  { avgPrice: 14, genre_name: 'Romance' },
-  { avgPrice: 13.13, genre_name: 'Mystery' }
-]
-
-```
-
-```sql [SQL] {6,7,8}
-SELECT
-  avg(Books.price) as avgPrice,
-  genre.name as genre_name
-FROM sap_capire_bookshop_Books as Books
-  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = Books.genre_ID
-WHERE Books.stock > 0
-GROUP BY Books.genre_ID
-ORDER BY Books.genre_ID ASC
-```
-:::
-
-::: details The above is equivalent to…
-
-Using the infix notation to specify the query modifiers is just
-syntactic sugar:
-
-```js
-await cds.ql`
-  SELECT from Books
-  {
-    avg(price) as avgPrice,
-    genre.name
-  }
-  where stock > 0
-  group by genre
-  order by genre asc`
-```
-
-:::
 
 ### in calculated element
 
@@ -543,66 +483,65 @@ FROM sap_capire_bookshop_Authors as Authors
 :::
 
 
-> TODO: explanation about json functions again? Learn more link? Specific additions?
-
-
 ### between path segments
 
-TODO: simpler example a la `SELECT from Books { title, author[age < 40].name }`
+Assuming you have the [calculated element](#in-calculated-element) age in place on the Authors entity:
+
+```cds
+extend Authors with {
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, $now));
+}
+```
 
 In this case we want to select all books where the author's name starts with `Emily`
 and the author is younger than 40 years.
 
 :::code-group
 ```js [CQL] {4}
-> await cds.ql`
-  SELECT from Books { title }
-  where startswith(
-    author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name,
-    'Emily'
-  )`
+> await cds.ql `SELECT from Books { title, author[age < 40].name as author }`
 
-[ { title: 'Wuthering Heights' } ]
+[
+  { title: 'Wuthering Heights', author: 'Emily Brontë' },
+  { title: 'Jane Eyre', author: 'Charlotte Brontë' },
+  { title: 'The Raven', author: null },
+  { title: 'Eleonora', author: null },
+  { title: 'Catweazle', author: null }
+]
 ```
 
 ```sql [SQL]
 SELECT
-  title
+  title,
+  author.name as author
 FROM
-  sap_capire_bookshop_Books AS B
-  LEFT JOIN sap_capire_bookshop_Authors AS author
-    ON B.author_ID = author.ID
-    AND FLOOR(
+  sap_capire_bookshop_Books as Books
+LEFT JOIN
+  sap_capire_bookshop_Authors as author
+ON
+  author.ID = Books.author_ID AND floor(
+  (
+    (
+      (cast(strftime('%Y', coalesce(author.dateOfDeath,session_context('$now'))) as Integer) - cast(strftime('%Y', author.dateOfBirth) as Integer)) * 12
+    ) + (
+      cast(strftime('%m', coalesce(author.dateOfDeath,session_context('$now'))) as Integer) - cast(strftime('%m', author.dateOfBirth) as Integer)
+    ) + (
       (
-        (
-          (CAST(STRFTIME('%Y', author.dateOfDeath) AS INTEGER) - CAST(STRFTIME('%Y', author.dateOfBirth) AS INTEGER)) * 12
-        ) + (
-          CAST(STRFTIME('%m', author.dateOfDeath) AS INTEGER) - CAST(STRFTIME('%m', author.dateOfBirth) AS INTEGER)
-        ) + (
-          CASE
-            WHEN (CAST(STRFTIME('%Y%m', author.dateOfDeath) AS INTEGER) < CAST(STRFTIME('%Y%m', author.dateOfBirth) AS INTEGER)) THEN
-              (CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfDeath) AS INTEGER) > CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfBirth) AS INTEGER))
-            ELSE
-              (CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfDeath) AS INTEGER) < CAST(STRFTIME('%d%H%M%S%f0000', author.dateOfBirth) AS INTEGER)) * -1
-          END
-        )
-      ) / 12
-    ) < ?
-WHERE
-  COALESCE(INSTR(author.name, ?) = 1, FALSE);
-```
+        case
+          when (cast(strftime('%Y%m', coalesce(author.dateOfDeath,session_context('$now'))) as Integer) < cast(strftime('%Y%m', author.dateOfBirth) as Integer)) then
+            (cast(strftime('%d%H%M%S%f0000', coalesce(author.dateOfDeath,session_context('$now'))) as Integer) > cast(strftime('%d%H%M%S%f0000', author.dateOfBirth) as Integer))
+          else
+            (cast(strftime('%d%H%M%S%f0000', coalesce(author.dateOfDeath,session_context('$now'))) as Integer) < cast(strftime('%d%H%M%S%f0000', author.dateOfBirth) as Integer)) * -1
+        end
+      )
+    )
+  ) / 12) < ?
+  ```
 :::
 
-The path expression `author[ years_between(dateOfBirth, dateOfDeath) < 40 ].name`
+The path expression `author[ age < 40 ].name`
 navigates along the `author` association of the `Books` entity.
 
-The join for this path expression is generated as usual and enhanced with the infix filter condition `years_between(dateOfBirth, dateOfDeath) < 40`.
-
-
-::: info 💡 Standard functions
-the `years_between` and `startswith` functions are in the [set of CAPs standard functions](../guides/databases.md#standard-database-functions) and are translated to the respective SQL to get the desired result.
-:::
-
+The join for this path expression is generated as usual and enhanced with the infix filter condition `age < 40`.
 
 
 ## operators
@@ -614,7 +553,7 @@ the `years_between` and `startswith` functions are in the [set of CAPs standard 
 </div>
 
 
-::: info 💡 A unary operator is an operator that operates on exactly one operand.
+::: info A unary operator is an operator that operates on exactly one operand.
 
 E.g. in the expression `-price`, the `-` operator is a unary operator
 that operates on the single operand `price`. It negates the value of `price`.
@@ -627,7 +566,7 @@ that operates on the single operand `price`. It negates the value of `price`.
 </div>
 
 
-::: info 💡 A binary operator is an operator that operates on two operands.
+::: info A binary operator is an operator that operates on two operands.
 E.g. in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
@@ -639,14 +578,6 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 [Learn more about literals.](./csn.md#literals){ .learn-more }
-
-## binding parameter { #binding-parameter }
-
-<div class="diagram" v-html="bindingParameter"></div>
-
-TODO: Remove for first version?
-
-💡 string and numeric literal as well as `?` are parsed as `ref`
 
 ## function { #function }
 
@@ -726,58 +657,6 @@ In this example, the ordering term sorts books by price in descending order and 
 ## type-ref <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> { #type-ref }
 
 [Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
-
-## Scientific Background {#foundation}
-
-Every entity defines a set of all possible instances:
-$${ b \in \text{Books} }$$
-
-A simple select query on Books returns the complete set → all books.
-Filters progressively narrow down the set:
-
-$$\text{highstock} = \{ b \in \text{Books} \mid b.\text{stock} > 100 \}$$
-
-With the infix filter notation, we write it as `Books[stock > 100]`.
-An association defines a relationship between two sets:
-
-$$\text{books} = \{ (a,b) \in \text{Books} \times \text{Authors} \mid b.\text{author\_id} = a.\text{id} \}$$
-
-We can select this set using the path expression `Authors:books` in the [from clause](#in-from-clause).
-The same can be applied to navigate via a path expression in the [select list](#path-navigation) or [where clause](#in-where-clause) using `books`.
-Filtering authors by `Authors where exists books[stock > 100]` can be expressed as:
-
-$$\{ a \in \text{Authors} \mid \exists \space b \in \text{Books}( b.\text{author\_id} = a.\text{id} \land b.\text{stock} > 100 ) \}$$
-
-Using the previously defined $\text{books}$, we can simplify it to:
-
-$$\{ a \in \text{Authors} \mid \exists \space b \in \text{books}( b.\text{stock} > 100 ) \}$$
-
-Using the $\text{highstock}$ set, we can further simplify it to:
-
-$$\{ a \in \text{Authors} \mid \exists \space b \in \text{books} \cap \text{highstock} \}$$
-
-So in conclusion, the expression filters for the intersection of the two sets $\text{books}$ (via association) and $\text{highstock}$ (via infix filter).
-
-
-
-
-
-<div class="diagram">
-<div v-html="setsIntersection"></div>
-</div>
-
-
-
-
-
-<div class="diagram">
-<div v-html="setsLeftjoin"></div>
-</div>
-
-
-<div class="diagram">
-<div v-html="setsExpand"></div>
-</div>
 
 
 <style>

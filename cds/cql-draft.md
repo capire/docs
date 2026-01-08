@@ -112,6 +112,28 @@ The table alias for the `author` association is used in the order by clause of t
 
 ## infix filter
 
+
+::: info 💡 infix notation as a way to influence auto-generated subqueries
+Within an infix, more than than just a simple `WHERE` condition can be specified.
+It is also possible to use other query modifiers, such as `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET`.
+
+::: details see the full syntax diagram
+
+TODO: make diagram more readable (use vertical dimension)
+
+<div class="diagram">
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
+<div v-html="infixFilterFull"></div>
+</div>
+
+  ::: warning
+  Query modifiers other than `WHERE` may only be used in the context of nested projections
+  and `exists` predicates. They are ignored for regular path expressions.
+
+
+:::
+
+
 ### applied to `expand`
 
 Further narrow down the result set of a path expression by applying an infix filter condition to
@@ -230,6 +252,66 @@ FROM sap_capire_bookshop_Authors as Authors
 
 
 TODO: add some short explanation and the limitations
+
+
+
+TODO: explanation and intro to the next sample with [query modifiers](#with-query-modifiers)
+
+
+:::code-group
+
+```js [CQL] {3,4,5}
+await cds.ql`
+  SELECT from Books[
+    where stock > 0
+    group by genre
+    order by genre asc
+  ]
+  {
+    avg(price) as avgPrice,
+    genre.name
+  }
+`
+[
+  { avgPrice: 11.725, genre_name: 'Drama' },
+  { avgPrice: 150, genre_name: 'Fantasy' },
+  { avgPrice: 14, genre_name: 'Romance' },
+  { avgPrice: 13.13, genre_name: 'Mystery' }
+]
+
+```
+
+```sql [SQL] {6,7,8}
+SELECT
+  avg(Books.price) as avgPrice,
+  genre.name as genre_name
+FROM sap_capire_bookshop_Books as Books
+  left JOIN sap_capire_bookshop_Genres as genre ON genre.ID = Books.genre_ID
+WHERE Books.stock > 0
+GROUP BY Books.genre_ID
+ORDER BY Books.genre_ID ASC
+```
+:::
+
+::: details The above is equivalent to…
+
+Using the infix notation to specify the query modifiers is just
+syntactic sugar:
+
+```js
+await cds.ql`
+  SELECT from Books
+  {
+    avg(price) as avgPrice,
+    genre.name
+  }
+  where stock > 0
+  group by genre
+  order by genre asc`
+```
+
+:::
+
 
 
 ## function args { #function-args }
