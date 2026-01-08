@@ -207,7 +207,7 @@ FROM
 :::
 
 In this example, we select all books together with the name of their author.
-`author` is an association in the `Books` entity.
+The association `author` defined in the `Books` entity relates a book to it's author.
 
 When navigating along a to-many association to a leaf element, the result is flattened:
 
@@ -237,7 +237,7 @@ In this example, we select the book titles together with each author.
 Since books is a to-many association, we get a flattened result: one entry per author and book title.
 
 In annotation expressions, the result should often only contain one entry per entry in the annotated entity.
-This can be achieved using the [exists](#after-exists-predicate) predicate.
+This can be achieved using the [exists](#in-exists-predicate) predicate.
 
 
 ::: tip Associations are **forward-declared joins**
@@ -288,16 +288,16 @@ The condition can manifest in multiple ways:
 - To select related entities with an additional query
 :::
 
-### after `exists` predicate
+### in `exists` predicate
 
-path expressions can also be used after the `exists` predicate to check for the existence.
+Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
 
-E.g., to select all authors that have written **at least**  one book:
+E.g., to select all authors that have written **at least** one book:
 
 :::code-group
-```js [CQL] {1}
-> await cds.ql`SELECT from Authors { name } where exists books`
+```js [CQL]
+> await cds.ql`SELECT from Authors { name } where exists books` // [!code focus]
 
 [
   { name: 'Emily Brontë' },
@@ -365,7 +365,7 @@ WHERE exists (
 :::
 
 > Note how the infix filter condition `genre.name = 'Fantasy'` is applied to the
-subquery following the `exists` predicate for the `books` association.
+the `exists`-subquery for the `books` association in SQL.
 
 ### applied to `from` clause
 
@@ -406,8 +406,8 @@ Now we can use `cheapBooks` just like any other association.
 E.g. to select the set of authors which have no cheap books:
 
 :::code-group
-```js [CQL] {1}
-> await cds.ql`SELECT from Authors { name } where not exists cheapBooks`
+```js [CQL]
+> await cds.ql`SELECT from Authors { name } where not exists cheapBooks` // [!code focus]
 [
   { name: 'Richard Carpenter' }
 ]
@@ -487,8 +487,8 @@ In this case we want to select all books where the author's name starts with `Em
 and the author is younger than 40 years.
 
 :::code-group
-```js [CQL] {4}
-> await cds.ql `SELECT from Books { title, author[age < 40].name as author }`
+```js [CQL]
+> await cds.ql `SELECT from Books { title, author[age < 40].name as author }` // [!code focus]
 
 [
   { title: 'Wuthering Heights', author: 'Emily Brontë' },
