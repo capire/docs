@@ -36,7 +36,7 @@ For topic resolution the logical events are delegated to the messaging service, 
 
 The message flow follows a clear path through both layers:
 
-**Outbound Flow (Publisher)**: A service calls `srv.emit('reviewed', data)` → CAP Messaging Service resolves the event name to a fully qualified topic (e.g., `OrderSrv.reviewed`) → Message is serialized and sent to the Event Broker → Broker stores and distributes the message to all subscribers.
+**Outbound Flow (Publisher)**: A CAP service calls `srv.emit('reviewed', data)` → CAP Messaging Service resolves the event name to a fully qualified topic (e.g., `OrderSrv.reviewed`) → Message is serialized and sent to the Event Broker → Broker stores and distributes the message to all subscribers.
 
 **Inbound Flow (Subscriber)**: Event Broker delivers message from subscribed topic → CAP Messaging Service receives the message → Service name and event name are resolved from the topic → Message is routed to the appropriate service handler via `srv.on('reviewed', handler)`.
 
