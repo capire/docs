@@ -5,7 +5,7 @@ label: Multitenancy
 impl-variants: true
 ---
 
-# Deploy Multi-tenant SaaS Applications
+# Deploy Multitenant SaaS Applications
 
 {{ $frontmatter.synopsis }}
 

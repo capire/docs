@@ -1,4 +1,4 @@
-# Integration
+# Services & Platform Integration
 
 CAP applications integrate at multiple levels — from reusing services and data within your application, to connecting with external microservices, to leveraging platform services for identity, storage, and observability. This section covers the various integration patterns and platform capabilities available to your CAP projects.
 {.abstract}

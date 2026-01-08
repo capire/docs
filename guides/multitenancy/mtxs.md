@@ -1,11 +1,8 @@
 ---
 
 label: MTX Reference
-# layout: reference-doc
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - MTX Reference
+synopsis: >
+  API reference for multitenancy and extensibility.
 status: released
 ---
 

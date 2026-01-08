@@ -212,6 +212,7 @@ Use `cds add` to grow your project as you go:
 
 ```shell
 cds add data
+cds add nodejs
 cds add java
 cds add ui5
 cds add fiori-tools
