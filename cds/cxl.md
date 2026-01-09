@@ -337,30 +337,55 @@ This allows to filter the target of an association based on certain criteria.
 
 ### applied to `exists` predicate
 
-In this example, we want to select all authors that have written at least one book in the `Fantasy` genre:
+In this example, we want to select all authors with books that have a certain stock amount.
+To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
 
-> REVISIT: this does work in the node runtime, but the compiler does not yet support it. How about java?
+:::code-group
+```js [CQL]
+await cds.ql`SELECT from Authors { name } where exists books[stock > 100]`
+[ { name: 'Edgar Allen Poe' } ]
+```
+```sql [SQL]
+SELECT
+  name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+  SELECT 1
+  FROM sap_capire_bookshop_Books as books
+  WHERE books.author_ID = Authors.ID
+    and books.stock > 100
+)
+```
+:::
+
+
+Exist predicates with infix filters can also be nested.
+Here we select all authors that have written at least one book in the `Fantasy` genre:
 
 :::code-group
 ```js [CQL]
 > await cds.ql`
     SELECT from Authors { name }
-    where exists books[genre.name = 'Fantasy']` // [!code focus]
+    where exists books[exists genre[name = 'Fantasy']]` // [!code focus]
 
 [ { name: 'Richard Carpenter' } ]
 ```
 
 ```sql [SQL]
-SELECT Authors.name
+SELECT
+  name
 FROM sap_capire_bookshop_Authors as Authors
 WHERE exists (
+  SELECT 1
+  FROM sap_capire_bookshop_Books as books
+  WHERE books.author_ID = Authors.ID
+  and exists (
     SELECT 1
-    FROM sap_capire_bookshop_Books as books
-      inner JOIN sap_capire_bookshop_Genres as genre
-        ON genre.ID = books.genre_ID
-    WHERE books.author_ID = Authors.ID
+    FROM sap_capire_bookshop_Genres as genre
+    WHERE genre.ID = books.genre_ID
       and genre.name = 'Fantasy'
   )
+)
 ```
 :::
 
@@ -369,7 +394,39 @@ the `exists`-subquery for the `books` association in SQL.
 
 ### applied to `from` clause
 
+Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
 
+For example, we want to get the author names of books with a price greater than 19.99.
+Intuitively, we can formulate a query using a condition in the `where` clause:
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { author.name as name } where price > 19.99` // [!code focus]
+[ { name: 'Richard Carpenter' } ]
+```
+
+```sql [SQL]
+SELECT author.name as name
+FROM sap_capire_bookshop_Books as Books
+LEFT JOIN sap_capire_bookshop_Authors as author
+    ON author.ID = Books.author_ID
+WHERE Books.price > ?
+```
+:::
+
+But we can also move this condition to an infix filter:
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books[price > 19.99] { author.name as name }` // [!code focus]
+[ { name: 'Richard Carpenter' } ]
+```
+
+```sql [SQL]
+```
+:::
+
+Now we can further use path navigation to navigate from the filtered books to their authors:
 
 :::code-group
 ```js [CQL]
@@ -389,6 +446,27 @@ WHERE exists (
 ```
 :::
 
+
+::: info
+Note that the generated SQL is equivalent to querying authors with an [exists predicate](#applied-to-exists-predicate):
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Authors { name } where exists books[price > 19.99]` // [!code focus]
+[ { name: 'Richard Carpenter' } ]
+```
+
+```sql [SQL]
+SELECT Authors.name
+FROM sap_capire_bookshop_Authors as Authors
+WHERE exists (
+  SELECT 1
+  FROM sap_capire_bookshop_Books as Books
+  WHERE Books.author_ID = Authors.ID
+    and Books.price > ?
+)
+```
+:::
 
 ### in calculated element
 
