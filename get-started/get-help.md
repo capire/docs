@@ -606,10 +606,11 @@ In this case, the process was killed by a `SIGKILL` signal, typically because it
 
 ::: tip Distinguish extensibility and non-extensibility scenarios
 While out-of-memory issues are more common, with **extensibility enabled** you’re more likely to run into CPU bottlenecks due to expensive compilations that need to be performed at (MTX) runtime.
+:::
 
-MTX uses **four parallel workers** by default to perform tenant upgrades. If your project exceeds a certain complexity threshold, you might run into these resource bottlenecks. We advise you to **follow this algorithm** to manage resources:
+MTX uses **four parallel workers** by default to perform tenant upgrades. If your project exceeds a certain complexity threshold, you might run into these resource bottlenecks. We advise you to **follow this algorithm** to mitigate resource overload:
 
-1. **Decrease your model complexity**: Ask yourself: Is your current domain model a good compression of your business domain? Decreasing complexity here will have positive trickle-down effects, including tenant upgrade performance.
+1. **Decrease your model complexity**: Ask yourself, is your current domain model a good compression of your business domain? Decreasing complexity here will have positive trickle-down effects, including tenant upgrade performance.
 2. **Increase resources (scale up)**: Increase the RAM assigned to your MTX sidecar or upgrade task. This is typically done in deployment resources like _mta.yaml_ (Cloud Foundry) or _values.yaml_ (Kyma).
 
    [Learn more about database upgrade task configuration](../guides/multitenancy/#update-database-schema){.learn-more}
