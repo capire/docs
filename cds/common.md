@@ -420,7 +420,7 @@ EU;European Union;European Union
 ```
 :::
 
-[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases/index#providing-initial-data){ .learn-more}
+[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases/initial-data){ .learn-more}
 
 
 ### Add Translated Texts
