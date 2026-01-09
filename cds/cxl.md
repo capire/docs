@@ -120,7 +120,7 @@ Expressions can be used in various places, for example in annotations:
 
 ```cds
 annotate AdminService.Authors:dateOfDeath with @assert: (case
-  when dateOfDeath > $now then 'Cannot be in the future'
+  when dateOfDeath > date( $now ) then 'Cannot be in the future'
   when dateOfDeath < dateOfBirth then 'Enter a date after date of birth'
 end);
 ```
