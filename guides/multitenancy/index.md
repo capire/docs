@@ -705,6 +705,14 @@ cf run-task <app> --name "upgrade-all" --command "cds-mtx upgrade '*'"
 ```
 :::
 
+::: info Managing large upgrade workloads
+
+Very large projects might need to increase resources or limit parallelism of tenant upgrades.
+
+[The best practice algorithm is laid out in our _Get Help_ guide.](../../get-started/get-help#my-mtx-sidecar-is-killed-with-exit-status-137){.learn-more}{style="margin-top:10px"}
+
+:::
+
 
 ### Test-Drive with Hybrid Setup
 
