@@ -511,7 +511,7 @@ In the following example, _Wuthering Heights (only in t1)_ was changed by _alice
 
    :::
 
-### 5. Upgrade Your Tenant
+### 5. Upgrade Your Tenant {#tenant-upgrade}
 
 When deploying new versions of your app, you also need to upgrade your tenants' databases. For example, open `db/data/sap.capire.bookshop-Books.csv` and add one or more entries in there. Then upgrade tenant `t1` as follows:
 
