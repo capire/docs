@@ -93,9 +93,9 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `cds.security.authorization.deep.enabled` | false | true | [Deep Authorization](./security#deep-auth) is now enabled by default. |
+| `cds.security.authorization.deep.enabled` | false | true | [Deep Authorization](../guides/security/authorization#deep-auth) is now enabled by default. |
 | `cds.security.authorization.instanceBased.rejectSelectedUnauthorizedEntity.enabled` | false | true | Requests that violate instance-based authorization conditions now fail with 403, instead of 404. |
-| `cds.security.authorization.instanceBased.checkInputData.enabled` | false | true | [Authorization Checks On Input Data](./security#input-data-auth) are now enabled by default. |
+| `cds.security.authorization.instanceBased.checkInputData.enabled` | false | true | [Authorization Checks On Input Data](../guides/security/authorization#input-data-auth) are now enabled by default. |
 | `cds.errors.defaultTranslations.enabled` | false | true | [Translations for Validation Error Messages](./event-handlers/indicating-errors#ootb-translated-messages) are now enabled by default. |
 | `cds.sql.runtimeView.mode` | resolve | cte | [Runtime views](./working-with-cql/query-execution#runtimeviews) are now by default translated into Common Table Expressions |
 
@@ -188,8 +188,6 @@ Though CAP does not support multiple XSUAA bindings, it was possible in previous
 In IAS scenarios, the [Proof-Of-Possession](https://github.com/SAP/cloud-security-services-integration-library/tree/main/java-security#proofofpossession-validation) is now enforced by default for incoming requests for versions starting from `3.5.1` of the [SAP BTP Spring Security Client](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security).
 
 Because of this, applications calling a CAP Java application will need to send a valid client certificate in addition to the JWT token. In particular, applications using an Approuter have to set `forwardAuthCertificates: true` on the Approuter destination pointing to your CAP backend.
-
-[Learn more about Proof-Of-Possession.](./security.md#proof-of-possession){.learn-more}
 
 ### Lazy Localization by default
 
@@ -1178,7 +1176,7 @@ With the help of these interfaces, the classic enforcement API can be mapped to 
 | `getUserAttribute(String attributeName)` | `user.getAttribute(attributeName)`    |
 | `isContainerSecurityEnabled()` | no substitution required            |
 
-[See section **Enforcement API & Custom Handlers in Java** for more details.](./security#enforcement-api){.learn-more}
+[See section **Developing with CAP Users** for more details.](../guides/security/cap-users#developing-with-users){.learn-more}
 
 <span id="moreenforcement" />
 

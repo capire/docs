@@ -19,16 +19,39 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 # CAP-level Authorization & Access Control
 
-Authorization means restricting access to data by adding respective declarations to CDS models, which are then enforced in service implementations. By adding such declarations, we essentially revoke all default access and then grant individual privileges.
+<ImplVariantsHint />
+
+This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 
 [[toc]]
 
 
+## Declarative Access Control
+
+In essence, [authentication](./authentication#authentication) verifies the user's identity and the presented claims. Briefly, authentication reveals _who_ is using the service.
+In contrast, **authorization controls _how_ the user may interact with the application's resources**. 
+As access control depends on user information, authentication is a prerequisite for authorization.
+
+![Authorization with CAP](./assets/authorization.drawio.svg){width="450px"}
+
+CAP authorization modeling means restricting user access to application resources in a declarative way.
+The decisive point here is that the application logic does not need to contribute any security-critical code for this, but can rely on the generic framework.
+
+There are several ways to define access rules on CDS resources:
+- [Static access control](#static-access-control) limits access to CDS services on a general level independently of the request user.
+- [Role-based access control](#role-based-access-control) derives resource access rules from roles granted by user administrators.
+- [Instance-based access control](#instance-based-auth) allows entity-level filters that usually depend on user criteria.
+
+**By default, CDS services have no access control**, which means that without authorization modeling, authenticated users have access to all entities.
+
+::: warning
+**Applications must implement proper authorization.** CAP cannot enforce this automatically as it depends entirely on the specific domain model.
+:::
+
+Finally, according to the key concept [Customizable Security](./overview#key-concept-customizable), applications can implement custom authorization logic for exceptional scenarios when declarative approaches are insufficient.
 
 
-## Authentication as Prerequisite { #prerequisite-authentication}
-
-In essence, authentication verifies the user's identity and the presented claims such as granted roles and tenant membership. Briefly, **authentication** reveals _who_ uses the service. In contrast, **authorization** controls _how_ the user can interact with the application's resources according to granted privileges. As the access control needs to rely on verified claims, authentication is a prerequisite to authorization.
+## Static Access Control { #static-access-control }
 
 From perspective of CAP, the authentication method is freely customizable. For convenience, a set of authentication methods is supported out of the box to cover most common scenarios:
 
@@ -56,7 +79,7 @@ service InternalService {
   ...
 }
 ```
-The `InternalService` service can only receive events sent by in-process handlers.
+`InternalService` can only receive events sent by in-process handlers.
 
 ## User Claims { #user-claims}
 
@@ -186,7 +209,7 @@ service SomeService {
 
 #### Events to Auto-Exposed Entities { #events-and-auto-expose}
 
-In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be **auto-exposed** by the CDS compiler due to some reason.
+In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](../../cds/cdl#auto-exposed-entities) by the CDS compiler for some reason.
 Access to auto-exposed entities needs to be controlled in a specific way. Consider the following example:
 
 ```cds
@@ -217,7 +240,7 @@ As a result, the `IssuesService` service actually exposes *all* three entities f
 * `db.Issues` is implicitly auto-exposed by the compiler as it is a composition entity of `Components`.
 * `db.Categories` is explicitly auto-exposed due to the `@cds.autoexpose` annotation.
 
-In general, **implicitly auto-exposed entities cannot be accessed directly**, that means, only access via a navigation path (starting from an explicitly exposed entity) is allowed.
+In general, **implicitly auto-exposed entities cannot be accessed directly**, which means only access via a navigation path (starting from an explicitly exposed entity) is allowed.
 
 In contrast, **explicitly auto-exposed entities can be accessed directly, but only as `@readonly`**. The rationale behind that is that entities representing value lists need to be readable at the service level, for instance to support value help lists.
 
@@ -237,6 +260,27 @@ This results in the following access matrix:
 CodeLists such as `Languages`, `Currencies`, and `Countries` from `sap.common` are annotated with `@cds.autoexpose` and so are explicitly auto-exposed.
 :::
 
+## Role-Based Access Control { #role-based-access-control }
+
+To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations. 
+
+Restrictions can be defined on *different CDS resources*:
+
+- Services
+- Entities
+- (Un)bound actions and functions
+
+You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model. 
+For instance, a restriction on the service level applies to all entities in the service. 
+Additional restrictions on entities or actions can further limit authorized requests. 
+See [combined restrictions](#combined-restrictions) for more details.
+
+Beside the scope, restrictions can limit access to resources with regards to *different dimensions*:
+
+- The [event](#restricting-events) of the request, that is, the type of the operation (what?)
+- The [roles](cap-users#roles) of the user (who?)
+- [Filter-condition](#instance-based-auth) on instances to operate on (which?)
+
 ### @requires { #requires}
 
 You can use the `@requires` annotation to control which (pseudo-)role a user requires to access a resource:
@@ -249,7 +293,7 @@ annotate ShopService.ReplicationAction with @(requires: 'system-user');
 
 In this example, the `BrowseBooksService` service is open for authenticated but not for anonymous users. A user who has the `Vendor` _or_ `ProcurementManager` role is allowed to access the `ShopService.Books` entity. Unbound action `ShopService.ReplicationAction` can only be triggered by a technical user.
 ::: tip
-When restricting service access through `@requires`, the service's metadata endpoints (that means, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#add-mw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
+When restricting service access through `@requires`, the service's metadata endpoints (that is, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#add-mw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
 :::
 
 
@@ -266,13 +310,13 @@ The building block of such a restriction is a single **privilege**, which has th
 whereas the properties are:
 
 * `grant`: one or more events that the privilege applies to
-* `to`: one or more [user roles](#roles) that the privilege applies to (optional)
+* `to`: one or more [user roles](cap-users#roles) that the privilege applies to (optional)
 * `where`: a filter condition that further restricts access on an instance level (optional).
 
 The following values are supported:
 - `grant` accepts all standard [CDS events](../../get-started/concepts#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
 
-- The `to` property lists all [user roles](#roles) or [pseudo roles](#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
+- The `to` property lists all [user roles](cap-users#roles) or [pseudo roles](cap-users#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
 - The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
 
@@ -320,11 +364,6 @@ Here an `Auditor` user can read all orders with matching `country` or that they 
    - `@requires: 'Viewer'` is equivalent to `@restrict: [{grant:'*', to: 'Viewer'}]`
    - `@readonly` is the same as `@restrict: [{ grant:'READ' }]`
 
-Currently, the security annotations **are only evaluated on the target entity of the request**. Restrictions on associated entities touched by the operation aren't regarded. This has the following implications:
-- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
-- Deep inserts and updates are checked on the root entity only.
-
-See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.{.learn-more}
 
 
 #### Supported Combinations with CDS Resources
@@ -337,7 +376,7 @@ Restrictions can be defined on different types of CDS resources, but there are s
 | entity          |  <Y/>   | <Y/> | <Y/><sup>1</sup>  |               |
 | action/function |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
 
-> <sup>1</sup>For bound actions and functions that aren't bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>1</sup>For bound actions and functions that are not bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
 > <sup>2</sup> For unbound actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
@@ -393,6 +432,47 @@ The resulting authorizations are illustrated in the following access matrix:
 
 The example models access rules for different roles in the same service. In general, this is _not recommended_ due to the high complexity. See [best practices](#dedicated-services) for information about how to avoid this.
 
+### Propagation of Restrictions { #propagated-restrictions }
+
+Service entities inherit the restriction from the database entity, on which they define a projection.
+An explicit restriction defined on a service entity *replaces* inherited restrictions from the underlying entity.
+
+Entity `Books` on a database level:
+
+```cds
+namespace db;
+entity Books @(restrict: [
+  { grant: 'READ', to: 'Buyer' },
+]) {/*...*/}
+```
+
+Services `BuyerService` and `AdminService` on a service level:
+
+```cds
+service BuyerService @(requires: 'authenticated-user'){
+  entity Books as projection on db.Books; /* inherits */
+}
+
+service AdminService @(requires: 'authenticated-user'){
+  entity Books @(restrict: [
+    { grant: '*', to: 'Admin'} /* overrides */
+  ]) as projection on db.Books;
+}
+```
+
+| Events                        | `Buyer` | `Admin` | `authenticated-user` |
+|-------------------------------|:-------:|:-------:|:--------------------:|
+| `BuyerService.Books` (`READ`) |  <Y/>   |  <X/>   |         <X/>         |
+| `AdminService.Books` (`*`)    |  <X/>   |  <Y/>   |         <X/>         |
+
+::: tip
+We recommend defining restrictions on a database entity level only in exceptional cases. Inheritance and override mechanisms can lead to an unclear situation.
+:::
+
+::: warning _Warning_ <!--  -->
+A service level entity can't inherit a restriction with a `where` condition that doesn't match the projected entity. The restriction has to be overridden in this case.
+:::
+
 
 ### Draft Mode {#restrictions-and-draft-mode}
 
@@ -439,57 +519,46 @@ So, the authorization for the requests in the example is delegated as follows:
 > <sup>2</sup> `@readonly` due to `@cds.autoexpose`<br>
 > <sup>3</sup> According to the restriction. `<id>` is relevant for instance-based filters.
 
-### Inheritance of Restrictions
 
-Service entities inherit the restriction from the database entity, on which they define a projection. An explicit restriction defined on a service entity *replaces* inherited restrictions from the underlying entity.
 
-Entity `Books` on a database level:
+## Instance-Based Access Control { #instance-based-auth }
 
-```cds
-namespace db;
-entity Books @(restrict: [
-  { grant: 'READ', to: 'Buyer' },
-]) {/*...*/}
-```
+The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. 
+In addition, you can define a `where`-condition that further limits the set of accessible instances. 
+This condition, which acts like a filter, establishes *instance-based authorization*.
 
-Services `BuyerService` and `AdminService` on a service level:
+The condition defined in the `where` clause typically associates domain data with static user claims.
 
-```cds
-service BuyerService @(requires: 'authenticated-user'){
-  entity Books as projection on db.Books; /* inherits */
-}
+### Filter Conditions { #filter-consitions }
 
-service AdminService @(requires: 'authenticated-user'){
-  entity Books @(restrict: [
-    { grant: '*', to: 'Admin'} /* overrides */
-  ]) as projection on db.Books;
-}
-```
-
-| Events                        | `Buyer` | `Admin` | `authenticated-user` |
-|-------------------------------|:-------:|:-------:|:--------------------:|
-| `BuyerService.Books` (`READ`) |  <Y/>   |  <X/>   |         <X/>         |
-| `AdminService.Books` (`*`)    |  <X/>   |  <Y/>   |         <X/>         |
-
-::: tip
-We recommend defining restrictions on a database entity level only in exceptional cases. Inheritance and override mechanisms can lead to an unclear situation.
-:::
-
-::: warning _Warning_ <!--  -->
-A service level entity can't inherit a restriction with a `where` condition that doesn't match the projected entity. The restriction has to be overridden in this case.
-:::
-
-## Instance-Based Authorization { #instance-based-auth }
-
-The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. In addition, you can define a `where`-condition that further limits the set of accessible instances. This condition, which acts like a filter, establishes an *instance-based authorization*.
-
-The condition defined in the `where`-clause typically associates domain data with static [user claims](#user-claims). Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. This means that, the condition applies to following standard CDS events only<sup>1</sup>:
+The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
+Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
+This means that, the condition applies to following standard CDS events only:
 - `READ` (as result filter)
-- `UPDATE` (as reject condition<sup>2</sup>)
-- `DELETE` (as reject condition<sup>2</sup>)
+- `UPDATE` (as reject condition)
+- `DELETE` (as reject condition)
 
- > <sup>1</sup> Node.js supports _static expressions_ that *don't have any reference to the model* such as `where: $user.level = 2` for all events.
- > <sup>2</sup> CAP Java uses a filter condition by default.
+<div class="impl java">
+
+In addition, the runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
+- `CREATE` (input filter)
+- `UPDATE` (input filer)
+
+</div>
+
+You can define filter conditions in the `where`-clause of restrictions based on [CQL](/cds/cql)-predicates, declared as [compiler expressions](../../cds/cdl#expressions-as-annotation-values):
+
+* Predicates with arithmetic operators.
+* Combining predicates to expressions with `and` and `or` logical operators.
+* Value references to constants, [user attributes](#user-attrs), and entity data (elements including [association paths](#association-paths))
+* [Exists predicate](#exists-predicate) based on subselects.
+
+<div class="impl java">
+
+* [Exists with a subquery](#exists-subquery) for access to ACL like entities.
+
+</div>
+
 
 For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
 
@@ -516,24 +585,33 @@ Supported features are:
 In case the filter condition is not met in an `UPDATE` or `DELETE` request, the runtime rejects the request (response code 403) even if the user is not even allowed to read the entity. To avoid to disclosure the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable.
 :::
 
-### User Attribute Values { #user-attrs}
+At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
 
-To refer to attribute values from the user claim, prefix the attribute name with '`$user.`' as outlined in [static user claims](#user-claims). For instance, `$user.country` refers to the attribute with the name `country`.
+:::warning Modification of Statements
+Be careful when you modify or extend the statements in custom handlers.
+Make sure you keep the filters for authorization.
+:::
+
+
+
+#### User Attributes { #user-attrs}
+
+To refer to attribute values from the user claim, prefix the attribute name with '`$user.`' as outlined in [static user claims](cap-users#claims). For instance, `$user.country` refers to the attribute with the name `country`.
 
 In general, `$user.<attribute>` contains a **list of attribute values** that are assigned to the user. The following rules apply:
 * A predicate in the `where` clause evaluates to `true` if one of the attribute values from the list matches the condition.
-* An empty (or not defined) list means that the user is fully restricted with regards to this attribute (that means that the predicate evaluates to `false`).
+* An empty (or not defined) list means that the user is fully restricted with regard to this attribute (that is, the predicate evaluates to `false`).
 
 For example, the condition `where: $user.country = countryCode` will grant a user with attribute values `country = ['DE', 'FR']` access to entity instances that have `countryCode = DE` _or_ `countryCode = FR`. In contrast, the user has no access to any entity instances if the value list of country is empty or the attribute is not available at all.
 
-#### Unrestricted XSUAA Attributes
+##### Unrestricted XSUAA Attributes
 
-By default, all attributes defined in [XSUAA instances](#xsuaa-configuration) require a value (`valueRequired:true`) which is well-aligned with the CAP runtime that enforces restrictions on empty attributes.
+By default, all attributes defined in [XSUAA instances](./cap-users#xsuaa-roles) require a value (`valueRequired:true`), which is well-aligned with the CAP runtime that enforces restrictions on empty attributes.
 If you explicitly want to offer unrestricted attributes to customers, you need to do the following:
 
 1. Switch your XSUAA configuration to `valueRequired:false`
 2. Adjust the filter-condition accordingly, for example: `where: $user.country = countryCode or $user.country is null`.
-  > If `$user.country` is undefined or empty, the overall expression evaluates to `true` reflecting the unrestricted attribute.
+  > If `$user.country` is undefined or empty, the overall expression evaluates to `true`, reflecting the unrestricted attribute.
 
 ::: warning
 Refrain from unrestricted XSUAA attributes as they need to be designed very carefully as shown in the following example.
@@ -551,8 +629,9 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
   }
 }
 ```
-Let's assume a customer creates XSUAA roles `SalesManagerEMEA` with dedicated values (`['DE', 'FR', ...]`) and 'SalesAdmin' with *unrestricted* values.
-As expected, a user assigned only to 'SalesAdmin' has access to all `SalesOrgs`. But when role `SalesManagerEMEA` is added, *only* EMEA orgs are accessible suddenly!
+
+Let's assume a customer creates XSUAA roles `SalesManagerEMEA` with dedicated values (`['DE', 'FR', ...]`) and `SalesAdmin` with *unrestricted* values.
+As expected, a user assigned only to `SalesAdmin` has access to all `SalesOrgs`. But when role `SalesManagerEMEA` is added, *only* EMEA organizations are accessible suddenly!
 
 The preferred way is to model with restricted attribute `country` (`valueRequired:true`) and an additional grant:
 ```cds
@@ -568,9 +647,7 @@ service SalesService @(requires: ['SalesAdmin', 'SalesManager']) {
 }
 ```
 
-
-
-### Exists Predicate { #exists-predicate }
+#### Exists Predicate { #exists-predicate }
 
 In many cases, the authorization of an entity needs to be derived from entities reachable via association path. See [domain-driven authorization](#domain-driven-authorization) for more details.
 You can leverage the `exists` predicate in `where` conditions to define filters that directly apply to associated entities defined by an association path:
@@ -626,16 +703,14 @@ service ProductsService @(requires: 'authenticated-user') {
 }
 ```
 
-Here, the authorization of `Products` is derived from `Divisions` by leveraging the _n:m relationship_ via entity `ProducingDivisions`. Note that the path `producers.division` in the `exists` predicate points to target entity `Divisions`, where the filter with the user-dependent attribute `$user.division` is applied.
+Here, the authorization of `Products` is derived from `Divisions` by leveraging the *n:m relationship* via entity `ProducingDivisions`. Note that the path `producers.division` in the `exists` predicate points to target entity `Divisions`, where the filter with the user-dependent attribute `$user.division` is applied.
 
 ::: warning Consider Access Control Lists
 Be aware that deep paths might introduce a performance bottleneck. Access Control List (ACL) tables, managed by the application, allow efficient queries and might be the better option in this case.
 :::
 
-<div id="exists-subquery" />
 
-
-### Association Paths { #association-paths}
+#### Association Paths { #association-paths}
 
 The `where`-condition in a restriction can also contain [CQL path expressions](../../cds/cql#path-expressions) that navigate to elements of associated entities:
 
@@ -652,15 +727,131 @@ service SalesOrderService @(requires: 'authenticated-user') {
 }
 ```
 
-Paths on 1:n associations (`Association to many`) are only supported, _if the condition selects at most one associated instance_.
-It's highly recommended to use the [exists](#exists-predicate) predicate instead.
-::: tip
-Be aware of increased execution time when modeling paths in the authorization check of frequently requested entities. Working with materialized views might be an option for performance improvement in this case.
+Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the condition selects at most one associated instance_ (`exists` semantic).
+
+
+<div class="impl java">
+
+<div id="exists-subquery" />
+
+</div>
+
+
+### Checking Input Data { #input-data-auth .java}
+
+Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
+Invalid input that does not meet the condition is rejected with response code `400`.
+
+Let's assume an entity `Orders` which restricts access to users classified by assigned accounting areas:
+
+```cds
+annotate Orders with @(restrict: [
+  { grant: '*', where: 'accountingArea = $user.accountingAreas' } ]);
+```
+
+A user with accounting areas `[Development, Research]` is not able to send an `UPDATE` request, that changes `accountingArea` from `Research` or `Development` to `CarFleet`, for example.
+Note that the `UPDATE` on instances _not matching the request user's accounting areas_ (for example, `CarFleet`) are rejected by standard instance-based authorization checks.
+
+Starting with CAP Java `4.0`, deep authorization is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
+
+
+### Rejected Entity Selection { #reject-403 .java}
+
+Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
+are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
+Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
+
+To allow the UI to distinguish between *not found* and *forbidden*, CAP Java can detect this situation and rejects`UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
+The additional authorization check may affect performance.
+
+::: warning Avoid enumerable keys
+To avoid to disclosure the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable or add custom code to overrule the default behaviour otherwise.
 :::
 
-::: warning _Warning_ <!--  -->
-In Node.js association paths in `where`-clauses are currently only supported when using SAP HANA.
+Starting with CAP Java `4.0`, the reject behaviour is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
+
+
+
+## Limitations {.node}
+
+Currently, the security annotations **are only evaluated on the target entity of the request**. 
+Restrictions on associated entities touched by the operation are not regarded. 
+This has the following implications:
+- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
+- Deep inserts and updates are checked on the root entity only.
+
+See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.
+
+
+## Deep Authorizations { #deep-auth .java}
+
+### Associations
+
+Queries to Application Services are not only authorized by the target entity which has a `@restrict` or `@requires` annotation, but also for all __associated entities__ that are used in the statement.
+For instance, consider the following model:
+
+```cds
+@(restrict: [{ grant: 'READ', to: 'Manager' }])
+entity Books {...}
+
+@(restrict: [{ grant: 'READ', to: 'Manager' }])
+entity Orders {
+  key ID: String;
+  items: Composition of many {
+    key book: Association to Books;
+    quantity: Integer;
+  }
+}
+```
+
+For the following OData request `GET Orders(ID='1')/items?$expand=book`, authorizations for `Orders` and for `Books` are checked.
+If the entity `Books` has a `where` clause for instance-based authorization, it will be added as a filter to the sub-request with the expand.
+
+Custom CQL statements submitted to the [Application Service](../../java/cqn-services/application-services) instances are also authorized by the same rules including the path expressions and subqueries used in them.
+
+For example, the following statement checks role-based authorizations for both `Orders` and `Books`,
+because the association to `Books` is used in the select list.
+
+```java
+Select.from(Orders_.class,
+    f -> f.filter(o -> o.ID().eq("1")).items())
+  .columns(c -> c.book().title());
+```
+
+For modification statements with associated entities used in infix filters or where clauses,
+role-based authorizations are checked as well. 
+Associated entities require `READ` authorization, in contrast to the target of the statement itself.
+
+The following statement requires `UPDATE` authorization on `Orders` and `READ` authorization on `Books`
+because an association from `Orders.items` to the book is used in the where condition.
+
+```java
+Update.entity(Orders_.class, f -> f.filter(o -> o.ID().eq("1")).items())
+  .data("quantity", 2)
+  .where(t -> t.book().ID().eq(1));
+```
+Starting with CAP Java `4.0`, deep authorization is active by default.
+It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
+
+
+### Compositions
+
+Restrictions on associated composition entities touched by the request are **not** regarded by the runtime.
+The rational behind that is that authorization rules are [implicitly defined by the root entity of the document](#autoexposed-restrictions) and therefore security annotations **of the composition root entity are evaluated**.
+
+This has the following implications:
+- Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
+- Deep `INSERT`s and `UPDATE`s are checked on the root entity only.
+
+::: warning
+**Restrictions on compositions are not checked by the runtime**.
+If you model dedicated restriction rules on child entity level, you need to add custom authorization handlers accordingly.
 :::
+
+
+
 
 ## Best Practices
 
@@ -668,7 +859,9 @@ CAP authorization allows you to control access to your business data on a fine g
 
 ### Choose Conceptual Roles
 
-When defining user roles, one of the first options could be to align roles to the available _operations_ on entities, which results in roles such as `SalesOrders.Read`, `SalesOrders.Create`, `SalesOrders.Update`, and `SalesOrders.Delete`, etc. What is the problem with this approach? Think about the resulting number of roles that the user administrator has to handle when assigning them to business users. The administrator would also have to know the domain model precisely and understand the result of combining the roles. Similarly, assigning roles to operations only (`Read`, `Create`, `Update`, ...) typically doesn't fit your business needs.<br>
+When defining user roles, one of the first options could be to align roles to the available *operations* on entities, which results in roles such as `SalesOrders.Read`, `SalesOrders.Create`, `SalesOrders.Update`, and `SalesOrders.Delete`.
+
+What is the problem with this approach? Think about the resulting number of roles that the user administrator has to handle when assigning them to business users. The administrator would also have to know the domain model precisely and understand the result of combining the roles. Similarly, assigning roles to operations only (`Read`, `Create`, `Update`, ...) typically doesn't fit your business needs.<br>
 We strongly recommend defining roles that describe **how a business user interacts with the system**. Roles like `Vendor`, `Customer`, or `Accountant` can be appropriate. With this approach, the application developers define the set of accessible resources in the CDS model for each role - and not the user administrator.
 
 ### Prefer Single-Purposed, Use-Case Specific Services { #dedicated-services}
@@ -687,7 +880,7 @@ service CatalogService @(requires: 'authenticated-user') {
 ```
 
 Four different roles (`authenticated-user`, `Vendor`, `Accountant`, `Admin`) *share* the same service - `CatalogService`. As a result, it's confusing how a user can use `Books` or `doAccounting`. Considering the complexity of this small example (4 roles, 1 service, 2 resources), this approach can introduce a security risk, especially if the model is larger and subject to adaptation. Moreover, UIs defined for this service will likely appear unclear as well.<br>
-The fundamental purpose of services is to expose business data in a specific way. Hence, the more straightforward way is to **use a service for each of the roles**:
+The fundamental purpose of services is to expose business data in a specific way. Hence, the more straightforward way is to **use a service for each role**:
 
 ```cds
 @path:'browse'
@@ -728,23 +921,25 @@ service GitHubRepositoryService @(requires: 'authenticated-user') {
 }
 ```
 
-This service allows querying organizations for all authenticated users. In addition, `Admin` users are allowed to rename or delete. Granting `UPDATE` to `Admin` would allow administrators to change organization attributes that aren't meant to change.
+This service allows querying organizations for all authenticated users. In addition, `Admin` users are allowed to rename or delete.
+
+Granting `UPDATE` to `Admin` would allow administrators to change organization attributes that are not meant to change.
 
 ### Think About Domain-Driven Authorization { #domain-driven-authorization}
 
-Static roles often don't fit into an intuitive authorization model. Instead of making authorization dependent from static properties of the user, it's often more appropriate to derive access rules from the business domain. For instance, all users assigned to a department (in the domain) are allowed to access the data of the organization comprising the department. Relationships in the entity model (for example, a department assignment to organization), influence authorization rules at runtime. In contrast to static user roles, **dynamic roles** are fully domain-driven.
+Static roles often don't fit into an intuitive authorization model. Instead of making authorization dependent on static properties of the user, it's often more appropriate to derive access rules from the business domain. For instance, all users assigned to a department (in the domain) are allowed to access the data of the organization comprising the department. Relationships in the entity model (for example, a department assignment to organization) influence authorization rules at runtime. In contrast to static user roles, **dynamic roles** are fully domain-driven.
 
 Revisit the [ProjectService example](#exists-predicate), which demonstrates how to leverage instance-based authorization to induce dynamic roles.
 
 Advantages of dynamic roles are:
 - The most flexible way to define authorizations
-- Induced authorizations according to business domain
+- Authorizations induced according to business domain
 - Application-specific authorization model and intuitive UIs
 - Decentralized role management for application users (no central user administrator required)
 
 Drawbacks to be considered are:
 - Additional effort for modeling and designing application-specific role management (entities, services, UI)
-- Potentially higher security risk due to lower use of the framework functionality
+- Potentially higher security risk due to lower use of framework functionality
 - Sharing authorization management with other (non-CAP) applications is harder to achieve
 - Dynamic role enforcement can introduce a performance penalty
 
@@ -777,7 +972,9 @@ service BrowseEmployeesService @(requires:'Employee') {
 }
 ```
 
-A team (entity `Teams`) contains members of type `Employees`. An employee refers to a single contract (entity `Contracts`) which contains sensitive information that should be visible only to `Manager` users. `Employee` users should be able to browse the teams and their members, but aren't allowed to read or even edit their contracts.<br>
+A team (entity `Teams`) contains members of type `Employees`. An employee refers to a single contract (entity `Contracts`), which contains sensitive information that should be visible only to `Manager` users.
+
+`Employee` users should be able to browse the teams and their members but are not allowed to read or even edit their contracts.<br>
 As `db.Employees` and `db.Contracts` are auto-exposed, managers can navigate to all instances through the `ManageTeamsService.Teams` service entity (for example, OData request `/ManageTeamsService/Teams?$expand=members($expand=contract)`).<br> It's important to note that this also holds for an `Employee` user, as **only the target entity** `BrowseEmployeesService.Teams` **has to pass the authorization check in the generic handler, and not the associated entities**.<br>
 
 To solve this security issue, introduce a new service entity `BrowseEmployeesService.Employees` that removes the navigation to `Contracts` from the projection:
@@ -791,19 +988,21 @@ service BrowseEmployeesService @(requires:'Employee') {
 }
 ```
 
-Now, an `Employee` user can't expand the contracts as the composition isn't reachable anymore from the service.
+Now, an `Employee` user cannot expand the contracts as the composition is not reachable anymore from the service.
 ::: tip
-Associations without navigation links (for example, when an associated entity isn't exposed) are still critical with regards to security.
+Associations without navigation links (for example, when an associated entity is not exposed) are still critical with regard to security.
 :::
 
 ### Design Authorization Models from the Start
 
-As shown before, defining an adequate authorization strategy has a deep impact on the service model. Apart from the fundamental decision, if you want to build your authorizations on [dynamic roles](#domain-driven-authorization), authorization requirements can result in rearranging service and entity definitions completely. In the worst case, this means rewriting huge parts of the application (including the UI). For this reason, it's *strongly* recommended to take security design into consideration at an early stage of your project.
+As shown before, defining an adequate authorization strategy has a deep impact on the service model. Apart from the fundamental decision of whether you want to build your authorizations on [dynamic roles](#domain-driven-authorization), authorization requirements can result in completely rearranging service and entity definitions.
+
+For this reason, it's *strongly* recommended to take security design into consideration at an early stage of your project.
 
 ### Keep it as Simple as Possible
 
-* If different authorizations are needed for different operations, it's easier to have them defined at the service level. If you start defining them at the entity level, all possible operations must be specified, otherwise the not mentioned operations are automatically forbidden.
-* If possible, try to define your authorizations either on the service or on the entity level. Mixing both variants increases complexity and not all combinations are supported either.
+* If different authorizations are needed for different operations, it's easier to have them defined at the service level. If you start defining them at the entity level, all possible operations must be specified; otherwise, the operations not mentioned are automatically forbidden.
+* If possible, try to define your authorizations either on the service or on the entity level. Mixing both variants increases complexity, and not all combinations are supported either.
 
 ### Separation of Concerns
 

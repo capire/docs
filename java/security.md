@@ -25,146 +25,87 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 { #security}
 
-## Overview
-
-For Web services, authentication is about controlling _who_ is using the service. It typically involves verifying the user's identity, tenant, and validating claims like granted roles. In contrast, authorization makes sure that the user has the required privileges to access the requested resources. Hence, authorization is about controlling _what_ the user is allowed to handle.
-
-Hence both, authentication and authorization, are essential for application security:
-* [Authentication](#authentication) describes how to configure authentication.
-* [Authorization](#auth) is about resource access control.
-
-[Connecting to IAS Services](#outbound-auth) describes how to authenticate outbound calls.
-
-::: warning
-Without security configured, CDS services are exposed to public. Proper configuration of authentication __and__ authorization is required to secure your CAP application.
+::: info
+This chapter appends CAP Java sepcifc information only. 
+Consult the comprehensive [Security Guide](../guides/security/#cap-security-guide) first to learn about CAP Security features in general.
 :::
 
 ## Authentication { #authentication}
 
-Authentication rejects user requests with invalid authentication and limits the possible resource impact.
+### Auto Configuration { #xsuaa-ias }
 
-Rejecting them as soon as possible is one of the reasons why it's not an integral part of the CAP runtime and needs to be configured on the application framework level. In addition, CAP Java is based on a [modular architecture](./developing-applications/building#modular_architecture) and allows flexible configuration of any authentication method.
-By default, it supports the standard BTP platform identity services [out of the box](#xsuaa-ias):
+To enable auto-configuration for authentication based on platform services, following two conditions need to be met:
+1. Required Maven [dependencies](#maven-dependencies) available.
+2. [Binding](#bindings) to a corresponding service instance (XSUAA and/or IAS) is available at runtime.
 
-- [SAP Cloud Identity Services Identity Authentication (IAS)](https://help.sap.com/docs/cloud-identity-services) - preferred solution integrating endpoints cross SAP-systems
-- [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/authorization-and-trust-management-service) - previous offering scoped to a BTP landscape
+::: warning
+Only **if both, the library dependencies and an XSUAA or IAS service binding are in place**, the CAP Java SDK activates a Spring security configuration, which enforces authentication for all endpoints **automatically**.
+:::
 
-Which are highly recommended for production usage. For specific use cases, [custom authentication](#custom-authentication) can be configured as well.
-Local development and testing can be done easily with built-in [mock user](#mock-users) support.
+#### Maven Dependencies { #maven-dependencies }
+To ensure the proper maven dependencies, we recommend using the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle.
+Both can be active for the local scenario.
 
-### Configure XSUAA and IAS Authentication { #xsuaa-ias}
-To enable your application for XSUAA or IAS-authentication, we recommend using the `cds-starter-cloudfoundry` or the `cds-starter-k8s` starter bundle, which covers all required dependencies.
+:::details Runtime Maven dependencies required for authentication
 
-:::details Individual Dependencies
-These are the individual dependencies that can be explicitly added in the `pom.xml` file of your service:
-   * `com.sap.cloud.security:resourceserver-security-spring-boot-starter` that brings [spring-security library](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security)
-   * `org.springframework.boot:spring-boot-starter-security`
-   * `cds-feature-identity`
+- `cds-feature-identity`
+- `org.springframework.boot:spring-boot-starter-security`
+- `com.sap.cloud.security:resourceserver-security-spring-boot-starter` that brings [spring-security library](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security)
 
 :::
 
-In addition, your application needs to be bound to corresponding service instances depending on your scenario.  The following list describes which service needs to be bound depending on the tokens your applications should accept:
-   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authorization#xsuaa-configuration)
-   * only accept tokens issued by IAS --> bind your application to an [IAS service instance](https://help.sap.com/docs/IDENTITY_AUTHENTICATION)
-   * accept tokens issued by XSUAA and IAS --> bind your application to service instances of both types.
+#### Service Bindings { #bindings }
 
-::: tip Specify Binding
+Additionally, your application must be bound to corresponding service instances depending on your scenario.  
+The following list describes which service must be bound depending on the tokens your application should accept:
+   * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authentication#xsuaa-auth)
+   * only accept tokens issued by IAS --> bind your application to an [IAS service instance](../guides/security/authentication#ias-auth)
+   * accept tokens issued by XSUAA and IAS --> bind your application to service instances of [both types](../guides/security/authentication#hybrid-auth).
+
+::: tip Unique Binding
 CAP Java picks only a single binding of each type. If you have multiple XSUAA or IAS bindings, choose a specific binding with property `cds.security.xsuaa.binding` respectively `cds.security.identity.binding`.
 Choose an appropriate XSUAA service plan to fit the requirements. For instance, if your service should be exposed as technical reuse service, make use of plan `broker`.
 :::
 
-#### Proof-Of-Possession for IAS { #proof-of-possession}
+### Custom Authentication { #spring-boot }
 
-Proof-Of-Possession is a technique for additional security where a JWT token is **bound** to a particular OAuth client for which the token was issued. On BTP, Proof-Of-Possession is supported by IAS and can be used by a CAP Java application.
+#### Authenticated Endpoints { #auth-endpoints }
 
-Typically, a caller of a CAP application provides a JWT token issued by IAS to authenticate a request. With Proof-Of-Possession in place, a mutual TLS (mTLS) tunnel is established between the caller and your CAP application in addition to the JWT token. Clients calling your CAP application need to send the certificate provided by their `identity` service instance in addition to the IAS token.
-
-On Cloud Foundry, the CAP application needs to be exposed under an additional route which accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header (for example, the `.cert.cfapps.<landscape>` domain).
-
-<div id="meshdomain" />
-
-On Kyma, it is required to configure an additional component (i.e. a gateway in Istio) which accepts client certificates and forwards them to the application as `X-Forwarded-Client-Cert` header. An example can be found in the Bookshop sample application [here](https://github.com/SAP-samples/cloud-cap-samples-java/tree/ias-ams-kyma/k8s). Besides defining the actual `Gateway` resource, it is required to expose the application under the new domain (see the `values.yaml` [here](https://github.com/SAP-samples/cloud-cap-samples-java/blob/e9c779cb64c0937815910988387b0775d8842765/helm/values.yaml#L47).
-
-The Proof-Of-Possession also affects approuter calls to a CAP Java application. The approuter needs to be configured to forward the certificate to the CAP application. First, set `forwardAuthCertificates: true` on the destination pointing to your CAP backend (for more details see [the `environment destinations` section on npmjs.org](https://www.npmjs.com/package/@sap/approuter#environment-destinations)). Second, configure the destination to use the route of the CAP backend that has been configured to accept client certificates as described previously.
-
-When authenticating incoming requests with IAS, the Proof-Of-Possession is activated by default. This requires using at least version `3.5.1` of the [SAP BTP Spring Security Client](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security) library.
-
-You can disable the Proof-Of-Possession enforcement in your CAP Java application by setting the property `sap.spring.security.identity.prooftoken` to `false` in the `application.yaml` file.
-
-:::tip
-CAP Java requires an AppRouter to be configured with mTLS in case of IAS authentication (`forwardAuthCertificates: true`).
-:::
-
-
-### Automatic Spring Boot Security Configuration { #spring-boot}
-
-Only if **both, the library dependencies and an XSUAA/IAS service binding are in place**, the CAP Java SDK activates a Spring security configuration, which enforces authentication for all endpoints **automatically**:
+By default, the [auto-configuration](#xsuaa-ias) covers
 * Protocol adapter endpoints (managed by CAP such as OData V4/V2 or custom protocol adapters)
 * Remaining custom endpoints (not managed by CAP such as custom REST controllers or Spring Actuators)
 
-The security auto configuration authenticates all endpoints by default, unless corresponding CDS model is not explicitly opened to public with [pseudo-role](../guides/security/authorization#pseudo-roles) `any` (configurable behaviour).
-Here's an example of a CDS model and the corresponding authentication configuration:
-
-```cds
-service BooksService @(requires: 'any') {
-  @readonly
-  entity Books @(requires: 'any') {...}
-
-  entity Reviews {...}
-
-  entity Orders @(requires: 'Customer') {...}
-}
-```
-
-| Path                      | Authenticated ?  |
-|:--------------------------|:----------------:|
-| `/BooksService`           |      <Na/>       |
-| `/BooksService/$metadata` |      <Na/>       |
-| `/BooksService/Books`     |      <Na/>       |
-| `/BooksService/Reviews`   |       <X/>       |
-| `/BooksService/Orders`    |       <X/>       |
-
-
-::: tip
-For multitenant applications, it's required to authenticate all endpoints as the tenant information is essential for processing the request.
-:::
-
-There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration:
+There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration wit hregards to the affected endpoints:
 
 | Configuration Property                               | Description                                             | Default
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------
-| `mode`  | Determines the [authentication mode](#auth-mode): `never`, `model-relaxed`, `model-strict` or `always` | `model-strict`
 | `authenticateUnknownEndpoints`  | Determines, if security configurations enforce authentication for endpoints not managed by protocol-adapters. | `true`
 | `authenticateMetadataEndpoints`  | Determines, if OData $metadata endpoints enforce authentication. | `true`
 
-The following properties can be used to switch off automatic security configuration at all:
-
-| Configuration Property                               | Description                                             | Default
-| :---------------------------------------------------- | :----------------------------------------------------- | ------------
-| `cds.security.xsuaa.enabled`  | Whether automatic XSUAA security configuration is enabled. | `true`
-| `cds.security.identity.enabled`  | Whether automatic IAS security configuration is enabled. | `true`
-
-#### Setting the Authentication Mode { #auth-mode}
+#### Authentication Modes { #auth-mode}
 
 The property `cds.security.authentication.mode` controls the strategy used for authentication of protocol-adapter endpoints. There are four possible values:
 
-- `never`: No endpoint requires authentication. All protocol-adapter endpoints are considered public.
-- `model-relaxed`: Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is considered public.
-- `model-strict`: Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is authenticated. An explicit `@requires: 'any'` makes the endpoint public.
-- `always`: All endpoints require authentication.
+| Configuration Property                               | Description                                             |
+| :---------------------------------------------------- | :----------------------------------------------------- |
+| `never` | No endpoint requires authentication. All protocol-adapter endpoints are considered public.
+| `model-relaxed` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is considered public.
+| `model-strict` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is authenticated. An explicit `@requires: 'any'` makes the endpoint public (Default).
+| `always` | All endpoints require authentication.
 
 By default the authentication mode is set to `model-strict` to comply with secure-by-default.
 In that case you can use the annotation `@requires: 'any'` on service-level to make the service and its entities public again.
-Please note that it's only possible to make an endpoint public, if the full endpoint path is considered public as well.
+You can only make an endpoint public if the full endpoint path is also considered public.
 For example you can only make an entity public, if the service that contains it is also considered public.
+
 ::: tip
-Please note that the authentication mode has no impact on the *authorization* behaviour.
+The authentication mode has no impact on the *authorization* behaviour.
 :::
 
-#### Customizing Spring Boot Security Configuration { #custom-spring-security-config}
+#### Overrule Partially { #custom-spring-security-config }
 
 If you want to explicitly change the automatic security configuration, you can add an _additional_ Spring security configuration on top that overrides the default configuration by CAP.
-This can be useful, for instance, if an alternative authentication method is required for *specific endpoints* of your application.
+This can be useful if an alternative authentication method is required for *specific endpoints* of your application.
 
 As the default security configurations provided by CAP act as the last line of defense and handle any request by default, you need to ensure that your custom security configurations have higher precedence. At the `SecurityFilterChain` bean method,  set the `@Order` annotation with a lower numeric value, for example `1`:
 
@@ -213,76 +154,70 @@ public class ActuatorSecurityConfig {
 }
 ```
 
+
+#### Overrule Fully { #custom-spring-security-alone }
+
 In case you want to write your own custom security configuration that acts as a last line of defense and handles any request you need to disable the CAP security configurations by setting <Config java>cds.security.authentication.authConfig.enabled: false</Config>, as Spring Security forbids registering multiple security configurations with an any request security matcher.
 
-### Custom Authentication { #custom-authentication}
+If you even want to deactivate OAuth token validation for XSUAA or IAS, e.g. to establish an own authentication strategy, 
+the following properties can be used:
 
-You're free to configure any authentication method according to your needs. CAP isn't bound to any specific authentication method or user representation such as introduced with XSUAA, it rather runs the requests based on a [user abstraction](../guides/security/authorization#user-claims). The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in [Enforcement API & Custom Handlers](#enforcement-api).
+| Configuration Property                               | Description                                             | Default
+| :---------------------------------------------------- | :----------------------------------------------------- | ------------
+| `cds.security.xsuaa.enabled`  | Whether automatic XSUAA security configuration is enabled. | `true`
+| `cds.security.identity.enabled`  | Whether automatic IAS security configuration is enabled. | `true`
 
-Hence, if you bring your own authentication, you have to transform the authenticated user and inject as `UserInfo` to the current request. This is done by means of [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers).
-More frequently you might have the requirement to just adapt the request's `UserInfo` which is possible with the same interface:
 
 
-```java
-@Component
-public class CustomUserInfoProvider implements UserInfoProvider {
+## CAP Users { #custom-authentication}
 
-    private UserInfoProvider defaultProvider;
+CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA or IAS; it runs requests based on a [user abstraction](../guides/security/cap-users#claims). 
+The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in the [authentication guide](../guides/security/cap-users#developing-with-users).
 
-    @Override
-    public UserInfo get() {
-        ModifiableUserInfo userInfo = UserInfo.create();
-        if (defaultProvider != null) {
-            UserInfo prevUserInfo = defaultProvider.get();
-            if (prevUserInfo != null) {
-                userInfo = prevUserInfo.copy();
-            }
-        }
-        if (userInfo != null) {
-           /* any modification of the resolved user goes here: */
-           XsuaaUserInfo xsuaaUserInfo = userInfo.as(XsuaaUserInfo.class);
-           userInfo.setName(xsuaaUserInfo.getEmail() + "/" +
-                            xsuaaUserInfo.getOrigin()); // normalizes name
-        }
-
-        return userInfo;
-    }
-
-    @Override
-    public void setPrevious(UserInfoProvider prev) {
-        this.defaultProvider = prev;
-    }
-}
-```
-
-In the example, the `CustomUserInfoProvider` defines an overlay on the default XSUAA-based provider (`defaultProvider`). The overlay redefines the user's name by a combination of email and origin.
-
-### Mock User Authentication with Spring Boot { #mock-users}
+### Mock Users { #mock-users}
 
 By default, CAP Java creates a security configuration, which accepts _mock users_ for test purposes.
 
-::: details Requirement
+::: tip
 
 Mock users are only initialized if the `org.springframework.boot:spring-boot-starter-security` dependency is present in the `pom.xml` file of your service.
 
 :::
 
-#### Preconfigured Mock Users
+#### Preconfigured Mock Users { #preconfigured-mock-users}
 
-For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/authorization#pseudo-roles). They are named `authenticated`, `system` and `privileged` and can be used with an empty password. For instance, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. The privileged user will pass any authorization checks. `cds.security.mock.defaultUsers = false` prevents the creation of default mock users at startup.
+For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/cap-users#pseudo-roles): 
 
-#### Explicitly Defined Mock Users
+| Name                               | Role                                             | Password
+| :---------------------------------------------------- | :----------------------------------------------------- | ------------
+| `authenticated`  | `authenticated-user` | _empty_
+| `system`  |`system-user` | _empty_
+| `privileged`  | privileged mode | _empty_
+
+
+For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. 
+The privileged user will pass any authorization checks. 
+
+There are several properties to control behavioud of mock users:
+
+| Configuration Property                               | Description                                             | Default
+| :---------------------------------------------------- | :----------------------------------------------------- | ------------
+| `cds.security.mock.defaultUsers`  | Activates creation of pre-defined mock users at startup. | `true`
+| `cds.security.mock.enabled`  | Activates mock users. | `false` in production profile, `true` otherwise.
+
+
+#### Custom Mock Users {#custom-mock-users}
 
 You can also define mock users explicitly. This mock user configuration only applies if:
-* The service runs without an XSUAA service binding (non-productive mode)
+* The service runs without a service binding (non-production mode)
 * Mock users are defined in the active application configuration
 
-Define the mock users in a Spring profile, which may be only active during testing, as in the following example:
+Define the mock users in a Spring profile, which may be only active in local testing, as in the following example:
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
 ---
 spring:
-  config.activate.on-profile: test
+  config.activate.on-profile: default
 cds:
   security:
     mock:
@@ -306,10 +241,8 @@ cds:
             - "*"
 ```
 :::
-- Mock user with name `Viewer-User` is a typical business user with SaaS-tenant `CrazyCars` who has assigned role `Viewer` and user attribute `Country` (`$user.Country` evaluates to value list `[GER, FR]`). This user also has the additional attribute `email`, which can be retrieved with `UserInfo.getAdditionalAttribute("email")`. The [features](../java/reflection-api#feature-toggles) `cruise` and `park` are enabled for this mock user.
+- Mock user with name `Viewer-User` is a typical business user with SaaS tenant `CrazyCars` who has the assigned role `Viewer` and user attribute `Country` (`$user.Country` evaluates to the value list `[GER, FR]`). This user also has the additional attribute `email`, which can be retrieved with `UserInfo.getAdditionalAttribute("email")`. The [features](../java/reflection-api#feature-toggles) `cruise` and `park` are enabled for this mock user.
 - `Admin-User` is a user running in privileged mode. Such a user is helpful in tests that bypasses all authorization handlers.
-
-Property `cds.security.mock.enabled = false` disables any mock user configuration (default in production profile).
 
 A setup for Spring MVC-based tests based on the given mock users and the CDS model from [above](#spring-boot) could look like this:
 
@@ -358,6 +291,12 @@ cds:
 :::
 The mock user `Alice` is assigned to the mock tenant `CrazyCars` for which the features `cruise` and `park` are enabled.
 
+
+
+### Custom Users { #custom-users}
+
+Therefore, if you bring your own authentication, you must transform the authenticated user and inject it as `UserInfo` to the current request. This is done by means of [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../java/event-handlers/request-contexts#global-providers).
+More frequently you might have the requirement to just adapt the request's `UserInfo` which is possible with the same interface:
 
 ## Connecting to IAS Services { #outbound-auth }
 
@@ -600,16 +539,38 @@ As a prerequisite*, the CAP service needs to know the clientId of the reuse serv
 ::: details Sample Code for Authorization of Callbacks
 
 ```java
-private void authorizeCallback() {
-		UserInfo userInfo = runtime.getProvidedUserInfo();
-		String azp = (String) userInfo.getAdditionalAttributes().get("azp");
-		if(!userInfo.isSystemUser() || azp == null || !azp.equals(clientId)) {
-			throw new ErrorStatusException(ErrorStatuses.FORBIDDEN);
-		}
-	}
-```
-:::
+@Component
+public class CustomUserInfoProvider implements UserInfoProvider {
 
+    private UserInfoProvider defaultProvider;
+
+    @Override
+    public UserInfo get() {
+        ModifiableUserInfo userInfo = UserInfo.create();
+        if (defaultProvider != null) {
+            UserInfo prevUserInfo = defaultProvider.get();
+            if (prevUserInfo != null) {
+                userInfo = prevUserInfo.copy();
+            }
+        }
+        if (userInfo != null) {
+           /* any modification of the resolved user goes here: */
+           XsuaaUserInfo xsuaaUserInfo = userInfo.as(XsuaaUserInfo.class);
+           userInfo.setName(xsuaaUserInfo.getEmail() + "/" +
+                            xsuaaUserInfo.getOrigin()); // normalizes name
+        }
+
+        return userInfo;
+    }
+
+    @Override
+    public void setPrevious(UserInfoProvider prev) {
+        this.defaultProvider = prev;
+    }
+}
+```
+
+In the example, the `CustomUserInfoProvider` defines an overlay on the default XSUAA-based provider (`defaultProvider`). The overlay redefines the user's name by a combination of email and origin.
 
 ## Authorization { #auth}
 
