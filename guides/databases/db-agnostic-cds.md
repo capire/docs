@@ -1,5 +1,5 @@
-# Database-Agnostic CDS Models
- 
+# Database-Agnostic Modelling and Feature Parity
+
 When designing your CDS models, it's best to stay database-agnostic to ensure portability across different database systems. This guide provides best practices and considerations for achieving database portability with CDS.
 {.abstract}
 
