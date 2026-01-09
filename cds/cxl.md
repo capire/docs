@@ -129,7 +129,7 @@ Or in entity defintions for adding calculated elements:
 
 ```cds
 extend Authors with {
-  age = years_between(dateOfBirth, coalesce(dateOfDeath, $now));
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
 }
 ```
 
@@ -217,8 +217,8 @@ When navigating along a to-many association to a leaf element, the result is fla
 [
   { title: 'Wuthering Heights', author: 'Emily Brontë' },
   { title: 'Jane Eyre', author: 'Charlotte Brontë' },
-  { title: 'Eleonora', author: 'Edgar Allen Poe' },
-  { title: 'The Raven', author: 'Edgar Allen Poe' },
+  { title: 'Eleonora', author: 'Edgar Allen Poe' }, // [!code focus]
+  { title: 'The Raven', author: 'Edgar Allen Poe' }, // [!code focus]
   { title: 'Catweazle', author: 'Richard Carpenter' }
 ]
 ```
@@ -234,14 +234,57 @@ FROM sap_capire_bookshop_Authors as Authors
 :::
 
 In this example, we select the book titles together with each author.
-Since books is a to-many association, we get a flattened result: one entry per author and book title.
+Since books is a to-many association, we get a _joined_ result that repeats every author (name) for every associated book.
 
-In annotation expressions, the result should often only contain one entry per entry in the annotated entity.
-This can be achieved using the [exists](#in-exists-predicate) predicate.
+::: info Use expand to read to-many associations as structured result
+To avoid that the author data is duplicated rather use an expand:
+
+::: code-group
+```js [CQL]
+> await cds.ql`SELECT from Authors {
+  name as author,
+  books { title }  }` // [!code focus]
+
+[
+  { author: 'Emily Brontë', books: [ { title: 'Wuthering Heights' } ] },
+  { author: 'Charlotte Brontë', books: [ { title: 'Jane Eyre' } ] },
+  { // [!code focus]
+    author: 'Edgar Allen Poe', // [!code focus]
+    books: [ { title: 'The Raven' }, { title: 'Eleonora' } ] // [!code focus]
+  }, // [!code focus]
+  { author: 'Richard Carpenter', books: [ { title: 'Catweazle' } ] }
+]
+```
+```sql [SQL]
+SELECT Authors.name as author,
+(
+  SELECT jsonb_group_array(
+    jsonb_insert('{}', '$."title"', title, '$."genre"', genre->'$')
+  ) as _json_
+  FROM (
+    SELECT books.title, (
+      SELECT json_insert('{}', '$."name"', name) as _json_
+      FROM (
+          SELECT genre.name
+          FROM sap_capire_bookshop_Genres as genre
+          WHERE books.genre_ID = genre.ID
+          LIMIT ?
+        )
+      ) as genre
+    FROM sap_capire_bookshop_Books as books
+    WHERE Authors.ID = books.author_ID
+  )) as books
+FROM sap_capire_bookshop_Authors as Authors
+
+```
+:::
+
+When writing annotation expressions, it's often important to ensure that the result yields a single value for each entry in the annotated entity.
+To achieve this, use the [exists](#in-exists-predicate) predicate.
 
 
 ::: tip Associations are **forward-declared joins**
-They provide a convenient way to navigate between related entities without having to define the join conditions manually.
+They provide a convenient way to navigate between related entities without having to explicitly specify the join condition during query execution.
 
 The join condition is defined **ahead of time** as part of the association.
 Typically, this is a foreign key relationship between two entities, but other conditions are also possible.
@@ -342,7 +385,8 @@ To achieve this, we can apply an infix filter to the path segment `books` in the
 
 :::code-group
 ```js [CQL]
-await cds.ql`SELECT from Authors { name } where exists books[stock > 100]`
+await cds.ql`SELECT from Authors { name }
+  where exists books[stock > 100]` // [!code focus]
 [ { name: 'Edgar Allen Poe' } ]
 ```
 ```sql [SQL]
@@ -553,16 +597,15 @@ FROM sap_capire_bookshop_Authors as Authors
 
 ### between path segments
 
-Assuming you have the [calculated element](#in-calculated-element) age in place on the Authors entity:
+Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
 
 ```cds
 extend Authors with {
-  age = years_between(dateOfBirth, coalesce(dateOfDeath, $now));
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
 }
 ```
 
-In this case we want to select all books where the author's name starts with `Emily`
-and the author is younger than 40 years.
+In this case we want to select all books but the author is only included in the result if their age is below 40:
 
 :::code-group
 ```js [CQL]
@@ -607,9 +650,7 @@ ON
 :::
 
 The path expression `author[ age < 40 ].name`
-navigates along the `author` association of the `Books` entity.
-
-The join for this path expression is generated as usual and enhanced with the infix filter condition `age < 40`.
+navigates along the `author` association of the `Books` entity only if the author's age is below 40.
 
 
 ## operators
