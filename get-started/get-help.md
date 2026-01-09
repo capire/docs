@@ -619,7 +619,7 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
    As there is no way to increase CPU independently from memory, your memory configuration might be a bottleneck even if the process is killed due to CPU spikes.
    :::
 3. **Decrease workers in async MTX operations**: When scaling up resources is no longer feasible, you can run with fewer parallel migrations:
-    ```json
+    ```jsonc
     "cds": {
       "requires": {
         "multitenancy": {
