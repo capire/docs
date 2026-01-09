@@ -659,6 +659,56 @@ In this example, the ordering term sorts books by price in descending order and 
 [Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
 
 
+## infix filters
+
+
+### in annotation expressions
+
+The `@assert` annotation supports expressions, so we can check that no Books with negative stocks are created:
+
+```cds
+annotate AdminService.Books:stock with @assert: (case
+  when stock < 0 then 'Enter a positive number'
+end);
+```
+
+:::code-group
+```js
+> const { Books } = AdminService.entities
+> const insert = INSERT.into(Books).entries({  // [!code focus]
+    ID: 277,
+    author_ID: 101,
+    title: 'Lord of the Rings',
+    stock: -2,  // [!code focus]
+  })
+> await AdminService.run(insert)
+
+Uncaught:
+{
+  status: 400,  // [!code focus]
+  code: 'ASSERT',  // [!code focus]
+  target: 'stock',  // [!code focus]
+  numericSeverity: 4,
+  '@Common.numericSeverity': 4,
+  message: 'Enter a positive number'  // [!code focus]
+}
+```
+
+```sql
+SELECT
+  ID,
+  case
+    when stock < 0 then 'Enter a positive number'
+  end as "@assert:stock"
+FROM AdminService_Books
+WHERE (ID) in ((277))
+```
+:::
+
+Infix filters can be used in annotation expressions as well:
+
+
+
 <style>
 
 .badge-inline {
