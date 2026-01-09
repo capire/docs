@@ -642,6 +642,14 @@ See [How to configure your App Router](../guides/extensibility/customization#app
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
 
+## BTP
+
+### How do I get an account on the SAP Business Technology Platform?
+
+For a start, create your [Trial Account](https://account.hanatrial.ondemand.com/).
+
+<div id="sap-in-house" />
+
 ## MTA { #mta}
 
 ### Why does my MTA build fail with _package-lock.json_ issues?
@@ -703,13 +711,6 @@ mbt build -t gen --mtar mta.tar -e less.mtaext
 :::
 
 
-## BTP
-
-### How do I get an account on the SAP Business Technology Platform?
-
-For a start, create your [Trial Account](https://account.hanatrial.ondemand.com/).
-
-<div id="sap-in-house" />
 
 ## Cloud Foundry
 
