@@ -4,7 +4,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 ---
 
 
-# Getting Help 
+# Getting Help
 Support Channels & Troubleshooting FAQs {.subtitle}
 
 <div id="support-channels">
@@ -17,7 +17,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 </div>
 
-> [!tip] 
+> [!tip]
 > If you encounter issues, check the Troubleshooting FAQs below.
 > Do that first before posting questions to or creating issues in the other channels.
 
@@ -270,7 +270,7 @@ If you find that the types are still incomplete, open a bug report in [the `@cap
 
 ### How to fix "`tar: Error is not recoverable: exiting now`"?
 
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) 
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources)
 you can try installing the tar library for better compatibility with Windows systems.
 
 Add it to your devDependencies like so:
@@ -600,7 +600,41 @@ Do not use a `XS_` prefix.
 
 ## MTXS
 
-### I get a 401 error when logging in to MTXS through App Router { #mtxs-sidecar-approuter-401}
+### My MTX sidecar is killed with 'Exit status 137'
+
+In this case, the process was killed by a `SIGKILL` signal, typically because it exceeded its resource limits, for example memory or CPU, causing the container platform to terminate it.
+
+::: tip Distinguish extensibility and non-extensibility scenarios
+While out-of-memory issues are more common, with **extensibility enabled** you’re more likely to run into CPU bottlenecks due to expensive compilations that need to be performed at (MTX) runtime.
+:::
+
+MTX uses **four parallel workers** by default to perform tenant upgrades. If your project exceeds a certain complexity threshold, you might run into these resource bottlenecks. We advise you to **follow this algorithm** to mitigate resource overload:
+
+1. **Decrease your model complexity**: Ask yourself, is your current domain model a good compression of your business domain? Decreasing complexity here will have positive trickle-down effects, including tenant upgrade performance.
+2. **Increase resources (scale up)**: Increase the RAM assigned to your MTX sidecar or upgrade task. This is typically done in deployment resources like _mta.yaml_ (Cloud Foundry) or _values.yaml_ (Kyma).
+
+   [Learn more about database upgrade task configuration](../guides/multitenancy/#update-database-schema){.learn-more}
+
+   ::: info In Cloud Foundry, CPU shares scale with memory
+   As there is no way to increase CPU independently from memory, your memory configuration might be a bottleneck even if the process is killed due to CPU spikes.
+   :::
+3. **Decrease workers in async MTX operations**: When scaling up resources is no longer feasible, you can run with fewer parallel migrations:
+    ```jsonc
+    "cds": {
+      "requires": {
+        "multitenancy": {
+          "jobs": {
+            "workerSize": 3 // default: 4
+          }
+        }
+      }
+    }
+    ```
+    > This won't affect application runtime performance.
+
+4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
+
+### I get a 401 error for `cds login` through App Router { #mtxs-sidecar-approuter-401}
 
 See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
 Also check the [documentation about `cds login`](../guides/extensibility/customization#cds-login).
@@ -615,7 +649,7 @@ If data loss is intended, you can disable the check by adding <Config>cds.requir
 :::
 
 
-### Potential problems on Windows 
+### Potential problems on Windows
 
 Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems. When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
 

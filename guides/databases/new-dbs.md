@@ -1,37 +1,427 @@
 ---
-uacp: Linked from https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
+synopsis: >
+  This guide provides instructions on how to use databases with CAP applications.
+  Out of the box-support is provided for SAP HANA, SQLite, H2 (Java only), and PostgreSQL.
+uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 impl-variants: true
 ---
 
 
-# CAP-level Database Integration
+# Using Databases
 
-CAP application developers [focus on their domain](../../get-started/features#focus-on-domain), while CAP takes care of all aspects of database integration. This includes translating CDS models to native database artefacts, schema evolution, deployment, as well as runtime querying in a database-agnostic way. [SQLite](./sqlite) <sup>1</sup> in-memory databases are automatically used in [inner-loop development](../../get-started/features#fast-inner-loops), while in production, [SAP HANA](./hana) <sup>2</sup> is used by default.
-{.abstract}
+<!-- REVISIT: Didn't we say no synopsis any more, but toc straight away? -->
+{{ $frontmatter.synopsis }}
 
-> _<sup>1</sup> or [H2](./h2) in case of Java_.\
-> _<sup>2</sup> or [PostgreSQL](./postgres) in edge cases_.
+<ImplVariantsHint />
 
 [[toc]]
 
 
-## Served Out-of-the-Box
+## Setup & Configuration
 
+<div class="impl node">
 
-When you run your CAP application with `cds watch`, an in-memory database service is automatically boostrapped, as indicated by such log output:
+### Migrating to the `@cap-js/` Database Services?  {.node}
 
-```log
-[cds] - connect to db > sqlite { url: ':memory:' }
-  > init from bookshop/db/data/sap.capire.bookshop-Authors.csv
-  > init from bookshop/db/data/sap.capire.bookshop-Books.csv
-  > init from bookshop/db/data/sap.capire.bookshop-Books.texts.csv
-  > init from bookshop/db/data/sap.capire.bookshop-Genres.csv
-/> successfully deployed to in-memory database.
+With CDS 8, the [`@cap-js`](https://github.com/cap-js/cds-dbs) database services for SQLite, PostgreSQL, and SAP HANA are generally available. It's highly recommended to migrate. You can find instructions in the [migration guide](./sqlite#migration). Although the guide is written in the context of the SQLite Service, the same hints apply to PostgreSQL and SAP HANA.
+
+### Adding Database Packages  {.node}
+
+Following are cds-plugin packages for CAP Node.js runtime that support the respective databases:
+
+| Database                       | Package                                                      | Remarks                            |
+| ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
+| **[SAP HANA Cloud](./hana)**     | [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) | recommended for production         |
+| **[SQLite](./sqlite)**       | [`@cap-js/sqlite`](https://www.npmjs.com/package/@cap-js/sqlite) | recommended for development        |
+| **[PostgreSQL](./postgres)** | [`@cap-js/postgres`](https://www.npmjs.com/package/@cap-js/postgres) | maintained by community + CAP team |
+
+<!-- Do we really need to say that? -->
+> Follow the preceding links to find specific information for each.
+
+In general, all you need to do is to install one of the database packages, as follows:
+
+Using SQLite for development:
+
+```sh
+npm add @cap-js/sqlite -D
 ```
+
+Using SAP HANA for production:
+
+```sh
+npm add @cap-js/hana
+```
+
+<!-- REVISIT: A bit confusing to prefer the non-copiable variant that doesn't get its own code fence -->
+::: details Prefer `cds add hana` ...
+
+... which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources as documented in the [deployment guide](../deploy/to-cf#_1-sap-hana-database).
+
+:::
+
+### Auto-Wired Configuration  {.node}
+
+The afore-mentioned packages use `cds-plugin` techniques to automatically configure the primary database with `cds.env`. For example, if you added SQLite and SAP HANA, this effectively results in this auto-wired configuration:
+
+<!-- REVISIT: hdbtable is now default, should we mention it anyway? -->
+```json
+{"cds":{
+  "requires": {
+    "db": {
+      "[development]": { "kind": "sqlite", "impl": "@cap-js/sqlite", "credentials": { "url": ":memory:" } },
+      "[production]": { "kind": "hana", "impl": "@cap-js/hana", "deploy-format": "hdbtable" }
+    }
+  }
+}}
+```
+
+::: details In contrast to pre-CDS 7 setups this means...
+
+1. You don't need to — and should not — add direct dependencies to driver packages, like [`hdb`](https://www.npmjs.com/package/hdb) or [`sqlite3`](https://www.npmjs.com/package/sqlite3) anymore in your *package.json* files.
+2. You don't need to configure `cds.requires.db` anymore, unless you want to override defaults brought with the new packages.
+
+:::
+
+
+
+### Custom Configuration  {.node}
+
+The auto-wired configuration uses configuration presets, which are automatically enabled via `cds-plugin` techniques. You can always use the basic configuration and override individual properties to create a different setup:
+
+1. Install a database driver package, for example:
+   ```sh
+   npm add @cap-js/sqlite
+   ```
+
+   > Add option `-D` if you want this for development only.
+
+2. Configure the primary database as a required service through `cds.requires.db`, for example:
+
+   ```json
+   {"cds":{
+     "requires": {
+       "db": {
+         "kind": "sqlite",
+         "impl": "@cap-js/sqlite",
+         "credentials": {
+           "url": "db.sqlite"
+         }
+       }
+     }
+   }}
+   ```
+
+The config options are as follows:
+
+- `kind` — a name of a preset, like `sql`, `sqlite`, `postgres`, or `hana`
+- `impl` — the module name of a CAP database service implementation
+- `credentials` — an object with db-specific configurations, most commonly `url`
+
+::: warning Don't configure credentials
+
+Credentials like `username` and  `password` should **not** be added here but provided through service bindings, for example, via `cds bind`.
+
+:::
+
+::: tip Use `cds env` to inspect effective configuration
+
+For example, running this command:
+
+```sh
+cds env cds.requires.db
+```
+→ prints:
+
+```sh
+{
+  kind: 'sqlite',
+  impl: '@cap-js/sqlite',
+  credentials: { url: 'db.sqlite' }
+}
+```
+
+:::
+
+</div>
+
+### Built-in Database Support {.java}
+
+CAP Java has built-in support for different SQL-based databases via JDBC. This section describes the different databases and any differences between them with respect to CAP features. There's out of the box support for SAP HANA with CAP currently as well as H2 and SQLite. However, it's important to note that H2 and SQLite aren't enterprise grade databases and are recommended for non-productive use like local development or CI tests only. PostgreSQL is supported in addition, but has various limitations in comparison to SAP HANA, most notably in the area of schema evolution.
+
+Database support is enabled by adding a Maven dependency to the JDBC driver, as shown in the following table:
+
+| Database                       | JDBC Driver                                                 | Remarks                            |
+| ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
+| **[SAP HANA Cloud](./hana)**     | `com.sap.cloud.db.jdbc:ngdbc` | Recommended for productive use         |
+| **[H2](./h2)**       | `com.h2database:h2` | Recommended for development and CI     |
+| **[SQLite](./sqlite)**       | `org.xerial:sqlite-jdbc` | Supported for development and CI <br> Recommended for local MTX |
+| **[PostgreSQL](./postgres)** | `org.postgresql:postgresql` | Supported for productive use |
+
+[Learn more about supported databases in CAP Java and their configuration](../../java/cqn-services/persistence-services#database-support){ .learn-more}
+
+## Providing Initial Data
+
+You can use CSV files to fill your database with initial data - see [Location of CSV Files](#location-of-csv-files).
+
+<div class="impl node">
+
+For example, in our [*capire/bookshop*](https://github.com/capire/bookshop/tree/main/db/data) application, we do so for *Books*, *Authors*, and *Genres* as follows:
+
+```zsh
+bookshop/
+├─ db/
+│ ├─ data/ # place your .csv files here
+│ │ ├─ sap.capire.bookshop-Authors.csv
+│ │ ├─ sap.capire.bookshop-Books.csv
+│ │ ├─ sap.capire.bookshop-Books.texts.csv
+│ │ └─ sap.capire.bookshop-Genres.csv
+│ └─ schema.cds
+└─ ...
+```
+</div>
+
+<div class="impl java">
+
+For example, in our [CAP Samples for Java](https://github.com/SAP-samples/cloud-cap-samples-java/tree/main/db/data) application, we do so for some entities such as *Books*, *Authors*, and *Genres* as follows:
+
+```zsh
+db/
+├─ data/ # place your .csv files here
+│ ├─ my.bookshop-Authors.csv
+│ ├─ my.bookshop-Books.csv
+│ ├─ my.bookshop-Books.texts.csv
+│ ├─ my.bookshop-Genres.csv
+│ └─ ...
+└─ index.cds
+```
+</div>
+
+
+The **filenames** are expected to match fully qualified names of respective entity definitions in your CDS models, optionally using a dash `-` instead of a dot `.` for cosmetic reasons.
+
+### Using `.csv` Files
+
+The **content** of these files is standard CSV content with the column titles corresponding to declared element names, like for `Books`:
+
+::: code-group
+
+```csvc [db/data/sap.capire.bookshop-Books.csv]
+ID,title,author_ID,stock
+201,Wuthering Heights,101,12
+207,Jane Eyre,107,11
+251,The Raven,150,333
+252,Eleonora,150,555
+271,Catweazle,170,22
+```
+
+:::
+
+> Note: `author_ID` is the generated foreign key for the managed Association  `author` → learn more about that in the [Generating SQL DDL](#generating-sql-ddl) section.
+
+If your content contains ...
+
+- commas or line breaks → enclose it in double quotes `"..."`
+- double quotes → escape them with doubled double quotes: `""...""`
+
+```csvc
+ID,title,descr
+252,Eleonora,"""Eleonora"" is a short story by Edgar Allan Poe, first published in 1842 in Philadelphia in the literary annual The Gift."
+```
+
+::: danger
+On SAP HANA, only use CSV files for _configuration data_ that can't be changed by application users.
+→ See [CSV data gets overridden in the SAP HANA guide for details](./hana#csv-data-gets-overridden).
+:::
+
+### Use `cds add data`
+
+Run this to generate an initial set of empty `.csv` files with header lines based on your CDS model:
+
+```sh
+cds add data
+```
+
+### Location of CSV Files
+
+CSV files can be found in the folders _db/data_ and _test/data_, as well as in any _data_ folder next to your CDS model files. When you use `cds watch` or `cds deploy`, CSV files are loaded by default from _test/data_. However, when preparing for production deployments using `cds build`, CSV files from _test/data_ are not loaded.
+
+::: details Adding initial data next to your data model
+The content of these 'co-located' `.cds` files actually doesn't matter, but they need to be included in your data model, through a `using` clause in another file for example.
+
+If you need to use certain CSV files exclusively for your production deployments, but not for tests, you can achieve this by including them in a separate data folder, for example, _db/hana/data_. Create an empty _index.cds_ file in the _hana_ folder. Then, set up this model location in a dummy cds service, for example _hanaDataSrv_, using the `[production]` profile.
+
+```json
+"cds": {
+  "requires": {
+    "[production]": {
+      "hanaDataSrv ": { "model": "db/hana" }
+     }
+  }
+}
+````
+
+As a consequence, when you run `cds build -–production` the model folder _hana_ is added, but it's not added when you run `cds deploy` or `cds watch` because the development profile is used by default. You can verify this by checking the cds build logs for the hana build task. Of course, this mechanism can also be used for PostgreSQL database deployments.
+:::
+
+::: details On SAP HANA ...
+CSV and _hdbtabledata_ files found in the _src_ folder of your database module are treated as native SAP HANA artifacts and deployed as they are. This approach offers the advantage of customizing the _hdbtabledata_ files if needed, such as adding a custom `include_filter` setting to mix initial and customer data in one table. However, the downside is that you must redundantly maintain them to keep them in sync with your CSV files.
+:::
+
+Quite frequently you need to distinguish between sample data and real initial data. CAP supports this by allowing you to provide initial data in two places:
+
+<div class="impl node">
+
+| Location    | Deployed...          | Purpose                                                  |
+| ----------- | -------------------- | -------------------------------------------------------- |
+| `db/data`   | always               | initial data for configurations, code lists, and similar |
+| `test/data` | if not in production | sample data for tests and demos                          |
+
+</div>
+
+<div class="impl java">
+
+Use the properties [cds.dataSource.csv.*](../../java/developing-applications/properties#cds-dataSource-csv) to configure the location of the CSV files. You can configure different sets of CSV files in different [Spring profiles](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#features.profiles). This configuration reads CSV data from `test/data` if the profile `test` is active:
+
+::: code-group
+
+```yaml [srv/src/main/resources/application.yaml]
+---
+spring:
+  config.activate.on-profile: test
+cds:
+  dataSource.csv.paths:
+  - test/data/**
+```
+
+:::
+</div>
+
+
+
+
+
+## Querying at Runtime
+
+
+
+
+Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../services/served-ootb#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
+
+
+
+
+### DB-Agnostic Queries
+
+<div class="impl node">
+
+At runtime, we usually construct and execute queries using cds.ql APIs in a database-agnostic way. For example, queries like this are supported for all databases:
+
+```js
+SELECT.from (Authors, a => {
+  a.ID, a.name, a.books (b => {
+    b.ID, b.title
+  })
+})
+.where ({name:{like:'A%'}})
+.orderBy ('name')
+```
+
+</div>
+
+<div class="impl java">
+
+At runtime, we usually construct queries using the [CQL Query Builder API](../../java/working-with-cql/query-api) in a database-agnostic way. For example, queries like this are supported for all databases:
+
+```java
+Select.from(AUTHOR)
+      .columns(a -> a.id(), a -> a.name(),
+               a -> a.books().expand(b -> b.id(), b.title()))
+      .where(a -> a.name().startWith("A"))
+      .orderBy(a -> a.name());
+```
+
+</div>
+
+### Standard Operators {.node}
+
+The database services guarantee the identical behavior of these operators:
+
+* `==`, `=` — with `=` null being translated to `is null`
+* `!=`, `<>` — with `!=` translated to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, or to an equivalent polyfill in SAP HANA
+* `<`, `>`, `<=`, `>=`, `IN`, `LIKE` — are supported as is in standard SQL
+
+In particular, the translation of `!=` to `IS NOT` in SQLite — or to `IS DISTINCT FROM` in standard SQL, or to an equivalent polyfill in SAP HANA — greatly improves the portability of your code.
+
+
+### Session Variables {.node}
+
+The API shown after this, which includes the function `session_context()` and specific pseudo variable names, is supported by **all** new database services, that is, *SQLite*, *PostgreSQL* and *SAP HANA*.
+This allows you to write the respective code once and run it on all these databases:
+
+```sql
+SELECT session_context('$user.id')
+SELECT session_context('$user.locale')
+SELECT session_context('$valid.from')
+SELECT session_context('$valid.to')
+```
+
+Among other things, this allows us to get rid of static helper views for localized data like `localized_de_sap_capire_Books`.
+
+### Native DB Queries
+
+If required you can also use native database features by executing native SQL queries:
+
+<div class="impl node">
+
+```js
+cds.db.run (`SELECT from sqlite_schema where name like ?`, name)
+```
+</div>
+
+<div class="impl java">
+
+Use Spring's [JDBC Template](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) to [leverage native database features](../../java/cqn-services/persistence-services#jdbctemplate) as follows:
+
+```java
+@Autowired
+JdbcTemplate db;
+...
+db.queryForList("SELECT from sqlite_schema where name like ?", name);
+```
+</div>
+
+### Reading `LargeBinary` / BLOB {.node}
+
+Formerly, `LargeBinary` elements (or BLOBs) were always returned as any other data type. Now, they're skipped from `SELECT *` queries. Yet, you can still enforce reading BLOBs by explicitly selecting them. Then the BLOB properties are returned as readable streams.
+
+```js
+SELECT.from(Books)          //> [{ ID, title, ..., image1, image2 }] // [!code --]
+SELECT.from(Books)          //> [{ ID, title, ... }]
+SELECT(['image1', 'image2']).from(Books) //> [{ image1, image2 }] // [!code --]
+SELECT(['image1', 'image2']).from(Books) //> [{ image1: Readable, image2: Readable }]
+```
+
+[Read more about custom streaming in Node.js.](../../node.js/best-practices#custom-streaming-beta){.learn-more}
 
 
 ## Generating DDL Files {#generating-sql-ddl}
 
+<div class="impl node">
+
+
+When you run your server with `cds watch` during development, an in-memory database is bootstrapped automatically, with SQL DDL statements generated based on your CDS models.
+
+You can also do this manually with the CLI command `cds compile --to <dialect>`.
+
+</div>
+
+<div class="impl java">
+
+When you've created a CAP Java application with `cds init --java` or with CAP Java's [Maven archetype](../../java/developing-applications/building#the-maven-archetype), the Maven build invokes the CDS compiler to generate a `schema.sql` file for your target database. In the `default` profile (development mode), an in-memory database is [initialized by Spring](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.data-initialization) and the schema is bootstrapped from the `schema.sql` file.
+
+[Learn more about adding an initial database schema.](../../java/cqn-services/persistence-services#initial-database-schema){.learn-more}
+
+</div>
 
 ### Using `cds compile`
 
@@ -596,10 +986,10 @@ For example, `startsWith` instead of `startswith` will be passed as-is to the da
 - `substring(x, i, n?)` <sup>1</sup>
   Extracts a substring from `x` starting at index `i` (0-based) with an optional length `n`.
 
-  | Parameter | Positive                | Negative                            | Omitted                              |
-  |-----------|-------------------------|-------------------------------------|--------------------------------------|
-  | `i`       | starts at index `i`     | starts `i` positions before the end |                                      |
-  | `n`       | extracts `n` characters | invalid                             | extracts until the end of the string |
+  | Parameter | Positive | Negative | Omitted
+  | --- | --- | --- | -- |
+  | `i` | starts at index `i` | starts `i` positions before the end |
+  | `n` | extracts `n` characters | invalid |  extracts until the end of the string
 
 - `length(x)`
   Returns the length of the string `x`.
@@ -694,110 +1084,6 @@ In addition to the OData and SAP HANA standard functions, the **CAP runtime** pr
   Returns the current timestamp.
 
 </div>
-
-## Querying at Runtime
-
-
-
-
-Most queries to databases are constructed and executed from [generic event handlers of CRUD requests](../services/served-ootb#serving-crud), so quite frequently there's nothing to do. The following is for the remaining cases where you have to provide custom logic, and as part of it execute database queries.
-
-
-
-
-### DB-Agnostic Queries
-
-<div class="impl node">
-
-At runtime, we usually construct and execute queries using cds.ql APIs in a database-agnostic way. For example, queries like this are supported for all databases:
-
-```js
-SELECT.from (Authors, a => {
-  a.ID, a.name, a.books (b => {
-    b.ID, b.title
-  })
-})
-.where ({name:{like:'A%'}})
-.orderBy ('name')
-```
-
-</div>
-
-<div class="impl java">
-
-At runtime, we usually construct queries using the [CQL Query Builder API](../../java/working-with-cql/query-api) in a database-agnostic way. For example, queries like this are supported for all databases:
-
-```java
-Select.from(AUTHOR)
-      .columns(a -> a.id(), a -> a.name(),
-               a -> a.books().expand(b -> b.id(), b.title()))
-      .where(a -> a.name().startWith("A"))
-      .orderBy(a -> a.name());
-```
-
-</div>
-
-### Standard Operators {.node}
-
-The database services guarantee the identical behavior of these operators:
-
-* `==`, `=` — with `=` null being translated to `is null`
-* `!=`, `<>` — with `!=` translated to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, or to an equivalent polyfill in SAP HANA
-* `<`, `>`, `<=`, `>=`, `IN`, `LIKE` — are supported as is in standard SQL
-
-In particular, the translation of `!=` to `IS NOT` in SQLite — or to `IS DISTINCT FROM` in standard SQL, or to an equivalent polyfill in SAP HANA — greatly improves the portability of your code.
-
-
-### Session Variables {.node}
-
-The API shown after this, which includes the function `session_context()` and specific pseudo variable names, is supported by **all** new database services, that is, *SQLite*, *PostgreSQL* and *SAP HANA*.
-This allows you to write the respective code once and run it on all these databases:
-
-```sql
-SELECT session_context('$user.id')
-SELECT session_context('$user.locale')
-SELECT session_context('$valid.from')
-SELECT session_context('$valid.to')
-```
-
-Among other things, this allows us to get rid of static helper views for localized data like `localized_de_sap_capire_Books`.
-
-### Native DB Queries
-
-If required you can also use native database features by executing native SQL queries:
-
-<div class="impl node">
-
-```js
-cds.db.run (`SELECT from sqlite_schema where name like ?`, name)
-```
-</div>
-
-<div class="impl java">
-
-Use Spring's [JDBC Template](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) to [leverage native database features](../../java/cqn-services/persistence-services#jdbctemplate) as follows:
-
-```java
-@Autowired
-JdbcTemplate db;
-...
-db.queryForList("SELECT from sqlite_schema where name like ?", name);
-```
-</div>
-
-### Reading `LargeBinary` / BLOB {.node}
-
-Formerly, `LargeBinary` elements (or BLOBs) were always returned as any other data type. Now, they're skipped from `SELECT *` queries. Yet, you can still enforce reading BLOBs by explicitly selecting them. Then the BLOB properties are returned as readable streams.
-
-```js
-SELECT.from(Books)          //> [{ ID, title, ..., image1, image2 }] // [!code --]
-SELECT.from(Books)          //> [{ ID, title, ... }]
-SELECT(['image1', 'image2']).from(Books) //> [{ image1, image2 }] // [!code --]
-SELECT(['image1', 'image2']).from(Books) //> [{ image1: Readable, image2: Readable }]
-```
-
-[Read more about custom streaming in Node.js.](../../node.js/best-practices#custom-streaming-beta){.learn-more}
-
 
 ## Using Native Features  { #native-db-functions}
 
