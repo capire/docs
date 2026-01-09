@@ -1,0 +1,142 @@
+// Defaults from https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css:
+// --vp-custom-block-tip-border: transparent;
+// --vp-custom-block-tip-text: var(--vp-c-text-1);
+// --vp-custom-block-tip-bg: var(--vp-c-tip-soft);
+// --vp-custom-block-tip-code-bg: var(--vp-c-tip-soft);
+// --vp-c-tip-1: var(--vp-c-brand-1);
+// --vp-c-tip-2: var(--vp-c-brand-2);
+// --vp-c-tip-3: var(--vp-c-brand-3);
+// --vp-c-tip-bg: var(--vp-c-brand-soft);
+// --vp-c-tip-soft: var(--vp-c-brand-soft);
+
+:root {
+  --vp-c-info-2: var(--vp-c-text-3);
+  --vp-c-info-1: var(--vp-c-text-2);
+  --vp-c-note-1: var(--vp-c-text-1);
+  --vp-c-tip-1: var(--vp-c-green-1);
+  --vp-c-warning-1: var(--vp-c-yellow-1);
+
+  --vp-custom-block-note-border: var(--vp-c-note-1);
+  --vp-custom-block-info-border: var(--vp-c-info-2);
+  --vp-custom-block-tip-border: var(--vp-c-tip-1);
+  --vp-custom-block-important-border: var(--vp-c-important-1);
+  --vp-custom-block-warning-border: var(--vp-c-warning-1);
+  --vp-custom-block-caution-border: var(--vp-c-caution-1);
+  --vp-custom-block-danger-border: var(--vp-c-danger-1);
+}
+
+.vp-doc .custom-block {
+
+  font-size: 100%; // VitePress chooses 90% -> reset to normal font size
+  &.info, &.note { font-size: 90%; } // make info and note smaller
+
+  &:has(p:only-child) { 
+    border:none; 
+    margin-top: 1em; 
+    margin-bottom: 1em;
+  }
+
+  // Borders and background styles
+  background-color: transparent !important;
+  padding: .1em 0 0 1em;
+  margin: 2em 0;
+  border-width: 0 0 0 4px;
+  border-radius: 0;
+
+  &.details { 
+    border: 4px solid transparent; 
+    border-width: 0 0 0 3px;
+    padding: .2em 0 .2em 1em;
+    margin: 0;
+    &[open] {
+      border-color: var(--vp-custom-block-info-border);
+      border-radius: 14px;
+    }
+    summary:first-of-type::before {
+      padding-left: 5px;
+      content: '';
+    }
+    summary {
+      font-weight: 500;
+      font-style: italic;
+      color: var(--vp-c-text-2);
+    }
+    > p, ul, ol {
+      font-size: 90%;
+    }
+  }
+
+  &.info .custom-block-title { 
+    color: var(--vp-c-info-1); 
+    &::before { 
+      background-color: var(--vp-c-info-1); 
+      mask: url('/icons/note.svg'); 
+    } 
+  }
+
+  &.note .custom-block-title { 
+    color: var(--vp-c-note-1); 
+    &::before { 
+      background-color: var(--vp-c-note-1); 
+      mask: url('/icons/note.svg'); 
+    } 
+  }
+
+  &.tip .custom-block-title { 
+    color: var(--vp-c-tip-1); 
+    &::before { 
+      background-color: var(--vp-c-tip-1); 
+      mask: url('/icons/tip.svg'); 
+    } 
+  }
+
+  &.important .custom-block-title { 
+    color: var(--vp-c-important-1); 
+    &::before { 
+      background-color: var(--vp-c-important-1); 
+      mask: url('/icons/important.svg'); 
+    } 
+  }
+
+  &.warning .custom-block-title { 
+    color: var(--vp-c-warning-1); 
+    &::before { 
+      background-color: var(--vp-c-warning-1); 
+      mask: url('/icons/warning.svg'); 
+    } 
+  }
+
+  &.caution .custom-block-title { 
+    color: var(--vp-c-caution-1); 
+    &::before { 
+      background-color: var(--vp-c-caution-1); 
+      mask: url('/icons/caution.svg'); 
+    } 
+  }
+
+  &.danger .custom-block-title { 
+    color: var(--vp-c-danger-1); 
+    &::before { 
+      background-color: var(--vp-c-danger-1); 
+      mask: url('/icons/caution.svg'); 
+    } 
+  }
+
+  // Title icon styles
+  .custom-block-title::before {
+    background-color: var(--vp-c-text-1); //> for masks
+    vertical-align: middle;
+    display: inline-block;
+    content: '';
+    height: 20px;
+    width: 20px;
+    margin-top: -2px;
+    margin-right: .7em;
+  }
+
+  // a {
+  //   font-weight: inherit !important;
+  //   text-decoration-style: dotted;
+  //   text-decoration: underline;
+  // }
+}

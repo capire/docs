@@ -1,0 +1,82 @@
+
+main .vp-doc {
+
+  div.language-zsh pre code {
+    line-height: 1.4em
+  }
+
+  pre {
+    padding: 12px 0 !important;
+    code { 
+      padding: 0 22px !important;
+    }
+  }
+  [class*='language-'] > button.copy {
+    top: 4px; // Fix for copy button position
+  }
+
+  :not(pre) code.no-bg { background-color: initial; }
+  :not(pre) > code {
+    font-style: italic;
+    font-size: 90%;
+    color: unset; // revert the c-brand-1 from default theme
+  }
+
+  // code blocks without background, e.g. as sole values in table cells
+
+  a {
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  pre.log {
+    font-size: var(--vp-code-font-size);
+    line-height: var(--vp-code-line-height);
+    background: var(--vp-code-block-bg);
+    padding: 12px 22px !important;
+    overflow-x: auto;
+    margin: 16px -24px; // same negative margin technique is used in Vitepress
+    @media (min-width: 640px) {
+      margin: unset;
+      border-radius: 8px;
+    }
+    span {
+      &.cmd {
+        color: #6F42C1;
+        .dark & { color: #B392F0; }
+      }
+      &.args {
+        color: #032F62;
+        .dark & { color: #9ECBFF; }
+      }
+      &.flags, &.option, &.posArg {
+        color: #005CC5;
+        .dark & { color: #79B8FF; }
+      }
+      &.cwd {
+        color: #777;
+        .dark & { color: #999; }
+      }
+      &.livereload {
+        color: #FDEC87
+      }
+    }
+    em {
+      color: #00ab00e0;
+      font-style: normal;
+    }
+    b {
+      color: #ee0000e0;
+    }
+    i {
+      color: grey;
+    }
+  }
+
+  .line-numbers-wrapper {
+    padding-top: 13px; // align with code line height
+  }
+
+}

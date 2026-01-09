@@ -1,7 +1,3 @@
----
-status: released
----
-
 <script setup>
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
 </script>

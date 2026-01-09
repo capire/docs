@@ -5,4 +5,5 @@
 requires.db.credentials.url = :memory:
 requires.db.impl = @cap-js/sqlite
 requires.db.kind = sqlite
+requires.db.pool.max = <em>1</em>
 </pre>

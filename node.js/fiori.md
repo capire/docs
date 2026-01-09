@@ -5,19 +5,23 @@ status: released
 
 # Fiori Support
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 [[toc]]
 
 
+
 <!--
 ## Serving `$metadata` Requests
-
-
-
-## Serving `$batch` Requests
-
 -->
+
+
+
+<!--
+## Serving `$batch` Requests
+-->
+
+
 
 ## Draft Entities {#draft-support}
 
@@ -135,6 +139,7 @@ srv.on('someAction', [ MyEntity, MyEntity.drafts ], /*...*/)
 ```
 
 
+
 ## Draft Locks
 
 To prevent inconsistency, the entities with draft are locked for modifications by other users. The lock is released when the draft is saved, canceled or a timeout is hit. The default timeout is 15 minutes. You can configure this timeout by the following application configuration property:
@@ -151,6 +156,7 @@ You can set the property to one of the following:
 :::tip Delete released draft locks
 If the `draft_lock_timeout` has been reached, every user can delete other users' drafts to create an own draft. There can't be two drafts at the same time on the same entity.
 :::
+
 
 
 ## Draft Timeouts
@@ -178,49 +184,49 @@ It can occur that inactive drafts are still in the database after the configured
 :::
 
 
-## Bypassing Drafts
-Creating or modifying active instances directly is possible without creating drafts. This comes in handy when technical services without a UI interact with each other.
 
-To enable this feature, set this feature flag in your configuration:
+## Bypassing Drafts {.deprecated}
 
-```json
-{
-  "cds": {
-    "fiori": {
-      "bypass_draft": true
-    }
-  }
-}
-```
+Use [Direct CRUD](#direct-crud) instead.
 
-You can then create active instances directly:
+Until the next major release (`cds10`), you can still activate the draft bypass without also allowing direct CRUD via <Config>cds.fiori.bypass_draft:true</Config>.
+
+
+
+## Direct CRUD <Beta />
+
+With <Config>cds.fiori.direct_crud:true</Config>, creating or modifying active instances directly is possible without creating drafts.
+This comes in handy when technical services without a UI interact with each other.
+
+That is, you can then create and modify active instances directly:
 
 ```http
 POST /Books
 
 {
-  "ID": 123,
-  "IsActiveEntity": true
+  "ID": 123
 }
 ```
 
-You can modify them directly:
-
 ```http
-PATCH /Books(ID=123,IsActiveEntity=true)
+PUT /Books(ID=123)
 
 {
   "title": "How to be more active"
 }
 ```
 
-This feature is required to enable [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), allowing users to change multiple objects with the
+For this, the default draft creation behavior by SAP Fiori Elements is redirected to a collection-bound action via annotation `@Common.DraftRoot.NewAction`.
+The thereby freed `POST` request to draft roots without specifying `IsActiveEntity` leads to the creation of an active instance (as it would without draft enablement).
+
+The feature is required to enable [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), allowing users to change multiple objects with the
 same editable properties without creating drafts for each row.
 
 :::warning Additional entry point
 Note that this feature creates additional entry points to your application. Custom handlers are triggered with delta
 payloads rather than the complete business object.
 :::
+
 
 
 ## Programmatic APIs <Beta />

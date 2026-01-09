@@ -2,8 +2,7 @@
 synopsis: >
   CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
   This section explains how to configure multitenancy for the CAP Java.
-# status: released
-uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
+# uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # Multitenancy (Classic) { #multitenancy-classic}
@@ -412,7 +411,7 @@ The first *.cdsrc.json* file goes into the root folder of your project and speci
 You only need to change this configuration if you named your project folders, `app`, `db`, `srv`, and `mtx-sidecar` differently.
 :::
 
-A detailed description of this configuration file can be found in section [Build Configuration](../guides/deployment/custom-builds#build-config). In the following, you find a short summary of this example:
+A detailed description of this configuration file can be found in section [Build Configuration](../guides/deploy/build.md). In the following, you find a short summary of this example:
 
 The `build` section defines the build `tasks` that should be executed. Three build tasks are defined in this example:
 
@@ -465,7 +464,7 @@ You only need to change this configuration if you named your project folders, `a
 :::
 
 ::: warning
-If you have configured a location for your i18n files as described in the [Localization Section](../guides/i18n#where-to-place-text-bundles), please make sure to add the same CDS configuration in both, the *.cdsrc.json* of the SaaS application and in the *.cdsrc.json* of the `mtx-sidecar`.
+If you have configured a location for your i18n files as described in the [Localization Section](../guides/uis/i18n#where-to-place-text-bundles), please make sure to add the same CDS configuration in both, the *.cdsrc.json* of the SaaS application and in the *.cdsrc.json* of the `mtx-sidecar`.
 :::
 
 In this file, the `requires` section configures the service instances that should be used by the *mtx-sidecar*. In this case, it's an instance of the UAA Service, to enable authentication and authorization, as well as the Service Manager, that enables multitenancy.

@@ -3,7 +3,6 @@ label: Authentication
 synopsis: >
   This guide is about authenticating users on incoming HTTP requests.
 # layout: node-js
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -188,6 +187,9 @@ This strategy creates a user that passes all authorization checks. It's meant fo
 
 This authentication strategy uses basic authentication with pre-defined mock users during development.
 
+::: warning Mocked authentication is not suitable for production!
+:::
+
 > **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
 
 **Configuration:** Choose this strategy as follows:
@@ -254,47 +256,9 @@ If you want to restrict these additional logins, you need to overwrite the defau
   }
 ```
 
-
-### Basic Authentication {#basic }
-
-This authentication strategy uses basic authentication to use mock users during development.
-
-> **Note:** When testing different users in the browser, it's best to use an incognito window, because logon information might otherwise be reused.
-
-**Configuration:** Choose this strategy as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": "basic"
-  }
-}
-```
+::: tip
+The pre-defined mock users can be deactivated by using kind `basic` instead of `mocked`. In that case configure users yourself, as described previously.
 :::
-
-You can optionally configure users as follows:
-
-::: code-group
-```json [package.json]
-"cds": {
-  "requires": {
-    "auth": {
-      "kind": "basic",
-      "users": {
-        "<user.id>": {
-          "password": "<password>",
-          "roles": [ "<role-name>", ... ],
-          "attr": { ... }
-        }
-      }
-    }
-  }
-}
-```
-:::
-
-In contrast to [mocked authentication](#mocked), no default users are automatically added to the configuration.
 
 
 ### JWT-based Authentication { #jwt }
@@ -465,7 +429,7 @@ export default function custom_auth(req: Req, res: Response, next: NextFunction)
 }
 ```
 
-[If you want to customize the user ID, please also have a look at this example.](/node.js/cds-serve#customization-of-cds-context-user){.learn-more}
+[If you want to customize the user ID, please also have a look at this example.](cds-serve#customization-of-cds-context-user){.learn-more}
 
 
 ## Authentication in Production
@@ -512,7 +476,7 @@ cf l -a <api-endpoint>
 ```
 If you don't know the API endpoint, have a look at section [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
 
-2. Go to the project you have created in [Getting started in a Nutshell](../get-started/in-a-nutshell).
+2. Go to the project you have created in [Getting started in a Nutshell](../get-started/bookshop).
 
 3. Configure your app for XSUAA-based authentication if not done yet:
     ```sh
@@ -646,7 +610,7 @@ The resulting JWT token is sent to the application where it's used to enforce au
     ```
     :::
 
-    [Learn more about `cds bind --exec`.](../advanced/hybrid-testing#cds-bind-exec){.learn-more}
+    [Learn more about `cds bind --exec`.](../tools/cds-bind#cds-bind-exec){.learn-more}
 
     This starts an [App Router](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/0117b71251314272bfe904a2600e89c0.html) instance on [http://localhost:5000](http://localhost:5000) with the credentials for the XSUAA service that you have bound using `cds bind`.
 

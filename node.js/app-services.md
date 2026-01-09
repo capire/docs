@@ -9,7 +9,7 @@ status: released
 
 ## Class `cds.ApplicationService`
 
-Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/providing-services), [Localized Data](../guides/localized-data.md) and [Temporal Data](../guides/temporal-data.md).
+Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/services/providing-services), [Localized Data](../guides/uis/localized-data.md) and [Temporal Data](../guides/domain/temporal-data.md).
 
 Take this service definition for example:
 
@@ -80,52 +80,52 @@ This method is adding request handlers for initial authorization checks, as docu
 
 ### _static_ handle_etags() {.method}
 
-This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/providing-services#concurrency-control).
+This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/served-ootb#concurrency-control).
 
 
 
 ### _static_ handle_validations() {.method}
 
-This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/providing-services#input-validation).
+This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/services/constraints).
 
 
 
 
 ### _static_ handle_temporal_data() {.method}
 
-This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/temporal-data.md).
+This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/domain/temporal-data.md).
 
 
 
 
 ### _static_ handle_localized_data() {.method}
 
-This method is adding request handlers for handling localized data, as documented in the [Localized Data guide](../guides/localized-data.md).
+This method is adding request handlers for handling localized data, as documented in the [Localized Data guide](../guides/uis/localized-data.md).
 
 
 
 
 ### _static_ handle_managed_data() {.method}
 
-This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain-modeling#managed-data).
+This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/index#managed-data).
 
 
 
 ### _static_ handle_paging() {.method}
 
-This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/providing-services#pagination-sorting).
+This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
 
 
 
 ### _static_ handle_fiori() {.method}
 
-This method is adding request handlers for handling Fiori Drafts and other Fiori-specifics, as documented in the [Serving Fiori guide](../advanced/fiori.md).
+This method is adding request handlers for handling Fiori Drafts and other Fiori-specifics, as documented in the [Serving Fiori guide](../guides/uis/fiori.md).
 
 
 
 ### _static_ handle_crud() {.method}
 
-This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/providing-services#generic-providers).
+This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/served-ootb).
 
 
 

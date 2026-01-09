@@ -2,7 +2,6 @@
 synopsis: >
   This section describes various options how to run CAP Java applications locally
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -105,7 +104,7 @@ Spring Boot Devtools only detects changes to .class files. You need to enable th
 ## Multitenant Applications
 
 With the streamlined MTX, you can run your multitenant application locally along with the MTX sidecar and use SQLite as the database.
-See [the _Multitenancy_ guide](../../guides/multitenancy/#test-locally) for more information.
+See [the _Multitenancy_ guide](../../guides/multitenancy/index#test-drive-locally) for more information.
 
 ## Debugging
 
@@ -126,4 +125,3 @@ Once this is added, you can use the restart capabilities of the Spring Boot Devt
     * Configuration files (for example, _application.yaml_)
     * Artifacts generated from CDS (schema.sql, CSN, EDMX)
     * Any other static resource
-

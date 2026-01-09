@@ -1,6 +1,5 @@
 ---
 # layout: node-js
-status: released
 label: Transactions
 ---
 

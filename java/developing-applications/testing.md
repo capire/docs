@@ -2,7 +2,6 @@
 synopsis: >
   This section describes how to test CAP Java applications on different level.
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -255,3 +254,108 @@ public class CatalogServiceITest {
 ::: tip
 Check out the version in our [CAP Java bookshop sample project](https://github.com/SAP-samples/cloud-cap-samples-java/blob/main/srv/src/test/java/my/bookshop/CatalogServiceITest.java) for additional examples of integration testing.
 :::
+
+## Testing with H2
+
+**H2** is the preferred database for CAP Java applications, as it offers a combination of features that make it the best candidate for local development and testing:
+
+* **Concurrent access and locking**
+
+  The database supports multiple concurrent connections and implements row-level locking, allowing safe parallel data access without data corruption or race conditions.
+
+* **Open Source and Java native**
+
+  As an open-source database written entirely in Java, H2 offers transparency, flexibility, and the benefit of being maintained by an active community. Its Java implementation ensures optimal integration with Java-based applications and platforms.
+
+* **Administrative tools**
+
+  H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (assuming default port `8080`).
+
+### Setup & Configuration
+
+#### Using the Maven Archetype
+
+When a new CAP Java project is created with the [Maven Archetype](../../java/developing-applications/building#the-maven-archetype) or with `cds init`,
+H2 is automatically configured as in-memory database used for development and testing in the `default` profile.
+
+#### Manual Configuration
+
+To use H2, just add a Maven dependency to the H2 JDBC driver:
+
+```xml
+<dependency>
+  <groupId>com.h2database</groupId>
+  <artifactId>h2</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+
+Next, configure the build to [create an initial _schema.sql_ file](../../java/cqn-services/persistence-services#initial-database-schema-1) for H2 using `cds deploy --to h2 --dry`.
+
+In Spring, H2 is automatically initialized as in-memory database when the driver is present on the classpath.
+
+[Learn more about the configuration of H2.](../../java/cqn-services/persistence-services#h2){.learn-more}
+
+After performing the above mentioned configuration steps, the `application.yaml` should contain the following lines for `default` profile:
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
+spring:
+  config.activate.on-profile: default
+  sql.init.platform: h2
+cds:
+  data-source:
+    auto-config.enabled: false
+```
+:::
+
+### H2 Limitations
+
+When developing a CAP Java application, it's important to understand the limits and constraints of the underlying database. Every database has its own performance characteristics, data type restrictions, indexing behavior, and transaction handling rules.
+
+Read more about known limitations in the H2 section of the [Persistence Services guide.](../../java/cqn-services/persistence-services#h2-database)
+
+::: warning Test local MTXS with H2 not possible
+Besides the limitations mentioned above, it is not possible to use H2 database when it comes to testing multitenancy and extensibility (MTXS) scenarios on a local environment.
+:::
+
+### Hybrid Testing - a way to overcome limitations
+
+Although CAP Java enables running and testing applications with a local H2 database, still there are cases when it is not possible, due to some limitations mentioned previously. In that case, hybrid testing capabilities help you to stay in a local development environment avoiding long turnaround times of cloud deployments. You just selectively connect to services in the cloud.
+
+The section [Hybrid Testing](../../tools/cds-bind#run-cap-java-apps-with-service-bindings) describes the steps on how to configure and consume the remote services, including SAP HANA, in a local environment.
+
+### H2 and Spring Dev Tools Integration
+
+Most CAP Java projects use Spring Boot. To speed up the edit-compile-verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
+
+The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows: 
+
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
+spring:
+  config.activate.on-profile: default
+  sql.init.platform: h2
+  url: "jdbc:h2:file:/data/testdb"
+cds:
+  data-source:
+    auto-config.enabled: false
+```
+:::
+
+[Learn more about how to configure file-based H2.](https://www.h2database.com/html/features.html#embedded_databases){.learn-more}
+
+### Logging SQL to Console
+
+To view the generated SQL statements, which will be run on the H2 database, it is possible to switch to `DEBUG` log output by adding the following log-levels:
+
+::: code-group
+```yml [srv/src/main/resources/application.yaml]
+logging:
+  level:
+    com.sap.cds.persistence.sql: DEBUG
+```
+:::
+
+This is beneficial, when you need to track runtime or a Java Application behavior.
+
+[Learn more about Predefined Loggers.](../../java/operating-applications/observability#predefined-loggers){.learn-more}

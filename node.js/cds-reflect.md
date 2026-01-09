@@ -108,15 +108,22 @@ Example:
 ```js
 let m = cds.linked`
   namespace my.bookshop;
-  entity Books {...}
-  entity Authors {...}
+  entity Books {}
+  entity Authors {}
+  service CatalogService { 
+    entity Books as projection on my.bookshop.Books;
+    entity Authors as projection on my.bookshop.Authors;
+  }
 `
+
 // Function nature
 let { Books, Authors } = m.entities ('my.bookshop')
 
-
-// Object nature (uses the model's top-level namespace)
-let { Books, Authors } = m.entities
+// Object nature
+let { 
+  'my.bookshop.Books': Books, 
+  'my.bookshop.Authors': Authors 
+} = m.entities
 
 // Array nature
 for (let each of m.entities) console.log (each.name)
@@ -375,12 +382,12 @@ Their values are [`LinkedDefinitions`].
 
 ### . texts {.property}
 
-If the entity has *[localized](../guides/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
+If the entity has *[localized](../guides/uis/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
 {.indent}
 
 ### . drafts {.property}
 
-If draft is enabled, a definition to easily refer to *[draft](../advanced/fiori#draft-support)* data for the current entity is returned.
+If draft is enabled, a definition to easily refer to *[draft](../guides/uis/fiori#draft-support)* data for the current entity is returned.
 {.indent}
 
 
@@ -440,10 +447,7 @@ The effective foreign keys of [*managed* association](../cds/cdl#managed-associa
 
 
 
-## cds. linked .classes {#cds-linked-classes .property}
-
-[`cds.linked.classes`]: #cds-linked-classes
-
+## cds. linked .classes {.property}
 
 This property gives you access to the very roots of `cds`'s type system. When a model is passed through [`cds.linked`] all definitions effectively become instances of one of these classes.
 In essence they are defined as follows:
@@ -526,7 +530,7 @@ m.foreach (d => console.log(d.toCDL()))
 
 
 
-## cds. builtin. types {#cds-builtin-types .property}
+## cds. builtin. types {.property}
 [`cds.builtin.types`]: #cds-builtin-types
 
 

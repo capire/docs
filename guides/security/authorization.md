@@ -1,10 +1,6 @@
 ---
-index: 44
-# layout: cookbook
-label: Authorization
 synopsis: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
@@ -21,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 
-# CAP Authorization { #authorization }
+# CAP-level Authorization & Access Control
 
 <ImplVariantsHint />
 
@@ -57,10 +53,25 @@ Finally, according to the key concept [Customizable Security](./overview#key-con
 
 ## Static Access Control { #static-access-control }
 
-### Internal Services
+From perspective of CAP, the authentication method is freely customizable. For convenience, a set of authentication methods is supported out of the box to cover most common scenarios:
 
-CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters. 
-In order to prevent access from *any* external clients, annotate those services with `@protocol: 'none'`:
+- [XS User and Authentication and Authorization service](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) (XSUAA) is a full-fleged [OAuth 2.0](https://oauth.net/2/) authorization server which allows to protect your endpoints in productive environments. JWT tokens issued by the server not only contain information about the user for authentication, but also assigned scopes and attributes for authorization.
+- [Identity Authentication Service](https://help.sap.com/docs/IDENTITY_AUTHENTICATION) (IAS) is an [OpenId Connect](https://openid.net/connect/) compliant service for next-generation identity and access management. As of today, CAP provides IAS authentication for incoming requests only. Authorization has to be explicitly managed by the application.
+- For _local development_ and _test_ scenario mock user authentication is provided as built-in feature.
+
+Find detailed instructions for setting up authentication in these runtime-specific guides:
+
+- [Set up authentication in Node.js.](../../node.js/authentication)
+- [Set up authentication in Java.](../../java/security#authentication)
+
+
+In _productive_ environment with security middleware activated, **all protocol adapter endpoints are authenticated by default**<sup>1</sup>, even if no [restrictions](#restrictions) are configured. Multi-tenant SaaS-applications require authentication to provide tenant isolation out of the box. In case there is the business need to expose open endpoints for anonymous users, it's required to take extra measures depending on runtime and security middleware capabilities.
+
+> <sup>1</sup> Starting with CAP Node.js 6.0.0 resp. CAP Java 1.25.0. _In previous versions endpoints without restrictions are public in single-tenant applications_.
+
+### Defining Internal Services
+
+CDS services which are only meant for *internal* usage, shouldn't be exposed via protocol adapters. In order to prevent access from external clients, annotate those services with `@protocol: 'none'`:
 
 ```cds
 @protocol: 'none'
@@ -70,6 +81,105 @@ service InternalService {
 ```
 `InternalService` can only receive events sent by in-process handlers.
 
+## User Claims { #user-claims}
+
+CDS authorization is _model-driven_. This basically means that it binds access rules for CDS model elements to user claims. For instance, access to a service or entity is dependent on the role a user has been assigned to. Or you can even restrict access on an instance level, for example, to the user who created the instance.<br>
+The generic CDS authorization is built on a _CAP user concept_, which is an _abstraction_ of a concrete user type determined by the platform's identity service. This design decision makes different authentication strategies pluggable to generic CDS authorization.<br>
+After successful authentication, a (CAP) user is represented by the following properties:
+
+- Unique (logon) _name_ identifying the user. Unnamed users have a fixed name such as `system` or `anonymous`.
+- _Tenant_ for multitenant applications.
+- _Roles_ that the user has been granted by an administrator (see [User Roles](#roles)) or that are derived by the authentication level (see [Pseudo Roles](#pseudo-roles)).
+- _Attributes_ that the user has been assigned by an administrator.
+
+In the CDS model, some of the user properties can be referenced with the `$user` prefix:
+
+| User Property                 | Reference           |
+|-------------------------------|---------------------|
+| Name                          | `$user`             |
+| Attribute (name \<attribute>) | `$user.<attribute>` |
+
+> A single user attribute can have several different values. For instance, the `$user.language` attribute can contain `['DE','FR']`.
+
+
+### User Roles { #roles}
+
+As a basis for access control, you can design conceptual roles that are application specific. Such a role should reflect how a user can interact with the application. For instance, the role `Vendor` could describe users who are allowed to read sales articles and update sales figures. In contrast, a `ProcurementManager` can have full access to sales articles. Users can have several roles, that are assigned by an administrative user in the platform's authorization management solution.
+::: tip
+CDS-based authorization deliberately refrains from using technical concepts, such as _scopes_ as in _OAuth_, in favor of user roles, which are closer to the conceptual domain of business applications. This also results in much **smaller JWT tokens**.
+:::
+
+
+### Pseudo Roles { #pseudo-roles}
+
+It's frequently required to define access rules that aren't based on an application-specific user role, but rather on the _authentication level_ of the request. For instance, a service could be accessible not only for identified, but also for anonymous (for example, unauthenticated) users. Such roles are called pseudo roles as they aren't assigned by user administrators, but are added at runtime automatically.
+
+The following predefined pseudo roles are currently supported by CAP:
+
+* `authenticated-user` refers to named or unnamed users who have presented a valid authentication claim such as a logon token.
+* [`system-user` denotes an unnamed user used for technical communication.](#system-user)
+* [`internal-user` is dedicated to distinguish application internal communication.](#internal-user)
+* `any` refers to all users including anonymous ones (that means, public access without authentication).
+
+#### system-user
+The pseudo role `system-user` allows you to separate access by _technical_ users from access by _business_ users. Note that the technical user can come from a SaaS or the PaaS tenant. Such technical user requests typically run in a _privileged_ mode without any restrictions on an instance level. For example, an action that implements a data replication into another system needs to access all entities of subscribed SaaS tenants and can’t be exposed to any business user. Note that `system-user` also implies `authenticated-user`.
+
+::: tip
+For XSUAA or IAS authentication, the request user is attached with the pseudo role `system-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` for a trusted client application.
+:::
+
+#### internal-user
+Pseudo-role `internal-user` allows to define application endpoints that can be accessed exclusively by the own PaaS tenant (technical communication). The advantage is that similar to `system-user` no technical CAP roles need to be defined to protect such internal endpoints. However, in contrast to `system-user`, the endpoints protected by this pseudo-role do not allow requests from any external technical clients. Hence is suitable for **technical intra-application communication**, see [Security > Application Zone](platform#application-zone).
+
+::: tip
+For XSUAA or IAS authentication, the request user is attached with the pseudo role `internal-user` if the presented JWT token has been issued with grant type `client_credentials` or `client_x509` on basis of the **identical** XSUAA or IAS service instance.
+:::
+
+::: warning
+All technical clients that have access to the application's XSUAA or IAS service instance can call your service endpoints as `internal-user`.
+**Refrain from sharing this service instance with untrusted clients**, for instance by passing services keys or [SAP BTP Destination Service](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/create-destinations-from-scratch) instances.
+:::
+
+### Mapping User Claims
+
+Depending on the configured [authentication](#prerequisite-authentication) strategy, CAP derives a *default set* of user claims containing the user's name and attributes:
+
+| CAP User Property   | XSUAA JWT Property               | IAS JWT Property        |
+|---------------------|----------------------------------|-------------------------|
+| `$user`             | `user_name`                      | `sub`                   |
+| `$user.<attribute>` | `xs.user.attributes.<attribute>` | All non-meta attributes |
+
+::: tip
+CAP does not make any assumptions on the presented claims given in the token. String values are copied as they are.
+:::
+
+In most cases, CAP's default mapping will match your requirements, but CAP also allows you to customize the mapping according to specific needs. For instance, `user_name` in XSUAA tokens is generally not unique if several customer IdPs are connected to the underlying identity service.
+Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you implement in a custom adaptation. Similarly, attribute values can be normalized and prepared for [instance-based authorization](#instance-based-auth). Find details and examples how to programmatically redefine the user mapping here:
+
+- [Set up Authentication in Node.js.](../../node.js/authentication)
+- [Custom Authentication in Java.](../../java/security#custom-authentication)
+
+::: warning Be very careful when redefining `$user`
+The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. Also consider data protection and privacy regulations when storing user data.
+:::
+
+## Restrictions { #restrictions}
+
+According to [authentication](#prerequisite-authentication), CAP endpoints are closed to anonymous users. But **by default, CDS services have no access control** which means that authenticated users are not restricted. To protect resources according to your business needs, you can define [restrictions](#restrict-annotation) that make the runtime enforce proper access control. Alternatively, you can add custom authorization logic by means of an [authorization enforcement API](#enforcement).
+
+Restrictions can be defined on *different CDS resources*:
+
+- Services
+- Entities
+- (Un)bound actions and functions
+
+You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model. For instance, a restriction on the service level applies to all entities in the service. Additional restrictions on entities or actions can further limit authorized requests. See [combined restrictions](#combined-restrictions) for more details.
+
+Beside the scope, restrictions can limit access to resources with regards to *different dimensions*:
+
+- The [event](#restricting-events) of the request, that is, the type of the operation (what?)
+- The [roles](#roles) of the user (who?)
+- [Filter-condition](#instance-based-auth) on instances to operate on (which?)
 
 ### @readonly and @insertonly { #restricting-events}
 
@@ -82,7 +192,7 @@ service BookshopService {
 }
 ```
 
-Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](/guides/providing-services#input-validation), you can also use `@readonly` on a property level.
+Note that both annotations introduce access control on an entity level. In contrast, for the sake of [input validation](../services/constraints), you can also use `@readonly` on a property level.
 
 In addition, annotation `@Capabilities` from standard OData vocabulary is enforced by the runtimes analogously:
 
@@ -134,7 +244,7 @@ In general, **implicitly auto-exposed entities cannot be accessed directly**, wh
 
 In contrast, **explicitly auto-exposed entities can be accessed directly, but only as `@readonly`**. The rationale behind that is that entities representing value lists need to be readable at the service level, for instance to support value help lists.
 
-See details about `@cds.autoexpose` in [Auto-Exposed Entities](/guides/providing-services#auto-exposed-entities).
+See details about `@cds.autoexpose` in [Auto-Exposed Entities](../services/providing-services#auto-exposed-entities).
 
 This results in the following access matrix:
 
@@ -204,11 +314,11 @@ whereas the properties are:
 * `where`: a filter condition that further restricts access on an instance level (optional).
 
 The following values are supported:
-- `grant` accepts all standard [CDS events](../../about/best-practices#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
+- `grant` accepts all standard [CDS events](../../get-started/concepts#events) (such as `READ`, `CREATE`, `UPDATE`, and `DELETE`) as well as action and function names. `WRITE` is a virtual event for all standard CDS events with write semantic (`CREATE`, `DELETE`, `UPDATE`, `UPSERT`) and `*` is a wildcard for all events.
 
 - The `to` property lists all [user roles](cap-users#roles) or [pseudo roles](cap-users#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
-- The `where` clause can contain a Boolean expression in [CQL](/cds/cql) syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
+- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
 
 A privilege is met, if and only if **all properties are fulfilled** for the current request. In the following example, orders can only be read by an `Auditor` who meets `AuditBy` element of the instance:
 
@@ -399,7 +509,7 @@ So, the authorization for the requests in the example is delegated as follows:
 
 | Request Target                                         |          Authorization Entity          |
 |--------------------------------------------------------|:--------------------------------------:|
-| `IssuesService.Components`                             |           <Na/><sup>1</sup>            |
+| `IssuesService.Components`                             | `IssuesService.Components`<sup>3</sup> |
 | `IssuesService.Issues`                                 |           <Na/><sup>1</sup>            |
 | `IssuesService.Categories`                             | `IssuesService.Categories`<sup>2</sup> |
 | `IssuesService.Components[<id>].issues`                | `IssuesService.Components`<sup>3</sup> |
@@ -464,8 +574,15 @@ annotate Articles with @(restrict: [
   { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
 ```
 
-::: tip
-Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
+You can define `where`-conditions in restrictions based on [CQL](../../cds/cql)-where-clauses.<br>
+Supported features are:
+* Predicates with arithmetic operators.
+* Combining predicates to expressions with `and` and `or` logical operators.
+* Value references to constants, [user attributes](#user-attrs), and entity data (elements including [paths](#association-paths))
+* [Exists predicate](#exists-predicate) based on subselects.
+
+::: info Avoid enumerable keys
+In case the filter condition is not met in an `UPDATE` or `DELETE` request, the runtime rejects the request (response code 403) even if the user is not even allowed to read the entity. To avoid to disclosure the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable.
 :::
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
@@ -595,7 +712,7 @@ Be aware that deep paths might introduce a performance bottleneck. Access Contro
 
 #### Association Paths { #association-paths}
 
-The `where`-condition in a restriction can also contain [CQL path expressions](/cds/cql#path-expressions) that navigate to elements of associated entities:
+The `where`-condition in a restriction can also contain [CQL path expressions](../../cds/cql#path-expressions) that navigate to elements of associated entities:
 
 ```cds
 service SalesOrderService @(requires: 'authenticated-user') {
@@ -889,7 +1006,7 @@ For this reason, it's *strongly* recommended to take security design into consid
 
 ### Separation of Concerns
 
-Consider using [CDS Aspects](/cds/cdl#aspects) to separate the actual service definitions from authorization annotations as follows:
+Consider using [CDS Aspects](../../cds/cdl#aspects) to separate the actual service definitions from authorization annotations as follows:
 
 <!--- % include _code sample='services.cds' %} -->
 ::: code-group
@@ -908,20 +1025,162 @@ service CustomerService {
 <!--- % include _code sample='services-auth.cds' %} -->
 ::: code-group
 ```cds [services-auth.cds]
-service ReviewsService @(requires: 'authenticated-user'){
-  /*...*/
-}
+annotate ReviewsService with @(requires: 'authenticated-user');
 
-service CustomerService @(requires: 'authenticated-user'){
-  entity Orders @(restrict: [
-    { grant: ['READ','WRITE'], to: 'admin' },
-    { grant: 'READ', where: 'buyer = $user' },
-  ]){/*...*/}
-  entity Approval @(restrict: [
-    { grant: 'WRITE', where: '$user.level > 2' }
-  ]){/*...*/}
-}
+annotate CustomerService with @(requires: 'authenticated-user');
+annotate CustomerService.Orders with @(restrict: [
+  { grant: ['READ','WRITE'], to: 'admin' },
+  { grant: 'READ', where: 'buyer = $user' },
+]);
+annotate CustomerService.Approval with @(restrict: [
+  { grant: 'WRITE', where: '$user.level > 2' }
+]);
 ```
 :::
 
 This keeps your actual service definitions concise and focused on structure only. It also allows you to give authorization models separate ownership and lifecycle.
+
+
+## Programmatic Enforcement { #enforcement}
+
+The service provider frameworks **automatically enforce** restrictions in generic handlers. They evaluate the annotations in the CDS models and, for example:
+
+* Reject incoming requests if static restrictions aren't met.
+* Add corresponding filters to queries for instance-based authorization, etc.
+
+If generic enforcement doesn't fit your needs, you can override or adapt it with **programmatic enforcement** in custom handlers:
+
+- [Authorization Enforcement in Node.js](../../node.js/authentication#enforcement)
+- [Enforcement API & Custom Handlers in Java](../../java/security#enforcement-api)
+
+## Role Assignments with IAS and AMS
+
+The Authorization Management Service (AMS) as part of SAP Cloud Identity Services (SCI) provides libraries and services for developers of cloud business applications to declare, enforce and manage instance based authorization checks. When used together with CAP the AMS  "Policies” can contain the CAP roles as well as additional filter criteria for instance based authorizations that can be defined in the CAP model. transformed to AMS policies and later on refined by customers user and authorization administrators in the SCI administration console and assigned to business users.
+
+### Use AMS as Authorization Management System on SAP BTP
+
+SAP BTP is currently replacing the authorization management done with XSUAA by an integrated solution with AMS. AMS is integrated into SAP Cloud Identity (SCI), which will offer authentication, authorization, user provisioning and management in one place.
+
+For newly build applications the usage of AMS is generally recommended. The only constraint that comes with the usage of AMS is that customers need to copy their users to the Identity Directory Service as the central place to manage users for SAP BTP applications. This is also the general SAP strategy to simplify user management in the future.
+
+### Case For XSUAA
+
+There is one use case where currently an XSUAA based authorization management is preferable: When XSUAA based services to be consumed by a CAP application come with their own business user roles and thus make user role assignment in the SAP Cloud Cockpit necessary. This will be resolved in the future when the authorization management will be fully based on the SCI Admin console.
+
+For example, SAP Task Center you want to consume an XSUAA-based service that requires own end user role. Apart from this, most services should be technical services that do not require an own authorization management that is not yet integrated in AMS.
+
+
+[Learn more about using IAS and AMS with CAP Node.js](https://github.com/SAP-samples/btp-developer-guide-cap/blob/main/documentation/xsuaa-to-ams/README.md){.learn-more}
+
+
+## Role Assignments with XSUAA { #xsuaa-configuration}
+
+Information about roles and attributes has to be made available to the UAA platform service. This information enables the respective JWT tokens to be constructed and sent with the requests for authenticated users. In particular, the following happens automatically behind-the-scenes upon build:
+
+
+### 1. Roles and Attributes Are Filled into the XSUAA Configuration
+
+Derive scopes, attributes, and role templates from the CDS model:
+
+```sh
+cds add xsuaa
+```
+
+This generates an _xs-security.json_ file:
+
+::: code-group
+```json [xs-security.json]
+{
+  "scopes": [
+    { "name": "$XSAPPNAME.admin", "description": "admin" }
+  ],
+  "attributes": [
+    { "name": "level", "description": "level", "valueType": "s" }
+  ],
+  "role-templates": [
+    { "name": "admin", "scope-references": [ "$XSAPPNAME.admin" ], "description": "generated" }
+  ]
+}
+```
+:::
+
+For every role name in the CDS model, one scope and one role template are generated with the exact name of the CDS role.
+
+::: tip Re-generate on model changes
+You can have such a file re-generated via
+```sh
+cds compile srv --to xsuaa > xs-security.json
+```
+:::
+
+See [Application Security Descriptor Configuration Syntax](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) in the SAP HANA Platform documentation for the syntax of the _xs-security.json_ and advanced configuration options.
+
+<!-- REVISIT: Not ideal cds compile --to xsuaa can generate invalid xs-security.json files -->
+::: warning Avoid invalid characters in your models
+Roles modeled in CDS may contain characters considered invalid by the XSUAA service.
+:::
+
+If you modify the _xs-security.json_ manually, make sure that the scope names in the file exactly match the role names in the CDS model, as these scope names will be checked at runtime.
+
+### 2. XSUAA Configuration Is Completed and Published
+
+#### Through MTA Build
+
+If there's no _mta.yaml_ present, run this command:
+
+```sh
+cds add mta
+```
+
+::: details See what this does in the background…
+
+1. It creates an _mta.yaml_ file with an `xsuaa` service.
+2. The created service added to the `requires` section of your backend, and possibly other services requiring authentication.
+::: code-group
+```yaml [mta.yaml]
+modules:
+  - name: bookshop-srv
+    requires:
+      - bookshop-auth # [!code ++]
+resources:
+  name: bookshop-auth # [!code ++]
+  type: org.cloudfoundry.managed-service # [!code ++]
+  parameters: # [!code ++]
+    service: xsuaa # [!code ++]
+    service-plan: application # [!code ++]
+    path: ./xs-security.json # include cds managed scopes and role templates  [!code ++]
+    config: # [!code ++]
+      xsappname: bookshop-${org}-${space} # [!code ++]
+      tenant-mode: dedicated # 'shared' for multitenant deployments  [!code ++]
+```
+:::
+
+
+Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_ file are merged. If there are conflicts, the [MTA security configuration](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) has priority.
+
+[Learn more about **building and deploying MTA applications**.](../deploy/){ .learn-more}
+
+### 3. Assembling Roles and Assigning Roles to Users
+
+This is a manual step an administrator would do in SAP BTP Cockpit. See [Set Up the Roles for the Application](../../node.js/authentication#auth-in-cockpit) for more details. If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
+In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.
+
+
+### 4. Scopes Are Narrowed to Local Roles
+
+Based on this, the JWT token for an administrator contains a scope `my.app.admin`. From within service implementations of `my.app` you can reference the scope:
+
+```js
+req.user.is ("admin")
+```
+... and, if necessary, from others by:
+
+```js
+req.user.is ("my.app.admin")
+```
+
+<br>
+
+> See the following sections for more details:
+- [Developing Security Artifacts in SAP BTP](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/419ae2ef1ddd49dca9eb65af2d67c6ec.html)
+- [Maintaining Application Security in XS Advanced](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/35d910ee7c7a445a950b6aad989a5a26.html)

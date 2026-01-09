@@ -16,10 +16,7 @@
       <em>extension</em>                    - extension project
       <em>mta</em>                          - Cloud Foundry deployment using mta.yaml
       <em>cf-manifest</em>                  - Cloud Foundry deployment using manifest files
-      <em>helm</em>                         - Kyma deployment using Helm charts
-      <em>helm-unified-runtime</em>         - Kyma deployment using Unified Runtime Helm charts
-      <em>containerize</em>                 - containerization using ctz CLI
-      <em>kyma</em>                         - helm + containerize
+      <em>kyma</em>                         - Kyma deployment using Helm charts
       <em>tiny-sample</em>                  - minimal sample files
       <em>sample</em>                       - sample files including Fiori UI
       <em>handler</em>                      - handler stubs for service entities, actions and functions
@@ -62,6 +59,7 @@
       <em>lint</em>                         - configure cds lint
       <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
       <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
+      <em>console</em>                      - installs the CAP console plugin
 
 <strong>OPTIONS</strong>
     <em>--for | -4</em> &lt;profile&gt;
@@ -166,13 +164,6 @@
         For Java, the default is 'handlers'. For Node.js, the default is 'srv'.
 
 
-    <em>cds add helm</em>
-
-      --y
-
-        If provided, the default values will be used for all prompts.
-
-
     <em>cds add http</em>
 
       --filter | -f
@@ -194,6 +185,13 @@
       --dry
 
         Print the generated requests to the console instead of writing them to a file.
+
+
+    <em>cds add kyma</em>
+
+
+
+
 
 
     <em>cds add test</em>
