@@ -26,7 +26,7 @@ This guide explains how to restrict access to data by adding respective declarat
 [[toc]]
 
 
-## Declarative Access Control { #restrictions}
+## Declarative Access Control
 
 In essence, [authentication](./authentication#authentication) verifies the user's identity and the presented claims. Briefly, authentication reveals _who_ is using the service.
 In contrast, **authorization controls _how_ the user may interact with the application's resources**. 

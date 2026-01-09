@@ -79,81 +79,6 @@ CAP cannot guarantee end-to-end security across all application layers by defaul
 The application is responsible for coordinated overall configuration.
 :::
 
-
-
-## Security Architecture
-
-CAP applications run in a specific context that has a major impact on the security [architecture](#architecture-overview).
-CAP requires a dedicated [platform environment](#platform-environment) to integrate with, in order to ensure end-to-end security.
-
-### Architecture Overview { #architecture-overview }
-
-The following diagram provides a high-level overview of the security-relevant components and interfaces of a deployed CAP application in a cloud environment:
-
-![This TAM graphic is explained in the accompanying text.](./assets/cap-security-architecture-overview.png){width="600px"}
-
-To serve a business request, different runtime components are involved: a request, issued by a UI or technical client ([public zone](#public-zone)), is forwarded by a gateway or ingress router to the CAP application. In case of a UI request, an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance acts as a proxy to manage the login flow and the browser session. The CAP application can have additional services such as a CAP sidecar. All application components ([application zone](#application-zone)) might make use of platform services such as database or identity service ([platform zone](#platform-zone)).
-
-#### Public Zone { #public-zone }
-
-From CAP's point of view, all components without specific security requirements belong to the public zone.
-Therefore, you shouldn't rely on the behavior or structure of consumer components like browsers or technical clients for the security of server components.
-The platform's gateway provides a single point of entry for any incoming call and defines the API visible to the public zone.
-Since malicious users have free access to the public zone, you must protect these endpoints carefully.
-Ideally, you should limit the number of exposed endpoints to a minimum, perhaps through proper network configuration.
-
-#### Platform Zone { #platform-zone }
-
-The platform zone contains all platform components and services that are *configured and maintained* by the application provider.
-CAP applications consume these low-level [platform services](#btp-services) to handle more complex business requests.
-For instance, persistence service to store business data and identity service to authenticate the business user play a fundamental role.
-
-The platform zone also includes the gateway, which is the main entry point for external requests. Additionally, it may contain extra ingress routers.
-
-#### Application Zone { #application-zone}
-
-The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a **unit of trust**. The application provider is responsible to *develop, deploy and operate* these services:
-
-- The [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) acts as an optional reverse proxy wrapping the application service and providing business-independent functionality required for UIs.
-This includes serving UI content, providing a login flow as well as managing the session with the browser.
-It can be deployed as an application (reusable module) or alternatively consumed as a [service](https://help.sap.com/docs/btp/sap-business-technology-platform/managed-application-router).
-
-- The CAP application service exposes the API to serve business requests. Usually, it makes use of lower-level platform services. As built on CAP, a significant number of security requirements is covered either out of the box or by adding minimal configuration.
-
-- The optional CAP sidecar (reusable module) is used to outsource application-independent tasks such as providing multitenancy and extension support.
-
-Application providers (platform users) have privileged access to the application zone.
-In contrast, application subscribers (business users) are restricted to a minimal interface.
-
-::: warning
-❗ Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
-In a production environment, we recommend deploying and operating the application on behalf of a technical user.
-:::
-
-
-### Platform Requirements { #platform-environment }
-
-There are several assumptions that a CAP application needs to make about the platform environment it is deployed to:
-
-1. Application and (platform) service endpoints are exposed externally by the API gateway via TLS protocol.
-Hence, the **CAP application can offer a pure HTTP endpoint** without having to enforce TLS and to deal with certificates.
-
-2. The server certificates presented by the external endpoints are signed by a trusted certificate authority.
-This **frees CAP applications from the need to manage trust certificates**. The underlying runtimes (Java or Node.js VMs) can validate the server certificates by default.
-
-3. **Secrets** that are required to protect the application or to consume other platform services **are injected by the platform** into the application microservices in a secure way.
-
-All supported [environments](overview#cloud) fulfill the given requirements. Additional requirements could be added in future.
-
-::: tip
-Custom domain certificates must be signed by a trusted certificate authority.
-:::
-
-::: warning
-❗ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
-:::
-
-
 ## Platform Compliance { #platform-compliance }
 
 CAP applications run in a certain environment, that is, in the context of some platform framework that has specific characteristics as explained [before](#platform-environment).
@@ -210,20 +135,6 @@ Find more about BTP platform security here:
 
 
 <div id="security-deploy-sap" />
-
-### CAP in Local Environment { #local }
-
-Security not only plays a crucial role in [cloud](#cloud) environments, but also during local development.
-Apparently the security requirements are different from cloud scenario as local endpoints are typically not exposed for remote clients.
-But there are still a few things to consider because exploited vulnerabilities could be the basis for attacks on productive cloud services:
-
-- Make sure that locally started HTTP endpoints are bound to `localhost`.
-- In case you run your service in hybrid mode with bindings to cloud service instances,
-use [cds bind](../../tools/cds-bind) instead of copying bindings manually to `default-env.json` file.
-`cds bind` avoids materialization of secrets to local disc, which is inherently dangerous.
-- Don't write sensitive data to application logs, also not via debug logging.
-- Don't test with real business data, for example, copied from a productive system.
-
 
 ### Security Platform Services { #btp-services }
 
