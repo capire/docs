@@ -3,16 +3,17 @@
 Databases are deployed based on the entity definitions in your CDS models. This guide explains how that works under the hood, focusing on the compilation of CDS models to database-specific artifacts like SQL `CREATE TABLE` statements for relational databases. 
 {.abstract}
 
+[[toc]]
+[toc]:.
+
 > [!tip] Everything Served Out of the Box
 > The CAP tooling handles the all compilation to DDL automatically, for example when you run `cds watch` or  `cds deploy`. You typically don't need to worry about the details unless you want to inspect or customize the generated DDL statements. So, all information in this guide is just to explain how things work under the hood, and if you are on a fast track, you can safely skip it.
 
-[[toc]]
 
-
-
-CDS compilation to database-specific DDLs is handled by the `cds compile` command, which is part of the [CDS CLI](../../tools/cds-cli). When you run `cds deploy` or `cds watch`, this command is invoked automatically to generate the necessary DDL statements for your target database.
 
 ## Using `cds compile`, ...
+
+CDS compilation to database-specific DDLs is handled by the `cds compile` command, which is part of the [`cds` CLI](../../tools/cds-cli). When you run `cds deploy` or `cds watch`, this command is invoked automatically to generate the necessary DDL statements for your target database.
 
 You can also run the command manually to see the generated DDL for your models. For example, to inspect what the SQL DDL for your entire model would look like, simply run:
 
@@ -93,24 +94,19 @@ cds deploy --dry
 
 This will print out the DDL for the database configured in your project for the current profile.
 
-As for `cds compile` above, let's generate DDL files for different databases in one go like this:
+As for `cds compile` above, let's generate DDL files for different databases in one go, and compare it to the former output like this:
 
 ```shell
-echo -------------------------------------------------
 cds deploy --dry --to sqlite -o _out/d/sqlite.sql
 cds deploy --dry --to h2 -o _out/d/h2.sql
 cds deploy --dry --to hana  -o _out/d/hana
 cds deploy --dry --to postgres -o _out/d/postgres.sql
 ```
-
-> [!tip] Under the hood...
-> Essentially, `cds deploy --to <db>`  calls  `cds compile --to sql --dialect <db>` under the hood, but goes a step further by also considering deployment-specific aspects. For example, check the differences like so:
-
 ```shell
 code --diff _out/c/sqlite.sql _out/d/sqlite.sql
 ```
 
-That'll show some additional `DROP TABLE IF EXISTS ...` statements at the beginning of the `cds deploy` output, which are not part of the `cds compile` output:
+Essentially, `cds deploy --to <db>`  calls  `cds compile --to sql --dialect <db>` under the hood, but goes a step further by also considering deployment-specific aspects. For example, the `diff` shows some additional `DROP TABLE` statements at the beginning of the `cds deploy` output, which are not part of the `cds compile` output:
 
 ::: code-group
 ```sql [cds deploy output]
@@ -131,22 +127,13 @@ CREATE TABLE sap_capire_bookshop_Genres ...;
 ```
 :::
 
-These `DROP TABLE IF EXISTS ...` statements are a poor-man's schema evolution strategy applied during development. -> learn more about [_Schema Evolution_](#schema-evolution) below.
+> [!tip] Schema Evolution
+> The  additional `DROP TABLE` statements we see above are a poor-man's schema evolution strategy applied during development. \
+Learn more about [_Schema Evolution_](#schema-evolution) below.
 
-> [!tip] cds deploy is meant for ad-hoc deployments
->
-> Without the `--dry` option, `cds deploy` would not only compile your CDS models to DDL, but would also do an ad-hoc deployment to the target database, if available. How that works is explained in more detail in the database-specific guides for [SAP HANA](hana#deploying-to-sap-hana), [SQLite](sqlite#deployment), and [PostgreSQL](postgres#deployment).
+> [!note] Ad-hoc Deployments
+> Without the `--dry` option, `cds deploy` would not only compile your CDS models to DDL, but would also do an ad-hoc deployment to the target database, if available. How that works is explained in more detail in the database-specific guides for [_SAP HANA_](hana#deploying-to-sap-hana), [_SQLite_](sqlite#deployment), and [_PostgreSQL_](postgres#deployment).
 
-
-
-### Using `cds build`
-
-Alternatively, you can use the `cds build` command, which compiles your CDS models and writes the generated DDL files to the `gen/` folder in your project:
-
-```shell
-cds build
-```
-This is particularly useful for CI/CD pipelines or when you want to keep a record of the generated DDL files.
 
 
 ## General Rules
