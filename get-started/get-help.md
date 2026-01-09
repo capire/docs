@@ -630,7 +630,7 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
       }
     }
     ```
-    > This won't affect runtime performance.
+    > This won't affect application runtime performance.
 
 4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
 
