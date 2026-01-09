@@ -4,7 +4,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 ---
 
 
-# Getting Help 
+# Getting Help
 Support Channels & Troubleshooting FAQs {.subtitle}
 
 <div id="support-channels">
@@ -17,7 +17,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 </div>
 
-> [!tip] 
+> [!tip]
 > If you encounter issues, check the Troubleshooting FAQs below.
 > Do that first before posting questions to or creating issues in the other channels.
 
@@ -270,7 +270,7 @@ If you find that the types are still incomplete, open a bug report in [the `@cap
 
 ### How to fix "`tar: Error is not recoverable: exiting now`"?
 
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) 
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources)
 you can try installing the tar library for better compatibility with Windows systems.
 
 Add it to your devDependencies like so:
@@ -649,7 +649,7 @@ If data loss is intended, you can disable the check by adding <Config>cds.requir
 :::
 
 
-### Potential problems on Windows 
+### Potential problems on Windows
 
 Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems. When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
 
