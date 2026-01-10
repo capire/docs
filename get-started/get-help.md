@@ -665,21 +665,23 @@ The purpose of _package-lock.json_ is to pin your project's dependencies to allo
 
 [Learn more about dependency management in Node.js.](../node.js/best-practices#dependencies){.learn-more}
 
-### Why does my MTA build for other reasons?
+### Why does my MTA build fail for other reasons?
 
 - Make sure to use the latest version of the [Cloud MTA Build Tool (MBT)](https://sap.github.io/cloud-mta-build-tool/).
 - Consult the [Cloud MTA Build Tool documentation](https://sap.github.io/cloud-mta-build-tool/usage/) for further information, for example, on the available tool options.
 
 ### How can I define the build order between MTA modules?
 
-By default, the Cloud MTA Build Tool executes module builds in parallel. If you want to enforce a specific build order, for example, because one module build relies on the outcome of another one, check the [Configuring build order](https://sap.github.io/cloud-mta-build-tool/configuration/) section in the tool documentation.
+By default, the Cloud MTA Build Tool executes module builds in parallel. If you want to enforce a specific build order, for example, because one module build relies on the outcome of another one, check the [Configuring build order](https://sap.github.io/cloud-mta-build-tool/configuration/#configuring-build-order) section in the tool documentation.
 
 ### How do I undeploy an MTA?
 
 `cf undeploy <mta-id>` deletes an MTA (use `cf mtas` to find the MTA ID).
 
-Use the optional `--delete-services` parameter to also wipe service instances. <br />
-**Caution:** This deletes the HDI containers with the application data.
+Use the optional `--delete-services` parameter to also wipe service instances.
+
+::: danger This also deletes the HDI containers with the application data.
+:::
 
 ### How can I reduce MTA archive size during development? { #reduce-mta-size}
 

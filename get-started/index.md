@@ -84,7 +84,7 @@ code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
 code --install-extension qwtel.sqlite-viewer      # for .sqlite files
 code --install-extension humao.rest-client        # for REST requests
-code --install-extension dbaeumer.vscode-eslint   # for linting```
+code --install-extension dbaeumer.vscode-eslint   # for linting
 ```
 
 
