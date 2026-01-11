@@ -338,7 +338,12 @@ Restrictions can be defined on different types of CDS resources, but there are s
 | action/function |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
 
 > <sup>1</sup>For bound actions and functions that aren't bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
+
 > <sup>2</sup> For unbound actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+
+// I'm a bit confused by 1. maybe the table needs to distinguish between bound and unbound operations?
+
+// I'd like to get rid of the support for "simple static expressions" in cds^9!!!
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
@@ -389,7 +394,7 @@ The resulting authorizations are illustrated in the following access matrix:
 | `CustomerService.Orders` (*)         |   <X/>   | <Y/><sup>1</sup> |         <X/>         | <X/>              |
 | `CustomerService.monthlyBalance`     |   <Y/>   |       <X/>       |         <X/>         | <X/>              |
 
-> <sup>1</sup> A `Vendor` user can only access the instances that they created. <br>
+> <sup>1</sup> A `Customer` user can only access the instances that they created. <br>
 
 The example models access rules for different roles in the same service. In general, this is _not recommended_ due to the high complexity. See [best practices](#dedicated-services) for information about how to avoid this.
 
