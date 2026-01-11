@@ -933,7 +933,8 @@ entity Addresses {
 ```
 
 
-### Managed (To-One) Associations {#managed-associations}
+### Managed (To-One) Associations 
+###### managed-associations
 
 For to-one associations, CDS can automatically resolve and add requisite foreign key elements from the target's primary keys and implicitly add respective join conditions.
 
