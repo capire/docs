@@ -558,7 +558,7 @@ Object authorId = book.get("author.Id"); // path access
 ```
 
 ::: tip
-Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases/index#database-constraints) on the database.
+Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases/cds-to-ddl#database-constraints) on the database.
 :::
 
 #### Selecting Map Data
@@ -713,7 +713,7 @@ You can aggregate data in two ways:
 
 #### Aggregation Functions { #aggregation-functions }
 
-Use [aggregation functions](../../guides/databases//index.md#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+Use [aggregation functions](../../guides/databases/cql-to-sql#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
 
 
 #### Grouping { #grouping }
