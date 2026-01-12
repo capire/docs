@@ -692,7 +692,7 @@ If you need to remove deployed CSV files, also add this entry:
 
 *See this [troubleshooting](../../get-started/get-help#hana-csv) entry for more information.*{.learn-more}
 
-### SAP HANA Cloud System Limits
+### System Limits
 
 All limitations for the SAP HANA Cloud database can be found in the [SAP Help Portal](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/system-limitations?version=2024_2_QRC).
 

@@ -35,48 +35,152 @@ This is also what happens automatically when running `cds watch` during developm
 In addition to dropping and recreating tables in-place, you can and should also drop and recreate the entire database or schema, depending on the database system in use. This ensures a clean state that fully reflects the current CDS model.
 
 
-## Schema Upgrades by CAP
+## Schema Migration by CAP
 
 
-In production environments, a drop-create strategy is not feasible, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, along these lines:
+In production environments, a drop-create strategy is not feasible, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that can be reviewed and applied to the database. 
 
-1. Capture the former states of the database schema.
-2. Compare it with the updated CDS model.
-3. Generate migration scripts to evolve the schema.
-
-Let's simulate this with the [@capire/bookshop](https://github.com/capire/bookshop) example. First, we deploy the initial model to a SQL database:
+Let's simulate the workflow with the [@capire/bookshop](https://github.com/capire/bookshop) example. 
 
 1. Capture the current state of the database schema:
    ```shell
-   cds deploy --dry --model-only -o _out/former.csn
-   ```
-2. Make changes to the CDS model, for example, by adding a new field to an entity.
-3. Use CAP's schema evolution tools to compare the two CSN files and generate migration scripts:
-   ```shell
-   cds deploy --dry --delta-from _out/former.csn -o _out/migration.sql
+   cds deploy --dry --model-only -o former.csn
    ```
 
+2. Make changes to our models, for example let's edit `db/schema.cds` like this:
 
-When changes are made to the CDS model, CAP can compare the new model with the existing database schema and determine the necessary changes to evolve the schema accordingly.
+   ::: code-group
+   ```cds [db/schema.cds]
+   entity Books { ...
+      title : localized String(300);     //> increase length to 300
+      foo : Association to Foo;          //> add a new relationship // [!code ++]
+      bar : String;                      //> add a new element // [!code ++]
+   }
+   entity Foo { key ID: UUID }           //> add a new entity // [!code ++]
+   ```
+   :::
 
-This typically involves generating migration scripts that can be executed to update the database schema without losing existing data. CAP can generate these migration scripts based on the differences between the current CDS model and the previous version of the model.
+3. Generate a migration script based on the differences between the former and the current model:
 
-When using CAP in production scenarios, it is essential to manage schema evolution carefully to avoid data loss and ensure data integrity. CAP provides tools to generate migration scripts that can be reviewed and executed against the production database. These scripts include SQL statements to add, modify, or remove database objects as required by the changes in the CDS model.
+   ```sh
+   cds deploy --script --delta-from former.csn -o migration.sql
+   ```
+
+4. Inspect the generated SQL statements, which should look like this:
+   ::: code-group
+
+   ```sql [delta.sql]
+   -- Drop Affected Views
+   DROP VIEW localized_CatalogService_ListOfBooks;
+   DROP VIEW localized_CatalogService_Books;
+   DROP VIEW localized_AdminService_Books;
+   DROP VIEW CatalogService_ListOfBooks;
+   DROP VIEW localized_sap_capire_bookshop_Books;
+   DROP VIEW CatalogService_Books_texts;
+   DROP VIEW AdminService_Books_texts;
+   DROP VIEW CatalogService_Books;
+   DROP VIEW AdminService_Books;
+
+   -- Alter Tables for New or Altered Columns
+   ALTER TABLE sap_capire_bookshop_Books ALTER title TYPE VARCHAR(300);
+   ALTER TABLE sap_capire_bookshop_Books_texts ALTER title TYPE VARCHAR(300);
+   ALTER TABLE sap_capire_bookshop_Books ADD foo_ID VARCHAR(36);
+   ALTER TABLE sap_capire_bookshop_Books ADD bar VARCHAR(255);
+
+   -- Create New Tables
+   CREATE TABLE sap_capire_bookshop_Foo (
+     ID VARCHAR(36) NOT NULL,
+     PRIMARY KEY(ID)
+   );
+
+   -- Re-Create Affected Views
+   CREATE VIEW AdminService_Books AS SELECT ... FROM sap_capire_bookshop_Books AS Books_0;
+   CREATE VIEW CatalogService_Books AS SELECT ... FROM sap_capire_bookshop_Books AS Books_0 LEFT JOIN sap_capire_bookshop_Authors AS author_1 O ... ;
+   CREATE VIEW AdminService_Books_texts AS SELECT ... FROM sap_capire_bookshop_Books_texts AS texts_0;
+   CREATE VIEW CatalogService_Books_texts AS SELECT ... FROM sap_capire_bookshop_Books_texts AS texts_0;
+   CREATE VIEW localized_sap_capire_bookshop_Books AS SELECT ... FROM sap_capire_bookshop_Books AS L_0 LEFT JOIN sap_capire_bookshop_Books_texts AS localized_1 ON localized_1.ID = L_0.ID AND localized_1.locale = session_context( '$user.locale' );
+   CREATE VIEW CatalogService_ListOfBooks AS SELECT ... FROM CatalogService_Books AS Books_0;
+   CREATE VIEW localized_AdminService_Books AS SELECT ... FROM localized_sap_capire_bookshop_Books AS Books_0;
+   CREATE VIEW localized_CatalogService_Books AS SELECT ... FROM localized_sap_capire_bookshop_Books AS Books_0 LEFT JOIN localized_sap_capire_bookshop_Authors AS author_1 O ... ;
+   CREATE VIEW localized_CatalogService_ListOfBooks AS SELECT ... FROM localized_CatalogService_Books AS Books_0;
+   ```
+   :::
+
+   > **Note:** If you use SQLite, ALTER TYPE commands are not necessary and so, are not supported, as SQLite is essentially typeless.
 
 
-When deploying changes to a production database, you would typically follow these steps:
-1. Generate migration scripts using CAP tools.
-2. Review and, if necessary, modify the generated scripts to ensure data integrity.
-3. Execute the migration scripts against the production database to apply the schema changes.   
+### Disallowed Changes
+
+Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. Examples of such changes include:
+
+- Renaming entities or fields (instead, add new ones and migrate data)
+- Changing data types in incompatible ways (e.g., from String to Integer)
+- Removing entities or fields (instead, consider deprecating them first)
+- Reducing the length of strings or binary fields
+- Reducing the precision of numeric fields
+
+When such disallowed changes are detected during the generation of migration scripts, `cds deploy --script` will print a warning, and also add corresponding comments to the generated SQL script, which can then be reviewed and addressed manually.
+
+For example, if we would rename the `descr` field to `details` like that:
+
+   ::: code-group
+   ```cds [db/schema.cds]
+   entity Books { ...
+      descr : localized String(2000);    //> rename former `descr` ... // [!code --]
+      details : localized String(2000);  //> ... to `details` // [!code ++]
+   }
+   entity Foo { key ID: UUID }           //> add a new entity // [!code ++]
+   ```
+   :::
+
+... `cds deploy --script` would print warnings like this:
+
+```js
+[WARNING] db/schema.cds:4:8: Dropping elements leads to data loss (in entity:“sap.capire.bookshop.Books”/element:“descr”)
+[WARNING] db/schema.cds:4:24: Dropping elements leads to data loss (in entity:“sap.capire.bookshop.Books.texts”/element:“descr”)
+[WARNING] Found potentially lossy changes - check generated SQL statements
+```
+
+And the generated SQL script would contain comments like these:
+
+::: code-group
+```sql [delta.sql]
+-- [WARNING] this statement is lossy
+ALTER TABLE sap_capire_bookshop_Books DROP descr;
+-- [WARNING] this statement is lossy
+ALTER TABLE sap_capire_bookshop_Books_texts DROP descr;
+```
+:::
 
 
-## Managed Schema Upgrades
+
+## Database-Specific Variants
+
+### Automatic Migration by HDI
+
+When deploying to SAP HANA, the so-called HANA Deployment Infrastructure (HDI) handles schema evolution automatically. 
+
+HDI manages the lifecycle of database artifacts and applies necessary schema changes based on the deployed CDS models. This includes creating, altering, or dropping database objects as needed to align with the current CDS model.
+
+Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evolution](hana#hdi-schema-evolution).
 
 
-## Automatic Migration by HDI
 
-When deploying CAP applications to SAP HANA databases using the HDI (HANA Deployment Infrastructure) service, schema evolution is handled automatically by HDI. HDI manages the lifecycle of database artifacts and applies necessary schema changes based on the deployed CDS models. This includes creating, altering, or dropping database objects as needed to align with the current CDS model.
+### Automatic Migration for PostgreSQL
 
-When using HDI, developers typically do not need to manually generate or execute migration scripts, as HDI takes care of applying the necessary changes during the deployment process. However, it is still important to test schema changes in a non-production environment before deploying to production to ensure that data integrity is maintained.
+For PostgreSQL databases, we automated the [schema migration](#schema-migration-by-cap) process as follows: 
 
-## Using Liquibase
+- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
+
+- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
+
+- Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
+
+Learn more about that in the [PostgreSQL](postgres.md) guide, section [Automatic Schema Evolution](postgres#schema-evolution).
+
+
+### Liquibase for Java Projects
+
+For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. 
+
+Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).
