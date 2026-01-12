@@ -140,6 +140,82 @@ SELECT from Books { title } where genre.name = 'Fantasy'
 ```
 
 
+### in annotations
+
+Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
+The meaning and effect of the expression depend on the specific annotation being used.
+
+The [`@assert` annotation](../guides/services/constraints.md#assert-constraint) lets us declaratively define input validation constraints.
+In this example, we want to make sure that no Books with negative stocks are created:
+
+
+```cds
+annotate AdminService.Books:stock with @assert: (case
+  when stock < 0 then 'Enter a positive number'
+end);
+```
+
+Upon insert, the expression is evaluated against the updated data:
+
+:::code-group
+```js [cds repl]
+> const { Books } = AdminService.entities
+> const insert = INSERT.into(Books).entries({  // [!code focus]
+    ID: 277,
+    author_ID: 101,
+    title: 'Lord of the Rings',
+    stock: -2,  // [!code focus]
+  })
+> await AdminService.run(insert)
+
+Uncaught:
+{
+  status: 400,  // [!code focus]
+  code: 'ASSERT',  // [!code focus]
+  target: 'stock',  // [!code focus]
+  numericSeverity: 4,
+  '@Common.numericSeverity': 4,
+  message: 'Enter a positive number'  // [!code focus]
+}
+```
+
+```sql [sql log]
+BEGIN
+
+-- sql statement for the insert:
+INSERT INTO sap_capire_bookshop_Books (createdAt,createdBy,modifiedAt,modifiedBy,ID,author_ID,title,descr,genre_ID,stock,price,currency_code) SELECT (CASE WHEN json_type(value,'$."createdAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."createdAt"') END),(CASE WHEN json_type(value,'$."createdBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."createdBy"' END),(CASE WHEN json_type(value,'$."modifiedAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."modifiedAt"') END),(CASE WHEN json_type(value,'$."modifiedBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."modifiedBy"' END),value->>'$."ID"',value->>'$."author_ID"',value->>'$."title"',value->>'$."descr"',value->>'$."genre_ID"',value->>'$."stock"',value->>'$."price"',value->>'$."currency_code"' FROM json_each(?) [
+  [
+    [
+      {
+        ID: 277,
+        author_ID: 101,
+        title: 'Lord of the Rings',
+        stock: -2
+      }
+    ]
+  ]
+]
+
+-- assert expressions are evaluated:
+SELECT json_insert('{}','$."ID"',ID,'$."@assert:stock"',"@assert:stock") as _json_
+FROM (
+  SELECT
+    "$B".ID,
+    case when "$B".stock < ? then ? end as "@assert:stock"
+  FROM AdminService_Books as "$B"
+  WHERE ("$B".ID) in ((?))
+) [ 0, 'Enter a positive number', 277 ]
+
+-- result of evaluation contains violated constraints,
+-- which leads to a rollback:
+ROLLBACK
+```
+:::
+
+The assert annotation lets you capture the intent via an expression, without having to deal with the technical details.
+This conforms to the core principle [what-not-how](../guides/domain/index.md#capture-intent--what-not-how) of CAP.
+
+
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
