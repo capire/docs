@@ -55,7 +55,7 @@ npm add @cap-js/postgres
 
 <div class="impl java">
 
-After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#deployment-using-liquibase) for PostgreSQL.
+After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#using-liquibase-java) for PostgreSQL.
 
 </div>
 

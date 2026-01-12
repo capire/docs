@@ -59,7 +59,6 @@ code --diff _out/c/sqlite.sql _out/c/h2.sql
 
 > [!tip] CDS models are database-agnostic
 > CDS models are designed to be database-agnostic, allowing you to switch between different databases with minimal changes. The `--dialect` option helps you see how your models translate to different database-specific DDLs. \
-> Learn more about [_Database-Agnostic Models_](agnostic-cds).
 
 
 ### Dialects by `cds env` Profiles
@@ -435,7 +434,7 @@ CREATE TABLE Books (
 :::
 
 > [!tip] Consider using <code>@cds.on.insert</code> instead
-> Instead of using `default` values, consider using the [`@cds.on.insert`](../domain#cds-on-insert) annotation, which provides more flexibility and is more tuned for typical application scenarios.
+> Instead of using `default` values, consider using the [`@cds.on.insert`](../domain/index#cds-on-insert) annotation, which provides more flexibility and is more tuned for typical application scenarios.
 
 
 ### Invalid Names
@@ -468,6 +467,7 @@ However, even though CAP allows this, and handles all accesses correctly, it is 
 > [!warning]  DON'T use Database-Invalid Names!
 > It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords-identifiers) in CDS models in the first place, as that impacts readability of your models.
 
+###### reserved-words
 > [!important] Lists of Reserved Words 
 > Check out the reserved words for the databases you are targeting: \
 > [_SAP HANA_](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c1d3f60099654ecfb3fe36ac93c121bb/28bcd6af3eb6437892719f7c27a8a285.html)

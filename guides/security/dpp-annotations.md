@@ -146,7 +146,7 @@ Use this annotation to identify data subject's unique key, or a reference to it.
 - Each `@PersonalData` entity needs to identify a `DataSubjectID` element.
 - For entities with `DataSubject` semantics, this is typically the primary key.
 - For entities with `DataSubjectDetails` or `Other`  semantics, this is usually an association to the data subject.
-- Fields marked as `DataSubjectID` should use [`not null`](../databases/index#not-null) to guarantee a value is present at all times.
+- Fields marked as `DataSubjectID` should use [`not null`](../databases/cds-to-ddl#not-null-constraints) to guarantee a value is present at all times.
 
 Hence, we annotate our model as follows:
 
