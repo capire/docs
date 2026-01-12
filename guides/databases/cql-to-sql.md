@@ -104,6 +104,7 @@ Numeric functions:
 - `floor(x)`
 - `round(x)`
 
+###### aggregate-functions
 Aggregate functions:
 
 - `avg(x)`, `average(x)`
