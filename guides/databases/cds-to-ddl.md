@@ -137,7 +137,7 @@ Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goe
 
 
 
-## CDS ⇒ SQL Translation 
+## CDS ⇒ DDL Translation 
 
 The CDS-to-DDL compilation follows several general mapping principles to translate CDS constructs into database-specific artifacts, as outlined below.
 
@@ -160,6 +160,9 @@ CREATE VIEW SomeProjection AS SELECT ... FROM SomeEntity;
 ```
 :::
 
+> [!tip] Views are defined using CQL
+> Both view defined per `as projection on` and those using `as select from` are defined using CQL, which supports a broad scope of database-agnostic features. Learn more about that in the following guide: [_CQL Compilation to SQL_](cql-to-sql).
+
 #### Qualified Names ⇒ Slugified
 
 Entities in CDS models have fully qualified names with dots. These are converted to database-native names, by replacing dots with underscores – called 'slugification': 
@@ -179,11 +182,16 @@ CREATE TABLE sap_capire_bookshop_Books_Details ( ... );
 ```
 :::
 
-> [!tip]
-> This slugification approach is guaranteed and stable, which means that you can rely on it and use in in native SQL queries.
+> [!tip] Guaranteed & Stable Slugification
+> The slugification effects are guaranteed and stable, which means that you can rely on it and use the slugified names in native SQL queries. For example, both of the following CQL queries are equivalent and will work as expected:
+
+```js
+await cds.run `SELECT from sap.capire.bookshop.Books`
+await cds.run `SELECT from sap_capire_bookshop_Books`
+```
 
 > [!tip]
-> Use entity names like `Books.Details` in your CDS models, instead of _CamelCase_ names like `BooksDetails`. While this doesn't have any impact on CAP-level, when deployed to databases, which don't preserve case, the former will show up as `BOOKS_DETAILS` in native database tools, while the latter will show up as `BOOKSDETAILS`, which is harder to read.
+> Prefer entity names like `Books.Details` over _CamelCase_ variants like `BooksDetails`. While both work equally, they show up differently in native tools of databases that don't preserve case, for example in SAP HANA: The former will show up as `BOOKS_DETAILS`, while the latter shows up as `BOOKSDETAILS`, which is harder to read.
 
 
 
@@ -268,6 +276,15 @@ CREATE TABLE Books (
 );
 ```
 :::
+
+> [!tip] Guaranteed & Stable Flattening
+> The flattening effects are guaranteed and stable, which means that you can rely on it and use the flattened elements in native SQL queries. For example, both of the following CQL queries are equivalent and would work as expected:
+
+```js
+await cds.run `SELECT price.amount from Books`
+await cds.run `SELECT price_amount from Books`
+```
+
 
 ### Associations ⇒ JOINs 
 
@@ -417,7 +434,7 @@ CREATE TABLE Books (
 ```
 :::
 
-> [!tip] Consider using @cds.on.insert instead
+> [!tip] Consider using <code>@cds.on.insert</code> instead
 > Instead of using `default` values, consider using the [`@cds.on.insert`](../domain#cds-on-insert) annotation, which provides more flexibility and is more tuned for typical application scenarios.
 
 
@@ -474,18 +491,20 @@ If a constraint violation occurs, the error messages coming from the database ar
 
 ### Primary Key Constraints
 
-Primary keys defined in CDS entities are translated into SQL `PRIMARY KEY` constraints in the generated DDL. For example, given this CDS entity:
+Primary keys defined in CDS entities are translated into SQL `PRIMARY KEY` constraints in the generated DDL. For example:
 
-```cds   
+::: code-group
+```CDS [CDS Source]   
 entity OrderItems {
   key order: Association to Orders;
   key pos: Integer;
   ...
 }
 ```
-The generated DDL will include a `PRIMARY KEY` constraint on the `ID` column:
+:::
 
-```sql
+::: code-group
+```SQL [=> &nbsp; Generated DDL]
 CREATE TABLE OrderItems (
   order_ID NVARCHAR(36),
   pos INTEGER,
@@ -493,7 +512,7 @@ CREATE TABLE OrderItems (
   PRIMARY KEY (order_ID, pos)    -- [!code focus]
 );
 ```
-
+:::
 
 
 ### Not Null Constraints
@@ -506,7 +525,7 @@ entity Books { ...
 }
 ```
 
-> [!tip] Consider using @mandatory instead
+> [!tip] Consider using <code>@mandatory</code> instead
 > Instead of, or in addition to using database-level `not null` constraints, consider using the [`@mandatory`](../services/constraints#mandatory) annotation, which provides more flexibility and is more tuned for typical application scenarios.
 
 
@@ -554,15 +573,12 @@ annotate OrderItems with @assert.unique.someOtherConstraint: [ ... ];
 
 - In case of structs, all [flattened columns](#flattened-structs) stemming from it will be included. Similarly, for managed associations: all foreign key columns will be included.
 
-::: tip
+::: tip Primary Keys are Unique Constraints
 You don't need to specify `@assert.unique` constraints for the [primary keys](#primary-key-constraints) of an entity as these are automatically secured by a SQL `PRIMARY KEY` constraint, which enforces uniqueness.
 :::
 
 
 ### Foreign Key Constraints
-
-> [!tip] Consider using @assert.target instead
-> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages taylored for end users.
 
 [managed to-one associations]: ../../cds/cdl#managed-to-one-associations
 
@@ -583,7 +599,7 @@ cds:
 ```
 :::
 
-With the global flag switched on, foreign key constraints are automatically added to CREATE TABLE statements for [managed to-one associations] like this:
+With the global flag switched on, `FOREIGN KEY` constraints are automatically added to `CREATE TABLE` statements for [managed to-one associations] like this:
 
 ::: code-group
 ```CDS [CDS Source]
@@ -609,10 +625,12 @@ CREATE TABLE Books ( ...
 ```
 :::
 
+> [!tip] Consider using <code>@assert.target</code> instead
+> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages taylored for end users.
 
-#### Skipping with `@assert.integrity: false`
+#### Skipping with `@assert.integrity:false`
 
-You can skip foreign key constraint generation for specific associations by annotating them with `@assert.integrity: false`, for example:
+You can skip foreign key constraint generation for specific associations by annotating them with `@assert.integrity:false`, for example:
 
 ```cds
 entity Books {
@@ -749,3 +767,39 @@ CAP creates columnar tables by default on SAP HANA, which is accomplished by an 
 ::: warning 
 Whenever you use `@sql.prepend`, the default `@sql.prepend:'COLUMN'` is overridden.
 :::
+
+
+
+## Database-Specific Models
+
+All the above translations are designed to be portable across different SQL databases supported by CAP. However, there may be scenarios where you need to add database-specific definitions. You can achieve this by using database-specific subfolders in your `./db` folder, and configuring your project to use these sub-models based on the target database as follows:
+
+1. Add database-specific models in respective subfolders of `./db`:
+
+   ::: code-group
+   ```cds [db/sqlite/index.cds]
+   using { AdminService } from '..';
+   extend projection AdminService.Authors with {
+      strftime('%Y',dateOfDeath)-strftime('%Y',dateOfBirth) as age : Integer
+   }
+   ```
+   ```cds [db/hana/index.cds]
+   using { AdminService } from '..';
+   extend projection AdminService.Authors with {
+      YEARS_BETWEEN(dateOfBirth, dateOfDeath) as age : Integer
+   }
+   ```
+   :::
+
+2. Add profile-specific configuration to use these database-specific extensions:
+
+   ```json
+   { "cds": { "requires": { 
+     "db": {
+       "[development]": { "model": "db/sqlite" },
+       "[production]": { "model": "db/hana" }
+     }
+   }}}
+   ```
+
+Find that sample also in [@capire/bookstore](https://github.com/capire/bookstore/tree/main/db).
