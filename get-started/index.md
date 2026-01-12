@@ -84,7 +84,7 @@ code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
 code --install-extension qwtel.sqlite-viewer      # for .sqlite files
 code --install-extension humao.rest-client        # for REST requests
-code --install-extension dbaeumer.vscode-eslint   # for linting```
+code --install-extension dbaeumer.vscode-eslint   # for linting
 ```
 
 
@@ -134,10 +134,10 @@ Use `cds version` to check your installed versions of _cds-dk_ , as well as your
   cds version
   ```
   ```zsh
-  @sap/cds-dk  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
-  npm root -l           ~/cap/bookshop/node_modules
-  npm root -g           /opt/homebrew/lib/node_modules
-  Node.js      24.12.0  /opt/homebrew/bin/node
+  @sap/cds-dk:  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
+  npm root -l:           ~/cap/bookshop/node_modules
+  npm root -g:           /opt/homebrew/lib/node_modules
+  Node.js:      24.12.0  /opt/homebrew/bin/node
   ```
 
 
@@ -200,7 +200,7 @@ service CatalogService {
 ```
 
 > [!tip] Served out of the box
-> Et voila! Your first CAP service is up and running, with automatically bootstrapped in-memory database, and a full-fledged OData service, generically serving requests like that: http://localhost:4004/odata/v4/catalog/Books
+> Et voilà! Your first CAP service is up and running, with automatically bootstrapped in-memory database, and a full-fledged OData service, generically serving requests like that: http://localhost:4004/odata/v4/catalog/Books
 
 ## Grow as You Go...
 
@@ -272,7 +272,7 @@ npm upgrade
 :::
 
 > [!tip]
-> Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are highly recommended for managing Maven dependencies in CAP Java projects.
+> Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are also highly recommended for managing Maven dependencies in CAP Java projects.
 
 
 ## Next: Bookshop

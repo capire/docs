@@ -4,7 +4,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 ---
 
 
-# Getting Help 
+# Getting Help
 Support Channels & Troubleshooting FAQs {.subtitle}
 
 <div id="support-channels">
@@ -17,7 +17,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 </div>
 
-> [!tip] 
+> [!tip]
 > If you encounter issues, check the Troubleshooting FAQs below.
 > Do that first before posting questions to or creating issues in the other channels.
 
@@ -270,7 +270,7 @@ If you find that the types are still incomplete, open a bug report in [the `@cap
 
 ### How to fix "`tar: Error is not recoverable: exiting now`"?
 
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources) 
+If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources)
 you can try installing the tar library for better compatibility with Windows systems.
 
 Add it to your devDependencies like so:
@@ -356,7 +356,7 @@ In addition you might want to remove the H2 dependency, which is included in the
 
 If you don't want to exclude dependencies completely, but make sure that an in-memory H2 database **isn't** used, you can disable Spring Boot's `DataSource` auto-configuration, by annotating the `Application.java` class with `@SpringBootApplication(exclude = org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class)`. In that mode CAP Java however can still react on explicit data source configurations or database bindings.
 
-### What to Do About Maven-Related Errors in Eclipse's Problems View?
+### What to do about Maven-related errors in Eclipse's _Problems_ view?
 
 - In _Problems_ view, execute _Quick fix_ from the context menu if available. If Eclipse asks you to install additional Maven Eclipse plug-ins to overcome the error, do so.
 - Errors like _'Plugin execution not covered by lifecycle configuration: org.codehaus.mojo:exec-maven-plugin)_ can be ignored. Do so in _Problems_ view > _Quick fix_ context menu > _Mark goal as ignored in Eclipse preferences_.
@@ -364,7 +364,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ## OData
 
-### How Do I Generate an OData Response in Node.js for Error 404?
+### How do I generate an OData response in Node.js for Error 404?
 
 If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-serve#custom-server-js).
 
@@ -391,7 +391,7 @@ Mixing them together is not trivial, therefore only some special cases are suppo
 
 ## SQLite { #sqlite}
 
-### How Do I Install SQLite on Windows?
+### How do I install SQLite on Windows?
 
 * From the [SQLite page](https://sqlite.org/download.html), download the precompiled binaries for Windows `sqlite-tools-win*.zip`.
 
@@ -419,7 +419,7 @@ In case you want a visual interface tool to work with SQLite, you can use [SQLit
 
 ## SAP HANA { #hana}
 
-### How to Get an SAP HANA Cloud Instance for SAP BTP, Cloud Foundry environment? { #get-hana}
+### How to get an SAP HANA Cloud instance for SAP BTP? { #get-hana}
 
 To configure this service in the SAP BPT cockpit on trial, refer to the [SAP HANA Cloud Onboarding Guide](https://www.sap.com/documents/2021/09/7476f8c4-f77d-0010-bca6-c68f7e60039b.html). See [SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD) documentation or visit the [SAP HANA Cloud community](https://pages.community.sap.com/topics/hana/cloud) for more details.
 
@@ -429,75 +429,7 @@ On trial, your SAP HANA Cloud instance will be automatically stopped overnight, 
 
 [Learn more about SAP HANA Cloud trying out tutorials in the Tutorial Navigator.](https://developers.sap.com/mission.hana-cloud-database-get-started.html){.learn-more}
 
-
-### I removed sample data (_.csv_ file) from my project. Still, the data is deployed and overwrites existing data. { #hana-csv}
-
-|              | Explanation                                                                                                                                                                                                                                                                                                                                              |
-|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | SAP HANA still claims exclusive ownership of the data that was once deployed through `hdbtabledata` artifacts, even though the CSV files are now deleted in your project.                                                                                                                                                                                |
-| _Solution_   | Add an _undeploy.json_ file to the root of your database module (the _db_ folder by default). This file defines the files **and data** to be deleted. See section [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c2b99f19e9264c4d9ae9221b22f6f589/ebb0a1d1d41e4ab0a06ea951717e7d3d.html) for more details. |
-
-
-#### How do I keep existing data?
-If you want to keep the data from _.csv_ files and data you've already added, apply [SAP Note 2922271](https://me.sap.com/notes/2922271).
-Depending on whether you have a single-tenant or multi-tenant application, see the following details for how to set the `path_parameter` and `undeploy` parameters:
-
-:::details Single-tenant applications {open}
-
-Use the _db/undeploy.json_ file as given in the SAP note.
-The _package.json_ file that is mentioned in the SAP note is located in the _db/_ folder.
-- If you don't find a _db/package.json_ file, use _gen/db/package.json_ (created by `cds build`) as a template and copy it to _db/package.json_.
-- After the modification, run `cds build --production` and verify your changes have been copied to _gen/db/package.json_.
-- Don't modify _gen/db/package.json_ as it is overwritten on every build.
-
-:::
-
-:::details Multi-tenant applications
-
-Instead of configuring the static deployer application in _db/package.json_, use environment variable [`HDI_DEPLOY_OPTIONS`](https://help.sap.com/docs/SAP_HANA_PLATFORM/4505d0bdaf4948449b7f7379d24d0f0d/a4bbc2dd8a20442387dc7b706e8d3070.html), the `cds` configuration in _package.json_, or add the options to the model update request as `hdi` parameter:
-
-CDS configuration for [Deployment Service](../guides/multitenancy/mtxs#deployment-config)
-```json
-"cds.xt.DeploymentService": {
-  "hdi": {
-    "deploy": {
-      "undeploy": [
-        "src/gen/data/my.bookshop-Books.hdbtabledata"
-      ],
-      "path_parameter": {
-        "src/gen/data/my.bookshop-Books.hdbtabledata:skip_data_deletion": "true"
-      }
-    },
-    ...
-  }
-}
-```
-
-Options in [Saas Provisioning Service upgrade API](../guides/multitenancy/mtxs#example-usage-1) call payload
-```json
-{
-  "tenants": ["*"],
-  "_": {
-      "hdi": {
-        "deploy": {
-          "undeploy": [
-            "src/gen/data/my.bookshop-Books.hdbtabledata"
-          ],
-          "path_parameter": {
-            "src/gen/data/my.bookshop-Books.hdbtabledata:skip_data_deletion": "true"
-          }
-        }
-      }
-  }
-}
-```
-
-:::
-
-After you have successfully deployed these changes to all affected HDI (tenant) containers (in all spaces, accounts etc.), you can remove the configuration again.
-
-
-### How Do I Resolve Deployment Errors?
+### How do I resolve deployment errors?
 
 #### Deployment fails — _Cyclic dependencies found_ or _Cycle between files_
 
@@ -583,12 +515,74 @@ This error occurs if all of the following applies:
 | _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.                                                                                                                                                                                                                                                                                                  |
 | _Solution_   | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause). |
 
-### How do I pass additional HDI deployment options to the multitenancy tenant deployment of the `cds-mtx` library
 
-You can add a subset of the [HDI deploy options](https://help.sap.com/docs/SAP_HANA_PLATFORM/4505d0bdaf4948449b7f7379d24d0f0d/a4bbc2dd8a20442387dc7b706e8d3070.html) using the environment variable `HDI_DEPLOY_OPTIONS`.\
+### Why is removed sample _.csv_ deployed and overwriting existing data? { #hana-csv}
 
-When making use of these parameters, for example `exclude_filter`, please always check if the parameters are consistent with your CDS build configuration to
-avoid deployment problems. For example, make sure to not exclude generated SAP HANA tables that are needed by generated views.
+|              | Explanation                                                                                                                                                                                                                                                                                                                                              |
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | SAP HANA still claims exclusive ownership of the data that was once deployed through `hdbtabledata` artifacts, even though the CSV files are now deleted in your project.                                                                                                                                                                                |
+| _Solution_   | Add an _undeploy.json_ file to the root of your database module (the _db_ folder by default). This file defines the files **and data** to be deleted. See section [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c2b99f19e9264c4d9ae9221b22f6f589/ebb0a1d1d41e4ab0a06ea951717e7d3d.html) for more details. |
+
+
+#### How do I keep existing data?
+If you want to keep the data from _.csv_ files and data you've already added, apply [SAP Note 2922271](https://me.sap.com/notes/2922271).
+Depending on whether you have a single-tenant or multi-tenant application, see the following details for how to set the `path_parameter` and `undeploy` parameters:
+
+:::details Single-tenant applications {open}
+
+Use the _db/undeploy.json_ file as given in the SAP note.
+The _package.json_ file that is mentioned in the SAP note is located in the _db/_ folder.
+- If you don't find a _db/package.json_ file, use _gen/db/package.json_ (created by `cds build`) as a template and copy it to _db/package.json_.
+- After the modification, run `cds build --production` and verify your changes have been copied to _gen/db/package.json_.
+- Don't modify _gen/db/package.json_ as it is overwritten on every build.
+
+:::
+
+:::details Multi-tenant applications
+
+Instead of configuring the static deployer application in _db/package.json_, use environment variable [`HDI_DEPLOY_OPTIONS`](https://help.sap.com/docs/SAP_HANA_PLATFORM/4505d0bdaf4948449b7f7379d24d0f0d/a4bbc2dd8a20442387dc7b706e8d3070.html), the `cds` configuration in _package.json_, or add the options to the model update request as `hdi` parameter:
+
+CDS configuration for [Deployment Service](../guides/multitenancy/mtxs#deployment-config)
+```json
+"cds.xt.DeploymentService": {
+  "hdi": {
+    "deploy": {
+      "undeploy": [
+        "src/gen/data/my.bookshop-Books.hdbtabledata"
+      ],
+      "path_parameter": {
+        "src/gen/data/my.bookshop-Books.hdbtabledata:skip_data_deletion": "true"
+      }
+    },
+    ...
+  }
+}
+```
+
+Options in [Saas Provisioning Service upgrade API](../guides/multitenancy/mtxs#example-usage-1) call payload
+```json
+{
+  "tenants": ["*"],
+  "_": {
+      "hdi": {
+        "deploy": {
+          "undeploy": [
+            "src/gen/data/my.bookshop-Books.hdbtabledata"
+          ],
+          "path_parameter": {
+            "src/gen/data/my.bookshop-Books.hdbtabledata:skip_data_deletion": "true"
+          }
+        }
+      }
+  }
+}
+```
+
+:::
+
+After you have successfully deployed these changes to all affected HDI (tenant) containers (in all spaces, accounts etc.), you can remove the configuration again.
+
+
 
 ### How can a table function access the logged in user?
 
@@ -600,61 +594,96 @@ Do not use a `XS_` prefix.
 
 ## MTXS
 
-### I get a 401 error when logging in to MTXS through App Router { #mtxs-sidecar-approuter-401}
+### Why is my MTX sidecar is killed with 'Exit status 137'?
 
-See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
-Also check the [documentation about `cds login`](../guides/extensibility/customization#cds-login).
+In this case, the process was killed by a `SIGKILL` signal, typically because it exceeded its resource limits, for example memory or CPU, causing the container platform to terminate it.
 
-### When running a tenant upgrade, I get the message 'Extensions exist, but extensibility is disabled.'
-
-This message indicates that extensions exist, but the application is not configured for extensibility. To avoid accidental data loss by removing existing extensions from the database, the upgrade is blocked in that case.
-Please check the [configuration for extensibility](../guides/extensibility/customization#_1-enable-extensibility).
-
-::: danger
-If data loss is intended, you can disable the check by adding <Config>cds.requires.cds.xt.DeploymentService.upgrade.skipExtensionCheck = true</Config> to the configuration.
+::: tip Distinguish extensibility and non-extensibility scenarios
+While out-of-memory issues are more common, with **extensibility enabled** you’re more likely to run into CPU bottlenecks due to expensive compilations that need to be performed at (MTX) runtime.
 :::
 
+MTX uses **four parallel workers** by default to perform tenant upgrades. If your project exceeds a certain complexity threshold, you might run into these resource bottlenecks. We advise you to **follow this algorithm** to mitigate resource overload:
 
-### Potential problems on Windows 
+1. **Decrease your model complexity**: Ask yourself, is your current domain model a good compression of your business domain? Decreasing complexity here will have positive trickle-down effects, including tenant upgrade performance.
+2. **Increase resources (scale up)**: Increase the RAM assigned to your MTX sidecar or upgrade task. This is typically done in deployment resources like _mta.yaml_ (Cloud Foundry) or _values.yaml_ (Kyma).
 
-Please note that Git Bash on Windows, despite offering a Unix-like environment, may encounter interoperability issues with specific scripts or tools due to its hybrid nature between Windows and Unix systems. When using Windows, we recommend testing and verifying all functionalities in the native Windows Command Prompt (cmd.exe) or PowerShell for optimal interoperability. Otherwise, problems can occur when building the mtxs extension on Windows, locally, or in the cloud.
+   [Learn more about database upgrade task configuration](../guides/multitenancy/#update-database-schema){.learn-more}
 
+   ::: info In Cloud Foundry, CPU shares scale with memory
+   As there is no way to increase CPU independently from memory, your memory configuration might be a bottleneck even if the process is killed due to CPU spikes.
+   :::
+3. **Decrease workers in async MTX operations**: When scaling up resources is no longer feasible, you can run with fewer parallel migrations:
+    ```jsonc
+    "cds": {
+      "requires": {
+        "multitenancy": {
+          "jobs": {
+            "workerSize": 3 // default: 4
+          }
+        }
+      }
+    }
+    ```
+    > This won't affect application runtime performance.
 
+4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
 
+### Why do I get 'Extensions exist, but extensibility is disabled'?
 
+This message indicates that extensions exist, but the application is not configured for extensibility. To avoid accidental data loss from removing existing extensions from the database, the upgrade is blocked.
 
+::: danger If data loss is acceptable
+`cds.requires.['cds.xt.DeploymentService'].upgrade.skipExtensionCheck = true` in your CDS configuration enables you to skip this check.
+:::
+
+### Why does `cds login` fail with a 401 error? { #mtxs-sidecar-approuter-401}
+
+See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
+
+[Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
+
+## BTP
+
+### How do I get an account on the SAP Business Technology Platform?
+
+For a start, create your [Trial Account](https://account.hanatrial.ondemand.com/).
+
+<div id="sap-in-house" />
 
 ## MTA { #mta}
 
-### Why Does My MTA Build Fail?
+### Why does my MTA build fail with _package-lock.json_ issues?
 
-- Make sure to use the latest version of the [Cloud MTA Build Tool (MBT)](https://sap.github.io/cloud-mta-build-tool/).
-- Consult the [Cloud MTA Build Tool documentation](https://sap.github.io/cloud-mta-build-tool/usage/) for further information, for example, on the available tool options.
+If `mbt build` fails with `The 'npm ci' command can only install with an existing package-lock.json`, this means that such a file is missing in your project.
 
-### How Can I Define the Build Order Between MTA Modules?
-
-By default the Cloud MTA Build Tool executes module builds in parallel. If you want to enforce a specific build order, for example, because one module build relies on the outcome of another one, check the [Configuring build order](https://sap.github.io/cloud-mta-build-tool/configuration/) section in the tool documentation.
-
-### How Do I Undeploy an MTA?
-
-`cf undeploy <mta-id>` deletes an MTA (use `cf mtas` to find the MTA ID).
-
-Use the optional `--delete-services` parameter to also wipe service instances. <br />
-**Caution:** This deletes the HDI containers with the application data.
-
-### MTA Build Complains About _package-lock.json_
-
-If the MTA build fails with `The 'npm ci' command can only install with an existing package-lock.json`, this means that such a file is missing in your project.
-- Check with `cds --version` to have `@sap/cds` >= 5.7.0.
 - Create the _package-lock.json_ file with a regular [`npm update`](https://docs.npmjs.com/cli/v8/commands/npm-update) command.
 - If the file was not created, make sure to enable it with `npm config set package-lock true` and repeat the previous command.
-- _package-lock.json_ should also be added to version control, so make sure that _.gitignore_ does __not__ contain it.
+
+> The _package-lock.json_ should be added to version control. Make sure that _.gitignore_ does __not__ contain it.
 
 The purpose of _package-lock.json_ is to pin your project's dependencies to allow for reproducible builds.
 
 [Learn more about dependency management in Node.js.](../node.js/best-practices#dependencies){.learn-more}
 
-### How Can I Reduce the MTA Archive Size During Development? { #reduce-mta-size}
+### Why does my MTA build fail for other reasons?
+
+- Make sure to use the latest version of the [Cloud MTA Build Tool (MBT)](https://sap.github.io/cloud-mta-build-tool/).
+- Consult the [Cloud MTA Build Tool documentation](https://sap.github.io/cloud-mta-build-tool/usage/) for further information, for example, on the available tool options.
+
+### How can I define the build order between MTA modules?
+
+By default, the Cloud MTA Build Tool executes module builds in parallel. If you want to enforce a specific build order, for example, because one module build relies on the outcome of another one, check the [Configuring build order](https://sap.github.io/cloud-mta-build-tool/configuration/#configuring-build-order) section in the tool documentation.
+
+### How do I undeploy an MTA?
+
+`cf undeploy <mta-id>` deletes an MTA (use `cf mtas` to find the MTA ID).
+
+Use the optional `--delete-services` parameter to also wipe service instances.
+
+::: danger This also deletes the HDI containers with the application data.
+:::
+
+### How can I reduce MTA archive size during development? { #reduce-mta-size}
 
 You can reduce MTA archive sizes, and thereby speedup deployments, by omitting `node_module` folders.
 
@@ -683,20 +712,23 @@ mbt build -t gen --mtar mta.tar -e less.mtaext
 - If all your dependencies are available in _public_ registries like npmjs.org or Maven Central.  Dependencies from _corporate_ registries are not resolvable in this mode.
 :::
 
-<div id="sap-make" />
-
 
 
 ## Cloud Foundry
 
+### How do I get logs from my application in Cloud Foundry? { #cflogs-recent}
 
-### How Do I Get Started with SAP Business Technology Platform, Cloud Foundry environment?
+You can use the Cloud Foundry CLI to retrieve recent logs:
 
-For a start, create your [Trial Account](https://account.hanatrial.ondemand.com/).
+```sh
+cf logs <appname> --recent
+```
 
-<div id="sap-in-house" />
+::: tip Stream logs to your terminal
+If you omit the option `--recent`, you can run this command in parallel to your deployment and see the logs as they come in.
+:::
 
-### How Do I Resolve Errors with `cf` Executable? { #cf-cli}
+### How do I resolve errors with the `cf` CLI? { #cf-cli}
 
 #### Installation fails — _mkdir ... The system cannot find the path specified_
 
@@ -707,69 +739,8 @@ Also, make sure to persist the variable for future sessions in the system prefer
 
 This is the same issue as with the installation error above.
 
-### Why Can't My _xs-security.json_ File Be Used to Create an XSUAA Service Instance? { #pws-encoding}
 
-|              | Explanation                                                                                                                                  |
-|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | Your file isn't UTF-8 encoded. If you executed `cds compile` with Windows PowerShell, the encoding of your _xs-security.json_ file is wrong. |
-| _Solution_   | Make sure, you execute `cds compile` in a command prompt that encodes in UTF-8 when piping output into a file.                               |
-
-[You can find related information on **Stack Overflow**.](https://stackoverflow.com/questions/40098771/changing-powershells-default-output-encoding-to-utf-8){.learn-more}
-
-
-### How Can I Connect to a Backing Service Container like SAP HANA from My Local Machine? { #cf-connect}
-
-Depending on, whether the container host is reachable and whether there's a proxy between your machine and the cloud, one of the following options applies:
-
-<span id="direct-access" />
-
-* CF SSH
-
-    The second most convenient way is the `cf ssh` capability of Cloud Foundry CLI. You can open an SSH tunnel to the target Cloud Foundry container, if these prerequisites are met:
-    - There's **no HTTP proxy** in the way.  Those only let HTTP traffic through.
-    - SSH access is enabled for the CF landscape and your space (in _Canary_ this is true, otherwise check with `cf ssh-enabled`).
-
-    Use it like this:
-
-    ```sh
-    cf ssh <app> -L localhost:<LocalPort>:<RemoteIP>:<RemotePort>
-    ```
-    where `<app>` has to be a running application that is bound to the service.
-
-    Example:
-
-    Connect to a SAP HANA service running on remote host 10.10.10.10, port 30010.
-
-    ```sh
-    cf ssh <app> -L localhost:30010:10.10.10.10:30010
-    ```
-
-    From then on, use `localhost:30010` instead of the remote address.
-
-    [Learn more about **cf ssh**.](https://docs.cloudfoundry.org/devguide/deploy-apps/ssh-apps.html){ .learn-more}
-
-* Chisel
-
-    In all other cases, for example, if there's an HTTP proxy between you and the cloud, you can resort to a TCP proxy tool, called _Chisel_. This also applies if the target host isn't reachable on a network level. You need to install _Chisel_ in your target space and that will tunnel TCP traffic over HTTP from your local host to the target (and vice versa).
-
-    Find [step-by-step instructions here](https://github.com/jpillora/chisel). For example, to connect to an SAP HANA service running on remote host 10.10.10.10, port 30010:
-
-    ```sh
-    bin/chisel_... client --auth secrets https://<url_to_chisel_server_app> localhost:30010:10.10.10.10:30010
-    ```
-    From then on, use `localhost:30010` instead of the remote address.
-
-    [Learn more about **Chisel**.](https://github.com/jpillora/chisel){ .learn-more}
-
-### Aborted Deployment With the _Create-Service-Push_ Plugin
-
-If you're using _manifest.yml_ features that are part of the new Cloud Foundry API, for example, the `buildpacks` property, the `cf create-service-push` command will abort after service creation without pushing the applications to Cloud Foundry.
-
-Use `cf create-service-push --push-as-subprocess` to execute `cf push` in a sub-process.
-
-[See `cf create-service-push --help` for further CLI details or visit the Create-Service-Push GitHub repository.](https://github.com/dawu415/CF-CLI-Create-Service-Push-Plugin){.learn-more}
-
-### Deployment Crashes With "No space left on device" Error
+### Why does my app deployment fail with "No space left on device"?
 
 If on deployment to Cloud Foundry, a module crashes with the error message `Cannot mkdir: No space left on device` then the solution is to adjust the space available to that module in the `mta.yaml` file. Adjust the `disk-quota` parameter.
 
@@ -780,17 +751,6 @@ If on deployment to Cloud Foundry, a module crashes with the error message `Cann
 ```
 [Learn more about this error in KBA 3310683](https://userapps.support.sap.com/sap/support/knowledge/en/3310683){.learn-more}
 
-### How Can I Get Logs From My Application in Cloud Foundry? { #cflogs-recent}
-
-The SAP BTP cockpit is not meant to analyze a huge amount of logs. You should use the Cloud Foundry CLI.
-
-```sh
-cf logs <appname> --recent
-```
-
-::: tip
-If you omit the option `--recent`, you can run this command in parallel to your deployment and see the logs as they come in.
-:::
 
 ### Why do I get "404 Not Found: Requested route does not exist"?
 
@@ -819,28 +779,28 @@ If you receive an error response `404 Not Found: Requested route ('<route>') doe
 
     :::
 
-### Why do I get a _404 Cannot GET /_ error?
+### Why do I get "_404 Cannot GET /_"?
 
-For security reasons, the **index page is not served in production** by default in both [Node.js](../node.js/cds-server#toggle-generic-index-page) and [Java](../java/developing-applications/configuring#production-profile).
+For security reasons, the **index page is not served in production** in [Node.js](../node.js/cds-server#toggle-generic-index-page) and [Java](../java/developing-applications/configuring#production-profile).
 
 If you try to access your backend URL, you will therefore see a _404 Cannot GET /_ error.
-This also means you **cannot use the `/` path as a health status indicator**.  See the [Health Checks guide](../guides/deploy/health-checks) for the correct paths.
+
+::: warning This also means you **cannot use the `/` path as a health status indicator**.
+See the [_Health Checks_](../guides/deploy/health-checks) guide  for the correct paths.
+:::
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
 
-Learn more about the generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
+Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in
+[Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
 ## Kyma / K8s
 
-### Pack Command Fails with Error `package.json and package-lock.json aren't in sync`
+### Why do I get "package.json and package-lock.json aren't in sync"?
 
-To fix this error, run `npm i --package-lock-only` to update your `package-lock.json` file and run the pack command again.
+Run `npm i --package-lock-only` to update the _package-lock.json_ and re-run `cds up`.
 
-> Note: After updating the package-lock.json the specific dependency versions would change, go through the changes and verify them.
 
-::: tip
-For SAP HANA deployment errors see [The HANA section](#how-do-i-resolve-deployment-errors).
-:::
-
+<div id="sap-make" />
 
 <div id="end" />

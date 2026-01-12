@@ -10,7 +10,7 @@ Declarative constraints allow you to express data validity conditions using [CDS
 [[toc]]
 
 > [!note]
-> Don't confuse constraints as discussed in here with [database constraints](../databases/index#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
+> Don't confuse constraints as discussed in here with [database constraints](../databases/cds-to-ddl#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
 
 
 
@@ -311,7 +311,7 @@ dependent values were inserted before the current transaction. For example, in a
 The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
 Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
 non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](../databases/index#database-constraints) constraint must be used instead.
+(ensure referential integrity), the [`@assert.integrity`](../databases/cds-to-ddl#database-constraints) constraint must be used instead.
 
 If the reference's target doesn't exist, an HTTP response
 (error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's

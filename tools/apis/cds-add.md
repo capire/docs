@@ -90,7 +90,7 @@ Starting with <span class="list-item">1</span>, register the plugin:
 
 ::: code-group
 ```js [cds-plugin.js]
-cds.add?.register?.('postgres', require('lib/add')) // ...or inline:
+cds.add?.register?.('postgres', require('./lib/add')) // ...or inline:
 cds.add?.register?.('postgres', class extends cds.add.Plugin {})
 :::
 

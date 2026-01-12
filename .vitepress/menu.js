@@ -6,6 +6,7 @@ import rewrites from './rewrites.js'
 
 const DEBUG = process.env.DEBUG?.match(/\b(menu|all)\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
 const EXTERNAL = process.env.VITE_CAPIRE_ENV === 'external'
+const PRUNE_UNRELEASED = process.env.VITE_CAPIRE_PRUNE_UNRELEASED === 'true'  // usually on CI builds
 const cwd = process.cwd()
 
 
@@ -82,7 +83,14 @@ export class Menu extends MenuItem {
       if (EXTERNAL) {
         let unreleased = each.match(/<!-- (UNRELEASED|INTERNAL) -->/)
         if (unreleased) {
-          DEBUG?.('skipped:', unreleased[0], text, 'at', relative(cwd,file)+':'+(i+1))
+          if (PRUNE_UNRELEASED && link) {
+            let targetFile = resolve (cwd, dirname(file), link.replace(/^\//, '').replace(/\/$/,'/index.md'))
+            if (!targetFile.endsWith('.md')) targetFile += '.md'
+            if (existsSync(targetFile)) await fs.unlink(targetFile)
+            DEBUG?.('pruned:', relative(cwd,targetFile), 'at', relative(cwd,file)+':'+(i+1))
+          } else {
+            DEBUG?.('skipped:', unreleased[0], text, 'at', relative(cwd,file)+':'+(i+1))
+          }
           continue
         }
       }
