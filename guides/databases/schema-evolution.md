@@ -69,7 +69,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
 4. Inspect the generated SQL statements, which should look like this:
    ::: code-group
 
-   ```sql [delta.sql]
+   ```sql:line-numbers {13,14} [delta.sql]
    -- Drop Affected Views
    DROP VIEW localized_CatalogService_ListOfBooks;
    DROP VIEW localized_CatalogService_Books;
@@ -106,7 +106,8 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
    ```
    :::
 
-   > **Note:** If you use SQLite, ALTER TYPE commands are not necessary and so, are not supported, as SQLite is essentially typeless.
+   > [!note]
+   > If you use SQLite, `ALTER ... TYPE` commands are not necessary and so, are not supported, as SQLite is essentially typeless. That means, statements for changing the type or length of a column will not show up in migration scripts for SQLite (lines 13,14 above).
 
 
 ### Disallowed Changes

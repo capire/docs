@@ -1,5 +1,5 @@
 <!-- # [CAP-level Database Usage](index.md) -->
-# [CDS Compiled to DDL](cds-to-ddl)
+# [CDL Compiled to DDL](cdl-to-ddl)
 # [CQL Compiled to SQL](cql-to-sql)
 # [Adding Initial Data](initial-data.md)
 # Deployed to ...

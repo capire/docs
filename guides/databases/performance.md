@@ -4,7 +4,9 @@ status: released
 
 # Performance Considerations for CDS Modeling
 
-  Here are some considerations and advice for CDS modeling.
+ Find here some considerations and advice for CDS modeling with performance focus. 
+ {.abstract}
+
 
 ## Avoid UNION
 
@@ -24,7 +26,7 @@ UNIONs in views come with a performance penalty and complex modelling.
 - Starting a new model, you should never need to use UNION. See [Polymorphism](#polymorphism).
 :::
 
-## Polymorphism
+### Polymorphism
 
 Polymorphism might be the root cause for severe performance issues due to the usage of UNIONs, CASEs and complex JOINs. Here are some good and bad examples.
 
@@ -118,10 +120,9 @@ Polymorphism done right, also results in simplified view building. Assume you wa
 Using the (de-) normalized version:
 
 ```cds
-view FruitsByVendor as
-select from Fruit
-{ID, description, vendor}
-where vendor.description = 'TopFruitCompany';
+view FruitsByVendor as select from Fruit { 
+  ID, description, vendor
+} where vendor.description = 'TopFruitCompany';
 ```
 You have less associations to be built and no UNIONs in your queries.
 
@@ -319,6 +320,7 @@ extend my.OrdersItems with {
 
 
 ## Compositions vs Associations
+
 From the performance perspective there are some cases, where you have to check out carefully if the general semantic rules of compositions vs associations should be applied.
 In general, go for **compositions** in the following cases:
  - Parent and child share a life-cycle.
@@ -343,7 +345,7 @@ Large documents, containing compositions with thousands of children, are copied 
 In such cases, deviate from the general rules above, and decouple the document using associations instead of compositions.
 :::
 
-## Legacy systems
+## Legacy Systems
 
 In legacy systems you find emulations for data types like string-encoded booleans (`“X” = true`, `“ ” = false`) or emulated decimal numbers. A lot of application complexity stems from the emulation of such data types and is unnecessary when using modern infrastructure. In modern systems you have dedicated *native data types*.
 
@@ -365,7 +367,7 @@ Common patterns:
   - Omit unnecessary abstraction views. When you are porting an "ABAP" CDS Model starting with the corresponding Virtual Data Model (VDM), C_Views and I_Views don't serve a purpose anymore. Please design your entities for optimized persistence, and your service layer for optimized processing. CAP already has a separation of concerns between the "DB" layer (persistency model) and the "SRV" layer (service / consumption model), there is no need to insert additional and unnecessary further abstraction layers. For example, the public interface layer with views like `I_COSTCENTER` will be replaced by the CDS services from which the OData consumption services are generated.
   - Legacy systems often have convoluted or overly complex data structures just to satisfy multiple processing requirements or use-cases with the same data structure. In CAP there is no need to create overly complex service entities, since you can use bound and unbound ACTIONs and FUNCTIONs for more complex data manipulation. Keep service entities as simple as possible and make them serve one purpose only, and rather create multiple simple entities instead of a complex one.
 
-**Summary:**
+## Summary
 
 | Legacy | Re-Model &rarr; Modern &rarr; Better Performance |
 |---|---|
