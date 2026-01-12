@@ -30,17 +30,29 @@ SELECT 1 == null, 1 != null, null == null, null != null;
 ::: code-group
 ```SQL [SQL's Three-Valued Logic]
 SELECT 1 = null, 1 <> null, null = null, null <> null; 
---> unknown, unknown, unknown, unknown
+--> null, null, null, null
 ```
 :::
 
+In other words:
+
 - CQL's `x == null` -> `true` if `x` is `null`, otherwise `false`
 - CQL's `x != null` -> `false` if `x` is `null`, otherwise `true`
-- SQL's `x = null` -> `unknown` for all `x` (even if `x` is `null`)
-- SQL's `x <> null` -> `unknown` for all `x` (even if `x` is not `null`)
+- SQL's `x = null` -> `null` for all `x` (even if `x` is `null`)
+- SQL's `x <> null` -> `null` for all `x` (even if `x` is not `null`)
+
+A real-world example makes this clearer. Consider this CQL query:
+
+```sql
+SELECT from Books where genre.name != 'Science Fiction';
+```
+
+The result set includes all books where genre is not 'Science Fiction', including the ones with an unspecified genre. In contrast, using SQL's `<>` operator, the ones with unspecified genre would be excluded.
 
 The CQL behavior is consistent with common programming languages like JavaScript and Java, as well as with OData semantics. It is implemented in database by, the translation of `!=` to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, and to an equivalent polyfill in SAP HANA.
 
+> [!tip] Usage Recommendation
+> Prefer using  `==` and `!=` in the very most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
 
 ### Ternary `?:` Operator
 
