@@ -68,6 +68,7 @@ It's organized as follows:
 </table>
 
 
+###### Callouts and Alerts
 ::: details Callouts and Alerts 
 
 We use [GitHub-flavored alerts](https://vitepress.dev/guide/markdown#github-flavored-alerts) to highlight important information in our documentation. 

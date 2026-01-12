@@ -132,7 +132,7 @@ Date / Time functions:
 > The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned. 
 
 > [!important] Function names are case-sensitive
-> The function names must be written exactly as in the list below. For example, `toUpper` is invalid, while `toupper` is valid. That allows you to write portable queries, but also gives you access to database-specific functions when needed by using all-uppercase names, for example `SUM(x)`.
+> The function names must be written exactly as listed above. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
 
 > [!warning] Non-portable <code>round()</code> function with more than one argument
 > Note that databases support `round()` functions with multiple arguments, the second parameter being the precision. If you use that option, the `round()` function may behave differently depending on the database.
