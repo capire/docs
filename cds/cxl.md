@@ -273,7 +273,7 @@ ROLLBACK
 
 ::: tip What-not-how!
 The `@assert` annotation lets you capture the intent via an expression, without having to deal with the technical details.
-This conforms to the core principle [what-not-how](../guides/domain/index.md#capture-intent--what-not-how) of CAP.
+This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
 :::
 
 ## ref (path expression) { #ref }
