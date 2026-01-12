@@ -181,9 +181,7 @@ This will enable automatic schema migration when running `cds deploy` in product
 > Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
 
 
-## Database-Specific Variants
-
-### Automatic Migration by HDI
+## Schema Evolution by HDI
 
 When deploying to SAP HANA, the so-called HANA Deployment Infrastructure (HDI) handles schema evolution automatically. 
 
@@ -193,7 +191,7 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 
 
 
-### Liquibase for Java Projects
+## Liquibase for Java Projects
 
 For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. 
 
