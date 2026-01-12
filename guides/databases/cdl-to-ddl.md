@@ -127,12 +127,12 @@ CREATE TABLE sap_capire_bookshop_Genres ...;
 
 Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goes a step further by also considering deployment-specific aspects, like:
 
-- **Schema Evolution** – the `diff` shows additional `DROP TABLE` statements, which are a schema evolution strategy most suitable for development. For production, more sophisticated strategies are applied, such as [HDI Schema Evolution in SAP HANA](hana#hdi-schema-evolution) or generating [ALTER TABLE statements for PostgreSQL](postgres#schema-evolution).
+- **Schema Evolution** – the `diff` shows additional `DROP TABLE` statements, which are a schema evolution strategy most suitable for development. For production, more sophisticated strategies are applied. Learn more about that in the [_Schema Evolution_](schema-evolution) guide.
 
 - **Database-specific Artifacts** – for [SAP HANA](hana), the output of `cds deploy` is not a single SQL DDL script anymore; but a number of `.hdbtable`, `.hdbview`, and other so-called HDI artifacts are generated.
 
 > [!note] Ad-hoc Deployments
-> Without the `--dry` option, `cds deploy` would not only compile your CDS models to DDL, but would also do an ad-hoc deployment to the target database, if available. How that works is explained in more detail in the database-specific guides for [_SAP HANA_](hana#deploying-to-sap-hana), [_SQLite_](sqlite#deployment), and [_PostgreSQL_](postgres#deployment).
+> Without the `--dry` option, `cds deploy` would not only compile your CDS models to DDL, but would also do an ad-hoc deployment to the target database, if available. How that works is explained in more detail in the database-specific guides for [_SAP HANA_](hana), [_SQLite_](sqlite), and [_PostgreSQL_](postgres).
 
 
 

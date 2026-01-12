@@ -35,7 +35,7 @@ This is also what happens automatically when running `cds watch` during developm
 In addition to dropping and recreating tables in-place, you can and should also drop and recreate the entire database or schema, depending on the database system in use. This ensures a clean state that fully reflects the current CDS model.
 
 
-## Schema Migration by CAP
+## Schema Evolution by CAP
 
 
 In production environments, a drop-create strategy is not feasible, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that can be reviewed and applied to the database. 
@@ -110,6 +110,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
    > If you use SQLite, `ALTER ... TYPE` commands are not necessary and so, are not supported, as SQLite is essentially typeless. That means, statements for changing the type or length of a column will not show up in migration scripts for SQLite (lines 13,14 above).
 
 
+
 ### Disallowed Changes
 
 Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. Examples of such changes include:
@@ -154,6 +155,31 @@ ALTER TABLE sap_capire_bookshop_Books_texts DROP descr;
 :::
 
 
+### Automatic Migration
+
+You can enable automatic schema evolution in your `db` configuration:
+
+   ::: code-group
+   ```json [package.json]
+   { "cds": { "requires": {
+      "db": {
+         "kind": "sqlite",
+         "credentials": { "url": "db.sqlite" },
+         "schema_evolution": "auto" // [!code focus]
+      }
+   }}}
+   ```
+   :::
+
+This will enable automatic schema migration when running `cds deploy` in production-like environments as follows:
+
+- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
+
+- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
+
+> [!important] 
+> Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
+
 
 ## Database-Specific Variants
 
@@ -165,19 +191,6 @@ HDI manages the lifecycle of database artifacts and applies necessary schema cha
 
 Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evolution](hana#hdi-schema-evolution).
 
-
-
-### Automatic Migration for PostgreSQL
-
-For PostgreSQL databases, we automated the [schema migration](#schema-migration-by-cap) process as follows: 
-
-- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
-
-- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
-
-- Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
-
-Learn more about that in the [PostgreSQL](postgres.md) guide, section [Automatic Schema Evolution](postgres#schema-evolution).
 
 
 ### Liquibase for Java Projects

@@ -7,10 +7,6 @@ status: released
 
 # CAP-level Messaging
 
-<!-- <div id="impl-variants" style="margin:-80px 0 80px 3px;">
-  <a impl-variant="node" class="impl-variant" title="Content for Node.js">Node.js</a>
-  <a impl-variant="java" class="impl-variant" title="Content for Java">Java</a>
-</div> -->
 
 {{ $frontmatter.synopsis }}
 
