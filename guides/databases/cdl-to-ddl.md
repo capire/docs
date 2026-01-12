@@ -136,9 +136,9 @@ Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goe
 
 
 
-## CDS ⇒ DDL Translation 
+## CDL ⇒ DDL Translation 
 
-The CDS-to-DDL compilation follows several general mapping principles to translate CDS constructs into database-specific artifacts, as outlined below.
+The CDL-to-DDL compilation follows several general mapping principles to translate CDS constructs into database-specific artifacts, as outlined below.
 
 
 
