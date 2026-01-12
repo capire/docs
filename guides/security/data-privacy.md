@@ -6,7 +6,7 @@ status: released
 
 
 
-# Data Privacy
+# Data Privacy Overview
 
 {{ $frontmatter.synopsis }}
 
