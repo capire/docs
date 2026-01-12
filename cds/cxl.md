@@ -139,13 +139,71 @@ Or as part of a query:
 SELECT from Books { title } where genre.name = 'Fantasy'
 ```
 
+### in entity definitions
+
+Expressions can be used to define calculated elements.
+Typically, this is done in a column of a query. CAP
+also allows to define calculated elements directly in the model:
+
+```cds
+extend Authors with {
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
+}
+```
+
+In this example, we define a calculated element `age` on the `Authors` entity
+which is no persisted but calculated on-read.
+
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Authors { name, age }` // [!code focus]
+[
+  { name: 'Emily Brontë', age: 30 },
+  { name: 'Charlotte Brontë', age: 36 },
+  { name: 'Edgar Allen Poe', age: 40 },
+  { name: 'Richard Carpenter', age: 82 }
+]
+```
+
+```sql [SQL]
+SELECT
+Authors.name,
+floor(
+  (
+    (
+      (cast(strftime('%Y', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) - cast(strftime('%Y', Authors.dateOfBirth) as Integer)) * 12
+    ) + (
+      cast(strftime('%m', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) - cast(strftime('%m', Authors.dateOfBirth) as Integer)
+    ) + (
+      (
+        case
+          when (cast(strftime('%Y%m', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) < cast(strftime('%Y%m', Authors.dateOfBirth) as Integer)) then
+            (cast(strftime('%d%H%M%S%f0000', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) > cast(strftime('%d%H%M%S%f0000', Authors.dateOfBirth) as Integer))
+          else
+            (cast(strftime('%d%H%M%S%f0000', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) < cast(strftime('%d%H%M%S%f0000', Authors.dateOfBirth) as Integer)) * -1
+        end
+      )
+    )
+  ) / 12
+) as age -- here the calculated element is resolved, in this case for sqlite
+FROM sap_capire_bookshop_Authors as Authors
+```
+:::
+
+the `years_between` function is one of CAPs standard functions that calculates the number of years between two dates.
+
+
+[Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
+[Learn more about CAPs portable functions](../guides/databases/cql-to-sql.md#portable-functions){ .learn-more }
+
 
 ### in annotations
 
 Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
 The meaning and effect of the expression depend on the specific annotation being used.
 
-The [`@assert` annotation](../guides/services/constraints.md#assert-constraint) lets us declaratively define input validation constraints.
+For example, the [`@assert` annotation](../guides/services/constraints.md#assert-constraint) lets us declaratively define input validation constraints.
 In this example, we want to make sure that no Books with negative stocks are created:
 
 
@@ -212,9 +270,11 @@ ROLLBACK
 ```
 :::
 
-The assert annotation lets you capture the intent via an expression, without having to deal with the technical details.
-This conforms to the core principle [what-not-how](../guides/domain/index.md#capture-intent--what-not-how) of CAP.
 
+::: tip What-not-how!
+The `@assert` annotation lets you capture the intent via an expression, without having to deal with the technical details.
+This conforms to the core principle [what-not-how](../guides/domain/index.md#capture-intent--what-not-how) of CAP.
+:::
 
 ## ref (path expression) { #ref }
 
@@ -773,36 +833,7 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 
-
-CAP supports a set of [standard functions](../guides/databases/index#standard-database-functions) that can be used in expressions. In addition, functions are passed through to the underlying database, allowing you to leverage database-specific functions as needed.
-
-CAP standard functions:
-| Name                              | Description                                                                                                                                             |
-|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **String Functions**              |                                                                                                                                                         |
-| `concat(x, y, ...)`               | Concatenates the given strings or numbers `x`, `y`, ...                                                                                                 |
-| `trim(x)`                         | Removes leading and trailing whitespaces from `x`.                                                                                                      |
-| `contains(x, y)`                  | Checks whether `x` contains `y` (case-sensitive).                                                                                                       |
-| `startswith(x, y)`                | Checks whether `x` starts with `y` (case-sensitive).                                                                                                    |
-| `endswith(x, y)`                  | Checks whether `x` ends with `y` (case-sensitive).                                                                                                      |
-| `matchespattern(x, y)`            | Checks whether `x` matches the regular expression `y`.                                                                                                  |
-| `indexof(x, y)`<sup>1</sup>       | Returns the index of the first occurrence of `y` in `x` (case-sensitive).                                                                               |
-| `substring(x, i, n?)`<sup>1</sup> | Extracts a substring from `x` starting at index `i` (0-based) with an optional length `n`.                                                              |
-| `length(x)`                       | Returns the length of the string `x`.                                                                                                                   |
-| `tolower(x)`                      | Converts all characters in `x` to lowercase.                                                                                                            |
-| `toupper(x)`                      | Converts all characters in `x` to uppercase.                                                                                                            |
-| **Numeric Functions**             |                                                                                                                                                         |
-| `ceiling(x)`                      | Rounds the numeric parameter up to the nearest integer.                                                                                                 |
-| `floor(x)`                        | Rounds the numeric parameter down to the nearest integer.                                                                                               |
-| `round(x)`                        | Rounds the numeric parameter to the nearest integer. The midpoint between two integers is rounded away from zero (e.g., `0.5` → `1` and `-0.5` → `-1`). |
-| **Aggregate Functions**           |                                                                                                                                                         |
-| `min(x)`                          | Returns the minimum value of `x`.                                                                                                                       |
-| `max(x)`                          | Returns the maximum value of `x`.                                                                                                                       |
-| `sum(x)`                          | Returns the sum of all values of `x`.                                                                                                                   |
-| `average(x)`                      | Returns the average (mean) value of `x`.                                                                                                                |
-| `count(x)`                        | Returns the count of non-null values of `x`.                                                                                                            |
-| `countdistinct(x)`                | Returns the count of distinct non-null values of `x`.                                                                                                   |
-
+CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
 
 
 ## ordering term { #ordering-term }
