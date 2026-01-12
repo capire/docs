@@ -777,14 +777,14 @@ All the above translations are designed to be portable across different SQL data
 1. Add database-specific models in respective subfolders of `./db`:
 
    ::: code-group
-   ```cds [db/sqlite/index.cds]
-   using { AdminService } from '..';
+   ```cds [db/sqlite/native.cds]
+   using { AdminService } from '@capire/bookshop';
    extend projection AdminService.Authors with {
       strftime('%Y',dateOfDeath)-strftime('%Y',dateOfBirth) as age : Integer
    }
    ```
-   ```cds [db/hana/index.cds]
-   using { AdminService } from '..';
+   ```cds [db/hana/native.cds]
+   using { AdminService } from '@capire/bookshop';
    extend projection AdminService.Authors with {
       YEARS_BETWEEN(dateOfBirth, dateOfDeath) as age : Integer
    }
