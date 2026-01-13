@@ -324,7 +324,7 @@ Before working with IAS on CF, you need to
 - [Establish trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
 towards your IAS tenant to use it as identity provider for applications in your subaccount.
 
-- Ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) on CF, 
+- Ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) on CF, 
 in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
 You can continue with the sample [already created](#mock-user-auth). In the project root folder, execute
@@ -626,7 +626,7 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
 It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
 
-Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
+Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
 ```sh
 cds add portal
@@ -706,7 +706,7 @@ XSUAA authentication is best configured and tested in the Cloud, so let's enhanc
 
 ### Get Ready with XSUAA { #xsuaa-ready }
 
-Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](https://pages.github.tools.sap/cap/docs/guides/deployment/to-cf#prerequisites) to CF.
+Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) to CF.
 In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
 You can continue with the bookshop sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
@@ -1083,7 +1083,7 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
 It will take care of fetching the required XSUAA tokens when forwarding requests to the backend service. 
 
-Enhancing the project with [SAP Cloud Portal](../deployment/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
+Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
 ```sh
 cds add portal

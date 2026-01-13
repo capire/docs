@@ -29,7 +29,7 @@ This guide explains how to authenticate remote services.
 
 ## Remote Service Abstraction { #remote-services }
 
-According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../using-services#consuming-services) decouples protocol level (i.e., exchanged content) from connection level (i.e., established connection channel). 
+According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (i.e., exchanged content) from connection level (i.e., established connection channel). 
 While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
 The latter is frequently subject to change and therefore should not introduce application dependencies. 
 
@@ -53,7 +53,7 @@ CAP supports out-of-the-box consumption of various types of [remote services]( #
 ## Co-located Services {#co-located-services}
 
 Co-located services do not run in the same microservice, but are typically part of the same deployment unit and hence reside within the same trust boundary of the [application zone](./overview#application-zone).
-Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../providing-services#late-cut-microservices).
+Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../services/providing-services#late-cut-microservices).
 
 Technically, **they share the same identity instance, which allows direct token forwarding**:
 
@@ -77,7 +77,7 @@ To combine both applications in a co-located setup, follow these steps:
 
 #### 1. Prepare the CF environment { #prepare }
 
-Make sure that you've prepared a [local environment for CF deployments](../deployment/to-cf#prerequisites) and in addition:
+Make sure that you've prepared a [local environment for CF deployments](../deploy/to-cf#prerequisites) and in addition:
 - A Cloud Foundry (CF) space in a subaccount.
 - [HANA Cloud instance](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) mapped to the CF space.
 - [IAS tenant](./authentication#ias-ready) mapped to the subaccount.
@@ -123,7 +123,7 @@ cds up
 ❗Note that CF application `xtravels-srv` will not start successfully as long as `xflights` is not deployed yet (step 3).
 
 ::: tip
-For production deployment, it is recommended to combine both services with the shared identity instance in a [single MTA descriptor](../deployment/microservices#all-in-one-deployment).
+For production deployment, it is recommended to combine both services with the shared identity instance in a [single MTA descriptor](../deploy/microservices#all-in-one-deployment).
 :::
 
 
@@ -215,7 +215,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-Alternatively, remote services can be configured on top of [BTP HTTP Destinations](../using-services#using-destinations) which offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
+Alternatively, remote services can be configured on top of [BTP HTTP Destinations](../services/consuming-services#using-destinations) which offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
 
 
 ### IAS App-2-App { #app-to-app }

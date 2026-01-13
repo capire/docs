@@ -180,8 +180,8 @@ All technical clients that have access to the application's XSUAA or IAS service
 
 The object representation of the resolved CAP user is attached to the current request context and has an impact on the request flow, for instance with regard to
 - [authorizations](./authorization#restrictions)
-- [enriching business data](../domain-modeling#managed-data) with user data
-- setting [DB session variables](../db-feature-comparison#session-variables)
+- [enriching business data](../domain/#managed-data) with user data
+- setting DB session variables
 
 In the CDS model, some of the user properties can be referenced in annotations or static views:
 
@@ -378,7 +378,7 @@ The framework then authorizes the request as usual based on the user's roles.
 The `@sap/ams` plugin provides multiple build-time features:
 
 - Validate `ams.attributes` annotations for type coherence against the AMS schema.
-- Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
+- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 
@@ -425,7 +425,7 @@ For local development, `@sap/ams-dev` needs to compile the DCL files to Data Con
 Additionally, `@sap/ams` provides multiple build-time features:
 
 - Validate `ams.attributes` annotations for type coherence against the DCL schema.
-- Generate policies from the CDS model during the build using a [custom build task](../deployment/custom-builds#custom-build-plugins).
+- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-plugins).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 ::: tip
@@ -1111,7 +1111,7 @@ resources:
 
 Inline configuration in the _mta.yaml_ `config` block and the _xs-security.json_ file are merged. If there are conflicts, the [MTA security configuration](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/6d3ed64092f748cbac691abc5fe52985.html) has priority.
 
-[Learn more about **building and deploying MTA applications**.](/guides/deployment/){ .learn-more}
+[Learn more about **building and deploying MTA applications**.](/guides/deploy/){ .learn-more}
 
 ### Assign Roles in SAP BTP Cockpit { #xsuaa-assign }
 
@@ -1666,7 +1666,7 @@ Always pin your dependencies as described in the [best practices](../../node.js/
 
 Remote APIs can be invoked either on behalf of a named user or a technical user, depending on the callee's specification.  
 Thus, a client executing a business request within a specific user context might need to explicitly adjust the user propagation strategy.  
-CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+CAP's [Remote Services](../services/consuming-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
 Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../../java/cqn-services/remote-services#configuring-the-authentication-strategy):
 
 ```yaml
@@ -1694,8 +1694,8 @@ Remote Services configurations with `destination` section support `onBehalfOf` o
 
 <div class="impl node">
 
-CAP's [Remote Services](../using-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
-Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../using-services#authentication-and-authorization-of-remote-services).
+CAP's [Remote Services](../services/consuming-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
+Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../services/consuming-services#authentication-and-authorization-of-remote-services).
 Under the hood CAP utilizes the [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/create-destinations-from-scratch) and [`@sap-cloud-sdk/connectivity`](https://www.npmjs.com/package/@sap-cloud-sdk/connectivity) to do most of the heavy lifting. 
 
 ```json

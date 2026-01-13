@@ -144,7 +144,7 @@ This **frees CAP applications from the need to manage trust certificates**. The 
 
 3. **Secrets** that are required to protect the application or to consume other platform services **are injected by the platform** into the application microservices in a secure way.
 
-All supported [environments](platform#cloud) fulfill the given requirements. Additional requirements could be added in future.
+All supported [environments](#cloud) fulfill the given requirements. Additional requirements could be added in future.
 
 ::: tip
 Custom domain certificates must be signed by a trusted certificate authority.
@@ -174,7 +174,7 @@ But there are still a few things to consider because exploited vulnerabilities c
 
 - Make sure that locally started HTTP endpoints are bound to `localhost`.
 - In case you run your service in hybrid mode with bindings to cloud service instances,
-use [cds bind](../../advanced/hybrid-testing) instead of copying bindings manually to `default-env.json` file.
+use [cds bind](../../tools/cds-bind) instead of copying bindings manually to `default-env.json` file.
 `cds bind` avoids materialization of secrets to local disc, which is inherently dangerous.
 - Don't write sensitive data to application logs, also not via debug logging.
 - Don't test with real business data, for example, copied from a productive system.
