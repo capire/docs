@@ -637,13 +637,13 @@ Not only do we address the very same goals, we can also identify several symmetr
 
 <span class="centered">
 
-| Hexagonal Architecture | CAP                                                          |
-| ---------------------- | ------------------------------------------------------------ |
+| Hexagonal Architecture | CAP                                                                                 |
+| ---------------------- | ----------------------------------------------------------------------------------- |
 | "The Outside"          | Remote *Clients* of Services (inbound) <br/>Databases, Platform Services (outbound) |
-| Adapters               | Protocol ***Adapters*** (inbound + outbound), <br/>Framework Services (outbound) |
-| Ports                  | Service ***Interfaces*** + Events (inbound + outbound)       |
-| Application Model      | Use-case ***Services*** + Event Handlers                     |
-| Domain Model           | Domain ***Entities*** (w/ essential invariants)              |
+| Adapters               | Protocol ***Adapters*** (inbound + outbound), <br/>Framework Services (outbound)    |
+| Ports                  | Service ***Interfaces*** + Events (inbound + outbound)                              |
+| Application Model      | Use-case ***Services*** + Event Handlers                                            |
+| Domain Model           | Domain ***Entities*** (w/ essential invariants)                                     |
 
 </span>
 
@@ -847,7 +847,7 @@ And as everyone can add event handlers to every service, you can also add event 
 For example, you could extend CAP's primary **database service** like this:
 
 ```js
-cds.db .before ('*', req => {
+cds.db.before('*', req => {
   console.log (req.event, req.target.name)
 })
 ```
@@ -856,121 +856,13 @@ In the same way you could add handlers to **remote service proxies**:
 
 ```js
 const proxy = await cds.connect.to ('SomeRemoteService')
-proxy.on ('READ', 'Something', req => {
+proxy.on('READ', 'Something', req => {
   // handle that remote call yourself
 })
-proxy.before ('READ', '*', req => {
+proxy.before('READ', '*', req => {
   // modify requests before they go out
 })
-proxy.after ('READ', '*', result => {
+proxy.after('READ', '*', result => {
   // post-process recieved responses
 })
 ```
-
-
-
-
-
-## The Calesi Pattern
-
-
-
-'Calesi' stands for CAP-level Service Interfaces, and refers to the increasing numbers of BTP platform services which offer a CAP-level client library. These drastically reduce the boilerplate code applications would have to write.
-
-For example, adding attachments required thousands of lines of code, caring for the UI, streaming of large data, size limiting, malware scanning, multitenancy, and so forth... after we provided the [Attachments plugin](../plugins/index#attachments), all an application needs to do now is to add that line to an entity:
-
-```cds
-entity Foo { //...
-   attachments : Composition of many Attachments; // [!code focus]
-}
-```
-
-
-
-Whenever you have to integrate external services, you should follow the Calesi patterns. For example, let's take an audit logging use case: Data privacy regulations require to write audit logs whenever personal data is modified.
-
-1. **Declare the service interface** — provide a CAP service that encapsulates outbound communication with the audit log service. Start by defining the respective service interface in CDS:
-
-   ```cds
-   service AuditLogService {
-
-     event PersonalDataModified : LogEntry {
-       subject   : DataSubject;
-       changes   : many {
-         field : String;
-         old   : String;
-         new   : String;
-       };
-       tenant    : Tenant;
-       user      : User;
-       timestamp : DateTime:
-     }
-
-   }
-   ```
-
-
-
-2. **Implement a mock variant** — Add a first service implementation: one for mocked usage during development:
-
-   ```js
-   class AuditLogService {init(){
-     this.on('PersonalDataModified', msg => {
-       console.log('Received audit log message', red.data)
-     })
-   }}
-   ```
-
-   >  [!tip]
-   >
-   > With that, you already fulfilled a few goals and guidelines from Hexagonal Architecture: The interface offered to your clients is agnostic and follows CAP's uniform service API style. Your consumers can use this mock implementation at development to speed up their [inner loop development](features#fast-inner-loops) phases.
-
-
-
-3. **Provide the real impl** — Start working on the 'real' implementation that translates received audit log messages into outbound calls to the real audit log service.
-
-   > [!note]
-   >
-   > You bought yourself some time for doing that, as your clients already got a working mock solution, which they can use for their development.
-
-
-
-4. **Plug and play** —Add profile-aware configuration presets, so your consumers don't need to do any configuration at all:
-
-   ```js
-   {
-     cds: {
-       requires: {
-         'audit-log': {
-           "[development]": { impl: ".../audit-log-mock.js" },
-           "[production]":  { impl: ".../the-real-audit-log-srv.js" },
-         }
-       }
-     }
-   }
-   ```
-
-
-
-5. **Served automatically?** — Check if you could automate things even more instead of having your use your service programmatically. For example, we could introduce an annotation *@PersonalData*, and write audit log entries automatically whenever an entity or element is tagged with that:
-
-   ```js :line-numbers
-   cds.on('served', async services => {
-     const auditlog = await cds.connect.to('AuditLog')
-     for (let each of services) {
-       for (let e of each.entities) if (e['@PersonalData']) {
-         each.on('UPDATE',e, auditlog.emit('PersonalDataModified', {...}))
-       }
-     }
-   })
-   ```
-
-
-
-That example was an *outbound* communication use case. Basically, we encapsulate outbound channels with CAP Services, as done in CAP for messaging service interfaces and database services.
-
-For *inbound* integrations, we would create an adapter, that is, a service endpoint which translates incoming messages into CAP event messages which it forwards to CAP services. With that, the actual service provider implementation is again a protocol-agnostic CAP service, which could as well be called locally, for example in development and tests.
-
-> [!tip]
->
-> Essentially, the 'Calesi' pattern is about encapsulating any external communication within a CAP-service-based interface, so that the actual consumption and/or implementation benefits from the related advantages, such as an agnostic consumption, intrinsic extensibility, automatic mocking, and so on.

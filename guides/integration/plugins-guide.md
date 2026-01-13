@@ -1,2 +1,0 @@
-
-# CAP Plugins Developers Guide 

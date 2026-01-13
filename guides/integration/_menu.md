@@ -13,5 +13,3 @@
    ## [ Notifications ](notifications.md)  <!-- UNRELEASED -->
    ## [ Telemetry ](telemetry.md)  <!-- UNRELEASED -->
    ## [ Change Tracking ](change-tracking.md)  <!-- UNRELEASED -->
-
-# [ CAP Plugins Guide  ](plugins-guide.md) <!-- UNRELEASED -->

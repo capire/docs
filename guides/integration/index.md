@@ -39,7 +39,3 @@ CAP applications integrate at multiple levels — from reusing services and data
 [Change Tracking](change-tracking)
 : Track and record changes to business data in CAP applications, enabling auditing and historical data analysis.
 
-<!-- Plugins -->
-
-[CAP Plugins Guide](plugins-guide)
-: Learn how to build CAP plugins, like the ones above, that extend the framework's capabilities, enhancing development and integration options. 
