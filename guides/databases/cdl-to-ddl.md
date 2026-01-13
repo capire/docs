@@ -7,7 +7,7 @@ Databases are deployed based on the entity definitions in your CDS models. This 
 [[toc]]
 
 > [!tip] Everything Served Out of the Box
-> The CAP tooling handles all compilation to DDL automatically, for example when you run `cds watch` or  `cds deploy`. You typically don't need to worry about the details unless you want to inspect or customize the generated DDL statements. So, all information in this guide is just to explain how things work under the hood, and if you are on a fast track, you can safely skip it.
+> The CAP framework handles all compilation to DDL automatically, for example when you run `cds watch` or  `cds deploy`. You typically don't need to worry about the details unless you want to inspect or customize the generated DDL statements. So, all information in this guide is just to explain how things work under the hood, and if you are on a fast track, you can safely skip it.
 
 
 
