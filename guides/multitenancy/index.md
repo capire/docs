@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
-label: Multitenancy
 impl-variants: true
 ---
 

@@ -35,7 +35,7 @@ This is also what happens automatically when running `cds watch` during developm
 In addition to dropping and recreating tables in-place, you can and should also drop and recreate the entire database or schema, depending on the database system in use. This ensures a clean state that fully reflects the current CDS model.
 
 
-## Schema Migration by CAP
+## Schema Evolution by CAP
 
 
 In production environments, a drop-create strategy is not feasible, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that can be reviewed and applied to the database. 
@@ -69,7 +69,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
 4. Inspect the generated SQL statements, which should look like this:
    ::: code-group
 
-   ```sql [delta.sql]
+   ```sql:line-numbers {13,14} [delta.sql]
    -- Drop Affected Views
    DROP VIEW localized_CatalogService_ListOfBooks;
    DROP VIEW localized_CatalogService_Books;
@@ -106,7 +106,9 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
    ```
    :::
 
-   > **Note:** If you use SQLite, ALTER TYPE commands are not necessary and so, are not supported, as SQLite is essentially typeless.
+   > [!note]
+   > If you use SQLite, `ALTER ... TYPE` commands are not necessary and so, are not supported, as SQLite is essentially typeless. That means, statements for changing the type or length of a column will not show up in migration scripts for SQLite (lines 13,14 above).
+
 
 
 ### Disallowed Changes
@@ -153,10 +155,33 @@ ALTER TABLE sap_capire_bookshop_Books_texts DROP descr;
 :::
 
 
+### Automatic Migration
 
-## Database-Specific Variants
+You can enable automatic schema evolution in your `db` configuration:
 
-### Automatic Migration by HDI
+   ::: code-group
+   ```json [package.json]
+   { "cds": { "requires": {
+      "db": {
+         "kind": "sqlite",
+         "credentials": { "url": "db.sqlite" },
+         "schema_evolution": "auto" // [!code focus]
+      }
+   }}}
+   ```
+   :::
+
+This will enable automatic schema migration when running `cds deploy` in production-like environments as follows:
+
+- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
+
+- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
+
+> [!important] 
+> Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
+
+
+## Schema Evolution by HDI
 
 When deploying to SAP HANA, the so-called HANA Deployment Infrastructure (HDI) handles schema evolution automatically. 
 
@@ -166,20 +191,7 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 
 
 
-### Automatic Migration for PostgreSQL
-
-For PostgreSQL databases, we automated the [schema migration](#schema-migration-by-cap) process as follows: 
-
-- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
-
-- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
-
-- Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
-
-Learn more about that in the [PostgreSQL](postgres.md) guide, section [Automatic Schema Evolution](postgres#schema-evolution).
-
-
-### Liquibase for Java Projects
+## Liquibase for Java Projects
 
 For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. 
 

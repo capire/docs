@@ -1,16 +1,7 @@
 ---
-index: 70
-breadcrumbs:
-  - Cookbook
-  - Deployment
-  - Deploy to Cloud Foundry
-# shorty: Deploy to CF
 synopsis: >
   A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP)  to SAP BTP Cloud Foundry environment.
-#notebook: true
 impl-variants: true
-# layout: cookbook
-status: released
 ---
 
 # Deploy to Cloud Foundry
