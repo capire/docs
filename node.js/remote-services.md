@@ -1,14 +1,14 @@
 ---
 label: Remote Services
 synopsis: >
-  Class `cds.RemoteService` is a service proxy class to consume remote services via different [protocols](/node.js/cds-serve#cds-protocols), like OData or plain REST.
+  Class `cds.RemoteService` is a service proxy class to consume remote services via different [protocols](cds-serve#cds-protocols), like OData or plain REST.
 # layout: node-js
 status: released
 ---
 
 # Remote Services <Concept />
 
-Class `cds.RemoteService` is a service proxy class to consume remote services via different [protocols](/node.js/cds-serve#cds-protocols), like OData or plain REST.
+Class `cds.RemoteService` is a service proxy class to consume remote services via different [protocols](cds-serve#cds-protocols), like OData or plain REST.
 
 [[toc]]
 
@@ -97,7 +97,7 @@ The `requestTimeout` setting in the `cds.RemoteService` configuration specifies 
 ```
 
 ::: tip
-See [Using Destinations](../guides/using-services#using-destinations) for more details on destination configuration.
+See [Using Destinations](../guides/services/consuming-services#using-destinations) for more details on destination configuration.
 :::
 
 ##  <i>  More to Come </i>

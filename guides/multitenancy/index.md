@@ -1,12 +1,12 @@
 ---
 synopsis: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
-label: Multitenancy
-status: released
 impl-variants: true
 ---
 
-# Multitenancy
+# Deploy Multitenant SaaS Applications
+
+{{ $frontmatter.synopsis }}
 
 [[toc]]
 
@@ -20,47 +20,30 @@ In contrast to single-tenant mode, applications wait for tenants to subscribe be
 
 [Learn more about SaaS applications.](#about-saas-applications){.learn-more}
 
-<ImplVariantsHint />
 
-## Prerequisites
 
-Make sure you have the latest version of `@sap/cds-dk` installed:
+## Enable Multitenancy
 
-```sh
-npm update -g @sap/cds-dk
-```
-
-## Jumpstart with an application
-
-To get a ready-to-use _bookshop_ application you can modify and deploy, run:
+Simply enable multitenancy for your CAP application using `cds add`, followed by an `npm install` for Node.js projects, or `mvn install` for Java projects, to install added package dependencies, like this:
 
 ::: code-group
-
 ```sh [Node.js]
-cds init bookshop --add sample
-cd bookshop
+cds add multitenancy
+npm install
 ```
 
 ```sh [Java]
-cds init bookshop --java --add tiny-sample
-cd bookshop
+cds add multitenancy
+mvn install
 ```
-
 :::
 
-## Enable Multitenancy {#enable-multitenancy}
 
-Now, you can run this to enable multitenancy for your CAP application:
+::: details See what this adds to your **Node.js** project…
 
-```sh
-cds add multitenancy
-```
+In case of **CAP Node.js** projects, the `cds add multitenancy` command...
 
-<div class="impl node">
-
-::: details See what this adds to your Node.js project…
-
-1. Adds package `@sap/cds-mtxs` to your project:
+1. Adds package dependency `@sap/cds-mtxs` to your project:
 
    ```jsonc
    {
@@ -118,12 +101,9 @@ cds add multitenancy
 4. If necessary, modifies deployment descriptors such as `mta.yaml` for Cloud Foundry and Helm charts for Kyma.
 
 :::
+::: details See what this adds to your **Java** project…
 
-</div>
-
-<div class="impl java">
-
-::: details See what this adds to your Java project…
+In case of **CAP Java** projects, the `cds add multitenancy` command...
 
 1. Adds the following to _.cdsrc.json_ in your app:
 
@@ -163,7 +143,7 @@ cds add multitenancy
 
     ```
 
-1. Adds a sidecar subproject at `mtx/sidecar` with this _package.json_:
+4. Adds a sidecar subproject at `mtx/sidecar` with this _package.json_:
 
    ```json
    {
@@ -195,9 +175,6 @@ cds add multitenancy
    ```
 
 :::
-
-</div>
-
 ::: details Profile-based configuration presets
 
    The profiles `with-mtx-sidecar` and `mtx-sidecar` activate pre-defined configuration presets, which are defined as follows:
@@ -266,38 +243,15 @@ cds add multitenancy
   You can always inspect the _effective_ configuration with `cds env`.
   :::
 
-## Install Dependencies
+## Test-Drive Locally
 
-<div class="impl node">
 
-After adding multitenancy, install your application dependencies:
+Before deploying to the cloud, you can test-drive common SaaS operations with your app locally, including SaaS startup, subscribing tenants, and upgrading tenants.
 
-```sh
-npm i
-```
 
-</div>
+::: details Additional configuration required for **CAP Java** projects…
 
-<div class="impl java">
-
-After adding multitenancy, Maven build should be used to generate the model related artifacts:
-
-```sh
-mvn install
-```
-
-:::warning Error message: 'Invalid MTX sidecar configuration'
-If you get the message 'Invalid MTX sidecar configuration', you need to add the dependency to `@sap/cds-mtxs` also to the `package.json` in your project root.
-This is a known issue in CDS 9.
-:::
-
-</div>
-
-## Test-Drive Locally {#test-locally}
-
-<div class="impl java">
-
-  For multitenancy you need additional dependencies in the _pom.xml_ of the `srv` directory. To support mock users in the local test scenario add `cds-starter-cloudfoundry`:
+  In case of **CAP Java** projects you need additional dependencies in the _pom.xml_ of the `srv` directory. To support mock users in the local test scenario add `cds-starter-cloudfoundry`:
 
   ```xml
   <dependency>
@@ -329,24 +283,18 @@ This is a known issue in CDS 9.
         tenant: t2
         roles: [ admin, cds.ExtensionDeveloper ]
   ```
-
-  :::
-
-</div>
-
-Before deploying to the cloud, you can test-drive common SaaS operations with your app locally, including SaaS startup, subscribing tenants, and upgrading tenants.
-
-::: details Using multiple terminals…
-In the following steps, we start two servers, the main app and MTX sidecar, and execute some CLI commands. So, you need three terminal windows.
 :::
 
+
 ### 1. Start MTX Sidecar
+
+In a first terminal, start the MTX sidecar process:
 
    ```sh
    cds watch mtx/sidecar
    ```
 
-   ::: details  Trace output explained
+   ::: details  Inspecting the log output...
 
    In the trace output, we see several MTX services being served; most interesting for multitenancy: the _ModelProviderService_ and the _DeploymentService_.
 
@@ -379,23 +327,29 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
    [cds] - [ terminate with ^C ]
    ```
 
+   [If you get an error on server start, read the troubleshooting information.](../../get-started/get-help#why-do-i-get-an-error-on-server-start){.learn-more}
    :::
 
-   [If you get an error on server start, read the troubleshooting information.](/get-started/troubleshooting#why-do-i-get-an-error-on-server-start){.learn-more}
 
-### 2. Launch App Server
+### 2. Launch the app server
 
-<div class="impl node">
+In a second terminal, start the main CAP application server:
 
-   ```sh
+::: code-group
+   ```sh [Node.js]
    cds watch --with-mtx
    ```
+  ```sh [Java]
+  mvn cds:watch -Dspring-boot.run.profiles=with-mtx
+  ```
+:::
 
-   ::: details  Persistent database
+::: details  Launched with shared database...
 
-   The server starts as usual, but automatically uses a persistent database instead of an in-memory one:
+   The server starts as usual, but automatically uses a persistent database shared with the MTX sidecar instead of an in-memory one, as we can see in the trace output:
 
-   ```log
+::: code-group
+   ```log [Node.js]
    [cds] - loaded model from 6 file(s):
 
      db/schema.cds
@@ -415,22 +369,7 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
    [cds] - launched at 3/5/2023, 2:21:53 PM, version: 6.7.0, in: 748.979ms
    [cds] - [ terminate with ^C ]
    ```
-
-   :::
-
-</div>
-
-  <div class="impl java">
-
-  ```sh
-  mvn cds:watch -Dspring-boot.run.profiles=with-mtx
-  ```
-
-  ::: details  Persistent database
-
-  The server starts as usual, with the difference that a persistent database is used automatically instead of an in-memory one:
-
-  ```log
+  ```log [Java]
   2023-03-31 14:19:23.987  INFO 68528 --- [  restartedMain] c.s.c.bookshop.Application               : The following 1 profile is active: "with-mtx"
   ...
   2023-03-31 14:19:23.987  INFO 68528 --- [  restartedMain] c.s.c.services.impl.ServiceCatalogImpl   : Registered service ExtensibilityService$Default
@@ -441,118 +380,59 @@ In the following steps, we start two servers, the main app and MTX sidecar, and 
   2023-03-31 14:19:24.561  INFO 68528 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
   2023-03-31 14:19:24.561  INFO 68528 --- [  restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.71]
   ```
+:::
 
-  :::
-
-  </div>
 
 ### 3. Subscribe Tenants
 
-In the third terminal, subscribe to two tenants using one of the following methods.
+In the third terminal, subscribe and unsubscribe tenants as follows:
 
    ::: code-group
-
-   ```sh [CLI]
-   cds subscribe t1 --to http://localhost:4005 -u yves:
-   cds subscribe t2 --to http://localhost:4005 -u yves:
+   ```sh [cds subscribe]
+   cds subscribe t1 --to http://localhost:4005
+   cds subscribe t2 --to http://localhost:4005
    ```
+   ```sh [cds unsubscribe]
+   cds unsubscribe t1 --from http://localhost:4005
+   cds unsubscribe t2 --from http://localhost:4005
+   ```
+   :::
 
-   ```http
-   POST http://localhost:4005/-/cds/deployment/subscribe HTTP/1.1
+  ::: details  Behind the scenes...
+
+   The `cds subscribe` command sends HTTP requests to the MTX sidecar's `SaasProvisioningService` as follows:
+
+   ```http [HTTP]
+   POST http://localhost:4005/-/cds/saas-provisioning/subscribe HTTP/1.1
    Content-Type: application/json
    Authorization: Basic yves:
-
    { "tenant": "t1" }
    ```
-
+   A programmatic call from a CAP Node.js client would look like this:
    ```js [JavaScript]
-   const ds = await cds.connect.to('cds.xt.DeploymentService')
+   const ds = await cds.connect.to ('cds.xt.SaasProvisioningService')
    await ds.subscribe('t1')
-   ```
+  ```
+  Upon receiving a subscription request, the sidecar creates a new persistent tenant database per tenant, hence keeping tenant data isolated:
 
-   :::
+  ```log
+  [cds] - POST /-/cds/deployment/subscribe
+  [mtx] - (re-)deploying SQLite database for tenant: t1 // [!code focus]
+  > init from db/init.js // [!code focus]
+  > init from db/data/sap.capire.bookshop-Authors.csv // [!code focus]
+  > init from db/data/sap.capire.bookshop-Books.csv // [!code focus]
+  > init from db/data/sap.capire.bookshop-Books_texts.csv // [!code focus]
+  > init from db/data/sap.capire.bookshop-Genres.csv // [!code focus]
+  /> successfully deployed to ./../../db-t1.sqlite  // [!code focus]
 
-   > Run `cds help subscribe` to see all available options.
-
-<!--
-<div class="impl java">
-
-   ::: code-group
-
-   ```sh [CLI]
-   cds subscribe t1 --to http://localhost:4005 -u yves:
-   cds subscribe t2 --to http://localhost:4005 -u yves:
-   ```
-
-   ```http
-   POST http://localhost:4005/-/cds/deployment/subscribe HTTP/1.1
-   Content-Type: application/json
-
-   { "tenant": "t1" }
-   ```
-
-   ```sh [with Java Handlers &gt;= Spring Boot 3.2.0]
-   # For java you have to run the Subscribe main method. The method waits
-   # until all deployments and custom subscribe handlers are finished and
-   # then prints the result. To run this method locally, use the following
-   # command where application.jar is the one of your application:
-   java -cp application.jar -Dloader.main=com.sap.cds.framework.spring.utils.Subscribe org.springframework.boot.loader.launch.PropertiesLauncher <tenant> [<tenant options>]
-   ```
-
-  ```sh [with Java Handlers &lt; Spring Boot 3.2.0]
-   # For java you have to run the Subscribe main method. The method waits
-   # until all deployments and custom subscribe handlers are finished and
-   # then prints the result. To run this method locally, use the following
-   # command where application.jar is the one of your application:
-   java -cp application.jar -Dloader.main=com.sap.cds.framework.spring.utils.Subscribe org.springframework.boot.loader.PropertiesLauncher <tenant> [<tenant options>]
-   ```
-
-   :::
-
-</div>
--->
-
-   ::: details  `cds subscribe` explained
-
-   1. Be reminded that these commands are only relevant for local testing. For a deployed app, [subscribe to your tenants](#subscribe) through the BTP cockpit.
-
-   2. In the CLI commands, we use the pre-defined mock user `yves`, see [pre-defined mock users](../../node.js/authentication#mock-users).
-
-   3. The subscription is sent to the MTX sidecar process (listening on port **4005**)
-
-   4. The sidecar reacts with trace outputs like this:
-
-      ```log
-      [cds] - POST /-/cds/deployment/subscribe
-      ...
-      [mtx] - successfully subscribed tenant t1 // [!code focus]
-      ```
-
-   5. In response to each subscription, the sidecar creates a new persistent tenant database per tenant, keeping tenant data isolated:
-
-      ```log
-      [cds] - POST /-/cds/deployment/subscribe
-      [mtx] - (re-)deploying SQLite database for tenant: t1 // [!code focus]
-      > init from db/init.js // [!code focus]
-      > init from db/data/sap.capire.bookshop-Authors.csv // [!code focus]
-      > init from db/data/sap.capire.bookshop-Books.csv // [!code focus]
-      > init from db/data/sap.capire.bookshop-Books_texts.csv // [!code focus]
-      > init from db/data/sap.capire.bookshop-Genres.csv // [!code focus]
-      /> successfully deployed to ./../../db-t1.sqlite  // [!code focus]
-
-      [mtx] - successfully subscribed tenant t1
-      ```
-
-   6. To unsubscribe a tenant, run:
-
-      ```sh
-      cds unsubscribe ‹tenant› --from http://localhost:4005 -u ‹user›
-      ```
-
-        > Run `cds help unsubscribe` to see all available options.
+  [mtx] - successfully subscribed tenant t1
+  ```
   :::
 
-#### Test with Different Users/Tenants {.node}
+
+### 4. Test via the app's UI {.node}
+
+For example, in case of [_@capire/bookshop_](https://github.com/capire/bookshop) sample, you can now test your app with different users/tenants as follows...
 
 Open the _Manage Books_ app at <http://localhost:4004/#Books-manage> and log in with `alice`. Select **Wuthering Heights** to open the details, edit here the title and save your changes. You've changed data in one tenant.
 
@@ -630,7 +510,7 @@ In the following example, _Wuthering Heights (only in t1)_ was changed by _alice
 
    :::
 
-### 4. Upgrade Your Tenant
+### 5. Upgrade Your Tenant
 
 When deploying new versions of your app, you also need to upgrade your tenants' databases. For example, open `db/data/sap.capire.bookshop-Books.csv` and add one or more entries in there. Then upgrade tenant `t1` as follows:
 
@@ -655,100 +535,41 @@ When deploying new versions of your app, you also need to upgrade your tenants' 
 
    :::
 
-<!--
-<div class="impl java">
+> After that, open or refresh <http://localhost:4004/#Books-manage> again as _alice_ and _erin_ &rarr; the added entries are visible for _alice_, but still missing for _erin_, as `t2` has not yet been upgraded.
 
-   ::: code-group
-
-   ```sh [CLI]
-   cds upgrade t1 --at http://localhost:4005 -u yves:
-   ```
-
-   ```http
-   POST http://localhost:4005/-/cds/deployment/upgrade HTTP/1.1
-   Content-Type: application/json
-
-   { "tenant": "t1" }
-   ```
-
-   ```sh [with Java Handlers &gt;= Spring Boot 3.2.0]
-   # For java you have to run the Deploy main method. The method waits
-   # until all deployments and custom handlers are finished and then
-   # prints the result. To run this method locally, use the following
-   # command where application.jar is the one of your application:
-   java -cp application.jar -Dloader.main=com.sap.cds.framework.spring.utils.Deploy org.springframework.boot.loader.launch.PropertiesLauncher [<tenant 1>] ... [<tenant n>]
-   ```
-
-   ```sh [with Java Handlers &lt; Spring Boot 3.2.0]
-   # For java you have to run the Deploy main method. The method waits
-   # until all deployments and custom handlers are finished and then
-   # prints the result. To run this method locally, use the following
-   # command where application.jar is the one of your application:
-   java -cp application.jar -Dloader.main=com.sap.cds.framework.spring.utils.Deploy org.springframework.boot.loader.PropertiesLauncher [<tenant 1>] ... [<tenant n>]
-   ```
-   :::
-
-</div>
--->
-
-<div class="impl node">
-
-Now, open or refresh <http://localhost:4004/#Books-manage> again as _alice_ and _erin_ &rarr; the added entries are visible for _alice_, but still missing for _erin_, as `t2` has not yet been upgraded.
-
-</div>
 
 ## Deploy to Cloud
 
-### Cloud Foundry / Kyma
+In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deploy/to-cf) and [deployment to Kyma](../deploy/to-kyma) guides.
 
-In order to get your multitenant application deployed, follow this excerpt from the [deployment to CF](../deployment/to-cf) and [deployment to Kyma](../deployment/to-kyma) guides.
+1. Prepare your application for production, **once**:
+    ::: code-group
+    ```sh [Cloud Foundry]
+    cds add hana,xsuaa  # add required production services
+    cds add portal      # as an option to serve UIs, if any
+    cds add mta         # to enable MTA based deployments
+    ```
+    ```sh [Kyma]
+    cds add hana,xsuaa  # add required production services
+    cds add portal      # as an option to serve UIs, if any
+    cds add kyma        # to enable Kyma/Helm based deployments
+    ```
+    :::
 
-Once: Add SAP HANA Cloud, XSUAA, and [App Router](../deployment/to-cf#add-app-router) configuration. The App Router acts as a single point-of-entry gateway to route requests to. In particular, it ensures user login and authentication in combination with XSUAA.
+2. Deploy the application:
+    ```sh
+    cds up
+    ```
 
-```sh
-cds add hana,xsuaa
-```
+:::tip For manual setups, ensure the metadata container (`t0`) is unique
 
-If you intend to serve UIs you can easily set up the SAP Cloud Portal service:
-
-```sh
-cds add portal
-```
-
-Once: add a **deployment descriptor**:
-
-::: code-group
-
-```sh [Cloud Foundry]
-cds add mta
-```
-
-```sh [Kyma]
-cds add kyma
-```
+If you’re not running [`cds-mtx upgrade *`](#update-database-schema) as a Cloud Foundry hook (as set up by `cds add multitenancy`) and instead use a custom setup, deploy the MTX sidecar with a single instance for the initial rollout. This avoids conflicts when `t0` is created.
 
 :::
 
-::: code-group
-
-```sh [Cloud Foundry]
-cds up
-```
-
-```sh [Kyma]
-cds up --to k8s
-```
-
-:::
-
-:::tip Ensure a unique metadata container
-To prevent potential conflicts during the initial creation of the MTXS metadata container (`t0`), it is recommended to perform the initial deployment with only one instance of the MTXS sidecar.
-
-Alternatively, you can run `cds-mtx upgrade t0` beforehand, such as in a [Cloud Foundry hook](#run-as-cloud-foundry-hook).
-:::
 
 
-### Subscribe
+### Subscribe via BTP Cockpit
 
 **Create a BTP subaccount** to subscribe to your deployed application. This subaccount has to be in the same region as the provider subaccount, for example, `us10`.
 
@@ -842,29 +663,30 @@ You should now see the route mapped to your application.
 
 ### Update Database Schema
 
-<div class="impl java">
+There are several ways to update the database schema of a multitenant application.
 
-[Learn best practices for schema updates in the Java Guide](/java/multitenancy#database-update){.learn-more style="margin-top: 20px"}
+* For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update).
+* For **CAP Node.js** applications, you can use either of:
+  - the `cds-mtx upgrade` command from a terminal
+  - the [MTX Sidecar API](mtxs#upgrade-tenants-→-jobs)
+  - via a [CloudFoundry hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks)
+  - via a [CloudFoundry task](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/tasks/)
 
-</div>
+  as shown in the examples below.
 
-<div class="impl node">
+::: code-group
+```sh [cds-mtx upgrade]
+cd mtx/sidecar
+cds-mtx upgrade t1 # single tenants
+cds-mtx upgrade \* # all tenants
+```
+```http [MTX Sidecar API]
+POST /-/cds/saas-provisioning/upgrade HTTP/1.1
+Content-Type: application/json
 
-There are several ways to run the update of the database schema.
-
-#### MTX Sidecar API
-
-Please check the [Upgrade API](./mtxs#upgrade-tenants-→-jobs) to see how the database schema update can be run for single or all tenants using the API endpoint.
-
-#### `cds-mtx upgrade` Command
-
-The database schema upgrade can also be run using `cds-mtx upgrade <tenant|*>`. The command must be run in the MTX sidecar root directory.
-
-##### Run as Cloud Foundry hook
-
-Example definition for a [module hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks):
-
-```yaml
+{ "tenants": ["t1"] }
+```
+```yaml [CloudFoundry hook]
 hooks:
   - name: upgrade-all
     type: task
@@ -877,34 +699,34 @@ hooks:
       disk-quota: 768M
       command: cds-mtx upgrade '*'
 ```
-
-[Blue-green deployment strategy for MTAs](https://help.sap.com/docs/btp/sap-business-technology-platform/blue-green-deployment-strategy){.learn-more}
-
-##### Manually run as Cloud Foundry Task
-
-You can also invoke the command manually using `cf run-task`:
-
-```sh
+```sh [CloudFoundry task]
 cf run-task <app> --name "upgrade-all" --command "cds-mtx upgrade '*'"
 ```
+:::
 
-</div>
+::: info Managing large upgrade workloads
 
-### Test-Drive with Hybrid Setup
+Very large projects might need to increase resources or limit parallelism of tenant upgrades.
 
-For faster turnaround cycles in development and testing, you can run the app locally while binding it to remote service instances created by a Cloud Foundry deployment.
+[The best practice algorithm is laid out in our _Get Help_ guide.](../../get-started/get-help#why-is-my-mtx-sidecar-is-killed-with-exit-status-137){.learn-more}{style="margin-top:10px"}
 
-To achieve this, bind your SaaS app and the MTX sidecar to its required cloud services, for example:
+:::
+
+
+### Test-Drive in Hybrid Setup
+
+You can run the app locally while binding it to remote service instances created by a Cloud Foundry deployment.
+To do so, use `cds bind` to bind your SaaS app and the MTX sidecar to its required cloud services, like that:
 
 ```sh
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-srv
 ```
 
 For testing the sidecar, make sure to run the command there as well:
 
 ```sh
 cd mtx/sidecar
-cds bind --to-app-services bookshop-srv
+cds bind -a bookshop-mtx
 ```
 
 To generate the SAP HANA HDI files for deployment, go to your project root and run the build:
@@ -919,32 +741,26 @@ Each time you update your model or any SAP HANA source file, you need repeat the
 
 > Make sure to stop any running CAP servers left over from local testing.
 
-By passing `--profile hybrid` you can now run the app with cloud bindings and interact with it as you would while [testing your app locally](#test-locally). Run this in your project root:
+By passing `--profile hybrid` you can now run the app with cloud bindings and interact with it as you would while [testing your app locally](#test-drive-locally). Run this in your project root:
 
 ```sh
 cds watch mtx/sidecar --profile hybrid
 ```
 
-And in another terminal:
+Then, in another terminal, start the main application:
 
-<div class="impl java">
-
-```sh
+::: code-group
+```sh [Node.js]
+cds watch --profile hybrid
+```
+```sh [Java]
 cd srv
 mvn cds:watch -Dspring-boot.run.profiles=hybrid
 ```
+:::
 
-</div>
 
-<div class="impl node">
-
-```sh
-cds watch --profile hybrid
-```
-
-</div>
-
-Learn more about [Hybrid Testing](../../advanced/hybrid-testing).{.learn-more}
+Learn more about [Hybrid Testing](../../tools/cds-bind).{.learn-more}
 
 ::: tip Manage multiple deployments
 Use a dedicated profile for each deployment landscape if you are using several, such as `dev`, `test`, `prod`. For example, after logging in to your `dev` space:
@@ -968,7 +784,7 @@ For CAP Java, all these services are supported natively and SaaS dependencies ar
 :::tip Explicitly activate the Destination service
 SaaS dependency for Destination service needs to be activated explicitly in the `application.yaml` due to security reasons. SaaS dependencies for some of the other services can be **de**activated by setting the corresponding property to `false` in the `application.yaml`.
 
-Refer to the `cds.multiTenancy.dependencies` section in the [CDS properties](/java/developing-applications/properties#cds-properties).
+Refer to the `cds.multiTenancy.dependencies` section in the [CDS properties](../../java/developing-applications/properties#cds-properties).
 :::
 
 For CAP Node.js, all these services are supported natively and can be activated individually by providing configuration in `cds.requires`. In the most common case, you simply activate service dependencies like so:
@@ -1039,39 +855,12 @@ Alternatively, overriding the [`dependencies`](./mtxs#get-dependencies) handler 
 
 <div id="subscriptiondashboard" />
 
-## Add Custom Handlers
+## Adding Custom Handlers
 
-MTX services are implemented as standard CAP services, so you can register for events just as you would for any application service.
+[MTX services](mtxs.md) are implemented as standard CAP services, so you can add custom handlers to all respective lifecycle events just as you would for any application service. To do so simply add a `server.js` file in the _mtx/sidecar/_ folder, with content like this:
 
-### In the Java Main Project {.java}
-
-For Java, you can add custom handlers to the main app as described in the [documentation](/java/multitenancy#custom-logic):
-
-```java
-@After
-private void subscribeToService(SubscribeEventContext context) {
-   String tenant = context.getTenant();
-   Map<String, Object> options = context.getOptions();
-}
-
-@On
-private void upgradeService(UpgradeEventContext context) {
-   List<String> tenants = context.getTenants();
-   Map<String, Object> options = context.getOptions();
-}
-
-@Before
-private void unsubscribeFromService(UnsubscribeEventContext context) {
-   String tenant = context.getTenant();
-   Map<String, Object> options = context.getOptions();
-}
-```
-
-### In the Sidecar Subproject
-
-You can add custom handlers in the sidecar project, implemented in Node.js.
-
-```js
+::: code-group
+```js [mtx/sidecar/server.js]
 cds.on('served', () => {
   const { 'cds.xt.DeploymentService': ds } = cds.services
   ds.before('subscribe', async (req) => {
@@ -1092,14 +881,40 @@ cds.on('served', () => {
     const { tenant } = req.data
   })
 })
-
 ```
-<!-- TODO: Learn more about the available events to plug in to{.learn-more}-->
+:::
+
+[Learn more about that in the _MTX Services Reference_ documentation](./mtxs){.learn-more}
 
 
-## Configuring the Java Service { #binding-it-together .java}
 
-`cds add multitenancy` added configuration similar to this:
+In case of **CAP Java** projects, you can alternatively add custom handlers to the main app as described in the [Java documentation](../../java/multitenancy#custom-logic):
+
+```java
+@After
+private void subscribeToService(SubscribeEventContext context) {
+   String tenant = context.getTenant();
+   Map<String, Object> options = context.getOptions();
+}
+
+@On
+private void upgradeService(UpgradeEventContext context) {
+   List<String> tenants = context.getTenants();
+   Map<String, Object> options = context.getOptions();
+}
+
+@Before
+private void unsubscribeFromService(UnsubscribeEventContext context) {
+   String tenant = context.getTenant();
+   Map<String, Object> options = context.getOptions();
+}
+```
+[Learn more about that in the _Java Multitenancy Guide_ documentation](../../java/multitenancy#custom-logic){.learn-more}
+
+
+## Configuring the Java Service
+
+In case of CAP Java projects, `cds add multitenancy` adds additional configuration similar to this:
 
 ::: code-group
 
@@ -1143,9 +958,13 @@ srv:
 ```
 :::
 
-- `CDS_MULTITENANCY_SIDECAR_URL` sets the application property <Config java>cds.multitenancy.sidecar.url</Config>. This URL is required by the CAP Java runtime to connect to the MTX Sidecar application and is derived from the property `mtx-url` of the mtx-sidecar module.
-- `CDS_MULTITENANCY_APPUI_URL` sets the entry point URL that is shown in the SAP BTP Cockpit.
-- `CDS_MULTITENANCY_APPUI_TENANTSEPARATOR` is the separator in generated tenant-specific URL.
+In which the following environment variables are set:
+
+| `CDS_MULTITENANCY_...` | Description |
+|---------------------|-------------|
+| `SIDECAR_URL` | Sets the application property <Config java>cds.multitenancy.sidecar.url</Config>. This URL is required by the CAP Java runtime to connect to the MTX Sidecar application and is derived from the property `mtx-url` of the mtx-sidecar module. |
+| `APPUI_URL` | Sets the entry point URL that is shown in the SAP BTP Cockpit. |
+| `APPUI_TENANTSEPARATOR` | The separator in generated tenant-specific URL. |
 
 The tenant application requests are separated by the tenant-specific app URL:
 
@@ -1172,12 +991,12 @@ modules:
       TENANT_HOST_PATTERN: ^(.*)-${default-uri}
 ```
 
-[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more style="margin-top: 10px;"}
+[Learn more about _Defining MTA Extension Descriptors_](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors?q=The%20MTA%20Deployment%20Extension%20Descriptor){.learn-more}
 
 
 :::
 
-#### Option: Provisioning Only { #provisioning-only-mtx-sidecar .java}
+#### Option: Provisioning Only
 
 Under certain conditions it makes a lot of sense to use the MTX Sidecar only for tenant provisioning. This configuration can be used in particular when the application doesn't offer (tenant-specific) model extensions and feature toggles. In such cases, business requests can be served by the Java runtime without interaction with the sidecar, for example to fetch an extension model.
 
@@ -1208,8 +1027,8 @@ In this case, the application can use its static local model without requesting 
 cds:
   model:
     provider:
-      extensibility: false // [!code focus]
-      toggles: false // [!code focus]
+      extensibility: false # [!code focus]
+      toggles: false # [!code focus]
 
 ```
 
@@ -1221,13 +1040,16 @@ You can also selectively use these properties to enable only extensibility or fe
 
 <div id="subscriptionmanager" />
 
-## Appendix
 
-### About SaaS Applications
+<br/> <br/> <br/> <br/>
+
+# Appendix
+
+## About SaaS Applications
 
 Software-as-a-Service (SaaS) solutions are deployed once by a SaaS provider, and then used by multiple SaaS customers subscribing to the software.
 
-SaaS applications need to register with the [_SAP BTP SaaS Provisioning service_](https://discovery-center.cloud.sap/serviceCatalog/saas-provisioning-service) to handle `subscribe` and `unsubscribe` events. In contrast to [single-tenant deployments](../deployment/to-cf), databases or other _tenant-specific_ resources aren't created and bootstrapped upon deployment, but upon subscription per tenant.
+SaaS applications need to register with the [_SAP BTP SaaS Provisioning service_](https://discovery-center.cloud.sap/serviceCatalog/saas-provisioning-service) to handle `subscribe` and `unsubscribe` events. In contrast to [single-tenant deployments](../deploy/to-cf), databases or other _tenant-specific_ resources aren't created and bootstrapped upon deployment, but upon subscription per tenant.
 
 CAP includes the **MTX services**, which provide out-of-the-box handlers for `subscribe`/`unsubscribe` events, for example to manage SAP HANA database containers.
 <!-- , as well as automated updates of subscribed tenants. (Not sure what this means here) -->
@@ -1241,16 +1063,7 @@ If everything is set up, the following graphic shows what's happening when a use
 3. The MTX services use Service Manager to create the database tenant.
 4. The CAP Application connects to this tenant at runtime using Service Manager.
 
-<div class="impl java">
-
-In CAP Java, tenant provisioning is delegated to CAP Node.js based services. This has the following implications:
-
-- Java applications need to run and maintain the [_cds-mtxs_ module](../multitenancy/#enable-multitenancy) as a sidecar application (called _MTX sidecar_ in this documentation).
-- But multitenant CAP Java applications automatically expose the tenant provisioning API called by the SaaS Provisioning service so that [custom logic during tenant provisioning](/java/multitenancy#custom-logic) can be written in Java.
-
-</div>
-
-### About Sidecar Setups
+## About Sidecar Setups
 
 The SaaS operations `subscribe` and `upgrade` tend to be resource-intensive. Therefore, it's recommended to offload these tasks onto a separate microservice, which you can scale independently of your main app servers.
 
@@ -1263,66 +1076,3 @@ In these MTX sidecar setups, a subproject is added in _./mtx/sidecar_, which ser
 The main task for the MTX sidecar is to serve `subscribe` and `upgrade` requests.
 
 The CAP services runtime requests models from the sidecar only when you apply tenant-specific extensions. For Node.js projects, you have the option to run the MTX services embedded in the main app, instead of in a sidecar.
-
-<!--
-
-## Multiple Microservices
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
-
-## Sharing One Database
-
-... as in Lothar's sample project
-
-::: warning TODO
-:::
--->
-
-<!--
-<div class="impl node">
-
-Use CLI option `--without-sidecar` to do so, e.g.:
-
-```sh
-cds add multitenancy --without-sidecar
-```
-
-::: details See what this adds to your Node.js project...
-
-1. Adds package `@sap/cds-mtxs` to your project:
-
-   ```jsonc
-   {
-      "dependencies": { // [!code focus]
-         "@sap/cds-mtxs": "^1" // [!code focus]
-      },
-   }
-   ```
-
-2. Adds these lines to your project's _package.json_ to enable multitenancy with sidecar:
-
-   ```jsonc
-   {
-      "cds": {  // [!code focus]
-         "requires": { "multitenancy": true }, // [!code focus]
-         "profile": "with-mtx-sidecar" // [!code --]
-      },
-      "dependencies": {
-         "@sap/cds-mtxs": "^1"
-      },
-   }
-   ```
-
-3. ~~**Doesn't** add a sidecar subproject at `mtx/sidecar`~~
-:::
-
-</div>
- -->
-
-## Next Steps
-
-- See the [MTX Services Reference](./mtxs) for details on service and configuration options, in particular about sidecar setups.
-- See our guide on [Extending and Customizing SaaS Solutions](../extensibility/).

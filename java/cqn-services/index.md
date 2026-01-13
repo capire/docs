@@ -1,6 +1,5 @@
 ---
 synopsis: CQN Services are the core services of CAP that deal with CDS data. One of the key APIs provided by these services is the uniform query API based on CQN statements.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -24,7 +23,7 @@ Consequently, they only accept CQN statements targeting entities that are define
 
 [Learn more about adding business logic to Application Services.](./application-services){.learn-more}
 
-Application Services are automatically augmented with generic providers (built-in event handlers), which handle common aspects such as [authorization](../../guides/security/authorization), [input validation](../../guides/providing-services#input-validation), [implicit pagination](../../guides/providing-services#implicit-pagination) and many more.
+Application Services are automatically augmented with generic providers (built-in event handlers), which handle common aspects such as [authorization](../../guides/security/authorization), [input validation](../../guides/services/constraints), [implicit pagination](../../guides/services/served-ootb#implicit-pagination) and many more.
 Their default ON event handler delegates CQN statements to the Persistence Service.
 
 [Learn more about these capabilities in our Cookbooks.](../../guides/){.learn-more}
@@ -53,7 +52,7 @@ A Persistence Service isn't bound to a specific service definition in the CDS mo
 
 Transaction management is built in to Persistence Services. They take care of lazily initializing and maintaining database transactions as part of the active changeset context.
 
-Some generic providers are registered on Persistence Services instead of on Application Services, like the ones for [managed data](../../guides/domain-modeling#managed-data).
+Some generic providers are registered on Persistence Services instead of on Application Services, like the ones for [managed data](../../guides/domain/index#managed-data).
 This ensures that the functionality is also triggered, when directly interacting with a Persistence Service.
 
 The Persistence Service is used when implementing event handlers for Application Services, for example when additional data needs to be read when performing custom validations.
@@ -63,7 +62,7 @@ Additionally, the default ON event handler of Application Services delegates CQN
 
 ## Remote Services
 
-[Remote Services](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/RemoteService.html) are CQN-based clients for remote APIs, for example OData. They're backed by a [CDS Service](../../cds/cdl#services) definition, that reflects the structure of the remote API. The CDS service definition is usually [imported](../../guides/using-services#external-service-api), for example from an EDMX specification.
+[Remote Services](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/RemoteService.html) are CQN-based clients for remote APIs, for example OData. They're backed by a [CDS Service](../../cds/cdl#services) definition, that reflects the structure of the remote API. The CDS service definition is usually [imported](../../guides/services/consuming-services#external-service-api), for example from an EDMX specification.
 
 They can be used when integrating APIs provided by the application with APIs provided by other applications or micro-services. This integration can happen synchronously by delegating CQN statements from Application Services to Remote Services or asynchronously by using Remote Services to replicate data into the applications own persistence.
 

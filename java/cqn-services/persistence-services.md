@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Persistence Services are CQN-based database clients. This section describes which database types are supported, how datasources to these databases are created and how they are turned into Persistence Services.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -69,7 +68,7 @@ Support for localized and temporal data via session context variables requires H
 
 ### SQLite
 
-CAP supports [SQLite](https://www.sqlite.org/index.html) out of the box. When working with Java, it's [recommended](../../guides/databases-sqlite?impl-variant=java#sqlite-in-production) to use SQLite only for development and testing purposes.
+CAP supports [SQLite](https://www.sqlite.org/index.html) out of the box. When working with Java, it's recommended to use SQLite only for development and testing purposes.
 
 CAP does support most of the major features on SQLite, although there are a few shortcomings that are listed here:
 
@@ -148,7 +147,7 @@ cds.sql.hana.optimizationMode: legacy
 Use the [hints](../working-with-cql/query-execution#hana-hints) `hdb.USE_HEX_PLAN` and `hdb.NO_USE_HEX_PLAN` to overrule the configured optimization mode per statement.
 
 ::: warning Rare error in `HEX` mode
-In some corner cases, particularly when using [native HANA views](../../advanced/hana#create-native-sap-hana-objects), queries in `HEX` optimization mode may fail with a "hex enforced but cannot be selected" error. This is the case if the statement execution requires the combination of HEX only features with other features that are not yet supported by the HEX engine. If CAP detects this error it will, as a fallback, execute the query in _legacy_ mode.
+In some corner cases, particularly when using [native HANA views](../../guides/databases/hana-native#create-native-sap-hana-objects), queries in `HEX` optimization mode may fail with a "hex enforced but cannot be selected" error. This is the case if the statement execution requires the combination of HEX only features with other features that are not yet supported by the HEX engine. If CAP detects this error it will, as a fallback, execute the query in _legacy_ mode.
 If you know upfront that a query can't be executed by the HEX engine, you can add a `hdb.NO_USE_HEX_PLAN` hint to the query, so the SQL generator won't use features that require the HEX engine.
 :::
 
@@ -184,7 +183,7 @@ cds add postgres
 ```
 
 ::: warning
-Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases-postgres.md?impl-variant=java#deployment-using-liquibase)
+Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases/postgres#using-liquibase-java)
 :::
 
 #### Configure the Connection Data Explicitly { #postgres-connection }
@@ -408,7 +407,7 @@ At runtime you need to ensure to access the tenant-dependent entities through th
 
 #### Local Development and Testing with MTX
 
-In case you are testing your multitenant application locally with the setup described in [Local Development and Testing](../../guides/multitenancy/#test-locally), you need to perform additional steps to create an in-memory tenant-independent datasource.
+In case you are testing your multitenant application locally with the setup described in [Local Development and Testing](../../guides/multitenancy/index#test-drive-locally), you need to perform additional steps to create an in-memory tenant-independent datasource.
 
 To create an in-memory datasource, initialized with the SQL schema, add the following configuration to your Spring Boot application:
 
@@ -545,7 +544,7 @@ cds:
 
 ### Native SQL with JDBC Templates { #jdbctemplate}
 
-The JDBC template is the Spring API, which in contrast to the CQN APIs allows executing native SQL statements and call stored procedures (alternative to [Native HANA Object](../../advanced/hana#create-native-sap-hana-objects)). It seamlessly integrates with Spring's transaction and connection management. The following example shows the usage of `JdbcTemplate` in the custom handler of a Spring Boot enabled application. It demonstrates the execution of the stored procedure and native SQL statement.
+The JDBC template is the Spring API, which in contrast to the CQN APIs allows executing native SQL statements and call stored procedures (alternative to [Native HANA Object](../../guides/databases/hana-native#create-native-sap-hana-objects)). It seamlessly integrates with Spring's transaction and connection management. The following example shows the usage of `JdbcTemplate` in the custom handler of a Spring Boot enabled application. It demonstrates the execution of the stored procedure and native SQL statement.
 
 ```java
 @Autowired
@@ -576,7 +575,7 @@ Currently, the generator doesn't support using reserved [Java keywords](https://
 
 #### Static Model in the Query Builder
 
-The [Query Builder API](../working-with-cql/../working-with-cql/query-api) allows you to dynamically create [CDS Query Language (CQL)](/cds/cql) queries using entity and element names given as strings:
+The [Query Builder API](../working-with-cql/../working-with-cql/query-api) allows you to dynamically create [CDS Query Language (CQL)](../../cds/cql) queries using entity and element names given as strings:
 
 ```java
 Select.from("my.bookshop.Books")
@@ -635,7 +634,7 @@ public interface Authors_ extends StructuredType<Authors_> {
 
 ####  Accessor Interfaces
 
-The corresponding data is captured in a data model similar to JavaBeans. These beans are interfaces generated by the framework, providing the data access methods - getters and setters - and containing the CDS element names as well. The instances of the data model are created by the [CDS Query Language (CQL)](/cds/cql) Execution Engine (see the following example).
+The corresponding data is captured in a data model similar to JavaBeans. These beans are interfaces generated by the framework, providing the data access methods - getters and setters - and containing the CDS element names as well. The instances of the data model are created by the [CDS Query Language (CQL)](../../cds/cql) Execution Engine (see the following example).
 
 Note the following naming convention: the model interfaces, which represent the structure of the CDS Model, always end with an underscore, for example `Books_`. The accessor interface, which refers to data model, is simply the name of the CDS entity - `Books`.
 
