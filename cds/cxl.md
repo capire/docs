@@ -139,7 +139,7 @@ Or as part of a query:
 SELECT from Books { title } where genre.name = 'Fantasy'
 ```
 
-### in entity definitions
+### in model definitions
 
 Expressions can be used to define calculated elements.
 Typically, this is done in a column of a query. CAP
@@ -191,11 +191,43 @@ FROM sap_capire_bookshop_Authors as Authors
 ```
 :::
 
-the `years_between` function is one of CAPs standard functions that calculates the number of years between two dates.
+the `years_between` function is one of CAPs portable functions that calculates the number of years between two dates.
 
 
 [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
 [Learn more about CAPs portable functions](../guides/databases/cql-to-sql.md#portable-functions){ .learn-more }
+
+### in queries
+
+Expressions can be used in various parts of a query, e.g., in the select list, in the where clause, in order by clauses, and more:
+
+:::code-group
+```js [CQL]
+> await cds.ql`
+  SELECT from Books {
+    title,
+    stock,
+    price,
+    price * stock as total } where price > 10` // [!code focus]
+[
+  { title: 'Wuthering Heights', stock: 12, price: 11.11, total: 133.32},
+  { title: 'Jane Eyre', stock: 11, price: 12.34, total: 135.74 },
+  { title: 'The Raven', stock: 333, price: 13.13, total: 4372.29 },
+  { title: 'Eleonora', stock: 555, price: 14, total: 7770 },
+  { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
+]
+```
+
+```sql [SQL]
+SELECT
+  Books.title,
+  Books.stock,
+  Books.price,
+  Books.price * Books.stock as total
+FROM sap_capire_bookshop_Books as Books
+WHERE Books.price > 10
+```
+:::
 
 
 ### in annotations
