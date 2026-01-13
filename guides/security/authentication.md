@@ -1353,3 +1353,7 @@ TODO
   
 - **Don't forget to add authentication tests** to ensure properly configured security in your deployed application that rejects unauthenticated requests.
 
+::: warning
+Without security middleware configured, CDS services are exposed to public. 
+Basic configuration of an authentication strategy is mandatory to protect your CAP application.
+:::
