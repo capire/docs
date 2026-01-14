@@ -601,8 +601,6 @@ WHERE exists (
 ```
 :::
 
-> Note how the infix filter condition `genre.name = 'Fantasy'` is applied to the
-the `exists`-subquery for the `books` association in SQL.
 
 ### applied to `from` clause
 
