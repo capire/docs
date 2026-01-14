@@ -420,7 +420,7 @@ Filters can be applied as for any other CDS defined entity, for example, to filt
 
 It is crucial to make the service `OutboxDeadLetterQueueService` accessible for internal users only as it contains sensitive data that could be exploited for malicious purposes if unauthorized changes are performed.
 
-[Learn more about pseudo roles](../guides/security/authorization#pseudo-roles){.learn-more}
+[Learn more about pseudo roles](../guides/security/cap-users#pseudo-roles){.learn-more}
 
 :::
 
