@@ -111,7 +111,7 @@ An expression can be used in various places, in the following sections we will g
 ### in model definitions
 
 Expressions can be used to define calculated elements.
-Typically, this is done in a column of a query. CAP
+Typically, this is done on the select list of a query. CAP
 also allows to define calculated elements directly in the model:
 
 ```cds
@@ -148,7 +148,7 @@ FROM sap_capire_bookshop_Books as Books
 
 ### in queries
 
-Expressions can be used in various parts of a query, e.g., in the select list, in the where clause, in order by clauses, and more:
+Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
 
 :::code-group
 ```js [CQL]
