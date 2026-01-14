@@ -109,7 +109,7 @@ MockUsersSecurityConfig  :  Added mock user {"name":"admin","password":"admin", 
 </div>
 
 **You should not manually configure authentication for endpoints.**
-As the mock user authentication is active, all (CAP) andpoints are [authenticated automatically](#model-auth). 
+As the mock user authentication is active, all (CAP) endpoints are [authenticated automatically](#model-auth). 
 
 <div class="impl java">
 
@@ -153,8 +153,8 @@ returns successfully (HTTP response `200`).
 Mock users are deactivated in production profile by default ❗
 :::
 
-[Learn more about advanced authentication options](../../java/security#spring-boot){.learn-more .java}
-[Learn more about advanced authentication options](../../node.js/authentication#strategies){.learn-more .node}
+[Learn more about advanced authentication options in Java](../../java/security#spring-boot){.learn-more}
+[Learn more about advanced authentication options in Node.js](../../node.js/authentication#strategies){.learn-more}
 
 
 ### Preconfigured Mock Users { #preconfigured-mock-users }
@@ -164,8 +164,8 @@ The predefined users are added to [custom mock users](#custom-mock-users) define
 
 You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
 
-[Learn more about predefined mock users](../../java/security#preconfigured-mock-users){.learn-more .java} 
-[Learn more about predefined mock users](../../node.js/authentication#mock-users){.learn-more .node}
+[Learn more about predefined mock users in Java](../../java/security#preconfigured-mock-users){.learn-more} 
+[Learn more about predefined mock users in Node.js](../../node.js/authentication#mock-users){.learn-more}
 
 
 ### Customization { #custom-mock-users }
@@ -201,18 +201,20 @@ cds:
 "cds": {
   "requires": {
     "auth": {
-      "kind": "mocked",
-      "users": {
-        "viewer-user": {
-          "password": "pass",
-          "tenant": "CrazyCars",
-          "roles": ["Viewer"],
-          "attr": { ... }
+      "[development]": {
+        "kind": "mocked",
+        "users": {
+          "viewer-user": {
+            "password": "pass",
+            "tenant": "CrazyCars",
+            "roles": ["Viewer"],
+            "attr": { ... }
+          }
+        },
+        "tenants": {
+          "name" : "CrazyCars",
+          "features": [ "cruise", "park" ]
         }
-      },
-      "tenants": {
-        "name" : "CrazyCars",
-        "features": [ "cruise", "park" ]
       }
     }
   }
@@ -251,8 +253,8 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 </div>
 
-[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more .java}
-[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more .node}
+[Learn more about custom mock users in Java.](../../java/security#custom-mock-users){.learn-more}
+[Learn more about custom mock users in Node.js.](../../node.js/authentication#mocked){.learn-more}
 
 
 ### Automated Testing { #mock-user-testing }
@@ -293,20 +295,15 @@ public class BookServiceOrdersTest {
 Integration tests running in production profile should verify that unauthenticated users cannot access any application endpoints❗
 :::
 
-[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more .java}
-[Learn more about testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
+[Learn more about testing in Java.](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
+[Learn more about testing with authenticated endpoints in Node.js.](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+[Learn more about unit testing in Node.js.](../../node.js/cds-test#testing-with-cds-test){.learn-more}
 
-
-<div class="impl node">
-
-[Learn more about unit testing](../../node.js/cds-test#testing-with-cds-test){.learn-more}
-
-</div>
 
 
 ## IAS Authentication { #ias-auth }
 
-[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing following features:
+[SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing the following features:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - cross-landscape user propagation (including on-premise)
@@ -394,7 +391,7 @@ The [binding](../../java/security#bindings) to service instance of type `identit
 </div>
 
 The binding provides access to the identity services on behalf of a concrete client.
-**CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS intstance. 
+**CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS instance. 
 
 Service instance and binding offer the following crucial configuration properties:
 
@@ -823,9 +820,9 @@ Role collections can be assigned to end users.
 
 For convenience, when adding the XSUAA facet, these artifacts are initially derived from the CDS model:
 
-- **XSUAA Scopes**: For every [CAP role](./cap-users#roles) in the CDS model, a dedicated scope is generated with the exact name of the CDS role.
-- **XSUAA attributes**  For every [CAP attribute](./authorization#user-attrs) in the CDS model, one attribute is generated.
-- **XSUAA role templates** For every scope, a dedicated role template with the exact name is generated. The role templates are building blocks for concrete role collections that finally can be assigned to users. 
+- **XSUAA scopes**: For every [CAP role](./cap-users#roles) in the CDS model, a dedicated scope is generated with the exact name of the CDS role.
+- **XSUAA attributes**:  For every [CAP attribute](./authorization#user-attrs) in the CDS model, one attribute is generated.
+- **XSUAA role templates**: For every scope, a dedicated role template with the exact name is generated. The role templates are building blocks for concrete role collections that finally can be assigned to users. 
 
 ```json
 {
@@ -848,9 +845,9 @@ For convenience, when adding the XSUAA facet, these artifacts are initially deri
   ]
 }
 ```
-[Learn more about XSUAA attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
-[Lean more about XSUAA security descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
-[Learn how to setup mTLS for XSUAA](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.learn-more}
+[Learn more about XSUAA attributes.](https://help.sap.com/docs/btp/sap-business-technology-platform/setting-up-instance-based-authorizations){.learn-more}
+[Lean more about XSUAA security descriptor.](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
+[Learn how to setup mTLS for XSUAA.](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-mtls-authentication-to-sap-authorization-and-trust-management-service-for-your-application){.learn-more}
 
 At runtime, after successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
@@ -1280,7 +1277,9 @@ With `cds.security.authentication.authenticateMetadataEndpoints: false` you can 
 </div>
 
 <div class="node">
+
 Automatic authentication enforcement can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mock-user-auth) explicitly in production.
+
 </div>
 
 ### Overrule Partially { #partially-auth .java }
@@ -1317,7 +1316,7 @@ Be cautious with the configuration of the `HttpSecurity` instance in your custom
 
 ### Overrule Fully { #fully-auth }
 
-In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protercted by a secure channel:
+In services meshes such as [Istio](https://istio.io/) the authentication is usually fully delegated to a central ingress gateway and the internal communication with the services is protected by a secure channel:
 
 ![Service Mesh with Ingress Gateway](./assets/ingress-auth.drawio.svg){width="500px"}
 
