@@ -16,8 +16,8 @@ entity Foo { //...
 ```
 
 Read through the runtime specific guides to learn about how to implement plugins:
-- [CAP Node.js Plugin guide](../node.js/cds-plugins.md)
-- [CAP Java Plugin guide](../java/building-plugins.md)
+- [CAP Node.js Plugin guide](../../node.js/cds-plugins.md)
+- [CAP Java Plugin guide](../../java/building-plugins.md)
 
 ### Consider all CAP runtimes
 
@@ -63,7 +63,7 @@ Whenever you have to integrate external services, you should follow the Calesi p
 
    >  [!tip]
    >
-   > With that, you already fulfilled a few goals and guidelines from Hexagonal Architecture: The interface offered to your clients is agnostic and follows CAP's uniform service API style. Your consumers can use this mock implementation at development to speed up their [inner loop development](features#fast-inner-loops) phases.
+   > With that, you already fulfilled a few goals and guidelines from Hexagonal Architecture: The interface offered to your clients is agnostic and follows CAP's uniform service API style. Your consumers can use this mock implementation at development to speed up their [inner loop development](../../get-started/features.md#fast-inner-loops) phases.
 
 3. **Provide the real impl** — Start working on the 'real' implementation that translates received audit log messages into outbound calls to the real audit log service.
 
