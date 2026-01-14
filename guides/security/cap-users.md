@@ -72,10 +72,10 @@ CAP users can be classified in multiple dimensions:
 - A subscriber tenant includes all users of a dedicated application customer.
 
 
-Usually, the provider tenant is not subscribed to a [multi-tenant application](../multitenancy/#multitenancy) and therefore has no business users.
+Usually, the provider tenant is not subscribed to a [multitenant application](../multitenancy/) and therefore has no business users.
 There are technical users for the provider and for all subscribers.
 
-| Multi-Tenant Application | Business users | Technical user
+| Multitenant Application | Business users | Technical user
 |---------------------------|----------------|----------------
 | Provider Tenant           |       -        | <Y/>
 | Subscriber Tenants        |      <Y/>      | <Y/> 
@@ -378,7 +378,7 @@ The framework then authorizes the request as usual based on the user's roles.
 The `@sap/ams` plugin provides multiple build-time features:
 
 - Validate `ams.attributes` annotations for type coherence against the AMS schema.
-- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-plugins).
+- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-tasks).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 
@@ -425,7 +425,7 @@ For local development, `@sap/ams-dev` needs to compile the DCL files to Data Con
 Additionally, `@sap/ams` provides multiple build-time features:
 
 - Validate `ams.attributes` annotations for type coherence against the DCL schema.
-- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-plugins).
+- Generate policies from the CDS model during the build using a [custom build task](../deploy/build#custom-build-tasks).
 - Generate a deployer application during the build to upload the Data Control Language (DCL) base policies.
 
 ::: tip
@@ -1695,7 +1695,7 @@ Remote Services configurations with `destination` section support `onBehalfOf` o
 <div class="impl node">
 
 CAP's [Remote Services](../services/consuming-services) offer an easy and declarative way to define client-side representations of remote service APIs.  
-Such services integrate seamlessly with CAP, managing connection setup, including [authentication and user propagation](../services/consuming-services#authentication-and-authorization-of-remote-services).
+Such services integrate seamlessly with CAP, managing connection setup, including authentication and user propagation.
 Under the hood CAP utilizes the [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/create-destinations-from-scratch) and [`@sap-cloud-sdk/connectivity`](https://www.npmjs.com/package/@sap-cloud-sdk/connectivity) to do most of the heavy lifting. 
 
 ```json

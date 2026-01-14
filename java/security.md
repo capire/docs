@@ -28,7 +28,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 ::: info
 This chapter appends CAP Java sepcifc information only. 
-Consult the comprehensive [Security Guide](../guides/security/#cap-security-guide) first to learn about CAP Security features in general.
+Consult the comprehensive [Security Guide](../guides/security/) first to learn about CAP Security features in general.
 :::
 
 ## Authentication { #authentication}

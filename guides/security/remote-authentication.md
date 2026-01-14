@@ -53,7 +53,7 @@ CAP supports out-of-the-box consumption of various types of [remote services]( #
 ## Co-located Services {#co-located-services}
 
 Co-located services do not run in the same microservice, but are typically part of the same deployment unit and hence reside within the same trust boundary of the [application zone](./overview#application-zone).
-Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../services/providing-services#late-cut-microservices).
+Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../deploy/microservices#late-cut-microservices).
 
 Technically, **they share the same identity instance, which allows direct token forwarding**:
 
