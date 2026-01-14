@@ -49,8 +49,8 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node               # Node.js latest LTS
-npm add --global @sap/cds-dk    # CAP's cds-dk
+brew install node      # Node.js latest LTS
+npm i -g @sap/cds-dk   # CAP's cds-dk
 ```
 
 
