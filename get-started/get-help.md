@@ -678,7 +678,7 @@ By default, the Cloud MTA Build Tool executes module builds in parallel. If you 
 
 `cf undeploy <mta-id>` deletes an MTA (use `cf mtas` to find the MTA ID).
 
-Use the optional `--delete-services` parameter to also wipe service instances.
+Use `--delete-services`, `--delete-service-keys` and `--delete-service-brokers` parameters to also wipe services, service keys, or service brokers.
 
 ::: danger This also deletes the HDI containers with the application data.
 :::
