@@ -14,7 +14,6 @@ import unaryOperator from './assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from './assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
 import functionDef from './assets/cxl/function-def.drawio.svg?raw'
-import orderingTerm from './assets/cxl/ordering-term.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
 </script>
 
