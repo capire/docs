@@ -793,43 +793,6 @@ navigates along the `author` association of the `Books` entity only if the autho
 CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
 
 
-## ordering term { #ordering-term }
-
-<div class="diagram" >
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div class="diagram" v-html="orderingTerm"></div>
-</div>
-
-### ordered list of book titles by price
-
-:::code-group
-```js [CQL]
-> await cds.ql`
-  SELECT from Books { title, price }
-  order by price desc nulls last` // [!code focus]
-[
-  { title: 'Catweazle', price: 150 },
-  { title: 'Eleonora', price: 14 },
-  { title: 'The Raven', price: 13.13 },
-  { title: 'Jane Eyre', price: 12.34 },
-  { title: 'Wuthering Heights', price: 11.11 },
-  { title: 'Untitled', price: null }
-]
-```
-
-```sql [SQL]
-SELECT
-  title,
-  price
-FROM
-  sap_capire_bookshop_Books AS Books
-ORDER BY price DESC NULLS LAST -- [!code focus]
-```
-:::
-
-In this example, the ordering term sorts books by price in descending order and places rows with `null` prices at the end.
-
-
 ## type-ref { #type-ref }
 
 [Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
