@@ -310,9 +310,33 @@ This conforms to the core principle [what-not-how](../guides/domain/index#captur
 
 ## literal value { #literal-value }
 
+Literal values represent constant data embedded directly in an expression.
+They are independent of model elements and evaluate to the same value.
+
 <div class="diagram" >
 <div v-html="literalValue"></div>
 </div>
+
+:::code-group
+```js [cds repl]
+> cds.parse.expr ` 42 `
+{ val: 42 }
+> cds.parse.expr ` 'Hello World' `
+{ val: 'Hello World' }
+> cds.parse.expr ` null `
+{ val: null }
+> cds.parse.expr ` true `
+{ val: true }
+> cds.parse.expr ` false `
+{ val: false }
+> cds.parse.expr ` Date'2026-01-01' `
+{ val: '2026-01-01', literal: 'date' }
+> cds.parse.expr ` Time'08:42:15.000' `
+{ val: '08:42:15.000', literal: 'time' }
+> cds.parse.expr ` TimeStamp'2026-01-14T10:30:00Z' `
+{ val: '2026-01-14T10:30:00Z', literal: 'timestamp' }
+```
+:::
 
 [Learn more about literals.](./csn.md#literals){ .learn-more }
 
@@ -323,7 +347,6 @@ This conforms to the core principle [what-not-how](../guides/domain/index#captur
 <div class="diagram">
 <div v-html="unaryOperator"></div>
 </div>
-
 
 ::: info A unary operator is an operator that operates on exactly one operand.
 
