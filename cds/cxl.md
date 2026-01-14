@@ -461,54 +461,6 @@ When writing annotation expressions, it's often important to ensure that the res
 To achieve this, use the [exists](#in-exists-predicate) predicate.
 
 
-::: tip Associations are **forward-declared joins**
-They provide a convenient way to navigate between related entities without having to explicitly specify the join condition during query execution.
-
-The join condition is defined **ahead of time** as part of the association.
-Typically, this is a foreign key relationship between two entities, but other conditions are also possible.
-
-
-```cds
-entity Books {
-  key ID : Integer;
-  title  : String;
-  author : Association to Authors;
-                      // implicit: on author.ID = author_ID
-}
-
-entity Authors {
-  key ID : Integer;
-  name   : String;
-  books  : Association to many Books on books.author = $self;
-                             // for: on books.author_ID = $self.ID
-}
-```
-
-
-It is applied whenever the association is used in a path expression.
-
-```cds
-SELECT from Books { title, author.name as author }
-```
-
-```sql
-SELECT
-  title,
-  author.name AS author
-FROM
-  sap_capire_bookshop_Books
-LEFT JOIN
-  sap_capire_bookshop_Authors AS author -- Table alias for association 'author'
-  ON author.ID = author_ID;             -- Join condition from association
-```
-
-
-The condition can manifest in multiple ways:
-- In the on condition of a join
-- In the condition that correlates a subquery to a main query
-- To select related entities with an additional query
-:::
-
 ### in `exists` predicate
 
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
