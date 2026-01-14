@@ -96,48 +96,17 @@ The following diagram illustrates how to read the diagrams:
 
 ## expr { #expr }
 
-An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
-```cds
-select from Books {
-  42                     as answer,         // literal
-  title,                                    // reference ("ref")
-  price * quantity       as totalPrice,     // binary operator
-  substring(title, 1, 3) as shortTitle,     // function call
-  author.name            as authorName,     // ref with path expression
-  chapters[number < 3]   as earlyChapters,  // ref with infix filter
-  exists chapters        as hasChapters,    // exists
-  count(chapters)        as chapterCount,   // aggregate function
-}
-```
-
+An expression can hold various elements, such as references, literals, function calls, operators, and more.
 
 <div class="diagram">
 <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
 <div  v-html="expr"></div>
 </div>
 
-Expressions can be used in various places, for example in annotations:
 
-```cds
-annotate AdminService.Authors:dateOfDeath with @assert: (case
-  when dateOfDeath > date( $now ) then 'Cannot be in the future'
-  when dateOfDeath < dateOfBirth then 'Enter a date after date of birth'
-end);
-```
-
-Or in entity defintions for adding calculated elements:
-
-```cds
-extend Authors with {
-  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
-}
-```
-
-Or as part of a query:
-
-```cds
-SELECT from Books { title } where genre.name = 'Fantasy'
-```
+::: tip
+An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
+:::
 
 ### in model definitions
 
@@ -146,56 +115,36 @@ Typically, this is done in a column of a query. CAP
 also allows to define calculated elements directly in the model:
 
 ```cds
-extend Authors with {
-  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
+extend Books with {
+  total = price * stock;
 }
 ```
 
-In this example, we define a calculated element `age` on the `Authors` entity
-which is no persisted but calculated on-read.
+In this example, we define a calculated element `total` in the `Books` entity
+that calculates the total value of all books in stock by multiplying the `price` with the `stock`.
 
 
 :::code-group
 ```js [CQL]
-> await cds.ql`SELECT from Authors { name, age }` // [!code focus]
+> await cds.ql`SELECT title, total from Books` // [!code focus]
 [
-  { name: 'Emily Brontë', age: 30 },
-  { name: 'Charlotte Brontë', age: 36 },
-  { name: 'Edgar Allen Poe', age: 40 },
-  { name: 'Richard Carpenter', age: 82 }
+  { title: 'Wuthering Heights', total: 133.32 },
+  { title: 'Jane Eyre', total: 135.74 },
+  { title: 'The Raven', total: 4372.29 },
+  { title: 'Eleonora', total: 7770 },
+  { title: 'Catweazle', total: 3300 }
 ]
 ```
 
 ```sql [SQL]
 SELECT
-Authors.name,
-floor(
-  (
-    (
-      (cast(strftime('%Y', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) - cast(strftime('%Y', Authors.dateOfBirth) as Integer)) * 12
-    ) + (
-      cast(strftime('%m', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) - cast(strftime('%m', Authors.dateOfBirth) as Integer)
-    ) + (
-      (
-        case
-          when (cast(strftime('%Y%m', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) < cast(strftime('%Y%m', Authors.dateOfBirth) as Integer)) then
-            (cast(strftime('%d%H%M%S%f0000', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) > cast(strftime('%d%H%M%S%f0000', Authors.dateOfBirth) as Integer))
-          else
-            (cast(strftime('%d%H%M%S%f0000', coalesce(Authors.dateOfDeath,date(session_context('$now')))) as Integer) < cast(strftime('%d%H%M%S%f0000', Authors.dateOfBirth) as Integer)) * -1
-        end
-      )
-    )
-  ) / 12
-) as age -- here the calculated element is resolved, in this case for sqlite
-FROM sap_capire_bookshop_Authors as Authors
+  Books.title,
+  Books.price * Books.stock as total -- calculated element is resolved
+FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-the `years_between` function is one of CAPs portable functions that calculates the number of years between two dates.
-
-
 [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
-[Learn more about CAPs portable functions](../guides/databases/cql-to-sql.md#portable-functions){ .learn-more }
 
 ### in queries
 
@@ -217,6 +166,9 @@ Expressions can be used in various parts of a query, e.g., in the select list, i
   { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
 ]
 ```
+
+Compared to the previous example, we now use the expression directly in the query
+to calculate the total value of all books in stock.
 
 ```sql [SQL]
 SELECT
