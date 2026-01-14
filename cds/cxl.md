@@ -308,6 +308,41 @@ The `@assert` annotation lets you capture the intent via an expression, without 
 This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
 :::
 
+## literal value { #literal-value }
+
+<div class="diagram" >
+<div v-html="literalValue"></div>
+</div>
+
+[Learn more about literals.](./csn.md#literals){ .learn-more }
+
+## operators
+
+### unary operator { #unary-operator }
+
+<div class="diagram">
+<div v-html="unaryOperator"></div>
+</div>
+
+
+::: info A unary operator is an operator that operates on exactly one operand.
+
+E.g. in the expression `-price`, the `-` operator is a unary operator
+that operates on the single operand `price`. It negates the value of `price`.
+:::
+
+### binary operator { #binary-operator }
+
+<div class="diagram">
+<div v-html="binaryOperator"></div>
+</div>
+
+
+::: info A binary operator is an operator that operates on two operands.
+E.g. in the expression `price * quantity`, the `*` operator is a binary operator
+that multiplies the two factors `price` and `quantity`.
+:::
+
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
@@ -818,41 +853,6 @@ ON
 The path expression `author[ age < 40 ].name`
 navigates along the `author` association of the `Books` entity only if the author's age is below 40.
 
-
-## operators
-
-### unary operator { #unary-operator }
-
-<div class="diagram">
-<div v-html="unaryOperator"></div>
-</div>
-
-
-::: info A unary operator is an operator that operates on exactly one operand.
-
-E.g. in the expression `-price`, the `-` operator is a unary operator
-that operates on the single operand `price`. It negates the value of `price`.
-:::
-
-### binary operator { #binary-operator }
-
-<div class="diagram">
-<div v-html="binaryOperator"></div>
-</div>
-
-
-::: info A binary operator is an operator that operates on two operands.
-E.g. in the expression `price * quantity`, the `*` operator is a binary operator
-that multiplies the two factors `price` and `quantity`.
-:::
-
-## literal value { #literal-value }
-
-<div class="diagram" >
-<div v-html="literalValue"></div>
-</div>
-
-[Learn more about literals.](./csn.md#literals){ .learn-more }
 
 ## function { #function }
 
