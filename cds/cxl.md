@@ -95,7 +95,21 @@ The following diagram illustrates how to read the diagrams:
 
 ## expr { #expr }
 
-An expression can hold various elements, such as references, literals, function calls, operators, and more.
+An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // reference ("ref")
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+This syntax diagram describes the possible expressions:
 
 <div class="diagram">
 <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
