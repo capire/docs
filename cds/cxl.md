@@ -386,6 +386,7 @@ FROM
 In this example, we select all books together with the name of their author.
 The association `author` defined in the `Books` entity relates a book to it's author.
 
+::: warning Flattening of to-many associations
 When navigating along a to-many association to a leaf element, the result is flattened:
 
 :::code-group
@@ -408,13 +409,12 @@ FROM sap_capire_bookshop_Authors as Authors
   LEFT JOIN sap_capire_bookshop_Books as books
   ON books.author_ID = Authors.ID
 ```
-:::
 
 In this example, we select the book titles together with each author.
 Since books is a to-many association, we get a _joined_ result that repeats every author (name) for every associated book.
+:::
 
-::: info Use expand to read to-many associations as structured result
-To avoid that the author data is duplicated rather use an expand:
+Use expand to read to-many associations as structured result:
 
 ::: code-group
 ```js [CQL]
@@ -456,9 +456,10 @@ FROM sap_capire_bookshop_Authors as Authors
 ```
 :::
 
+::: warning Annotation expressions expect single-valued results
 When writing annotation expressions, it's often important to ensure that the result yields a single value for each entry in the annotated entity.
 To achieve this, use the [exists](#in-exists-predicate) predicate.
-
+:::
 
 ### in `exists` predicate
 
@@ -492,6 +493,9 @@ WHERE exists (
 
 [Learn more about the `exists` predicate.](./cql.md#exists-predicate){.learn-more}
 
+The `exists` predicate can be further enhanced by [combining it with infix filters](#exists-infix-filter).
+This allows you to specify conditions on subsets of associated entities, enabling more precise and expressive queries.
+
 ## infix filter { #infix-filter }
 
 An infix in linguistics refer to a letter or group of letters that are added in the middle of a word to make a new word.
@@ -507,7 +511,7 @@ This allows to filter the target of an association based on certain criteria.
 
 
 
-### applied to `exists` predicate
+### applied to `exists` predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -619,7 +623,7 @@ WHERE exists (
 
 
 ::: info
-Note that the generated SQL is equivalent to querying authors with an [exists predicate](#applied-to-exists-predicate):
+Note that the generated SQL is equivalent to querying authors with an [exists predicate](#exists-infix-filter):
 
 :::code-group
 ```js [CQL]
@@ -790,12 +794,6 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 
 CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
-
-
-## type-ref { #type-ref }
-
-[Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
-
 
 <style>
 
