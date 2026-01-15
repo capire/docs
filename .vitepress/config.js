@@ -3,6 +3,7 @@ const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
 import { defineConfig } from 'vitepress'
+import { node, cap } from 'vite-plugin-cds'
 import languages from './languages'
 import path from 'node:path'
 import { Menu } from './menu.js'
@@ -76,6 +77,7 @@ const config = defineConfig({
   ],
 
   vite: {
+    plugins: [node(), cap()],
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },

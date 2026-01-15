@@ -8,13 +8,75 @@ status: released
 
 <script setup>
 import expr from './assets/cxl/expr.drawio.svg?raw'
-import ref from './assets/cxl/ref.drawio.svg?raw'
+import refDiagram from './assets/cxl/ref.drawio.svg?raw'
 import infixFilter from './assets/cxl/infix-filter.drawio.svg?raw'
 import unaryOperator from './assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from './assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
 import functionDef from './assets/cxl/function-def.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
+import InteractiveQuery from './components/InteractiveQuery.vue'
+
+import cds from '@sap/cds'
+import sqlite from 'better-sqlite3'
+import express from 'express';
+
+window.cds = cds
+
+async function initialize() {
+  //======= compile a csn model =======
+  const csn = cds.compile(`
+
+  entity Books {
+    key ID   : Integer;
+    author   : Association to Authors @mandatory;
+    title    : localized String @mandatory;
+    descr    : localized String(2000);
+    stock    : Integer;
+    price    : Decimal;
+    currency : String;
+  }
+
+  entity Authors {
+    key ID       : Integer;
+    name         : String @mandatory;
+    dateOfBirth  : Date;
+    dateOfDeath  : Date;
+    placeOfBirth : String;
+    placeOfDeath : String;
+    books        : Association to many Books on books.author = $self;
+  }
+  `);
+
+  //======= start a cds server =======
+  await sqlite.initialized // wait for sqlite3-wasm to be ready (part of polyfill)
+
+  cds.db = await cds.connect.to('db');
+  await cds.deploy(csn).to(cds.db);
+
+  await INSERT.into('Authors').entries([
+    {ID: 1, name: 'JRR Tolkien'}
+  ])
+
+  await INSERT.into('Books').entries([
+    {ID: 1, title: 'LOTR', author_ID: 1}
+  ])
+
+  const app = express();
+  await cds.serve('all').from(csn).in(app);
+}
+
+const initialized = initialize();
+
+async function evalJS(code) {
+  await initialized;
+  return await eval(`(async () => {${code}})()`) ?? "success";
+}
+
+async function cdsQL(queryText) {
+  await initialized;
+  return await window.cds.ql(queryText);
+}
 </script>
 
 
@@ -35,6 +97,9 @@ For example, [a calculated element](./cdl#calculated-elements) defined in an ent
 to the respective calculation in the generated query when the entity is queried.
 :::
 
+<InteractiveQuery :onExecute="cdsQL" />
+
+<InteractiveQuery initialQuery="await INSERT.into('Books').entries({ID: 2, author_ID: 1, title: 'LOTR 2'})" :onExecute="evalJS" />
 
 ## How to read this guide { #how-to }
 
@@ -325,7 +390,7 @@ referred to as a **path expression**.
 
 <div class="diagram">
   <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-  <div v-html="ref"></div>
+  <div v-html="refDiagram"></div>
 </div>
 
 ::: info Leaf elements
@@ -796,28 +861,4 @@ CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#por
 
 [Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
 
-
-<style>
-
-.badge-inline {
-  margin-bottom: 1em
-}
-
-.diagram {
-  padding-top: 1em;
-  padding-bottom: 1em;
-  max-width: 100%;
-}
-
-.diagram > div > svg {
-  max-width: 100%;
-  height: auto;
-}
-
-.diagram > svg {
-  max-width: 100%;
-  height: auto;
-}
-
-</style>
 
