@@ -331,6 +331,17 @@ E.g. in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
 
+## function { #function }
+
+
+<div class="diagram" >
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+<div class="diagram" v-html="functionDef"></div>
+</div>
+
+
+CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
+
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
@@ -796,18 +807,6 @@ ON
 
 The path expression `author[ age < 40 ].name`
 navigates along the `author` association of the `Books` entity only if the author's age is below 40.
-
-
-## function { #function }
-
-
-<div class="diagram" >
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div class="diagram" v-html="functionDef"></div>
-</div>
-
-
-CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
 
 <style>
 
