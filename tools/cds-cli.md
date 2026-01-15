@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  Available commands of the <code>cds</code> command line client
+  Available commands of the <code>cds</code> command line client.
 ---
 
 <script setup>
@@ -484,7 +484,7 @@ could look like this:
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
 
-@data.product @hcql @rest @odata 
+@data.product @hcql @rest @odata
 service sap.capire.flights.data {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
