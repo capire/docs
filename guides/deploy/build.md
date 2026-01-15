@@ -26,7 +26,7 @@ Build tasks are derived from the CDS configuration and project context. By defau
 - _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
 - CDS model folders and files defined by [required services](../../node.js/cds-env#services)
   - Built-in examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
-- `src` folder configured in the build task
+- Explicit `src` folder configured in the build task
 
 
 Feature toggle folders and required built-in service models will also be added if user-defined models have been configured as a [`model` option](#build-task-properties) in your build tasks.
