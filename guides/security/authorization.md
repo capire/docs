@@ -413,7 +413,25 @@ The [restrict annotation](#restrict-annotation) for an entity allows you to enfo
 In addition, you can define a `where`-condition that further limits the set of accessible instances. 
 This condition, which acts like a filter, establishes *instance-based authorization*.
 
-### Filter Conditions { #filter-consitions }
+### Filter Conditions
+
+For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
+
+```cds
+annotate Orders with @(restrict: [
+  { grant: ['READ', 'UPDATE', 'DELETE'], where: (CreatedBy = $user) } ]);
+```
+
+Or a `Vendor` can only edit articles on stock (that means `Articles.stock` positive):
+
+```cds
+annotate Articles with @(restrict: [
+  { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
+```
+
+::: tip
+Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
+:::
 
 The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
 Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
@@ -443,24 +461,6 @@ You can define filter conditions in the `where`-clause of restrictions based on 
 
 </div>
 
-
-For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
-
-```cds
-annotate Orders with @(restrict: [
-  { grant: ['READ', 'UPDATE', 'DELETE'], where: (CreatedBy = $user) } ]);
-```
-
-Or a `Vendor` can only edit articles on stock (that means `Articles.stock` positive):
-
-```cds
-annotate Articles with @(restrict: [
-  { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
-```
-
-::: tip
-Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
-:::
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
 
