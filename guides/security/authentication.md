@@ -39,7 +39,7 @@ As access control relies on verified claims, authentication is a mandatory prere
 According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely. 
 CAP [leverages platform services](overview#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
 
-- For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-auth) is an appropriate built-in authentication feature.
+- For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-authentication) is an appropriate built-in authentication feature.
 
 - For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services out of the box:  
   - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
@@ -47,7 +47,7 @@ CAP [leverages platform services](overview#key-concept-platform-services) to pro
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
 
 
-## Mock User Authentication { #mock-user-auth }
+## Mock User Authentication
 
 In non-production profile, by default, CAP creates a security configuration which accepts _mock users_.
 As this authentication strategy is a built-in feature which does not require any platform service, it is perfect for **unit testing and local development scenarios**.
@@ -140,9 +140,9 @@ curl http://localhost:4004/odata/v4/admin/Books --verbose
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (no password) with
 ```sh
-curl http://alice:basic@localhost:4004/odata/v4/admin/Books
+curl http://alice:@localhost:4004/odata/v4/admin/Books
 ```
 returns successfully (HTTP response `200`).
 
@@ -309,7 +309,7 @@ Integration tests running in production profile should verify that unauthenticat
  - cross-landscape user propagation (including on-premise)
  - streamlined SAP and non-SAP system [integration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/integrating-service) (due to [OpenId Connect](https://openid.net/connect/) compliance)
 
-IAS authentication is best configured and tested in the Cloud, so let's enhance the started bookshop sample application with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+IAS authentication is best configured and tested in the Cloud, so let's enhance the [previously started bookshop sample application](#mock-user-authentication) with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with IAS { #ias-ready }
@@ -324,7 +324,7 @@ towards your IAS tenant to use it as identity provider for applications in your 
 - Ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) on CF, 
 in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-You can continue with the sample [already created](#mock-user-auth). In the project root folder, execute
+You can continue with the sample [already created](#mock-user-authentication). In the project root folder, execute
 
 ```sh
 cds add mta
@@ -417,6 +417,7 @@ and wait until the application is up and running.
 You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
 The startup log should confirm the activated IAS authentication:
+
 <div class="java">
 
 ```sh
@@ -426,7 +427,11 @@ The startup log should confirm the activated IAS authentication:
 </div>
 
 <div class="node">
+
+```sh
 TODO
+```
+
 </div>
 
 ::: tip
@@ -677,14 +682,15 @@ The same is true for the logout flow.
 :::
 
 
-Now re-deploy the solution by running 
+Now re-deploy the solution:
 
 ```sh
 cds up
 ```
 
-and test the application via URL provided in the Cockpit.
-The Application Router should redirect to a login flow where you can enter the credentials of a [test user](#ias-admin) created before.
+Test the application using the URL provided in the Cockpit.
+
+The Application Router should redirect to a login flow where you can enter the credentials of a [test user](#ias-admin) you created before in the Administration Console for IAS.
 
 
 ## XSUAA Authentication { #xsuaa-auth }
@@ -706,23 +712,17 @@ XSUAA authentication is best configured and tested in the Cloud, so let's enhanc
 Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) to CF.
 In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-You can continue with the bookshop sample create for the [mock users](#mock-user-auth) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
+:::details If you haven't prepared a sample yet...
 
-If there is no deployment descriptor yet, execute in the project root folder
+You can create a bookshop sample as described in [Mock User Authentication](#mock-user-authentication).
+
+Execute the following two commands in the project root folder, only if you haven't prepared your sample for IAS in the previous section already.
+
+To make your application ready for deployment to CF:
 
 ```sh
 cds add mta
 ```
-
-<div class="impl java">
-
-::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
-:::
-
-</div>
-
-to make your application ready for deployment to CF.
 
 You also need to configure DB support:
 
@@ -730,10 +730,14 @@ You also need to configure DB support:
 cds add hana
 ```
 
+::: tip For Java
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
+
+:::
 
 ### Adding XSUAA { #adding-xsuaa }
 
-Now the application is ready for enhancing with XSUAA-support:
+Enhance your [sample application](#mock-user-authentication) with XSUAA-support:
 
 <div class="impl java">
 
@@ -1278,7 +1282,7 @@ With `cds.security.authentication.authenticateMetadataEndpoints: false` you can 
 
 <div class="node">
 
-Automatic authentication enforcement can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mock-user-auth) explicitly in production.
+Automatic authentication enforcement can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mock-user-authentication) explicitly in production.
 
 </div>
 
@@ -1337,7 +1341,9 @@ In such architectures, CAP authentication is obsolete and can be deactivated ent
 </div>
 
 <div class="node">
+
 TODO
+
 </div>
 
 

@@ -105,12 +105,12 @@ context db {
     ...
   }
 
-  entity Issues : cuid { // implicitly auto-exposed (by composition)
+  entity Issues : cuid { // implicitly auto-exposed (by composition in Components)
     category: Association to Categories;
     ...
   }
 
-  entity Components : cuid { // explicitly exposed (by projection)
+  entity Components : cuid { // explicitly exposed (by projection in IssuesService)
     issues: Composition of many Issues;
     ...
   }
@@ -262,21 +262,35 @@ Restrictions can be defined on different types of CDS resources, but there are s
 | entity          |  <Y/>   | <Y/> | <Y/><sup>1</sup>  |               |
 | action/function |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
 
-> <sup>1</sup>For bound actions and functions that are not bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>1</sup>For bound actions and functions that are not bound against a collection, Node.js supports instance-based authorization at the entity level, see [link] (somewhere in Node.js docs)<br>
 > <sup>2</sup> For unbound actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
-```cds
+::: code-group
+```cds [Model w/ unsupported privilege properties]
 service CatalogService {
   entity Products as projection on db.Products { ... }
   actions {
     @(requires: 'Admin')
     action addRating (stars: Integer);
   }
-  function getViewsCount @(restrict: [{ to: 'Admin' }]) () returns Integer;
+  function getViewsCount @(restrict: [{ grant: 'READ' to: 'Admin' }]) () returns Integer;
 }
 ```
+```cds [Resulting model]
+service CatalogService {
+  entity Products as projection on db.Products { ... }
+  actions {
+    @(requires: 'Admin') // is already in implicit {grant: '*'}
+    action addRating (stars: Integer);
+  }
+   //unsupported property is removed, means implicit { grant: '*'}
+  function getViewsCount @(restrict: [{ to: 'Admin' }]) () returns Integer; 
+}
+
+```
+:::
 
 
 ### Combined Restrictions { #combined-restrictions}
@@ -413,7 +427,25 @@ The [restrict annotation](#restrict-annotation) for an entity allows you to enfo
 In addition, you can define a `where`-condition that further limits the set of accessible instances. 
 This condition, which acts like a filter, establishes *instance-based authorization*.
 
-### Filter Conditions { #filter-consitions }
+### Filter Conditions
+
+For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
+
+```cds
+annotate Orders with @(restrict: [
+  { grant: ['READ', 'UPDATE', 'DELETE'], where: (CreatedBy = $user) } ]);
+```
+
+Or a `Vendor` can only edit articles on stock (that means `Articles.stock` positive):
+
+```cds
+annotate Articles with @(restrict: [
+  { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
+```
+
+::: tip
+Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
+:::
 
 The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
 Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
@@ -443,24 +475,6 @@ You can define filter conditions in the `where`-clause of restrictions based on 
 
 </div>
 
-
-For instance, a user is allowed to read or edit `Orders` (defined with the `managed` aspect) that they have created:
-
-```cds
-annotate Orders with @(restrict: [
-  { grant: ['READ', 'UPDATE', 'DELETE'], where: (CreatedBy = $user) } ]);
-```
-
-Or a `Vendor` can only edit articles on stock (that means `Articles.stock` positive):
-
-```cds
-annotate Articles with @(restrict: [
-  { grant: ['UPDATE'], to: 'Vendor',  where: (stock > 0) } ]);
-```
-
-::: tip
-Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
-:::
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
 

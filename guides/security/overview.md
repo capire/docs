@@ -172,10 +172,13 @@ Security not only plays a crucial role in [cloud environments](#cloud), but also
 Apparently the security requirements are different from cloud scenario as local endpoints are typically not exposed for remote clients.
 But there are still a few things to consider because exploited vulnerabilities could be the basis for attacks on productive cloud services:
 
+#### DO:{.good}
+
 - Make sure that locally started HTTP endpoints are bound to `localhost`.
-- In case you run your service in hybrid mode with bindings to cloud service instances,
-use [cds bind](../../tools/cds-bind) instead of copying bindings manually to `default-env.json` file.
-`cds bind` avoids materialization of secrets to local disc, which is inherently dangerous.
+- Use [cds bind](../../tools/cds-bind) to run your service in hybrid mode with bindings to cloud service instances. `cds bind` avoids materialization of secrets to local disc, which is inherently dangerous. The opposite is consequently a **Don't**.
+
+#### DON'T:{.bad}
+- Don't copy bindings manually to `default-env.json` file or otherwise on your local disc.
 - Don't write sensitive data to application logs, also not via debug logging.
 - Don't test with real business data, for example, copied from a productive system.
 
@@ -234,32 +237,32 @@ The Identity Authentication service defines the user base for (CAP) applications
 Customers can integrate their third-party or on-premise identity provider (IdP) and harden security by defining multifactor authentication or by narrowing client IP ranges.
 This service helps to introduce a strict separation between platform users (provider) and business users (subscribers), a requirement of CAP. It supports various authentication methods, including SAML 2.0 and [OpenID Connect](https://openid.net/connect/), and allows for the configuration of single sign-on access.
 
-[Learn more in the security guide.](https://help.sap.com/docs/IDENTITY_AUTHENTICATION?#discover_task-security){.learn-more}
+[Learn more in the SAP Cloud Identity - Security Guide.](https://help.sap.com/docs/IDENTITY_AUTHENTICATION?#discover_task-security){.learn-more}
 
 #### [SAP Authorization and Trust Management Service](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG)
 
 The service allows customers to manage user authorizations in technical roles at the application level, which can be aggregated into business-level role collections for large-scale cloud scenarios.
 Developers must define application roles carefully as they form the basic access rules for business data.
 
-[Learn more in the security guide.](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security){.learn-more}
+[Learn more in the SAP Authorization and Trust Management service guide.](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security){.learn-more}
 
 #### [SAP BTP Connectivity](https://help.sap.com/docs/CP_CONNECTIVITY)
 
 The connectivity service allows SAP BTP applications to securely access remote services that run on the Internet or on-premise.
 It provides a way to establish a secure communication channel between remote endpoints that are connected via an untrusted network infrastructure.
 
-[Learn more in the security guide.](https://help.sap.com/docs/CP_CONNECTIVITY/cca91383641e40ffbe03bdc78f00f681/cb50b6191615478aa11d2050dada467d.html){.learn-more}
+[Learn more in the SAP BTP Connectivity guide.](https://help.sap.com/docs/CP_CONNECTIVITY/cca91383641e40ffbe03bdc78f00f681/cb50b6191615478aa11d2050dada467d.html){.learn-more}
 
 #### [SAP Malware Scanning Service](https://help.sap.com/docs/MALWARE_SCANNING)
 
 This service scans transferred business documents for malware and viruses.
 Currently, there is no CAP integration. A scan must be triggered explicitly by the business application.
 
-[Learn more in the security guide.](https://help.sap.com/docs/btp?#operate_task-security){.learn-more}
+[Learn more in the SAP Malware Scanning service guide.](https://help.sap.com/docs/btp?#operate_task-security){.learn-more}
 
 #### [SAP Credential Store](https://help.sap.com/docs/CREDENTIAL_STORE)
 
 Credentials managed by applications must be stored securely.
 This service provides a REST API for (CAP) applications to store and retrieve credentials at runtime.
 
-[Learn more in the security guide.](https://help.sap.com/docs/CREDENTIAL_STORE?#discover_task-security){.learn-more}
+[Learn more in the SAP Credential Store guide.](https://help.sap.com/docs/CREDENTIAL_STORE?#discover_task-security){.learn-more}
