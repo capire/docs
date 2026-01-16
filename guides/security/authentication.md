@@ -140,9 +140,9 @@ curl http://localhost:4004/odata/v4/admin/Books --verbose
 results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (password: `basic`) with
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (no password) with
 ```sh
-curl http://alice:basic@localhost:4004/odata/v4/admin/Books
+curl http://alice:@localhost:4004/odata/v4/admin/Books
 ```
 returns successfully (HTTP response `200`).
 
@@ -682,14 +682,15 @@ The same is true for the logout flow.
 :::
 
 
-Now re-deploy the solution by running 
+Now re-deploy the solution:
 
 ```sh
 cds up
 ```
 
-and test the application via URL provided in the Cockpit.
-The Application Router should redirect to a login flow where you can enter the credentials of a [test user](#ias-admin) created before.
+Test the application using the URL provided in the Cockpit.
+
+The Application Router should redirect to a login flow where you can enter the credentials of a [test user](#ias-admin) you created before in the Administration Console for IAS.
 
 
 ## XSUAA Authentication { #xsuaa-auth }
