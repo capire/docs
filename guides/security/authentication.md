@@ -417,6 +417,7 @@ and wait until the application is up and running.
 You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
 The startup log should confirm the activated IAS authentication:
+
 <div class="java">
 
 ```sh
@@ -710,23 +711,17 @@ XSUAA authentication is best configured and tested in the Cloud, so let's enhanc
 Before working with XSUAA on CF, you need to ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) to CF.
 In particular, you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-You can continue with the bookshop sample create for the [mock users](#mock-user-authentication) or, alternatively, you can also enhance the [IAS-based](#ias-auth) application. 
+:::details If you haven't prepared a sample yet...
 
-If there is no deployment descriptor yet, execute in the project root folder
+You can create a bookshop sample as described in [Mock User Authentication](#mock-user-authentication).
+
+Execute the following two commands in the project root folder, only if you haven't prepared your sample for IAS in the previous section already.
+
+To make your application ready for deployment to CF:
 
 ```sh
 cds add mta
 ```
-
-<div class="impl java">
-
-::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
-:::
-
-</div>
-
-to make your application ready for deployment to CF.
 
 You also need to configure DB support:
 
@@ -734,10 +729,14 @@ You also need to configure DB support:
 cds add hana
 ```
 
+::: tip For Java
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
+
+:::
 
 ### Adding XSUAA { #adding-xsuaa }
 
-Now the application is ready for enhancing with XSUAA-support:
+Enhance your [sample application](#mock-user-authentication) with XSUAA-support:
 
 <div class="impl java">
 
