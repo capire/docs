@@ -426,7 +426,11 @@ The startup log should confirm the activated IAS authentication:
 </div>
 
 <div class="node">
+
+```sh
 TODO
+```
+
 </div>
 
 ::: tip
@@ -1337,7 +1341,9 @@ In such architectures, CAP authentication is obsolete and can be deactivated ent
 </div>
 
 <div class="node">
+
 TODO
+
 </div>
 
 
