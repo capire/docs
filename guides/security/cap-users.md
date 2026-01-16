@@ -31,7 +31,7 @@ This guide introduces to CAP user abstraction and role assignments.
 
 A successful authentication results in a CAP user representation reflecting the request user in a uniform way.
 Referring to the [key concepts](./overview#key-concept-decoupled-coding), the abstraction serves to completely decouple authorization and business logic from pluggable authentication strategies.
-It contains static information about the user such as name, ID and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
+It contains static information about the user such as name, ID, and tenant. Additionally, it contains claims such as roles or assigned attributes that are relevant for [authorization](./authorization).
 
 ![CAP Userse](./assets/cap-users.drawio.svg){width="650px" }
 
@@ -556,6 +556,7 @@ After the application is built, check the `srv/src/main/resources/ams` folder to
 </div>
 
 <div class="impl node">
+
 After the application is built, check the *ams/dcl* folder to see the generated AMS *schema* and a *basePolicies* DCL file in a package called *cap*:
 
 ::: code-group
@@ -568,6 +569,7 @@ After the application is built, check the *ams/dcl* folder to see the generated 
 ```
 
 :::
+
 </div>
 
 [Learn more about policy generation](https://sap.github.io/cloud-identity-developer-guide/CAP/cds-Plugin.html#dcl-generation){.learn-more}
@@ -697,7 +699,7 @@ You can now verify that the assigned policies enforce the expected access rules:
 - mock user `content-manager` has full access to `Books` and `Authors`.
 - mock user `stock-manager` can _read_ `Books` and `Authors` and can _edit_ `Books` (but _not_ `Authors`).
 
-For the advanced test scenario, you can define custom policies in pre-defined package `local` which is ignored during [deployment of the policies](#ams-deployment) to the Cloud service and hence will no show up in production.
+For the advanced test scenario, you can define custom policies in pre-defined package `local` which is ignored during [deployment of the policies](#ams-deployment) to the Cloud service and hence will not show up in production.
 
 Let's add a custom policy `StockManagerFiction` which is based on base policy `cap.StockManager` restricting the assigned users to the genres `Mystery` and `Fantasy`:
 
@@ -1501,7 +1503,7 @@ public void onAction(AddToOrderContext context){
 In this scenario the application offers a bound action in a CDS entity. 
 Within the action, the application communicates with a remote CAP service using a privileged user and the provider tenant. 
 The corresponding `.on` handler of the action needs to create a new root transaction by calling `srv.tx`.
-The user passed to `srv.tx` in the `ctx` attribute will be used as the prinicpal for requests made within the new root transaction.
+The user passed to `srv.tx` in the `ctx` attribute will be used as the principal for requests made within the new root transaction.
 
 ```js
 srv.on('action', srv.entities.Books, async req => {

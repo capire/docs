@@ -109,7 +109,7 @@ cds:
 The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
 The `model` property needs to match the fully qualified name of the CDS service from the imported model.
 You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
-The `binding.name` needs to point to the shared identity instance and `option.url` provides the required location of the remote service endpoint.
+The `binding.name` needs to point to the shared identity instance and `options.url` provides the required location of the remote service endpoint.
 Finally, `onBehalfOf: systemUserProvider` specifies that the remote call is invoked on behalf of the technical provider tenant.
 
 
@@ -152,15 +152,15 @@ Additionally, to establish the co-located setup, the microservice needs to share
 ```yaml [/srv/srv/main/resources/application.yaml]
 resources:
   - name: xflights-ias
-    type: org.cloudfoundry.managed-service // [!code --]
-    type: org.cloudfoundry.existing-service // [!code ++]
+    type: org.cloudfoundry.managed-service # [!code --]
+    type: org.cloudfoundry.existing-service # [!code ++]
     parameters:
-      service: identity // [!code --]
-      service-name: xflights-ias // [!code --]
-      service-name: xtravels-ias // [!code ++]
-      service-plan: application // [!code --]
-      config: // [!code --]
-        display-name: xflights // [!code --]
+      service: identity # [!code --]
+      service-name: xflights-ias # [!code --]
+      service-name: xtravels-ias # [!code ++]
+      service-plan: application # [!code --]
+      config: # [!code --]
+        display-name: xflights # [!code --]
 ```
 
 :::
@@ -404,7 +404,7 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](./a
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
-3. Type a dependency name (needs to match property value `cloudsdk.ias-dependency-name`) and pick provided API `DataConsumer` from the provider IAS application `xflights`.
+3. Type `DataConsumer` as dependency name (needs to match property value `cloudsdk.ias-dependency-name`) and pick provided API `DataConsumer` from the provider IAS application `xflights`.
 4. Confirm with **Save**
 
 ::: details Create IAS dependency in Administrative Console
@@ -415,9 +415,8 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](./a
 
 :::
 
-:::tip
-Both the BTP destination and the IAS dependency can be automatically created at runtime using [UCL integration](../../java/integrating-applications/ucl#unified-customer-landscape-ucl).
-:::
+<div id="tipucl" />
+
 
 Now restart the consumer application with
 
