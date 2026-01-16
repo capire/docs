@@ -1746,22 +1746,23 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 
 ## Pitfalls
 
-- **Don't write custom code against concrete user types of a specific identity service (e.g. XSUAA or IAS)**. 
-Instead, if required at all, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
+- **Don't write custom code against user types of an identity service (XSUAA / IAS)**. 
+  
+  Instead, if it is required at all to code against user types, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
 
-- **Don't try to propagate named user context in asynchronous requests**, such as when using the Outbox pattern or Messaging. 
-Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. 
-Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
+- **Don't try to propagate named user context in asynchronous requests**.
+  
+  This can happen when using the Outbox pattern or Messaging. Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
 
-- **Don't mix CAP Roles for business and technical users**. CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application.
-Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
+- **Don't mix CAP Roles for business and technical users**. 
+  
+  CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application. Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
 
 - **Don't mix AMS Policy level with CAP Role level**.
-AMS policies operate at the business level, while CAP roles are defined at the technical domain level. 
-Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
+  
+  AMS policies operate at the business level, while CAP roles are defined at the technical domain level. Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
 
-- **Don't choose non-cross-sectional entity attributes as AMS Attributes**.
-Such attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
-Typically, only a limited number of attributes (less than 10) meet this criterion. 
-Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
+- **Don't choose entity attributes as AMS Attributes whose relevance is too small**.
+  
+  Such attributes should have a broad, domain-wide relevance and be applicable across multiple entities. Typically, only a limited number of attributes (less than 10) meet this criterion. Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
 
