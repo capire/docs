@@ -1,6 +1,6 @@
 
 # [ CAP-level Service Integration ](calesi.md) <!-- UNRELEASED -->
-# [ Reuse & Compose ](composition)
+# [ Reuse & Compose ](composition.md)
 # [ Using Microservices ](microservices.md) <!-- UNRELEASED -->
 
 # Platform Services <!-- UNRELEASED -->

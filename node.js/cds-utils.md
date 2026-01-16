@@ -258,16 +258,16 @@ console.log(bg.BLUE, 'this is text with a blue background', RESET)
 | **Category**         | **Values**                                                                                |
 |----------------------|-------------------------------------------------------------------------------------------|
 | **Formatting**        | `RESET`, `BOLD`, `BRIGHT`, `DIMMED`, `ITALIC`, `UNDER`, `BLINK`, `FLASH`, `INVERT`        |
-| **Text Colors**       | `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `PINK`, `CYAN`, `LIGHT_GRAY`, `DEFAULT`, `GRAY`, `LIGHT_RED`, `LIGHT_GREEN`, `LIGHT_YELLOW`, `LIGHT_BLUE`, `LIGHT_PINK`, `LIGHT_CYAN`, `WHITE` |
-| **Background Colors** | `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `PINK`, `CYAN`, `WHITE`, `DEFAULT`, `LIGHT_GRAY`, `LIGHT_RED`, `LIGHT_GREEN`, `LIGHT_YELLOW`, `LIGHT_BLUE`, `LIGHT_PINK`, `LIGHT_CYAN`, `LIGHT_WHITE` |
+| **Text Colors**       | `DEFAULT`, `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `PINK`, `CYAN`, `WHITE`, `LIGHT_GRAY`, `LIGHT_RED`, `LIGHT_GREEN`, `LIGHT_YELLOW`, `LIGHT_BLUE`, `LIGHT_PINK`, `LIGHT_CYAN`, `GRAY` |
+| **Background Colors** | `DEFAULT`, `BLACK`, `RED`, `GREEN`, `YELLOW`, `BLUE`, `PINK`, `CYAN`, `WHITE`, `LIGHT_GRAY`, `LIGHT_RED`, `LIGHT_GREEN`, `LIGHT_YELLOW`, `LIGHT_BLUE`, `LIGHT_PINK`, `LIGHT_CYAN`, `LIGHT_WHITE` |
 
 
 ## Shortcuts to Node.js Modules
 
 In addition, `cds.utils` provides shortcuts to common Node.js functions and libraries...
 
-| `cds.utils.`... | → shortcut to:            |
-| --------------- | ------------------------- |
-| `inspect`       | `require('util').inspect` |
-| `path`          | `require('path')`         |
-| `fs`            | `require('fs')`           |
+| `cds.utils.`... | → shortcut to:                 |
+| --------------- | ------------------------------ |
+| `inspect`       | `require('node:util').inspect` |
+| `path`          | `require('node:path')`         |
+| `fs`            | `require('node:fs')`           |
