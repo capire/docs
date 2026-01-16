@@ -1,25 +1,23 @@
+const { base, themeConfig: { sidebar }} = global.VITEPRESS_CONFIG.site
 import { join } from 'node:path'
-import { ContentData, DefaultTheme, SiteConfig} from 'vitepress'
-type SBItem = DefaultTheme.SidebarItem
-
-// @ts-ignore
-const site = (global.VITEPRESS_CONFIG as SiteConfig<DefaultTheme.Config>).site
-const sidebar = site.themeConfig.sidebar! as SBItem[]
+import { ContentData, DefaultTheme } from 'vitepress'
 
 type ContentDataCustom = ContentData & {
   title?:string
 }
 
+type SBItem = DefaultTheme.SidebarItem
+
 export default (pages:ContentDataCustom[], basePath:string):ContentDataCustom[] => {
   let items = findInItems(basePath, sidebar) || []
   items = items.map(item => { return { ...item, link: item.link?.replace(/\.md$/, '') }})
-  const itemLinks = items.map(item => join(site.base, item.link||''))
+  const itemLinks = items.map(item => join(base, item.link||''))
 
   return pages
     .map(p => {
       const res = { ...p } // do not mutate original data
       res.url = res.url?.replaceAll('@external/', '')?.replace(/\/index$/, '/') || ''
-      res.url = join(site.base, res.url)
+      res.url = join(base, res.url)
       return res
     })
     .filter(p => {
@@ -40,20 +38,11 @@ export default (pages:ContentDataCustom[], basePath:string):ContentDataCustom[] 
     }))
 }
 
-import {inspect} from 'node:util'
-inspect.defaultOptions.depth = 111
-
-function findInItems(url:string, items:SBItem[]=[], all:SBItem[]=[]) : SBItem[] {
+function findInItems(url:string, items:SBItem[]=[]):SBItem[]|undefined {
+  let res = items.find(item => item.link?.includes(url))
+  if (res)  return res.items
   for (const item of items) {
-    if (item.link?.includes(url)) {
-      // console.log(url, item.link)
-      all.push(item)
-    }
-    if (item.items) {
-      // console.log('>>', item.link || item.text)
-      findInItems(url, item.items, all)
-    }
-
+    const result = findInItems(url, item.items)
+    if (result)  return result
   }
-  return all
 }
