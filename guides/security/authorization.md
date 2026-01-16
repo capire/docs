@@ -105,12 +105,12 @@ context db {
     ...
   }
 
-  entity Issues : cuid { // implicitly auto-exposed (by composition)
+  entity Issues : cuid { // implicitly auto-exposed (by composition in Components)
     category: Association to Categories;
     ...
   }
 
-  entity Components : cuid { // explicitly exposed (by projection)
+  entity Components : cuid { // explicitly exposed (by projection in IssuesService)
     issues: Composition of many Issues;
     ...
   }
@@ -267,16 +267,30 @@ Restrictions can be defined on different types of CDS resources, but there are s
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
-```cds
+::: code-group
+```cds [Model w/ unsupported privilege properties]
 service CatalogService {
   entity Products as projection on db.Products { ... }
   actions {
     @(requires: 'Admin')
     action addRating (stars: Integer);
   }
-  function getViewsCount @(restrict: [{ to: 'Admin' }]) () returns Integer;
+  function getViewsCount @(restrict: [{ grant: 'READ' to: 'Admin' }]) () returns Integer;
 }
 ```
+```cds [Resulting model]
+service CatalogService {
+  entity Products as projection on db.Products { ... }
+  actions {
+    @(requires: 'Admin') // is already in implicit {grant: '*'}
+    action addRating (stars: Integer);
+  }
+   //unsupported property is removed, means implicit { grant: '*'}
+  function getViewsCount @(restrict: [{ to: 'Admin' }]) () returns Integer; 
+}
+
+```
+:::
 
 
 ### Combined Restrictions { #combined-restrictions}
