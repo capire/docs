@@ -67,6 +67,10 @@ The `NEW` event is triggered when the user created a new draft.
 As a result `MyEntity.drafts` is created in the database.
 You can modify the initial draft data in a `before` handler.
 
+:::warning Known Limitation
+With the [`hdb` SAP HANA driver](https://www.npmjs.com/package/hdb), trying to `INSERT` draft entities with fields that use the [`LargeBinary` type](../cds/types#core-built-in-types) will cause a deadlock.
+The known workaround is to [configure your CAP app](../guides/databases/hana#setup-configuration) to use the [`hana-client` SAP HANA driver](https://www.npmjs.com/package/@sap/hana-client) instead.
+:::
 
 ### `EDIT`
 
