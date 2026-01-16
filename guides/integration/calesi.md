@@ -5,7 +5,7 @@ Calesi is the pattern and set of tools for integrating external services into CA
 
 CAP provides built-in capabilities to integrate with external services at the CAP framework level. This guide explains how to consume and expose services using CAP's service integration features, known as Calesi. Calesi refers to the increasing numbers of BTP platform services which offer a CAP-level client library, drastically reducing the boilerplate code applications would have to write.
 
-## Getting Started
+## Introduction
 
 For example, adding attachments required thousands of lines of code, caring for the UI, streaming of large data, size limiting, malware scanning, multitenancy, and so forth... after we provided the [Attachments plugin](../../plugins/index#attachments), all an application needs to do now is to add that line to an entity:
 
@@ -21,7 +21,7 @@ Read through the runtime specific guides to learn about how to implement plugins
 
 ### Consider all CAP runtimes
 
-Service integrations should be available for both CAP runtimes. To avoid duplicate effort, consider which parts can be unified:
+Plugins should be available for both CAP runtimes. To avoid duplicate effort, consider which parts can be unified:
 
 <p align="center">
   <img src="./assets/calesi-runtime-decision-tree.svg" alt="What is needed for efficient development." />
@@ -111,11 +111,11 @@ For *inbound* integrations, we would create an adapter, that is, a service endpo
 
 CAP Framework Extensions and Calesi Correlation
 
-The CAP (Cloud Application Programming) framework is designed to be highly extensible, following the principle that "Every active thing is a Service." This extensibility applies not only to application-defined services but also to all core framework services, such as databases, messaging, remote proxies, and MTX (multi-tenancy) services.
+The CAP (Cloud Application Programming) framework is designed to be highly extensible, following the principle that **"Every active thing is a Service."** This extensibility applies not only to application-defined services but also to all core framework services, such as databases, messaging, remote proxies, and MTX (multi-tenancy) services.
 
 ### Extending Framework Services
 
-Calesi (and Calipso) plugins leverage the fundamental capability of CAP to generically extend any service—whether it is an application-defined service or a built-in framework service—using event handlers such as `.before`, `.on`, and `.after`. This extensibility applies not only to your own app services, but also to all core CAP framework services, including database services, messaging services, outbox services, and even services provided by other plugins, such as the Attachments service.
+Calesi (TODO: and Calipso?) plugins leverage the fundamental capability of CAP to generically extend any service—whether it is an application-defined service or a built-in framework service—using event handlers such as `.before`, `.on`, and `.after`. This extensibility applies not only to your own app services, but also to all core CAP framework services, including database services, messaging services, outbox services, and even services provided by other plugins, such as the Attachments service.
 
 By attaching handlers to these services, plugins can intercept, modify, or enhance the behavior of core functionalities without changing the framework code itself. This enables powerful patterns for cross-cutting concerns, integration, and customization at the framework level.
 
@@ -137,10 +137,10 @@ proxy.on('READ', 'Something', req => {
     // handle that remote call yourself
 });
 proxy.before('READ', '', req => {
-    // modify requests before they go out
+    // modify requests before they go out to the actual service
 });
 proxy.after('READ', '', result => {
-    // post-process received responses
+    // post-process responses from the service
 });
 ```
 
@@ -166,13 +166,13 @@ This approach ensures that Calesi solutions remain modular, maintainable, and fu
 
 Complexity should be hidden as much as possible while still offering configuration options for advanced use cases. As a baseline, an application must run after adding your plugin, before any configuration is applied.
 
-For configuration adjustments, use CAP design patterns such as services <!--add link to doc--> to offer different variants. Make sure that every configuration option has a sensible default that supports running on SAP BTP without additional setup.
+For configuration adjustments, use CAP design patterns such as [profiles](../../node.js/cds-env.md#configuration-profiles-profiles) to offer different variants. Make sure that every configuration option has a sensible default that supports running on SAP BTP without additional setup.
 
 ### Local testability
 
 CAP applications rely on `cds watch` for rapid local development, so plugins must function locally, even when they integrate with SAP BTP services.
 
-If your plugin depends on a BTP service, provide a local mock implementation. The mock does not need to be sophisticated, a simple console.log() capturing what would be sent to the real service is sufficient. For reference, see how @cap-js/audit-logging provides its local mock variant.
+If your plugin depends on a BTP service, provide a local mock implementation. The mock does not need to be sophisticated, a simple `console.log()` capturing what would be sent to the real service is sufficient. For reference, see how [@cap-js/attachments](https://github.com/cap-js/attachments) provides its local mock variant.
 
 ### Evolution without disruption
 
@@ -182,7 +182,7 @@ Plugins should expose a semantic abstraction layer that remains stable over time
 
 ### Extrinsic extensibility
 
-Extrinsic extensibility refers to using CAPs [service](../guides/providing-services.md) pattern, meaning that everything is a service. This allows applications to hook into your provided service and extend or modify the logic, making it easier to adjust the implementation to their needs if required.
+Extrinsic extensibility refers to using CAPs [service](../guides/providing-services.md) pattern, meaning that "_everything is a service_". This allows applications to hook into your provided service and extend or modify the logic, making it easier to adjust the implementation to their needs if required.
 
 ### Reuse not reinvent
 
@@ -192,11 +192,11 @@ Prefer existing CAP capabilities and ecosystem components over custom implementa
 
 - **Reuse existing plugins** | Similarly, use existing CAP plugins if you need to interact with a BTP service already covered by a CAP plugin. For example, if you need to audit log some activities in your plugin, use the `@cap-js/audit-logging` plugin as a peer dependency and its APIs instead of calling the audit logging API directly.
 
-- **Leverage existing annotations** | Favor reusing existing annotations documented in the [SAP OData vocabulary](https://sap.github.io/odata-vocabularies/) and [Open OData vocabulary](https://docs.oasis-open.org/odata/odata-vocabularies/v4.0/odata-vocabularies-v4.0.html) instead of inventing new ones. For example use [`@title`](../advanced/fiori.md#prefer-title-and-description) when you need a label for a property instead of a new annotation or use the `@Capabilities` annotations when you want to allow configuring functionality restrictions for your service.
+- **Leverage existing annotations** | Favor reusing existing annotations documented in the [SAP OData vocabulary](https://sap.github.io/odata-vocabularies/) and [Open OData vocabulary](https://docs.oasis-open.org/odata/odata-vocabularies/v4.0/odata-vocabularies-v4.0.html) instead of inventing new ones. For example use [`@title`](../../guides/uis/fiori.md#prefer-title-and-description) when you need a label for a property instead of a new annotation or use the `@Capabilities` annotations when you want to allow configuring functionality restrictions for your service.
 
-- **Use runtime-agnostic access to services** | In **Node.js** always use [`cds.env`](../node.js/cds-env#programmatic-settings) to read the credentials and service bindings of the application in an agnostic way. You should avoid accessing `VCAP_SERVICES` directly as it is Cloud Foundry specific and thus does not work on Kyma. [`cds.env`](../node.js/cds-env#programmatic-settings) works consistently across runtimes and environments.
+- **Use runtime-agnostic access to services** | In **Node.js** always use [`cds.env`](../../node.js/cds-env#programmatic-settings) to read the credentials and service bindings of the application in an agnostic way. You should avoid accessing `VCAP_SERVICES` directly as it is Cloud Foundry specific and thus does not work on Kyma. [`cds.env`](../../node.js/cds-env#programmatic-settings) works consistently across runtimes and environments.
 
-- **Use established SAP BTP libraries when needed** | When functionality exceeds what CAP offers, rely on well-supported libraries like the [`SAP Cloud SDK`](https://sap.github.io/cloud-sdk/docs/js/overview). It provides utilities for calling BTP services via service bindings or destinations and should be preferred over manual handling of CSRF tokens, OAuth flows, or raw HTTP calls.
+- TODO: <!-- Clarify with Daniel if needs to be removed --> **Use established SAP BTP libraries when needed** | When functionality exceeds what CAP offers, rely on well-supported libraries like the [`SAP Cloud SDK`](https://sap.github.io/cloud-sdk/docs/js/overview). It provides utilities for calling BTP services via service bindings or destinations and should be preferred over manual handling of CSRF tokens, OAuth flows, or raw HTTP calls.
 
 ### Follow CAP Best-Practices
 
@@ -204,7 +204,7 @@ Follow the general [best practices](../domain/#best-practices) for CAP when appl
 
 For example, make sure to have a proper error handling when you make outbound calls and validate request inputs as well as configurations for your service to let the developer know if something is missing instead of simply crashing.
 
-Use [queues](../node.js/queue#) for asynchronous handling and additional resiliency when doing outbound calls or processing asynchronous events.
+Use [queues](../../node.js/queue#) for asynchronous handling and additional resiliency when doing outbound calls or processing asynchronous events.
 
 ## Configuration
 
@@ -228,6 +228,11 @@ Prefer integration tests at the CAP service API or HTTP level to validate featur
 ### E2E tests
 
 Use CAP's [hybrid mode](../../tools/cds-bind), which allows a local CAP service to connect to SAP BTP-hosted services, to test the actual service integration.
+
+Example using jest:
+```bash
+cds bind --exec '--' npx jest
+```
 
 ### Deployment tests
 
@@ -263,3 +268,4 @@ If you are part of `cap-js-community` or another organization your plugins docum
 
 ## Learn more
 
+- TODO: add helpful links
