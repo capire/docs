@@ -164,6 +164,10 @@ If you don't want CAP console to open an SSH tunnel, you can disable SSH for you
 
 Even though the SSH tunnel is only opened to one specific port of your application container, you are still opening up a potential attack vector. CAP console tries to minimize this risk by only opening the tunnel for the duration of the connection. Once you close the CAP console, switch environments, or your user loses access to the CF Space, the SSH tunnel is closed automatically. You must ensure that you and your team understand the security implications of opening SSH tunnels in your environment and read the [Cloud Foundry SSH Documentation](https://docs.cloudfoundry.org/devguide/deploy-apps/ssh-apps.html). If attackers exploit the SSH tunnel, they will also be able to access the WebSocket and read all data transmitted via it.
 
+## Telemetry and Data Collection
+
+CAP console collects anonymous usage data to improve user experience, prioritize feature development, ensure reliability across different environments, and optimize performance. The collected data is sent to SAP in accordance with our [Privacy Statement](https://www.sap.com/about/legal/privacy.html). No personally identifiable information, project names, source code, or other sensitive details are collected. You can disable telemetry collection in the application settings if desired.
+
 ## Limitations
 
 CAP console is still a young project and has some limitations that are important to know. We will try to mitigate these limitations in future releases.
@@ -182,6 +186,35 @@ If you see CDS services as unavailable in the Projects Page, this usually indica
 ### The Effect of Debug Log Level
 
 Debug log level produces a high volume of log messages, which can lead to performance degradation in your application. It's advisable to use the debug log level only for short periods when troubleshooting specific issues. Once you've gathered the necessary information, switch back to a less verbose log level to maintain optimal performance. CAP console cannot guarantee that the log level is automatically reset, so please make sure to change it back manually.
+
+## Release Notes
+
+### 1.3.0
+
+- Comprehensive micro-services support with enhanced project detection, package-level monitoring, and deployment capabilities
+- Integrated telemetry system for anonymous usage data collection to improve user experience and feature development
+- Enhanced UI/UX with system theme support, responsive project card grid, and improved monitoring layout with splitter views
+- Advanced CDS debugging capabilities and optimized project detection with push-based updates for better performance
+
+### 1.2.0
+
+- Enhanced deployment workflow with support for existing BTP services and improved entitlements management
+- Comprehensive monitoring improvements including detailed service information, bindings, keys, and multi-instance metrics
+- Better user experience with project pinning, multiple development instances support, and responsive UI enhancements
+- Upgraded to Node.js v22 and Electron v39 for improved performance and security
+
+### 1.1.0
+
+- Complete UI redesign with new project card interface, improved monitoring highlights, and intelligent project sorting
+- Enhanced deployment workflow with Environment Wizard, better CF space validation, and improved entitlements management
+- Improved local development experience with better process detection, enhanced connection handling, and Windows compatibility fixes
+- Performance optimizations including responsive UI during deployment, reduced bundle size, and better error handling
+
+### 1.0.0
+
+- Initial release of CAP Console with comprehensive BTP deployment and local monitoring capabilities
+- Enhanced deployment experience with retry functionality for failed deployments and improved HANA service handling
+- Improved monitoring and logging with timestamped logs, fixed CF logs integration, and better environment management
 
 ## License
 
