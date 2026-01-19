@@ -62,7 +62,7 @@ async function runQuery() {
   margin: 1em 0;
   padding: 1em;
   border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
+  background-color: var(--vp-code-block-bg);
 }
 
 .interactive-query button {
@@ -88,12 +88,12 @@ async function runQuery() {
 }
 
 .query-result {
-  background-color: var(--vp-c-bg-soft);
+  background-color: var(--vp-code-block-bg);
   border: 1px solid var(--vp-c-green-1);
 }
 
 .query-error {
-  background-color: var(--vp-c-bg-soft);
+  background-color: var(--vp-code-block-bg);
   border: 1px solid var(--vp-c-danger-1);
 }
 

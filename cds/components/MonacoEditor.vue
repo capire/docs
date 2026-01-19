@@ -14,7 +14,10 @@ import { ref, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import languages from '../../.vitepress/languages'
 import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
-const { isDark, theme: vitepressTheme } = useData()
+const { isDark } = useData()
+import { createHighlighter } from 'shiki'
+import { shikiToMonaco } from '@shikijs/monaco'
+
 
 const props = defineProps({
   modelValue: {
@@ -51,50 +54,6 @@ function mapMonacoLang(lang) {
   return null
 }
 
-
-function cssVar(name) {
-    return getComputedStyle(document.documentElement)
-        .getPropertyValue(name)
-        .trim()
-}
-
-function initTheme(isDarkNow) {
-  const bgSoft = cssVar('--vp-c-bg-soft')// || '#202127';
-  monaco?.editor?.defineTheme(isDarkNow? 'cap-dark' : 'cap', {
-    base: isDarkNow ? 'vs-dark' : 'vs',
-    inherit: true,
-    rules: [
-      {
-        token: "identifier",
-        foreground: "9CDCFE"
-      },
-      {
-        token: "identifier.function",
-        foreground: "DCDCAA"
-      },
-      {
-        token: "type",
-        foreground: "1AAFB0"
-      }
-    ],
-    colors: {
-        "editor.background": bgSoft,
-        "editor-background": bgSoft,
-        "editorGutter.background": bgSoft,
-    }
-  });
-}
-
-function setTheme(isDarkNow) {
-    initTheme(isDarkNow);
-    if (isDarkNow) {
-        monaco?.editor?.setTheme('cap-dark')
-    } else {
-        monaco?.editor?.setTheme('cap')
-    }
-}
-
-
 async function setupMonaco() {
   if (typeof window === 'undefined' || editor) return
 
@@ -113,27 +72,35 @@ async function setupMonaco() {
   ])
   monaco = monacoApi
 
-  self.MonacoEnvironment = {
-    getWorker(_, label) {
-      if (label === 'typescript' || label === 'javascript') return new tsWorker.default()
-      if (label === 'html') return new htmlWorker.default()
-      if (label === 'css') return new cssWorker.default()
-      if (label === 'json') return new jsonWorker.default()
-      return new editorWorker.default()
+    languages
+    const highlighter = await createHighlighter({
+        themes: ['github-dark', 'github-light'],
+        langs: ['javascript', 'js', 'typescript', 'vue', ...languages],
+    })
+
+    // register languages you will use
+    monaco.languages.register({ id: 'javascript' })
+    monaco.languages.register({ id: 'js' })
+    monaco.languages.register({ id: 'cds' })
+    monaco.languages.register({ id: 'typescript' })
+    monaco.languages.register({ id: 'vue' })
+
+    self.MonacoEnvironment = {
+        getWorker(_, label) {
+        if (label === 'typescript' || label === 'javascript') return new tsWorker.default()
+        if (label === 'html') return new htmlWorker.default()
+        if (label === 'css') return new cssWorker.default()
+        if (label === 'json') return new jsonWorker.default()
+        return new editorWorker.default()
+        }
     }
-  }
+    // hook Shiki into Monaco (tokenization + theme registration)
+    shikiToMonaco(highlighter, monaco)
 
-  const builtIn = mapMonacoLang(props.language)
-  if (!builtIn) {
-    await setupTextMateGrammar(props.language)
-  }
-  setTheme(isDark.value)
-
-  const theme = isDark.value ? 'cap-dark' : 'cap'
   editor = monaco.editor.create(editorContainer.value, {
     value: props.modelValue,
     language: props.language || 'plaintext',
-    theme,
+    theme: 'github-dark',
     automaticLayout: true,
     wordWrap: 'on',
     wrappingIndent: 'none',
@@ -188,83 +155,12 @@ async function setupMonaco() {
   })
 }
 
-async function setupTextMateGrammar(langId) {
-  try {
-    const langEntry = (languages || []).find(l => (l.aliases || []).includes(langId) || l.name === langId)
-    if (!langEntry) return
-
-    const [vscodeTextmate, oniguruma, onigWasmUrl] = await Promise.all([
-      import('vscode-textmate'),
-      import('vscode-oniguruma'),
-      import('vscode-oniguruma/release/onig.wasm?url')
-    ])
-
-    const onigUrl = onigWasmUrl.default
-    await oniguruma.loadWASM(await (await fetch(onigUrl)).arrayBuffer())
-
-    const { Registry, INITIAL } = vscodeTextmate
-    const registry = new Registry({
-      onigLib: Promise.resolve({
-        createOnigScanner: (patterns) => new oniguruma.OnigScanner(patterns),
-        createOnigString: (s) => new oniguruma.OnigString(s)
-      }),
-      loadGrammar: async (scopeName) => {
-        if (scopeName === langEntry.scopeName) {
-          return langEntry
-        }
-        return null
-      }
-    })
-
-    const grammar = await registry.loadGrammar(langEntry.scopeName)
-    if (!grammar) return
-
-    monaco.languages.register({ id: langId })
-
-    class TMState {
-      constructor(ruleStack) { this.ruleStack = ruleStack }
-      clone() { return new TMState(this.ruleStack) }
-      equals(other) { return other && this.ruleStack === other.ruleStack }
-    }
-
-    const tmTokensProvider = {
-      getInitialState: () => new TMState(INITIAL),
-      tokenize: (line, state) => {
-        const res = grammar.tokenizeLine(line, state.ruleStack)
-        const tokens = res.tokens.map((t) => {
-          const scopes = t.scopes
-          let token = 'source'
-          if (scopes.some(s => s.includes('comment'))) token = 'comment'
-          else if (scopes.some(s => s.includes('string'))) token = 'string'
-          else if (scopes.some(s => s.includes('keyword'))) token = 'keyword'
-          else if (scopes.some(s => s.includes('constant.numeric') || s.includes('number'))) token = 'number'
-          else if (scopes.some(s => s.includes('entity.name.function'))) token = 'function'
-          else if (scopes.some(s => s.includes('variable'))) token = 'variable'
-          else if (scopes.some(s => s.includes('storage.type') || s.includes('support.type'))) token = 'type'
-          else if (scopes.some(s => s.includes('operator') || s.includes('punctuation'))) token = 'operator'
-          return { startIndex: t.startIndex, scopes: token }
-        })
-        return { tokens, endState: new TMState(res.ruleStack) }
-      }
-    }
-
-    monaco.languages.setTokensProvider(langId, tmTokensProvider)
-    monaco.editor.setModelLanguage(editor.getModel(), langId)
-  } catch (e) {
-    console.error('Failed to wire TextMate grammar for', langId, e)
-  }
-}
 
 onMounted(setupMonaco)
 
 watch(() => props.language, async (newLang) => {
   if (!editor || !monaco) return
-  const builtIn = mapMonacoLang(newLang)
-  if (builtIn) {
-    monaco.editor.setModelLanguage(editor.getModel(), builtIn)
-  } else {
-    await setupTextMateGrammar(newLang)
-  }
+  monaco.editor.setModelLanguage(editor.getModel(), newLang)
 })
 
 watch(() => props.modelValue, (val) => {
@@ -274,16 +170,26 @@ watch(() => props.modelValue, (val) => {
 })
 
 watchEffect(() => {
-  console.log('dark mode is now', isDark.value)
-  setTheme();
+  monaco?.editor?.setTheme(isDark.value ? 'github-dark' : 'github-light');
 })
 
 </script>
 
-<style scoped>
+<style>
 .monaco-editor-container {
+  background-color: var(--vp-code-block-bg) !important;
+  font-family: var(--vp-font-family-mono) !important;
+  font-size: var(--vp-code-font-size) !important;
+  line-height: var(--vp-code-line-height) !important;
   width: 100%;
   border-radius: 8px;
   margin-bottom: 0.5em;
+}
+
+.monaco-editor, .monaco-editor .margin, .monaco-editor-background {
+    background-color: var(--vp-code-block-bg) !important;
+    font-family: var(--vp-font-family-mono) !important;
+    font-size: var(--vp-code-font-size) !important;
+    line-height: var(--vp-code-line-height) !important;
 }
 </style>
