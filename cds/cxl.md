@@ -17,13 +17,14 @@ import functionDef from './assets/cxl/function-def.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
 import InteractiveQuery from './components/InteractiveQuery.vue'
 
-import cds from '@sap/cds'
-import sqlite from 'better-sqlite3'
-import express from 'express';
-
-window.cds = cds
 
 async function initialize() {
+
+  const cds = (await import('@sap/cds')).default;
+  const sqlite = (await import('better-sqlite3')).default;
+  const express = (await import('express')).default;
+
+  window.cds = cds
   //======= compile a csn model =======
   const csn = cds.compile(`
 
@@ -66,7 +67,13 @@ async function initialize() {
   await cds.serve('all').from(csn).in(app);
 }
 
-const initialized = initialize();
+let initialized;
+if (!import.meta.env.SSR) {
+  // runs only in the browser
+  console.log("Initialize CAP runtime")
+
+  initialized = initialize();
+}
 
 async function evalJS(code) {
   await initialized;
