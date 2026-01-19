@@ -28,10 +28,10 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 
 ### Principles for Calipso Plugins
 
-Calipso builds on the foundation of Calesi. The core Calesi concepts—such as ease of use, local testability, evolution without disruption, and promoting reuse—should always guide Calipso plugin development.
+Calipso builds on the foundation of Calesi. The core Calesi concepts—such as ease of use, local testability, evolution without disruption, extrinsic extensibility and promoting reuse—should always guide Calipso plugin development.
 
 <p align="center">
-  <img src="./assets/calipso-principles.drawio.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
+  <img src="./assets/calipso-principles.drawio.svg" alt="The five foundations of Calesi + Calipso: Easy to use, Local testability, Evolution without disruption, extrinsic extensibility and Reuse not reinvent." />
 </p>
 
 ### Quickstart development
