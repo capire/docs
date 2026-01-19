@@ -584,7 +584,7 @@ bupa.send({
 
 For Java, you can use the `HttpClient` API to implement your custom requests. The API is enhanced by the SAP Cloud SDK to support destinations.
 
-[Learn more about using the HttpClient Accessor.](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/sdk-connectivity-http-client){.learn-more}
+[Learn more about using the HttpClient Accessor.](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/http-client){.learn-more}
 
 [Learn more about using destinations.](#use-destinations-with-java){.learn-more}
 
