@@ -159,7 +159,7 @@ This approach ensures that Calesi solutions remain modular, maintainable, and fu
 ## Guiding Principles for Calesi Plugins
 
 <p align="center">
-  <img src="./assets/calesi-principles.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
+  <img src="./assets/calesi-principles.drawio.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
 </p>
 
 ### Easy to use
