@@ -18,7 +18,7 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 - **Integrating with SAP BTP services:** The main purpose of Calipso plugins is to abstract technical integration with SAP BTP services—such as audit-logging, attachments, or data-privacy—so developers only need to model and annotate their data semantically.
 - **Extending CAP runtime functionality:** Plugins like [odata-v2](../../plugins/index.md#odata-v2-adapter-odata-v2-proxy), [websockets](../../plugins/index.md#websocket), or [graphql](../../plugins/index.md#graphql-adapter) add new capabilities to the CAP runtime, keeping the core framework modular and clean.
 - **Generating database-level artifacts:** Plugins such as [change-tracking](../../plugins/index.md#change-tracking) or data-privacy can generate additional database artifacts or services, pushing logic to the database layer for better performance and a leaner application layer.
-- **Reusing UI sections via annotations:** Plugins like [change-tracking](../@external/plugins/index.md#change-tracking) or attachments provide UI annotations that automatically surface data in Fiori Elements UIs. These plugins supply only annotations, not custom UI code.
+- **Reusing UI sections via annotations:** Plugins like [change-tracking](../../plugins/index.md#change-tracking) or attachments provide UI annotations that automatically surface data in Fiori Elements UIs. These plugins supply only annotations, not custom UI code.
 
 ❌ <u>Invalid use cases:</u>
 - **Reusable UI components:** If you need to provide reusable UI components, use the Fiori elements guide on [developing reuse components](https://ui5.sap.com/#/topic/6314fcd2510648fbaad3cee8a421030d).
@@ -145,7 +145,7 @@ Key considerations:
 Thoroughly testing your plugin ensures reliability, maintainability, and a smooth developer experience for consumers. Effective testing covers not only individual functions but also integration with CAP services, deployment scenarios, and performance. The following strategies help you validate that your plugin works as intended across different environments and use cases.
 
 <p align="center">
-  <img src="./assets/calesi-testing.drawio.svg" alt="Outlining the following testing strategies." />
+  <img src="./assets/calipso-testing.drawio.svg" alt="Outlining the following testing strategies." />
 </p>
 
 ### Test features not functions
