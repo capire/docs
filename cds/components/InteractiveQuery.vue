@@ -61,15 +61,14 @@ async function runQuery() {
 .interactive-query {
   margin: 1em 0;
   padding: 1em;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
+  border-radius: 8px;
+  background-color: var(--vp-c-bg-soft);
 }
 
 .interactive-query button {
   padding: 0.5em 1em;
-  background-color: #42b983;
-  color: white;
+  background-color: var(--vp-button-brand-bg);
+  color: var(--vp-button-brand-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -77,7 +76,8 @@ async function runQuery() {
 }
 
 .interactive-query button:hover {
-  background-color: #359268;
+  background-color: var(--vp-button-brand-hover-bg);
+  color: var(--vp-button-brand-hover-text);
 }
 
 .query-result,
@@ -88,13 +88,13 @@ async function runQuery() {
 }
 
 .query-result {
-  background-color: #e8f5e9;
-  border: 1px solid #4caf50;
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-green-1);
 }
 
 .query-error {
-  background-color: #ffebee;
-  border: 1px solid #f44336;
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-danger-1);
 }
 
 .query-result pre,

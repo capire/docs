@@ -10,9 +10,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, watchEffect, onMounted, onUnmounted } from 'vue'
 import languages from '../../.vitepress/languages'
 import 'monaco-editor/min/vs/editor/editor.main.css'
+import { useData } from 'vitepress'
+const { isDark, theme: vitepressTheme } = useData()
 
 const props = defineProps({
   modelValue: {
@@ -49,9 +51,52 @@ function mapMonacoLang(lang) {
   return null
 }
 
+
+function cssVar(name) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim()
+}
+
+function initTheme(isDarkNow) {
+  const bgSoft = cssVar('--vp-c-bg-soft')// || '#202127';
+  monaco?.editor?.defineTheme(isDarkNow? 'cap-dark' : 'cap', {
+    base: isDarkNow ? 'vs-dark' : 'vs',
+    inherit: true,
+    rules: [
+      {
+        token: "identifier",
+        foreground: "9CDCFE"
+      },
+      {
+        token: "identifier.function",
+        foreground: "DCDCAA"
+      },
+      {
+        token: "type",
+        foreground: "1AAFB0"
+      }
+    ],
+    colors: {
+        "editor.background": bgSoft,
+        "editor-background": bgSoft,
+        "editorGutter.background": bgSoft,
+    }
+  });
+}
+
+function setTheme(isDarkNow) {
+    initTheme(isDarkNow);
+    if (isDarkNow) {
+        monaco?.editor?.setTheme('cap-dark')
+    } else {
+        monaco?.editor?.setTheme('cap')
+    }
+}
+
+
 async function setupMonaco() {
   if (typeof window === 'undefined' || editor) return
-  const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches
 
   const [monacoApi, editorWorker, tsWorker, htmlWorker, cssWorker, jsonWorker] = await Promise.all([
     import('monaco-editor/esm/vs/editor/editor.api'),
@@ -82,10 +127,12 @@ async function setupMonaco() {
   if (!builtIn) {
     await setupTextMateGrammar(props.language)
   }
-  const theme = prefersDark ? 'vs-dark' : 'vs'
+  setTheme(isDark.value)
+
+  const theme = isDark.value ? 'cap-dark' : 'cap'
   editor = monaco.editor.create(editorContainer.value, {
     value: props.modelValue,
-    language: builtIn || props.language || 'plaintext',
+    language: props.language || 'plaintext',
     theme,
     automaticLayout: true,
     wordWrap: 'on',
@@ -225,13 +272,18 @@ watch(() => props.modelValue, (val) => {
   const model = editor.getModel()
   if (model && model.getValue() !== val) model.setValue(val)
 })
+
+watchEffect(() => {
+  console.log('dark mode is now', isDark.value)
+  setTheme();
+})
+
 </script>
 
 <style scoped>
 .monaco-editor-container {
   width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-bottom: 0.5em;
 }
 </style>
