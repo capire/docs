@@ -41,7 +41,7 @@ You can also specify other folders by providing the `--out` option, e.g.:
 cds add data -o test/data
 ```
 
-
+Each file contains a CSV header line reflecting the structure of the entity to which it corresponds.
 
 ## Editing `.csv` Files 
 
@@ -68,7 +68,7 @@ cds add data --records 10
 ```
 
 > [!tip] AI-Generated Data
-> For more realistic domain-specific data, you can use AI tools, like CoPilot in VS Code, to assist you in that. This works particularly well for small to medium-sized datasets. Even more as CDS models provide easy to reason domain models, combined with strong typing information that AIs can leverage to generate fitting data samples.
+> For more realistic domain-specific data, you can use AI tools, like CoPilot in VS Code, to assist you in that. This works particularly well for small to medium-sized datasets. Moreover, CDS models provide domain models that are easy to reason about, with strong typing information, meaning that AIs can generate better fitting data samples.
 
 
 
@@ -78,7 +78,7 @@ Common rules apply to text content in `.csv` files, like:
 | ------------------------------------------------------------ | --------------------------- |
 | If texts contain commas, or line breaks, or trailing whitespaces | -> enclose in double quotes |
 | If texts contain double quotes                               | -> escape by doubling them  |
-| Numeric content shall be treated as texts                    | -> enclose in double quotes |
+| Numeric content should be treated as texts                   | -> enclose in double quotes |
 
 
 
@@ -158,13 +158,13 @@ myproject/
 
 All `db/data/*.csv` and  `srv/data/*.csv` files are automatically loaded, because they are located in a `data` folder next to `.cds` model sources.
 
-Additionally, this _in-the-neighborhood-of-models_ technique enables reuse packages, which's main purpose is to provide initial data. Such packages get installed via `npm` or `mvn`, and hence their content will reside under `node_modules` folders, or Maven `target` folders. As long as they also provide models through `.cds` sources, their data will be found and loaded.
+This is especially useful for remote service definitions imported with `cds import` (by default into `srv/external/`) so that data for such services can also be served when mocking.
 
 
 
 ## From Reuse Packages
 
-The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages, which's main purpose is to provide initial data. 
+The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages whose main purpose is to provide initial data. 
 
 Find an example for such a content reuse package at [*@capire/common*](https://github.com/capire/common) which showcases how one could provide ISO reuse data for `Countries`, `Currencies` and `Languages` code lists, as defined in [`@sap/cds/common`](../../cds/common). It essentially consists of these files as content:
 
