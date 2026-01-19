@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
-label: Multitenancy
 impl-variants: true
 ---
 
@@ -283,7 +282,7 @@ Before deploying to the cloud, you can test-drive common SaaS operations with yo
       erin: # [!code focus]
         tenant: t2
         roles: [ admin, cds.ExtensionDeveloper ]
-  ```  
+  ```
 :::
 
 
@@ -387,15 +386,15 @@ In a second terminal, start the main CAP application server:
 ### 3. Subscribe Tenants
 
 In the third terminal, subscribe and unsubscribe tenants as follows:
-  
+
    ::: code-group
    ```sh [cds subscribe]
-   cds subscribe t1 --to http://localhost:4005 
-   cds subscribe t2 --to http://localhost:4005 
+   cds subscribe t1 --to http://localhost:4005
+   cds subscribe t2 --to http://localhost:4005
    ```
    ```sh [cds unsubscribe]
-   cds unsubscribe t1 --from http://localhost:4005 
-   cds unsubscribe t2 --from http://localhost:4005 
+   cds unsubscribe t1 --from http://localhost:4005
+   cds unsubscribe t2 --from http://localhost:4005
    ```
    :::
 
@@ -666,11 +665,11 @@ You should now see the route mapped to your application.
 
 There are several ways to update the database schema of a multitenant application.
 
-* For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update)
+* For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update).
 * For **CAP Node.js** applications, you can use either of:
   - the `cds-mtx upgrade` command from a terminal
   - the [MTX Sidecar API](mtxs#upgrade-tenants-→-jobs)
-  - via a [CloudFoundry hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks) 
+  - via a [CloudFoundry hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks)
   - via a [CloudFoundry task](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/tasks/)
 
   as shown in the examples below.
@@ -705,8 +704,16 @@ cf run-task <app> --name "upgrade-all" --command "cds-mtx upgrade '*'"
 ```
 :::
 
+::: info Managing large upgrade workloads
 
-### Test-Drive with Hybrid Setup
+Very large projects might need to increase resources or limit parallelism of tenant upgrades.
+
+[The best practice algorithm is laid out in our _Get Help_ guide.](../../get-started/get-help#why-is-my-mtx-sidecar-is-killed-with-exit-status-137){.learn-more}{style="margin-top:10px"}
+
+:::
+
+
+### Test-Drive in Hybrid Setup
 
 You can run the app locally while binding it to remote service instances created by a Cloud Foundry deployment.
 To do so, use `cds bind` to bind your SaaS app and the MTX sidecar to its required cloud services, like that:
@@ -905,7 +912,7 @@ private void unsubscribeFromService(UnsubscribeEventContext context) {
 [Learn more about that in the _Java Multitenancy Guide_ documentation](../../java/multitenancy#custom-logic){.learn-more}
 
 
-## Configuring the Java Service 
+## Configuring the Java Service
 
 In case of CAP Java projects, `cds add multitenancy` adds additional configuration similar to this:
 

@@ -41,14 +41,15 @@ export default {
         this.enableFadeOutClass = !isVisible
       })
       // Add back-to-top behavior to the outline's 'On this page' title
-      const e = document.getElementById('doc-outline-aria-label')
-      if (e) e.onclick = scrollToTop
+      // const e = document.getElementById('doc-outline-aria-label')
+      // if (e) e.onclick = scrollToTop
     }
   },
 }
 </script>
 
 <style scoped>
+
 .scroll-to-top {
   position: fixed;
   bottom: 24px;
@@ -77,12 +78,9 @@ export default {
   opacity: 0.5;
   transition: visibility 0s linear 0s, opacity 400ms;
 }
-</style>
 
-<style>
-.outline-title {
-  &:hover { color: var(--vp-c-brand-1) }
-  transition: color 0.3s;
-  cursor: pointer;
-}
+/* 
+.outline-title:hover { color: var(--vp-c-brand-1); }
+.outline-title { transition: color 0.3s; cursor: pointer; } 
+*/
 </style>

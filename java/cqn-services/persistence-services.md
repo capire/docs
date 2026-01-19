@@ -68,7 +68,7 @@ Support for localized and temporal data via session context variables requires H
 
 ### SQLite
 
-CAP supports [SQLite](https://www.sqlite.org/index.html) out of the box. When working with Java, it's [recommended](../../guides/databases/sqlite#sqlite-in-production) to use SQLite only for development and testing purposes.
+CAP supports [SQLite](https://www.sqlite.org/index.html) out of the box. When working with Java, it's recommended to use SQLite only for development and testing purposes.
 
 CAP does support most of the major features on SQLite, although there are a few shortcomings that are listed here:
 
@@ -183,7 +183,7 @@ cds add postgres
 ```
 
 ::: warning
-Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases/postgres#deployment-using-liquibase)
+Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases/postgres#using-liquibase-java)
 :::
 
 #### Configure the Connection Data Explicitly { #postgres-connection }

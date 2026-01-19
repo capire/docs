@@ -1,12 +1,6 @@
 ---
-# layout: cookbook
-label: Feature Toggles
 synopsis: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Feature Toggles
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 

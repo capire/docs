@@ -1,9 +1,7 @@
 ---
-index: 22
 synopsis: >
   Learn how to use uniform APIs to consume local or remote services.
 impl-variants: true
-# uacp: Used as link target from Help Portal at
 ---
 
 <script setup>
@@ -887,6 +885,16 @@ You need additional logic, if remote entities are in the game. The following tab
 | Remote (including navigations and expands to the same remote service) | `/service/risks/Suppliers`               | Delegate query to remote service                                  |
 | Remote: Expand local                                                  | `/service/risks/Suppliers?$expand=risks` | Delegate query w/o expand to remote service and implement expand. |
 | Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
+
+
+##### Support Analytical Queries in Java {.java}
+
+CAP Java provides out-of-the-box support for remote analytical queries.
+
+| **Request**                                                           | **Example**                              | **Implementation**                                                |
+| --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
+| Remote: Analytical queries                                            | `/service/risks/Suppliers?$apply=...`    | Delegate query to remote service                                  |
+
 
 #### Transient Access vs. Replication
 
