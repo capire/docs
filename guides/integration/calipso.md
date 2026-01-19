@@ -11,17 +11,18 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 </p>
 
 
-::: details Reasoning
+::: details Decision Rationale
 
-Suitable plugin use cases:
-- **Integrating with an existing SAP BTP service** is the primary example for Calipso plugins, such as the audit-logging, attachments or data-privacy plugin. They abstract the technical integration with the underlying SAP BTP service, only requiring the developer to properly model and semantically annotate their data model.
-- **Enhancing CAP runtime functionality** is another primary use case, like the [odata-v2](../../plugins/index.md#odata-v2-adapter-odata-v2-proxy), [websockets](../../plugins/index.md#websocket) or [graphql](../../plugins/index.md#graphql-adapter) plugins, where the existing CAP runtime is enhanced with additional functionality, while keeping the core framework clean and modular.
-- **Generating additional database-level artifacts** is done, for example, by the [change-tracking](../../plugins/index.md#change-tracking) or data-privacy plugin to push down logic to the database layer or generate additional services. This keeps the application layer lean and improves performance.
-- **Reuse UI sections** via annotations are leveraged by [change-tracking](../@external/plugins/index.md#change-tracking) or attachments, for example, to automatically surface data in Fiori Elements UIs. Importantly, these plugins provide only the annotations, no dedicated UI coding is included.
 
-Unsuitable plugin use cases:
-- If you need to provide **reusable UI components**, refer to the Fiori elements guide on [developing reuse components](https://ui5.sap.com/#/topic/6314fcd2510648fbaad3cee8a421030d).
-- If you need to offer a whole reuse UI app or [Shell plugin](https://help.sap.com/docs/build-work-zone-standard-edition/sap-build-work-zone-standard-edition/add-shell-plugin?locale=en-US), you should develop a reuse SaaS service on BTP. For example, if a customer wants a dedicated app to view all drafts from across multiple apps of a solution, this would not be a [Calesi](./calesi.md) scenario. Creating a Calipso plugin would result in multiple applications being created in customer landscapes, one per application which uses the plugin, which is considered bad practice. A reuse SaaS is the right way to implement such a scenario. Only one generic UI, the SaaS UI, is seen in the customer landscape for viewing all drafts across applications improving the UX for end users and avoiding cluttering the customer landscapes with redundant UIs.
+✅ <u>Valid use cases:</u>
+- **Integrating with SAP BTP services:** The main purpose of Calipso plugins is to abstract technical integration with SAP BTP services—such as audit-logging, attachments, or data-privacy—so developers only need to model and annotate their data semantically.
+- **Extending CAP runtime functionality:** Plugins like [odata-v2](../../plugins/index.md#odata-v2-adapter-odata-v2-proxy), [websockets](../../plugins/index.md#websocket), or [graphql](../../plugins/index.md#graphql-adapter) add new capabilities to the CAP runtime, keeping the core framework modular and clean.
+- **Generating database-level artifacts:** Plugins such as [change-tracking](../../plugins/index.md#change-tracking) or data-privacy can generate additional database artifacts or services, pushing logic to the database layer for better performance and a leaner application layer.
+- **Reusing UI sections via annotations:** Plugins like [change-tracking](../@external/plugins/index.md#change-tracking) or attachments provide UI annotations that automatically surface data in Fiori Elements UIs. These plugins supply only annotations, not custom UI code.
+
+❌ <u>Invalid use cases:</u>
+- **Reusable UI components:** If you need to provide reusable UI components, use the Fiori elements guide on [developing reuse components](https://ui5.sap.com/#/topic/6314fcd2510648fbaad3cee8a421030d).
+- **Standalone UI apps or Shell plugins:** If your goal is to deliver a full reuse UI app or [Shell plugin](https://help.sap.com/docs/build-work-zone-standard-edition/sap-build-work-zone-standard-edition/add-shell-plugin?locale=en-US), create a reuse SaaS service on BTP instead. For example, a generic app to view drafts across multiple solutions should be implemented as a SaaS UI, not as a Calipso plugin. This approach avoids deploying redundant UIs in every application, resulting in a cleaner customer landscape and a better user experience.
 
 :::
 
@@ -30,7 +31,7 @@ Unsuitable plugin use cases:
 Calipso builds on the foundation of Calesi. The core Calesi concepts—such as ease of use, local testability, evolution without disruption, and promoting reuse—should always guide Calipso plugin development.
 
 <p align="center">
-  <img src="./assets/calesi-principles.drawio.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
+  <img src="./assets/calipso-principles.drawio.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
 </p>
 
 ### Quickstart development
@@ -46,7 +47,7 @@ This guide focuses on general concepts and does not cover language-specific impl
 Plugins should be available for both CAP runtimes. To avoid duplicate effort, consider which parts can be unified:
 
 <p align="center">
-  <img src="./assets/calesi-runtime-decision-tree.svg" alt="What is needed for efficient development." />
+  <img src="./assets/calipso-runtime-decision-tree.svg" alt="What is needed for efficient development." />
 </p>
 
 ### Sidecar approach

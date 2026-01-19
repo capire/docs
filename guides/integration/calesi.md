@@ -15,19 +15,7 @@ entity Foo { //...
 }
 ```
 
-Read through the runtime specific guides to learn about how to implement plugins:
-- [CAP Node.js Plugin guide](../../node.js/cds-plugins.md)
-- [CAP Java Plugin guide](../../java/building-plugins.md)
-
-### Consider all CAP runtimes
-
-Plugins should be available for both CAP runtimes. To avoid duplicate effort, consider which parts can be unified:
-
-<p align="center">
-  <img src="./assets/calesi-runtime-decision-tree.svg" alt="What is needed for efficient development." />
-</p>
-
-## Example
+## Deep-dive
 
 Whenever you have to integrate external services, you should follow the Calesi patterns. For example, let's take an audit logging use case: Data privacy regulations require to write audit logs whenever personal data is modified.
 
@@ -148,7 +136,7 @@ Here, event handlers are attached to a remote service proxy. You can intercept a
 
 ### Correlation to Calesi
 
-Calesi plugins make extensive use of these extension mechanisms to customize and enhance both application and framework services. By utilizing CAP's event-driven extension points, Calesi developers can:
+The Calesi pattern defines extensive use of this extension mechanisms to customize and enhance both application and framework services. By utilizing CAP's event-driven extension points, Calesi developers can:
 
 - Implement cross-cutting concerns (e.g., logging, authorization, validation) centrally.
 - Adapt and extend core and plugin-provided services to meet specific business requirements.
@@ -156,10 +144,10 @@ Calesi plugins make extensive use of these extension mechanisms to customize and
 
 This approach ensures that Calesi solutions remain modular, maintainable, and fully aligned with CAP's best practices for extensibility.
 
-## Guiding Principles for Calesi Plugins
+## Guiding Principles for Calesi pattern
 
 <p align="center">
-  <img src="./assets/calesi-principles.drawio.svg" alt="The four foundations of Calesi: Easy to use, Local testability, Evolution without disruption and Reuse not reinvent." />
+  <img src="./assets/calesi-principles.drawio.svg" alt="The five foundations of Calesi: Easy to use, Local testability, Evolution without disruption, Extrinsic extensibility and Reuse not reinvent." />
 </p>
 
 ### Easy to use
@@ -212,60 +200,3 @@ Use [queues](../../node.js/queue#) for asynchronous handling and additional resi
 - **Always use `cds.env`** — For environment configuration, always use CAP's built-in `cds.env`. Never use `xsenv`, `VCAP_SERVICES`, or similar environment-specific mechanisms directly.
 - **Use Service Bindings à la CAP** — Bind services using CAP's service binding conventions (e.g., `cds.requires.db...`) for consistent and maintainable integration.
 - **Use Profiles for environment-specific configuration** — Leverage CAP profiles to specify environment-specific settings, such as connecting to BTP services in production and mocking data locally during development or testing.
-
-## Test Your Plugin
-
-Thoroughly testing your plugin ensures reliability, maintainability, and a smooth developer experience for consumers. Effective testing covers not only individual functions but also integration with CAP services, deployment scenarios, and performance. The following strategies help you validate that your plugin works as intended across different environments and use cases.
-
-<p align="center">
-  <img src="./assets/calesi-testing.drawio.svg" alt="Outlining the following testing strategies." />
-</p>
-
-### Test features not functions
-
-Prefer integration tests at the CAP service API or HTTP level to validate features rather than individual functions. Tests should remain as implementation-agnostic as possible to reduce refactoring efforts as your plugin evolves.
-
-### E2E tests
-
-Use CAP's [hybrid mode](../../tools/cds-bind), which allows a local CAP service to connect to SAP BTP-hosted services, to test the actual service integration.
-
-Example using jest:
-```bash
-cds bind --exec '--' npx jest
-```
-
-### Deployment tests
-
-Include both single-tenant and multi-tenant deployments in your test strategy. Deploy the application with your plugin to ensure that it starts, provisions correctly, and runs on SAP BTP.
-
-### UI tests
-
-Some plugins like `@cap-js/attachments` or `@cap-js/change-tracking` add UI annotations, which modify how Fiori elements will render the UI. Write [UI5 One Page Acceptance](https://ui5.sap.com/#/topic/2696ab50faad458f9b4027ec2f9b884d) tests to verify that the resulting UI renders correctly and that your annotation generation is valid. The UI5 OPA tests can directly call the CAP backend to leverage the same mock data, avoiding a separate mock server.
-
-### Performance tests
-
-Performance is critical in cloud scenarios. If your plugin hooks into existing request cycles, for example by adding SAVE or READ handlers, conduct performance tests to ensure it does not significantly degrade response times or system throughput.
-
-### Unit tests
-
-Write unit tests only for complex functions where it is really needed. For most cases, integration tests against the CAP API are preferred because CAP handlers may introduce side effects that unit tests would fail to capture.
-
-Also avoid unit-testing CAP's DB API or other CAP-provided APIs, as testing these is covered by the respective CAP components.
-
-## Documentation
-
-### Readme
-
-Have a well-described `README.md` file explaining how to contribute to your plugin but also how to get started using your plugin.
-
-For service integrations, you should also include an Architecture Diagram to show how CAP integrates with your BTP service. See the [BTP Solution Diagram](https://github.com/SAP/btp-solution-diagrams/tree/main/assets/shape-libraries-and-editable-presets/draw.io) templates for [draw.io](https://draw.io).
-
-### Capire
-
-If your plugin is in the `cap-js` and/or `cap-java` organization, add the documentation to [capire](https://github.com/capire/docs). <span id="afterCapireOrg" />
-
-If you are part of `cap-js-community` or another organization your plugins documentation is _usually_ not added to Capire.
-
-## Learn more
-
-- TODO: add helpful links
