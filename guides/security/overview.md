@@ -36,14 +36,14 @@ For example, authentication can be delegated to a [separate ingress component](.
 
 ### Customizable { #key-concept-customizable }
 
-Due to the plugin-based architecture, **CAP allows standard functions to be modified as required or, if necessary, completely replaced**.
-This flexibility is crucial for scenarios where the default methods do not fully meet the requirements of the application.
+Due to the plugin-based architecture, **you can modify CAP's standard functions as required or, if necessary, completely replace them**.
+This flexibility is crucial for scenarios where the default methods do not fully meet your application's requirements.
 Moreover, this integration helps to easily incorporate non-CAP and even non-BTP services, thereby providing a flexible and interoperable environment. 
 
 ![Overview Customizable Components with CAP](./assets/security-customizable.drawio.svg){width="600px" }
 
-For instance, it is possible to define specific endpoints with a [custom authentication strategy](./authentication#custom-auth). 
-Likewise, the CAP representation of the request user can be overruled to match additional, application-specific requirements.
+For instance, you can define specific endpoints with a [custom authentication strategy](./authentication#custom-auth). 
+Likewise, you can override the CAP representation of the request user to match additional, application-specific requirements.
 
 ### Built on Best of Breed { #key-concept-platform-services }
 
@@ -59,7 +59,7 @@ Likewise, TLS termination is offered by the [platform infrastructure](#platform-
 
 ### Decoupled from Business Logic  { #key-concept-decoupled-coding }
 
-As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change in case of any security-related adaptations. 
+As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change for any security-related adaptations. 
 This ensures that business logic remains independent of platform services, which are often subject to security-hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 
@@ -85,7 +85,7 @@ The application is responsible for coordinated overall configuration.
 ## Security Architecture
 
 CAP applications run in a specific context that has a major impact on the security [architecture](#architecture-overview).
-CAP requires a dedicated [platform environment](#platform-environment) to integrate with, in order to ensure end-to-end security.
+CAP requires a dedicated [platform environment](#platform-environment) to integrate with to ensure end-to-end security.
 
 ### Architecture Overview { #architecture-overview }
 
@@ -93,7 +93,7 @@ The following diagram provides a high-level overview of the security-relevant co
 
 ![This TAM graphic is explained in the accompanying text.](./assets/cap-security-architecture-overview.png){width="600px"}
 
-To serve a business request, different runtime components are involved: a request, issued by a UI or technical client ([public zone](#public-zone)), is forwarded by a gateway or ingress router to the CAP application. In case of a UI request, an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance acts as a proxy to manage the login flow and the browser session. The CAP application can have additional services such as a CAP sidecar. All application components ([application zone](#application-zone)) might make use of platform services such as database or identity service ([platform zone](#platform-zone)).
+To serve a business request, different runtime components are involved: a request, issued by a UI or technical client ([public zone](#public-zone)), is forwarded by a gateway or ingress router to the CAP application. For a UI request, an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance acts as a proxy to manage the login flow and the browser session. The CAP application can have additional services such as a CAP sidecar. All application components ([application zone](#application-zone)) might make use of platform services such as database or identity service ([platform zone](#platform-zone)).
 
 #### Public Zone { #public-zone }
 
@@ -107,17 +107,17 @@ Ideally, you should limit the number of exposed endpoints to a minimum, perhaps 
 
 The platform zone contains all platform components and services that are *configured and maintained* by the application provider.
 CAP applications consume these low-level [platform services](#btp-services) to handle more complex business requests.
-For instance, persistence service to store business data and identity service to authenticate the business user play a fundamental role.
+For instance, the persistence service stores business data and the identity service authenticates the business user. Both play a fundamental role.
 
 The platform zone also includes the gateway, which is the main entry point for external requests. Additionally, it may contain extra ingress routers.
 
 #### Application Zone { #application-zone}
 
-The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a **unit of trust**. The application provider is responsible to *develop, deploy and operate* these services:
+The application zone comprises all microservices that represent a CAP application. They are tightly integrated and form a **unit of trust**. The application provider is responsible for *developing, deploying, and operating* these services:
 
 - The [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) acts as an optional reverse proxy wrapping the application service and providing business-independent functionality required for UIs.
 This includes serving UI content, providing a login flow as well as managing the session with the browser.
-It can be deployed as an application (reusable module) or alternatively consumed as a [service](https://help.sap.com/docs/btp/sap-business-technology-platform/managed-application-router).
+You can deploy it as an application (reusable module) or alternatively consume it as a [service](https://help.sap.com/docs/btp/sap-business-technology-platform/managed-application-router).
 
 - The CAP application service exposes the API to serve business requests. Usually, it makes use of lower-level platform services. As built on CAP, a significant number of security requirements is covered either out of the box or by adding minimal configuration.
 
@@ -144,7 +144,7 @@ This **frees CAP applications from the need to manage trust certificates**. The 
 
 3. **Secrets** that are required to protect the application or to consume other platform services **are injected by the platform** into the application microservices in a secure way.
 
-All supported [environments](#cloud) fulfill the given requirements. Additional requirements could be added in future.
+All supported [environments](#cloud) fulfill the given requirements. Additional requirements may be added in future.
 
 ::: tip
 Custom domain certificates must be signed by a trusted certificate authority.
@@ -190,12 +190,12 @@ Currently, CAP supports to run on two cloud runtimes of [SAP Business Technology
 - [SAP BTP, Cloud Foundry Runtime](https://help.sap.com/docs/btp/sap-business-technology-platform/cloud-foundry-environment)
 - [SAP BTP, Kyma Runtime](https://help.sap.com/docs/btp/sap-business-technology-platform/kyma-environment)
 
-Application providers are responsible to ensure a **secure platform environment**.
+Application providers are responsible for ensuring a **secure platform environment**.
 In particular, this includes *configuring* [platform services](#btp-services) the application consumes.
-For instance, the provider (user) administrator needs to configure the [identity service](#identity-service) to separate platform users from business users that come from different identity providers.
+For instance, you as the provider (user) administrator need to configure the [identity service](#identity-service) to separate platform users from business users that come from different identity providers.
 Likewise, login policies (for example, multifactor authentication or single-sign-on) must be aligned with company-specific requirements.
 
-Note, that achieving production-ready security requires to meet all relevant aspects of the **development process** as well.
+Note that achieving production-ready security requires meeting all relevant aspects of the **development process** as well.
 For instance, source code repositories must be protected and must not contain any secrets or personal data.
 Likewise, the **deployment process** must be secured. This includes not only setting up CI/CD pipelines running on technical platform users, but also defining integration tests to ensure properly secured application endpoints.
 
@@ -219,7 +219,7 @@ Find more about BTP platform security here:
 
 ### Security Platform Services { #btp-services }
 
-SAP BTP provides a range of platform services that your CAP applications can utilize to meet production-grade security requirements. To ensure the security of your CAP applications, it's crucial to comply with the service level agreement (SLA) of these platform services. *As the provider of the application, you play a key role in meeting these requirements by correctly configuring and using these services.*
+SAP BTP provides a range of platform services that your CAP applications can use to meet production-grade security requirements. To ensure the security of your CAP applications, comply with the service level agreement (SLA) of these platform services. *As the provider of the application, you play a key role in meeting these requirements by correctly configuring and using these services.*
 
 ::: tip
 SAP BTP services and the underlying platform infrastructure hold various certifications and attestations, which can be found under the naming of SAP Cloud Platform in the [SAP Trust Center](https://www.sap.com/about/trust-center/certification-compliance/compliance-finder.html?search=SAP%20Business%20Technology%20Platform%20ISO).
@@ -227,15 +227,15 @@ SAP BTP services and the underlying platform infrastructure hold various certifi
 [Webcast SAP BTP Cloud Identity and Security Services](https://assets.dm.ux.sap.com/webinars/sap-user-groups-k4u/pdfs/221117_sap_security_webcast_series_sap_btp_cloud_identity_and_security_services.pdf){.learn-more}
 
 
-The CAP framework offers flexible APIs that you can integrate with various services, including your custom services. If you replace platform services with your custom ones, it's important to ensure that the service level agreements (SLAs) CAP depends on are still met.
+The CAP framework offers flexible APIs that you can integrate with various services, including your custom services. If you replace platform services with your custom ones, ensure that the service level agreements (SLAs) CAP depends on are still met.
 
 The most important services for security offered by the platform:
 
 #### [SAP Cloud Identity Services - Identity Authentication](https://help.sap.com/docs/IDENTITY_AUTHENTICATION) { #identity-service }
 
-The Identity Authentication service defines the user base for (CAP) applications and services, and allows to control access.
-Customers can integrate their third-party or on-premise identity provider (IdP) and harden security by defining multifactor authentication or by narrowing client IP ranges.
-This service helps to introduce a strict separation between platform users (provider) and business users (subscribers), a requirement of CAP. It supports various authentication methods, including SAML 2.0 and [OpenID Connect](https://openid.net/connect/), and allows for the configuration of single sign-on access.
+The Identity Authentication service defines the user base for (CAP) applications and services, and allows you to control access.
+You can integrate your third-party or on-premise identity provider (IdP) and harden security by defining multifactor authentication or by narrowing client IP ranges.
+This service helps introduce a strict separation between platform users (provider) and business users (subscribers), a requirement of CAP. It supports various authentication methods, including SAML 2.0 and [OpenID Connect](https://openid.net/connect/), and allows you to configure single sign-on access.
 
 [Learn more in the SAP Cloud Identity - Security Guide.](https://help.sap.com/docs/IDENTITY_AUTHENTICATION?#discover_task-security){.learn-more}
 
