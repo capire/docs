@@ -218,7 +218,7 @@ Use [queues](../../node.js/queue#) for asynchronous handling and additional resi
 Thoroughly testing your plugin ensures reliability, maintainability, and a smooth developer experience for consumers. Effective testing covers not only individual functions but also integration with CAP services, deployment scenarios, and performance. The following strategies help you validate that your plugin works as intended across different environments and use cases.
 
 <p align="center">
-  <img src="./assets/calesi-testing.png" alt="Outlining the following testing strategies." />
+  <img src="./assets/calesi-testing.drawio.svg" alt="Outlining the following testing strategies." />
 </p>
 
 ### Test features not functions
