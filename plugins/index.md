@@ -10,8 +10,6 @@ Following is a curated list of plugins that are available for the SAP Cloud Appl
 The `@cap-js`-scoped plugins are created and maintained in close collaboration and shared ownership of CAP development teams and other SAP development teams.
 :::
 
-[[toc]]
-
 <style scoped>
    main .vp-doc a:has(> img) {
       display: inline-flex;

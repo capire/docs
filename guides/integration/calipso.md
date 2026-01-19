@@ -63,13 +63,7 @@ When the external service needs to call the CAP app, use the following ways to g
 
 Use `@requires : 'MyServiceRestriction'` annotated to your CDS service to enforce that any user trying to send a request against this OData service must have the scope (XSUAA) / group (IAS/AMS) assigned to them. CAP will take care of the enforcement.
 
-#### XSUAA 
-
-<StatusBadge
-    type="warning"
-    text="Legacy"
-    title="This feature is legacy and IAS / AMS should be preferred."
-  />
+#### XSUAA <Legacy />
 
 When the CAP application is using XSUAA for enforcing authorizations, you can grant the scope needed for the CAP service via the "grant-as-authority-to-apps" configuration, like in the following sample `xs-security.json` file:
 
@@ -190,7 +184,11 @@ Also avoid unit-testing CAP's DB API or other CAP-provided APIs, as testing thes
 
 Have a well-described `README.md` file explaining how to contribute to your plugin but also how to get started using your plugin.
 
-For service integrations, you should also include an Architecture Diagram to show how CAP integrates with your BTP service. See the [BTP Solution Diagram](https://github.com/SAP/btp-solution-diagrams/tree/main/assets/shape-libraries-and-editable-presets/draw.io) templates for [draw.io](https://draw.io).
+For service integrations, you should also include an Architecture Diagram to show how CAP integrates with your BTP service. See the [BTP Solution Diagram](https://github.com/SAP/btp-solution-diagrams/tree/main/assets/shape-libraries-and-editable-presets/draw.io) templates for [draw.io](https://draw.io). 
+
+:::info
+Make sure to save diagrams as editable svg vector so they can be adjusted later on and have change-tracking enabled through git.
+:::
 
 ### Capire
 
