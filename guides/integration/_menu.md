@@ -1,5 +1,6 @@
 
 # [ CAP-level Service Integration ](calesi.md) <!-- UNRELEASED -->
+# [ CAP-level Integration of Platform Services ](calipso.md) <!-- UNRELEASED -->
 # [ Reuse & Compose ](composition)
 # [ Using Microservices ](microservices.md) <!-- UNRELEASED -->
 
