@@ -413,8 +413,6 @@ The [restrict annotation](#restrict-annotation) for an entity allows you to enfo
 In addition, you can define a `where`-condition that further limits the set of accessible instances. 
 This condition, which acts like a filter, establishes *instance-based authorization*.
 
-The condition defined in the `where` clause typically associates domain data with static user claims.
-
 ### Filter Conditions { #filter-consitions }
 
 The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
