@@ -58,7 +58,7 @@
 # [Serving Fiori UIs](fiori)
 # [Transactions](cds-tx)
 # [Security](authentication)
-# [Plugins](cds-plugins)
+# [Building Plugins](cds-plugins)
 # [Testing](cds-test)
 # [TypeScript](typescript)
 # [Best Practices](best-practices)

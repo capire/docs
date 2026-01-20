@@ -140,6 +140,15 @@ Key considerations:
 - **Use Service Bindings à la CAP** — Bind services using CAP's service binding conventions (e.g., `cds.requires.db...`) for consistent and maintainable integration.
 - **Use Profiles for environment-specific configuration** — Leverage CAP profiles to specify environment-specific settings, such as connecting to BTP services in production and mocking data locally during development or testing.
 
+## Code completion 
+
+If you must introduce new annotations, check if they can be added to [SAP's OData vocabulary](https://sap.github.io/odata-vocabularies/) as only these appear in the CDS code completion. Offering annotations without any code completion leads to a worse development experience!
+
+::: details For Node.js plugins: 
+- Think about TypeScript. If your plugin offers new APIs, make sure they have code completion in VS Code by having jsdoc comments or type definition files.
+- Add typing for configuration options via a [schema](../../node.js/cds-plugins.md#configuration-schema).
+:::
+
 ## Test Your Plugin
 
 Thoroughly testing your plugin ensures reliability, maintainability, and a smooth developer experience for consumers. Effective testing covers not only individual functions but also integration with CAP services, deployment scenarios, and performance. The following strategies help you validate that your plugin works as intended across different environments and use cases.

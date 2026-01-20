@@ -1,24 +1,24 @@
 ---
+synopsis: >
+  This page describes how to build plugins for CAP Node.js.
 status: released
 ---
 
 # CDS Plugin Packages
 
 
-
-The `cds-plugin` technique allows to provide extension packages with auto-configuration.
-
-[[toc]]
-
+The `cds-plugin` approach enables you to deliver extension packages with built-in auto-configuration. Before creating a new plugin, review the [Calesi](../guides/integration/calesi.md) and [Calipso](../guides/integration/calipso.md) patterns. These patterns help ensure your plugin follows best practices for quality and consistency.
 
 
 ## Starting a new plugin
 
-Simply add a file `cds-plugin.js` next to the `package.json` of your reuse package to have this detected and loaded automatically when starting CAP Node.js servers.
+To get started, ensure you have created a [valid CAP project](../get-started/index.md#cds-init).
 
-Meaning when an application downloads your package `npm i my-plugin` and afterwards starts the CAP server with `cds watch`, the packages `cds-plugin.js` file will automatically be detected and executed during startup.
+Next, place a `cds-plugin.js` file in the same directory as your package's `package.json`. CAP Node.js servers will automatically detect and load this file when starting up.
 
-Within such `cds-plugin.js` modules you can use [the `cds` facade](cds-facade) object, to register to lifecycle events or plugin to other parts of the framework. For example, they can react to lifecycle events, the very same way as in [custom `server.js`](cds-server#custom-server-js) modules:
+When a user installs your package (e.g., with `npm i my-plugin`) and runs the CAP server using `cds watch`, your `cds-plugin.js` will be executed automatically during server startup.
+
+Inside `cds-plugin.js`, you can use the [CDS facade](./cds-facade) to hook into CAP lifecycle events or extend framework functionality. This works similarly to how you would use lifecycle events in a [custom `server.js`](./cds-server#custom-server-js) module.
 
 ::: code-group
 
@@ -83,7 +83,7 @@ cds.on('served', ()=>{ /**...*/ })
 }
 ```
 
-```js [srv/myservice]
+```js [srv/myservice.js]
 const cds = require('@sap/cds')
 const LOG = cds.log('my-plugin')
 
@@ -100,7 +100,7 @@ module.exports = class MyService extends cds.Service {
 }
 ```
 
-```js [srv/myservice-mock]
+```js [srv/myservice-mock.js]
 const cds = require('@sap/cds')
 const LOG = cds.log('my-plugin')
 
@@ -118,6 +118,17 @@ Sometimes `cds-plugin.js` files can also be empty, for example if your plugin on
 ::: danger Avoiding state in services
 
 Keep in mind in multi-tenant scenarios the CAP service is shared across all tenants! Thus you must store any tenant specific state, like credentials for a remote BTP service, in a map with the tenant ID as the key to maintain tenant separation.
+
+Example:
+```js
+const cds = require('@sap/cds')
+
+const myTenantStates = {}
+
+updateState(myState) {
+  myTenantStates[cds.context.tenant] = myState
+}
+```
 
 :::
 
@@ -162,7 +173,7 @@ The profiles, like "development", are explained in the [Configuration Profiles](
 All kinds need to be prefixed with the service for which they are intended to be used. Else they might clash with kinds from other plugins.
 :::
 
-The following example is from the data privacy plugin. Here the Information service uses a model property to specify a `.cds` file used as the domain model for that service. The domain model imported via that path is then added to the domain model of the application.
+The following example is from the [attachments](../plugins/index.md#attachments) plugin. Here the malware scanning service uses a model property to specify a `.cds` file used as the domain model for that service. The domain model imported via that path is then added to the domain model of the application.
 
 ::: code-group
 
@@ -170,19 +181,53 @@ The following example is from the data privacy plugin. Here the Information serv
 {
   "cds": {
     "requires": {
-      "sap.dpp.RetentionService": {
-        "kind": "TableHeaderBlocking"
-      },
-      "sap.dpp.InformationService": {
-        "model": "@sap/cds-dpi/srv/DPIInformation"
+      "malwareScanner": {
+        "kind": "malwareScanner-mocked"
       },
       "kinds": {
-        "sap.dpp.RetentionService-TableHeaderBlocking": {
-          "impl": "@sap/cds-dpi/srv/TableHeaderBlocking",
-          "model": "@sap/cds-dpi/srv/TableHeaderBlocking"
-        }
+        "malwareScanner-mocked": {
+          "model": "@cap-js/attachments/srv/malwareScanner-mocked",
+          "impl": "@cap-js/attachments/srv/malwareScanner-mocked"
+        },
+        "malwareScanner-btp": {
+          "model": "@cap-js/attachments/srv/malwareScanner",
+          "impl": "@cap-js/attachments/srv/malwareScanner"
+        },
       }
     }
+  }
+}
+```
+
+
+```cds [malwareScanner-mocked.cds]
+using {malwareScanner} from './malwareScanner';
+
+annotate malwareScanner with @impl : './malwareScanner-mocked';
+```
+
+```cds [malwareScanner.cds]
+@protocol : 'none'
+service malwareScanner {
+
+  event ScanAttachmentsFile {
+    target: String; //CSN name of Attachments entity to scan
+    keys: Map; //Key value pairs of attachments entity to scan
+  };
+
+  action scan(file: LargeBinary) returns {
+    isMalware: Boolean;
+    encryptedContentDetected: Boolean;
+    scanSize: Integer;
+    finding: String;
+    /**
+     * Returns "empty" if no type could be detected
+     */
+    mimeType: String;
+    /**
+     * SHA256 hash of file
+     */
+    hash: String;
   }
 }
 ```
@@ -191,18 +236,16 @@ The following example is from the data privacy plugin. Here the Information serv
 
 ### Service variants
 
-As seen above in the sample the different kinds can be used to offer different variants of your plugin. This makes sense to for example have one `db` service but variants for different databases or one `audit-log` but variants for different Audit logging service plans.
+As seen above, you can use different kinds to offer multiple variants of your plugin. This is especially useful when you want to provide, for example, a mocked version of your service for local development and a real version for production. The [attachments](../plugins/index.md#attachments) plugin demonstrates this pattern: in development, the `malwareScanner-mocked` kind is used, which simply logs that a malware scan was triggered, while in production, the `malwareScanner-btp` kind connects to the actual Malware Scanning service in BTP.
 
-The service variants are especially handy to provide a mocked version of the service, in case your plugin integrates with a Cloud Service, so applications can still run locally and test basic functionality without needing to connect to the Cloud Service during development.
+By configuring these variants in your plugin's `package.json`, applications can connect to your service using `cds.connect`, and CAP will automatically provide the correct implementation based on the current profile. This allows applications to run and test basic functionality locally without needing access to the real cloud service, while seamlessly switching to the real implementation in production.
 
-The mocked variant usually just logs the events send to your service to the console. For example `@cap-js/audit-logging` logs the audit logs to the console when in development and `@cap-js/attachments` only logs that a malware scan is triggered without actually scanning as the Malware Scanning service is locally not connected.
-
-Variant independent applications can connect to your service via `cds.connect` and depending on the kind configured a different service is returned.
+For example, with the attachments plugin:
 
 ```js
-// Returns "MyService" in hybrid or production mode, 
-// but with the development profile it returns "MyServiceMock"
-await cds.connect.to('my-service');
+// Returns the mocked service in development, 
+// and the real service in production
+await cds.connect.to('malwareScanner');
 ```
 
 ### Reading BTP service bindings / credentials
@@ -226,33 +269,43 @@ Do not read the credentials from `process.env.VCAP_SERVICES`! `VCAP_SERVICES` is
 
 #### Connecting to BTP services
 
-Before you use `axios` or `node:fetch`, you can use the [`Cloud SDK`](https://sap.github.io/cloud-sdk/) and its functions `executeHttpRequest` and `getDestination` to retrieve a destination from BTP and run an HTTP request against it. This takes full care of doing the authentication and is the preferred method for communicating with BTP services so your plugin does not need to fetch the token itself.
+Before you use http clients such as `axios` or `node:fetch`, you can use the [`Cloud SDK`](https://sap.github.io/cloud-sdk/) and its functions `executeHttpRequest` and `getDestination` to retrieve a destination from BTP and run an HTTP request against it. This takes full care of doing the authentication and is the preferred method for communicating with BTP services so your plugin does not need to fetch the token itself.
 
 If you do not have a destination at hand the Cloud SDK supports service bindings as well.
 
-### Early exit
+### Early Exit
 
-Have an early exit option for your plugin so apps can easily disable the plugin in specific profiles. Disablement should be done by setting your service in the requires section to `null`.
+Sometimes, you may want to disable a service for certain environments or profiles (such as local development, testing, or specific deployments). CAP makes this easy by allowing you to "turn off" a plugin through configuration—without uninstalling or changing your code.
+
+To disable a service, set the corresponding service entry in the `cds.requires` section to `null` in your application's configuration (for example, in your `package.json` or a profile-specific `.cdsrc.json`):
 
 ```json
 "cds": {
   "requires": {
-    "myservice": null
+    "my-service": null
   }
 }
 ```
 
-Early on in your logic, you should have some logic, like this:
+This tells CAP to skip loading and initializing the service.
+
+**Best Practice:**  
+Always check if your service is enabled before registering handlers or running plugin logic. This ensures your plugin is only active when explicitly configured.
 
 ::: code-group
 
 ```js [cds-plugin.js]
+const cds = require('@sap/cds')
+// Only activate plugin if the service is enabled
 if (cds.env.requires['my-service']) {
-  const cds = require('@sap/cds')
-  cds.on('served', ()=>{ /**...*/ })
+  cds.on('served', () => {
+    // Plugin logic here
+  })
 }
 ```
 :::
+
+By following this pattern, you give application developers full control to enable or disable your plugin as needed, simply by adjusting configuration—no code changes required.
 
 ## Reusable CDS Artifacts
 
@@ -317,7 +370,9 @@ Regarding compositions and associations keep in mind that compositions are just 
 
 #### Reading annotations
 
-[Annotations](../cds/cdl#annotations) are used for marking up CDS artifacts with additional information. In the CSN they are normalised object properties, e.g. flattened, meaning
+Annotations in CDS are used to enrich artifacts (entities, properties, associations, etc.) with metadata or additional semantics. In the compiled CSN (Core Schema Notation), these annotations are normalized and flattened into object properties for easier programmatic access.
+
+For example, consider the following CDS snippet with several annotations:
 
 ```cds
 @Common : {
@@ -338,54 +393,88 @@ Regarding compositions and associations keep in mind that compositions are just 
 currency: Association to one Currencies;
 ```
 
-would result in
+After compilation, the CSN representation of the `currency` association would look like this:
 
 ```json
-"currency": {
-  "@Common.Text": {"=": "currency.name"},
-  "@Common.TextArrangement" : {"#": "TextOnly"},
-  "@Common.ValueListWithFixedValues": true,
-  "@Common.ValueList.CollectionPath": "Currencies",
-  "@Common.ValueList.Parameters": [{
-    "$Type" : "Common.ValueListParameterInOut",
-    "LocalDataProperty" : {"=": "code"},
-    "ValueListProperty" : "code",
-  }],
-  "type": "cds.Association",
-  "cardinality": {"max": 1}
+{
+  "currency": {
+    "@Common.Text": {"=": "currency.name"},
+    "@Common.TextArrangement": {"#": "TextOnly"},
+    "@Common.ValueListWithFixedValues": true,
+    "@Common.ValueList.CollectionPath": "Currencies",
+    "@Common.ValueList.Parameters": [{
+      "$Type": "Common.ValueListParameterInOut",
+      "LocalDataProperty": {"=": "code"},
+      "ValueListProperty": "code"
+    }],
+    "type": "cds.Association",
+    "cardinality": {"max": 1}
+  }
 }
 ```
 
-When defining own annotations consider the section [Code completion](../../plugins/development-guide#code-completion).
+Notice how each annotation is flattened into a property prefixed with `@`, and complex annotation values (like objects or arrays) are preserved.
+
+### Accessing Annotations Programmatically
+
+You can access these annotations in your plugin or service handlers by inspecting the CSN model. For example, within an event handler:
+
+```js
+const myService = await cds.connect.to("myService")
+myService.after("SAVE", async function saveDraftAttachments(res, req) {
+  const entity = req.target
+
+  // Check for a specific annotation value
+  if (entity?.['@Common.Text']?.['='] === "currency.name") {
+    // Custom logic based on annotation
+  }
+})
+```
+
+This approach allows you to implement logic that reacts to specific annotations, enabling advanced scenarios such as dynamic behavior, validation, or UI hints.
+
+> **Tip:**  
+> When defining custom annotations, refer to the [Code completion](../../plugins/development-guide#code-completion) section to ensure your annotations are discoverable and usable with tooling support.
+
 
 #### Dynamically modifying the model
 
-Via [lifecycle events](./cds-compile#compile-to-edmx) you can modify the model before it is used by the CAP for various purposes, like creating the database artifacts, the runtime model or the OData services.
+You can change the CAP data model dynamically before it is used by CAP, for example to add new properties or associations, by listening to special [lifecycle events](./cds-compile#compile-to-edmx). These events let you modify the model just before it is used for things like creating the database, generating OData services, or running the application.
+
+Here’s how you can do it:
 
 ```js
 const cds = require('@sap/cds')
-cds.on('compile.for.runtime', m => enhanceModel(m))
-cds.on('compile.to.dbx', m => enhanceModel(m))
-cds.on('compile.to.edmx', m => enhanceModel(m))
+
+// Listen to model compilation events and enhance the model
+cds.on('compile.for.runtime', model => enhanceModel(model))
+cds.on('compile.to.dbx', model => enhanceModel(model))
+cds.on('compile.to.edmx', model => enhanceModel(model))
 ```
 
-In there you can add additional associations or properties based on annotations, add additional services or in general modify artifacts as needed.
+In the `enhanceModel` function, you can add or change definitions in the model. For example, you might add new associations, properties, or even services based on certain annotations or conditions.
 
-Because the events can trigger multiple times set a flag in the meta information to not run your modifications twice on the same model.
+**Important:**  
+These events can be triggered more than once for the same model. To avoid running your changes multiple times, set a flag in the model’s metadata after you’ve made your modifications:
 
-```js
-function enhanceModel(m) {
-  const meta = m.meta ??= {};
+::: code-group
+```js [cds-plugin.js]
+function enhanceModel(model) {
+  // Use a flag to ensure modifications are only applied once
+  const meta = model.meta ??= {};
   if (meta['sap.myservice.enhancements']) return;
 
-  //Do modifications to m.definitions
+  // Make your changes to model.definitions here
 
+  // Set the flag so this block doesn't run again for the same model
   meta['sap.myservice.enhancements'] = true;
-
 }
 ```
+:::
 
-Importantly you need to consider, that in multi-tenancy setups the model is owned by the MTX micro-service and as such your plugin must then also be part of the MTX micro-service `package.json` file to ensure the model modifications are done to the models used by every tenant.
+> [!NOTE] Multi-tenancy scenarios
+> If your CAP project uses multi-tenancy (MTX), the model is managed by the MTX microservice. In this case, your plugin must also be listed as a dependency in the MTX microservice’s `package.json`. This ensures your model changes are applied for every tenant.
+
 
 ## Registering additional handler
 
@@ -398,7 +487,7 @@ While usually, handlers are registered when defining the service, plugins often 
 Commonly the [server lifecycle](./cds-server#lifecycle-events) events are used to register additional handlers on existing services:
 
 ::: code-group
-```js [Bad practice]
+```js [❌ Bad practice]
 cds.on('served', services => {
   for (const name in services) {
     const srv = services[name]
@@ -415,39 +504,44 @@ cds.on('served', services => {
 ```
 :::
 
-However this approach has two downsides:
+The above approach has two main drawbacks:
 
-1. The `served` lifecycle event is used, which makes it harder for consuming applications to register additional handlers on top of the plugin. If the plugin registers `on` handlers via `srv.prepend` the consuming application cannot add their own on handlers via `srv.prepend` with good conscious during that stage as it is undefined which event handler for `served` is executed first, leading to an ambiguous situation where it is not clear which on handler has precedence.
-2. The handlers are registered per entity. While this works fine for plugins only consumed by single-tenant applications, it will cause problems in multi-tenancy scenarios. `srv.entities` is based on the base model of the CAP service `cds.model`. However in multi-tenant scenarios the model can be extended at runtime for each tenant, be it via [feature toggles](../guides/extensibility/feature-toggles.md) or [customer extensions](../guides/extensibility/index.md#extensibility). At runtime `cds.context.model` contains the model which is currently active for the tenant of an incoming request and during server startup the tenant-specifc models are not available. For example the attachments entity from `@cap-js/attachments` could be placed behind a feature toggle. This means `cds.model` won't contain any reference to attachments, but at runtime `cds.context.model` will, when the feature toggle is activated.
+1. **Ambiguous Handler Precedence:**  
+  Using the `served` lifecycle event to register handlers can make it unclear which handler takes precedence if both your plugin and the consuming application use `srv.prepend` to add their own handlers. Since the order in which `served` event handlers are executed is not guaranteed, it's ambiguous which handler will run first. This can lead to unpredictable behavior, making it difficult for consuming applications to reliably extend or override plugin logic.
 
-To avoid these two problems, use CAPs way for [adding generic handler](./app-services.md#adding-generic-handlers). This means, that when an application service is initialized, first the handlers from the application service are registered, thus having precedence, and afterwards the generic handlers from CAP itself and your plugin are added.
+2. **Issues in Multi-Tenancy Scenarios:**  
+  Registering handlers per entity at startup works for single-tenant applications, but causes problems in multi-tenant setups. The list of entities (`srv.entities`) is based on the base model (`cds.model`), which does not include tenant-specific extensions or feature toggles. In multi-tenant scenarios, the model can be extended at runtime for each tenant (for example, via [feature toggles](../guides/extensibility/feature-toggles.md) or [customer extensions](../guides/extensibility/index.md#extensibility)). At runtime, `cds.context.model` reflects the active model for the current tenant, which may include additional entities not present at startup. For example, an attachments entity from `@cap-js/attachments` might only be available when a feature toggle is enabled, so it would not appear in `cds.model` at startup but would be present in `cds.context.model` at runtime.
+
+**Recommended Approach:**  
+To avoid these issues, use CAP's mechanism for [adding generic handlers](./app-services.md#adding-generic-handlers). With this approach, application service handlers are registered first (giving them precedence), followed by generic handlers from CAP and your plugin. This ensures that plugins do not unintentionally override application logic and that handlers are correctly registered for tenant-specific models.
 
 ::: code-group
-```js [Good practice]
+```js [✅ Good practice]
 const cds = require('@sap/cds')
 
-cds.ApplicationService.handle_my_service = cds.service.impl (function(){
+cds.ApplicationService.handle_my_service = cds.service.impl(function () {
   if (!cds.env.requires['my-service']) return;
   this.before('*', req => {
-    if (/** Some check on req.target */) continue;
-    // Additional logic;
+   if (/** Some check on req.target */) return;
+   // Additional logic here
   })
 })
 ```
 :::
 
 ::: danger The dangers of generic handlers
-While registering handlers assume the least possible and always check for your use case. Generic handlers are quite powerful but as they are generic all kinds of requests will go through them, like messaging request, analytical OData calls, $count calls or file stream requests.
+Generic handlers are powerful but must be used with care. They will process all kinds of requests, including messaging, analytical OData calls, `$count` queries, and file streams.
 
-- Check the dangers of [`req.query`](./events.md#query) to be aware of
-- Check the dangers of [`req.data`](./events.md#data) to be aware of
-- Check out the [performance considerations](./core-services.md#performance-considerations) for event handlers
-- Check out the [implications of data modification in after handlers](./core-services.md#implication-when-modifying-data-in-after-handlers)
+- Be aware of the risks when accessing [`req.query`](./events.md#query)
+- Understand the implications of using [`req.data`](./events.md#data)
+- Review [performance considerations](./core-services.md#performance-considerations) for event handlers
+- Consider the [effects of modifying data in after handlers](./core-services.md#implication-when-modifying-data-in-after-handlers)
 :::
 
-While `before` and `after` handlers are called by CAP in parallel, `on` handlers behave like express middlewares, where the next middleware must be explicitly called. For plugins this means each `on` handler must always call next `on` handler when the conditions they check for are not met!
+> [!NOTE] 
+> While `before` and `after` handlers are executed in parallel by CAP, `on` handlers work like Express middlewares and must explicitly call the next handler if their conditions are not met. Always ensure your plugin's `on` handlers call the next handler when appropriate.
 
-If you want to enhance the generic authentication and authorization consider [initial handlers](./core-services.md#initial-handlers)
+If you want to enhance authentication or authorization, consider using [initial handlers](./core-services.md#initial-handlers).
 
 ## Configuration Schema <Beta /> { #configuration-schema }
 
@@ -487,7 +581,7 @@ All schema definitions must be below the `schema` node:
 Currently, the following schema contribution points are supported:
 
 | Contribution Point | Description                               |
-|--------------------|-------------------------------------------|
+| ------------------ | ----------------------------------------- |
 | `buildTaskType`    | Additional build task type                |
 | `databaseType`     | Additional database type                  |
 | `cds`              | One or more additional top level settings |
@@ -495,7 +589,7 @@ Currently, the following schema contribution points are supported:
 
 #### Usage In a CAP Project
 
-<video src="./assets/schema-usage_compressed.mp4" autoplay loop muted webkit-playsinline playsinline />{.ignore-dark style="width: 688px"}
+<video src="./assets/schema-usage_compressed.mp4" autoplay loop muted webkit-playsinline playsinline style="border-radius: 10px" />{.ignore-dark style="width: 688px;"}
 
 
 ## How the plugins hook is implemented in CAP
