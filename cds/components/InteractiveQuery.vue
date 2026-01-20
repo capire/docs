@@ -41,7 +41,7 @@ import { ref } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import highlighter from './highlighter'
-import play from '/icons/play.drawio.svg?url&raw'
+import play from '/icons/play.svg?url&raw'
 
 const { isDark } = useData()
 
