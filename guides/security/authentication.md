@@ -117,8 +117,8 @@ As the mock user authentication is active, all (CAP) endpoints are [authenticate
 To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
 :::
 
-Sending OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
-results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
+If you stay with the standard authentication mode, sending the OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
+results in a `401` error response from the server, indicating that the anonymous user has been rejected due to missing authentication.
 This is the case for all endpoints including the web application page at `/index.html`.
 
 Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with `curl http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
@@ -127,17 +127,17 @@ Mock users require **basic authentication**, hence sending the same request on b
 
 <div class="impl node">
 
-::: info
+::: tip
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
 :::
 
-Sending OData request
+Send an OData request through the restricted `AdminService` as follows:
 
 ```sh
 curl http://localhost:4004/odata/v4/admin/Books --verbose
 ```
 
-results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
+This results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
 Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (no password) with
@@ -314,7 +314,7 @@ You can best configure and test IAS authentication in the Cloud, so let's enhanc
 
 ### Get Ready with IAS { #ias-ready }
 
-Before working with IAS on CF, you need to
+Before working with IAS on CF, you need to do all of the following:
 
 - Prepare an IAS (test) tenant. If not available yet, you need to [create](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant) it now.
 
@@ -324,13 +324,11 @@ towards your IAS tenant to use it as identity provider for applications in your 
 - Ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) on CF, 
 in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
-You can continue with the sample [already created](#mock-user-authentication). In the project root folder, execute
+You can continue with the sample [already created](#mock-user-authentication). In the project root folder, execute the following command to make your application ready for deployment to CF.
 
 ```sh
 cds add mta
 ```
-
-to make your application ready for deployment to CF.
 
 <div class="impl java">
 
@@ -340,9 +338,9 @@ Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and t
 
 </div>
 
-You also need to configure DB support:
+You also need to configure database support:
 
-```sh [SAP HANA]
+```sh
 cds add hana
 ```
 
@@ -350,13 +348,13 @@ cds add hana
 
 ### Adding IAS
 
-Now the application is ready to be enhanced with IAS-support by executing
+Now the application is ready to be enhanced with IAS-support:
 
 ```sh
 cds add ias
 ```
 
-which automatically adds a service instance named `bookshop-ias` of type `identity` (plan: `application`) and binds the CAP application to it.
+This command automatically adds a service instance named `bookshop-ias` of type `identity` (plan: `application`) and binds the CAP application to it in the _mta.yaml_.
 
 ::: details Generated deployment descriptor for IAS instance and binding
 ```yaml [mta.yaml]
@@ -404,16 +402,16 @@ Service instance and binding offer the following crucial configuration propertie
 | `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
 
 
-[Lean more about IAS service instance and binding configuration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
+[Learn more about IAS service instance and binding configuration.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
 
 <div id="learn-more-IAS-instances-bindings" />
 
-Now let's pack and deploy the application with
+Now let's pack and deploy the application:
+
 ```sh
 cds up
 ```
 
-and wait until the application is up and running. 
 You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
 The startup log should confirm the activated IAS authentication:
@@ -434,7 +432,7 @@ TODO
 
 </div>
 
-::: tip
+::: tip Local at this point?
 The local setup is still runnable on basis of mock users as there is no IAS binding in the environment.
 :::
 
@@ -480,7 +478,7 @@ In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows di
 
 Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect valid OAuth tokens created for the IAS application.
 
-Sending the test request 
+The following request as anonymous user without a token results in a `401 Unauthorized`:
 
 <div class="java">
 
@@ -500,9 +498,7 @@ curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
 
 </div>
 
-as anonymous user without a token results in a `401 Unauthorized` as expected.
-
-Now let's fetch a token as basis for a fully authenticated test request. 
+This is expected. Now let's fetch a token as basis for a fully authenticated test request. 
 For doing so, you need to interact with IAS service which requires an authenticated client itself.
 
 The overall setup with CLI client and the Cloud services is sketched in the diagram:
@@ -718,13 +714,21 @@ You can create a bookshop sample as described in [Mock User Authentication](#moc
 
 Execute the following two commands in the project root folder, only if you haven't prepared your sample for IAS in the previous section already.
 
-To make your application ready for deployment to CF:
+If there is no deployment descriptor yet, execute the following in the project root folder:
 
 ```sh
 cds add mta
 ```
 
-You also need to configure DB support:
+<div class="impl java">
+
+::: tip
+Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
+:::
+
+</div>
+
+You also need to configure database support:
 
 ```sh [SAP HANA]
 cds add hana
@@ -877,7 +881,7 @@ If you modify the _xs-security.json_ manually, make sure that the scope names in
 
 #### Start and Check the Deployment
 
-Now let's pack and deploy the application with
+Now let's pack and deploy the application:
 
 <div class="impl node">
 
@@ -928,7 +932,7 @@ The local setup is still runnable on basis of mock users as there is no IAS bind
 
 Due to CAP's autoconfiguration, all CAP endpoints are [authenticated automatically](#model-auth) and expect valid XSUAA tokens.
 
-Sending the test request
+The following request as anonymous user without a token results in a `401 Unauthorized`:
 
 <div class="java">
 
@@ -948,24 +952,22 @@ curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
 
 </div>
 
-as anonymous user without a token the request results in a `401 Unauthorized` as expected.
+This is expected. Now let's fetch an XSUAA token to prepare an authenticated test request.
+Here, you need to interact with XSUAA service which requires a valid authentication as well.
 
-Now let's fetch an XSUAA token to prepare an authenticated test request.
-To do so, you need to interact with XSUAA service which requires a valid authentication as well.
-
-As first step add a new client for XSUAA by creating an appropriate service key with
+As first step add a new client for XSUAA by creating an appropriate service key:
 
 ```sh
 cf create-service-key bookshop-auth bookshop-auth-key
 ```
 
-You can inspect the service key credentials by executing
+You can inspect the service key credentials as follows:
 
 ```sh
 cf service-key bookshop-auth bookshop-auth-key
 ```
 
-which prints the information to the console: 
+This command prints the information to the console: 
 
 ```json
 {
@@ -1141,22 +1143,23 @@ The same is true for the logout flow.
 :::
 
 
-Now update the Cloud deployment with
+Now update the Cloud deployment:
 
 ```sh
 cds up
 ```
 
-and verify it by running `cf apps` in the targeted space:
+Verify it by running `cf apps` in the targeted space:
 
 ```sh
-name           requested state   processes   routes
-bookshop-potal               started           web:1/1     <org>-<space>-bookshop.<landscape-domain>
-bookshop-potal-db-deployer   stopped           web:0/1
-bookshop-potal-srv           started           web:1/1     <org>-<space>-bookshop-srv.<landscape-domain>
+> $ cf apps
+name                          requested state   processes   routes
+bookshop-portal               started           web:1/1     <org>-<space>-bookshop.<landscape-domain>
+bookshop-portal-db-deployer   stopped           web:0/1
+bookshop-portal-srv           started           web:1/1     <org>-<space>-bookshop-srv.<landscape-domain>
 ```
 
-and open the route exposed by the `bookshop` UI application in a new browser session.
+Open the route exposed by the `bookshop` UI application in a new browser session.
 
 
 
