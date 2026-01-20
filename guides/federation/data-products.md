@@ -1,4 +1,4 @@
-## SAP HANA Data Products
+# SAP HANA Data Products
 CAP applications can leverage SAP HANA data products to encapsulate and manage data from various sources, providing a unified interface for data access and manipulation. This guide explores the concept of HANA data products and how they can be utilized in CAP applications to enhance data federation capabilities.
 {.abstract}
 
@@ -13,7 +13,7 @@ Integrate the HANA data product with your CAP services to enable seamless data a
 ### Step 4: Test and Validate
 Thoroughly test the integration to ensure that data is being accessed and manipulated correctly through the HANA data product. Validate performance and data integrity as part of this process.
 ### Step 5: Monitor and Optimize
-Once the HANA data product is integrated, monitor its performance and optimize as needed to ensure efficient data federation within your CAP application.   
+Once the HANA data product is integrated, monitor its performance and optimize as needed to ensure efficient data federation within your CAP application.
 ## Best Practices
 - Ensure that data models are well-defined and optimized for performance.
 - Regularly review access controls to maintain security.

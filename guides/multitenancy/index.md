@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
-label: Multitenancy
 impl-variants: true
 ---
 
@@ -709,7 +708,7 @@ cf run-task <app> --name "upgrade-all" --command "cds-mtx upgrade '*'"
 
 Very large projects might need to increase resources or limit parallelism of tenant upgrades.
 
-[The best practice algorithm is laid out in our _Get Help_ guide.](../../get-started/get-help#my-mtx-sidecar-is-killed-with-exit-status-137){.learn-more}{style="margin-top:10px"}
+[The best practice algorithm is laid out in our _Get Help_ guide.](../../get-started/get-help#why-is-my-mtx-sidecar-is-killed-with-exit-status-137){.learn-more}{style="margin-top:10px"}
 
 :::
 

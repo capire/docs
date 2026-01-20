@@ -14,6 +14,7 @@
 - [guides/as-saas](guides/multitenancy)
 - [guides/authorization](guides/security/authorization)
 - [guides/data-privacy/introduction](guides/security/data-privacy.md)
+- [guides/deployment/](guides/deploy/index)
 - [guides/deploy-to-cloud](guides/deploy/index.md)
 - [guides/deploy/deploy-to-kyma](guides/deploy/to-kyma)
 - [guides/deploy/mtx-apis](guides/multitenancy/old-mtx-apis)

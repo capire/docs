@@ -297,11 +297,12 @@ runtime.requestContext().systemUserProvider().run(context -> {
 });
 ```
 
-[Learn more about how to switch to a technical tenant.](../java/event-handlers/request-contexts#switching-to-provider-tenant){.learn-more}
+[Learn more about how to switch to a technical tenant.](../guides/security/cap-users#switching-to-provider-tenant){.learn-more}
+
 
 #### Switching to Subscriber Tenants { #switching-subscriber-tenant }
 
-You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../java/event-handlers/request-contexts#switching-to-a-specific-technical-tenant) and demonstrated by the following example:
+You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../guides/security/cap-users#switching-to-subscriber-tenant) and demonstrated by the following example:
 
 ```java
 runtime.requestContext().systemUser(tenant).run(context -> {
