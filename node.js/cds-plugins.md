@@ -7,7 +7,11 @@ status: released
 # CDS Plugin Packages
 
 
-The `cds-plugin` approach enables you to deliver extension packages with built-in auto-configuration. Before creating a new plugin, review the [Calesi](../guides/integration/calesi.md) and [Calipso](../guides/integration/calipso.md) patterns. These patterns help ensure your plugin follows best practices for quality and consistency.
+The `cds-plugin` approach enables you to deliver extension packages with built-in auto-configuration. 
+
+
+> [!NOTE] Before you start
+> Review the [Calesi](../guides/integration/calesi.md) and [Calipso](../guides/integration/calipso.md) patterns. These patterns help ensure your plugin follows best practices for quality and consistency.
 
 
 ## Starting a new plugin
