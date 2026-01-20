@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  About supported development environments (IDEs) and features of the CDS language editor.
+  Supported development environments (IDEs) and features of the CDS language editor.
 ---
 
 # CDS Editors and IDEs

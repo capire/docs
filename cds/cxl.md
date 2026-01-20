@@ -8,13 +8,14 @@ status: released
 
 <script setup>
 import expr from './assets/cxl/expr.drawio.svg?raw'
-import refDiagram from './assets/cxl/ref.drawio.svg?raw'
+import ref from './assets/cxl/ref.drawio.svg?raw'
 import infixFilter from './assets/cxl/infix-filter.drawio.svg?raw'
 import unaryOperator from './assets/cxl/unary-operator.drawio.svg?raw'
 import binaryOperator from './assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
 import functionDef from './assets/cxl/function-def.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
+
 import InteractiveQuery from './components/InteractiveQuery.vue'
 
 function simpleSqlFormat(sql) {
@@ -145,11 +146,13 @@ For example, [a calculated element](./cdl#calculated-elements) defined in an ent
 to the respective calculation in the generated query when the entity is queried.
 :::
 
+
 <InteractiveQuery language="cds" :onExecute="cdsQL" />
 
 <InteractiveQuery initialQuery="await INSERT.into('Books').entries(
   { ID: 2, author_ID: 1, title: 'LOTR 2' }
 )" :onExecute="evalJS" />
+
 
 ## How to read this guide { #how-to }
 
@@ -210,7 +213,21 @@ The following diagram illustrates how to read the diagrams:
 
 ## expr { #expr }
 
-An expression can hold various elements, such as references, literals, function calls, operators, and more.
+An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // reference ("ref")
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+This syntax diagram describes the possible expressions:
 
 <div class="diagram">
 <Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
@@ -432,6 +449,17 @@ E.g. in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
 
+## function { #function }
+
+
+<div class="diagram" >
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+<div class="diagram" v-html="functionDef"></div>
+</div>
+
+
+CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
+
 ## ref (path expression) { #ref }
 
 A `ref` (short for reference) is used to refer to an element within the model.
@@ -440,7 +468,7 @@ referred to as a **path expression**.
 
 <div class="diagram">
   <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-  <div v-html="refDiagram"></div>
+  <div v-html="ref"></div>
 </div>
 
 ::: info Leaf elements
@@ -501,6 +529,7 @@ FROM
 In this example, we select all books together with the name of their author.
 The association `author` defined in the `Books` entity relates a book to it's author.
 
+::: warning Flattening of to-many associations
 When navigating along a to-many association to a leaf element, the result is flattened:
 
 :::code-group
@@ -523,13 +552,12 @@ FROM sap_capire_bookshop_Authors as Authors
   LEFT JOIN sap_capire_bookshop_Books as books
   ON books.author_ID = Authors.ID
 ```
-:::
 
 In this example, we select the book titles together with each author.
 Since books is a to-many association, we get a _joined_ result that repeats every author (name) for every associated book.
+:::
 
-::: info Use expand to read to-many associations as structured result
-To avoid that the author data is duplicated rather use an expand:
+Use expand to read to-many associations as structured result:
 
 ::: code-group
 ```js [CQL]
@@ -571,9 +599,10 @@ FROM sap_capire_bookshop_Authors as Authors
 ```
 :::
 
+::: warning Annotation expressions expect single-valued results
 When writing annotation expressions, it's often important to ensure that the result yields a single value for each entry in the annotated entity.
 To achieve this, use the [exists](#in-exists-predicate) predicate.
-
+:::
 
 ### in `exists` predicate
 
@@ -607,6 +636,9 @@ WHERE exists (
 
 [Learn more about the `exists` predicate.](./cql.md#exists-predicate){.learn-more}
 
+The `exists` predicate can be further enhanced by [combining it with infix filters](#exists-infix-filter).
+This allows you to specify conditions on subsets of associated entities, enabling more precise and expressive queries.
+
 ## infix filter { #infix-filter }
 
 An infix in linguistics refer to a letter or group of letters that are added in the middle of a word to make a new word.
@@ -622,7 +654,7 @@ This allows to filter the target of an association based on certain criteria.
 
 
 
-### applied to `exists` predicate
+### applied to `exists` predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -734,7 +766,7 @@ WHERE exists (
 
 
 ::: info
-Note that the generated SQL is equivalent to querying authors with an [exists predicate](#applied-to-exists-predicate):
+Note that the generated SQL is equivalent to querying authors with an [exists predicate](#exists-infix-filter):
 
 :::code-group
 ```js [CQL]
@@ -894,21 +926,27 @@ ON
 The path expression `author[ age < 40 ].name`
 navigates along the `author` association of the `Books` entity only if the author's age is below 40.
 
+<style>
 
-## function { #function }
+.badge-inline {
+  margin-bottom: 1em
+}
 
+.diagram {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  max-width: 100%;
+}
 
-<div class="diagram" >
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div class="diagram" v-html="functionDef"></div>
-</div>
+.diagram > div > svg {
+  max-width: 100%;
+  height: auto;
+}
 
+.diagram > svg {
+  max-width: 100%;
+  height: auto;
+}
 
-CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
-
-
-## type-ref { #type-ref }
-
-[Learn more about type references in CDL.](./cdl#type-references){ .learn-more }
-
+</style>
 
