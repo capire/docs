@@ -82,7 +82,10 @@ async function evalJS(code) {
 
 async function cdsQL(queryText) {
   await initialized;
-  return await window.cds.ql(queryText);
+  return [
+    { value: await window.cds.ql(queryText), kind: 'json', name: 'Result' },
+    { value: 'placeholder', kind: 'sql', name: 'SQL'}
+  ];
 }
 </script>
 
@@ -106,7 +109,9 @@ to the respective calculation in the generated query when the entity is queried.
 
 <InteractiveQuery language="cds" :onExecute="cdsQL" />
 
-<InteractiveQuery initialQuery="await INSERT.into('Books').entries({ID: 2, author_ID: 1, title: 'LOTR 2'})" :onExecute="evalJS" />
+<InteractiveQuery initialQuery="await INSERT.into('Books').entries(
+  { ID: 2, author_ID: 1, title: 'LOTR 2' }
+)" :onExecute="evalJS" />
 
 ## How to read this guide { #how-to }
 

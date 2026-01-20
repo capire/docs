@@ -1,15 +1,33 @@
 <template>
   <div class="interactive-query">
-    <MonacoEditor
-      v-model="queryText"
-      :rows="props.rows"
-      :language="props.language"
-      @execute="runQuery"
-    />
-    <button @click="runQuery">Run Query</button>
-    <div v-if="queryResult" class="query-result">
-      <strong>Result:</strong>
-      <pre>{{ queryResult }}</pre>
+    <div class="editor-row">
+      <MonacoEditor
+        v-model="queryText"
+        :rows="props.rows"
+        :language="props.language"
+        @execute="runQuery"
+        class="editor"
+      />
+      <button class="icon-button" @click="runQuery" aria-label="Run Query">
+        <div v-html="play"></div>
+      </button>
+    </div>
+
+    <div v-if="queryResult" class="vp-code-group vp-adaptive-theme">
+      <div class="tabs">
+        <template v-for="tab in tabs" :key="tab.key">
+          <input type="radio" :id="`tab-${tab.key}`" v-model="selectedTab" :value="tab.name">
+          <label :for="`tab-${tab.key}`">{{ tab.name }}</label>
+        </template>
+      </div>
+
+      <div class="blocks">
+        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === tab.name" :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === tab.name ? 'active' : ''}`" >
+          <button title="Copy Code" class="copy"></button>
+          <span class="lang">{{ tab.kind }}</span>
+          <span v-html="format(tab, isDark)"></span>
+        </div>
+      </div>
     </div>
     <div v-if="queryError" class="query-error">
       <strong>Error:</strong>
@@ -21,6 +39,11 @@
 <script setup>
 import { ref } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
+import { useData } from 'vitepress'
+import highlighter from './highlighter'
+import play from '/icons/play.drawio.svg?url&raw'
+
+const { isDark } = useData()
 
 const props = defineProps({
   initialQuery: {
@@ -41,16 +64,50 @@ const props = defineProps({
   }
 })
 
+const tabs = ref([])
+const selectedTab = ref('Result')
+
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
 const queryError = ref(null)
+
+function format({value, kind}, dark) {
+  // const highlighter = (await import('./highlighter')).default
+  if (!highlighter.getLoadedLanguages().includes(kind)) {
+    kind = 'plaintext'
+  }
+  const html = highlighter.codeToHtml(
+    typeof value === 'string' ? value : JSON.stringify(value, null, 2),
+    { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
+  return html
+}
 
 async function runQuery() {
   queryError.value = null
   queryResult.value = null
   try {
     const result = await props.onExecute(queryText.value)
-    queryResult.value = JSON.stringify(result, null, 2)
+    if (result && result.kind && result.value) {
+      const { kind, name = 'Result', value } = result
+      tabs.value = [
+        { key: name, kind, name, value }
+      ]
+    }
+    else if (Array.isArray(result) && result[0] && result[0].kind && result[0].value) {
+      tabs.value = result.map(r => {
+        const { kind, name = kind, value } = r
+        return { key: name, kind, name, value }
+      })
+    } else {
+      tabs.value = [
+        { key: 'Result', name: 'Result', value: result }
+      ]
+    }
+    selectedTab.value = tabs.value[0].key
+    queryResult.value = Object.fromEntries(tabs.value.map(tab => [
+      tab.key,
+      tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
+    ]))
   } catch (error) {
     queryError.value = error.message || String(error)
   }
@@ -65,17 +122,40 @@ async function runQuery() {
   background-color: var(--vp-code-block-bg);
 }
 
-.interactive-query button {
-  padding: 0.5em 1em;
+.editor-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5em;
+}
+
+.editor-row .editor {
+  flex: 1;
+}
+
+.interactive-query .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--vp-button-brand-bg);
   color: var(--vp-button-brand-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
-}
+  width: 2.5em;
+  height: 2.5em;
+  padding: 0.25em;
+  color: var(--vp-c-tip-1);
 
-.interactive-query button:hover {
+  div {
+    width: 1.5em;
+    height: 1.5em;
+    stroke: var(--vp-button-brand-text);
+    fill: var(--vp-button-brand-text);
+  }
+} 
+
+
+.interactive-query .icon-button:hover {
   background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-hover-text);
 }
@@ -101,5 +181,9 @@ async function runQuery() {
 .query-error pre {
   margin: 0.5em 0 0 0;
   overflow-x: auto;
+}
+
+:deep(.shiki) {
+  background-color: var(--vp-code-block-bg) !important;
 }
 </style>

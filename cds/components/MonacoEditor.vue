@@ -10,14 +10,11 @@
 </template>
 
 <script setup>
-import { ref, watch, watchEffect, onMounted, onUnmounted } from 'vue'
-import languages from '../../.vitepress/languages'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
-const { isDark } = useData()
-import { createHighlighter } from 'shiki'
-import { shikiToMonaco } from '@shikijs/monaco'
 
+const { isDark } = useData()
 
 const props = defineProps({
   modelValue: {
@@ -44,63 +41,13 @@ const editorPaddingTop = 4
 const editorPaddingBottom = 4
 const editorHeight = ref(props.rows * lineHeight + editorPaddingTop + editorPaddingBottom + 0)
 
-function mapMonacoLang(lang) {
-  const m = (lang || 'js').toLowerCase()
-  if (m === 'js' || m === 'javascript') return 'javascript'
-  if (m === 'ts' || m === 'typescript') return 'typescript'
-  if (m === 'html') return 'html'
-  if (m === 'css' || m === 'scss' || m === 'less') return 'css'
-  if (m === 'json') return 'json'
-  return null
-}
-
-async function setupMonaco() {
+async function createEditor() {
   if (typeof window === 'undefined' || editor) return
-
-  const [monacoApi, editorWorker, tsWorker, htmlWorker, cssWorker, jsonWorker] = await Promise.all([
-    import('monaco-editor/esm/vs/editor/editor.api'),
-    import('monaco-editor/esm/vs/editor/editor.worker?worker'),
-    import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
-    import('monaco-editor/esm/vs/language/html/html.worker?worker'),
-    import('monaco-editor/esm/vs/language/css/css.worker?worker'),
-    import('monaco-editor/esm/vs/language/json/json.worker?worker'),
-    import('monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'),
-    import('monaco-editor/esm/vs/language/typescript/monaco.contribution'),
-    import('monaco-editor/esm/vs/language/html/monaco.contribution'),
-    import('monaco-editor/esm/vs/language/css/monaco.contribution'),
-    import('monaco-editor/esm/vs/language/json/monaco.contribution')
-  ])
-  monaco = monacoApi
-
-    languages
-    const highlighter = await createHighlighter({
-        themes: ['github-dark', 'github-light'],
-        langs: ['javascript', 'js', 'typescript', 'vue', ...languages],
-    })
-
-    // register languages you will use
-    monaco.languages.register({ id: 'javascript' })
-    monaco.languages.register({ id: 'js' })
-    monaco.languages.register({ id: 'cds' })
-    monaco.languages.register({ id: 'typescript' })
-    monaco.languages.register({ id: 'vue' })
-
-    self.MonacoEnvironment = {
-        getWorker(_, label) {
-        if (label === 'typescript' || label === 'javascript') return new tsWorker.default()
-        if (label === 'html') return new htmlWorker.default()
-        if (label === 'css') return new cssWorker.default()
-        if (label === 'json') return new jsonWorker.default()
-        return new editorWorker.default()
-        }
-    }
-    // hook Shiki into Monaco (tokenization + theme registration)
-    shikiToMonaco(highlighter, monaco)
-
+  monaco = (await import('./monaco')).default
   editor = monaco.editor.create(editorContainer.value, {
     value: props.modelValue,
     language: props.language || 'plaintext',
-    theme: 'github-dark',
+    theme: isDark.value ? 'github-dark' : 'github-light',
     automaticLayout: true,
     wordWrap: 'on',
     wrappingIndent: 'none',
@@ -156,7 +103,7 @@ async function setupMonaco() {
 }
 
 
-onMounted(setupMonaco)
+onMounted(createEditor)
 
 watch(() => props.language, async (newLang) => {
   if (!editor || !monaco) return
@@ -169,8 +116,8 @@ watch(() => props.modelValue, (val) => {
   if (model && model.getValue() !== val) model.setValue(val)
 })
 
-watchEffect(() => {
-  monaco?.editor?.setTheme(isDark.value ? 'github-dark' : 'github-light');
+watch(() => isDark.value, (dark) => {
+  monaco?.editor?.setTheme(dark ? 'github-dark' : 'github-light');
 })
 
 </script>
