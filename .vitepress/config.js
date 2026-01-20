@@ -115,7 +115,8 @@ config.themeConfig.capire = {
     java_services: '4.6.1',
     java_cds4j: '4.6.0'
   },
-  gotoLinks: []
+  gotoLinks: [],
+  siteURL: new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs/')
 }
 
 // Add meta tag to prevent indexing of preview deployments
@@ -196,18 +197,11 @@ config.markdown.config = md => {
   md.use(dl)
 }
 
-// Add sitemap
-const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs')
-if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
-config.sitemap = {
-  hostname: siteURL.href
-}
-
 // Add custom buildEnd hook
 import * as cdsMavenSite from './lib/cds-maven-site'
 import { promises as fs } from 'node:fs'
 config.buildEnd = async ({ outDir, site }) => {
-  const sitemapURL = new URL(siteURL.href)
+  const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')
   console.debug('✓ writing robots.txt with sitemap URL', sitemapURL.href) // eslint-disable-line no-console
   const robots = (await fs.readFile(path.resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
