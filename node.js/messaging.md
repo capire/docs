@@ -317,7 +317,7 @@ Example:
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 When using `enterprise-messaging-shared` in a multitenant scenario, only the provider account will have an event bus. There is no tenant isolation.
 :::
 
