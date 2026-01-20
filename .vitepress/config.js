@@ -111,13 +111,15 @@ if (process.cwd() === path.dirname(__dirname)) {
 }
 
 // Add custom capire info to the theme config
+const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs/')
+if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
     java_services: '4.6.1',
     java_cds4j: '4.6.0'
   },
   gotoLinks: [],
-  siteURL: new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs/')
+  siteURL
 }
 
 // Add meta tag to prevent indexing of preview deployments
