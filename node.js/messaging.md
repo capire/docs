@@ -29,16 +29,16 @@ The **logical layer** consists of three primary components:
 
 The **technical layer** handles the actual message transport and delivery:
 
-**CAP Messaging Service**: Acts as the translation layer between logical events and technical infrastructure. It manages topic resolution, message serialization, and routing logic.
+**CAP Messaging Service**: The translation layer between logical events and technical infrastructure. It manages topic resolution, message serialization, and routing logic.
 For topic resolution the logical events are delegated to the messaging service, the corresponding event name on the technical service is either the fully qualified event name or the value of the @topic annotation if given.
 
-**Message Brokers**: Form the core of the technical infrastructure, handling message persistence, delivery guarantees, and cross-service communication. Examples include SAP Event Mesh, Apache Kafka, or Redis Streams.
+**Message Brokers**: The core of the technical infrastructure, handling message persistence, delivery guarantees, and cross-service communication. Examples include SAP Event Mesh, Apache Kafka, or Redis Streams.
 
 The message flow follows a clear path through both layers:
 
-**Outbound Flow (Publisher)**: A CAP service calls `srv.emit('reviewed', data)` → CAP Messaging Service resolves the event name to a fully qualified topic (e.g., `OrderSrv.reviewed`) → Message is serialized and sent to the Event Broker → Broker stores and distributes the message to all subscribers.
+**Outbound Flow (Publisher)**: A CAP service calls `srv.emit('reviewed', data)` → CAP Messaging Service resolves the event name to a fully qualified topic (for example, `OrderSrv.reviewed`) → Message is serialized and sent to the Event Broker → Broker stores and distributes the message to all subscribers.
 
-**Inbound Flow (Subscriber)**: Event Broker delivers message from subscribed topic → CAP Messaging Service receives the message → Service name and event name are resolved from the topic → Message is routed to the appropriate CAP service handler via `srv.on('reviewed', handler)`. Registering a modeled `srv.on(...)` event handler causes the broker to listen to those events, e.g. creates a subscription for Event Mesh.
+**Inbound Flow (Subscriber)**: Event Broker delivers message from subscribed topic → CAP Messaging Service receives the message → Service name and event name are resolved from the topic → Message is routed to the appropriate CAP service handler via `srv.on('reviewed', handler)`. Registering a modeled `srv.on(...)` event handler causes the broker to listen to those events, for example, creates a subscription for Event Mesh.
 
 **Alternatively** custom handlers can bypass the service layer and work directly with the messaging service.
 
@@ -271,7 +271,7 @@ Per default, a persistent queue is used. See [Messaging - Queue](./queue) for mo
 ## Receiving Events
 
 To listen to messages from a message broker, you can use the `on` method on the connected service.
-This also creates the necessary topic subscriptions.
+The necessary topic subscriptions are automatically created.
 
 Example:
 
@@ -286,16 +286,16 @@ messaging.on('my/custom/topic', msg => {
 ```
 
 Once all handlers are executed successfully, the message is acknowledged.
-If one handler throws an error, the message broker will be informed that the message couldn't be consumed properly and might send the message again. To avoid endless cycles, consider catching all errors.
+If one handler throws an error, the message broker is informed that the message couldn't be consumed properly. In this case, the broker sends the message again. To avoid endless cycles, consider catching all errors.
 
-If you want to receive all messages without creating topic subscriptions, you can register on `'*'`. This is useful when consuming messages from a dead letter queue.
+If you want to receive all messages without creating topic subscriptions, you can register on `'*'`. This feature is useful when consuming messages from a dead letter queue.
 
 ```js
 messaging.on('*', async msg => { /*...*/ })
 ```
 
 ::: tip
-In general, messages do not contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
+In general, messages don't contain user information but operate with a technical user. As a consequence, the user of the message processing context (`cds.context.user`) is set to [`cds.User.privileged`](/node.js/authentication#privileged-user) and, hence, any necessary authorization checks must be done in custom handlers.
 :::
 
 ### Inbox <Beta />
