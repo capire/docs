@@ -159,8 +159,8 @@ Mock users are deactivated in production profile by default ❗
 
 ### Preconfigured Mock Users { #preconfigured-mock-users }
 
-For convenience, the runtime creates default mock users to cover typical test scenarios, e.g. privileged users passing all security checks or users which pass authentication but do not have additional claims.
-The predefined users are added to [custom mock users](#custom-mock-users) defined by the application. 
+For convenience, the runtime creates default mock users to cover typical test scenarios, such as privileged users passing all security checks or users that pass authentication but don't have additional claims.
+The runtime adds the predefined users to [custom mock users](#custom-mock-users) you define in the application. 
 
 You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
 
@@ -309,7 +309,7 @@ Integration tests running in production profile should verify that unauthenticat
  - cross-landscape user propagation (including on-premise)
  - streamlined SAP and non-SAP system [integration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/integrating-service) (due to [OpenId Connect](https://openid.net/connect/) compliance)
 
-IAS authentication is best configured and tested in the Cloud, so let's enhance the [previously started bookshop sample application](#mock-user-authentication) with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+You can best configure and test IAS authentication in the Cloud, so let's enhance the [previously started bookshop sample application](#mock-user-authentication) with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with IAS { #ias-ready }
@@ -466,10 +466,10 @@ In the [Administrative Console for Cloud Identity Services](https://help.sap.com
 you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
 
 In the Console you can manage the IAS tenant and IAS applications, for example: 
-- Create (test) users in `Users & Authorizations` -> `User Management`
-- Deactivate users
-- Configure the authentication strategy (password policies, MFA etc.) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name)
-- Inspect logs in `Monitoring & Reporting` -> `Troubleshooting`
+- Create (test) users in `Users & Authorizations` -> `User Management`.
+- Deactivate users.
+- Configure the authentication strategy (password policies, multifactor authentication, and similar) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name).
+- Inspect logs in `Monitoring & Reporting` -> `Troubleshooting`.
 
 ::: tip
 In BTP Cockpit, service instance `bookshop-ias` appears as a link that allows direct navigation to the IAS application in the Administrative Console for IAS.
@@ -510,7 +510,7 @@ The overall setup with CLI client and the Cloud services is sketched in the diag
 ![CLI-level Testing of IAS Endpoints](./assets/ias-cli-setup.drawio.svg){width="500px"}
 
 As IAS requires mTLS-protected channels, **client certificates are mandatory** for all of the following requests:
-- Token request to IAS in order to fetch a valid IAS token (1)
+- Token request to IAS to fetch a valid IAS token (1)
 - Business request to the CAP application presenting the token (2)
 - Initial proof token request to IAS - not required for all business requests (3)
 
@@ -625,8 +625,8 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
-It will take care of fetching the required IAS tokens when forwarding requests to the backend service. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly. 
+It fetches the required IAS tokens when forwarding requests to the backend service. 
 
 Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
@@ -662,7 +662,7 @@ In addition, property `forwardAuthCertificates` needs to be `true` to support th
 :::
 
 As the login flow is based on an HTTP redirect between the CAP application and IAS login page,
-IAS needs to know a valid callback URI which is offered by the AppRouter out-of-the-box.
+IAS needs to know a valid callback URI that the AppRouter offers out of the box.
 The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
@@ -704,7 +704,7 @@ The Application Router should redirect to a login flow where you can enter the c
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
 ::: 
 
-XSUAA authentication is best configured and tested in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
+You can best configure and test XSUAA authentication in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
 
 ### Get Ready with XSUAA { #xsuaa-ready }
@@ -731,7 +731,7 @@ cds add hana
 ```
 
 ::: tip For Java
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
+Command `add mta` enhances the project with `cds-starter-cloudfoundry` and therefore adds all [dependencies required for security](../../java/security#maven-dependencies) transitively.
 
 :::
 
@@ -811,7 +811,7 @@ There are some mandatory configuration parameters:
 
 ::: warning
 Upgrading the `service-plan` from type `application` to `broker` is not supported.
-Hence, start with plan `broker` in case you want to provide technical APIs in future.
+Start with plan `broker` if you want to provide technical APIs in future.
 :::
 
 [Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
@@ -855,9 +855,9 @@ For convenience, when adding the XSUAA facet, these artifacts are initially deri
 
 At runtime, after successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
-In the [deplyoment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
-In general, role collections are [created manually](./cap-users#xsuaa-assign) at runtime by user administrators.
-But in case the underlying role template has no reference to an attribute, a corresponding role collection can be prepared already for sake of convenience.
+In the [deployment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
+In general, user administrators [create role collections manually](./cap-users#xsuaa-assign) at runtime.
+However, if the underlying role template has no reference to an attribute, you can prepare a corresponding role collection for convenience.
 
 In the example, role collection `admin (bookshop <org>-<space>)` containing the role template `admin` is defined and can be directly assigned to users.
 
@@ -1017,7 +1017,7 @@ The request returns with a valid XSUAA token which is suitable to pass authentic
 {"access_token":"<the token>", "token_type":"bearer","expires_in":43199, [...]}
 ```
 
-With the token for the technical user, you should be able to access endpoints, which has no specific role requirements:
+With the token for the technical user, you should be able to access endpoints that have no specific role requirements:
 
 <div class="java">
 
@@ -1039,8 +1039,8 @@ curl -H "Authorization: Bearer <access_token>" \
 
 </div>
 
-If you also want to access the `AdminService` which requires the role `admin`,
-you need to fetch the token for the named user instead. That is the user which you have assigned the `admin (bookshop <org>-<space>)` role collection to.
+If you also want to access the `AdminService` that requires the role `admin`,
+you need to fetch the token for the named user instead. That is the user to whom you assigned the `admin (bookshop <org>-<space>)` role collection.
 
 With the token for the named user, the following request should succeed:
 
@@ -1081,8 +1081,8 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing a lot. 
-It will take care of fetching the required XSUAA tokens when forwarding requests to the backend service. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly. 
+It fetches the required XSUAA tokens when forwarding requests to the backend service. 
 
 Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
@@ -1121,7 +1121,7 @@ modules:
 :::
 
 As the login flow is based on an HTTP redirect between the CAP application and XSUAA login page,
-XSUAA needs to know a valid callback URI which is offered by the Application Router out of the box.
+XSUAA needs to know a valid callback URI that the Application Router offers out of the box.
 The same is true for the logout flow.
 
 ::: details Redirect URIs for login and logout
@@ -1170,9 +1170,9 @@ will come soon
 <div class="java">
 
 There are multiple reasons why customization might be required:
-1. Endpoints for non-business requests often require specific authentication methods (e.g. health check, technical services).
-2. The application is deployed in the context of a service mesh with ingress authentication (e.g. Istio).
-3. The application needs to integrate with a 3rd party authentication service.
+1. Endpoints for non-business requests often require specific authentication methods (for example, health check, technical services).
+2. The application is deployed in the context of a service mesh with ingress authentication (for example, Istio).
+3. The application needs to integrate with a third-party authentication service.
 
 ![Endpoints with different authentication strategy](./assets/custom-auth.drawio.svg){width="380px"}
 
@@ -1181,9 +1181,9 @@ There are multiple reasons why customization might be required:
 
 
 - For CAP endpoints you are fine to go with the [automatic authentication](#model-auth) fully derived from the CAP model.
-- For custom endpoints that should be protected by the same authentication strategy you are also fine with automatc authentication as CAP will cover these endpoints by default.
-- For custom endpoints that should have a different kind of authentication strategy (e.g. X.509, basic or none) you can add a security configuration that [partially overrules](#partially-auth) the CAP integration partially for exactly these endpoints.
-- In case the authentiaction is delegated to a different component, just [fully overrule](#fully-auth) CAP authentication and replace by any suitable strategy.
+- For custom endpoints that should be protected by the same authentication strategy you are also fine with automatic authentication as CAP will cover these endpoints by default.
+- For custom endpoints that should have a different kind of authentication strategy (for example, X.509, basic or none) you can add a security configuration that [partially overrules](#partially-auth) the CAP integration for exactly these endpoints.
+- If the authentication is delegated to a different component, just [fully overrule](#fully-auth) CAP authentication and replace it with any suitable strategy.
 
 ::: tip Secure by Default
 **By default, CAP authenticates all endpoints of the microservice, including the endpoints which are not served by CAP itself**.
@@ -1352,7 +1352,7 @@ TODO
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
   Without security middleware configured, CDS services are exposed to the public. 
 
-- **Don't rely on Application Router authentication**. Application Router as a frontend proxy does not shield the backend from incoming traffic. Therefore, the backend must be secured independently.
+- **Don't rely on Application Router authentication**. Application Router as a frontend proxy does not shield the backend from incoming traffic. Therefore, you must secure the backend independently.
 
 - **Don't deviate from security defaults**. Only when absolutely necessary should experts make the decision to add modifications or replace parts of the standard authentication mechanisms. 
   
