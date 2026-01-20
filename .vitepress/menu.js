@@ -83,7 +83,7 @@ export class Menu extends MenuItem {
       if (EXTERNAL) {
         let unreleased = each.match(/<!-- (UNRELEASED|INTERNAL) -->/)
         if (unreleased) {
-          if (PRUNE_UNRELEASED && link) {
+          if (PRUNE_UNRELEASED && link && !link.endsWith('menu.md')) {
             let targetFile = resolve (cwd, dirname(file), link.replace(/^\//, '').replace(/\/$/,'/index.md'))
             if (!targetFile.endsWith('.md')) targetFile += '.md'
             if (existsSync(targetFile)) await fs.unlink(targetFile)
