@@ -27,6 +27,9 @@
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ tab.kind }}</span>
           <span v-html="format?.(tab, isDark)"></span>
+          <div v-if="tab.hint" class="hint">
+            💡 {{ tab.hint }}
+          </div>
         </div>
       </div>
     </div>
@@ -113,6 +116,11 @@ async function runQuery() {
       { key: `${uid}-Error`, name: 'Error', value: error.message || String(error), error },
     ]
     if (error.stack) tmp.push({ key: `${uid}-Stack`, name: 'Stack', value: error.stack, error })
+
+    if (/UNIQUE constraint failed: /.test(tmp[0].value)) {
+      tmp[0].hint = 'Try changing ID to a different value.'
+    }
+
     tabs.value = tmp
     selectedTab.value = `${uid}-Error`
     window.tabs = tabs.value
@@ -140,6 +148,7 @@ async function runQuery() {
 
 .editor-row .editor {
   flex: 1;
+  min-width: 0;
 }
 
 .interactive-query .icon-button {
@@ -155,6 +164,7 @@ async function runQuery() {
   height: 2.5em;
   padding: 0.25em;
   color: var(--vp-c-tip-1);
+  flex-shrink: 0;
 
   div {
     width: 1.5em;
@@ -176,6 +186,10 @@ async function runQuery() {
 
 .vp-code-group.error input:checked + label::after {
   background-color: var(--vp-c-danger-2);
+}
+
+.hint {
+  padding: 0 22px;
 }
 
 :deep(.shiki) {
