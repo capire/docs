@@ -116,7 +116,7 @@ As you can see in the example, the event context not only provides access to the
 For messaging services, the `@On` handlers don't need to be completed by the `context.setCompleted()` method. The reason for that is because CAP wants to support the parallel handling of the messaging events and completes the context automatically. There could be numerous use cases where different components of the CAP application want to be notified by messaging events. Even more, you should not complete the context in the handler manually. Otherwise, not all registered handlers can be notified.
 :::
 
-::: warning _❗ Warning_
+::: warning 
 If any exceptions occur in the handler, the messaging service will not acknowledge the message as successfully processed to the broker. In consequence, the broker will deliver this message again.
 :::
 
@@ -760,7 +760,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 The way how unsuccessfully delivered messages are treated, fully depends on the messaging broker. Please check in section [Acknowledgement Support](#acknowledgement-support)  whether the messaging broker you are using is suitable for your error handler implementation.
 :::
 

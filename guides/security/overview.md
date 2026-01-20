@@ -127,7 +127,7 @@ Application providers (platform users) have privileged access to the application
 In contrast, application subscribers (business users) are restricted to a minimal interface.
 
 ::: warning
-❗ Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
+Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
 In a production environment, we recommend deploying and operating the application on behalf of a technical user.
 :::
 
@@ -151,7 +151,7 @@ Custom domain certificates must be signed by a trusted certificate authority.
 :::
 
 ::: warning
-❗ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
+ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
 :::
 
 
@@ -162,7 +162,7 @@ The underlying framework has a major impact on the security of the application,
 regardless of whether it runs a [cloud environment](#cloud) or [local environment](#local).
 Moreover, CAP applications are tightly integrated with [platform services](#btp-services), in particular with identity and persistence service.
 
-::: warning ❗ End-to-end security necessarily requires compliance with all security policies of all involved components
+::: warning  End-to-end security necessarily requires compliance with all security policies of all involved components
 CAP application security requires consistent security configuration of the underlying platform and all consumed services. Consult the relevant security documentation accordingly.
 :::
 
