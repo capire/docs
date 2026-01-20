@@ -1,6 +1,3 @@
-
-import languages from '../../.vitepress/languages'
-import { createHighlighter } from 'shiki'
 import highlighter from './highlighter'
 import { shikiToMonaco } from '@shikijs/monaco'
 

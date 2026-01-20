@@ -26,7 +26,7 @@
             :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === tab.key ? 'active' : ''}`" >
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ tab.kind }}</span>
-          <span v-html="format(tab, isDark)"></span>
+          <span v-html="format?.(tab, isDark)"></span>
         </div>
       </div>
     </div>
@@ -34,10 +34,9 @@
 </template>
 
 <script setup>
-import { ref, useId } from 'vue'
+import { onMounted, ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
-import highlighter from './highlighter'
 import play from '/icons/play.svg?url&raw'
 
 const uid = useId()
@@ -66,10 +65,12 @@ const props = defineProps({
 const tabs = ref([])
 const selectedTab = ref(`${uid}-Result`)
 
+let highlighter
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
+const format = ref()
 
-function format({value, kind}, dark) {
+function _format({value, kind}, dark) {
   // const highlighter = (await import('./highlighter')).default
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
@@ -79,6 +80,11 @@ function format({value, kind}, dark) {
     { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
   return html
 }
+
+onMounted(async () => {
+  highlighter = (await import('./highlighter')).default
+  format.value = _format
+})
 
 async function runQuery() {
   queryResult.value = null

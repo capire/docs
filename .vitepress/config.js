@@ -78,6 +78,11 @@ const config = defineConfig({
 
   vite: {
     plugins: [node(), cap()],
+    esbuild: {
+      supported: {
+        'top-level-await': true //browsers can handle top-level-await features
+      },
+    },
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
