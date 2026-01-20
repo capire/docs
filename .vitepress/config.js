@@ -26,7 +26,8 @@ const config = defineConfig({
     '**/CODE_OF_CONDUCT.md',
     '**/redirects.md',
     '**/menu.md',
-    '**/-*.md'
+    '**/-*.md',
+    '**/internal.md',
   ],
 
   markdown: {
