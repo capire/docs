@@ -28,6 +28,7 @@ const config = defineConfig({
     '**/menu.md',
     '**/-*.md',
     '**/internal.md',
+    '**/FIXME.md',
   ],
 
   markdown: {
