@@ -64,7 +64,7 @@ When the external service needs to call the CAP app, use the following ways to g
 
 Use `@requires : 'MyServiceRestriction'` annotated to your CDS service to enforce that any user trying to send a request against this OData service must have the scope (XSUAA) / group (IAS/AMS) assigned to them. CAP will take care of the enforcement.
 
-#### XSUAA <Legacy />
+#### XSUAA
 
 When the CAP application is using XSUAA for enforcing authorizations, you can grant the scope needed for the CAP service via the "grant-as-authority-to-apps" configuration, like in the following sample `xs-security.json` file:
 
