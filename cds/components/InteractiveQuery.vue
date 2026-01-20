@@ -16,14 +16,14 @@
     <div v-if="queryResult" class="vp-code-group vp-adaptive-theme">
       <div class="tabs">
         <template v-for="tab in tabs" :key="tab.key">
-          <input type="radio" :id="`${uid}-${tab.key}`" v-model="selectedTab" :value="`${uid}-${tab.key}`">
-          <label :for="`${uid}-${tab.key}`">{{ tab.name }}</label>
+          <input type="radio" :id="tab.key" v-model="selectedTab" :value="tab.key">
+          <label :for="tab.key">{{ tab.name }}</label>
         </template>
       </div>
 
       <div class="blocks">
-        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === `${uid}-${tab.key}`"
-            :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === `${uid}-${tab.key}` ? 'active' : ''}`" >
+        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === tab.key"
+            :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === tab.key ? 'active' : ''}`" >
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ tab.kind }}</span>
           <span v-html="format(tab, isDark)"></span>
@@ -93,22 +93,23 @@ async function runQuery() {
     if (result && result.kind && result.value) {
       const { kind, name = 'Result', value } = result
       tabs.value = [
-        { key: name, kind, name, value }
+        { key: `${uid}-${name}`, kind, name, value }
       ]
     }
     else if (Array.isArray(result) && result[0] && result[0].kind && result[0].value) {
       tabs.value = result.map(r => {
         const { kind, name = kind, value } = r
-        return { key: name, kind, name, value }
+        return { key: `${uid}-${name}`, kind, name, value }
       })
     } else {
       tabs.value = [
-        { key: 'Result', name: 'Result', value: result }
+        { key: `${uid}-Result`, name: 'Result', value: result }
       ]
     }
-    selectedTab.value = `${uid}-${tabs.value[0].key}`
+
+    if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key
     queryResult.value = Object.fromEntries(tabs.value.map(tab => [
-      `${uid}-${tab.key}`,
+      tab.key,
       tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
     ]))
   } catch (error) {
