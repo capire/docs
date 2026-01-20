@@ -129,7 +129,7 @@ public class AppSecurityConfig {
 ```
 Due to the custom configuration, all URLs matching `/public/**` are opened for public access.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 

@@ -92,7 +92,7 @@ Pool configuration can be adjusted by setting the `pool` option as shown in the 
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 The parameters are very specific to the current technical setup, such as the application environment and database location.
 Even though we provide a default pool configuration, we expect that each application provides its own configuration based on its specific needs.
 :::

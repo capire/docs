@@ -1067,7 +1067,7 @@ ID;x_priority;x_salesRegion_code
 
 :::
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 Adding data only for the missing columns doesn't work when using SAP HANA as a database. With SAP HANA, you always have to provide the full set of data.
 :::
 

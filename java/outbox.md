@@ -49,7 +49,7 @@ To enable the persistence for the outbox, you need to add the service `outbox` o
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 Be aware that you need to migrate the database schemas of all tenants after you've enhanced your model with an outbox version from `@sap/cds`  version 6.0.0 or later.
 :::
 
