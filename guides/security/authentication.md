@@ -383,7 +383,7 @@ resources:
 <div class="impl java">
 
 ::: info
-The [binding](../../java/security#bindings) to service instance of type `identity` is the trigger to automatically enforce IAS authentiaction at runtime ❗
+The [binding](../../java/security#bindings) to service instance of type `identity` is the trigger to automatically enforce IAS authentication at runtime ❗
 :::
 
 </div>
@@ -719,14 +719,6 @@ If there is no deployment descriptor yet, execute the following in the project r
 ```sh
 cds add mta
 ```
-
-<div class="impl java">
-
-::: tip
-Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required for security](../../java/security#maven-dependencies) are added transitively.
-:::
-
-</div>
 
 You also need to configure database support:
 
