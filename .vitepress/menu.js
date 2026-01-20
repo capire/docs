@@ -1,4 +1,7 @@
-/* eslint-disable no-console no-self-assign */
+// #!usr/bin/env node
+
+/* eslint-disable no-console */
+/* eslint-disable no-self-assign */
 
 import { dirname, relative, resolve, join, normalize } from 'node:path'
 import { existsSync, promises as fs } from 'node:fs'
