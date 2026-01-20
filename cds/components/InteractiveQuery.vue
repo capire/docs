@@ -13,7 +13,7 @@
       </button>
     </div>
 
-    <div v-if="queryResult" class="vp-code-group vp-adaptive-theme">
+    <div v-if="queryResult" :class="`vp-code-group vp-adaptive-theme ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
         <template v-for="tab in tabs" :key="tab.key">
           <input type="radio" :id="tab.key" v-model="selectedTab" :value="tab.key">
@@ -29,10 +29,6 @@
           <span v-html="format(tab, isDark)"></span>
         </div>
       </div>
-    </div>
-    <div v-if="queryError" class="query-error">
-      <strong>Error:</strong>
-      <pre>{{ queryError }}</pre>
     </div>
   </div>
 </template>
@@ -72,7 +68,6 @@ const selectedTab = ref(`${uid}-Result`)
 
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
-const queryError = ref(null)
 
 function format({value, kind}, dark) {
   // const highlighter = (await import('./highlighter')).default
@@ -86,7 +81,6 @@ function format({value, kind}, dark) {
 }
 
 async function runQuery() {
-  queryError.value = null
   queryResult.value = null
   try {
     const result = await props.onExecute(queryText.value)
@@ -108,13 +102,19 @@ async function runQuery() {
     }
 
     if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key
-    queryResult.value = Object.fromEntries(tabs.value.map(tab => [
-      tab.key,
-      tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
-    ]))
   } catch (error) {
-    queryError.value = error.message || String(error)
+    const tmp = [
+      { key: `${uid}-Error`, name: 'Error', value: error.message || String(error), error },
+    ]
+    if (error.stack) tmp.push({ key: `${uid}-Stack`, name: 'Stack', value: error.stack, error })
+    tabs.value = tmp
+    selectedTab.value = `${uid}-Error`
+    window.tabs = tabs.value
   }
+  queryResult.value = Object.fromEntries(tabs.value.map(tab => [
+    tab.key,
+    tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
+  ]))
 }
 </script>
 
@@ -156,41 +156,23 @@ async function runQuery() {
     stroke: var(--vp-button-brand-text);
     fill: var(--vp-button-brand-text);
   }
-} 
-
+}
 
 .interactive-query .icon-button:hover {
   background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-hover-text);
 }
 
-.query-result,
-.query-error {
-  margin-top: 1em;
-  padding: 1em;
+.error {
+  border: 1px solid var(--vp-c-danger-2);
   border-radius: 4px;
 }
 
-.query-result {
-  background-color: var(--vp-code-block-bg);
-  border: 1px solid var(--vp-c-green-1);
-}
-
-.query-error {
-  background-color: var(--vp-code-block-bg);
-  border: 1px solid var(--vp-c-danger-1);
-}
-
-.query-result pre,
-.query-error pre {
-  margin: 0.5em 0 0 0;
-  overflow-x: auto;
+.vp-code-group.error input:checked + label::after {
+  background-color: var(--vp-c-danger-2);
 }
 
 :deep(.shiki) {
   background-color: var(--vp-code-block-bg) !important;
-}
-:deep(.line) {
-  word-wrap: normal;
 }
 </style>

@@ -10,11 +10,14 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+// Monaco Editor Vue Component
+// Note: Do not create many of these: https://github.com/microsoft/monaco-editor/issues/2326
+import { ref, watch, onMounted, onUnmounted, useId } from 'vue'
 import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
 
 const { isDark } = useData()
+const uid = useId()
 
 const props = defineProps({
   modelValue: {
@@ -88,8 +91,15 @@ async function createEditor() {
   updateHeight()
 
   // Emit execute on Cmd/Ctrl+Enter
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
-    emit('execute')
+  editor.addAction({
+    id: 'run',
+    label: 'Run',
+    keybindings: [
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter
+    ],
+    run: () => {
+      emit('execute')
+    }
   })
 
   const model = editor.getModel()
