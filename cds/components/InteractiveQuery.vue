@@ -16,13 +16,14 @@
     <div v-if="queryResult" class="vp-code-group vp-adaptive-theme">
       <div class="tabs">
         <template v-for="tab in tabs" :key="tab.key">
-          <input type="radio" :id="`tab-${tab.key}`" v-model="selectedTab" :value="tab.name">
-          <label :for="`tab-${tab.key}`">{{ tab.name }}</label>
+          <input type="radio" :id="`${uid}-${tab.key}`" v-model="selectedTab" :value="`${uid}-${tab.key}`">
+          <label :for="`${uid}-${tab.key}`">{{ tab.name }}</label>
         </template>
       </div>
 
       <div class="blocks">
-        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === tab.name" :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === tab.name ? 'active' : ''}`" >
+        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === `${uid}-${tab.key}`"
+            :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === `${uid}-${tab.key}` ? 'active' : ''}`" >
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ tab.kind }}</span>
           <span v-html="format(tab, isDark)"></span>
@@ -37,11 +38,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import highlighter from './highlighter'
 import play from '/icons/play.svg?url&raw'
+
+const uid = useId()
 
 const { isDark } = useData()
 
@@ -65,7 +68,7 @@ const props = defineProps({
 })
 
 const tabs = ref([])
-const selectedTab = ref('Result')
+const selectedTab = ref(`${uid}-Result`)
 
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
@@ -103,9 +106,9 @@ async function runQuery() {
         { key: 'Result', name: 'Result', value: result }
       ]
     }
-    selectedTab.value = tabs.value[0].key
+    selectedTab.value = `${uid}-${tabs.value[0].key}`
     queryResult.value = Object.fromEntries(tabs.value.map(tab => [
-      tab.key,
+      `${uid}-${tab.key}`,
       tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
     ]))
   } catch (error) {
@@ -185,5 +188,8 @@ async function runQuery() {
 
 :deep(.shiki) {
   background-color: var(--vp-code-block-bg) !important;
+}
+:deep(.line) {
+  word-wrap: normal;
 }
 </style>
