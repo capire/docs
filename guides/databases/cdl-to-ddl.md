@@ -283,7 +283,7 @@ CREATE TABLE Books (
 ```
 :::
 
-The flattening effects for structured elements are guaranteed and stable. If a CDS model is compiled for usage with OData the only the flattened elements are preserved in the CDS model.
+The flattening effects for structured elements are guaranteed and stable. If a CDS model is compiled for usage with OData only the flattened elements are preserved in the CDS model.
 
 > [!tip] Use flattening in runtime queries in CAP Node.js
 > The flattening effects can also be used at runtime with CAP Node.js. For example, both of the following CQL queries are equivalent and would work as expected:
