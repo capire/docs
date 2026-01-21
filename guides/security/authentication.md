@@ -396,7 +396,7 @@ The binding provides access to the identity services on behalf of a concrete cli
 Service instance and binding offer the following crucial configuration properties:
 
 | Property          | Artifact            | Description         |
-|-------------------|:-------------------:|:---------------------:|
+|-------------------|:-------------------:|---------------------|
 | `name` |  _instance_   | _Name for the IAS application - unique in the tenant_  |
 | `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS administrators_ |
 | `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
