@@ -201,8 +201,8 @@ You can activate user tracing by setting logger `com.sap.cds.security.authentica
 
 ```yaml
 logging:
-   level:
-      com.sap.cds.security.authentication: DEBUG
+  level:
+    com.sap.cds.security.authentication: DEBUG
 ```
 
 This will result in trace output like
@@ -579,7 +579,7 @@ The generated policies are a good starting point to add manual modifications.
 
 The generated DCL schema includes all AMS attributes exposed for filtering:
 
-```yaml [/ams/schema.dcl]
+```dcl [/ams/schema.dcl]
 SCHEMA {
   Genre : String
 }
@@ -703,7 +703,7 @@ For the advanced test scenario, you can define custom policies in pre-defined pa
 
 Let's add a custom policy `StockManagerFiction` which is based on base policy `cap.StockManager` restricting the assigned users to the genres `Mystery` and `Fantasy`:
 
-```yaml [/ams/local/customPolicies.dcl]
+```dcl [/ams/local/customPolicies.dcl]
 POLICY StockManagerFiction {
     USE cap.StockManager RESTRICT Genre IN ('Mystery', 'Fantasy');
 }
