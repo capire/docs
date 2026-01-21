@@ -1,6 +1,6 @@
 ---
 # layout: cookbook
-label: Remote Authentication
+label: Outbound Authentication
 synopsis: >
   This guide explains how to authenticate remote services.
 status: released
@@ -19,7 +19,7 @@ status: released
 </style>
 
 
-# Remote Authentication { #remote-authentication }
+# Outbound Authentication { #remote-authentication }
 
 <ImplVariantsHint />
 
