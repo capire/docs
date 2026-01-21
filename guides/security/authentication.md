@@ -396,7 +396,7 @@ The binding provides access to the identity services on behalf of a concrete cli
 Service instance and binding offer the following crucial configuration properties:
 
 | Property          | Artifact            | Description         |
-|-------------------|:-------------------:|:---------------------:|
+|-------------------|:-------------------:|---------------------|
 | `name` |  _instance_   | _Name for the IAS application - unique in the tenant_  |
 | `display-name` |  _instance_   | _Human-readable name for the IAS application as it appears in the Console UI for IAS administrators_ |
 | `multi-tenant` |  _instance_   | _Specifies application mode: `false` for single tenant (default), `true` for multiple subscriber tenants (SAAS)_  |
@@ -799,7 +799,7 @@ In case your application has multiple XSUAA bindings you need to [pin the bindin
 There are some mandatory configuration parameters:
 
 | Property          |  Description         |
-|-------------------|:-------------------:|
+|-------------------|-------------------|
 |`service-plan`     | _The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`._ |
 |`path`             | _File system path to the [application security descriptor](#xsuaa-security-descriptor)._ |
 |`xsappname`        | _A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`)._ |
