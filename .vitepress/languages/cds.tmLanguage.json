@@ -3,112 +3,25 @@
   "fileTypes": [
     "cds"
   ],
-  "name": "CDS Definition Language (CDL)",
+  "name": "CDS",
   "patterns": [
     {
-      "comment": "entityDef, aspectDef, and others containing elements",
-      "begin": "\\b(aspect|(abstract\\s+)?entity|type|event)\\b",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.strong.cds"
-        }
-      },
-      "end": "(?<=})(;)?|(;)",
-      "endCaptures": {
-        "1": {
-          "name": "punctuation.terminator.statement.cds"
-        },
-        "2": {
-          "name": "punctuation.terminator.statement.cds"
-        }
-      },
-      "patterns": [
-        {
-          "include": "#atAnnoParen"
-        },
-        {
-          "include": "#atAnnoNoParen"
-        },
-        {
-          "comment": "Aspects",
-          "begin": ":",
-          "end": "(?=[{;@])",
-          "beginCaptures": {
-            "0": {
-              "name": "keyword.operator.cds"
-            }
-          },
-          "patterns": [
-            {
-              "include": "#identifiers"
-            },
-            {
-              "match": ",",
-              "name": "punctuation.separator.object.cds"
-            }
-          ]
-        },
-        {
-          "include": "#bracedElementDef"
-        },
-        {
-          "include": "#keywords"
-        },
-        {
-          "include": "#identifiers"
-        }
-      ]
+      "include": "#serviceDef"
     },
     {
-      "comment": "extendVarious (TODO simplify begin pattern - would currently produce false positives; allow annotationAssignment_ll1)",
-      "begin": "(?i)\\b(extend)\\s+((context|service|aspect|entity|projection|type)\\s+)?((?!@)\\S+)(\\s+(with)(\\s+(actions|definitions|columns|elements|enum))?|(?=\\s*{))",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.strong.cds"
-        },
-        "3": {
-          "name": "keyword.cds"
-        },
-        "4": {
-          "name": "entity.name.type.cds"
-        },
-        "6": {
-          "name": "keyword.cds"
-        },
-        "8": {
-          "name": "keyword.cds"
-        }
-      },
-      "end": "(?<=})(;)?|(;)",
-      "endCaptures": {
-        "1": {
-          "name": "punctuation.terminator.statement.cds"
-        },
-        "2": {
-          "name": "punctuation.terminator.statement.cds"
-        }
-      },
-      "patterns": [
-        {
-          "include": "#bracedElementDef"
-        },
-        {
-          "include": "#atAnnoParen"
-        },
-        {
-          "include": "#atAnnoNoParen"
-        },
-        {
-          "include": "#keywords"
-        },
-        {
-          "include": "#identifiers"
-        },
-        {
-          "match": ",",
-          "name": "punctuation.separator.object.cds"
-        }
-      ]
+      "include": "#actionOrFunctionDef"
+    },
+    {
+      "include": "#aspectDefOrEntityDefOrTypeDefOrEventDefOrAnnotate"
+    },
+    {
+      "include": "#extendArtifactWithDef"
+    },
+    {
+      "include": "#extendAspectOrEntityOrTypeOrArtifact"
+    },
+    {
+      "include": "#extendProjection"
     },
     {
       "match": "(?<!\\.)\\b(annotate)\\b\\s*([\\w.]+)\\b\\s*\\b(with)?\\b",
@@ -169,17 +82,17 @@
                 }
               },
               "comment": "(default|name) as alias",
-              "match": "(?:\\b(default)\\b|\\b([$_a-zA-Z][$_a-zA-Z0-9]*)\\b)\\s*(\\bas\\b)\\s*(?:\\b([$_a-zA-Z][$_a-zA-Z0-9]*)\\b)"
+              "match": "(?:\\b(default)\\b|\\b([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)\\b)\\s*(\\bas\\b)\\s*(?:\\b([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)\\b)"
             },
             {
               "match": ",",
               "name": "punctuation.separator.object.cds"
             },
             {
-              "include": "#comments"
+              "include": "#comment"
             },
             {
-              "match": "\\b([$_a-zA-Z][$_a-zA-Z0-9]*)\\b",
+              "match": "\\b([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)\\b",
               "name": "entity.name.type.cds"
             }
           ]
@@ -211,17 +124,17 @@
           "name": "variable.language.default.cds"
         },
         {
-          "include": "#strings"
+          "include": "#string"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         },
         {
           "match": "(?i)\\b(from)\\b",
           "name": "keyword.strong.control.cds"
         },
         {
-          "match": "\\b([$_a-zA-Z][$_a-zA-Z0-9]*)\\b(?=.*\\bfrom\\b)",
+          "match": "\\b([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)\\b(?=.*\\bfrom\\b)",
           "name": "entity.name.type.cds"
         },
         {
@@ -243,33 +156,8 @@
         }
       },
       "comment": "ES6 export: `export default (variable|class, etc.)`",
-      "match": "(?i)\\b(export)\\b\\s*\\b(default)\\b(?:\\s*)\\b((?!\\bclass\\b|\\blet\\b|\\bvar\\b|\\bconst\\b)[$_a-zA-Z][$_a-zA-Z0-9]*)?\\b",
+      "match": "(?i)\\b(export)\\b\\s*\\b(default)\\b(?:\\s*)\\b((?!\\bclass\\b|\\blet\\b|\\bvar\\b|\\bconst\\b)[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)?\\b",
       "name": "meta.export.cds"
-    },
-    {
-      "begin": "(?i)\\b(action|function)\\s+([$_a-zA-Z][$_a-zA-Z0-9]*)\\s*(\\()",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.strong.cds"
-        },
-        "2": {
-          "name": "entity.name.function.cds"
-        },
-        "3": {
-          "name": "punctuation.definition.parameters.begin.cds"
-        }
-      },
-      "end": "\\)",
-      "endCaptures": {
-        "0": {
-          "name": "punctuation.definition.parameters.end.cds"
-        }
-      },
-      "patterns": [
-        {
-          "include": "#function-params"
-        }
-      ]
     },
     {
       "captures": {
@@ -286,7 +174,7 @@
           "name": "entity.other.inherited-class.cds"
         }
       },
-      "match": "\\b(class)(?:\\s+([$_a-zA-Z][$_a-zA-Z0-9]*))?(?:\\s+(extends)\\s+([$_a-zA-Z][$_a-zA-Z0-9]*))?\\s*($|(?={))",
+      "match": "\\b(class)(?:\\s+([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*))?(?:\\s+(extends)\\s+([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*))?\\s*($|(?={))",
       "name": "meta.class.cds"
     },
     {
@@ -322,7 +210,7 @@
       "name": "variable.language.cds"
     },
     {
-      "match": "\\;",
+      "match": ";",
       "name": "punctuation.terminator.statement.cds"
     },
     {
@@ -376,22 +264,18 @@
       ]
     },
     {
-      "match": "\\[|\\]",
-      "name": "meta.brace.square.cds"
-    },
-    {
       "comment": "Match classes based on the usage of the \"new\" operator.",
-      "match": "(?<=new )([$_a-zA-Z][$_a-zA-Z0-9]*)(?!\\w)",
+      "match": "(?<=new )([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?!\\w)",
       "name": "support.class.cds"
     },
     {
       "comment": "Match classes based on the usage of the \"instanceof\" operator.",
-      "match": "(?<= instanceof )([$_a-zA-Z][$_a-zA-Z0-9]*)(?!\\w)",
+      "match": "(?<= instanceof )([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?!\\w)",
       "name": "support.class.cds"
     },
     {
       "comment": "Match classes based on the usage of the \"prototype\" property.",
-      "match": "(?<!\\w)([$_a-zA-Z][$_a-zA-Z0-9]*)(?=\\.prototype\\b)",
+      "match": "(?<!\\w)([$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?=\\.prototype\\b)",
       "name": "support.class.cds"
     },
     {
@@ -406,30 +290,31 @@
       "include": "#atAnnoNoParen"
     },
     {
-      "include": "#keywords"
+      "include": "#keyword"
     },
     {
-      "include": "#numbers"
+      "include": "#number"
     },
     {
-      "include": "#strings"
+      "include": "#string"
     },
     {
-      "include": "#comments"
+      "include": "#comment"
     },
     {
-      "include": "#operators"
+      "include": "#operator"
     },
     {
-      "include": "#identifiers"
+      "include": "#identifier"
     }
   ],
   "repository": {
-    "keywords": {
+    "keyword": {
+      "name": "keyword",
       "patterns": [
         {
           "comment": "Association, Composition",
-          "match": "(?<!\\.|\\$)\\b(Association\\b\\s*(?:\\[[0-9.eE+, *-]*\\]\\s*)?to\\b\\s*(?:many\\s*|one\\s*)?|Composition\\b\\s*(?:\\[[0-9.eE+, *-]*\\]\\s*)?of\\b\\s*(?:many\\s*|one\\s*)?)(?:(?=\\s*{)|([$_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]))",
+          "match": "(?<!\\.|\\$)\\b(Association\\b\\s*(?:\\[[0-9.eE+, *-]*\\]\\s*)?to\\b\\s*(?:many\\s*|one\\s*)?|Composition\\b\\s*(?:\\[[0-9.eE+, *-]*\\]\\s*)?of\\b\\s*(?:many\\s*|one\\s*)?)(?:(?=\\s*{)|(\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*))",
           "captures": {
             "1": {
               "name": "support.class.cds"
@@ -441,40 +326,42 @@
         },
         {
           "comment": "Types (exact casing)",
-          "match": "(?<!\\.|\\$)\\b(Binary|Boolean|DateTime|Date|DecimalFloat|Decimal|Double|Int(16|32|64)|Integer64|Integer|LargeBinary|LargeString|Number|String|Timestamp|Time|UInt8|UUID)\\b\\s*(\\([^()]*\\))?(?!\\$|\\s*:)",
+          "match": "(?<!\\.|\\$)\\b(Binary|Boolean|DateTime|Date|DecimalFloat|Decimal|Double|Int(16|32|64)|Integer64|Integer|LargeBinary|LargeString|Number|String|Timestamp|Time|UInt8|UUID|Vector)\\b\\s*(\\([^()]*\\))?(?!\\$|\\s*:)",
           "name": "support.class.cds"
         },
         {
           "comment": "CQL keywords (arbitrary casing)",
-          "match": "(?i)(?<!\\.|\\$)\\b(all|and|any|asc|between|by|case|cast|cross|desc|distinct|element|elements|escape|except|excluding|exists|first|from|full|group|group by|having|in|inner|intersect|into|is|join|last|left|like|limit|many|minus|mixin|not null|not|null|nulls|offset|one|or|order by|outer|redirected to|select|some|top|type of|union|where|with)\\b(?!\\$|\\s*:)",
+          "match": "(?i)(?<!\\.|\\$)\\b(all|and|any|asc|between|by|case|cast|cross|desc|distinct|element|elements|escape|except|excluding|exists|first|from|full|group|group by|having|in|inner|intersect|into|is|join|last|left|like|limit|many|minus|mixin|not null|not|null|nulls|offset|one|or|order by|outer|redirected to|select|some|stored|top|type of|union|where|with)\\b(?!\\$|\\s*:)",
           "name": "keyword.cds"
         },
         {
           "comment": "CQL keywords, strong (arbitrary casing)",
-          "match": "(?i)(?<!\\.|\\$)\\b(as|key|on|type)\\b(?!\\$|\\s*:)",
+          "match": "(?i)(?<!\\.|\\$)\\b(as|key|on)\\b(?!\\$|\\s*:)",
           "name": "keyword.strong.cds"
         },
         {
           "comment": "CDL keywords (lowercase)",
-          "match": "(?<!\\.|\\$)\\b(array of|column|columns|current|day|default|depends|else|enabled|end|generated|hana|hour|identity|import|index|language|layout|leading|masked|merge|minute|minutes|mode|month|name|new|no|off|only|others|parameters|partition|partitions|priority|projection|projection on|queue|range|ratio|reset|returns|right|row|search|second|start|storage|store|table|technical|then|trailing|trim|unique|unload|value|values|virtual|when|with parameters|year)\\b(?!\\$|\\s*:)",
+          "match": "(?<!\\.|\\$)\\b(array of|column|columns|current|day|default|depends|else|enabled|end|generated|hana|hour|identity|language|leading|masked|minute|month|new|parameters|partition|projection|projection on|queue|reset|returns|right|row|second|start|storage|store|technical|then|trailing|trim|unique|unload|value|virtual|when|with parameters)\\b(?!\\$|\\s*:)",
           "name": "keyword.cds"
         },
         {
           "comment": "CDL keywords, strong (lowercase)",
-          "match": "(?<!\\.|\\$)\\b(abstract|action|actions|annotation|aspect|context|define|entity|enum|event|extend|function|namespace|service|view)\\b(?!\\$|\\s*:)",
+          "match": "(?<!\\.|\\$)\\b(action|actions|annotation|context|define|enum|extend|function|namespace|service|view)\\b(?!\\$|\\s*:)",
           "name": "keyword.strong.cds"
         }
       ]
     },
-    "identifiers": {
+    "identifier": {
+      "name": "identifier",
       "patterns": [
         {
-          "match": "(?<!@)(?:\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
+          "match": "(?i)(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
           "name": "entity.name.type.cds"
         }
       ]
     },
-    "comments": {
+    "comment": {
+      "name": "comment",
       "patterns": [
         {
           "begin": "/\\*\\*(?!/)",
@@ -512,25 +399,8 @@
         }
       ]
     },
-    "function-params": {
-      "patterns": [
-        {
-          "match": "\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]",
-          "name": "variable.parameter.function.cds"
-        },
-        {
-          "match": ",",
-          "name": "punctuation.separator.object.cds"
-        },
-        {
-          "include": "#comments"
-        },
-        {
-          "include": "#operators"
-        }
-      ]
-    },
-    "numbers": {
+    "number": {
+      "name": "number",
       "patterns": [
         {
           "match": "(?<!\\w|\\$)0[xX]\\h+\\b",
@@ -550,7 +420,8 @@
         }
       ]
     },
-    "operators": {
+    "operator": {
+      "name": "operator",
       "patterns": [
         {
           "match": "!=|<=|>=|<>|<|>",
@@ -590,7 +461,8 @@
         }
       ]
     },
-    "strings": {
+    "string": {
+      "name": "string",
       "patterns": [
         {
           "begin": "'",
@@ -636,28 +508,34 @@
               "include": "#interpolation"
             },
             {
-              "include": "#escapes"
+              "include": "#escape"
             }
           ]
         }
       ]
     },
-    "escapes": {
+    "escape": {
       "match": "\\\\([xu$]\\{?[0-9a-fA-F]+}?|.|$)",
       "name": "constant.character.escape.cds"
     },
     "selectItemDef": {
-      "begin": "^\\s*(?=\\*|.+\\s+as\\s+)",
+      "name": "selectItemDef",
+      "begin": "(?!\\s*@)",
       "end": "(?=})|(,)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.separator.object.cds"
+        }
+      },
       "patterns": [
         {
-          "include": "#bracedElementDef"
+          "include": "#bracedSelectItemDef"
         },
         {
-          "include": "#strings"
+          "include": "#string"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         },
         {
           "include": "#atAnnoParen"
@@ -666,30 +544,30 @@
           "include": "#atAnnoNoParen"
         },
         {
-          "include": "#keywords"
+          "include": "#keyword"
         },
         {
           "include": "#bracketedExpression"
         },
         {
           "comment": "Element name or type",
-          "match": "(?<!@)(?:\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
+          "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
           "name": "entity.other.attribute-name.cds"
         },
         {
-          "include": "#operators"
+          "include": "#operator"
         },
         {
-          "include": "#numbers"
+          "include": "#squareBrackets"
         },
         {
-          "match": ",",
-          "name": "punctuation.separator.object.cds"
+          "include": "#number"
         }
       ]
     },
     "elementDef": {
-      "begin": "(?!\\s*@)(?:(?=\\()|\\b(virtual(?:\\s+))?(key(?:\\s+))?(masked(?:\\s+))?(element(?:\\s+))?)",
+      "name": "elementDef",
+      "begin": "(?:^|\\G)\\s*(?!extend)(virtual(?:\\s+))?(key(?:\\s+))?(masked(?:\\s+))?(element(?:\\s+))?(?=\\S)",
       "beginCaptures": {
         "1": {
           "name": "keyword.cds"
@@ -715,10 +593,10 @@
           "include": "#bracedElementDef"
         },
         {
-          "include": "#strings"
+          "include": "#string"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         },
         {
           "include": "#atAnnoParen"
@@ -727,19 +605,19 @@
           "include": "#atAnnoNoParen"
         },
         {
-          "include": "#keywords"
+          "include": "#keyword"
         },
         {
           "include": "#bracketedExpression"
         },
         {
           "comment": "Element name or type",
-          "match": "(?<!@)(?:\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])(?=\\s*[:{,@])",
+          "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?=\\s*[:{,@])",
           "name": "entity.other.attribute-name.cds"
         },
         {
           "comment": "Whole-line element name",
-          "match": "^\\s*([$_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])\\s*$",
+          "match": "^\\s*(\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|(?!(when|then|else|end)\\s*$)[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)\\s*$",
           "captures": {
             "1": {
               "name": "entity.other.attribute-name.cds"
@@ -747,13 +625,13 @@
           }
         },
         {
-          "include": "#identifiers"
+          "include": "#identifier"
         },
         {
-          "include": "#operators"
+          "include": "#operator"
         },
         {
-          "include": "#numbers"
+          "include": "#number"
         },
         {
           "match": ",",
@@ -765,6 +643,7 @@
       ]
     },
     "bracedElementDef": {
+      "name": "bracedElementDef",
       "comment": "Braces enclosing all elementDefs and extendElements; also typeStructs",
       "begin": "{",
       "beginCaptures": {
@@ -780,7 +659,7 @@
       },
       "patterns": [
         {
-          "include": "#comments"
+          "include": "#comment"
         },
         {
           "include": "#atAnnoParen"
@@ -792,16 +671,129 @@
           "include": "#extendElement"
         },
         {
-          "include": "#selectItemDef"
-        },
-        {
           "include": "#elementDef"
         }
       ]
     },
+    "bracedArtifactDefOrExtend": {
+      "name": "bracedArtifactDefOrExtend",
+      "begin": "{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.begin.cds"
+        }
+      },
+      "end": "}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.end.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#serviceDef"
+        },
+        {
+          "include": "#actionOrFunctionDef"
+        },
+        {
+          "include": "#aspectDefOrEntityDefOrTypeDefOrEventDefOrAnnotate"
+        },
+        {
+          "include": "#keyword"
+        }
+      ]
+    },
+    "bracedSelectItemDef": {
+      "name": "bracedSelectItemDef",
+      "comment": "Braces enclosing all selectItemDefs",
+      "begin": "{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.begin.cds"
+        }
+      },
+      "end": "}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.end.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#selectItemDef"
+        }
+      ]
+    },
+    "parameterListDef": {
+      "name": "parameterListDef",
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.begin.cds"
+        }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.parameters.end.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "comment": "parameter name",
+          "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?=\\s*[:{@])",
+          "name": "variable.parameter.function.cds"
+        },
+        {
+          "include": "#bracedElementDef"
+        },
+        {
+          "include": "#identifier"
+        },
+        {
+          "include": "#operator"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.object.cds"
+        }
+      ]
+    },
     "extendElement": {
-      "begin": "\\b(?=extend\\b.*\\bwith\\b)",
-      "end": "(?<=})(;)?|(;)",
+      "name": "extendElement",
+      "begin": "(?:^|\\G)\\s*(?=extend)",
+      "end": "(?<=[};])(;)?|(;)",
       "endCaptures": {
         "1": {
           "name": "punctuation.terminator.statement.cds"
@@ -812,29 +804,29 @@
       },
       "patterns": [
         {
-          "begin": "\\bextend\\b",
+          "begin": "\\bextend\\b(?=.*(?:[@{]|\\bwith\\b))",
           "beginCaptures": {
             "0": {
               "name": "keyword.strong.cds"
             }
           },
-          "end": "\\bwith\\b",
+          "end": "(?:(?=[@{])|\\b(with)\\b)",
           "endCaptures": {
-            "0": {
+            "1": {
               "name": "keyword.cds"
             }
           },
           "patterns": [
             {
-              "match": "element(?!(?:\\s*/\\*.*\\*/\\s*|\\s+)?with\\b)",
+              "match": "element(?!(?:\\s*/[*].*[*]/\\s*|\\s+)?with\\b)",
               "name": "keyword.cds"
             },
             {
-              "match": "(?<!@)(?:\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
+              "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
               "name": "entity.other.attribute-name.cds"
             },
             {
-              "include": "#comments"
+              "include": "#comment"
             }
           ]
         },
@@ -867,16 +859,16 @@
           ]
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         },
         {
-          "include": "#keywords"
+          "include": "#keyword"
         },
         {
-          "include": "#identifiers"
+          "include": "#identifier"
         },
         {
-          "include": "#operators"
+          "include": "#operator"
         },
         {
           "match": "\\(",
@@ -887,12 +879,13 @@
           "name": "punctuation.section.scope.end.cds"
         },
         {
-          "include": "#numbers"
+          "include": "#number"
         }
       ]
     },
 
     "atAnnoParen": {
+      "name": "atAnnoParen",
       "begin": "(@)\\s*(\\()",
       "beginCaptures": {
         "1": {
@@ -910,6 +903,9 @@
       },
       "patterns": [
         {
+          "include": "#bracketedExpression"
+        },
+        {
           "include": "#annotationName"
         },
         {
@@ -917,6 +913,9 @@
         },
         {
           "include": "#optColonAndArray"
+        },
+        {
+          "include": "#colonAndBracketedExpression"
         },
         {
           "include": "#colonAndNumber"
@@ -928,25 +927,26 @@
           "include": "#colonAndTemplateString"
         },
         {
-          "include": "#colonAndHashIdent"
+          "include": "#colonAndConstant"
         },
         {
-          "include": "#colonAndConstant"
+          "include": "#colonAndOptHashIdent"
         },
         {
           "match": ",",
           "name": "punctuation.separator.object.cds"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
 
     "atAnnoNoParen": {
+      "name": "atAnnoNoParen",
       "begin": "(@)(?!\\s*\\()",
-      "comment": "'end' uses lookahead, since end of annotation value itself cannot be safely determined currently",
-      "end": "(?<=[}\\]'`])(?=\\s*($|[@;]))|(?<![@:])(?!\\s*:)(?=$|[\\s@,;(){}\\[\\]'`/\"!]|\\b[$_a-zA-Z])",
+      "comment": "'end' uses lookahead, since end of annotation value itself cannot currently be safely determined",
+      "end": "(?<=[}\\]'`])(?=\\s*($|[@;]))|(?<![@:])(?!\\s*:)(?=$|[\\s@,;(){}\\[\\]'`/\"!]|\\b\\p{ID_Start})",
       "captures": {
         "1": {
           "name": "entity.name.tag.at.cds"
@@ -963,6 +963,9 @@
           "include": "#optColonAndArray"
         },
         {
+          "include": "#colonAndBracketedExpression"
+        },
+        {
           "include": "#colonAndNumber"
         },
         {
@@ -972,25 +975,26 @@
           "include": "#colonAndTemplateString"
         },
         {
-          "include": "#colonAndHashIdent"
-        },
-        {
           "include": "#colonAndConstant"
         },
         {
-          "include": "#comments"
+          "include": "#colonAndOptHashIdent"
+        },
+        {
+          "include": "#comment"
         }
       ]
     },
 
     "atAnnoName": {
+      "name": "atAnnoName",
       "begin": "(@)",
       "beginCaptures": {
         "1": {
           "name": "entity.name.tag.at.cds"
         }
       },
-      "end": "(?:(?<=[$\"\\]])(?=\\s*[@:;])|(?<=[_a-zA-Z0-9])\\b)(?![#.])",
+      "end": "(?:(?<=[$\"\\]])(?=\\s*[@:;])|(?<=\\p{ID_Continue})\\b)(?![#.])",
       "comment": "!TODO alternative end: (?=\\s*(?:$|[@,;:)]))",
       "patterns": [
         {
@@ -1000,12 +1004,13 @@
     },
 
     "annotationName": {
+      "name": "annotationName",
       "comment": "annotationPath ( '#' annotationPathVariant ) ?",
-      "begin": "(?=[$_\"!a-zA-Z0-9])",
-      "end": "(?:(?<=[$\"\\]])(?=\\s*[@:;])|(?<=[_a-zA-Z0-9])\\b)(?!\\s*[#.])",
+      "begin": "(?=[\"\\p{ID_Start}]|!\\[)",
+      "end": "(?:(?<=[$\"\\]])(?=\\s*[@:;])|(?<=\\p{ID_Continue})\\b)(?!\\s*[#.])",
       "patterns": [
         {
-          "match": "[$_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]",
+          "match": "\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*",
           "name": "entity.name.tag.cds"
         },
         {
@@ -1031,10 +1036,11 @@
     },
 
     "optColonAndStructure": {
+      "name": "optColonAndStructure",
       "begin": "(:)?\\s*({)",
       "beginCaptures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         },
         "2": {
           "name": "punctuation.section.scope.begin.cds"
@@ -1061,6 +1067,9 @@
           "include": "#optColonAndArray"
         },
         {
+          "include": "#colonAndBracketedExpression"
+        },
+        {
           "include": "#colonAndNumber"
         },
         {
@@ -1070,26 +1079,27 @@
           "include": "#colonAndTemplateString"
         },
         {
-          "include": "#colonAndHashIdent"
+          "include": "#colonAndConstant"
         },
         {
-          "include": "#colonAndConstant"
+          "include": "#colonAndOptHashIdent"
         },
         {
           "match": ",",
           "name": "punctuation.separator.object.cds"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
 
     "optColonAndArray": {
+      "name": "optColonAndArray",
       "begin": "(:)?\\s*(\\[)",
       "beginCaptures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         },
         "2": {
           "name": "punctuation.section.scope.begin.cds"
@@ -1111,11 +1121,7 @@
         },
         {
           "match": "\\.{3}",
-          "captures": {
-            "0": {
-              "name": "keyword.operator.ellipsis"
-            }
-          }
+          "name": "keyword.operator.ellipsis"
         },
         {
           "match": "(?i)(up)\\s+(to)\\b",
@@ -1142,32 +1148,52 @@
           "name": "punctuation.separator.object.cds"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
-    "colonAndNumber": {
-      "begin": "(:)\\s*(?=[0-9+-])",
-      "end": "(?<=[\\h0-9])\\b",
+    "colonAndBracketedExpression": {
+      "name": "colonAndBracketedExpression",
+      "begin": "(:)\\s*(?=\\()",
+      "end": "(?<=\\))",
       "beginCaptures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         }
       },
       "patterns": [
         {
-          "include": "#numbers"
+          "include": "#bracketedExpression"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
+        }
+      ]
+    },
+    "colonAndNumber": {
+      "name": "colonAndNumber",
+      "begin": "(:)\\s*(?=[0-9+-])",
+      "end": "(?<=[\\h0-9])\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.operator.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#number"
+        },
+        {
+          "include": "#comment"
         }
       ]
     },
     "colonAndString": {
+      "name": "colonAndString",
       "begin": "(:)\\s*(x|date|time(?:stamp)?)?\\s*(')",
       "beginCaptures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         },
         "2": {
           "name": "support.class.cds"
@@ -1192,32 +1218,34 @@
           "name": "string.quoted.single.cds"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
     "colonAndTemplateString": {
+      "name": "colonAndTemplateString",
       "begin": "(:)\\s*(?=`)",
       "end": "(?<=`)",
       "beginCaptures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         }
       },
       "patterns": [
         {
-          "include": "#strings"
+          "include": "#string"
         },
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
-    "colonAndHashIdent": {
-      "match": "(:)\\s*(#)\\s*([$_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
+    "colonAndOptHashIdent": {
+      "name": "colonAndOptHashIdent",
+      "match": "(:)\\s*(#)?\\s*(\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
       "captures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         },
         "2": {
           "name": "entity.name.tag.hash.cds"
@@ -1228,15 +1256,16 @@
       },
       "patterns": [
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
     "colonAndConstant": {
+      "name": "colonAndConstant",
       "match": "(?i)(:)\\s*(null|true|false)\\b",
       "captures": {
         "1": {
-          "name": "keyword.operator.colon"
+          "name": "keyword.operator.cds"
         },
         "2": {
           "name": "constant.language.cds"
@@ -1244,17 +1273,18 @@
       },
       "patterns": [
         {
-          "include": "#comments"
+          "include": "#comment"
         }
       ]
     },
 
     "literalValue": {
+      "name": "literalValue",
       "comment": "the rules grouped here, when preceded by ':', are found in their own separate rules",
       "patterns": [
         {
           "comment": "'#' ident",
-          "match": "(#)\\s*([$_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
+          "match": "(#)\\s*(\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
           "captures": {
             "1": {
               "name": "entity.name.tag.hash.cds"
@@ -1269,10 +1299,10 @@
           "name": "constant.language.cds"
         },
         {
-          "include": "#numbers"
+          "include": "#number"
         },
         {
-          "include": "#strings"
+          "include": "#string"
         },
         {
           "comment": "quotedLiteral",
@@ -1298,6 +1328,7 @@
       ]
     },
     "bracketedExpression": {
+      "name": "bracketedExpression",
       "begin": "\\(",
       "beginCaptures": {
         "0": {
@@ -1312,24 +1343,396 @@
       },
       "patterns": [
         {
+          "include": "#bracedSelectItemDef"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "match": "(?i)(?<!@|select from )(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
+          "name": "entity.other.attribute-name.cds"
+        },
+        {
+          "include": "#identifier"
+        },
+        {
+          "include": "#operator"
+        },
+        {
+          "include": "#string"
+        }
+      ]
+    },
+    "squareBrackets": {
+      "match": "\\[|\\]",
+      "name": "meta.brace.square.cds"
+    },
+    "bracedDefinitionsOrAnnotateOrExtend": {
+      "name": "bracedDefinitionsOrAnnotateOrExtend",
+      "begin": "{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.begin.cds"
+        }
+      },
+      "end": "}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.scope.end.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#aspectDefOrEntityDefOrTypeDefOrEventDefOrAnnotate"
+        },
+        {
+          "include": "#extendAspectOrEntityOrTypeOrArtifact"
+        }
+      ]
+    },
+    "extendArtifactWithDef": {
+      "name": "extendArtifactWithDef",
+      "begin": "(?i)\\b(extend)\\s+((?!@)\\S+)\\s+(with)\\s+(definitions)(?=\\s*{)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        },
+        "2": {
+          "name": "entity.name.type.cds"
+        },
+        "3": {
+          "name": "keyword.cds"
+        },
+        "4": {
+          "name": "keyword.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#bracedDefinitionsOrAnnotateOrExtend"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.object.cds"
+        }
+      ]
+    },
+    "extendAspectOrEntityOrTypeOrArtifact": {
+      "name": "extendAspectOrEntityOrTypeOrArtifact",
+      "comment": "TODO simplify begin pattern - would currently produce false positives; allow annotationAssignment_ll1",
+      "begin": "(?i)\\b(extend)\\s+((aspect|entity|type)\\s+)?((?!@)\\S+)(\\s+(with)(\\s+(actions|columns|elements|enum))?|(?=\\s*{))",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        },
+        "3": {
+          "name": "keyword.strong.cds"
+        },
+        "4": {
+          "name": "entity.name.type.cds"
+        },
+        "6": {
+          "name": "keyword.cds"
+        },
+        "8": {
+          "name": "keyword.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
           "include": "#bracedElementDef"
         },
         {
-          "include": "#keywords"
+          "include": "#atAnnoParen"
         },
         {
-          "match": "(?i)(?<!@|select from )(?:\\$?\\b[_a-zA-Z][$_a-zA-Z0-9]*|\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\])",
-          "captures": {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#identifier"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.object.cds"
+        }
+      ]
+    },
+    "extendProjection": {
+      "name": "extendProjection",
+      "comment": "TODO simplify begin pattern - would currently produce false positives; allow annotationAssignment_ll1",
+      "begin": "(?i)\\b(extend)\\s+((projection)\\s+)?((?!@)\\S+)(\\s+(with)(\\s+(actions))?|(?=\\s*{))",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        },
+        "3": {
+          "name": "keyword.cds"
+        },
+        "4": {
+          "name": "entity.name.type.cds"
+        },
+        "6": {
+          "name": "keyword.cds"
+        },
+        "8": {
+          "name": "keyword.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#bracedSelectItemDef"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
+    },
+    "aspectDefOrEntityDefOrTypeDefOrEventDefOrAnnotate": {
+      "name": "aspectDefOrEntityDefOrTypeDefOrEventDefOrAnnotate",
+      "begin": "\\b((annotate)|(?:(aspect)|(abstract)\\s+(entity))(?=\\s+.*\\S+.*[{;])|(entity)(?=\\s+.*\\S+.*(?:\\s+as|\\{))|(type|event)(?=\\s+.*\\S+.*[:{]))\\b",
+      "beginCaptures": {
+        "2": {
+          "name": "keyword.strong.control.import.cds"
+        },
+        "3": {
+          "name": "keyword.strong.cds"
+        },
+        "4": {
+          "name": "keyword.strong.cds"
+        },
+        "5": {
+          "name": "keyword.strong.cds"
+        },
+        "6": {
+          "name": "keyword.strong.cds"
+        },
+        "7": {
+          "name": "keyword.strong.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "comment": "Aspects",
+          "begin": ":",
+          "end": "(?=[{;@])",
+          "beginCaptures": {
             "0": {
-              "name": "entity.other.attribute-name.cds"
+              "name": "keyword.operator.cds"
             }
-          }
+          },
+          "patterns": [
+            {
+              "include": "#keyword"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#identifier"
+            },
+            {
+              "match": ",",
+              "name": "punctuation.separator.object.cds"
+            }
+          ]
         },
         {
-          "include": "#identifiers"
+          "include": "#asSelectOrProjection"
         },
         {
-          "include": "#operators"
+          "include": "#bracedElementDef"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
+    },
+    "actionOrFunctionDef":     {
+      "name": "actionOrFunctionDef",
+      "begin": "(?i)\\b(action|function)\\s+(\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        },
+        "2": {
+          "name": "entity.name.function.cds"
+        }
+      },
+      "end": ";",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#parameterListDef"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#bracedElementDef"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
+    },
+    "serviceDef": {
+      "name": "serviceDef",
+      "begin": "\\b(service)(?=\\s+.*\\S+.*[{;])\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#bracedArtifactDefOrExtend"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
+    },
+    "asSelectOrProjection": {
+      "name": "asSelectOrProjection",
+      "begin": "\\b(as)\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.strong.cds"
+        }
+      },
+      "end": "(?<=[};])(;)?|(;)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.terminator.statement.cds"
+        },
+        "2": {
+          "name": "punctuation.terminator.statement.cds"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#bracedSelectItemDef"
+        },
+        {
+          "include": "#atAnnoParen"
+        },
+        {
+          "include": "#atAnnoNoParen"
+        },
+        {
+          "include": "#keyword"
+        },
+        {
+          "include": "#identifier"
+        },
+        {
+          "include": "#operator"
         }
       ]
     }
