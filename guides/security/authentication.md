@@ -153,8 +153,19 @@ returns successfully (HTTP response `200`).
 Mock users are deactivated in production profile by default ❗
 :::
 
-[Learn more about advanced authentication options in Java](../../java/security#spring-boot){.learn-more}
-[Learn more about advanced authentication options in Node.js](../../node.js/authentication#strategies){.learn-more}
+<div class="impl java">
+
+[Learn more about advanced authentication options](../../java/security#spring-boot){.learn-more}
+
+</div>
+
+<div class="impl node">
+
+[Learn more about advanced authentication options](../../node.js/authentication#strategies){.learn-more}
+
+</div>
+
+
 
 
 ### Preconfigured Mock Users { #preconfigured-mock-users }
@@ -164,8 +175,18 @@ The predefined users are added to [custom mock users](#custom-mock-users) define
 
 You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
 
-[Learn more about predefined mock users in Java](../../java/security#preconfigured-mock-users){.learn-more} 
-[Learn more about predefined mock users in Node.js](../../node.js/authentication#mock-users){.learn-more}
+
+<div class="impl java">
+
+[Learn more about predefined mock users](../../java/security#preconfigured-mock-users){.learn-more} 
+
+</div>
+
+<div class="impl node">
+
+[Learn more about predefined mock users](../../node.js/authentication#mock-users){.learn-more}
+
+</div>
 
 
 ### Customization { #custom-mock-users }
@@ -253,8 +274,21 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 </div>
 
-[Learn more about custom mock users in Java.](../../java/security#custom-mock-users){.learn-more}
-[Learn more about custom mock users in Node.js.](../../node.js/authentication#mocked){.learn-more}
+
+<div class="impl java">
+
+[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more}
+
+</div>
+
+<div class="impl node">
+
+[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more}
+
+</div>
+
+
+
 
 
 ### Automated Testing { #mock-user-testing }
@@ -295,9 +329,22 @@ public class BookServiceOrdersTest {
 Integration tests running in production profile should verify that unauthenticated users cannot access any application endpoints❗
 :::
 
-[Learn more about testing in Java.](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
-[Learn more about testing with authenticated endpoints in Node.js.](../../node.js/cds-test#authenticated-endpoints){.learn-more}
-[Learn more about unit testing in Node.js.](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+
+<div class="impl java">
+
+[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
+
+</div>
+
+<div class="impl node">
+
+[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+[Learn more about unit testing](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+
+</div>
+
+
+
 
 
 

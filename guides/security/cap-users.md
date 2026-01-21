@@ -19,7 +19,7 @@ status: released
 </style>
 
 
-# CAP Users { #cap-users }
+# CAP-level Users { #cap-users }
 
 <ImplVariantsHint />
 
@@ -1760,8 +1760,8 @@ Technical user roles are intended for system-level operations, such as backgroun
 AMS policies operate at the business level, while CAP roles are defined at the technical domain level. 
 Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
 
-- **Don't choose non-cross-sectional entity attributes as AMS Attributes**.
-Such attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
-Typically, only a limited number of attributes (less than 10) meet this criterion. 
+- **Don't choose AMS Attributes which do not slice the domain properly**.
+AMS attributes attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
+Typically, only a limited number of attributes (less than 5) meet this criterion. 
 Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
 
