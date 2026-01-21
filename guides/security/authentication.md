@@ -799,7 +799,7 @@ In case your application has multiple XSUAA bindings you need to [pin the bindin
 There are some mandatory configuration parameters:
 
 | Property          |  Description         |
-|-------------------|:-------------------:|
+|-------------------|-------------------|
 |`service-plan`     | _The plan type reflecting various application scenarios. UI applications without API access use plan `application`. All others should use plan `broker`._ |
 |`path`             | _File system path to the [application security descriptor](#xsuaa-security-descriptor)._ |
 |`xsappname`        | _A unique application name within the subaccount. All XSUAA artifacts are prefixed with it (wildcard `$XSAPPNAME`)._ |
