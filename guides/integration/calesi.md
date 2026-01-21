@@ -5,6 +5,8 @@ The *'Calesi'* Pattern {.subtitle}
 Integrating remote services – from other applications, third-party services, or platform services – is a fundamental aspect of cloud application development. CAP provides an easy and platform-agnostic way to do so: Remote services are represented as CAP services, which can be consumed _as if they were local_, while the CAP runtimes manage the communication and resilience details under the hood. Not the least, remote services can be mocked automatically for local inner-loop development and testing.
 {.abstract}
 
+
+[toc]:./
 [[toc]]
 
 
