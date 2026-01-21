@@ -1761,7 +1761,7 @@ AMS policies operate at the business level, while CAP roles are defined at the t
 Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
 
 - **Don't choose AMS Attributes which do not slice the domain properly**.
-AMS attributes attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
+AMS attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
 Typically, only a limited number of attributes (less than 5) meet this criterion. 
 Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
 
