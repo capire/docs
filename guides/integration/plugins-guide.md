@@ -1,6 +1,5 @@
 # Plugin Development Guide 
-The *'Calipso'* Pattern {.subtitle}
-
+Also known as *'Calipso'* {.subtitle}
 
 CAP applications frequently integrate with platform services like identity, logging, document storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
 {.abstract}
@@ -8,7 +7,7 @@ CAP applications frequently integrate with platform services like identity, logg
 [toc]:./
 [[toc]]
 
-## What are Calipso Plugins?
+## What are CAP Plugins?
 
 Plugins minimize setup and maintenance, enabling rapid adoption through plug-and-play principles and simple configuration. For advanced needs, plugins can offer configurable options while adhering to CAP service conventions, allowing customization without unnecessary reimplementation. They built on top of the [CAP-level Service Integration (Calesi)](./calesi.md) pattern.
 
@@ -21,14 +20,14 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 
 
 ✅ <u>Valid use cases:</u>
-- **Integrating with SAP BTP services:** The main purpose of Calipso plugins is to abstract technical integration with SAP BTP services—such as audit-logging, attachments, or data-privacy—so developers only need to model and annotate their data semantically.
+- **Integrating with SAP BTP services:** The main purpose of plugins is to abstract technical integration with SAP BTP services—such as audit-logging, attachments, or data-privacy—so developers only need to model and annotate their data semantically.
 - **Extending CAP runtime functionality:** Plugins like [odata-v2](../../plugins/index.md#odata-v2-adapter-odata-v2-proxy), [websockets](../../plugins/index.md#websocket), or [graphql](../../plugins/index.md#graphql-adapter) add new capabilities to the CAP runtime, keeping the core framework modular and clean.
 - **Generating database-level artifacts:** Plugins such as [change-tracking](../../plugins/index.md#change-tracking) or data-privacy can generate additional database artifacts or services, pushing logic to the database layer for better performance and a leaner application layer.
 - **Reusing UI sections via annotations:** Plugins like [change-tracking](../../plugins/index.md#change-tracking) or attachments provide UI annotations that automatically surface data in Fiori Elements UIs. These plugins supply only annotations, not custom UI code.
 
 ❌ <u>Invalid use cases:</u>
 - **Reusable UI components:** If you need to provide reusable UI components, use the Fiori elements guide on [developing reuse components](https://ui5.sap.com/#/topic/6314fcd2510648fbaad3cee8a421030d).
-- **Standalone UI apps or Shell plugins:** If your goal is to deliver a full reuse UI app or [Shell plugin](https://help.sap.com/docs/build-work-zone-standard-edition/sap-build-work-zone-standard-edition/add-shell-plugin?locale=en-US), create a reuse SaaS service on BTP instead. For example, a generic app to view drafts across multiple solutions should be implemented as a SaaS UI, not as a Calipso plugin. This approach avoids deploying redundant UIs in every application, resulting in a cleaner customer landscape and a better user experience.
+- **Standalone UI apps or Shell plugins:** If your goal is to deliver a full reuse UI app or [Shell plugin](https://help.sap.com/docs/build-work-zone-standard-edition/sap-build-work-zone-standard-edition/add-shell-plugin?locale=en-US), create a reuse SaaS service on BTP instead. For example, a generic app to view drafts across multiple solutions should be implemented as a SaaS UI, not as a plugin. This approach avoids deploying redundant UIs in every application, resulting in a cleaner customer landscape and a better user experience.
 
 :::
 
@@ -151,7 +150,7 @@ Key considerations:
 If you must introduce new annotations, check if they can be added to [SAP's OData vocabulary](https://sap.github.io/odata-vocabularies/) as only these appear in the CDS code completion. Offering annotations without any code completion leads to a worse development experience!
 
 ::: details For Node.js plugins: 
-- Think about TypeScript. If your plugin offers new APIs, make sure they have code completion in VS Code by having jsdoc comments or type definition files.
+- If your plugin offers new APIs, make sure they have code completion in VS Code by having [jsdoc](https://jsdoc.app/) comments or type definition files.
 - Add typing for configuration options via a [schema](../../node.js/cds-plugins.md#configuration-schema).
 :::
 

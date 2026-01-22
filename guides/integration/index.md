@@ -38,5 +38,5 @@ CAP applications integrate at multiple levels — from reusing services and data
 
 <!-- Plugins -->
 
-[CAP Plugins Guide](plugins-guide) <!-- UNRELEASED -->
+[Plugin Development Guide](plugins-guide) <!-- UNRELEASED -->
 : Learn how to build CAP plugins, like the ones above, that extend the framework's capabilities, enhancing development and integration options. <!-- UNRELEASED -->
