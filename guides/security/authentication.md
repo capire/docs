@@ -46,6 +46,10 @@ CAP [leverages platform services](overview#key-concept-platform-services) to pro
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
 
+::: tip 
+**Start new projects with IAS** to take advantage of the best integration options. 
+IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
+:::
 
 ## Mock User Authentication { #mock-user-auth }
 
@@ -155,13 +159,13 @@ Mock users are deactivated in production profile by default ❗
 
 <div class="impl java">
 
-[Learn more about advanced authentication options](../../java/security#spring-boot){.learn-more}
+[Learn more about advanced authentication options.](../../java/security#spring-boot){.learn-more}
 
 </div>
 
 <div class="impl node">
 
-[Learn more about advanced authentication options](../../node.js/authentication#strategies){.learn-more}
+[Learn more about advanced authentication options.](../../node.js/authentication#strategies){.learn-more}
 
 </div>
 
@@ -178,13 +182,13 @@ You can opt out the preconfigured mock users by setting <Config java>`cds.securi
 
 <div class="impl java">
 
-[Learn more about predefined mock users](../../java/security#preconfigured-mock-users){.learn-more} 
+[Learn more about predefined mock users.](../../java/security#preconfigured-mock-users){.learn-more} 
 
 </div>
 
 <div class="impl node">
 
-[Learn more about predefined mock users](../../node.js/authentication#mock-users){.learn-more}
+[Learn more about predefined mock users.](../../node.js/authentication#mock-users){.learn-more}
 
 </div>
 
@@ -277,13 +281,13 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 <div class="impl java">
 
-[Learn more about custom mock users](../../java/security#custom-mock-users){.learn-more}
+[Learn more about custom mock users.](../../java/security#custom-mock-users){.learn-more}
 
 </div>
 
 <div class="impl node">
 
-[Learn more about custom mock users](../../node.js/authentication#mocked){.learn-more}
+[Learn more about custom mock users.](../../node.js/authentication#mocked){.learn-more}
 
 </div>
 
@@ -332,14 +336,14 @@ Integration tests running in production profile should verify that unauthenticat
 
 <div class="impl java">
 
-[Learn more about unit testing](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
+[Learn more about unit testing.](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
 
 </div>
 
 <div class="impl node">
 
-[Learn more about testing with authenticated endpoints](../../node.js/cds-test#authenticated-endpoints){.learn-more}
-[Learn more about unit testing](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+[Learn more about testing with authenticated endpoints.](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+[Learn more about testing.](../../node.js/cds-test#testing-with-cds-test){.learn-more}
 
 </div>
 
@@ -451,7 +455,7 @@ Service instance and binding offer the following crucial configuration propertie
 | `app-identifier` |  _binding_   | _Ensures stable subject in generated certificate (required for credential rotation)_  |
 
 
-[Lean more about IAS service instance and binding configuration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
+[Lean more about IAS service instance and binding configuration.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/reference-information-for-identity-service-of-sap-btp){.learn-more}
 
 <div id="learn-more-IAS-instances-bindings" />
 
@@ -857,7 +861,7 @@ Upgrading the `service-plan` from type `application` to `broker` is not supporte
 Hence, start with plan `broker` in case you want to provide technical APIs in future.
 :::
 
-[Learn more about XSUAA application security descriptor configuration syntax](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
+[Learn more about XSUAA application security descriptor configuration syntax.](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax){.learn-more}
 
 #### Security Descriptor { #xsuaa-security-descriptor }
 
@@ -1319,7 +1323,7 @@ By default, if a CAP service `MyService` is authenticated, also `/MyService/$met
 
 With `cds.security.authentication.authenticateMetadataEndpoints: false` you can switch off this behaviour on a global level.
 
-[Learn more about authentication options](../../java/security#spring-boot){.learn-more}
+[Learn more about authentication options.](../../java/security#spring-boot){.learn-more}
 
 </div>
 
@@ -1358,7 +1362,7 @@ Ensure your custom configuration has higher priority than CAP's default security
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
 :::
 
-[Learn more about overruling Spring security configuration in CAP Java](../../java/security#custom-spring-security-config){.learn-more}
+[Learn more about overruling Spring security configuration.](../../java/security#custom-spring-security-config){.learn-more}
 
 
 ### Overrule Fully { #fully-auth }
@@ -1379,7 +1383,7 @@ If you switch off CAP authentication, make sure that the internal communication 
 <div class="java">
 In such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
 
-[Learn more about how to switch off authentication in CAP Java](../../java/security#custom-spring-security-alone){.learn-more}
+[Learn more about how to switch off authentication.](../../java/security#custom-spring-security-alone){.learn-more}
 
 </div>
 
