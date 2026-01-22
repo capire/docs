@@ -263,6 +263,8 @@ In the application log you will find information about the resolved user after s
 MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
 
+[Learn more about custom mock users.](../../java/security#custom-mock-users){.learn-more}
+
 </div>
 
 <div class="impl node">
@@ -271,24 +273,9 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 [basic] - authenticated: { user: 'viewer-user', tenant: 'CrazyCars', features: [ 'cruise', 'park' ] }
 ```
 
-</div>
-
-
-<div class="impl java">
-
-[Learn more about custom mock users.](../../java/security#custom-mock-users){.learn-more}
-
-</div>
-
-<div class="impl node">
-
 [Learn more about custom mock users.](../../node.js/authentication#mocked){.learn-more}
 
 </div>
-
-
-
-
 
 ### Automated Testing { #mock-user-testing }
 
