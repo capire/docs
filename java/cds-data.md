@@ -14,7 +14,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 {{ $frontmatter.synopsis }}
 
-
+[Before you continue reading, make sure to read the database guide.](../guides/databases){.learn-more}
 
 ## Predefined Types
 
