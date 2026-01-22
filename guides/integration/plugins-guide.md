@@ -1,4 +1,4 @@
-# CAP-level Integration of Platform Services 
+# Plugin Development Guide 
 The *'Calipso'* Pattern {.subtitle}
 
 
@@ -190,6 +190,8 @@ Write unit tests only for complex functions where it is really needed. For most 
 
 Also avoid unit-testing CAP's DB API or other CAP-provided APIs, as testing these is covered by the respective CAP components.
 
+<span id="afterUnitTests" />
+
 ## Documentation
 
 ### Readme
@@ -207,3 +209,9 @@ Make sure to save diagrams as editable svg vector so they can be adjusted later 
 If your plugin is in the `cap-js` and/or `cap-java` organization, add the documentation to [capire](https://github.com/capire/docs). <span id="afterCapireOrg" />
 
 If you are part of `cap-js-community` or another organization your plugins documentation is _usually_ not added to Capire.
+
+#### SFlight
+
+Add your plugin to the SFlight sample showcasing it to the public. All modifications necessary in cds should be in their own cds file so developers can easily digest what modifications are necessary to use your plugin.
+
+As a not perfect, but guiding sample, you can refer to how tree tables are showcased in the Bookstore in [tree-view.cds](https://github.com/capire/bookstore/blob/main/app/genres/tree-view.cds). Using CAP's inbuilt extensibility the necessary additional fields and annotations are added to avoid splitting up the necessary code changes across multiple files.
