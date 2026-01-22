@@ -46,11 +46,6 @@ CAP [leverages platform services](overview#key-concept-platform-services) to pro
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
 
-::: tip 
-**Start new projects with IAS** to take advantage of the best integration options. 
-IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
-:::
-
 ## Mock User Authentication { #mock-user-auth }
 
 In non-production profile, by default, CAP creates a security configuration which accepts _mock users_.
@@ -353,6 +348,11 @@ Integration tests running in production profile should verify that unauthenticat
 
 
 ## IAS Authentication { #ias-auth }
+
+::: tip 
+**Start new projects with IAS** to take advantage of the best integration options. 
+IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
+:::
 
 [SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing the following features:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
@@ -739,6 +739,11 @@ The Application Router should redirect to a login flow where you can enter the c
 
 
 ## XSUAA Authentication { #xsuaa-auth }
+
+::: warning
+**Start new projects with IAS** to take advantage of the best integration options. 
+IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
+:::
 
 [SAP Authorization and Trust Management Service (XSUAA)](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-authorization-and-trust-management-service-in-cloud-foundry-environment) is a platform service for identity and access management which provides:
  - authentication mechanisms (single sign-on, multi-factor enforcement)
