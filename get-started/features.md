@@ -232,7 +232,8 @@ That initiative happened to be successful, and gave a boost to a steadily **grow
 
 >  [!tip]
 >
-> This is just a subset and a snapshot of the growing number of plugins <br/>→ find more in the [***CAP Plugins***](../plugins/index) page, as well in the [***CAP Commmunity***](/resources/community-sap.md) spaces.
+> This is just a subset and a snapshot of the growing number of plugins.<br/> Find more in the [***CAP Plugins***](../plugins/index) page.
+> At SAP, there is also an inner-source [***CAP Commmunity***](/resources/community-sap.md). <!-- INTERNAL -->
 
 
 
