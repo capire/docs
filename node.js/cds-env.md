@@ -368,6 +368,16 @@ Example:
 }
 ```
 
+## Feature Flags
+
+Influence the runtime behavior by specifying one or more of the following flags in `cds.features`:
+
+| Flag  | Behavior                                   |
+|----------------|-------------------------------------------|
+| `assert_integrity`      | Enables [db integrity constraints](../guides/databases#db-constraints) |
+| `odata_new_parser`       |Enables the new OData URL parser |
+| `kibana_formatter` | Enables [log output in Kibana-friendly format](./cds-log#logging-in-production) |
+| `fiori_preview`      | Enables [SAP Fiori Preview](../advanced/fiori#sap-fiori-preview) |
 
 ## Configuration Profiles {#profiles}
 
