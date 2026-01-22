@@ -3,6 +3,10 @@ The *'Calipso'* Pattern {.subtitle}
 
 
 CAP applications frequently integrate with platform services like identity, logging, document storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
+{.abstract}
+
+[toc]:./
+[[toc]]
 
 ## What are Calipso Plugins?
 
@@ -194,23 +198,23 @@ Also avoid unit-testing CAP's DB API or other CAP-provided APIs, as testing thes
 
 ## Documentation
 
-### Readme
+### README
 
-Have a well-described `README.md` file explaining how to contribute to your plugin but also how to get started using your plugin.
+Have a well-described _README.md_ file explaining how to contribute to your plugin but also how to get started using your plugin.
 
 For service integrations, you should also include an Architecture Diagram to show how CAP integrates with your BTP service. See the [BTP Solution Diagram](https://github.com/SAP/btp-solution-diagrams/tree/main/assets/shape-libraries-and-editable-presets/draw.io) templates for [draw.io](https://draw.io). 
 
-:::info
-Make sure to save diagrams as editable svg vector so they can be adjusted later on and have change-tracking enabled through git.
-:::
+> [!note]
+> Make sure to save diagrams as editable svg vector so they can be adjusted later on and have change-tracking enabled through git.
 
 ### Capire
 
 If your plugin is in the `cap-js` and/or `cap-java` organization, add the documentation to [capire](https://github.com/capire/docs). <span id="afterCapireOrg" />
 
-If you are part of `cap-js-community` or another organization your plugins documentation is _usually_ not added to Capire.
+> [!warning]
+> If you are part of `cap-js-community` or another organization your plugins documentation is _usually_ not added to Capire.
 
-#### SFlight
+### SFlight
 
 Add your plugin to the SFlight sample showcasing it to the public. All modifications necessary in cds should be in their own cds file so developers can easily digest what modifications are necessary to use your plugin.
 
