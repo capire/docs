@@ -426,7 +426,7 @@ It is crucial to make the service `OutboxDeadLetterQueueService` accessible for 
 
 ### Reading Dead Entries
 
-Filtering the dead entries is done by adding an appropriate `where`-clause to all `READ`-queries which covers all outbox message entries with maximum number of retries. The following code provides an example handler implementation defining this behaviour for the `DeadLetterQueueService`:
+Filtering the dead entries is done by adding an appropriate `where`-clause to all `READ`-queries which matches all outbox message entries that have been retried for the maximum number of times. The following code provides an example handler implementation defining this behavior for the `DeadLetterQueueService`:
 
 ```java
 @Component
@@ -509,7 +509,7 @@ The injected `PersistenceService` instance is used to perform the operations on 
 [Learn more about CQL statement inspection.](./working-with-cql/query-introspection#cqnanalyzer){.learn-more}
 
 ::: tip Use paging logic
-Avoid to read all outbox entries at once as a single entry can have significant size reflecting the request's payload. Prefer `READ`-queries with paging instead.
+Avoid reading all outbox entries at once in case entries which have large request payloads are present. Prefer `READ`-queries with paging instead.
 :::
 
 ## Observability using Open Telemetry
