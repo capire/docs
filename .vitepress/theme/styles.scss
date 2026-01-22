@@ -1,264 +1,88 @@
-/* https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css */
+//////////////////////////////////////////////////////////////////////////////
+//
+//   Custom CSS styles for VitePress documentation site.
+//   Based on default variables from VitePress:
+//   https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
+//
+//////////////////////////////////////////////////////////////////////////////
 
-.VPHome {
-  .VPHero {
-    .name { font-weight: 400; font-size: 55px }
-    .text { font-weight: 400 }
-    .tagline { font-weight: 400 }
-    .VPImage { max-width: 350px; }
-    .VPButton { border: none; }
-  }
-  .VPFeatures .icon {
-    font-size: 30px;
-    // width: 60px;
-    // height: 60px;
-  }
+
+html {
+  &.java .node { display: none; }
+  &.node .java { display: none; }
 }
 
 
+
+// ------------------------------------------------------------
+// Common variables
+
 :root {
-  // add Avenir Next first
-  --vp-font-family-base: 'Avenir Next', 'Inter var', 'Inter', ui-sans-serif,
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Helvetica, Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  --vp-c-brand-1: #db8b0b;
-  --vp-c-brand-2: #db8b0b;
-  --vp-c-brand-3: #db8b0b;
-  --vp-c-brand-soft: rgba(219, 139, 11, 0.16); // where is that used?
+  --vp-font-family-avenir: 'Avenir Next', var(--vp-font-family-base);
 
-  // --vp-c-brand: #db8b0b;
-  // --vp-c-brand-dark: #9f660a;
-  --vp-button-brand-border: #efbc6b;
-  --vp-button-brand-hover-bg: #c37d0b;
-  --vp-button-brand-hover-border: #f3b655;
-  // --vp-button-brand-active-bg: #9f660a;
-  // --vp-button-brand-active-border: #f3b655;
-
-  // use the standard search highlight color (instead of our brand orange)
-  --vp-local-search-highlight-bg: mark;
-  --vp-local-search-highlight-text: black;
-
+  // Layout sizes
+  // .VPContent .aside { max-width: 270px};
   --vp-sidebar-width: 300px;
   --vp-nav-height: 44px;
 
-  --vp-c-text-1: #000;
-  .VPHomeHero {
-    h1 span.name { line-height: 1.2em; }
-  }
-  h1, h2, h3, h4, h5 { color: rgba(60, 60, 67) }
-  h6 { color: transparent; position: absolute; margin-top: -7.7em; right: 0px; } // we use h6 for alternative anchor targets
+  // Brand colors
+  --vp-c-brand-1: #088;
+  --vp-c-brand-2: #077;
+  --vp-c-brand-3: #0cc;
+  --vp-c-brand-soft: rgba(16, 179, 185, 0.16);
 
-
-  /* inverts image colors in dark mode */
   &.dark {
-    h1, h2, h3, h4, h5 { color: var(--vp-c-text-1) }
-    --vp-c-text-1: rgba(255, 255, 245, 0.86);
+    --vp-c-brand-1: var(--vp-c-yellow-2);
+    --vp-c-brand-2: var(--vp-c-yellow-2);
+    --vp-c-brand-3: var(--vp-c-yellow-3);
+    --vp-c-brand-soft: var(--vp-c-yellow-soft);
+    --vp-button-brand-hover-bg: var(--vp-c-yellow-1);
+  }
 
-    /* brightness fine-tuned to turn #fff into --vp-c-bg */
-    img, svg.adapt-dark,
-    video.bright { // assuming videos are usually dark, only darken them if marked as bright
-      filter: brightness(.884) invert(1) hue-rotate(177deg)
-    }
-    img.mute-dark {
-      filter:brightness(.884)
-    }
-    img.ignore-dark, .avatar-img, .VPHome img {
-      filter:none
-    }
+  // Button colors
+  --vp-button-brand-active-text: var(--vp-c-text-1);
+  --vp-button-brand-active-bg: var(--vp-c-brand-3);
+  --vp-button-brand-hover-text: var(--vp-c-bg);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-1);
+  --vp-button-brand-text: var(--vp-c-bg);
+  --vp-button-brand-bg: var(--vp-c-brand-2);
+  --vp-button-alt-active-text: var(--vp-c-text-1);
+  --vp-button-alt-active-bg: var(--vp-c-brand-3);
+  --vp-button-alt-hover-text: var(--vp-c-bg);
+  --vp-button-alt-hover-bg: var(--vp-c-brand-2);
+
+  // Search colors: using standard search highlight color (instead of our brand orange)
+  --vp-local-search-highlight-bg: mark;
+  --vp-local-search-highlight-text: black;
+}
+
+
+
+
+// ------------------------------------------------------------
+// Fonts and layout
+
+
+.VPHome { font-family: var(--vp-font-family-avenir); }
+.VPHero .tagline { font-weight: 400 }
+.VPHero .name, main .vp-doc h1 {
+  -webkit-text-fill-color: transparent;
+  background: -webkit-linear-gradient(-60deg,#098 20%,#fa0 50%);
+  background-clip: text;
+  line-height: 1.2em;
+  font-weight: 600;
+  font-size: 48px;
+  font-family: var(--vp-font-family-avenir);
+  .VPBadge {
+    -webkit-text-fill-color: initial;
+    font-size: .7em;
   }
 }
 
-main {
 
-  // Headings
-  .vp-doc {
-    h1, .h1 { font-size: 48px; margin: 1em 0 1em; font-weight: 400; line-height: 1.2em }
-    h2, .h2 { font-size: 24px; margin: 4em 0 2em; padding-top: 12px; }
-    h3, .h3 { font-size: 20px; margin: 3em 0 1em; }
-    h4, .h4 { font-size: 17px; margin: 2em 0 1em; }
-
-    // Set margin-bottom to group groups of h3/h4 together, as in req.error/warn/info/notify
-    h3, h4 { margin-bottom: 0em; }
-    h3 + p { margin-top: 1.5em; }
-    h4 + p { margin-top: 1.1em; }
-
-    h1 + .subtitle {
-      margin: -40px 0 48px;
-      font-size: 1.7em;
-      font-weight: 400;
-    }
-    h2 + .subtitle {
-      margin-top: -44px;
-      font-size: 24px;
-    }
-    h3 + .subtitle {
-      margin-top: 0;
-      font-size: 1.1em;
-    }
-
-
-    p + h1 {
-      margin-top: 3em
-    }
-    .header-anchor {
-      top: auto // undo the hard-wired 24px of vitepress
-    }
-    p {
-      line-height: 1.5em
-    }
-    ul, ol {
-      padding-left: 2.5em;
-    }
-
-    .step-by-step {
-      ol {
-        counter-reset: my-counter;
-        margin-left: 20px;
-        > li {
-          counter-increment: my-counter;
-          list-style: none;
-          margin-top: 30px;
-          &::before {
-            content: counter(my-counter);
-            color: var(--vp-c-text-2);
-            background-color: var(--vp-code-bg);
-            width: 31px;
-            height: 30px;
-            background-size: 30px;
-            line-height: 31px;
-            border-radius: 50%;
-            font-weight: 600;
-            text-align: center;
-            font-size: 16px;
-            display: inline-block;
-            position: absolute;
-            // top: -3px;
-            margin-left: -50px;
-            margin-top: -3px;
-          }
-        }
-      }
-    }
-
-    table {
-      tr, th, td {
-        background-color: var(--vp-c-bg);
-      }
-      td, th {
-        border-color: #bbb; .dark & { border-color: #555 };
-        border-right: none;
-        border-left: none;
-        padding-top: 7px;
-        padding-bottom: 7px;
-        line-height: 1.5em;
-      }
-    }
-    .centered table {
-      margin-left: auto;
-      margin-right: auto;
-      width: max-content;
-    }
-
-    .caption {
-      text-align: center;
-      color: #888;
-    }
-
-
-    div.language-zsh pre code {
-      line-height: 1.4em
-    }
-    pre {
-      padding: 12px 0 !important;
-      code { padding: 0 22px !important }
-    }
-    :not(pre) > code {
-      font-style: italic;
-      font-size: 90%;
-      color: unset; // revert the c-brand-1 from default theme
-    }
-    a {
-      text-decoration: none;
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    // Fix for copy button position
-    [class*='language-'] > button.copy {
-      top: 4px;
-    }
-
-    pre.log {
-      font-size: var(--vp-code-font-size);
-      line-height: var(--vp-code-line-height);
-      background: var(--vp-code-block-bg);
-      padding: 12px 22px !important;
-      overflow-x: auto;
-      margin: 16px -24px; // same negative margin technique is used in Vitepress
-      @media (min-width: 640px) {
-        margin: unset;
-        border-radius: 8px;
-      }
-      span {
-        &.cmd {
-          color: #6F42C1;
-          .dark & { color: #B392F0; }
-        }
-        &.args {
-          color: #032F62;
-          .dark & { color: #9ECBFF; }
-        }
-        &.flags, &.option, &.posArg {
-          color: #005CC5;
-          .dark & { color: #79B8FF; }
-        }
-        &.cwd {
-          color: #777;
-          .dark & { color: #999; }
-        }
-        &.livereload {
-          color: #FDEC87
-        }
-      }
-      em {
-        color: #00ab00e0;
-        font-style: normal;
-      }
-      b {
-        color: #ee0000e0;
-      }
-      i {
-        color: grey;
-      }
-    }
-
-    .line-numbers-wrapper {
-      padding-top: 13px; // align with code line height
-    }
-
-    .cols-2 {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .cols-2 > * {
-      width: 100%;
-    }
-    @media (min-width: 650px) {
-      .cols-2 {
-        gap: 1em;
-      }
-      .cols-2 > * {
-        flex: 1;
-        width: calc(100% / 2);
-      }
-    }
-
-    // code blocks without background, e.g. as sole values in table cells
-    :not(pre) code.no-bg { background-color: initial; }
-  }
+// Styling for documentation panes
+main .vp-doc {
 
   // Table of Contents
   nav.table-of-contents {
@@ -279,122 +103,71 @@ main {
     }
   }
 
-  // Custom Blocks
-  .custom-block {
-    font-size: 95%;
-    border-width: 0 0 0 7px;
-    border-radius: 14px;
 
-    &.note {
-      background-color: #f6f6f6;
-      border-color: #bbb;
-      .dark & {
-        border-color: #666;
-        background-color: #222;
-      }
+  // font-family: var(--vp-font-family-avenir);
+  h1, h2, h3, h4, h5 {
+    font-family: var(--vp-font-family-avenir);
+    .header-anchor { top: auto } // undo the hard-wired 24px of vitepress
+  }
+
+
+  h1 {
+    margin: 1em 0 1em;
+    + .subtitle {
+      color: var(--vp-c-text-2);
+      margin: -44px 0 48px;
+      font-size: 1.7em;
+      font-weight: 400;
     }
-    &.tip {
-      background-color: #dfe;
-      border-color: #096;
-      &, & code, & a { color: #041 };
-      .dark & {
-        background-color: #021;
-        &, & code, & a { color: #ced; }
+    p + & { margin-top: 3em; }
+  }
+
+  p.abstract {
+    color: var(--vp-c-text-2);
+    font-size: 123%;
+  }
+  h2 { font-size: 24px; margin: 4em 0 2em; padding-top: 12px; }
+  h3 { font-size: 20px; margin: 3em 0 1em;
+    margin-bottom: 0em; // reduce margin-bottom to group series of h3 together
+    & + h3 { margin-top: 0.3em; }
+    & + p { margin-top: 1.5em; }
+  }
+  h4 { font-size: 17px; margin: 2em 0 1em;
+    margin-bottom: 0em; // reduce margin-bottom to group series of h4 together
+    & + p { margin-top: 1.1em; }
+  }
+
+  h6 {
+    // we use h6 for alternative anchor targets
+    color: transparent;
+    position: absolute;
+    left:0px;
+    margin-top:0px;
+  }
+
+  p {
+    line-height: 1.5em
+  }
+
+  ol {
+    padding-left: 2.5em;
+  }
+
+  // Custom list styles for nested items
+  ul {
+    padding-left: 2.5em;
+    list-style-type: disc; // First level: filled circle
+    ul {
+      list-style-type: circle; // Second level: empty circle
+      ul {
+        list-style-type: square; // Third level: square
       }
-    }
-    &.info {
-      .dark & {
-        background-color: #222;
-      }
-    }
-    &.warning {
-      background-color: #fff7f0;
-      border-color: #ea0;
-      &, & code, & a { color: #960; }
-      .dark & {
-        background-color: #210;
-        &, & code, & a { color: #ea0; }
-      }
-    }
-    &.danger, &.caution {
-      background-color: #fee;
-      border-color: #900;
-      &, & code, & a { color: #600; }
-      .dark & {
-        background-color: #300;
-        &, & code, & a { color: #fcc; }
-      }
-    }
-    a {
-      font-weight: inherit !important;
-      text-decoration-style: dotted;
-      text-decoration: underline;
     }
   }
 
-  // Details Blocks
-  details.custom-block.details {
-    padding: 11px 14px 1px;
-    .dark & {
-      background-color: #222;
-    }
-    summary {
-      font-weight: 500;
-      font-style: italic;
-      a { color: darkcyan }
-    }
-    &[open] {
-      padding: 11px 14px 11px;
-    }
-  }
-
-  img:not(.avatar-img) {
-    margin: 30px auto;
-  }
-
-  img.zoom75 { zoom: 75% }
-  img.zoom66 { zoom: 66% }
-  img.zoom50 { zoom: 50% }
-  img.zoom44 { zoom: 44% }
-  img.zoom40 { zoom: 40% }
-  img.zoom33 { zoom: 33% }
-  img.zoom25 { zoom: 25% }
-  img.zoom20 { zoom: 20% }
-
-  .best-practice::after { content: ' — Best Practice'; color: #777; font-style: italic; }
-  .anti-pattern::after { content: ' — Anti Pattern'; color: #e00 }
-  .prefer::before { content: 'Prefer: '; color: #0a0 }
-  .avoid::before { content: 'Avoid: '; color: #e00 }
-
-  .good, .green { color:#0a0; .dark & { color:#0a0 } };
-  .bad, .red, .important { color:darkred; .dark & { color:#e00 } }
-  .grey { color:#777 };
-
-  .constructor::before { content: 'Constructor: '; color: #999 }
-  .annotation::before { content: 'Annotation: '; color: #999 }
-  .interface::before { content: 'Interface: '; color: #999 }
-  .property::before { content: 'Property: '; color: #999 }
-  .type::before { content: 'Type: '; color: #999 }
-  .method::before { content: 'Method: '; color: #999 }
-  .event::before { content: 'Event: '; color: #999 }
-  .class::before { content: 'Class: '; color: #999 }
-  .async-method::before { content: 'Method: async '; color: #999 }
-  .deprecated::after { content: ' – deprecated'; color: #999 }
-
-  h3.event, h3.method, h3.async-method {
-    margin-top: 5em;
-    // font-size: 22px;
-  }
-  h4.annotation + h4.annotation,
-  h4.property + h4.property,
-  h4.event + h4.event,
-  h4.method + h4.method,
-  h3.annotation + h3.annotation,
-  h3.property + h3.property,
-  h3.event + h3.event,
-  h3.class + h3.class,
-  h3.method + h3.method {
-    margin-top: 0
+  dl {
+    dt { font-size: 111%; .index-page & { font-size: 123%; } }
+    dd { margin: 11px 0 22px 22px; }
   }
 
   sup {
@@ -403,131 +176,229 @@ main {
     font-weight: 600;
     color: #777;
   }
+
+  kbd {
+    font-size: 12px;
+    display: inline-block;
+    padding: 5px;
+    line-height: 10px;
+    vertical-align: middle;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 6px;
+    box-shadow: inset 0 -1px 0 var(--vp-c-divider);
+    position: relative;
+    top: -1px;
+    background: #f3f3f3;
+    .dark & { background: #222 }
+  }
+
+  .cols-2 {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .cols-2 > * {
+    width: 100%;
+  }
+  @media (min-width: 650px) {
+    .cols-2 {
+      gap: 1em;
+    }
+    .cols-2 > * {
+      flex: 1;
+      width: calc(100% / 2);
+    }
+  }
+
+
+
+  a.learn-more, p.learn-more, .learn-more {
+    font-style: italic;
+    margin-top: -10px;
+    margin-bottom: 5px;
+    display: block;
+    &, & a {
+      color: var(--vp-c-text-2);
+      font-weight: 400;
+      em {
+        font-weight: 500;
+      }
+    };
+    & a:hover {
+      color: var(--vp-c-brand-1);
+    }
+    &::before {
+      content: url('/learn-more.svg');
+      vertical-align: middle;
+      height: 20px;
+      width: 20px;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    + a.learn-more, + p.learn-more {
+      margin-top: 7px;
+    }
+  }
+
+  .indent {
+    padding-left: 22px;
+  }
+
+  .best-practice::after { content: ' — Best Practice'; color: var(--vp-c-green-1); font-style: italic; }
+  .anti-pattern::after { content: ' — Anti Pattern'; color: var(--vp-c-red-2); }
+  .prefer::before { content: 'Prefer: '; color: var(--vp-c-green-1); }
+  .avoid::before { content: 'Avoid: '; color: var(--vp-c-red-2); }
+
+  .good, .green { color: var(--vp-c-green-1) };
+  .bad, .red { color: var(--vp-c-red-2) }
+  .dimmed { color: var(--vp-c-text-2) };
+
+  .constructor::before { content: 'Constructor: '; color: var(--vp-c-text-2) }
+  .annotation::before { content: 'Annotation: '; color: var(--vp-c-text-2) }
+  .interface::before { content: 'Interface: '; color: var(--vp-c-text-2) }
+  .property::before { content: 'Property: '; color: var(--vp-c-text-2) }
+  .type::before { content: 'Type: '; color: var(--vp-c-text-2) }
+  .method::before { content: 'Method: '; color: var(--vp-c-text-2) }
+  .event::before { content: 'Event: '; color: var(--vp-c-text-2) }
+  .class::before { content: 'Class: '; color: var(--vp-c-text-2) }
+  .async-method::before { content: 'Method: async '; color: var(--vp-c-text-2) }
+  .deprecated::after { content: ' – deprecated'; color: var(--vp-c-text-2) }
 }
 
+
+
+// Tables styling
+main .vp-doc table {
+  tr, th, td {
+    background-color: var(--vp-c-bg);
+  }
+  td, th {
+    border-color: #bbb; .dark & { border-color: #555 };
+    border-right: none;
+    border-left: none;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    line-height: 1.5em;
+  }
+
+  // Hide empty table headers
+  tr:has(> th:empty:first-child:last-child),
+  tr:has(> th:empty:first-child:not(:last-child) + th:empty:last-child) {
+    display: none;
+  }
+}
+main .vp-doc span.centered table {
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+}
+
+
+
+// Images & video adaptations
+img, video.bright {
+  main .vp-doc & {
+    margin: 30px auto; // center images and videos
+    .dark & { // recolor in dark mode
+      filter: brightness(.884) invert(1) hue-rotate(177deg);
+      &.ignore-dark { // class to skip recoloring
+        filter: none !important;
+      }
+    }
+  }
+}
+
+
+
+.VPBadge {
+  &.tip {
+    background-color: #ced; color: #031; .dark & {
+      background-color: #031; color: #9ca;
+    }
+  }
+  margin-top: 3px !important;
+  padding: 0 0.7em !important;
+  font-size: 80%;
+  line-height: 1.5em;
+  border-radius: 1.5em;
+  white-space: nowrap;
+}
+
+
+
+
 // Menu Sidebar
-aside.VPSidebar {
+.VPSidebar {
   .group {
     padding-top: 5px !important;
     .VPSidebarItem {
+      .caret { // reposition caret
+        margin-right: initial;
+        width: initial;
+        height: initial;
+      }
       &.level-0 {
-        padding-bottom: 11px;
+        padding-bottom: 15px;
         &.collapsed {
-          padding-bottom: 1px;
+          padding-bottom: 5px;
         }
         .text {
           font-weight: 500;
         }
       }
       &.level-1 {
+        .items {
+          padding: 3px 0 6px 15px;
+          border: none;
+        }
         padding-left: 15px;
         h2, h3, p {
           padding: 2px 0;
         }
       }
-      .caret { height: inherit; }
-    }
-  }
-}
 
-// "On this page" outlines
-div.aside nav {
-
-  .outline-title {
-    &:hover { color: var(--vp-c-brand-1) }
-    transition: color 0.3s;
-    cursor: pointer;
-  }
-
-  .outline-link {
-    font-weight: inherit;
-  };
-  ul {
-    font-size: 15px !important;
-    ul.nested {
-      font-size: 95% !important;
-      padding: 0 0 0 20px;
-      li a {
-        line-height: 1.9em !important;
+      // reposition indicators to keep within padding 
+      .item > .indicator { left: -14px;  }
+      // also enable indicators for level-1 items
+      &.level-1.is-active > .item > .indicator {
+        background-color: var(--vp-c-brand-1);
       }
     }
   }
 }
 
-// Hide empty table headers
-tr:has(> th:empty:first-child:last-child),
-tr:has(> th:empty:first-child:not(:last-child) + th:empty:last-child) {
-  display: none;
-}
-
-kbd {
-  font-size: 12px;
-  display: inline-block;
-  padding: 5px;
-  line-height: 10px;
-  vertical-align: middle;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
-  box-shadow: inset 0 -1px 0 var(--vp-c-divider);
-  position: relative;
-  top: -1px;
-  background: #f3f3f3;
-  .dark & { background: #222 }
-}
-
-.indent {
-  padding-left: 22px;
-}
-
-.quote {
-  padding-left: 22px;
-  font-family: serif;
-  font-style: italic;
-}
-
-a.learn-more, p.learn-more, .learn-more {
-  font-style: italic;
-  margin-top: -10px;
-  margin-bottom: 5px;
-  display: block;
-  &, & a {
-    font-weight: 400;
-    color: #666 ;
-    .dark & {
-      color: #999
-    }
-    em {
-      font-weight: 500;
-    }
-  };
-  & a:hover {
-    color: var(--vp-c-brand-1);
-  }
-  &::before {
-    content: url('/learn-more.svg');
-    vertical-align: middle;
-    height: 20px;
-    width: 20px;
-    display: inline-block;
-    margin-right: 5px;
-  }
-  + a.learn-more, + p.learn-more {
-    margin-top: 7px;
+// Outlines
+.VPDocAside {
+  ul.nested {
+    li a { line-height: 1.9em !important; }
+    padding: 0 0 0 20px;
   }
 }
 
-.VPBadge { white-space: nowrap; }
 
-html.java {
-  & .node {
+footer {
+  div.last-updated {
     display: none;
   }
-}
-html.node {
-  & .java {
-    display: none;
+  div.edit-link {
+    .edit-link-button {
+      font-size: 100%;
+    }
+  }
+  nav.prev-next {
+    padding-top: none;
+    .pager-link {
+      .title {
+        font-weight: 500;
+        font-size: 100%;
+      }
+      border: none;
+      padding: 0;
+    }
   }
 }
+
+
+
 
 /* expand width on big screens */
 @media screen and (min-width: 1600px) {
@@ -537,15 +408,14 @@ html.node {
   pre.log:focus {
     min-width: fit-content;
     padding-right: 40px;
-    z-index: 1;  // draw over outline
+    z-index: 1; position: relative; // draw over outline
   }
   table:hover,
   table:focus {
     min-width: fit-content;
   }
-  tr { // make wide rows go over outline, not below it
-    z-index: 1;
-    position: relative;
+  tr {
+    z-index: 1; position: relative;  // draw wide rows over outline
   }
   [class*='language-'] pre {
     overflow: hidden !important;
@@ -558,11 +428,6 @@ html.node {
   // }
 }
 
-// save real estate in navbar
-.DocSearch-Button-Keys {
-  // we have the shortcut listed in the ? popup
-  display: none !important;
-}
 @media (min-width: 1024px) {
   .VPNavBarSearch { padding-left: 12px; }
 }

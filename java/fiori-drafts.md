@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes which events occur in combination with SAP Fiori Drafts.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -17,7 +16,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Overview { #draftevents}
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 ## Reading Drafts
 
@@ -60,6 +59,9 @@ public Result delegateToS4(ActiveReadEventContext context) {
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
 
+### Aggregation Queries
+Aggregating over active and inactive draft entities isn't supported. Queries with aggregation functions implicitly add `IsActiveEntity` as a part of the group-by clause, resulting in disjunct `active` and `inactive` rows being returned instead of aggregated rows.
+
 ## Editing Drafts
 
 When users edit a draft-enabled entity in the frontend, the following requests are sent to the CAP Java backend. As an effect, draft-specific events are triggered, as described in the following table. The draft-specific events are defined by the [DraftService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/draft/DraftService.html) interface.
@@ -93,46 +95,6 @@ public void prefillOrderItems(DraftNewEventContext context, OrderItems orderItem
 The `DRAFT_CREATE` is an internal event that is not triggered by OData requests directly. It can be used to set default or calculated values on new drafts, regardless if they were created from scratch (`DRAFT_NEW` flow) or based on an existing active entity (`DRAFT_EDIT` flow).
 
 For more examples, see the [Bookshop sample application](https://github.com/SAP-samples/cloud-cap-samples-java/tree/master/srv/src/main/java/my/bookshop/handlers/AdminServiceHandler.java).
-
-## Validating Drafts <Beta />
-
-CAP Java can provide _state messages_ to the UI5 OData V4 model. This enables validations of drafts and giving feedback about errors to users faster in the UI.
-
-To enable this feature, set the following properties in your `.cdsrc.json`:
-
-::: code-group
-```json [.cdsrc.json]
-{
-  "cdsc": {
-    "draftMessages": true
-  }
-}
-```
-:::
-
-::: warning Uses _document URLs_ and requires UI5 version >=1.135.0
-The _state messages_ feature relies on UI5 to use _document URLs_. That's because, with this feature enabled, CAP sets the annotation `@Common.AddressViaNavigationPath` to instruct UI5 to use _document URLs_. In turn, this requires UI5 version >= 1.135.0.
-:::
-
-Setting the `draftMessages` property adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](/guides/security/data-protection-privacy#dpp-cap), which are required to store and serve state messages. For this to work, CAP Java supports persisting (error) messages for draft-enabled entities.
-
-If you activate this feature, you can observe the following improvements, without any changes to the application code:
-
-- Error messages for annotation-based validations (for example, `@mandatory` or `@assert...`) already appear while editing the draft.
-- Custom validations can now be registered to the `DRAFT_PATCH` event and can write (error) messages. It's ensured that the invalid value is still persisted, as expected by the draft choreography.
-- Messages no longer unexpectedly vanish from the UI after editing another field.
-- Messages are automatically loaded when reopening a previously edited draft.
-
-By default, when activating this state messages, side-effect annotations are generated in the EDMX that instruct UI5 to fetch state messages after every `PATCH` request. If you require more precise control over side-effect annotations, you can disable the side-effect annotation per entity:
-
-```cds
-// Setting `null` disables the side-effect annotation for always fetching messages.
-annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
-```
-
-::: warning Requires Schema Update
-Enabling draft messages requires a database schema update, as it adds an additional element to `DraftAdministrativeData`.
-:::
 
 ## Activating Drafts
 
@@ -184,6 +146,10 @@ It's possible to create and update data directly without creating intermediate d
 
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
+::: warning
+Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
+:::
+
 ## Draft Lock { #draft-lock }
 
 An entity with a draft is locked from being edited by other users until either the draft is saved or a timeout is hit (15 minutes by default). You can configure this timeout by the following application configuration property:
@@ -195,7 +161,7 @@ cds.drafts.cancellationTimeout: 1h
 You can turn off this feature completely by means of the application configuration property:
 
 ```yaml
-cds.security.draftProtection.enabled: false
+cds.security.authorization.draftProtection.enabled: false
 ```
 
 ## Draft Garbage Collection { #draft-gc }

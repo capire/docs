@@ -5,3 +5,5 @@
     "**/CONTRIBUTING.md": true,
     "**/LICENSE*": true,
     "**/node_modules/": true
+  }
+}

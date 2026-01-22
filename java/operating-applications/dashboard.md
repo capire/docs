@@ -171,10 +171,10 @@ In some cases, your application may run in a complex environment and you simply 
 	import org.springframework.security.web.SecurityFilterChain;
 
 	@Configuration
-	@Order(1)
 	public class WebSecurity {
 
 		@Bean
+	    @Order(1)
 		public SecurityFilterChain appFilterChain(HttpSecurity http) throws Exception {
 
 			return http

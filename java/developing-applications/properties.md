@@ -52,8 +52,7 @@ In property files `<index>` should be replaced with a number and `<key>` with an
 
   /* expand this extra wide table on big screens */
   @media screen and (min-width: 1600px) {
-    table {
-      min-width: fit-content;
-    }
+    table { min-width: fit-content; }
+    tr { position: initial; } /* for anchor to appear */
   }
 </style>

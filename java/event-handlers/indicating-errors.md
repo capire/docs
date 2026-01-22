@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Learn about the error handling capabilities provided by the CAP Java SDK.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -70,6 +69,10 @@ Writing the messages into explicitly modeled messages properties isn't yet suppo
 
 SAP Fiori uses these messages to display detailed information on the UI. The style how a message appears on the UI depends on the severity of the message.
 
+::: warning User Input & Injection Vulnerabilities
+Ensure proper validation of the message text and URL if they contain values ​​from user input.
+:::
+
 ### Throwing a ServiceException from Error Messages { #throwing-a-serviceexception-from-messages}
 
 It is also possible to throw a [ServiceException](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceException.html) from error messages. This can, for example, be useful to cancel a request after collecting multiple validation errors. The individual validation checks will collect error messages in the `Messages` API. After the validation checks have been run, you call the `throwIfError()` method. Only if error messages have been collected, this method cancels the request with a [ServiceException](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceException.html):
@@ -102,7 +105,7 @@ You can localize these strings, by putting them into property files and passing 
 When running your application on Spring, the CAP Java SDK integrates with [Spring's support for handling text resource bundles](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.internationalization). This handling by default expects translated texts in a `messages.properties` file under `src/main/resources`.
 
 The texts defined in the resource bundles can be formatted based on the syntax defined by `java.text.MessageFormat`.
-When the message or exception text is sent to the client it's localized using the client's locale, as described [in the Localization Cookbook](../../guides/i18n#user-locale).
+When the message or exception text is sent to the client it's localized using the client's locale, as described [in the Localization Cookbook](../../guides/uis/i18n#user-locale).
 
 ::: code-group
 ```properties [messages.properties]
@@ -132,13 +135,20 @@ You can disable these translated error messages by setting [<Config java>cds.err
 ### Provide custom error messages
 
 By default, CAP Java provides error messages in several languages. If an error message or translation isn't sufficient for an application, it can be overwritten with a custom error message. Applications can provide the new error message under the respective error code in the application's `messages.properties` resource bundle under `src/main/resources`.
+
+::: code-group
+```properties [message.properties]
+# Custom message for @mandatory
+409003 = Please enter a value
+```
+:::
+
 To know which error codes and messages are available by default, you can have a look at the Java enumeration `com.sap.cds.services.utils.CdsErrorStatuses` with your favorite IDE. This enumeration shows all available error codes and messages that are used by the CAP Java runtime.
 
 ## Target
 
 When SAP Fiori interprets messages it can handle an additional `target` property, which, for example, specifies which element of an entity the message refers to. SAP Fiori can use this information to display the message along the corresponding field on the UI.
-When specifying messages in the `sap-messages` HTTP header, SAP Fiori mostly ignores the `target` value.
-Therefore, specifying the `target` can only correctly be used when throwing a `ServiceException` as SAP Fiori correctly handles the `target` property in OData V4 error responses.
+SAP Fiori interprets `target` property in OData V4 error messages and [draft state messages](../../guides/uis/fiori#validating-drafts). You can specify the `target` when throwing a `ServiceException` or when setting a validation error using the [Messages API](#messages).
 
 A message target is always relative to an input parameter in the event context.
 For CRUD-based events this is always the `cqn` parameter, which represents and carries the payload of the request.
@@ -150,7 +160,7 @@ By default a message target always refers to the CQN statement of the event. In 
 As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
-When using the `target(String)` API, which specifices the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. The `target` value is used as specified.
+When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../guides/uis/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.
 :::
 
 Let's illustrate this with the following example:
@@ -196,63 +206,39 @@ Here, we have a `CatalogService` that exposes et al. the `Books` entity and a `B
 
 ### CRUD Events
 
-Within a `Before` handler that triggers on inserts of new books a message target can only refer to the `cqn` parameter:
+Within a `Before` handler that triggers on inserts of new books, a message target can only refer to the `cqn` parameter. You can use generic `String`-based APIs or a typed API backed by the interfaces generated from the CDS model:
 
-``` java
+```java
 @Before
 public void validateTitle(CdsCreateEventContext context, Books book) {
-    // ...
+    Messages messages = context.getMessages();
 
     // event context contains the "cqn" key
+    // target implicitly refers to cqn
+    messages.error("No title specified").target(b -> b.get("title"));
 
-    // implicitly referring to cqn
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget(b -> b.get("title"));
+    // which is equivalent to a target explicitly referring to cqn
+    messages.error("No title specified").target("cqn", b -> b.get("title"));
 
-    // which is equivalent to explicitly referring to cqn
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget("cqn", b -> b.get("title"));
-
-    // which is the same as using plain string
-    // assuming direct POST request
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget("title");
-
-    // which is the same as using plain string
-    // assuming surrounding bound action request with binding parameter "in",
-    // e.g. draftActivate
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget("in/title");
+    // using interfaces generated from the CDS model
+    messages.error("No title specified").target(Books_.class, b -> b.title());
 }
 ```
 
-Instead of using the generic API for creating the relative message target path, CAP Java SDK also provides a typed API backed by the CDS model:
+Depending on the OData request context, the resulting target in this example is either `title` (assuming a `POST` or `PATCH` request) or `in/title` (assuming a bound action like `draftActivate`).
 
-``` java
-@Before
-public void validateTitle(CdsCreateEventContext context, Books book) {
-    // ...
+You can also specify targets that point to elements within associations:
 
-    // implicitly referring to cqn
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget(Books_.class, b -> b.title());
-}
-```
-
-This also works for nested paths with associations:
-
-``` java
+```java
 @Before
 public void validateAuthorName(CdsCreateEventContext context, Books book) {
-    // ...
+    Messages messages = context.getMessages();
 
-    // using un-typed API
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No title specified")
-        .messageTarget(b -> b.to("author").get("name"));
+    // using untyped API
+    messages.error("No title specified").target(b -> b.to("author").get("name"));
 
     // using typed API
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "No author name specified")
-        .messageTarget(Books_.class, b -> b.author().name());
+    messages.error("No title specified").target(Books_.class, b -> b.author().name());
 }
 ```
 
@@ -264,30 +250,25 @@ The same applies to message targets that refer to an action or function input pa
 ``` java
 @Before
 public void validateReview(BooksAddReviewContext context) {
-    // ...
-
+    Messages messages = context.getMessages();
     // event context contains the keys "reviewer", "rating", "title", "text",
     // which are the input parameters of the action "addReview"
 
     // referring to action parameter "reviewer", targeting "firstName"
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid reviewer first name")
-        .messageTarget("reviewer", r -> r.get("firstName"));
+    messages.error("Invalid reviewer first name").target("reviewer", r -> r.get("firstName"));
 
     // which is equivalent to using the typed API
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid reviewer first name")
-        .messageTarget(BooksAddReviewContext.REVIEWER, Reviewer_.class, r -> r.firstName());
+    messages.error("Invalid reviewer first name")
+        .target(BooksAddReviewContext.REVIEWER, Reviewer_.class, r -> r.firstName());
 
     // targeting "rating"
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid review rating")
-        .messageTarget("rating");
+    messages.error("Invalid review rating").target("rating");
 
     // targeting "title"
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid review title")
-        .messageTarget("title");
+    messages.error("Invalid review title").target("title");
 
      // targeting "text"
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid review text")
-        .messageTarget("text");
+    messages.error("Invalid review text").target("text");
 }
 ```
 
@@ -298,26 +279,20 @@ For the `addReview` action that is the `Books` entity, as in the following examp
 ``` java
 @Before
 public void validateReview(BooksAddReviewContext context) {
-    // ...
-
+    Messages messages = context.getMessages();
     // referring to the bound entity `Books`
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid book description")
-        .messageTarget(b -> b.get("descr"));
+    messages.error("Invalid book description").target(b -> b.get("descr"));
 
-    // or (using the typed API, referring to "cqn" implicitly)
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid book description")
-        .messageTarget(Books_.class, b -> b.descr());
-
-    // which is the same as using plain string
-    throw new ServiceException(ErrorStatuses.BAD_REQUEST, "Invalid book description")
-        .messageTarget("in/descr");
+    // or using the typed API
+    messages.error("Invalid book description").target(Books_.class, b -> b.descr());
 }
 ```
 
-::: tip
-The previous examples showcase the target creation with the `ServiceException` API, but the same can be done with the `Message` API and the respective `target(...)` methods.
-:::
+In the case of OData the resulting target is `in/descr`, assuming the default name `in` is used for the binding parameter name.
 
+::: tip
+The previous examples showcase the target creation with the `Messages` API, but the same can be done with the `ServiceException` API and the respective `messageTarget(...)` methods.
+:::
 
 ## Error Handler { #errorhandler}
 

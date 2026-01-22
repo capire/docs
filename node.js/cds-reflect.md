@@ -79,36 +79,57 @@ A tag property which is `true` for linked models. {.indent}
 
 The [CSN definitions](../cds/csn#definitions) of the model, turned into an instance of [`LinkedDefinitions`].  {.indent}
 
-### . services {.property alt="The following documentation on entities also applies to services. "}
+### . services {.property}
 
-### . entities {.property}
+Convenient shortcut to access all *[service](../cds/cdl#services)* definitions in a model. The returned value is an array of all service definitions, with additional non-enumerable properties to access the service definitions by name.
 
-These are convenient shortcuts to access all *[service](../cds/cdl#services)* or all *[entity](../cds/cdl#entities)* definitions in a model. <br>The value is an instance of [`LinkedDefinitions`].
-
-For example:
+Example:
 
 ```js
 let m = cds.linked`
-  namespace my.bookshop;
-  entity Books {...}
-  entity Authors {...}
-  service CatalogService {
-    entity ListOfBooks as projection on Books {...}
-  }
+  service CatalogService { ... }
+  service AdminService { ... }
 `
 
 // Object nature
 let { CatalogService, AdminService } = m.services
-let { Books, Authors } = m.entities
 
 // Array nature
-for (let each of m.entities) console.log(each.name)
-
-// Function nature
-let { ListOfBooks } = m.entities ('my.bookshop.CatalogService')
+for (let each of m.services) console.log (each.name)
 ```
 
-In addition to the object and array natures of  [`LinkedDefinitions`] these properties also can be used as functions, which allows to optionally specify a namespace to fetch all definitions with prefixed with that. If no namespace is specified, the model's declared namespace is used, if any.
+
+### . entities {.property}
+
+These are convenient shortcuts to access all *[entity](../cds/cdl#entities)* definitions in a model. The returned value is a function that allows to specify a namespace to fetch all matching entity definitions, with initial properties for all entity definitions in the model.
+
+Example:
+
+```js
+let m = cds.linked`
+  namespace my.bookshop;
+  entity Books {}
+  entity Authors {}
+  service CatalogService { 
+    entity Books as projection on my.bookshop.Books;
+    entity Authors as projection on my.bookshop.Authors;
+  }
+`
+
+// Function nature
+let { Books, Authors } = m.entities ('my.bookshop')
+
+// Object nature
+let { 
+  'my.bookshop.Books': Books, 
+  'my.bookshop.Authors': Authors 
+} = m.entities
+
+// Array nature
+for (let each of m.entities) console.log (each.name)
+//> my.bookshop.Books
+//> my.bookshop.Authors
+```
 
 
 
@@ -361,12 +382,12 @@ Their values are [`LinkedDefinitions`].
 
 ### . texts {.property}
 
-If the entity has *[localized](../guides/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
+If the entity has *[localized](../guides/uis/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
 {.indent}
 
 ### . drafts {.property}
 
-If draft is enabled, a definition to easily refer to *[draft](../advanced/fiori#draft-support)* data for the current entity is returned.
+If draft is enabled, a definition to easily refer to *[draft](../guides/uis/fiori#draft-support)* data for the current entity is returned.
 {.indent}
 
 
@@ -426,10 +447,7 @@ The effective foreign keys of [*managed* association](../cds/cdl#managed-associa
 
 
 
-## cds. linked .classes {#cds-linked-classes .property}
-
-[`cds.linked.classes`]: #cds-linked-classes
-
+## cds. linked .classes {.property}
 
 This property gives you access to the very roots of `cds`'s type system. When a model is passed through [`cds.linked`] all definitions effectively become instances of one of these classes.
 In essence they are defined as follows:
@@ -512,7 +530,7 @@ m.foreach (d => console.log(d.toCDL()))
 
 
 
-## cds. builtin. types {#cds-builtin-types .property}
+## cds. builtin. types {.property}
 [`cds.builtin.types`]: #cds-builtin-types
 
 

@@ -46,7 +46,8 @@ async function cds.connect.to (
 
 Argument `name` is used to look up connect options from [configured services](#cds-env-requires), which are defined in the `cds.requires` section of your _package.json_ or _.cdsrc.json_ or _.yaml_ files.
 
-Argument `options` also allows to pass additional options such as `credentials` programmatically, and thus create services without configurations and [service bindings](#service-bindings), for example, you could connect to a local SQLite database in your tests like this:
+Argument `options` also allows to pass additional options programmatically. The available and supported properties of options depend on the selected `kind`.
+Each `kind` defines its own set of expected configuration properties (for example, `credentials`, `model`, `service`). This allows creating services without configurations and [service bindings](#service-bindings). For example, you could connect to a local SQLite database in your tests like this:
 
 ```js
 const db2 = await cds.connect.to ({
@@ -126,7 +127,7 @@ Prefix the module path in `impl` with `./` to refer to a file relative to your p
 
 ### cds.requires.<i>\<srv\></i>`.kind`
 
-As service configurations inherit from each other along `kind` chains, we can refer to default configurations shipped with `@sap/cds`, as you commonly see that in our [_cap/samples_](https://github.com/sap-samples/cloud-cap-samples), like so:
+As service configurations inherit from each other along `kind` chains, we can refer to default configurations shipped with `@sap/cds`, as you commonly see that in our [_cap/samples_](https://github.com/capire/samples), like so:
 
 ```json
 "cds": { "requires": {
@@ -384,8 +385,123 @@ Here are a few examples:
 </tbody>
 </table>
 
+If the `vcap` configuration contains multiple properties such as `name`, `label`, `tags`, `plan`, all properties have to match the corresponding VCAP_SERVICE attributes:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr >
+<td >
 
 
+```json
+{
+  "cds": {
+    "requires": {
+      "hana": {
+        "vcap": {
+          "label": "hana",
+          "plan": "standard",
+          "name": "myHana",
+          "tags": "database"
+        }
+      }
+    }
+  }
+}
+```
+</td>
+<td >
+
+```json
+{
+  "VCAP_SERVICES": {
+    "hana": [{
+      "label": "hana",
+      "plan": "standard",
+      "name": "myHana",
+      "tags": ["database"]
+    }]
+  }
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
+CAP services often come with a default `vcap` configuration. In rare cases, the default configuration has to be deactivated which can be achieved by explicitly setting the service property `vcap.<property>` to `false`:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr >
+<td >
+
+
+```json
+{
+  "cds": {
+    "requires": {
+      "hana": {
+        "vcap": {
+          "label": false,
+          "name": "myHana",
+          "tags": "database"
+        }
+      }
+    }
+  }
+}
+```
+</td>
+<td >
+
+```json
+{
+  "VCAP_SERVICES": {
+    "myHana-binding": [{
+      "label": "not-hana",
+      "plan": "standard",
+      "name": "myHana",
+      "tags": ["database"]
+    }]
+  }
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
+::: tip To see the default configuration of a CAP service, use:
+
+```js
+cds env get requires.<servicename>
+```
+:::
 
 ### In Kubernetes / Kyma { #in-kubernetes-kyma}
 
@@ -528,7 +644,7 @@ For example, you can enable it in the _package.json_ file for your production pr
 ```
 
 ::: warning
-This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](../releases/schedule#yearly-major-releases).
+This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](/releases/schedule#yearly-major-releases).
 :::
 
 Each service that has credentials and a `vcap.label` property is put into the `VCAP_SERVICES` env variable. All properties from the service's `vcap` object will be taken over to the service binding.
@@ -626,7 +742,7 @@ The resulting `VCAP_SERVICES` env variable looks like this:
 
 ### Through _.cdsrc-private.json_ File for Hybrid Testing
 
-[Learn more about hybrid testing using _.cdsrc-private.json_.](../advanced/hybrid-testing#bind-to-cloud-services)
+[Learn more about hybrid testing using _.cdsrc-private.json_.](../tools/cds-bind#bind-to-cloud-services)
 
 ```json
 {

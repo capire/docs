@@ -2,7 +2,6 @@
 label: Best Practices
 synopsis: >
   Learn about Node.js best practices.
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -18,7 +17,7 @@ From generic Node.js best practices like dependency management and error handlin
 Projects using CAP need to manage dependencies to the respective tools and libraries in their _package.json_ and/or _pom.xml_ respectively. Follow the guidelines to make sure that you consume the latest fixes and avoid vulnerabilities and version incompatibilities. These guidelines apply to you as a _consumer_ of reuse packages as well as a _provider_ of such reuse packages.
 
 
-### Always Use the _Latest Minor_ Releases &rarr; for Example, `^7.2.0` {#use-caret }
+### Always Use the _Latest Minor_ Releases → for Example, `^7.2.0` {#use-caret }
 
 This applies to both, *@sap* packages as well as open source ones. It ensures your projects receive the latest features and important fixes during development. It also leverages [NPM's dedupe](https://docs.npmjs.com/cli/dedupe.html) to make sure bundles have a minimal footprint.
 
@@ -201,7 +200,7 @@ If a CSRF token is cached, it can potentially be reused in multiple requests, de
 
 #### Using App Router
 
-The _App Router_ is configured to require a _CSRF_ token by default for all protected routes and all HTTP requests methods except _HEAD_ and _GET_. Thus, by adding the _App Router_ as described in the [Deployment Guide: Using App Router as Gateway](../guides/deployment/to-cf#add-app-router), endpoints are CSRF protected.
+The _App Router_ is configured to require a _CSRF_ token by default for all protected routes and all HTTP requests methods except _HEAD_ and _GET_. Thus, by using an _App Router_ as described in the [_Deployment_ guide](../guides/deploy/to-cf#add-ui), endpoints are CSRF protected.
 
 [Learn more about CSRF protection with the **App Router**](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/c19f165084d742e096c5d1625cecd2d4.html?q=csrf#loioc19f165084d742e096c5d1625cecd2d4__section_xj4_pcg_2z){.learn-more}
 
@@ -278,7 +277,7 @@ cds.on('bootstrap', app => app.use ((req, res, next) => {
 
 #### Configuring CORS in App Router
 
-The _App Router_ has full support for CORS. Thus, by adding the _App Router_ as described in the [Deployment Guide: Using App Router as Gateway](../guides/deployment/to-cf#add-app-router), CORS can be configured in the _App Router_ configuration.
+The _App Router_ has full support for CORS. Thus, by adding the _App Router_ as described in the [_Deployment_ guide](../guides/deploy/to-cf#add-ui), CORS can be configured in the _App Router_ configuration.
 
 [Learn more about CORS handling with the **App Router**](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/ba527058dc4d423a9e0a69ecc67f4593.html?q=allowedOrigin#loioba527058dc4d423a9e0a69ecc67f4593__section_nt3_t4k_sz){.learn-more}
 
@@ -333,7 +332,7 @@ The most important aspects for programming errors are:
 - Fail loudly: Do not hide errors and silently continue. Make sure that unexpected errors are correctly logged. Do not catch errors you can't handle.
 - Don't program in a defensive way: Concentrate on your business logic and only handle errors if you know that they occur. Only use `try`/`catch` blocks when necessary.
 
-Never attempt to catch and handle unexpected errors, promise rejections, etc. If it's unexpected, you can't handle it correctly. If you could, it would be expected (and should already be handled). Even though your apps should be stateless, you can never be 100% certain that any shared resource wasn't affected by the unexpected error. Hence, you should never keep an app running after such an event, especially in multi-tenant apps that bear the risk of information disclosure.
+Never attempt to catch and handle unexpected errors, promise rejections, etc. If it's unexpected, you can't handle it correctly. If you could, it would be expected (and should already be handled). Even though your apps should be stateless, you can never be 100% certain that any shared resource wasn't affected by the unexpected error. Hence, you should never keep an app running after such an event, especially in multitenant apps that bear the risk of information disclosure.
 
 This will make your code shorter, clearer, and simpler.
 
@@ -385,7 +384,7 @@ Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that
 
 ## Custom Streaming <Beta /> { #custom-streaming-beta }
 
-[Media Data](../guides/providing-services#serving-media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
+[Media Data](../guides/services/media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
 Actions and functions support the same set of `media data` annotations.
 ```cds
 @(Core.MediaType: 'text/csv', Core.ContentDisposition.Filename: 'Books.csv')
@@ -399,7 +398,7 @@ Alternatively, the return type can be annotated directly in the declarations of 
 function csvExport () returns @Core.MediaType LargeBinary;
 ```
 
-When returning custom media data, content information can be configured as part of the handlers `result` object. 
+When returning custom media data, content information can be configured as part of the handlers `result` object.
 
 When calling [`req.reply`](events#req-reply-results) in handlers, you can include options with an instance of [stream.Readable](https://nodejs.org/api/stream.html#class-streamreadable) to specify the [content disposition headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition). In the following example, the options are specified in the `stream.Readable` instance named `myReadable` :
 
@@ -457,7 +456,7 @@ srv.on('unboundAction', (req) => {
 If no content information is provided in one of the ways listed above, the Node.js runtime will fall back to using content information found in annotations or as a last resort, try to assume defaults from context.
 
 :::warning Limited feature-set in REST
-For [`protocol: rest`](cds-serve#cds-protocols) stream responses are only available for operations. 
+For [`protocol: rest`](cds-serve#cds-protocols) stream responses are only available for operations.
 :::
 
 ## Custom $count { #custom-count }
@@ -474,10 +473,9 @@ srv.on('READ', 'Books', function (req) {
 
   const resultSet = [ ... ]
 
-  // request contains $count=true 
+  // request contains $count=true
   if (req.query.SELECT.count === true) resultSet.$count = 100
 
   return resultSet
 })
 ```
-

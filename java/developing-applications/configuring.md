@@ -2,7 +2,6 @@
 synopsis: >
   This section describes how to configure CAP Java applications.
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -39,8 +38,13 @@ Property defaults adjusted with the production profile are the following:
 
 - Index Page is disabled: `cds.index-page.enabled` is set to `false`
 - Mock Users are strictly disabled: `cds.security.mock.enabled` is set to `false`
+- Access for internal testing is disabled: `cds.security.authentication.internalUserAccess.enabled` is set to `false`
 
 Note, that explicit configuration in the application takes precedence over property defaults from the production profile.
+
+::: warning 
+**Do not manually enable features for production that are disabled by the production profile**, as this could introduce serious security vulnerabilities.
+:::
 
 ## Using SAP Java Buildpack { #buildpack }
 

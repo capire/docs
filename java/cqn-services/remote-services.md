@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Remote Services are CQN-based clients to remote APIs that a CAP application consumes. This section describes how to configure and use these services.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -15,7 +14,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 {{ $frontmatter.synopsis }}
 
 The CAP Java SDK supports _Remote Services_ for OData V2 and V4 APIs out of the box.
-The CQN query APIs enable [late-cut microservices](../../guides/providing-services#late-cut-microservices) with simplified mocking capabilities. Regarding multitenant applications, these APIs keep you extensible, even towards remote APIs. In addition, they free developers from having to map CQN to OData themselves.
+The CQN query APIs enable [late-cut microservices](../../get-started/features#late-cut-microservices) with simplified mocking capabilities. Regarding multitenant applications, these APIs keep you extensible, even towards remote APIs. In addition, they free developers from having to map CQN to OData themselves.
 
 Cross-cutting aspects like security are provided by configuration. Applications do not need to provide additional code. The CAP Java SDK leverages the [SAP Cloud SDK](https://sap.github.io/cloud-sdk) and in particular its destination capabilities to cover these aspects.
 
@@ -28,7 +27,7 @@ On top of that CAP integrates nicely with Cloud SDK, for example, ensuring autom
 CAP's clear recommendation is to use _Remote Services_ over directly using the SAP Cloud SDK. However, if you can't leverage CQN-based _Remote Services_, refer to [native consumption with Cloud SDK](#native-consumption) for details.
 
 ::: tip
-To learn more about how to use _Remote Services_ end to end read the [Consuming Services cookbook](../../guides/using-services).
+To learn more about how to use _Remote Services_ end to end read the [Consuming Services cookbook](../../guides/services/consuming-services).
 :::
 
 ## Remote OData Services
@@ -70,7 +69,7 @@ The `type` property defines the protocol used by the remote API. The CAP Java SD
 
 ::: tip
 You can use the `cds import` command to generate a CDS service definition from an EDMX API specification.
-To learn more about this, have a look at the section [Importing Service Definitions](../../guides/using-services#import-api).
+To learn more about this, have a look at the section [Importing Service Definitions](../../guides/services/consuming-services#import-api).
 :::
 
 [Learn about all `cds.remote.services` configuration possibilities in our **CDS Properties Reference**.](../developing-applications/properties#cds-remote-services){.learn-more}
@@ -178,7 +177,7 @@ The parameter `onBehalfOf` in the `binding` configuration section allows to defi
 
 The following options are available:
 
-- `currentUser`: Use the user of the current [Request Context](/java/event-handlers/request-contexts). This propagates the named user if available or falls back to a (tenant-specific) technical user otherwise. (default)
+- `currentUser`: Use the user of the current [Request Context](../event-handlers/request-contexts). This propagates the named user if available or falls back to a (tenant-specific) technical user otherwise. (default)
 - `systemUser`: Use a (tenant-specific) technical user, based on the tenant set in the current Request Context.
 - `systemUserProvider`: Use a technical user of the provider tenant. This is especially helpful on an internal communication channel that is not authorized tenant-specifically.
 
@@ -234,8 +233,8 @@ The destination or service binding configuration provides the base URL to the OD
 The full service URL however is built from three parts:
 
 1. The URL provided by the destination or the service binding configuration.
-1. An optional URL suffix provided in the _Remote Service_ http configuration under the `suffix` property.
-1. The name of the service, either obtained from the optional `service` configuration property or the fully qualified name of the CDS service definition.
+1. An optional URL suffix provided in the _Remote Service_ http configuration under the `http.suffix` property.
+1. The name of the service, either obtained from the optional `http.service` configuration property or the fully qualified name of the CDS service definition.
 
 Consider this example:
 
@@ -258,7 +257,7 @@ Given that this destination holds the URL `https://s4.sap.com`, the resulting se
 
 ## Consuming Remote Services
 
-_Remote Services_ can be used in your CAP application just like any other [service that accepts CQN queries](/java/cqn-services/):
+_Remote Services_ can be used in your CAP application just like any other service that accepts CQN queries:
 
 ```java
 @Autowired
@@ -280,14 +279,14 @@ CAP doesn't automatically forward CQN queries to these services. Developers need
 However, as _Remote Services_ are based on the common CQN query APIs it's easy to use them in event handlers of your [Application Services](application-services).
 ::: warning
 In case data from _Remote Services_ should be combined with data from the database custom coding is required.
-Refer to the [Integrate and Extend guide](../../guides/using-services#integrate-and-extend) for more details.
+Refer to the [Integrate and Extend guide](../../guides/services/consuming-services#integrate-and-extend) for more details.
 :::
 
 ### Consuming Media Elements
 
 #### Reading Media Elements
 
-To read a [media elements](/guides/providing-services#annotating-media-elements) of an entity, you need to create a CQN statement that targets a single instance of this entity via its primary key in its `from()` clause and include _one_ media element in the select list.
+To read a [media elements](../../guides/services/media-data#annotating-media-elements) of an entity, you need to create a CQN statement that targets a single instance of this entity via its primary key in its `from()` clause and include _one_ media element in the select list.
 Otherwise, the statement will be interpreted as a regular read and will not return values for media elements. Bulk reads are not supported.
 
 Given the following model:
@@ -308,14 +307,14 @@ Select.from(Media_.class, m -> m.filter(f -> f.ID().eq("..."))).columns(Media_::
 ```
 
 If the entity has multiple media elements (in OData V4), you can read them one by one with dedicated statements each targeting a single element.
-The OData call generated by CAP is an equivalent of the direct [read of the media property value](/guides/providing-services#reading-media-resources)
+The OData call generated by CAP is an equivalent of the direct [read of the media property value](../../guides/services/media-data#reading-media-resources)
 
 The content of the media element is returned as an `InputStream` or `Reader` that is not buffered and must be consumed so that the HTTP connection can be released.
 In addition, content type and file name are returned back if corresponding elements of your entity exist.
 
 #### Writing Media Elements
 
-You write [media elements](/guides/providing-services#annotating-media-elements) with `Update` statements. Statements still need to target a single entity instance and
+You write [media elements](../../guides/services/media-data#annotating-media-elements) with `Update` statements. Statements still need to target a single entity instance and
 must include a single value for the media element as `InputStream` or `Reader`. Optionally the content type can be provided, if a corresponding element exists.
 Batched or bulk updates are not supported and rejected.
 
@@ -335,7 +334,7 @@ payload.setImage(...);
 Update.entity(Media_.class).entry(payload);
 ```
 
-Updates are translated to OData requests to [update the media element value](/guides/providing-services#updating-media-resources) or [delete the value](/guides/providing-services#deleting-media-resources).
+Updates are translated to OData requests to [update the media element value](../../guides/services/media-data#updating-media-resources) or [delete the value](../../guides/services/media-data#deleting-media-resources).
 
 :::tip Creating an entity with media elements
 `Insert` statements do not support media elements. Values for media elements need to be provided in a subsequent update.
@@ -437,7 +436,7 @@ public class DestinationConfiguration implements EventHandler {
 ```
 
 [Find out how to create destinations for different authentication types](#programmatic-destinations){.learn-more}
-[Learn more about using destinations](../../guides/using-services#using-destinations){.learn-more}
+[Learn more about using destinations](../../guides/services/consuming-services#using-destinations){.learn-more}
 
 Note that you can leverage Spring Boot's configuration possibilities to inject credentials into the destination configuration.
 The same mechanism can also be used for the URL of the destination by also reading it from your application configuration (for example environment variables or _application.yaml_).

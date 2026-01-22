@@ -110,7 +110,7 @@ On outgoing HTTP messages, it's propagated as `x-correlation-id` header.
 
 ### . locale {.property}
 
-The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/i18n#normalized-locales).
+The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/uis/i18n#normalized-locales).
 
 
 
@@ -127,7 +127,7 @@ A unique string identifying the current tenant, or `undefined` if not in multite
 
 A constant timestamp for the current request being processed, as an instance of [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). The CAP framework uses that to fill in values for the CDS pseudo variable `$now`, with the guaranteed same value.
 
-[Learn more in the **Managed Data** guide.](../guides/domain-modeling#managed-data){.learn-more}
+[Learn more in the **Managed Data** guide.](../guides/domain/index#managed-data){.learn-more}
 
 
 
@@ -292,7 +292,7 @@ For example:
 Captures the full canonicalized path information of incoming requests with navigation.
 For requests without navigation, `req.path` is identical to [`req.target.name`](#target) (or [`req.entity`](#entity), which is a shortcut for that).
 
-Examples based on [cap/samples/bookshop AdminService](https://github.com/sap-samples/cloud-cap-samples/tree/master/bookshop/srv/admin-service.cds):
+Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/bookshop/blob/main/srv/admin-service.cds):
 
 | OData Request     | `req.path`                | `req.target.name`    |
 |-------------------|---------------------------|----------------------|
@@ -347,17 +347,36 @@ For bound custom operations, `req.query` contains the query to the entity on whi
 
 ### . subject {.property}
 
-Acts as a pointer to one or more instances targeted by the request.
-It can be used as input for [cds.ql](cds-ql) as follows:
+Acts as a pointer to the instances targeted by the request.
+For example for the equivalents of inbound requests addressing _single rows_ like these:
 
 ```js
-SELECT.one.from(req.subject)   //> returns single object
-SELECT.from(req.subject)      //> returns one or many in array
-UPDATE(req.subject)          //> updates one or many
-DELETE(req.subject)         //> deletes one or many
+AdminService.read(Books,201)
+AdminService.update(Books,201).with({...})
+AdminService.delete(Books,201)
 ```
 
-It's available for CRUD events and bound actions.
+... `req.subject` would always look like that: 
+
+```js
+req.subject //> ...
+{ ref: [{
+  id: 'AdminService.Books', // == req.target.name
+  where: [ { ref: [ 'ID' ] }, '=', { val: 201 } ]
+}]}
+```
+
+... which allows it to be used in custom handlers of each inbound request to easily read or write this very target row using  [cds.ql](cds-ql) as follows:
+
+```js
+SELECT.from(req.subject)  //> returns the single target row
+UPDATE(req.subject)...    //> updates the single target row
+DELETE.from(req.subject)   //> deletes the single target row
+```
+
+> [!warning] 
+> You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
+> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple row_**.
 
 
 
@@ -412,7 +431,7 @@ this.on('CREATE', Books, req => {
 ```
 
 ::: details **Best Practice:**{.good} Use the `@mandatory` annotation instead.
-The sample above is just for illustration. Instead, use the [`@mandatory`](../guides/providing-services.md#mandatory)
+The sample above is just for illustration. Instead, use the [`@mandatory`](../guides/services/constraints#mandatory)
 annotation in your CDS model to define mandatory inputs like that:
 
 ```cds
@@ -463,7 +482,7 @@ This is a convenience variant of the [`req.reject()`](#req-reject) method, with 
 
 ```tsx
 function req.reject (
-  code?    : number,
+  status?  : number,
   message? : string,
   target?  : string,
   args?    : string[]
@@ -529,6 +548,9 @@ req.warn ('Some warning message')
 
 The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (e.g. `sap-messages`), instead of the response body.
 
+::: warning User Input & Injection Vulnerabilities
+Ensure proper validation of the message text if it contains values ​​from user input.
+:::
 
 
 ## Error Responses
@@ -590,3 +612,20 @@ Content-Type: application/json
 > In production, error responses should never disclose internal information that could be exploited by attackers. To ensure that, all errors with a `5xx` status code are returned to the client with only the respective generic message (example: `500 Internal Server Error`).
 >
 > In very rare cases, you might want to return 5xx errors with a meaningful message to the client. This can be achieved with `err.$sanitize = false`. Use that option with care!
+
+
+## Translations for Validation Errors
+
+For the following annotations/error codes, the runtime provides default translations:
+
+| Annotation              | Error Code                      |
+|-------------------------|---------------------------------|
+| `@mandatory`            | ASSERT_MANDATORY<sup>(1)</sup> |
+| `@assert.range`         | ASSERT_RANGE                    |
+| `@assert.range` on enum | ASSERT_ENUM                     |
+| `@assert.format`        | ASSERT_FORMAT                   |
+| `@assert.target`        | ASSERT_TARGET                   |
+
+<sup>(1)</sup> Falls back to error code `ASSERT_NOT_NULL` if provided in custom translations.
+
+These can be overridden by the known technique of providing [custom i18n messages](cds-i18n#localized-messages).

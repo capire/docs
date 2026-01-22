@@ -22,7 +22,7 @@ In the following sections, the different extension points and mechanisms are exp
 
 ### Java Version
 
-When building CAP Java plugin modules, you need to keep in mind that the generated Java byte code of the plugin has to be compatible with the Java byte code version of the potential consumers of the plugin. To be on the safe side, we recommend using *Java 17* as this is anyways the minimum Java version for CAP Java (for 2.x release) applications. In case you deviate from this you need to check and align with the potential consumers of the plugin.
+When building CAP Java plugin modules, you need to keep in mind that the generated Java byte code of the plugin has to be compatible with the Java byte code version of the potential consumers of the plugin. To be on the safe side, we recommend using *Java 17* as this is anyways the minimum Java version for CAP Java applications. In case you deviate from this you need to check and align with the potential consumers of the plugin.
 
 ### Maven GroupId and Java Packages
 
@@ -31,13 +31,12 @@ Of course, it's up to your project / plugin how you call the corresponding Maven
 
 ## Share CDS Models via Maven Artifacts
 
-Before the CAP Java 2.2 release CDS definitions had to be shared as Node.js modules, also for Java projects.
-
-Starting with the 2.2 release CDS models, CSV import data and i18n files can now be shared through Maven dependencies in addition to npm packages. This means you can now provide CDS models, CSV files, i18n files, and Java code (for example, event handlers) in a single Maven dependency.
+CDS models, CSV import data and i18n files can be shared through Maven dependencies. In addition they can also be shared through npm packages.
+This means you can provide CDS models, CSV files, i18n files, and Java code (for example, event handlers) in a single Maven dependency.
 
 ### Create the CDS Model in a New Maven Artifact
 
-Simply create a plain Maven Java project and place your CDS models in the `main/resources/cds` folder of the reuse package under a unique module directory (for example, leveraging group ID and artifact ID): `src/main/resources/cds/com.sap.capire/bookshop/`. With `com.sap.capire` being the group ID and `bookshop` being the artifact ID.
+Simply create a plain Maven Java project and place your CDS models in the `src/main/resources/cds` folder of the reuse package under a unique module directory (for example, leveraging group ID and artifact ID): `src/main/resources/cds/com.sap.capire/bookshop/`. With `com.sap.capire` being the group ID and `bookshop` being the artifact ID.
 
 You can simplify the creation of such a **plain Maven Java** project by calling the following Maven archetype command:
 
@@ -65,7 +64,7 @@ Projects wanting to import the content simply add a Maven dependency to the reus
 ```
 :::
 
-Additionally, the new `resolve` goal from the CDS Maven Plugin needs to be added, to extract the models into the `target/cds/` folder of the Maven project, in order to make them available to the CDS Compiler.
+Additionally, the `resolve` goal from the CDS Maven Plugin needs to be added, to extract the models into the `target/cds/` folder of the Maven project, in order to make them available to the CDS Compiler.
 
 ::: code-group
 ```xml [srv/pom.xml]
@@ -87,8 +86,8 @@ Additionally, the new `resolve` goal from the CDS Maven Plugin needs to be added
 ```
 :::
 
-::: details Reuse module as Maven module
-Please be aware that the module that uses the reuse module needs to be a Maven module itself or a submodule to a Maven module that declares the dependency to the Maven module. Usually you would declare the dependency in the `srv` module of your CAP Java project and use the reuse model in the service's CDS files then. In case you want to use the reuse model in your `db` module you need to make sure that your `db` module is a Maven module and include it to the project's parent `pom.xml` file.
+::: details Scope of the Reuse Package
+Usually you would declare the dependency to the reuse package in the `srv` module of your CAP Java project. Since CAP Java 4.4.0 this makes the reuse models available to all CDS files in the CAP project. The models are extracted to the root `target/cds` folder. In case you want to make the reuse models only available within the Maven module that declared the dependency (e.g. `srv`) set the configuration `to` of the `resolve` goal to `${project.build.directory}`. In earlier versions of CAP Java reuse models where only available within CDS files placed in the Maven module that declared the dependency by default.
 :::
 
 When your Maven build is set up correctly, you can use the reuse models in your CDS files using the standard `using` directive:
@@ -100,7 +99,7 @@ using { CatalogService } from 'com.sap.capire/bookshop';
 The location in the `using` directive differs from the default [CDS model resolution rules](../cds/cdl#model-resolution). The *name* does not refer to a local file/package, nor to an NPM package. Instead, it follows to the groupId/artifactId scheme. The name doesn't directly refer to an actual file system location but is looked up in a _cds_ folder in Maven's _target_ folder.
 :::
 
-[Learn more about providing and using reuse packages.](../guides/extensibility/composition){.learn-more}
+[Learn more about providing and using reuse packages.](../guides/integration/composition){.learn-more}
 
 This technique can be used independently or together with one or more of the techniques described on this page.
 
@@ -112,7 +111,7 @@ In most of the cases an event handler plugin for a CAP Java application can be a
 
 ```xml
 <properties>
-    <cds.services.version>2.4.0</cds.services.version>
+    <cds.services.version>...</cds.services.version>
 </properties>
 
 <dependencyManagement>
@@ -150,7 +149,7 @@ public class SampleHandler implements EventHandler {
 }
 ```
 
-The shown handler code is registered for any entity type on any [ApplicationService](../guides/providing-services). Depending on the use case the target scope could be narrowed to specific entities and/or services. The handler registration applies to the same rules as custom handlers that are directly packaged with a CAP Java application.
+The shown handler code is registered for any entity type on any [ApplicationService](../guides/services/providing-services). Depending on the use case the target scope could be narrowed to specific entities and/or services. The handler registration applies to the same rules as custom handlers that are directly packaged with a CAP Java application.
 
 [Learn more about event handling in our EventHandler documentation](event-handlers/){.learn-more}
 
@@ -158,7 +157,7 @@ Of course, this handler code looks just the same as any other custom or builtin 
 
 When you provide your custom handler as part of a reuse library, external to your application, things change a bit. At first, you need to decide whether you want to use Spring Boot's component model and rely on dependency injection or if you want to use one of the CAP Java ServiceLoader based extension points.
 
-The decision between the two is straightforward: In case your handler depends on other Spring components, for example relies on dependency injection, you should use the [Spring approach](#spring-autoconfiguration). This applies as soon as you need to access another CAP Service like [`CqnService`](./cqn-services/application-services), [`PersistenceService`](./cqn-services/persistence-services) or to a service using it's [typed service interface](../releases/archive/2023/nov23#typed-service-interfaces).
+The decision between the two is straightforward: In case your handler depends on other Spring components, for example relies on dependency injection, you should use the [Spring approach](#spring-autoconfiguration). This applies as soon as you need to access another CAP Service like [`CqnService`](./cqn-services/application-services), [`PersistenceService`](./cqn-services/persistence-services) or to a service using it's [typed service interface](/releases/2023/nov23#typed-service-interfaces).
 
 If your custom handler is isolated and, for example, only performs a validation based on provided data or a calculation, you can stick with the [CAP Java ServiceLoader approach](#service-loader), which is described in the following section.
 

@@ -1,57 +1,11 @@
 ---
-status: released
 synopsis: >
-  About supported development environments (IDEs) and features of the CDS language editor.
+  Supported development environments (IDEs) and features of the CDS language editor.
 ---
 
 # CDS Editors and IDEs
 
 [[toc]]
-
-## SAP Business Application Studio {#bas}
-
-[SAP Business Application Studio](https://help.sap.com/docs/bas/sap-business-application-studio/what-is-sap-business-application-studio) offers a modern development environment tailored for efficient development of business applications for the SAP Intelligent Enterprise.
-
-#### Setup in BTP
-
-If not already done, [set up SAP Business Application Studio](https://developers.sap.com/tutorials/appstudio-onboarding.html) on SAP BTP.
-
-
-#### Set Up a Dev Space
-
-1. Open the [SAP BTP cockpit](https://account.hanatrial.ondemand.com/) and choose *SAP Business Application Studio* from the _Quick Tool Access_ section.
-
-1. Choose *Create Dev Space*.
-
-1. Provide a name for your dev space.
-
-1. Choose *Full Stack Cloud Application* as the application type.
-
-   By selecting *Full Stack Cloud Application*, your dev space comes with several extensions out of the box that you need to develop CAP applications. For example, CAP Tools, Java Tools, and MTA Tools are built in to save setup time.
-   See [Developer Guide](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/84be8d91b3804ab5b0581551d99ed24c.html) for SAP Business Application Studio for more details.
-
-1. Choose *Create Dev Space*.
-
-   The creation of the dev space takes a while. You see that the status for your dev space changes from *STARTING* to *RUNNING*. See [Dev Space Types](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/4142f786f3d345699c3d5fbebda5ded6.html) for more details.
-
-1. Once the dev space is running, choose the dev space by clicking on the dev space name.
-
-   >In the trial version, any dev space that hasn't been running for 30 days will be deleted. See the full list of [restrictions](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/a45742a719704bdea179b4c4f9afa07f.html).
-
-See [Developing a CAP Application in SAP Business Application Studio](https://help.sap.com/docs/SAP%20Business%20Application%20Studio/9c36fdb911ae4cadab467a314d9e331f/8a648174036a458688391c3ad7ee7cd5.html) {.learn-more}
-
-
-#### Tutorials
-
-+ [Combine CAP with SAP HANA Cloud to Create Full-Stack Applications](https://developers.sap.com/mission.hana-cloud-cap.html)
-+ [Set Up SAP Business Application Studio for Development](https://developers.sap.com/tutorials/appstudio-onboarding.html)
-
-+ Video showing [SAP Business Application Studio Productivity Tools](https://www.youtube.com/watch?v=KE6DKU1P9ic)
-
-
-
-
-
 
 ## Visual Studio Code {#vscode}
 
@@ -116,12 +70,13 @@ Restart the server when you did changes to your code using the *Debug* views res
 
 ## IntelliJ
 
-The [CAP CDS Language Support](https://github.com/cap-js/cds-intellij) plugin for IntelliJ IDEs provides syntax highlighting, code completion, formatting, and more.
-It supports commercial IntelliJ IDEs including IntelliJ IDEA Ultimate and WebStorm.
+[SAP CDS Language Support](https://plugins.jetbrains.com/plugin/25209-sap-cds-language-support) for IntelliJ provides syntax highlighting, code completion, formatting, navigation, hover documentation, workspace symbol search, and more.
+
+The plugin supports free and commercial IntelliJ IDEs including IntelliJ IDEA Community, IDEA Ultimate and WebStorm.
 
 ![Screenshot showing an example of code completion in IntelliJ.](https://raw.githubusercontent.com/cap-js/cds-intellij/9dab0d1984e79b74074a820fe97ee6f9fb53cab7/.assets/code_completion.png){ .ignore-dark style="width:450px"}
 
-See the [detailed feature list](https://github.com/cap-js/cds-intellij/blob/main/FEATURES.md) and the [installation instructions](https://github.com/cap-js/cds-intellij#requirements) for how to get started.
+See the [detailed feature list](https://github.com/cap-js/cds-intellij/blob/main/docs/features.md) and the [installation instructions](https://github.com/cap-js/cds-intellij#requirements) for how to get started.
 
 [Report issues and provide feedback](https://github.com/cap-js/cds-intellij/issues).
 
