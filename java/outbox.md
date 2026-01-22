@@ -49,7 +49,7 @@ To enable the persistence for the outbox, you need to add the service `outbox` o
 }
 ```
 
-::: warning 
+::: warning
 Be aware that you need to migrate the database schemas of all tenants after you've enhanced your model with an outbox version from `@sap/cds`  version 6.0.0 or later.
 :::
 
@@ -173,7 +173,7 @@ To avoid this, you can apply a manual workaround as follows:
  1. Customize the outbox configuration and isolating them via distinct namespaces for each service.
  2. Adapt the Audit Log outbox configuration.
  3. Adapt the messaging outbox configuration per service.
- 
+
  These steps are described in the following sections.
 
 #### Deactivate Default Outboxes
@@ -228,7 +228,7 @@ cds:
 ::: tip Important Note
 It is crucial to **deactivate** the default outboxes, and	ensure **unique outbox namespaces** in order to achieve proper isolation between services in a shared DB scenario.
 :::
-  
+
 
 ## Outboxing CAP Service Events
 
@@ -458,23 +458,15 @@ public class DeadOutboxMessagesHandler implements EventHandler {
     }
 
     private Optional<Predicate> createOutboxFilters(CdsRuntime runtime) {
-        List<OutboxService> outboxServices = runtime.getServiceCatalog().getServices(OutboxService.class)
-                .filter(s -> !s.getName().equals(OutboxService.INMEMORY_NAME)).toList();
         CdsProperties.Outbox outboxConfigs = runtime.getEnvironment().getCdsProperties().getOutbox();
 
-        Predicate where = null;
-        for(OutboxService service : outboxServices) {
-            OutboxServiceConfig config = outboxConfigs.getService(service.getName());
-            Predicate targetPredicate = CQL.get(Messages.TARGET).eq(service.getName()).and(CQL.get(Messages.ATTEMPTS).ge(config.getMaxAttempts()));
-
-            if (where == null) {
-                where = targetPredicate;
-            } else {
-                where = where.or(targetPredicate);
-            }
-        }
-
-        return Optional.ofNullable(where);
+        return runtime.getServiceCatalog().getServices(OutboxService.class)
+                 .map(service -> {
+                     OutboxServiceConfig config = outboxConfigs.getService(service.getName());
+                     return CQL.get(Messages.TARGET).eq(service.getName())
+                              .and(CQL.get(Messages.ATTEMPTS).ge(config.getMaxAttempts()));
+                 })
+                 .reduce(Predicate::or);
     }
 }
 ```
