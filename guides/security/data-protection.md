@@ -5,7 +5,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 impl-variants: true
 ---
 
-# Data Protection
+# Product Security Overview
 
 {{ $frontmatter.synopsis }}
 
@@ -21,14 +21,14 @@ impl-variants: true
 <!-- #SEC-218 -->
 
 *Integrity* and *confidentiality* of data being transferred between any communication endpoints needs to be guaranteed.
-In particular, this holds true for communication between client and server ([public zone](./platform#public-zone) resp. [platform zone](./platform#platform-zone)), but also for service-to-service communication (within a platform zone).
+In particular, this holds true for communication between client and server ([public zone](./overview#public-zone) resp. [platform zone](./overview#platform-zone)), but also for service-to-service communication (within a platform zone).
 That means the communication channels are established in a way that rules out undetected data manipulation or disclosure.
 
 
 #### Inbound Communication (Server) { #inbound }
 <!-- #SEC-266 -->
 
-[SAP BTP](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security) exclusively establishes encrypted communication channels based on HTTPS/TLS as shown in the [architecture overview](./platform#architecture-overview)
+[SAP BTP](https://help.sap.com/docs/btp/sap-business-technology-platform/btp-security) exclusively establishes encrypted communication channels based on HTTPS/TLS as shown in the [architecture overview](./overview#architecture-overview)
 and hence fulfills the requirements out of the box.
 For all deployed (CAP) applications and platform services, the platform's API gateway resp. ingress router provides TLS endpoints accepting incoming request and forwards to the backing services via HTTP.
 The HTTP endpoints of microservices are only accessible for the router in terms of network technology (perimeter security) and therefore aren't visible for clients in public and platform zone.
@@ -117,7 +117,7 @@ CAP doesn't require any specific authentication strategy, but it provides out of
 On configured authentication, *all CAP endpoints are authenticated by default*.
 
 ::: warning
-❗ **CAP applications need to ensure that an appropriate [authentication method](authorization#prerequisite-authentication) is configured**.
+❗ **CAP applications need to ensure that an appropriate [authentication method](authentication) is configured**.
 It's highly recommended to establish integration tests to safeguard a valid configuration.
 :::
 
@@ -143,7 +143,7 @@ Note that the applied authentication strategy is specified by server offering an
 CAP microservices require [authentication](#authenticate-requests) of all requests, but they don't support logon flows for UI clients.
 Being stateless, they neither establish a session with the client to store login information such as an OAuth 2 token that needs to be passed in each server request.
 
-To close this gap, UI-based CAP applications can use an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance or service as reverse proxy as depicted in the [diagram](./platform#architecture-overview).
+To close this gap, UI-based CAP applications can use an [Application Router](https://help.sap.com/docs/btp/sap-business-technology-platform/application-router) instance or service as reverse proxy as depicted in the [diagram](./overview#architecture-overview).
 The Application Router redirects the login to the identity service, fetches an OAuth2 token, and stores it into a secure session cookie.
 
 ::: warning
@@ -155,7 +155,7 @@ Hence, authentication is still mandatory for CAP microservices.
 <!-- #SEC-309 -->
 
 To run a CAP application that authenticates users and consumes remote services, **it isn't required to manage any secrets such as keys, tokens, or passwords**.
-Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./platform#platform-environment) or [destinations](../services/consuming-services#btp-destinations).
+Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./overview#platform-environment) or [destinations](../services/consuming-services#btp-destinations).
 
 ::: tip
 In case you still need to store any secrets, use a platform service [SAP Credential Store](https://help.sap.com/docs/CREDENTIAL_STORE).
@@ -195,7 +195,7 @@ To verify CAP authorizations in your model, it's recommended to use [CDS lint ru
 
 The rules prepared by application developers are applied to business users according to grants given by the subscribers user administrator, that is, they're applied tenant-specific.
 
-CAP authorizations can be defined dependently from [user claims](authorization#user-claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
+CAP authorizations can be defined dependently from [user claims](cap-users#claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
 that are deployed by application developers and granted by the user administrator of the subscriber.
 Hence, CAP provides a seamless integration of central identity service without technical lock-in.
 
@@ -258,7 +258,7 @@ Moreover, technical [MTXs CAP services](../multitenancy/mtxs) may be configured,
 | [cds.xt.DeploymentService](../multitenancy/mtxs#deploymentservice) | `/-/cds/deployment/**` | | Internal, technical user<sup>1</sup>, or technical role `cds.Subscriber`
 | [cds.xt.SaasProvisioningService](../multitenancy/mtxs#saasprovisioningservice) | `/-/cds/saas-provisioning/**` | Internal, technical user<sup>1</sup>, or technical roles `cds.Subscriber` resp. `mtcallback`
 | [cds.xt.ExtensibilityService](../multitenancy/mtxs#extensibilityservice) | `/-/cds/extensibility/**` | Internal, technical user<sup>1</sup>, or technical roles `cds.ExtensionDeveloper`
-> <sup>1</sup> The microservice running the MTXS CAP service needs to be deployed to the [application zone](./platform#application-zone)
+> <sup>1</sup> The microservice running the MTXS CAP service needs to be deployed to the [application zone](./overview#application-zone)
 and hence has established trust with the CAP application client, for instance given by shared XSUAA instance.
 
 Authentication for a CAP sidecar needs to be configured just like any other CAP application.
@@ -429,7 +429,7 @@ On the client side, SAPUI5 provides input validation for all typed element prope
   :::
 
 - [Path traversal](https://owasp.org/www-community/attacks/Path_Traversal) attacks aim to access parts of the server's file system outside the web root folder.
-As part of the [application zone](./platform#application-zone), an Application Router serves the static UI content of the application. The CAP microservice doesn't need to serve web content from file system.
+As part of the [application zone](./overview#application-zone), an Application Router serves the static UI content of the application. The CAP microservice doesn't need to serve web content from file system.
 Apart from that the used web server frameworks such as Spring or Express already have adequate protection mechanisms in place.
 
 - [CLRF injections](https://owasp.org/www-community/vulnerabilities/CRLF_Injection) or [log injections](https://owasp.org/www-community/attacks/Log_Injection) can occur when untrusted user input is written to log output.

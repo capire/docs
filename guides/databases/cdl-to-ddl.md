@@ -345,9 +345,9 @@ LEFT JOIN Genres as genre on genre_ID = genre.ID; -- [!code ++]
 ```
 :::
 
-> [!tip] Associations as <i>Forward-declared JOINs</i>
+> [!tip] Associations as <i>'Forward-declared' JOINs</i>
 > Looking closely at the above compiled SQL code, we can regard 
-> associations to be like _'Forward-declared JOINs'_, along these lines: 
+> associations to be like _'Forward-declared' JOINs_, along these lines: 
 >
 > 1. Association names `a.name` appear in queries as standard _table aliases_ 
 > 2. _JOINs_ are added automatically as per the following construction rule: 

@@ -13,11 +13,11 @@
    ## [Domain Modeling](guides/domain/_menu.md)
    ## [Services & APIs](guides/services/_menu.md)
    ## [Serving UIs](guides/uis/_menu.md)
-   ## [Protocols](guides/protocols/_menu.md)
-   ## [Querying](guides/querying/_menu.md) <!-- UNRELEASED -->
    ## [Databases](guides/databases/_menu.md)
+   ## [Querying](guides/querying/_menu.md) <!-- UNRELEASED -->
+   ## [Protocols](guides/protocols/_menu.md)
+   ## [Integration](guides/integration/_menu.md)
    ## [Data Federation](guides/federation/_menu.md) <!-- UNRELEASED -->
-   ## [Service Integration](guides/integration/_menu.md)
    ## [Events & Messaging](guides/events/_menu.md)
    ## [Security & Data Privacy](guides/security/_menu.md)
    ## [Extensibility](guides/extensibility/_menu.md)

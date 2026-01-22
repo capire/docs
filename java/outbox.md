@@ -49,7 +49,7 @@ To enable the persistence for the outbox, you need to add the service `outbox` o
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 Be aware that you need to migrate the database schemas of all tenants after you've enhanced your model with an outbox version from `@sap/cds`  version 6.0.0 or later.
 :::
 
@@ -420,7 +420,7 @@ Filters can be applied as for any other CDS defined entity, for example, to filt
 
 It is crucial to make the service `OutboxDeadLetterQueueService` accessible for internal users only as it contains sensitive data that could be exploited for malicious purposes if unauthorized changes are performed.
 
-[Learn more about pseudo roles](../guides/security/authorization#pseudo-roles){.learn-more}
+[Learn more about pseudo roles](../guides/security/cap-users#pseudo-roles){.learn-more}
 
 :::
 

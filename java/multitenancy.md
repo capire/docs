@@ -297,11 +297,12 @@ runtime.requestContext().systemUserProvider().run(context -> {
 });
 ```
 
-[Learn more about how to switch to a technical tenant.](../java/event-handlers/request-contexts#switching-to-provider-tenant){.learn-more}
+[Learn more about how to switch to a technical tenant.](../guides/security/cap-users#switching-to-provider-tenant){.learn-more}
+
 
 #### Switching to Subscriber Tenants { #switching-subscriber-tenant }
 
-You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../java/event-handlers/request-contexts#switching-to-a-specific-technical-tenant) and demonstrated by the following example:
+You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../guides/security/cap-users#switching-to-subscriber-tenant) and demonstrated by the following example:
 
 ```java
 runtime.requestContext().systemUser(tenant).run(context -> {
@@ -313,7 +314,7 @@ runtime.requestContext().systemUser(tenant).run(context -> {
 Note that switching the tenant in the context is a quite expensive operation as CDS model data might need to be fetched from MTX sidecar in case of tenant extensions.
 Hence, avoid setting the context for all subscribed tenants iteratively as this might overload the sidecar and also could flood the local CDS model cache.
 
-::: warning _❗ Warning_
+::: warning 
 If an application deviates from default behaviour and switches the tenant context internally, it needs to ensure data privacy and proper isolation!
 :::
 
@@ -330,7 +331,7 @@ TenantProviderService tenantProvider;
 List<TenantInfo> tenantInfo = tenantProvider.readTenants();
 ```
 
-::: warning _❗ Warning_
+::: warning 
 Retrieving the tenants is an expensive operation. It might be a good idea to cache the results if appropriate.
 :::
 
@@ -364,7 +365,7 @@ upon incoming requests.
 
 In order to activate the combined pool approach set the property `cds.multiTenancy.datasource.combinePools.enabled = true`.
 
-::: warning _❗ Warning_
+::: warning 
 Since the pool is shared among all tenants, one tenant could eat up all available connections, either intentionally or by accident. Applications using combined pools need to take adequate measures to mitigate this risk, for example by introducing rate-limiting.
 :::
 

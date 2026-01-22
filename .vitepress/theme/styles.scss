@@ -70,6 +70,7 @@ html {
   -webkit-text-fill-color: transparent;
   background: -webkit-linear-gradient(-60deg,#098 20%,#fa0 50%);
   background-clip: text;
+  line-height: 1.2em;
   font-weight: 600;
   font-size: 48px;
   font-family: var(--vp-font-family-avenir);
@@ -111,7 +112,7 @@ main .vp-doc {
 
 
   h1 {
-    line-height: 1.2em; margin: 1em 0 1em;
+    margin: 1em 0 1em;
     + .subtitle {
       color: var(--vp-c-text-2);
       margin: -44px 0 48px;

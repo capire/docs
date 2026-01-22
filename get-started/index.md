@@ -49,8 +49,8 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node@24             # Node.js latest LTS
-npm add --global @sap/cds-dk     # CAP's cds-dk
+brew install node      # Node.js latest LTS
+npm i -g @sap/cds-dk   # CAP's cds-dk
 ```
 
 
@@ -59,10 +59,6 @@ npm add --global @sap/cds-dk     # CAP's cds-dk
 ```shell
 brew install sapmachine-jdk
 brew install maven
-```
-```shell
-code --install-extension oracle.oracle-java       # for Java
-code --install-extension vscjava.vscode-maven     # for Maven
 ```
 
 
@@ -80,11 +76,17 @@ brew install github    # GitHub Desktop App
 
 ```shell
 brew install --cask visual-studio-code            # VS Code itself
+```
+```shell
 code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
 code --install-extension qwtel.sqlite-viewer      # for .sqlite files
 code --install-extension humao.rest-client        # for REST requests
 code --install-extension dbaeumer.vscode-eslint   # for linting
+```
+```shell
+code --install-extension oracle.oracle-java       # for Java
+code --install-extension vscjava.vscode-maven     # for Maven
 ```
 
 
