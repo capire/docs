@@ -11,35 +11,143 @@ Integrating remote services – from other applications, third-party services, o
 
 
 
-## Remote Service Consumption 
+## Consuming Remote Services 
 
-Service integration is essentially about consuming remote services from other applications, which can be third-party services, platform services, or services from other applications within the same enterprise landscape. CAP allows this by representing them as CAP services, which can be used _as if they were local_.
+Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how that looks in practice:
 
-We can see that happening live as follows:
-1. Clone the [*@capire/bookshop*](https://github.com/capire/bookshop) sample.
+1. Clone the bookshop sample, and start the server in a terminal:
+
    ```shell
    git clone https://github.com/capire/bookshop
    ```
-2. Start the application in watch mode:
    ```shell
    cds watch bookshop
    ```
-3. Start a cds repl in another terminal:
+
+2. Start *cds repl* in a second terminal, and run the code below in there:
+
    ```shell
    cds repl
    ```
-4. Load service bindings from the local binding envorinment:
-   ```js
-   await cds.service.bindings
+   ```js :line-numbers=1
+   await cds.service.bindings // from local binding environment
    ```
-5. Connect to the remote _bookshop_ service from the repl:
-   ```js
-   let cats = await cds.connect.to ('CatalogService')
+   ```js :line-numbers=2
+   const srv = await cds.connect.to ('AdminService')
    ```
-6. Read some data from the remote service:
-   ```js
-   await cats.read `ID, title` .from `Books`
+   ```js :line-numbers=3
+   await srv.read `ID, title` .from `Books` // SQL style
    ```
+   ```js :line-numbers=4
+   await srv.read `Authors { 
+     ID, name, books { 
+       ID, title, genre.name as genre
+     }
+   }` // CQL style w/ deep queries
+   ```
+
+The graphic below illustrates what happened here:
+
+![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
+](assets/remote-services.drawio.svg)
+
+Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they were local_**. Given a respective service bindings, `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
+
+::: details Details about `cds.service.bindings` ...
+Whenever you start a CAP server with `cds watch` it registers itself with all the provided services and their protocol-specific endpoints in a user-local `~/.cds-services.json` (or `.yaml`) file. In our example above, that would look like that:
+
+::: code-group
+```yaml [~/.cds-services.yaml]
+cds:
+  serves:
+    '@capire/bookshop':
+      root: ~/cap/samples/bookshop
+      url: http://localhost:4004
+      pid: 76123
+      serving:
+        AdminService:
+          odata: /admin
+          rest: /rest/admin
+          hcql: /hcql/admin
+        CatalogService:
+          odata: /browse
+          rest: /rest/catalog
+          hcql: /hcql/catalog
+```
+```json [~/.cds-services.json]
+{
+  "cds": {
+    "serves": {
+      "@capire/bookshop": {
+        "root": "~/cap/samples/bookshop",
+        "url": "http://localhost:4004",
+        "pid": 76123,
+        "serving": {
+          "AdminService": {
+            "odata": "/admin",
+            "rest": "/rest/admin",
+            "hcql": "/hcql/admin"
+          },
+          "CatalogService": {
+            "odata": "/browse",
+            "rest": "/rest/catalog",
+            "hcql": "/hcql/catalog"
+          }
+        }
+      }
+    }
+  }
+}
+```
+```json [~/.cds-services.json < 9.7]
+{
+  "cds": {
+    "provides": {
+      "AdminService": {
+        "endpoints": {
+          "odata": "/admin",
+          "rest": "/rest/admin",
+          "hcql": "/hcql/admin"
+        },
+        "server": 92460
+      },
+      "CatalogService": {
+        "endpoints": {
+          "odata": "/browse",
+          "rest": "/rest/catalog",
+          "hcql": "/hcql/catalog"
+        },
+        "server": 92460
+      }
+    },
+    "servers": {
+      "92460": {
+        "root": "~/cap/samples/bookshop",
+        "url": "http://localhost:4004"
+      }
+    }
+  }
+}
+```
+[Learn more about service bindings below](#service-bindings) {.learn-more}
+:::
+
+
+> [!tip] Calesi Design Principles
+>
+> 1. Remote services are represented as CAP services, ... → *Everything is a CAP service*
+> 2. consumed using high-level APIs, in protocol-agnostic ways → *as if they were local*
+> 3. with built-in connectivity, resilience, and principal propagation → *under the hood*
+>
+> => Application developers stay at the CAP level -> *Focused on Domain*
+
+> [!note] Model Free
+>
+> Note that in the exercise above, the consumer side didn't even have any information about the service provider, except for the URL endpoint and protocols served, which it got from the service binding. In particular no API/service definitions at all – neither in *CDS*, *OData*, nor *OpenAPI*. 
+
+The remainder of this guide goes beyond such simple scenarios 
+and covers all the aspects of CAP-level service integration in detail.
+
 
 ## Integration Scenarios
 
@@ -303,7 +411,7 @@ Looking at the whole output of `cds export` we see that multiple files are gener
 ```zsh
 apis/data-service
 ├── _i18n/
-│   └── *.properties
+│   └── *.properties 
 ├── data/*.csv
 │   └── *.csv
 ├── index.cds
@@ -312,59 +420,70 @@ apis/data-service
 └── package.json
 ```
 
-Actually that's a valid CAP project structure, as introduced in the [_Getting Started_](../../get-started/index#jumpstart-projects) guide, and when imported into consuming applications it behaves like any other CAP reuse package, in particular, the models can be reused, and when doing so, the .csv files and i18n files will be found and automatically loaded. 
-
-> [!tip] Yet Another CAP Package (YACP)
-> The output of `cds export` is a valid CAP project/package on its own, which can be consumed like any other CAP reuse package. This allows to leverage all the options for adding and sharing reuse content offered by CAP.
-
-
-There is also a `cds-plugin.js` file included, which triggers CAP's plug & play configuration in consuming apps. We leverage that by this config in the _package.json_:
-
-```json [apis/data-service/package.json]
-{
-  ...
-  "cds": {
-    "requires": {
-      "sap.capire.flights.data": true
-    }
-  }
-}
-```
-
 > [!warning] Don't Touch Files
 > The `services.csn` file and the generated `i18n*.properties` and `*.csv` files are not meant to be modified, as they are overwritten on subsequent runs of `cds export`.
 
 We can modify `package.json`, `index.cds`, and `cds-plugin.js` as needed, though, to further tailor the exported API package to our needs. For example, let's edit the _package.json_ file and adjust the package name as shown below. 
 
 ::: code-group
+
 ```json [apis/data-service/package.json]
 {
   "name": "@capire/xflights-data-service", // [!code ++]
   "name": "@capire/xflights-data", // [!code --]
   ...
-}```
+}
+```
+
 :::
 
-We can also add additional files, including .cds files to extend the exported definitions, or .js/.ts/.java files to add custom logic, as needed. 
+We can also add additional files as needed; for example `.cds` files to extend the exported definitions, or `.js` files to add custom logic.
+
+> [!tip] Yet Another CAP Package (YACP)
+>
+> The output of `cds export` is actually CAP project/package on its own, with a valid CAP project layout as introduced in the [_Getting Started_](../../get-started/index#jumpstart-projects) guide. So it can be consumed like any other CAP reuse package. It also allows leveraging all the options for adding and sharing reuse models, code, and data offered by CAP, as well as plug & play configuration. 
+>
+> ::: details Yet Another CAP Plugin ...
+>
+> There is also a `cds-plugin.js` file included, which triggers CAP's plug & play configuration in consuming apps. We leverage that by this config added in _.cdsrc.yaml_ which essentially adds a mount point for service bindings to the consuming application:
+>
+> ::: code-group
+>
+> ```yaml [apis/data-service/.cdsrc.yaml]
+> cds:
+>   requires:
+>     sap.capire.flights.data: true
+> ```
+>
+> :::
+>
+
+
 
 
 
 #### Publishing APIs
 
-And it's a valid _npm_ or _Maven_ package, which can be published to any package registry, as we'll see below in the [_Publishing APIs_](#publishing-apis) section.
+The output of `cds export` is a valid _npm_ or _Maven_ package, which can be published to any npm-compatible registry, such as the public [npmjs.com](https://www.npmjs.com/) registry, or private registries like [GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry), [Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/npm/npm-overview?view=azure-devops), or [JFrog Artifactory](https://jfrog.com/confluence/display/JFROG/NPM+Registry). For example:
 
-This allows to easily share and distribute the exported APIs to consumers via standard package registries.
-
-The second key ingredient of the output generated by `cds export` is the packaging of the exported API into an _npm_ or _Maven_ package, indicated by the presence of a `package.json` or `pom.xml` file in the generated output, as highlighted below. 
-
-... which can be published to any npm-compatible registry, such as the public [npmjs.com](https://www.npmjs.com/) registry, or private registries like [GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry), [Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/npm/npm-overview?view=azure-devops), or [JFrog Artifactory](https://jfrog.com/confluence/display/JFROG/NPM+Registry).
-
-
-
+```shell
+cd apis/data-service
+```
 ```shell
 npm publish
 ```
 
+::: details Using GitHub Packages 
+
+Within the [_capire_](https://github.com/capire) org, we're publishing to [GitHub Packages](https://docs.github.com/packages), which requires you to `npm login` once like that, prior to publishing:
+  ```sh
+  npm login --scope=@capire --registry=https://npm.pkg.github.com
+  ```
+As password you're using a Personal Access Token (classic) with `read:packages` scope (for retrieving and installing a package). Read more about that in the [_GitHub Packages_](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) docs.
+:::
+
+> [!tip] Best Practice: Using Proven Standards
+> CAP leverages standard and widely adopted package management tools and practices, such as _npm_ or _Maven_, for sharing and distributing reuse packages. This allows you to use established and battle-tested workflows and tools for versioning, publishing, consuming, and upgrading packages. At the same time it allows us to not reinvent those wheels, and focus on what matters most: allowing you to focus on domain, and be as productive as possible.
 
 
 
@@ -374,6 +493,8 @@ npm publish
 git clone https://github.com/capire/xtravels
 code xtravels
 ```
+
+With that consuming application projects like *@capire/xtravels* can just import the exported API package like any other CAP reuse package, using standard `npm add` or `mvn install` :
 
 
 
