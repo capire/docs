@@ -11,9 +11,6 @@ CAP applications integrate at multiple levels — from reusing services and data
 [Service Composition](composition)
 : Explore in this guide how to reuse and compose enhanced solutions by reusing modular services from other projects, and adapt them to your needs with solution-specific projections and extensions.
 
-[Using Microservices](microservices) <!-- UNRELEASED -->
-: Deploy and manage CAP applications as microservices, with guidance on creating solution monorepos and orchestrating multiple services. <!-- UNRELEASED -->
-
 <!-- Platform Services -->
 [Application Gateways](app-gateways) <!-- UNRELEASED -->
 : Integrate with application gateways like SAP API Management or SAP Cloud API Gateway to expose and manage your CAP services securely. <!-- UNRELEASED -->
