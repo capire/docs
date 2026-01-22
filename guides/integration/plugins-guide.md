@@ -1,4 +1,6 @@
-# CAP-level Integration of Platform Services (Calipso)
+# CAP-level Integration of Platform Services 
+The *'Calipso'* Pattern {.subtitle}
+
 
 CAP applications frequently integrate with platform services like identity, logging, document storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
 
