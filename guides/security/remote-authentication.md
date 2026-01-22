@@ -368,9 +368,9 @@ cds:
 
 ```xml [/srv/pom.xml]
 <dependency>
-		<groupId>com.sap.cloud.sdk.cloudplatform</groupId>
- 		<artifactId>scp-cf</artifactId>
-  	<scope>runtime</scope>
+  <groupId>com.sap.cloud.sdk.cloudplatform</groupId>
+  <artifactId>scp-cf</artifactId>
+  <scope>runtime</scope>
 </dependency>
 ```
 
@@ -443,5 +443,3 @@ Instead, rely on the shared connectivity component, which ensures centralized an
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership (TCO).
-
-
