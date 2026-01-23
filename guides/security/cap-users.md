@@ -516,17 +516,6 @@ aspect withGenre {
 entity Books : withGenre { ... }
 ```
 
-<!--
-The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
->>>>>>> Stashed changes
-```cds
-annotate AdminService.Books with @ams.attributes.genre: {
-  attribute: 'Genre', element: (genre.name)
-};
-```
--->
-
-
 ### Prepare Base Policies { #policies }
 
 CAP roles and attribute filters cannot be directly assigned to business users.
@@ -1752,7 +1741,7 @@ Instead, if required at all, use CAP's user abstraction layer (`UserInfo` in Jav
 - **Don't try to propagate named user context in asynchronous requests**, such as when using the Outbox pattern or Messaging. 
 Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. 
 Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
-
+  
 - **Don't mix CAP Roles for business and technical users**. CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application.
 Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
 
