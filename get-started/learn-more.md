@@ -104,6 +104,7 @@ The _capire_ samples at https://github.com/capire are the official and curated c
 [![](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
 
 
+
 ## Featured Samples
 
 
@@ -131,12 +132,29 @@ The Sustainable SaaS (SuSaaS) sample application has been built in a partner col
 
 
 
+
+## The *qmacro* Series
+
+![](assets/learn-more/qmacro.png){style="float:right; width: 144px; margin: 0px 1em"}
+
+SAP Developer Advocate [DJ Adams](https://www.dj-adams.co.uk) has compiled a vast number of learning resources around CAP, published under the umbrella of _qmacro_, which are most recommended to both beginners and advanced users of CAP:
+
+- [The *capref* series – Axioms, Best Practices, Features, ...](https://github.com/qmacro/capref/tree/main#readme)
+- [The *Back to basics* series ...](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
+- The *HandsOn* series ...
+- More blogs series ...
+- The Code Jams ... 
+- Selected picks...
+
+
+
 ## SAP Learning Sources
 
    - [SAP Learning Courses](https://learning.sap.com/courses?lsc_product=SAP+Cloud+Application+Programming+Model)
    - [SAP BTP Developers Guide](https://help.sap.com/docs/btp/btp-developers-guide/btp-developers-guide)
       - [Tutorials featured in there](https://help.sap.com/docs/btp/btp-developers-guide/tutorials-for-sap-cloud-application-programming-model)
    - [SAP Discovery Center Missions](https://discovery-center.cloud.sap/missionCatalog/?search=cap&product=32)
+
 
 
 ## Hands-Ons & CodeJams
