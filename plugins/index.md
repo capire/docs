@@ -107,6 +107,9 @@ Prefer public repositories and issues over private/internal ones, as they help e
 As CAP is blessed with an active community, there are many useful plugins available created by the community. Have a look at the [CAP JS community](https://github.com/cap-js-community) to browse all available plugins. A broader collection of plugins can be found at [bestofcapjs.org](https://bestofcapjs.org/)
 :::
 
+## Build your own plugin
+CAP provides flexibility and variety in plugin development by following the [Calesi](../guides/integration/calesi.md) integration pattern. This approach enables you to create plugins that seamlessly extend CAP applications, supporting integration with e.g. SAP BTP services and other technologies. To help you get started, we offer a comprehensive [Plugin Development Guide](../guides/integration/plugins-guide.md) that covers best practices, design principles, and step-by-step instructions for building robust CAP plugins.
+
 ## OData V2 Adapter {#odata-v2-proxy}
 
 OData V2 has been deprecated. Use the plugin only if you need to support existing UIs or if you need to use specific controls that don't work with V4 **yet** like, tree tables (sap.ui.table.TreeTable). The CDS OData V2 Adapter is a protocol adapter that allows you to expose your services as OData V2 services. For Node.js, this is provided through the [@cap-js-community/odata-v2-adapter](https://www.npmjs.com/package/@cap-js-community/odata-v2-adapter) plugin, which converts incoming OData V2 requests to CDS OData V4 service calls and responses back. For Java, this is built in.

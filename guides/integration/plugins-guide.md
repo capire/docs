@@ -1,7 +1,7 @@
 # Plugin Development Guide 
 Also known as *'Calipso'* {.subtitle}
 
-CAP applications frequently integrate with platform services like identity, logging, document storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
+CAP applications frequently integrate with platform services like identity, logging, document & object storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
 {.abstract}
 
 [toc]:./
@@ -31,7 +31,7 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 
 :::
 
-### Principles for Calipso Plugins
+### Principles
 
 Calipso builds on the foundation of Calesi. The core Calesi concepts—such as ease of use, local testability, evolution without disruption, extrinsic extensibility and promoting reuse—should always guide Calipso plugin development.
 
@@ -61,9 +61,9 @@ A [sidecar](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/sidecar
 
 If the sidecars limitations are too restrictive for your use case, having one implementation for both runtimes is also possible if you configure the CAP service endpoints provided by the plugin as their own micro-service. The multi-tenancy service from CAP is an example of that.
 
-### Authorise another service to call the CAP app
+### Authorization
 
-When the external service needs to call the CAP app, use the following ways to grant the external service the permissions to access the service.
+When an external service needs to call your CAP app, use the following ways to grant the external service the permissions to access the service.
 
 #### Enforce permissions
 
@@ -71,7 +71,7 @@ Use `@requires : 'MyServiceRestriction'` annotated to your CDS service to enforc
 
 #### XSUAA
 
-When the CAP application is using XSUAA for enforcing authorizations, you can grant the scope needed for the CAP service via the "grant-as-authority-to-apps" configuration, like in the following sample `xs-security.json` file:
+When the CAP application is using [XSUAA](../../guides/security/authentication.md#xsuaa-auth) for enforcing authorizations, you can grant the scope needed for the CAP service via the "grant-as-authority-to-apps" configuration, like in the following sample `xs-security.json` file:
 
 ::: code-group
 
@@ -123,7 +123,7 @@ Furthermore, in the deployment descriptor you need to enable that the service in
 
 #### IAS/AMS
 
-In the IAS/AMS scenario you would create a [provided api](https://help.sap.com/docs/btp/sap-business-technology-platform/regular-and-native-sidecar-containers) with the same name as the role you require with the `@requires` annotation.
+In the [IAS/AMS](../../guides/security/authentication.md#adding-ias) scenario you would create a [provided api](https://help.sap.com/docs/btp/sap-business-technology-platform/regular-and-native-sidecar-containers) with the same name as the role you require with the `@requires` annotation.
 
 This provided API then needs to be manually assigned to the consuming service in the Cloud Identity Services UI and at runtime AMS will map the assigned provided API to the role that is required by your CAP service.
 
@@ -138,7 +138,7 @@ Key considerations:
 - **Avoid entity-specific handlers:** Multi-tenant applications often use feature flags to roll out functionality gradually. Handlers registered by your plugin must therefore not depend on specific entities, so they continue to function even when certain entities are gated behind feature flags.
 
 
-## Configuration
+### Configuration
 
 - **Plug & Play, convention over configuration** — Favor conventions that enable automatic integration and minimize manual configuration steps.
 - **Always use `cds.env`** — For environment configuration, always use CAP's built-in `cds.env`. Never use `xsenv`, `VCAP_SERVICES`, or similar environment-specific mechanisms directly.
@@ -216,5 +216,3 @@ If your plugin is in the `cap-js` and/or `cap-java` organization, add the docume
 ### SFlight
 
 Add your plugin to the SFlight sample showcasing it to the public. All modifications necessary in cds should be in their own cds file so developers can easily digest what modifications are necessary to use your plugin.
-
-As a not perfect, but guiding sample, you can refer to how tree tables are showcased in the Bookstore in [tree-view.cds](https://github.com/capire/bookstore/blob/main/app/genres/tree-view.cds). Using CAP's inbuilt extensibility the necessary additional fields and annotations are added to avoid splitting up the necessary code changes across multiple files.
