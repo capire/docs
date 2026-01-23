@@ -149,102 +149,43 @@ The remainder of this guide goes beyond such simple scenarios
 and covers all the aspects of CAP-level service integration in detail.
 
 
-## Integration Scenarios
+
+
+## The XTravels Sample
+
+The [*@capire/xtravels*](https://github.com/capire/xtravels) sample is about an application which allows travel agents to plan travels on behalf of travellers, including bookings of flights. *Customer* data is obtained from S/4HANA, while *Flights*, *Airports* and *Airline* are master data provided by the [*@capire/xflights*](https://github.com/capire/xflights) microservice, as indicated by the green and blue areas in the screenshot below. 
+
+![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
+](assets/xtravels-screenshot.png)
+
+The resulting entity-relashionship model looks like that:
+
+![Architecture diagram showing three systems: XFlights on the left containing Flights and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
+](assets/xtravels-sample.drawio.svg)
+
+From a service integration perspective, this sample mainly shows a data federation scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. 
+
+
+So let's dive into the details of CAP-level service integration, using the XTravels sample as our running example:
 
 ```sh
 mkdir -p cap/samples
 cd cap/samples
-```
-
-```shell
-git clone https://github.com/capire/bookstore
-git clone https://github.com/capire/bookshop
-git clone https://github.com/capire/reviews
-git clone https://github.com/capire/orders
-```
-
-```shell
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/xtravels
 ```
 
 
-### The XTravels Sample
-
-The [*@capire/xtravels*](https://github.com/capire/xtravels) sample is about an application which allows travel agents to plan travels on behalf of travellers, including bookings of flights. Travellers are Customers maintained in, and obtained from S/4HANA. *Flights*, *Airports* and *Airline* are master data provided by the [*@capire/xflights*](https://github.com/capire/xflights) microservice. 
-
-![Architecture diagram showing three systems: XFlights on the left containing Flights and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
-](assets/xtravels-sample.drawio.svg)
-
-From a service integration perspective, this sample mainly shows a **data federation** scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. The screenshot below shows a travel request including customer data from S/4HANA (highlighted in green) and flight data from XFlights (highlighted in blue).
-
-![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
-](assets/xtravels-screenshot.png)
-
-### The Bookstore Sample
-
-The [*@capire/bookstore*](https://github.com/capire/bookstore) sample composes independent microservices into a composite application as follows:
-
-- [*@capire/bookstore*](https://github.com/capire/bookstore) – a composite application which composes:
-- [*@capire/bookshop*](https://github.com/capire/bookshop) – a standalone bookshop application
-- [*@capire/reviews*](https://github.com/capire/reviews) – a reuse service to manage user reviews
-- [*@capire/orders*](https://github.com/capire/orders) – a reuse service to manage orders 
-
-![Diagram showing the bookstore application architecture with four hexagonal service components: a dark blue bookstore service at the top center, and three light blue services below it - bookshop at bottom center, orders at bottom right, and reviews at bottom left, representing a microservices composition pattern.
-](assets/bookstore-sample.drawio.svg)
-
-> [!note] Independent Microservices
-> Each of the microservices are developed independently, and can be reused and composed in any applications. 
-> Bookshop, Reviews and Orders services are all standalone CAP applications on their own, that know nothing about each other, with independent lifecycles. Only the Bookstore application composes them into a larger whole.
-
-The illustration below zooms in to the flow of events and requests between the individual (micro) services, with the dashed lines representing asynchronous events, and the solid lines representing synchronous requests (read and write). Basically, the bookstore application follows an event-driven choreography pattern, with the following interactions:
-
-- on _Bookshop.submitOrder_ -> _OrdersService.create (Order)_.
-- on _OrdersService.Order.Changed_ -> _Bookshop.update (stock)_.
-- on _ReviewsService.Ratings.Changed_ -> _Bookstore.update (averageRating)_.
-
-![Diagram illustrating event-driven choreography in the bookstore application. Four hexagonal service components are arranged in a diamond pattern: Bookstore in dark blue at the center, Reviews in light blue at top left, Orders in light blue at top right, and Bookshop in light blue at bottom. Solid arrows indicate synchronous calls: Bookstore calls Read Reviews to Reviews service, Create Order to Orders service, and Update Stock to Bookshop service. Dashed arrows show asynchronous events: Reviews publishes Ratings Changed event to Bookstore, Orders publishes Order Changed event to Bookstore, and Bookshop publishes Submit Order event to Bookstore. This demonstrates a choreographed integration pattern where services communicate through a combination of direct calls and event-driven messaging.
-](assets/bookstore-choreography.drawio.svg)
-
-
-> [!tip] Integration Patterns
->
-> From the descriptions of the sample scenarios above we can identify these general integration scenarios and patterns:
-> * **(Master) Data Integration** scenarios, which frequently involve data replication via initial loads / delta loads, on-demand replication, or event-based replication.
-> * **(Enterprise) Application Integration** scenarios, in which we commonly see a mix of (synchronous) calls to remote services, and (asynchronous) reaction on events. 
-> * **Reuse & Composition of (Micro) Services** as in the *@capire/bookstore* sample.
-
-
-
 
 ## Defining Service APIs
 
-CAP-based service providers define provided APIs in terms of CAP service definitions in CDS, and expose them to clients via protocols served by CAP runtimes out of the box, such as *HCQL*, *OData*, *REST*, or *GraphQL*. All the API features of CAP services can be used, which are: 
-
-- Data-centric CRUDQ operations on deeply structured entity graphs 
-- Custom actions and functions specific to the service's domain
-- Asynchronous events which consumers can subscribe to
-
-> [!tip] Yet Another CAP Service (YACS)
-> In CAP, all interfaces to the outside world are defined as services in CDS. This applies equally to services meant to serve UIs, as well as to services that constitute APIs consumed from remote applications. And vice versa, all remote services we want to consume in CAP applications are to be represented as CAP services – as we'll see in the following chapters. 
-
-Let's look at some samples below...
-
-
-
-### Data-Centric Services
-
-(Master) data integration scenarios usually involve data-centric services, with readonly entities, as we find in the XFlights microservice. -> Open the _cap/samples/xflights_ folder in Visual Studio Code, and have a look at the service definition in `srv/data-service.cds` in there, e.g., like that from the command line:
-
-```shell
-code xflights -g xflights/srv/data-service.cds
-```
+Open the _cap/samples/xflights_ folder in Visual Studio Code, and have a look at the service definition in `srv/data-service.cds` in there:
 
 ::: code-group
 ```cds :line-numbers [cap/samples/xflights/srv/data-service.cds]
 using sap.capire.flights as x from '../db/schema';
 @odata @hcql service sap.capire.flights.data {
-  @readonly entity Flights as projection on x.Flights { flights.*, * };
+  @readonly entity Flights as projection on x.Flights {flights.*,*};
   @readonly entity Airlines as projection on x.Airlines;
   @readonly entity Airports as projection on x.Airports;  
 }
@@ -254,11 +195,12 @@ using sap.capire.flights as x from '../db/schema';
 This declares a CAP service named `sap.capire.flights.data`, served over _OData_ and _HCQL_ protocols, which exposes _Flights_, _Airlines_, and _Airports_ as readonly projections on underlying domain model entities, with _Flights_ as a denormalized view.
 
 
-#### Denormalized Views
+#### Using Denormalized Views
 
-Lets have a closer look at the denormalized view for _Flights_, which basically flattens the association to `FlightConnection`. The above projection is a simplified version of the following actual definition found in `srv/data-service.cds`:
+Lets have a closer look at the denormalized view for _Flights_, which basically flattens the association to `FlightConnection`. The projection `{flights.*,*}` shown in line 3 above, is a simplified version of the following actual definition found in `srv/data-service.cds`:
 
-```cds :line-numbers [cap/samples/xflights/srv/data-service.cds]
+```cds :line-numbers=3 [cap/samples/xflights/srv/data-service.cds]
+@readonly entity Flights as projection on x.Flights {flights.*,*}; // [!code --]
 @readonly entity Flights as projection on x.Flights {
   *,                          // all fields from Flights
   flight.{*} excluding {ID},  // all fields from FlightConnection
@@ -272,90 +214,90 @@ Reason for this more complicated definition is that we need to preserve the prim
 > [!tip] Use Case-Oriented Services
 > Denormalized views are a common means to tailor provided APIs in a use case-oriented way. While normalization is required _within_ _XFlights_ to avoid redundancies, we flatten it here, to make life easier for external consumers. \
 > => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
-
-
-### Feature-Centric Services
-
-Let's have a look at another the reuse service definition from the [_@capire/reviews_](https://github.com/capire/reviews) sample, which is designed as a reuse service, which can be consumed by any application needing review functionality, such as the _bookstore_ sample. 
-
-In contrast to data-centric services, such feature-centric services typically expose less entities, and more specialized custom events and actions.
-
-Open `srv/review-service.cds` in VSCode, e.g., like that from the command line:
-
-```shell
-code reviews -g reviews/srv/review-service.cds
-```
-::: code-group
-```cds :line-numbers [cap/samples/reviews/srv/review-service.cds]
-using { sap.capire.reviews as my } from '../db/schema';
-
-@odata @rest @hcql service ReviewsService {
-
-  /** The central entity for reviews, add/change reviews */
-  entity Reviews as projection on my.Reviews;
-
-  /** Lightweight list of reviews without text and likes */
-  @readonly entity ListOfReviews as projection on Reviews 
-  excluding { text, likes };
-
-  /** Summary of average ratings per reviewed subject. */
-  @readonly entity AverageRatings as projection on Reviews {
-    key subject,
-    round(avg(rating),2) as rating  : my.Rating,
-    count(*)             as reviews : Integer,
-  } group by subject;
-
-  /** Event emitted when a subject's average rating has changed. */
-  event AverageRatings.Changed : AverageRatings;
-
-  /** Entities and actions for liking and unliking reviews */
-  @readonly entity Likes as projection on my.Likes;
-  action like (review: Review);
-  action unlike (review: Review);
-  type Review : projection on my.Reviews { subject, reviewer }
-}
-```
-:::
-This service exposes the `Reviews` entity for full CRUD operations, as well as two readonly projections: `ListOfReviews` without the potentially large text and likes fields, and `AverageRatings` which provides aggregated average ratings per subject. Additionally, an event `AverageRatings.Changed` is defined to notify consumers when the average rating for a subject changes. Actions `like` and `unlike` are also provided to manage likes on reviews.
-
+>
+> 
 
 
 ## Exporting APIs
 
-Use `cds export` to export the interface-only part of service definitions. For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would display the output shown below:
+Use `cds export` to export APIs. For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would print some output as shown below:
 
 ```shell
 cds export srv/data-service.cds 
 ```
-```log{5}
+```log
 Exporting APIs to apis/data-service ...
 
-  > apis/data-service/package.json
-  > apis/data-service/index.cds
   > apis/data-service/services.csn
-  > apis/data-service/cds-plugin.js
-  ...
+  > apis/data-service/index.cds
+  > apis/data-service/package.json
+
+/done.
 ```
+
+By default, generated output is written to an `./apis/<service>`  subfolder, with `<service>` being the given service definition's `.cds` file basename. You can choose a different output folder with the `--to` option of `cds export`. 
 
 
 
 ### Service Interfaces
 
-The key ingredient of the output generated by `cds export` is the `services.csn` file, which contains the interface-only part of the given service definitions in [CSN](https://cap.cloud.sap/docs/cds/csn/) format.
-Open that file in VSCode, for example, by cmd/ctrl-clicking on the logged file name in your terminal, or like that from the command line:
+The key ingredient of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** part of the given service definition: only the _inferred elements signature_ of served entities are included, while all projections to underlying entities got removed, and hence all underlying entities and definitions referred to by them. 
+
+To get an idea of the effect, run `cds export` in dry-run mode like this:
 
 ```shell
-code xflights -g xflights/apis/data-service/services.csn
+cds export srv/data-service.cds --dry 
+```
+```zsh
+ Kept: 6
+
+   • sap.capire.flights.data
+   • sap.capire.flights.data.Flights
+   • sap.capire.flights.data.Airlines
+   • sap.capire.flights.data.Airports
+   • sap.capire.flights.data.Supplements
+   • sap.capire.flights.data.SupplementTypes
+
+ Skipped: 31
+
+   - sap.capire.flights.Flights
+   - sap.capire.flights.FlightConnections
+   - sap.capire.flights.Airlines
+   - sap.capire.flights.Airports
+   - sap.capire.flights.Supplements
+   - sap.capire.flights.SupplementTypes
+   - Language
+   - Currency
+   - Country
+   - Timezone
+   - sap.common
+   - sap.common.Locale
+   - sap.common.Languages
+   - sap.common.Countries
+   - sap.common.Currencies
+   - sap.common.Timezones
+   - sap.common.CodeList
+   - sap.common.TextsAspect
+   - sap.common.FlowHistory
+   - cuid
+   - managed
+   - temporal
+   - User
+   - sap.capire.flights.Supplements.texts
+   - sap.capire.flights.SupplementTypes.texts
+   - sap.common.Languages.texts
+   - sap.common.Countries.texts
+   - sap.common.Currencies.texts
+   - sap.common.Timezones.texts
+   - sap.capire.flights.data.Supplements.texts
+   - sap.capire.flights.data.SupplementTypes.texts
+
+ Total: 37
 ```
 
-In VSCode display the outline view (via the sidebar or `Cmd+Shift+O` / `Ctrl+Shift+O`), to get a hierarchical overview of the service definition contained in the `services.csn` file, which would display something like this:
+::: details Compare to original service definition...
 
-![Visual Studio Code editor showing an outline tree view of a CAP service definition file named service.csn. The tree structure displays the sap.capire.flights.data service with its nested entities: Flights containing fields like ID, date, departure, arrival, and associations to airline, origin, and destination; Airlines with ID, name, and icon fields; Airports with ID, name, city, and country fields; and Supplements with ID, name, and description fields. The outline demonstrates the hierarchical structure of a CAP service API with its data model entities and their properties.
-](assets/service.csn-outline.png){width="400px"}
-
-::: details Inspect the difference to the original service definition
-
-To better understand the difference between the original service definition and the exported API definition, we can compare them side by side like this:
+We can also compare the above to the respective output for the complete provided service like that:
 
 ```shell
 cds export srv/data-service.cds --dry > x.log
@@ -363,117 +305,145 @@ cds minify srv/data-service.cds --dry > m.log
 code --diff *.log
 ```
 This opens a diff view in VSCode, which would display these differences:
-```diff
+```zsh
 - Kept: 26 
 + Kept: 6 
 
    • sap.capire.flights.data
    • sap.capire.flights.data.Flights
--  •• sap.capire.flights.Flights
--  ••• sap.capire.flights.FlightConnections
--  •••• sap.capire.flights.Airlines
--  ••••• sap.common.Currencies
--  •••••• sap.common.Currencies.texts
--  ••••••• sap.common.Locale
--  ••••••• sap.common.TextsAspect
--  •••••• sap.common.CodeList
--  ••••• Currency
--  ••••• cuid
--  •••• sap.capire.flights.Airports
--  ••••• sap.common.Countries
--  •••••• sap.common.Countries.texts
--  ••••• Country
    •• sap.capire.flights.data.Airlines
    •• sap.capire.flights.data.Airports
    • sap.capire.flights.data.Supplements
--  •• sap.capire.flights.Supplements
--  ••• sap.capire.flights.SupplementTypes
--  •••• sap.capire.flights.SupplementTypes.texts
--  ••• sap.capire.flights.Supplements.texts
    •• sap.capire.flights.data.SupplementTypes
--  ••• sap.capire.flights.data.SupplementTypes.texts
--  •• sap.capire.flights.data.Supplements.texts
+   •• sap.capire.flights.Flights # [!code --]
+   ••• sap.capire.flights.FlightConnections # [!code --]
+   •••• sap.capire.flights.Airlines # [!code --]
+   ••••• sap.common.Currencies # [!code --]
+   •••••• sap.common.Currencies.texts # [!code --]
+   ••••••• sap.common.Locale # [!code --]
+   ••••••• sap.common.TextsAspect # [!code --]
+   •••••• sap.common.CodeList # [!code --]
+   ••••• Currency # [!code --]
+   ••••• cuid # [!code --]
+   •••• sap.capire.flights.Airports # [!code --]
+   ••••• sap.common.Countries # [!code --]
+   •••••• sap.common.Countries.texts # [!code --]
+   ••••• Country # [!code --]
+   •• sap.capire.flights.Supplements # [!code --]
+   ••• sap.capire.flights.SupplementTypes # [!code --]
+   •••• sap.capire.flights.SupplementTypes.texts # [!code --]
+   ••• sap.capire.flights.Supplements.texts # [!code --]
+   ••• sap.capire.flights.data.SupplementTypes.texts # [!code --]
+   •• sap.capire.flights.data.Supplements.texts # [!code --]
 
 - Skipped: 11 
 + Skipped: 31 
 ...
 ```
+
 :::
 
-> [!tip] Interface-Only Service APIs
-> The exported service definitions contain only what is required to describe the service interface to consumers, that is, only the inferred entity _types_ **without any projections to underlying projections**. The latter are required for generic service providers to serve the interface on top of persisted entities, while the consumers don't need that, and should not see that. 
-
+In addition to the generated `services.csn` file, an `index.cds` file was added, which you can modify as needed. It won't be overridded on subsequent runs of `cds export`.
 
 ### Packaged APIs 
 
-Looking at the whole output of `cds export` we see that multiple files are generated in the target folder, as shown below:
-
-```zsh
-apis/data-service
-├── _i18n/
-│   └── *.properties 
-├── data/*.csv
-│   └── *.csv
-├── index.cds
-├── services.csn
-├── cds-plugin.js
-└── package.json
-```
-
-> [!warning] Don't Touch Files
-> The `services.csn` file and the generated `i18n*.properties` and `*.csv` files are not meant to be modified, as they are overwritten on subsequent runs of `cds export`.
-
-We can modify `package.json`, `index.cds`, and `cds-plugin.js` as needed, though, to further tailor the exported API package to our needs. For example, let's edit the _package.json_ file and adjust the package name as shown below. 
+The third file generated is a `package.json` with that content:
 
 ::: code-group
 
 ```json [apis/data-service/package.json]
 {
-  "name": "@capire/xflights-data-service", // [!code ++]
-  "name": "@capire/xflights-data", // [!code --]
-  ...
+  "name": "@capire/xflights-data-service",
+  "version": "0.1.3"
+}
+```
+
+```json [=> modified]
+{
+  "name": "@capire/xflights-data-service", // [!code --]
+  "name": "@capire/xflights-data", // [!code ++]
+  "version": "0.1.3"
 }
 ```
 
 :::
 
-We can also add additional files as needed; for example `.cds` files to extend the exported definitions, or `.js` files to add custom logic.
+We can modify that as needed, changes won't be overriden on subsequent runs of `cds export`. In our xflights/xtravels sample we adjusted the package name to `@capire/xflights-data` as shown in the second tab above.
 
-> [!tip] Yet Another CAP Package (YACP)
->
-> The output of `cds export` is actually CAP project/package on its own, with a valid CAP project layout as introduced in the [_Getting Started_](../../get-started/index#jumpstart-projects) guide. So it can be consumed like any other CAP reuse package. It also allows leveraging all the options for adding and sharing reuse models, code, and data offered by CAP, as well as plug & play configuration. 
->
-> ::: details Yet Another CAP Plugin ...
->
-> There is also a `cds-plugin.js` file included, which triggers CAP's plug & play configuration in consuming apps. We leverage that by this config added in _.cdsrc.yaml_ which essentially adds a mount point for service bindings to the consuming application:
->
-> ::: code-group
->
-> ```yaml [apis/data-service/.cdsrc.yaml]
-> cds:
->   requires:
->     sap.capire.flights.data: true
-> ```
->
-> :::
->
+> [!tip] Yet Another CAP Package (YACAP)
+> The generated output is actually a CAP project/package on its own. So we can also add additional files to the generated *./apis* subfolder as needed; such as additional models in *.cds* files, data in *.csv* files or I18n bundles, even *.js* or *.java* files with custom logic for consumers. 
 
 
 
+#### Adding Initial Data and I18n Bundles
 
-
-#### Publishing APIs
-
-The output of `cds export` is a valid _npm_ or _Maven_ package, which can be published to any npm-compatible registry, such as the public [npmjs.com](https://www.npmjs.com/) registry, or private registries like [GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry), [Azure Artifacts](https://learn.microsoft.com/en-us/azure/devops/artifacts/npm/npm-overview?view=azure-devops), or [JFrog Artifactory](https://jfrog.com/confluence/display/JFROG/NPM+Registry). For example:
+We can also use the following `cds export` command line options, to add I18n bundles and/or initial data , wich would generate output to the usual locations next to the generated `.csn` file as shown below:
 
 ```shell
-cd apis/data-service
-```
-```shell
-npm publish
+cds export srv/data-service.cds --texts
 ```
 
-::: details Using GitHub Packages 
+```log
+  > apis/data-service/_i18n/i18n.properties
+  > apis/data-service/_i18n/i18n_de.properties
+  > apis/data-service/_i18n/i18n_fr.properties
+```
+```shell
+cds export srv/data-service.cds --data
+```
+
+```log
+  > apis/data-service/data/sap.capire.flights.data.Flights.csv
+  > apis/data-service/data/sap.capire.flights.data.Airlines.csv
+  > apis/data-service/data/sap.capire.flights.data.Airports.csv
+  > apis/data-service/data/sap.capire.flights.data.Supplements.csv
+```
+
+The `.csv` data is taken from the source application's existing initial data, but reduced to and transformed to the entities exposed by the given service definition, including all denormalizations or calculated fields. It's actually read via an instance of that service.
+
+
+
+#### Plug & Play Config
+
+We can also use the `--plugin` option, to turn the package into a CAP plugin, to benefit from CAP's plug & play configuration features in consuming apps:
+
+```shell
+cds export srv/data-service.cds --plugin
+```
+
+This would add this to the generated output:
+
+::: code-group
+```js [apis/data-service/cds-plugin.js]
+// just a tag file for plug & play
+```
+:::
+::: code-group
+```json [apis/data-service/package.json]
+{
+  "name": "@capire/xflights-data",
+  "version": "0.1.13",
+  "cds": { // [!code focus]
+    "requires": { // [!code focus]
+      "sap.capire.flights.data": true // [!code focus]
+    } // [!code focus]
+  } // [!code focus]
+}
+```
+:::
+
+
+
+
+### Publishing APIs
+
+The output of `cds export` is a valid _npm_ or _Maven_ package, which can be published to any npm-compatible registry, such as the public [*npmjs.com*](https://www.npmjs.com/) registry, or private registries like [*GitHub Packages*](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry), [*Azure Artifacts*](https://learn.microsoft.com/en-us/azure/devops/artifacts/npm/npm-overview?view=azure-devops), or [*JFrog Artifactory*](https://jfrog.com/confluence/display/JFROG/NPM+Registry). For example:
+
+```shell
+npm publish ./apis/data-service
+```
+
+::: details Using GitHub Packages ...
 
 Within the [_capire_](https://github.com/capire) org, we're publishing to [GitHub Packages](https://docs.github.com/packages), which requires you to `npm login` once like that, prior to publishing:
   ```sh
@@ -482,6 +452,33 @@ Within the [_capire_](https://github.com/capire) org, we're publishing to [GitHu
 As password you're using a Personal Access Token (classic) with `read:packages` scope (for retrieving and installing a package). Read more about that in the [_GitHub Packages_](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) docs.
 :::
 
+::: details Not using npm registries ...
+
+Instead of publishing to npm registries we can also share packages any other way. For example we could create an archive that we upload to some marketplace like [*SAP Business Accelerator Hub*](https://api.sap.com), or team-internal ones. 
+
+For Node.js we'd use `npm pack` to create installable archives, which would print some output with the last line telling us the filename of the created archive:
+
+```shell
+npm pack ./apis/data-service
+```
+
+```zsh [=> output]
+npm notice ...
+npm notice 4.9kB services.csn
+npm notice 410B index.cds
+npm notice 61B package.json
+npm notice ...
+capire-xflights-data-0.1.13.tgz
+```
+
+> [!warning]
+>
+> Not using package registries like *npm* or *Maven* also means you'll loose all their support for semver-based dependency management. 
+
+:::
+
+
+
 > [!tip] Best Practice: Using Proven Standards
 > CAP leverages standard and widely adopted package management tools and practices, such as _npm_ or _Maven_, for sharing and distributing reuse packages. This allows you to use established and battle-tested workflows and tools for versioning, publishing, consuming, and upgrading packages. At the same time it allows us to not reinvent those wheels, and focus on what matters most: allowing you to focus on domain, and be as productive as possible.
 
@@ -489,32 +486,24 @@ As password you're using a Personal Access Token (classic) with `read:packages` 
 
 ## Importing APIs 
 
+
+
 ```shell
 git clone https://github.com/capire/xtravels
 code xtravels
 ```
 
-With that consuming application projects like *@capire/xtravels* can just import the exported API package like any other CAP reuse package, using standard `npm add` or `mvn install` :
-
 
 
 ### From Packaged APIs
 
-```shell
-cds import --package @capire/xflights-data
-```
+With CAP-based service providers exporting Packaged APIs as shown earlier, consuming application projects like [*@capire/xtravels*](https://github.com/capire/xtravels) can just import the exported API packages using standard `npm add` or `mvn install` like that:
 
 ```shell
 npm add @capire/xflights-data
 ```
 
 
-
-### Importing CDS APIs
-
-```shell
-cds import --api ...
-```
 
 
 
@@ -720,7 +709,169 @@ await xflights.read `Flights {
 
 ### Using Workspaces
 
+Instead of exercising a workflow like that again and again:
+
+- ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
+
+... we can use *npm workspaces* technique to work locally and speed up things as follows:
+
+```shell 
+mkdir -p cap/works; cd cap/works
+git clone https://github.com/capire/xflights
+git clone https://github.com/capire/xtravels
+echo '{"workspaces":["xflights","xtravels"]}' > package.json
+```
+
+Add a link to the local `@capire/xflights-data` API package, enclosed with the cloned xflights sources:
+
+```shell
+npm add ./xflights/apis/data-service
+```
+
+Check the installation using `npm ls`, which would yield output as below, showing that `@capire/xtravel`'s dependency to `@capire/xflights-data` is nicely fulfilled by a local link to `./xflights/apis/data-service`:
+
+```shell
+npm ls @capire/xflights-data
+```
+
+```zsh
+works@ ~/cap/works
+├── @capire/xflights-data@0.1.11 -> ./xflights/apis/data-service
+└─┬ @capire/xtravels@1.0.0 -> ./xtravels
+  └── @capire/xflights-data@0.1.11 deduped -> ./xflights/apis/data-service
+```
+
+Start the xtravels application → and note the sources loaded from *./xflights/apis/data-service*, and the information further below about the `sap.capire.flights.data` service mocked automatically:
+
+```shell
+cds watch xtravels
+```
+
+```zsh
+[cds] - loaded model from 20 file(s):
+
+  xtravels/srv/travel-service.cds
+  xtravels/db/schema.cds
+  xtravels/db/xflights.cds
+  xflights/apis/data-service/index.cds
+  xflights/apis/data-service/services.csn
+  ...
+```
+
+```zsh
+[cds] - mocking sap.capire.flights.data {
+  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
+  decl: 'xflights/apis/data-service/services.csn:3',
+}
+```
+
+
+
 ### Using Proxy Packages
+
+The usage of *npm workspaces* technique as described above streamlined our workflows as follows:
+
+- Before: ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
+- After: ( *develop* → *export* ) → ( *consume* )
+
+We can even more streamline that by eliminating the export step as follows...
+
+Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
+
+```shell
+mkdir xflights-api-shortcut
+```
+
+Add a `package.json` file in there with that content:
+
+```json
+{
+  "name": "@capire/xflights-data",
+  "dependencies": {
+    "@capire/xflights": "*"
+  }
+}
+```
+
+And an `index.cds` file with that content:
+
+```cds
+using from '@capire/xflights/srv/data-service';
+```
+
+<details> <summary> Using the shell's "here document" technique </summary>
+
+  You can also create those two files from the command line as follows:
+  ```shell
+  cat > xflights-api-shortcut/package.json << EOF
+  {
+    "name": "@capire/xflights-data",
+    "dependencies": {
+      "@capire/xflights": "*"
+    }
+  }
+  EOF
+  ```
+
+  Take the same approach for the `index.cds` file:
+  ```shell
+  cat > xflights-api-shortcut/index.cds << EOF
+  using from '@capire/xflights/srv/data-service';
+  EOF
+  ```
+
+</details>
+With that in place, change our API package dependency in the workspace root as follows:
+
+```shell
+npm add ./xflights-api-shortcut
+```
+
+Check the effect of that → note how `@capire/xflights-data` dependencies now link to `./xflights-api-shortcut`:
+
+```shell
+npm ls @capire/xflights-data
+```
+
+```zsh
+works@ ~/cap/works
+├── @capire/xflights-data@ -> ./xflights-api-shortcut
+└─┬ @capire/xtravels@1.0.0 -> ./xtravels
+  └── @capire/xflights-data@ deduped -> ./xflights-api-shortcut≤
+```
+
+Start the *xtravels* application → and note the sources loaded from *./xflights-api-shortcut*, and the information further below about the `sap.capire.flights.data` service now being _served_, not _mocked_ anymore:
+
+```shell
+cds watch xtravels
+```
+
+```zsh
+[cds] - loaded model from 20 file(s):
+
+  xtravels/srv/travel-service.cds
+  xtravels/db/schema.cds
+  xtravels/db/xflights.cds
+  xflights-api-shortcut/index.cds
+  xflights/srv/data-service.cds
+  xflights/db/schema.cds  
+  ...
+```
+
+```zsh
+[cds] - serving sap.capire.flights.data {
+  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
+  decl: 'xflights/apis/data-service/services.csn:3',
+}
+```
+
+Which means we've streamlined our workflows as follows:
+
+- Before: ( *change* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
+- Step 1: ( *change* → *export* ) → ( *consume* )
+- Step 2: ( *change* ) → ( *consume* )
+
+
 
 
 
