@@ -13,7 +13,7 @@ The following figure illustrates a walkthrough of the most prominent tasks durin
    : Most projects start with capturing the essential objects of their domain in a respective domain model. Find here an introduction to the basics of domain modeling with CDS, complemented with recommended best practices.
 
 [ Services & APIs ](services/index.md  )
-   : Services are the central building block to expose and consume functionality in CAP applications. This guide provides an introduction to defining, implementing, and consuming services. 
+   : Services are the central building block to expose and consume functionality in CAP applications. This guide provides an introduction to defining, implementing, and consuming services.
 
 [ Serving UIs ](uis/index.md)
    : CAP provides out-of-the-box support for SAP Fiori elements front ends.
@@ -24,8 +24,8 @@ The following figure illustrates a walkthrough of the most prominent tasks durin
 [ Databases ](databases/index.md)
    : This guide provides instructions on how to use databases with CAP applications. Out of the box-support is provided for SAP HANA, SQLite, H2 (Java only), and PostgreSQL.
 
-[ Data Federation ](federation/index.md)
-   : CAP provides built-in capabilities to consume and expose data from remote services, based on OData or REST protocols.
+[ Data Federation ](federation/index.md) <!-- UNRELEASED -->
+   : CAP provides built-in capabilities to consume and expose data from remote services, based on OData or REST protocols. <!-- UNRELEASED -->
 
 [ Service Integration ](integration/index.md)
    : This guide provides an overview of integration options available in CAP applications.

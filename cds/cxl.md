@@ -255,10 +255,10 @@ INSERT INTO sap_capire_bookshop_Books (createdAt,createdBy,modifiedAt,modifiedBy
 SELECT json_insert('{}','$."ID"',ID,'$."@assert:stock"',"@assert:stock") as _json_
 FROM (
   SELECT
-    "$B".ID,
-    case when "$B".stock < ? then ? end as "@assert:stock"
-  FROM AdminService_Books as "$B"
-  WHERE ("$B".ID) in ((?))
+    Books.ID,
+    case when Books.stock < ? then ? end as "@assert:stock"
+  FROM AdminService_Books as Books
+  WHERE (Books.ID) in ((?))
 ) [ 0, 'Enter a positive number', 277 ]
 
 -- result of evaluation contains violated constraints,
@@ -623,6 +623,10 @@ But we can also move this condition to an infix filter:
 ```
 
 ```sql [SQL]
+SELECT author.name as name
+FROM sap_capire_bookshop_Books as Books
+  LEFT JOIN sap_capire_bookshop_Authors as author ON author.ID = Books.author_ID
+WHERE Books.price > 19.99
 ```
 :::
 
