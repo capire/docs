@@ -336,8 +336,8 @@ Kept: 6 # [!code ++]
    ••• sap.capire.flights.data.SupplementTypes.texts # [!code --]
    •• sap.capire.flights.data.Supplements.texts # [!code --]
 
-- Skipped: 11 # [!code --]
-+ Skipped: 31 # [!code ++]
+Skipped: 11 # [!code --]
+Skipped: 31 # [!code ++]
 ...
 ```
 
