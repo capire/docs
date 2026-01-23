@@ -137,14 +137,14 @@ The Sustainable SaaS (SuSaaS) sample application has been built in a partner col
 
 ![](assets/learn-more/qmacro.png){style="float:right; width: 144px; margin: 0px 1em"}
 
-SAP Developer Advocate [DJ Adams](https://www.dj-adams.co.uk) has compiled a vast number of learning resources around CAP, published under the umbrella of _qmacro_, which are most recommended to both beginners and advanced users of CAP:
+SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number of learning resources around CAP, published under the umbrella of _qmacro_, which are most recommended to both beginners and advanced users of CAP:
 
 - [The *capref* series – Axioms, Best Practices, Features, ...](https://github.com/qmacro/capref/tree/main#readme)
 - [The *Back to basics* series ...](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - The *HandsOn* series ...
 - More blogs series ...
 - The Code Jams ... 
-- Selected picks...
+- Selected picks ...
 
 
 
