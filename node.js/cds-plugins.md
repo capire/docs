@@ -11,7 +11,7 @@ The `cds-plugin` approach enables you to deliver extension packages with built-i
 
 
 > [!NOTE] Before you start
-> Review the [Calesi](../guides/integration/calesi.md) and [Calipso](../guides/integration/calipso.md) patterns. These patterns help ensure your plugin follows best practices for quality and consistency.
+> Read through the [Calesi](../guides/integration/calesi.md) pattern and the [Plugin Development](../guides/integration/calipso.md) guide. These patterns help ensure your plugin follows best practices for quality and consistency.
 
 
 ## Starting a new plugin
