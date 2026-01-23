@@ -131,7 +131,7 @@ Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goe
 
 ### Dialects by `cds env` Profiles for CAP Node.js
 
-TThe dialect is automatically inferred from your project configuration, and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically. Try this out using the `--profile` option:
+The dialect is automatically inferred from your project configuration, and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically. Try this out using the `--profile` option:
 
 ```shell
 cds deploy --dry --profile development

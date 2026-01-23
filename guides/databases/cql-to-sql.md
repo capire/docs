@@ -44,7 +44,7 @@ The differences are captured in these truth tables:
 
 #### two-valued inequality (`!=`, CQL)
 
-| == | 1 | 0 | `null` |
+| != | 1 | 0 | `null` |
 |---|---|---|---|
 | 1 | `false` | `true` | `true` |
 | 0 | `true` | `false` | `true` |
@@ -52,7 +52,7 @@ The differences are captured in these truth tables:
 
 #### three-valued inequality (`<>`, CQL & SQL)
 
-| = | 1 | 0 | `null` |
+| <> | 1 | 0 | `null` |
 |---|---|---|---|
 | 1 | `false` | `true` | `unknown` |
 | 0 | `true` | `false` | `unknown` |
@@ -133,7 +133,7 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 
 **Numeric functions:**
 
-- `ceiling(x)`<sup>1</sup>
+- `ceiling(x)`
 - `floor(x)`
 - `round(x)`
 
@@ -143,9 +143,9 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 - `min(x)`, `max(x)`
 - `sum(x)`
 - `count(x)`
-- `countdistinct(x)`<sup>2</sup>
+- `countdistinct(x)`<sup>1</sup>
 
-**Date/time functions:**<sup>3</sup>
+**Date/time functions:**<sup>2</sup>
 
 - `date(x)` -> `yyyy-MM-dd`
 - `time(x)` -> `HH:mm:ss`
@@ -156,7 +156,7 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 - `minute(x)`
 - `second(x)`
 
-**SAP HANA date/time functions:**<sup>3</sup>
+**SAP HANA date/time functions:**<sup>2</sup>
 
 - `years_between(x,y)`
 - `months_between(x,y)`
@@ -165,9 +165,8 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 
 ---
 
-* <sup>1</sup> CAP Node.js also supports `ceil`.
-* <sup>2</sup> `countdistinct` is only supported by CAP Java.
-* <sup>3</sup> Date/time functions are not supported by CAP Java.
+* <sup>1</sup> `countdistinct` is only supported by CAP Java.
+* <sup>2</sup> Date/time functions are not supported by CAP Java.
 
 > [!note] Indexes and Substring Details
 > The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned. 
