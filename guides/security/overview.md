@@ -28,7 +28,7 @@ The building blocks are:
 - [Authentication](./authentication )
 - [CAP Users](./cap-users)
 - [CAP Authorization](./authorization)
-- [Remote Authentication](./remote-authentication)
+- [Outbound Authentication](./remote-authentication)
 
 **By separating these concerns**, CAP ensures that each security function can be configured and customized independently without affecting other parts of the system, providing maximum flexibility.
 
@@ -76,7 +76,7 @@ For instance, endpoints of deployed CAP applications are [automatically authenti
 Making endpoints public requires manual configuration in either the CAP model or the middleware.
 
 ::: warning
-CAP cannot guarantee end-to-end security across all application layers by default.
+CAP cannot guarantee end-to-end [product security](./data-protection) across all application layers by default.
 The application is responsible for coordinated overall configuration.
 :::
 
