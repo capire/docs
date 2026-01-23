@@ -306,8 +306,8 @@ code --diff *.log
 ```
 This opens a diff view in VSCode, which would display these differences:
 ```zsh
-- Kept: 26 
-+ Kept: 6 
+Kept: 26 # [!code --]
+Kept: 6 # [!code ++]
 
    • sap.capire.flights.data
    • sap.capire.flights.data.Flights
@@ -336,8 +336,8 @@ This opens a diff view in VSCode, which would display these differences:
    ••• sap.capire.flights.data.SupplementTypes.texts # [!code --]
    •• sap.capire.flights.data.Supplements.texts # [!code --]
 
-- Skipped: 11 
-+ Skipped: 31 
+- Skipped: 11 # [!code --]
++ Skipped: 31 # [!code ++]
 ...
 ```
 
