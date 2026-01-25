@@ -35,16 +35,25 @@ Service integration is much about consuming remote services from other applicati
    ```js :line-numbers=2
    const srv = await cds.connect.to ('AdminService')
    ```
-   ```js :line-numbers=3
-   await srv.read `ID, title` .from `Books` // SQL style
-   ```
    ```js :line-numbers=4
    await srv.read `Authors { 
      ID, name, books { 
        ID, title, genre.name as genre
      }
-   }` // CQL style w/ deep queries
+   }`
    ```
+
+::: details Requires Cloud SDK libs ...
+
+In case you get respective error messages ensure you've installed the following Cloud SDK packages in your project:
+
+```shell
+npm add @sap-cloud-sdk/connectivity
+npm add @sap-cloud-sdk/http-client
+npm add @sap-cloud-sdk/resilience
+```
+
+:::
 
 The graphic below illustrates what happened here:
 
