@@ -31,7 +31,7 @@
 - [guides/media-data](guides/services/media-data)
 - [guides/messaging](guides/events/)
 - [guides/providing-services](guides/services/providing-services)
-- [guides/reuse-and-compose](guides/integration/composition)
+- [guides/reuse-and-compose](guides/integration/reuse-and-compose)
 - [guides/services](guides/services/providing-services)
 - [guides/services/status-flows](guides/services/providing-services#status-transition-flows)
 - [guides/temporal-data](guides/domain/temporal-data)
