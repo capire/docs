@@ -69,7 +69,7 @@ If the table doesn't contain much data, this process won't significantly impact 
 
 ## Annotations
 
-Annotations [`@sql.append/prepend`](../../guides/databases#sql-prepend-append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
+Annotations [`@sql.append/prepend`](../../guides/databases/cdl-to-ddl#sql-prepend-append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
 
 If you have used these annotations in your model, a simple switchover from `hdbcds` to `hdbtable` is unlikely as such an annotation written for `hdbcds` in general is not valid for `hdbtable`. You'll have to adapt your model before the migration.
 
@@ -161,7 +161,6 @@ Then run a new build and deploy the newly generated _.hdbcds_ files. The `@Comme
 
 ## Temporal Data With Time Slice IDs <Concept />
 
-<!-- TODO add link back, currently in internal fragment: [Time Slice IDs](/guides/temporal-data#adding-time-slice-ids) -->
 Temporal Data with Time Slice IDs is a conceptual feature, thus it shouldn't occur in productive applications. Nevertheless, we mention it here for completeness.
 
 Example:

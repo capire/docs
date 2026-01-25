@@ -19,7 +19,7 @@ There are two standard i18n bundles available through these static properties:
 
 ### Localized (Fiori) UIs
 
-The former, that is [`cds.i18n.labels`](#labels), is used automatically when generating OData `$metadata` documents for SAP Fiori elements to look up translations for respective [`{i18n>...}` placeholders](../guides/i18n#externalizing-texts-bundles). For example, localized texts for annotations like that will be looked up from `cds.i18n.labels`:
+The former, that is [`cds.i18n.labels`](#labels), is used automatically when generating OData `$metadata` documents for SAP Fiori elements to look up translations for respective [`{i18n>...}` placeholders](../guides/uis/i18n#externalizing-texts-bundles). For example, localized texts for annotations like that will be looked up from `cds.i18n.labels`:
 
 ::: code-group
 
@@ -114,7 +114,7 @@ cap/samples/bookshop/
 
 ### `.labels` {.property}
 
-The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
+The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/uis/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/

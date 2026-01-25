@@ -295,7 +295,7 @@ await cds.ql`SELECT from Authors {
 [
   {
     ID: 150,
-    name: 'Edgar Allen Poe',
+    name: 'Edgar Allan Poe',
     books: [
       { ID: 251, title: 'The Raven', genre: 'Mystery' },
       { ID: 252, title: 'Eleonora', genre: 'Romance' }

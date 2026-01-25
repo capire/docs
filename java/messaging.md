@@ -88,7 +88,7 @@ In section [CDS-Declared Events](#cds-declared-events), we show how to declare e
 The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
 
 You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/messaging/#using-multiple-channels).
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
@@ -116,7 +116,7 @@ As you can see in the example, the event context not only provides access to the
 For messaging services, the `@On` handlers don't need to be completed by the `context.setCompleted()` method. The reason for that is because CAP wants to support the parallel handling of the messaging events and completes the context automatically. There could be numerous use cases where different components of the CAP application want to be notified by messaging events. Even more, you should not complete the context in the handler manually. Otherwise, not all registered handlers can be notified.
 :::
 
-::: warning _❗ Warning_
+::: warning 
 If any exceptions occur in the handler, the messaging service will not acknowledge the message as successfully processed to the broker. In consequence, the broker will deliver this message again.
 :::
 
@@ -303,7 +303,7 @@ cds:
 ```
 :::
 
-Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/#event-hub).
+Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/index#event-hub).
 
 #### Configuring SAP Integration Suite, Advanced Event Mesh Support <Beta />: { #configuring-advanced-event-mesh-support}
 
@@ -323,7 +323,7 @@ cds:
 ```
 :::
 
-[Support for SAP Integration Suite, advanced event mesh is provided via plugin.](../plugins/#advanced-event-mesh){.learn-more}
+[Support for SAP Integration Suite, advanced event mesh is provided via plugin.](../plugins/index#advanced-event-mesh){.learn-more}
 
 <span id="beforeredispubsub" />
 
@@ -721,7 +721,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-In a multi-tenant setup with several microservices, messages of a tenant not yet subscribed to the own microservice would be already received from the message queue. In this case, the message cannot be processed for the tenant because the tenant context is not yet available. By default, the standard error handler still acknowledges the message to prevent it from getting stuck in the message sequence. To change this behavior, the custom error handler from the example above can be extended by checking the exception type of the unknown tenant.
+In a multitenant setup with several microservices, messages of a tenant not yet subscribed to the own microservice would be already received from the message queue. In this case, the message cannot be processed for the tenant because the tenant context is not yet available. By default, the standard error handler still acknowledges the message to prevent it from getting stuck in the message sequence. To change this behavior, the custom error handler from the example above can be extended by checking the exception type of the unknown tenant.
 
 
 ```java
@@ -760,7 +760,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 The way how unsuccessfully delivered messages are treated, fully depends on the messaging broker. Please check in section [Acknowledgement Support](#acknowledgement-support)  whether the messaging broker you are using is suitable for your error handler implementation.
 :::
 
@@ -877,6 +877,6 @@ private void ratingChanged(ReviewedContext context) {
 }
 ```
 
-[Learn more about **CloudEvents**.](../guides/messaging/#cloudevents){.learn-more}
+[Learn more about **CloudEvents**.](../guides/events/messaging#cloudevents){.learn-more}
 
 <span id="aftercloudevents" />

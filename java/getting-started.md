@@ -40,7 +40,7 @@ Excited? The following sections describe how to set up a development environment
 
 This section describes the prerequisites and tools to build a CAP application locally.
 
-1. Install the CDS tools (`cds-dk`) by following the steps in the central *[Getting Started](../get-started/#setup)* guide.
+1. Install the CDS tools (`cds-dk`) by following the steps in the central *[Getting Started](../get-started/index#initial-setup)* guide.
 
 2. Install a Java VM. Java 17 is the minimum requirement, but we recommend using Java 21. For example, [download](https://github.com/SAP/SapMachine/releases) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 21.
 
@@ -55,10 +55,6 @@ This section describes the prerequisites and tools to build a CAP application lo
     java --version
     mvn --version
     ```
-::: tip
-For a preconfigured environment, use [SAP Business Application Studio](../tools/cds-editors#bas), which comes with all the required tools preinstalled.
-In older workspaces it might be necessary to explicitly set the JDK to version 17 with the command `Java: Set Default JDK`.
-:::
 
 ## Starting a New Project { #new-project}
 <!--Used as link target from Help Portal: https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html -->
@@ -98,7 +94,7 @@ mvn com.sap.cds:cds-maven-plugin:add -Dfeature=TINY_SAMPLE
 
 ### Add CloudFoundry target platform
 
-Following the "[Grow As You Go](../about/#grow-as-you-go)" principle, the generated CAP Java project doesn't contain support for Cloud Foundry as the target platform. To enhance your project with dependencies required for Cloud Foundry, execute the goal `add` of the [CDS Maven plugin](./assets/cds-maven-plugin-site/add-mojo.html){target="_blank"} using the following command:
+Following the "[Grow As You Go](../get-started/features#grow-as-you-go)" principle, the generated CAP Java project doesn't contain support for Cloud Foundry as the target platform. To enhance your project with dependencies required for Cloud Foundry, execute the goal `add` of the [CDS Maven plugin](./assets/cds-maven-plugin-site/add-mojo.html){target="_blank"} using the following command:
 
 ```sh
 mvn com.sap.cds:cds-maven-plugin:add -Dfeature=CF
@@ -191,9 +187,8 @@ Use user [`authenticated`](./security#mock-users) if a username is requested. Yo
 
 CAP Java projects can be edited best in a Java IDE. Leaving CDS support aside you could use any Java IDE supporting the import of Maven projects. But as CDS modeling and editing is a core part of CAP application development we strongly recommend to use an IDE with existing Java support:
 
-* [SAP Business Application Studio](/tools/cds-editors#bas) is a cloud-based IDE with minimal local requirements and footprint. It comes pre packaged with all tools, libraries and extensions that are needed to develop CAP applications.
-* [Visual Studio Code](/tools/cds-editors#vscode) is a free and very wide-spread code editor and IDE which can be extended with Java and CDS support. It offers first class CDS language support and solid Java support for many development scenarios.
-* [IntelliJ IDEA](/tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
+* [Visual Studio Code](../tools/cds-editors#vscode) is a free and very wide-spread code editor and IDE which can be extended with Java and CDS support. It offers first class CDS language support and solid Java support for many development scenarios.
+* [IntelliJ IDEA](../tools/cds-editors#intellij) is one of the leading Java IDEs with very powerful debugging, refactoring and profiling support. Together with the CDS Plugin it offers the most powerful support for CAP Java application development.
 
 
 #### Source Path Configuration and CDS build

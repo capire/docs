@@ -10,7 +10,6 @@
 <strong>COMMANDS</strong>
     <em>i</em> | <em>init</em>        jump-start cds-based projects
     <em>a</em> | <em>add</em>         add a feature to an existing project
-    <em> </em> | <em>gen</em>         generate models/data using a descriptive prompt [beta]
     <em>m</em> | <em>import</em>      add models from external sources
     <em>c</em> | <em>compile</em>     compile cds models to different outputs
     <em>p</em> | <em>parse</em>       parses given cds models
@@ -30,10 +29,10 @@
     <em> </em> | <em>logout</em>      logout from extensible multitenant SaaS app
     <em> </em> | <em>pull</em>        pull base model of extensible SaaS app
     <em> </em> | <em>push</em>        push extension to extensible SaaS app
-    <em>t</em> | <em>lint</em>        run linter for env or model checks
+    <em> </em> | <em>lint</em>        run linter for env or model checks
     <em>v</em> | <em>version</em>     get detailed version information
     <em> </em> | <em>completion</em>  add/remove cli completion for cds commands
-    <em>?</em> | <em>help</em>        get detailed usage information
+    <em>h</em> | <em>help</em>        get detailed usage information
 
   Learn more about each command using:
   <em>cds help</em> &lt;command&gt; or
