@@ -128,15 +128,14 @@ Date / Time functions:
 - `days_between(x,y)`
 - `seconds_between(x,y)`
 
-> [!note] Indexes and Substring Details
-> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned. 
-
 > [!important] Function names are case-sensitive
 > The function names must be written exactly as listed above. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
 
-> [!warning] Non-portable <code>round()</code> function with more than one argument
+> [!important] Non-portable <code>round()</code> function with more than one argument
 > Note that databases support `round()` functions with multiple arguments, the second parameter being the precision. If you use that option, the `round()` function may behave differently depending on the database.
 
+> [!note] Indexes and Substring Details
+> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned.
 
 
 ### Native Functions
