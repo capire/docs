@@ -63,7 +63,6 @@
 ## Java
 
 - [java/advanced](java/cqn-services/persistence-services)
-- [java/advanced#multitenancy](java/multitenancy) <!-- this doesn't work, redirect goes to java/cqn-services/persistence-services#multitenancy -->
 - [java/application-services](java/cqn-services/application-services)
 - [java/architecture](java/developing-applications/building)
 - [java/cds-ql](java/working-with-cql/query-api)
@@ -80,7 +79,6 @@
 - [java/indicating-errors](java/event-handlers/indicating-errors)
 - [java/messaging-foundation](java/messaging)
 - [java/observability](java/operating-applications/observability)
-- [java/observability#profiling](java/operating-applications/optimizing) <!-- doesn't work as expected -->
 - [java/overview](java/getting-started)
 - [java/persistence-services](java/cqn-services/persistence-services)
 - [java/provisioning-api](java/event-handlers)
