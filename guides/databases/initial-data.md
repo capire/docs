@@ -199,6 +199,7 @@ As long as they also enclose reuse models, like the `index.cds` above, the .csv 
 > }
 > ```
 >
+> In absence of such a plugin configuration, you could add a `using from '@capire/common';` clause to one of your cds files.
 
 
 ##  Plug-and-Play Reuse
