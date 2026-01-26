@@ -23,13 +23,13 @@ CQL supports `==` and `!=` operators as bivalent logic variants for SQL's three-
 
 ::: code-group
 ```SQL [CQL's Two-Valued Logic Operators]
-SELECT 1 == null, 1 != null, null == null, null != null; 
+SELECT 1 == null, 1 != null, null == null, null != null;
 --> false, true, true, false
 ```
-::: 
+:::
 ::: code-group
 ```SQL [SQL's Three-Valued Logic]
-SELECT 1 = null, 1 <> null, null = null, null <> null; 
+SELECT 1 = null, 1 <> null, null = null, null <> null;
 --> null, null, null, null
 ```
 :::
@@ -66,9 +66,9 @@ from Books;
 :::
 ::: code-group
 ```sql [=>&nbsp; Compiled SQL query]
-SELECT CASE 
-  WHEN price > 100 THEN 'expensive' 
-  ELSE 'affordable' 
+SELECT CASE
+  WHEN price > 100 THEN 'expensive'
+  ELSE 'affordable'
 END as priceCategory
 FROM Books;
 ```
@@ -93,8 +93,8 @@ String functions:
 - `contains(x,substring)`
 - `startswith(x,substring)`
 - `endswith(x,substring)`
-- `indexof(x,substring)` 
-- `substring(x,start, length)` 
+- `indexof(x,substring)`
+- `substring(x,start, length)`
 - `matchespattern(x,pattern)`
 
 
