@@ -722,8 +722,8 @@ annotate Books with @sql.append: ```sql
 ```;
 annotate ListOfBooks with @sql.append: 'WITH DDL ONLY';
 ```
-```sql [=> &nbsp; Generated DDL]
 
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Books ( ...,
   title NVARCHAR(100) FUZZY SEARCH INDEX ON
 ) GROUP TYPE foo
@@ -733,9 +733,7 @@ CREATE VIEW ListOfBooks AS SELECT ... FROM Books WITH DDL ONLY;
 :::
 
 - Values for the annotations must be [string literals](../../cds/cdl#literals) or [multiline string literals](../../cds/cdl#multiline-literals).
-
 - `@sql.prepend` is only supported for entities translating to tables. It can't be used with views or with elements.
-
 
 > [!note] Note for SAP HANA
 > Ensure to read [Schema Evolution Support of Native Database Clauses](hana#schema-evolution-native-db-clauses) if you plan to use these annotations in combination with [`@cds.persistence.journal`](hana#enabling-hdbmigrationtable-generation).
