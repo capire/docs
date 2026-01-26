@@ -582,24 +582,9 @@ You don't need to specify `@assert.unique` constraints for the [primary keys](#p
 
 [managed to-one associations]: ../../cds/cdl#managed-to-one-associations
 
-For [managed to-one associations], CAP can automatically generate foreign key constraints in the database. Switch this on globally with config option <Config>cds.features.assert_integrity = db</Config>, as shown below:
+For [managed to-one associations], CAP can automatically generate foreign key constraints in the database. Switch this on globally with config option <Config>cds.features.assert_integrity = db</Config>.
 
-::: code-group
-```json [package.json]
-"cds": {
-  "features": {
-    "assert_integrity": "db"
-  }
-}
-```
-```yaml [.cdsrc.yaml]
-cds:
-  features:
-    assert_integrity: db
-```
-:::
-
-With the global flag switched on, `FOREIGN KEY` constraints are automatically added to `CREATE TABLE` statements for [managed to-one associations] like this:
+With this flag switched on, `FOREIGN KEY` constraints are automatically added to `CREATE TABLE` statements for [managed to-one associations] like this:
 
 ::: code-group
 ```cds [CDS Source]
