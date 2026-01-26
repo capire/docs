@@ -77,8 +77,9 @@ Common rules apply to text content in `.csv` files, like:
 | Condition                                                    | Handling                    |
 | ------------------------------------------------------------ | --------------------------- |
 | If texts contain commas, or line breaks, or trailing whitespaces | -> enclose in double quotes |
-| If texts contain double quotes                               | -> escape by doubling them  |
-| Numeric content should be treated as texts                   | -> enclose in double quotes |
+| If texts contain double quotes                                   | -> escape by doubling them  |
+| Numeric content should be treated as texts                       | -> enclose in double quotes |
+| Boolean values should be treated as text                         | -> enclose in double quotes |
 
 
 
