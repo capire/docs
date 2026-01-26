@@ -51,7 +51,7 @@ The result set includes all books where genre is not 'Science Fiction', includin
 
 The CQL behavior is consistent with common programming languages like JavaScript and Java, as well as with OData semantics. It is implemented in database by, the translation of `!=` to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, and to an equivalent polyfill in SAP HANA.
 
-> [!tip] Usage Recommendation
+> [!tip] Prefer == and !=
 > Prefer using  `==` and `!=` in the very most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
 
 ### Ternary `?:` Operator
@@ -149,7 +149,7 @@ SELECT from Books {
 }
 ```
 
-> [!warning] 
+> [!warning] Native functions are less portable
 > Using native functions like this makes your CDS models database-specific, and thus less portable. Therefore, prefer using the [portable functions](#portable-functions) listed above whenever possible.
 
 
