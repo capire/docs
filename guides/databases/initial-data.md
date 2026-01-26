@@ -187,7 +187,7 @@ As long as they also enclose reuse models, like the `index.cds` above, the .csv 
 
 > [!tip] How to 'enable' reuse packages
 >
-> The `@capire/common` package uses the `cds-plugin.js` technique, to provide plug-and-play configuration [in its `package.json`](https://github.com/capire/common/tree/main/package.json#L9-L16) like that:
+> The `@capire/common` package uses the `cds-plugin.js` technique, to provide plug-and-play configuration [in its `package.json`](https://github.com/capire/common/blob/bc92ae532d902022bf6c1dff70cce892fd0fd350/package.json#L9-L16) like that:
 >
 > ```json
 > "cds": {
