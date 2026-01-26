@@ -387,13 +387,13 @@ entity V as select
 SAP HANA allows to omit the parentheses for functions that don't expect arguments. For example:
 
 ```cds
-entity Foo { key ID : UUID; }
-entity Bar as select from Foo {
+entity Books { key ID : UUID; }
+entity CatalogService.Books as select from Books {
   ID, current_timestamp
 };
 ```
 
-Some of which are well-known standard functions like `current_timestamp` in the previous example, which can be written without parentheses in CDS models. However, there are many unknown ones, that aren't known to the compiler, for example:
+Some of which are well-known standard functions like `current_timestamp` in the previous example, which can be written without parentheses in CDS models. However, there are many that aren't known to the compiler, for example:
 
 - `current_connection`
 - `current_schema`
@@ -403,19 +403,17 @@ Some of which are well-known standard functions like `current_timestamp` in the 
 - `current_utctimestamp`
 - `sysuuid`
 
-To use these in CDS models, you have to add the parentheses so that CDS generic support for using native features can kick in:
+To use these in CDS models, add parentheses `()`:
 
 ```cds
-entity Foo { key ID : UUID; }
-entity Bar as select from Foo {
+entity Books { key ID : UUID; }
+entity CatalogService.Books as select from Books {
   ID, current_timestamp,
   sysuuid() as sysid // [!code focus]
 };
 ```
 
-
-
-
+[Learn more on SAP HANA functions.](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/20a61f29751910149f99f0300dd95cd9.html){.learn-more}
 
 ### Regex Functions
 
@@ -429,10 +427,6 @@ first_value(name order by price desc)
 Restriction: `COLLATE` isn't supported.
 
 For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](./hana-native) for more details.
-
-
-
-
 
 
 
