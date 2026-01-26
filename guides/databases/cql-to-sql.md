@@ -140,7 +140,7 @@ Date / Time functions:
 
 ### Native Functions
 
-In general, the CDS compiler doesn't 'understand' SQL functions but translates them to SQL generically as long as they follow the standard call syntax of `fn(x,y,...)`. This allows to use all native database functions inside your CDS models, like this:
+In general, the CDS compiler doesn't 'understand' SQL functions but translates them to SQL _generically_ as long as they follow the standard call syntax of `fn(x,y,...)`. This allows to use all native database functions inside your CDS models, like this:
 
 ```cds
 SELECT from Books {
@@ -154,7 +154,7 @@ SELECT from Books {
 
 ### Window Functions
 
-Window functions with `OVER` clauses are supported as well; for example:
+[SQL window functions](https://en.wikipedia.org/wiki/Window_function_(SQL)) with `OVER` clauses are supported as well, for example:
 
 ```sql
 SELECT from Books {
