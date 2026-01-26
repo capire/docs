@@ -185,7 +185,7 @@ Find an example for such a content reuse package at [*@capire/common*](https://g
 Such packages get installed via `npm` or `mvn`, and hence their content will reside under `node_modules` folders, or Maven `target` folders.
 As long as they also enclose reuse models, like the `index.cds` above, the .csv files in the `data` folder next to it will be automatically found and loaded into a consuming application's database.
 
-> [!tip]
+> [!tip] How to 'enable' reuse packages
 >
 > The `@capire/common` package uses the `cds-plugin.js` technique, to provide plug-and-play configuration [in its `package.json`](https://github.com/capire/common/tree/main/package.json#L9-L16) like that:
 >
@@ -236,5 +236,5 @@ When running `cds watch`, the `@capire/common/index.cds` model file is automatic
 /> successfully deployed to in-memory database.
 ```
 
-> [!tip] 
+> [!tip] Installation is sufficient
 > The great thing with plug-and-play configuration is that a mere `npm install` in a consuming project suffices to have the `@capire/common/index.cds` file loaded together with the application’s models, and hence also all data from accompanying `.csv` files.
