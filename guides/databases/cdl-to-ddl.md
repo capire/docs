@@ -339,7 +339,7 @@ Are enhanced with JOINs as per respective association definitions:
 
 ::: code-group
 ```sql [=>&nbsp; Compiled SQL query]
-SELECT title, author.name, genre.name from Books --> very same as above [!code focus]
+SELECT title, author.name, genre.name from Books --> very same as above
 LEFT JOIN Authors as author on author_ID = author.ID; -- [!code ++]
 LEFT JOIN Genres as genre on genre_ID = genre.ID; -- [!code ++]
 ```
