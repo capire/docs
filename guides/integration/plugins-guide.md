@@ -55,11 +55,17 @@ Plugins should be available for both CAP runtimes. To avoid duplicate effort, co
   <img src="./assets/calipso-runtime-decision-tree.svg" alt="What is needed for efficient development." />
 </p>
 
+### Concept architecture first
+
+Before jumping into implementation, begin by designing the architecture of your plugin. Define the responsibilities, integration points, and how your plugin will interact with CAP services and external systems. Consider aspects such as runtime compatibility, extensibility, and maintainability. Document your architecture decisions, including diagrams if possible, to clarify the overall structure and guide development.
+
+Once the architecture is clear and agreed upon, proceed to implement the plugin according to your design. This approach helps avoid rework, ensures alignment with CAP principles, and makes it easier to onboard contributors.
+
 ### Sidecar approach
 
-A [sidecar](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/sidecars/) on BTP is essentially another process running as part of the same Cloud Foundry application. This allows you to implement custom CAP service endpoints only once but staying compatible with all CAP runtimes.
+A [sidecar](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/sidecars/) on BTP is essentially another process running alongside your app service. By implementing custom CAP service endpoints in a sidecar, you avoid reimplementing the same functionality for both Node.js and Java runtimes—ensuring compatibility and reducing duplicate effort.
 
-If the sidecars limitations are too restrictive for your use case, having one implementation for both runtimes is also possible if you configure the CAP service endpoints provided by the plugin as their own micro-service. The multi-tenancy service from CAP is an example of that.
+If sidecar limitations are too restrictive for your use case, you can still achieve a single implementation for both runtimes by configuring the CAP service endpoints provided by the plugin as their own micro-service. CAP's multi-tenancy service is an example of this approach.
 
 ### Authorization
 
@@ -127,6 +133,24 @@ In the [IAS/AMS](../../guides/security/authentication.md#adding-ias) scenario yo
 
 This provided API then needs to be manually assigned to the consuming service in the Cloud Identity Services UI and at runtime AMS will map the assigned provided API to the role that is required by your CAP service.
 
+### Logging
+
+Add comprehensive debug logging throughout your plugin to simplify troubleshooting and support. Effective logging helps developers quickly identify issues, understand plugin behavior, and trace integration points.
+
+**Best practices for logging:**
+- **Use CAP's built-in logging APIs** ([node.js](../../node.js/cds-log.md) | [Java](../../java/operating-applications/observability.md)) to ensure consistency and integration with platform tools.
+- **Log at key lifecycle events:** initialization, configuration loading, service binding, request handling, error handling, and external service interactions.
+- **Include contextual information** such as tenant, user, request ID, and relevant parameters to make logs actionable.
+- **Differentiate log levels:** use `debug` for detailed troubleshooting, `info` for high-level events, `warn` for recoverable issues, and `error` for failures.
+- **Enable configurable log verbosity** via CAP log levels so developers can adjust the level of detail as needed.
+- **Document log levels** in your README so developers know how to enable different levels in your services.
+
+Well-structured logging accelerates troubleshooting, improves maintainability, and enhances the developer experience for plugin consumers.
+
+> [!WARNING]
+> **Never log credentials, sensitive user information, or personal data.** Logging such information can lead to security breaches and violate privacy regulations like GDPR. Always review your logging statements to ensure no confidential or personally identifiable information is exposed.
+
+
 ### Be multi-tenancy ready
 
 Your plugin must work in a multi-tenancy (MTX) setup. Refer to the [multi-tenancy](../../guides/multitenancy/index.md) documentation to learn more.
@@ -145,7 +169,7 @@ Key considerations:
 - **Use Service Bindings à la CAP** — Bind services using CAP's service binding conventions (e.g., `cds.requires.db...`) for consistent and maintainable integration.
 - **Use Profiles for environment-specific configuration** — Leverage CAP profiles to specify environment-specific settings, such as connecting to BTP services in production and mocking data locally during development or testing.
 
-## Code completion 
+### Code completion 
 
 If you must introduce new annotations, check if they can be added to [SAP's OData vocabulary](https://sap.github.io/odata-vocabularies/) as only these appear in the CDS code completion. Offering annotations without any code completion leads to a worse development experience!
 
@@ -178,10 +202,6 @@ cds bind --exec '--' npx jest
 ### Deployment tests
 
 Include both single-tenant and multi-tenant deployments in your test strategy. Deploy the application with your plugin to ensure that it starts, provisions correctly, and runs on SAP BTP.
-
-### UI tests
-
-Some plugins like `@cap-js/attachments` or `@cap-js/change-tracking` add UI annotations, which modify how Fiori elements will render the UI. Write [UI5 One Page Acceptance](https://ui5.sap.com/#/topic/2696ab50faad458f9b4027ec2f9b884d) tests to verify that the resulting UI renders correctly and that your annotation generation is valid. The UI5 OPA tests can directly call the CAP backend to leverage the same mock data, avoiding a separate mock server.
 
 ### Performance tests
 
