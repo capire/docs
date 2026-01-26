@@ -1,6 +1,6 @@
 # CDL Compilation to Database-Specific DDLs
 
-Databases are deployed based on the entity definitions in your CDS models. This guide explains how that works under the hood, focusing on the compilation of CDS models to database-specific artifacts like SQL `CREATE TABLE` statements for relational databases. 
+Databases are deployed based on the entity definitions in your CDS models. This guide explains how that works under the hood, focusing on the compilation of CDS models to database-specific artifacts like SQL `CREATE TABLE` statements for relational databases.
 {.abstract}
 
 [toc]:./
@@ -28,25 +28,25 @@ cds compile db/schema.cds --to sql
 cds compile db --to sql
 ```
 
-::: details 
+::: details
 You can combine `cds compile` with other shell commands via UNIX pipes for more advanced use cases. For example, count the number of entity definitions in your models like this:
 
 ```shell
-cds compile \* | grep entity | wc -l 
+cds compile \* | grep entity | wc -l
 ```
 > <sup>1</sup> The backslash (`\`) before the asterisk (`*`) is used to escape it, preventing shell expansion to all files in the current directory.
 :::
 
 
 
-### Database-specific Dialects 
+### Database-specific Dialects
 
 Add the `--dialect` option, to generate DDL for a specific databases. For example, to see the SAP HANA-specific variant, run:
 
 ```shell
 cds compile \* --to sql --dialect hana
 ```
-We can generate DDL files for different dialects in one go, and check differences between individual ones using VS Code like this: 
+We can generate DDL files for different dialects in one go, and check differences between individual ones using VS Code like this:
 ```shell
 cds compile \* --to sql --dialect sqlite -o _out/c/sqlite.sql
 cds compile \* --to sql --dialect h2 -o _out/c/h2.sql
@@ -63,7 +63,7 @@ code --diff _out/c/sqlite.sql _out/c/h2.sql
 
 ### Dialects by `cds env` Profiles
 
-The dialect is automatically inferred from your project configuration, and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically. 
+The dialect is automatically inferred from your project configuration, and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically.
 Try this out using the `--profile` option:
 
 ```shell
@@ -136,7 +136,7 @@ Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goe
 
 
 
-## CDL ⇒ DDL Translation 
+## CDL ⇒ DDL Translation
 
 The CDL-to-DDL compilation follows several general mapping principles to translate CDS constructs into database-specific artifacts, as outlined below.
 
@@ -147,12 +147,12 @@ The CDL-to-DDL compilation follows several general mapping principles to transla
 Declared entities become tables, projected entities become views:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity SomeEntity { ... }
 entity SomeView as select from SomeEntity { ... };
 entity SomeProjection as projection on SomeEntity { ... };
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE SomeEntity ( ... );
 CREATE VIEW SomeView AS SELECT ... FROM SomeEntity;
 CREATE VIEW SomeProjection AS SELECT ... FROM SomeEntity;
@@ -164,10 +164,10 @@ CREATE VIEW SomeProjection AS SELECT ... FROM SomeEntity;
 
 #### Qualified Names ⇒ Slugified
 
-Entities in CDS models have fully qualified names with dots. These are converted to database-native names, by replacing dots with underscores – called 'slugification': 
+Entities in CDS models have fully qualified names with dots. These are converted to database-native names, by replacing dots with underscores – called 'slugification':
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 namespace sap.capire.bookshop;
 entity Books { ... }
 entity Books.Details { ... }
@@ -175,7 +175,7 @@ entity Books.Details { ... }
 :::
 
 ::: code-group
-```SQL[=> Generated DDL]
+```sql[=> Generated DDL]
 CREATE TABLE sap_capire_bookshop_Books ( ... );
 CREATE TABLE sap_capire_bookshop_Books_Details ( ... );
 ```
@@ -239,11 +239,11 @@ await cds.run `SELECT from sap_capire_bookshop_Books`
 Custom-defined types based on built-in CDS types are mapped according to their underlying base type:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Foo { bar : Text(44); }
 type Text : String(111);
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Foo ( bar NVARCHAR(44) );
 ```
 :::
@@ -256,7 +256,7 @@ CREATE TABLE Foo ( bar NVARCHAR(44) );
 Elements with [structured types](../../cds/cdl#structured-types) are flattened into their parent entities, with the struct name used as a prefix for the contained elements:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Books {
   title : String;
   price : {
@@ -265,9 +265,9 @@ entity Books {
   }
 }
 ```
-::: 
+:::
 ::: code-group
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Books (
   title       NVARCHAR(255),
   price_amount  DECIMAL,
@@ -285,18 +285,18 @@ await cds.run `SELECT price_amount from Books`
 ```
 
 
-### Associations ⇒ JOINs 
+### Associations ⇒ JOINs
 
 
 Given this CDS model with both [managed](../../cds/cdl#managed-associations) to-one and [unmanaged](../../cds/cdl#unmanaged-associations) to-many associations, as we know them from the [_@capire/bookshop_](https://github.com/capire/bookshop) sample:
 
 ```cds
-entity Books { ...  
-  author : Association to Authors; // managed 
-  genre  : Association to Genres; // managed 
+entity Books { ...
+  author : Association to Authors; // managed
+  genre  : Association to Genres; // managed
 }
 entity Authors { ...
-  books : Association to many Books on books.author = $self;  
+  books : Association to many Books on books.author = $self;
 }
 entity Genres { ... }
 ```
@@ -306,9 +306,9 @@ Managed associations are _unfolded_ into unmanaged ones as below::
 ```cds
 entity Books { ... // with managed associations unfolded to:
   author : Association to Authors on author_ID = author.ID;
-  author_ID : Integer; // added foreign key element 
+  author_ID : Integer; // added foreign key element
   genre : Association to Genres on genre_ID = genre.ID;
-  genre_ID : Integer; // added foreign key element 
+  genre_ID : Integer; // added foreign key element
 }
 entity Authors {/* as above */}
 entity Genres {/* as above */}
@@ -317,11 +317,11 @@ entity Genres {/* as above */}
 This unfolded model is then compiled to DDL, with unmanaged associations **skipped**:
 
 ```sql
-CREATE TABLE Authors (/* no columns for unmanaged assocs */... ) 
-CREATE TABLE Books (/* no columns for unmanaged assocs */ ... 
-  author_ID INTEGER -- added foreign key column 
-  genre_ID  INTEGER -- added foreign key column 
-); 
+CREATE TABLE Authors (/* no columns for unmanaged assocs */... )
+CREATE TABLE Books (/* no columns for unmanaged assocs */ ...
+  author_ID INTEGER -- added foreign key column
+  genre_ID  INTEGER -- added foreign key column
+);
 ```
 
 ###### Associations as Forward-declared JOINs
@@ -330,7 +330,7 @@ CQL queries that use such associations, for example:
 
 ::: code-group
 ```sql [CQL query using associations]
-SELECT title, author.name, genre.name from Books 
+SELECT title, author.name, genre.name from Books
 /* Note: author and genre are used like table aliases */
 ```
 :::
@@ -346,34 +346,34 @@ LEFT JOIN Genres as genre on genre_ID = genre.ID; -- [!code ++]
 :::
 
 > [!tip] Associations as <i>'Forward-declared' JOINs</i>
-> Looking closely at the above compiled SQL code, we can regard 
-> associations to be like _'Forward-declared' JOINs_, along these lines: 
+> Looking closely at the above compiled SQL code, we can regard
+> associations to be like _'Forward-declared' JOINs_, along these lines:
 >
-> 1. Association names `a.name` appear in queries as standard _table aliases_ 
-> 2. _JOINs_ are added automatically as per the following construction rule: 
-> 
-> _JOIN `a.target` as `a.name` on `a.on`_ 
+> 1. Association names `a.name` appear in queries as standard _table aliases_
+> 2. _JOINs_ are added automatically as per the following construction rule:
+>
+> _JOIN `a.target` as `a.name` on `a.on`_
 > {style="margin: 1em 3em; font-weight: 600;"}
 >
 > 3. For _managed_ associations with unfolded on conditions:
 >
-> _JOIN `a.target` as `a.name` on `a.keys` = `a.name` . `a.target.keys`_ 
+> _JOIN `a.target` as `a.name` on `a.keys` = `a.name` . `a.target.keys`_
 > {style="margin: 1em 3em; font-weight: 600;"}
 >
 >  where `a` is an association definition with these properties:
 >  <br/> `a.target` – the target entity's name
->  <br/> `a.name` – the association's name 
+>  <br/> `a.name` – the association's name
 >  <br/> `a.on` – the on condition of an unmanaged association
 >  <br/> `a.keys` – the foreign key element(s), added to the source entity
->  <br/> `a.target.keys` – the target's respective (primary) key element(s) 
+>  <br/> `a.target.keys` – the target's respective (primary) key element(s)
 
 
-### Calculated Elements 
+### Calculated Elements
 
 [_Materialized_ calculated elements](../../cds/cdl#on-write), that is those with a trailing `stored` keyword, are translated into corresponding database columns with `GENERATED ALWAYS AS` clauses. In contrast, [_virtual_ calculated elements](../../cds/cdl#on-read) are not represented in the database schema at all, but applied at runtime by the CAP database layers when reading data from the database.
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Orders {
  quantity : Integer;
  price : Decimal;
@@ -383,7 +383,7 @@ entity Orders {
 ```
 :::
 ::: code-group
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Orders (
   quantity INTEGER,
   price DECIMAL,
@@ -419,13 +419,13 @@ SELECT total, total * (1+VAT) as gross from Orders;
 You can specify default values for elements using the `default` keyword in element definitions. These defaults are translated into SQL `DEFAULT` clauses in the generated DDL, in a one-to-one manner.
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Books {
   available : Boolean default true;
   createdAt : DateTime default current_timestamp;
 }
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Books (
   available BOOLEAN DEFAULT true,
   createdAt TIMESTAMP DEFAULT current_timestamp
@@ -439,12 +439,12 @@ CREATE TABLE Books (
 
 ### Invalid Names
 
-When you use names in your CDS models that conflict with reserved words of underlying databases, or names that contain non-ASCII characters, special characters, or spaces, these names are considered invalid in many databases, and are therefore escaped by CAP in the generated DDL, and all queries sent to the database. 
+When you use names in your CDS models that conflict with reserved words of underlying databases, or names that contain non-ASCII characters, special characters, or spaces, these names are considered invalid in many databases, and are therefore escaped by CAP in the generated DDL, and all queries sent to the database.
 
 For example, the following is a valid CDS model, with all database-invalid named elements, so the generated DDL will escape them accordingly with double quotes:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity BadNames {
   ![a name] : String;  // invalid whitespaces
   ![drôle]  : String;  // invalid diacritics
@@ -452,7 +452,7 @@ entity BadNames {
   group    : String;  // reserved word in SQL
 }
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE BadNames (
   "a name" NVARCHAR(255),
   "drôle"  NVARCHAR(255),
@@ -468,7 +468,7 @@ However, even though CAP allows this, and handles all accesses correctly, it is 
 > It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords-identifiers) in CDS models in the first place, as that impacts readability of your models.
 
 ###### reserved-words
-> [!important] Lists of Reserved Words 
+> [!important] Lists of Reserved Words
 > Check out the reserved words for the databases you are targeting: \
 > [_SAP HANA_](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c1d3f60099654ecfb3fe36ac93c121bb/28bcd6af3eb6437892719f7c27a8a285.html)
 > , [_SQLite_](https://www.sqlite.org/lang_keywords.html)
@@ -479,9 +479,9 @@ However, even though CAP allows this, and handles all accesses correctly, it is 
 
 
 ## Keys, Constraints
-###### Database Constraints 
+###### Database Constraints
 
-CAP supports the generation of various database constraints based on CDS model definitions, as outlined below. 
+CAP supports the generation of various database constraints based on CDS model definitions, as outlined below.
 
 
 ::: warning Don't use for end user-facing input validation
@@ -494,7 +494,7 @@ If a constraint violation occurs, the error messages coming from the database ar
 Primary keys defined in CDS entities are translated into SQL `PRIMARY KEY` constraints in the generated DDL. For example:
 
 ::: code-group
-```CDS [CDS Source]   
+```cds [CDS Source]
 entity OrderItems {
   key order: Association to Orders;
   key pos: Integer;
@@ -504,7 +504,7 @@ entity OrderItems {
 :::
 
 ::: code-group
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE OrderItems (
   order_ID NVARCHAR(36),
   pos INTEGER,
@@ -536,21 +536,21 @@ Annotate an entity with `@assert.unique.<constraint>`, to express one or more, n
 For example, given an entity definition like this:
 ```cds
 entity OrderItems { ...
-  order : Association to Orders; 
+  order : Association to Orders;
   product : Association to Products;
 }
 ```
 
 Use `@assert.unique` to ensure that each product appears only once per order:
 
-```CDS [CDS Source]
+```cds [CDS Source]
 annotate OrderItems with @assert.unique.product: [ order, product ];
 ```
 
 Which would translate to the following SQL `UNIQUE` constraint in the generated DDL:
 
-```SQL [=> &nbsp; Generated DDL]
-CREATE TABLE OrderItems ( 
+```sql [=> &nbsp; Generated DDL]
+CREATE TABLE OrderItems (
   ...
   CONSTRAINT OrderItems_products UNIQUE (order_ID, product_ID)    -- [!code focus]
 );
@@ -558,14 +558,14 @@ CREATE TABLE OrderItems (
 
 Multiple named unique constraints per entity are supported, for example:
 
-```CDS [CDS Source]
+```cds [CDS Source]
 annotate OrderItems with @assert.unique.product: [ order, product ];
 annotate OrderItems with @assert.unique.someOtherConstraint: [ ... ];
 ```
 
 - The `<constraint>` name in `@assert.unique.<constraint>` becomes the name of the database constraint.
 
-- The argument is expected to be an array of flat [element references](../../cds/cdl#annotation-values) referring to elements in the entity. These elements may have the following types: 
+- The argument is expected to be an array of flat [element references](../../cds/cdl#annotation-values) referring to elements in the entity. These elements may have the following types:
 
   - scalar types, i.e., `String`, `Integer`, etc.
   - structured types – **not** elements _within_ structs.
@@ -582,7 +582,7 @@ You don't need to specify `@assert.unique` constraints for the [primary keys](#p
 
 [managed to-one associations]: ../../cds/cdl#managed-to-one-associations
 
-For [managed to-one associations], CAP can automatically generate foreign key constraints in the database. Switch this on globally with config option <Config>cds.features.assert_integrity = db</Config>, as shown below: 
+For [managed to-one associations], CAP can automatically generate foreign key constraints in the database. Switch this on globally with config option <Config>cds.features.assert_integrity = db</Config>, as shown below:
 
 ::: code-group
 ```json [package.json]
@@ -602,14 +602,14 @@ cds:
 With the global flag switched on, `FOREIGN KEY` constraints are automatically added to `CREATE TABLE` statements for [managed to-one associations] like this:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Books {
   author : Association to Authors;
 }
 ```
-::: 
+:::
 ::: code-group
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Books ( ...
   ID INTEGER NOT NULL,
   author_ID INTEGER,       -- added foreign key field
@@ -619,7 +619,7 @@ CREATE TABLE Books ( ...
    ON UPDATE RESTRICT
    ON DELETE RESTRICT
    VALIDATED
-   ENFORCED 
+   ENFORCED
    INITIALLY DEFERRED
 )
 ```
@@ -656,12 +656,12 @@ You can customize the generated DDL using specific CDS annotations, as outlined 
 Annotate an entity with `@cds.persistence.skip` to indicate that this entity should be skipped from generated DDL scripts, and also no SQL views to be generated on top of it:
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Foo {...}
 entity Bar as select from Foo;
 annotate Foo with @cds.persistence.skip;
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Foo ( ... )); -- skipped [!code --]
 CREATE VIEW Bar AS SELECT ... FROM Foo; -- skipped [!code --]
 ```
@@ -674,12 +674,12 @@ CREATE VIEW Bar AS SELECT ... FROM Foo; -- skipped [!code --]
 Annotate an entity with `@cds.persistence.exists` to indicate that this entity should be skipped from generated DDL scripts. In contrast to `@cds.persistence.skip` a database table or view is expected to exist, so we can and will generate SQL views on top.
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Foo {...}
 entity Bar as select from Foo;
 annotate Foo with @cds.persistence.exists;
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Foo ( ... )); -- skipped, but expected to exist [!code --]
 CREATE VIEW Bar AS SELECT ... FROM Foo; -- generated as usual
 ```
@@ -688,8 +688,8 @@ CREATE VIEW Bar AS SELECT ... FROM Foo; -- generated as usual
 ::: details On SAP HANA ...
 When using `@cds.persistence.exists` for ...
 
-- User-defined functions (UDFs), annotate it with `@cds.persistence.udf` in addition. 
-- Calculation views, annotate it with `@cds.persistence.calcview` in addition. 
+- User-defined functions (UDFs), annotate it with `@cds.persistence.udf` in addition.
+- Calculation views, annotate it with `@cds.persistence.calcview` in addition.
 
 See [Calculated Views and User-Defined Functions](./hana-native#calculated-views-and-user-defined-functions) for more details.
 :::
@@ -701,19 +701,19 @@ See [Calculated Views and User-Defined Functions](./hana-native#calculated-views
 Annotate an view entity with `@cds.persistence.table` to create a table with the effective signature of the view definition instead of an SQL view.
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Foo { key ID : Integer; tag : String; foo : Timestamp; }
 entity Bar as select from Foo { ID, tag, true as bar : Boolean; };
 annotate Bar with @cds.persistence.table;
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 CREATE TABLE Foo ( ID INTEGER, tag NVARCHAR(255), foo TIMESTAMP );
 CREATE TABLE Bar ( ID INTEGER, tag NVARCHAR(255), bar BOOLEAN ); -- [!code ++]
 CREATE VIEW Bar AS SELECT ... FROM Foo; -- skipped [!code --]
 ```
 :::
 
-> [!note] 
+> [!note]
 > All parts of the view definition not relevant for the signature, such as `where`, `group by`, `having`, `order by`, or `limit`, are ignored.
 
 > [!tip] Use Case: Replica Caching Tables
@@ -726,7 +726,7 @@ A common use case for this annotation is to create projections on entities from 
 Annotate entities or elements with `@sql.prepend` and `@sql.append` to add native SQL clauses before or after the generated SQL output.
 
 ::: code-group
-```CDS [CDS Source]
+```cds [CDS Source]
 entity Books { ..., title: String }
 entity ListOfBooks as select from Books { ... };
 
@@ -737,7 +737,7 @@ annotate Books with @sql.append: ```sql
 ```;
 annotate ListOfBooks with @sql.append: 'WITH DDL ONLY';
 ```
-```SQL [=> &nbsp; Generated DDL]
+```sql [=> &nbsp; Generated DDL]
 
 CREATE TABLE Books ( ...,
   title NVARCHAR(100) FUZZY SEARCH INDEX ON
@@ -755,16 +755,16 @@ CREATE VIEW ListOfBooks AS SELECT ... FROM Books WITH DDL ONLY;
 > [!note] Note for SAP HANA
 > Ensure to read [Schema Evolution Support of Native Database Clauses](hana#schema-evolution-native-db-clauses) if you plan to use these annotations in combination with [`@cds.persistence.journal`](hana#enabling-hdbmigrationtable-generation).
 
-> [!caution] 
+> [!caution]
 > The content of these annotations is inserted as-is into the generated DDL statements without any validation or other processing by the compiler. Use this feature with caution, as incorrect SQL clauses may lead to deployment failures or runtime errors. You're responsible to ensure that the resulting statement is valid and doesn't negatively impact your database or your application. **We don't provide support for problems caused by using this feature.**
 
 
 
 #### Column vs Row Tables on SAP HANA
 
-CAP creates columnar tables by default on SAP HANA, which is accomplished by an implicit `@sql.prepend:'COLUMN'` applied to all entities translating to tables. You can override this by using `@sql.prepend:'ROW'` to create a row table instead. 
+CAP creates columnar tables by default on SAP HANA, which is accomplished by an implicit `@sql.prepend:'COLUMN'` applied to all entities translating to tables. You can override this by using `@sql.prepend:'ROW'` to create a row table instead.
 
-::: warning 
+::: warning
 Whenever you use `@sql.prepend`, the default `@sql.prepend:'COLUMN'` is overridden.
 :::
 
@@ -791,10 +791,10 @@ All the above translations are designed to be portable across different SQL data
    ```
    :::
 
-2. Add profile-specific configuration to use these database-specific extensions:
+2. Add [profile-specific configuration](../../node.js/cds-env#profiles) to use these database-specific extensions:
 
    ```json
-   { "cds": { "requires": { 
+   { "cds": { "requires": {
      "db": {
        "[development]": { "model": "db/sqlite" },
        "[production]": { "model": "db/hana" }
