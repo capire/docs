@@ -109,6 +109,8 @@ cap/bookshop/
 Note that the initial data provided in the [_@capire/bookshop_](../../get-started/bookshop) sample is actually test data, and hence should have been placed in the _test/data_ folder. But for simplicity, it's placed in _db/data_, also because the whole purpose of that project is to be a _sample_.
 ::::
 
+> [!danger] Don't let users modify productive initial data
+> Otherwise this [data might get overridden on SAP HANA](./hana#csv-data-gets-overridden).
 
 
 ### Custom Folders

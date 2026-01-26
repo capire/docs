@@ -641,20 +641,14 @@ The `change-mode` option determines whether `ALTER TABLE ... ALTER` (`"alter"`) 
 
 ## Caveats
 
-
-
 ### CSV Data Gets Overridden
 
-HDI deploys CSV data as _.hdbtabledata_ and assumes exclusive ownership of the data. It's overridden with the next application deployment; hence:
+HDI deploys CSV data as _.hdbtabledata_ and assumes exclusive ownership of the data. It's **overridden with the next application deployment**; hence:
 
-::: tip
-
-Only use CSV files for _configuration data_ that can't be changed by application users.
-
-:::
-
-Yet, if you need to support initial data with user changes, you can use the `include_filter` option that _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ offers.
-
+> [!danger] Do not let application users modify initial data
+> Only use CSV files for configuration data that can't be changed by application users but only through new deployments of your application. There must be no application endpoint through which it can be modified.
+>
+> Yet, if you need to support initial data with user changes, you can use the `include_filter` option that _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ offers.
 
 
 ### Undeploying Artifacts
@@ -707,7 +701,7 @@ indirect dependencies between other objects, which can trigger other unnecessary
 or even unnecessary drop/create of indexes.
 
 As CAP doesn't need these native associations, by default no native HANA associations
-are created anymore starting with CAP 9. 
+are created anymore starting with CAP 9.
 
 In the unlikely case that you need native HANA associations because you explicitly use them
 in other native HANA objects or in custom code, you can switch them back on with <Config>cds.sql.native_hana_associations = true</Config>.
