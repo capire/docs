@@ -303,14 +303,16 @@ At runtime, use SAP HANA's built-in vector functions to search for similar items
 var request = new OpenAiEmbeddingRequest(List.of("How to use vector embeddings in CAP?"));
 CdsVector userQuestion = CdsVector.of(
  aiClient.embedding(request).getEmbeddingVectors().get(0));
+
 // Compute similarity between user question and book embeddings
 var similarity = CQL.cosineSimilarity( // computed on SAP HANA
   CQL.get(Books.EMBEDDING), userQuestion);
+
 // Find Books related to user question ordered by similarity
 hana.run(Select.from(BOOKS).limit(10)
-.columns(b -> b.ID(), b -> b.title(),
-		 b -> similarity.as("similarity"))
-.orderBy(b -> b.get("similarity").desc()));
+  .columns(b -> b.ID(), b -> b.title(), b -> similarity.as("similarity"))
+  .orderBy(b -> b.get("similarity").desc())
+);
 ```
 
 ```js [Node.js]
@@ -319,29 +321,24 @@ const response = await new AzureOpenAiEmbeddingClient(
 ).run({
  input: 'How to use vector embeddings in CAP?'
 });
+
 const questionEmbedding = response.getEmbedding();
 let similarBooks = await SELECT.from('Books')
   .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.9`;
 ```
-
 :::
 
-:::tip
+:::tip Evolve embeddings with your model
 Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
 :::
 
-:::tip SAP Cloud SDK for AI
+:::tip Use SAP Cloud SDK for AI
 Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access to embedding models and large language models (LLMs) from [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core).
 :::
 
-
-[Learn more about the SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) {.learn-more}
+Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
-
-[Learn more about the SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
-
-
 
 
 ### Geospatial Functions
