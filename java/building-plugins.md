@@ -99,7 +99,7 @@ using { CatalogService } from 'com.sap.capire/bookshop';
 The location in the `using` directive differs from the default [CDS model resolution rules](../cds/cdl#model-resolution). The *name* does not refer to a local file/package, nor to an NPM package. Instead, it follows to the groupId/artifactId scheme. The name doesn't directly refer to an actual file system location but is looked up in a _cds_ folder in Maven's _target_ folder.
 :::
 
-[Learn more about providing and using reuse packages.](../guides/integration/composition){.learn-more}
+[Learn more about providing and using reuse packages.](../guides/integration/reuse-and-compose){.learn-more}
 
 This technique can be used independently or together with one or more of the techniques described on this page.
 
