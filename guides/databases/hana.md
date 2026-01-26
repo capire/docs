@@ -57,7 +57,7 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 ## Running `cds build`
 
-Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
+Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?). Use `cds build` to generate all necessary deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
 
 ```sh
 cds build --for hana
@@ -156,6 +156,8 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
    gen/db/src/sap.capire.bookshop.Books.hdbindex // [!code focus]
    ```
 
+> [!note]
+Use folder `db/src` here because `src` is HDI's default source folder.
 
 [Learn more about HDI Design-Time Resources and Build Plug-ins](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/hdi-design-time-resources-and-build-plug-ins?){.learn-more}
 
