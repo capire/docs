@@ -19,7 +19,7 @@ status: released
 </style>
 
 
-# CAP Users { #cap-users }
+# CAP-level Users { #cap-users }
 
 <ImplVariantsHint />
 
@@ -201,8 +201,8 @@ You can activate user tracing by setting logger `com.sap.cds.security.authentica
 
 ```yaml
 logging:
-   level:
-      com.sap.cds.security.authentication: DEBUG
+  level:
+    com.sap.cds.security.authentication: DEBUG
 ```
 
 This will result in trace output like
@@ -516,17 +516,6 @@ aspect withGenre {
 entity Books : withGenre { ... }
 ```
 
-<!--
-The detailed syntax of the `@ams` annotation provides an `attribute` property which might be helpful to decouple the external from the internal name:
->>>>>>> Stashed changes
-```cds
-annotate AdminService.Books with @ams.attributes.genre: {
-  attribute: 'Genre', element: (genre.name)
-};
-```
--->
-
-
 ### Prepare Base Policies { #policies }
 
 CAP roles and attribute filters cannot be directly assigned to business users.
@@ -579,7 +568,7 @@ The generated policies are a good starting point to add manual modifications.
 
 The generated DCL schema includes all AMS attributes exposed for filtering:
 
-```yaml [/ams/schema.dcl]
+```dcl [/ams/schema.dcl]
 SCHEMA {
   Genre : String
 }
@@ -703,7 +692,7 @@ For the advanced test scenario, you can define custom policies in pre-defined pa
 
 Let's add a custom policy `StockManagerFiction` which is based on base policy `cap.StockManager` restricting the assigned users to the genres `Mystery` and `Fantasy`:
 
-```yaml [/ams/local/customPolicies.dcl]
+```dcl [/ams/local/customPolicies.dcl]
 POLICY StockManagerFiction {
     USE cap.StockManager RESTRICT Genre IN ('Mystery', 'Fantasy');
 }

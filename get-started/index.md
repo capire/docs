@@ -162,7 +162,7 @@ bookshop/           # the project's root folder
 ```
 
 > [!info] Convention over configuration
-> CAP uses defaults for many things you'd have to configure in other frameworks. Goal is that things should just work out of the box, with zero configuration, as much as possible. While you _can_ override these defaults, of course, you _should not_ do so, but rather stick to the defaults, for the sake of simplicity.
+> CAP uses defaults for many things you'd have to configure in other frameworks. The idea is that things just work out of the box, with zero configuration. While you _can_ override these defaults, of course, you _should not_ do so, but rather stick to the defaults, for the sake of simplicity.
 
 
 ### `cds watch`

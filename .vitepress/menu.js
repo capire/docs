@@ -1,4 +1,7 @@
+// #!usr/bin/env node
+
 /* eslint-disable no-console */
+/* eslint-disable no-self-assign */
 
 import { dirname, relative, resolve, join, normalize } from 'node:path'
 import { existsSync, promises as fs } from 'node:fs'
@@ -6,7 +9,6 @@ import rewrites from './rewrites.js'
 
 const DEBUG = process.env.DEBUG?.match(/\b(menu|all)\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
 const EXTERNAL = process.env.VITE_CAPIRE_ENV === 'external'
-const PRUNE_UNRELEASED = process.env.VITE_CAPIRE_PRUNE_UNRELEASED === 'true'  // usually on CI builds
 const cwd = process.cwd()
 
 
@@ -49,8 +51,9 @@ export class MenuItem {
   async include (filename, parent='.', _rewrite = rewrites, include, exclude) {
     const root = dirname(parent), folder = dirname(filename)
     const rewrite = link => link[0] === '/' ? link : _rewrite (normalize(join(folder,link)))
-    const {items} = await Menu.from (join(root,filename), rewrite, include, exclude)
+    const {items, skipped} = await Menu.from (join(root,filename), rewrite, include, exclude)
     if (items) (this.items ??= []).push (...items)
+    if (skipped) (this.skipped ??= []).push (...skipped)
     const index = existsSync (join (root,folder,'index.md'))
     if (index) this.link = `/${folder}/`; else delete this.link
     this.collapsed = true
@@ -79,15 +82,21 @@ export class Menu extends MenuItem {
         /^\s*(#+)\s(.*)/.exec(each) || []          // without link
       if (!hashes) continue //> skip lines not starting with #es
 
+      let is_submenu = /\/(_?menu.md)$/.exec(link)
 
       if (EXTERNAL) {
         let unreleased = each.match(/<!-- (UNRELEASED|INTERNAL) -->/)
         if (unreleased) {
-          if (PRUNE_UNRELEASED && link && !link.endsWith('menu.md')) {
-            let targetFile = resolve (cwd, dirname(file), link.replace(/^\//, '').replace(/\/$/,'/index.md'))
-            if (!targetFile.endsWith('.md')) targetFile += '.md'
-            if (existsSync(targetFile)) await fs.unlink(targetFile)
-            DEBUG?.('pruned:', relative(cwd,targetFile), 'at', relative(cwd,file)+':'+(i+1))
+          if (link) {
+            let target
+            if (is_submenu) { // skip entire submenu by with ** entry
+              target = resolve (cwd, dirname(file), dirname(link), '**')
+            } else {
+              target = resolve (cwd, dirname(file), link.replace(/^\//, '').replace(/\/$/,'/index.md'))
+              if (!target.endsWith('.md')) target += '.md'
+            }
+            (menu.skipped ??= []).push (relative(cwd,target))
+            DEBUG?.('skipped:', relative(cwd,target), 'at', relative(cwd,file)+':'+(i+1))
           } else {
             DEBUG?.('skipped:', unreleased[0], text, 'at', relative(cwd,file)+':'+(i+1))
           }
@@ -100,7 +109,6 @@ export class Menu extends MenuItem {
       if (!parent) throw new Error (`Missing parent for: ${each.trim()} at ${relative(cwd,file)}:${i+1}`)
 
       // Rewrite link and skip if excluded
-      let is_submenu = /\/(_?menu.md)$/.exec(link)
       if (link) {
         if (link[0] !== '/' && !is_submenu) link = rewrite(link)
         if (exclude(link) || !include(link)) {
@@ -132,6 +140,20 @@ export class Menu extends MenuItem {
   }
   set navbar (v) { super.navbar = v }
 
+  // returns skipped entries from all submenus
+  get excluded() {
+    let all = this.skipped || []
+    const collect = items => {
+      for (let item of items) {
+        if (item.skipped) all.push (...item.skipped)
+        if (item.items) collect (item.items)
+      }
+    }
+    collect (this.items || [])
+    return this.excluded = all
+  }
+  set excluded (v) { super.excluded = v }
+
 
   /**
    * CLI methods for ad-hoc tests
@@ -150,6 +172,7 @@ export class Menu extends MenuItem {
     // Parse menu.md file(s) with optional rewrites
     const {default:rewrites} = options.rewrites ? await import (resolve (options.rewrites)) : {}
     const menu = await this.from (args.shift(), rewrites)
+    menu.excluded = menu.excluded // trigger calculation of excluded entries
 
     // Print result
     const result = options.navbar ? menu.navbar : menu

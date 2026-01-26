@@ -1,13 +1,15 @@
 
-# [Concepts & Architecture](overview)
-# [CAP-level Authentication](authentication)
-## [CAP Users](cap-users)
-## [Remote Authentication](remote-authentication)
-# [CAP-level Authorization](authorization)
-# [Data Protection](data-protection)
-# [Data Privacy](data-privacy)
-# [Annotating Personal Data](dpp-annotations)
-# [Automatic Audit Logging](dpp-audit-logging)
-# [Personal Data Management](dpp-pdm)
+# [Security Overview](overview)
+## [Authentication](authentication)
+## [CAP-level Users](cap-users)
+## [CAP-level Authorization](authorization)
+## [Outbound Authentication](remote-authentication)
+
+# [Data Privacy Overview](data-privacy)
+## [Personal Data](dpp-annotations)
+## [Audit Logging](dpp-audit-logging)
+## [Personal Data Manager](dpp-pdm)
   <!-- ## [Data Retention Management](dpp-drm) -->
-# [Product Security Standard](../../../guides/security/product-standards) <!-- INTERNAL -->
+
+# [Product Security Overview](data-protection)
+## [SAP Standard](../../../guides/security/product-standards) <!-- INTERNAL -->

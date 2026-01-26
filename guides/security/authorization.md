@@ -17,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 
-# CAP Authorization { #authorization }
+# CAP-level Authorization { #authorization }
 
 <ImplVariantsHint />
 

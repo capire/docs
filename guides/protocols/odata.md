@@ -164,7 +164,7 @@ Use the annotation `@odata.Type` first to override standard type mappings, then 
 
 `@odata.Type` is effective on scalar CDS types only and the value must be a valid OData (EDM) primitive type for the specified protocol version. Unknown types and non-matching facets are silently ignored. No further value constraint checks are applied.
 
-These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs. See [Using Services](../services/consuming-services#external-service-api).
+These annotations allow you to produce additional OData EDM types that are not available in the standard type mapping. Use this approach during the import of external service APIs.
 
 ```cds
 entity Foo {

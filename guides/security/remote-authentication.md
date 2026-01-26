@@ -1,6 +1,6 @@
 ---
 # layout: cookbook
-label: Remote Authentication
+label: Outbound Authentication
 synopsis: >
   This guide explains how to authenticate remote services.
 status: released
@@ -19,7 +19,7 @@ status: released
 </style>
 
 
-# Remote Authentication { #remote-authentication }
+# Outbound Authentication { #remote-authentication }
 
 <ImplVariantsHint />
 
@@ -31,7 +31,7 @@ This guide explains how to authenticate remote services.
 
 According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (that is, exchanged content) from connection level (that is, established connection channel). 
 While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
-The latter is frequently subject to change and therefore should not introduce application dependencies. 
+The latter is frequently subject to change and therefore should not introduce application dependencies.
 
 ![Remote Service stack architecture](./assets/remote-service-stack.drawio.svg){width="400px" }
 
@@ -47,7 +47,7 @@ CAP supports out-of-the-box consumption of various types of [remote services]( #
 
 * [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (that is, belong to the same trusted [application zone](./overview#application-zone)).
 * [External services](#app-to-app) that can be running on non-BTP platforms.
-* [BTP reuse services](#ias-reuse) consumed via service binding.
+* [BTP reuse services](#ias-reuse) consumed via service binding. <!-- INTERNAL -->
 
 
 ## Co-located Services {#co-located-services}
@@ -67,7 +67,7 @@ On the client side, `xtravels-java` imports this service as a CAP remote service
 
 ::: tip
 CAP offers a simplified co-located service setup by leveraging remote services that require:
-- Shared identity instance 
+- Shared identity instance
 - URL for the destination
 - Principal propagation mode (optional)
 :::
@@ -81,7 +81,7 @@ Make sure that you've prepared a [local environment for CF deployments](../deplo
 - A Cloud Foundry (CF) space in a subaccount.
 - [HANA Cloud instance](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) mapped to the CF space.
 - [IAS tenant](./authentication#ias-ready) mapped to the subaccount.
-  
+
 
 #### 2. Prepare and deploy the consumer application { #co-located-consumer }
 
@@ -185,8 +185,8 @@ xflights-db-deployer             stopped           web:0/1
 xflights-srv                     started           web:1/1    ...
 xtravels                         started           web:1/1    ...
 xtravels-ams-policies-deployer   stopped           web:0/1
-xtravels-db-deployer             stopped           web:0/1  
-xtravels-srv                     started           web:1/1    ... 
+xtravels-db-deployer             stopped           web:0/1
+xtravels-srv                     started           web:1/1    ...
 ```
 :::
 
@@ -220,7 +220,7 @@ Alternatively, remote services can be configured on top of [BTP HTTP Destination
 
 ### IAS App-2-App { #app-to-app }
 
-As a first-class citizen, [IAS](./authentication#ias-auth) is positioned to simplify cross-regional requests with user propagation. 
+As a first-class citizen, [IAS](./authentication#ias-auth) is positioned to simplify cross-regional requests with user propagation.
 Prerequisites are identity instances on both consumer and provider sides, plus a registered IAS dependency in the consumer instance.
 
 ![External services](./assets/external-services.drawio.svg){width="500px" }
@@ -271,7 +271,7 @@ The description helps administrators to configure the consumer application with 
 
 [Detailed description about identity instance parameters for `provided-apis`](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-instance-parameters){.learn-more}
 
-How can proper authorization be configured for _technical clients without user propagation_? 
+How can proper authorization be configured for _technical clients without user propagation_?
 OAuth tokens presented by valid consumer requests from an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
 Therefore, you can protect the corresponding CDS service by CAP role `DataConsumer` to authorize requests thoroughly:
 
@@ -348,7 +348,7 @@ Alternatively, the destination can also be created manually in the [BTP destinat
 :::
 
 
-Given the destination, the remote service can be configured in a very similar way as with [co-located services](#co-located-consumer). 
+Given the destination, the remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
 Currently, an additional Cloud SDK dependency `scp-cf` is required to support communication with the BTP destination service:
 
 ::: code-group
@@ -368,9 +368,9 @@ cds:
 
 ```xml [/srv/pom.xml]
 <dependency>
-		<groupId>com.sap.cloud.sdk.cloudplatform</groupId>
- 		<artifactId>scp-cf</artifactId>
-  	<scope>runtime</scope>
+  <groupId>com.sap.cloud.sdk.cloudplatform</groupId>
+  <artifactId>scp-cf</artifactId>
+  <scope>runtime</scope>
 </dependency>
 ```
 
@@ -385,7 +385,7 @@ cd ./xtravels_java
 cds up
 ```
 
-`xtravels-srv` is not expected to start successfully; instead, you should see error log messages like this:	
+`xtravels-srv` is not expected to start successfully; instead, you should see error log messages like this:
 ```yaml
 Remote HCQL service responded with HTTP status code '401', ...
 ```
@@ -435,7 +435,7 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## Pitfalls
 
-- **Don't write custom integration logic** for consumed services. 
+- **Don't write custom integration logic** for consumed services.
 Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
 
 - **Don't implement connectivity layer code** (for example, to fetch or exchange tokens). 
