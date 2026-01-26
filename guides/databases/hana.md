@@ -673,17 +673,24 @@ By default, `cds add hana` creates an `undeploy.json` like this:
 If you need to remove deployed CSV files, also add this entry:
 
 ::: code-group
-
 ```json [db/undeploy.json]
 [
   [...]
   "src/gen/**/*.hdbtabledata"
 ]
 ```
-
 :::
 
 *See this [troubleshooting](../../get-started/get-help#hana-csv) entry for more information.*{.learn-more}
+
+> [!danger] Never undeploy hdbtable files
+> Never have entries for _tables_ in _undeploy.json_, as this leads to data loss for all tables that are not part of the deploy set.
+> ::: code-group
+> ```json [db/undeploy.json]
+>   "src/...hdbtable" // [!code error] data loss!
+> ```
+> :::
+
 
 ### System Limits
 
