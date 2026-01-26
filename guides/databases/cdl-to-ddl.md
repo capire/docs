@@ -345,7 +345,7 @@ LEFT JOIN Genres as genre on genre_ID = genre.ID; -- [!code ++]
 ```
 :::
 
-> [!tip] Associations as <i>'Forward-declared' JOINs</i>
+> [!note] Associations as <i>'Forward-declared' JOINs</i>
 > Looking closely at the above compiled SQL code, we can regard
 > associations to be like _'Forward-declared' JOINs_, along these lines:
 >
@@ -468,7 +468,7 @@ However, even though CAP allows this, and handles all accesses correctly, it is 
 > It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords-identifiers) in CDS models in the first place, as that impacts readability of your models.
 
 ###### reserved-words
-> [!important] Lists of Reserved Words
+> [!tip] Lists of Reserved Words
 > Check out the reserved words for the databases you are targeting: \
 > [_SAP HANA_](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c1d3f60099654ecfb3fe36ac93c121bb/28bcd6af3eb6437892719f7c27a8a285.html)
 > , [_SQLite_](https://www.sqlite.org/lang_keywords.html)
@@ -713,7 +713,7 @@ CREATE VIEW Bar AS SELECT ... FROM Foo; -- skipped [!code --]
 ```
 :::
 
-> [!note]
+> [!note] Irrelevant parts are ignored
 > All parts of the view definition not relevant for the signature, such as `where`, `group by`, `having`, `order by`, or `limit`, are ignored.
 
 > [!tip] Use Case: Replica Caching Tables
