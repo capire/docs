@@ -30,8 +30,8 @@ By default, the generated files are placed in the _db/data_ folder of your proje
 ```zsh
 cap/bookshop/
 ├── db/
-│ ├── data/ 
-│ │ └── # generated .csv files 
+│ ├── data/
+│ │ └── # generated .csv files
 ...
 ```
 
@@ -43,7 +43,7 @@ cds add data -o test/data
 
 Each file contains a CSV header line reflecting the structure of the entity to which it corresponds.
 
-## Editing `.csv` Files 
+## Editing `.csv` Files
 
 Go ahead and fill these files with initial data by editing them in your favorite editor. For example, the content of _db/data/sap.capire.bookshop-Books.csv_ looks like that:
 
@@ -74,8 +74,8 @@ cds add data --records 10
 
 Common rules apply to text content in `.csv` files, like:
 
-| Condition                                                    | Handling                    |
-| ------------------------------------------------------------ | --------------------------- |
+| Condition                                                        | Handling                    |
+|------------------------------------------------------------------|-----------------------------|
 | If texts contain commas, or line breaks, or trailing whitespaces | -> enclose in double quotes |
 | If texts contain double quotes                                   | -> escape by doubling them  |
 | Numeric content should be treated as texts                       | -> enclose in double quotes |
@@ -83,28 +83,26 @@ Common rules apply to text content in `.csv` files, like:
 
 
 
+## Initial vs Test Data
 
-## Initial vs Test Data 
-
-Quite frequently you need to distinguish between _(real) initial data_, that is data meant for production, such as configuration, code lists, and _test data_, meant for development and testing purposes only. CAP supports this by putting respective .csv files in two major places:
+Quite frequently, you need to distinguish between _(real) initial data_, that is data meant for production, such as configuration, code lists, and _test data_, meant for development and testing purposes only. CAP supports this by putting respective .csv files in two major places:
 
 ```zsh
 cap/bookshop/
 ├── db/
-│ ├── data/ 
+│ ├── data/
 │ │ └── # .csv files for initial data
 │ ...
 ├── test/
-│ ├── data/ 
-│ │ └── # .csv files for test data 
+│ ├── data/
+│ │ └── # .csv files for test data
 ...
 ```
 
-| Location                     | Purpose   | Deployed...          |
-|------------------------------|----------------------|---------------------|
-| **`db/data`** | (real) initial data | always, dev and prod |
-| **`test/data`**              | test data | in development only  |
-
+| Location        | Purpose             | Deployed...          |
+|-----------------|---------------------|----------------------|
+| **`db/data`**   | (real) initial data | always, dev and prod |
+| **`test/data`** | test data           | in development only  |
 
 ::: details Bookshop data is actually test data...
 Note that the initial data provided in the [_@capire/bookshop_](../../get-started/bookshop) sample is actually test data, and hence should have been placed in the _test/data_ folder. But for simplicity, it's placed in _db/data_, also because the whole purpose of that project is to be a _sample_.
@@ -116,7 +114,7 @@ Note that the initial data provided in the [_@capire/bookshop_](../../get-starte
 
 ### Custom Folders
 
-You can also configure other folders to read data from in different profiles. Use config option <Config> cds.requires.db.data </Config> to do so. The default configuration is like that, which you can override in your `package.json` or `.cdsrc.yaml` file as appropriate: 
+You can also configure other folders to read data from in different profiles. Use config option <Config>cds.requires.db.data</Config> to do so. The default configuration is like that, which you can override in your `package.json` or `.cdsrc.yaml` file as appropriate:
 
 ::: code-group
 ```json [package.json]
@@ -138,7 +136,7 @@ cds:
 ```
 :::
 
-Use `cds env` to check which configuration is active in your current profile, e.g.: 
+Use `cds env` to check which configuration is active in your current profile, e.g.:
 ```shell
 cds env requires.db.data --profile development
 ```
@@ -164,10 +162,9 @@ All `db/data/*.csv` and  `srv/data/*.csv` files are automatically loaded, becaus
 This is especially useful for remote service definitions imported with `cds import` (by default into `srv/external/`) so that data for such services can also be served when mocking.
 
 
-
 ## From Reuse Packages
 
-The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages whose main purpose is to provide initial data. 
+The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages whose main purpose is to provide initial data.
 
 Find an example for such a content reuse package at [*@capire/common*](https://github.com/capire/common) which showcases how one could provide ISO reuse data for `Countries`, `Currencies` and `Languages` code lists, as defined in [`@sap/cds/common`](../../cds/common). It essentially consists of these files as content:
 
@@ -185,14 +182,14 @@ Find an example for such a content reuse package at [*@capire/common*](https://g
 └── package.json
 ```
 
-Such packages get installed via `npm` or `mvn`, and hence their content will reside under `node_modules` folders, or Maven `target` folders. 
-As long as they also enclose reuse models, like the `index.cds` above, the .csv files in the `data` folder next to it will be automatically found and loaded into a consuming application's database. 
+Such packages get installed via `npm` or `mvn`, and hence their content will reside under `node_modules` folders, or Maven `target` folders.
+As long as they also enclose reuse models, like the `index.cds` above, the .csv files in the `data` folder next to it will be automatically found and loaded into a consuming application's database.
 
 > [!tip]
 >
 > The `@capire/common` package uses the `cds-plugin.js` technique, to provide plug-and-play configuration [in its `package.json`](https://github.com/capire/common/tree/main/package.json#L9-L16) like that:
 >
-> ```json 
+> ```json
 > "cds": {
 >   "requires": {
 >     "@capire/common/data": {
@@ -214,7 +211,7 @@ Reuse packages, such as the `@capire/common` one described above, can be consume
   "version": "1.2.3",
   "dependencies": {
     "@capire/common": "^1.0.0", // [!code focus]
-    "@sap/cds": "^6",
+    "@sap/cds": "..."
   }
 }
 ```
