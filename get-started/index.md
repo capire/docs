@@ -242,10 +242,9 @@ cds up --to kyma
 
 ## Stay up to Date!
 
-> [!important]
+> [!important] Staying up to date is crucial to receive important security fixes.
 > In order to benefit from the latest features and improvements, as well as receiving crucial security fixes, it's of utter importance to stay up to date with latest releases of CAP. Regularly run the following commands to do so.
 
-> [!caution] Staying up to date is crucial to receive important security fixes.
 
 Keep your development environment up to date:
 
