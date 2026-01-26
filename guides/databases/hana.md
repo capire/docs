@@ -450,16 +450,16 @@ CAP supports database schema updates by detecting changes to the CDS model when 
 > <sup>2</sup> Changing targets may lead to renamed foreign keys. Possibly hard to detect data integrity issues due to non-matching foreign key values if target key names remain the same (for example "ID").
 
 ::: warning No support for incompatible schema changes
-Currently there's no framework support for incompatible schema changes that require scripted data migration steps (like changing field constraints NULL > NOT NULL). However, the CDS build does detect those changes and renders them as non-executable statements, requesting the user to take manual resolution steps. We recommend avoiding those changes in productive environments.
+Currently there's no framework support for incompatible schema changes that require scripted data migration steps (like changing field constraints NULL > NOT NULL). However, `cds build` detects those changes and renders them as non-executable statements, requesting the user to take manual resolution steps. We recommend avoiding those changes in productive environments.
 :::
 
 ### Schema Evolution and Multitenancy/Extensibility
 
 There's full support for schema evolution when the _cds-mtxs_ library is used for multitenancy handling. It ensures that all schema changes during base-model upgrades are rolled out to the tenant databases.
 
-::: warning
-Tenant-specific extensibility using the _cds-mtxs_ library isn't supported yet
-Right now, you can't activate extensions on entities annotated with `@cds.persistence.journal`.
+::: warning No tenant extensibility
+Tenant-specific extensibility using the _cds-mtxs_ library isn't supported yet.
+You can't activate extensions on entities annotated with `@cds.persistence.journal`.
 :::
 
 ### Schema Updates with SAP HANA {#schema-updates-with-sap-hana}
@@ -470,19 +470,18 @@ Schema updates using _.hdbtable_ deployments are a challenge for tables with lar
 
 #### Deploy Artifact Transitions as Supported by HDI {#deploy-artifact-transitions}
 
-| Current format    | hdbcds | hdbtable | hdbmigrationtable |
-|-------------------|:------:|:--------:|:-----------------:|
-| hdbcds            |        |  yes  |      n/a      |
-| hdbtable          | n/a |          |       yes       |
-| hdbmigrationtable | n/a |  Yes  |                   |
+| Target format / <br>Current format | hdbcds<br><br> | hdbtable<br><br> | hdbmigrationtable<br><br> |
+|------------------------------------|:--------------:|:----------------:|:-------------------------:|
+| hdbcds                             |                |       yes        |            n/a            |
+| hdbtable                           |      n/a       |                  |            yes            |
+| hdbmigrationtable                  |      n/a       |       Yes        |                           |
 
-::: warning
-Direct migration from _.hdbcds_ to _.hdbmigrationtable_ isn't supported by HDI. A deployment using _.hdbtable_ is required up front.
-
-[Learn more in the **Enhance Project Configuration for SAP HANA Cloud** section.](#configure-hana){.learn-more}
-
-During the transition from _.hdbtable_ to _.hdbmigrationtable_ you have to deploy version=1 of the _.hdbmigrationtable_ artifact, which must not include any migration steps.
-:::
+> [!note] No direct transition from .hdbcds to .hdbmigrationtable
+> Direct migration from _.hdbcds_ to _.hdbmigrationtable_ isn't supported by HDI. A deployment using _.hdbtable_ is required up front.
+>
+> During the transition from _.hdbtable_ to _.hdbmigrationtable_ you have to deploy version=1 of the _.hdbmigrationtable_ artifact, which must not include any migration steps.
+>
+> [Learn more in the **Enhance Project Configuration for SAP HANA Cloud** section.](#configure-hana){.learn-more}
 
 HDI supports the _hdbcds → hdbtable → hdbmigrationtable_ migration flow without data loss. Even going back from _.hdbmigrationtable_ to _.hdbtable_ is possible. Keep in mind that you lose the migration history in this case.
 For all transitions you want to execute in HDI, you need to specify an undeploy allowlist as described in [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/hdi-delta-deployment-and-undeploy-allow-list?) in the SAP HANA documentation.
@@ -493,9 +492,9 @@ There a migration guide providing you step-by-step instructions for making the s
 [Learn more about Moving From _.hdbcds_ To _.hdbtable_](../../cds/compiler/hdbcds-to-hdbtable){.learn-more}
 :::
 
-#### Enabling hdbmigrationtable Generation for Selected Entities During CDS Build {#enabling-hdbmigrationtable-generation}
+#### Enabling hdbmigrationtable Generation for Selected Entities During `cds build` {#enabling-hdbmigrationtable-generation}
 
-If you're migrating your already deployed scenario to _.hdbmigrationtable_ deployment, you've to consider the remarks in [Deploy Artifact Transitions as Supported by HDI](#deploy-artifact-transitions).
+If you're migrating your already deployed scenario to _.hdbmigrationtable_ deployment, consider the remarks in [Deploy Artifact Transitions as Supported by HDI](#deploy-artifact-transitions).
 
 By default, all entities are still compiled to _.hdbtable_ and you only selectively choose the entities for which you want to build _.hdbmigrationtable_ by annotating them with `@cds.persistence.journal`.
 
@@ -504,17 +503,18 @@ Example:
 ```cds
 namespace data.model;
 
-  @cds.persistence.journal
-  entity LargeBook {
-    key id : Integer;
-    title : String(100);
-    content : LargeString;
-  }
+@cds.persistence.journal
+entity LargeBook {
+  key id : Integer;
+  title : String(100);
+  content : LargeString;
+}
 ```
 
-CDS build generates _.hdbmigrationtable_ source files for annotated entities as well as a _last-dev/csn.json_ source file representing the CDS model state of the last build.
+`cds build` generates _.hdbmigrationtable_ source files for annotated entities as well as a _last-dev/csn.json_ source file representing the CDS model state of the last build.
 
-> These source files have to be checked into the version control system.
+> [!note] .hdbmigrationtable files are source files.
+> These source files **must** be checked into the version control system.
 
 Subsequent model changes are applied automatically as respective migration versions including the required schema update statements to accomplish the new target state.
 There are cases where you have to resolve or refactor the generated statements, like for reducing field lengths. As they can't be executed without data loss (for example, `String(100)` -> `String(50)`), the required migration steps are only added as comments for you to process explicitly.
@@ -532,7 +532,7 @@ Example:
 -- ALTER TABLE my_bookshop_Books ADD (title NVARCHAR(50));
 ```
 
-Changing the type of a field causes CDS build to create a corresponding ALTER TABLE statement. [Data type conversion rules](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/data-type-conversion?) are applied by the SAP HANA database as part of the deployment step. This may cause the deployment to fail if the column contents can't be converted to the new format.
+Changing the type of a field causes `cds build` to create a corresponding ALTER TABLE statement. [Data type conversion rules](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/data-type-conversion?) are applied by the SAP HANA database as part of the deployment step. This may cause the deployment to fail if the column contents can't be converted to the new format.
 
 Examples:
 
@@ -547,14 +547,14 @@ When choosing to use _.hdbmigrationtable_ for an entity with
 the generated `.texts` and composition child entities are automatically handled via _.hdbmigrationtable_, too.
 If this is not desired, annotate these generated entities with `@cds.persistence.journal: false`.
 
-::: tip
-Sticking to _.hdbtable_ for the actual application development phase avoids lots of initial migration versions that would need to be applied to the database schema.
-:::
+`cds build` performs rudimentary checks on generated _.hdmigrationtable_ files:
 
-CDS build performs rudimentary checks on generated _.hdmigrationtable_ files:
+- `cds build` fails if inconsistencies are encountered between the generated _.hdbmigrationtable_ files and the _last-dev/csn.json_ model state. For example, the last migration version not matching the table version is such an inconsistency.
+- `cds build` fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
 
-- CDS build fails if inconsistencies are encountered between the generated _.hdbmigrationtable_ files and the _last-dev/csn.json_ model state. For example, the last migration version not matching the table version is such an inconsistency.
-- CDS build fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
+> [!tip] Stick to hdbtable during (early) development.
+> Sticking to _.hdbtable_ for the actual application development phase avoids lots of initial migration versions that would need to be applied to the database schema.
+
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
 Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
@@ -586,7 +586,7 @@ ALTER TABLE E PERSISTENT MEMORY ON;
 ALTER TABLE E ALTER (text NVARCHAR(100) FUZZY SEARCH INDEX ON);
 ```
 
-It's important to understand that during deployment new migration versions will be applied on the existing database schema. If the resulting schema doesn't match the schema as defined by the TABLE statement, deployment fails and any changes are rolled-back. In consequence, when removing or replacing an existing `@sql.append` annotation, the original ALTER statements need to be undone. As the required statements can't automatically be determined, manual resolution is required. The CDS build generates comments starting with `>>>>` in order to provide some guidance and enforce manual resolution.
+It's important to understand that during deployment new migration versions will be applied on the existing database schema. If the resulting schema doesn't match the schema as defined by the TABLE statement, deployment fails and any changes are rolled-back. In consequence, when removing or replacing an existing `@sql.append` annotation, the original ALTER statements need to be undone. As the required statements can't automatically be determined, manual resolution is required. The `cds build` generates comments starting with `>>>>` in order to provide some guidance and enforce manual resolution.
 
 Generated file with comments:
 ```txt
