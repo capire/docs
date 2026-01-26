@@ -176,7 +176,7 @@ To prepare the project, execute:
 cds add hana --for hybrid
 ```
 
-This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
+This configures deployment for SAP HANA. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
 ::: tip The profile `hybrid` relates to [the hybrid testing](../../tools/cds-bind) scenario
 If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deploy/index.md) guide.
@@ -197,17 +197,7 @@ Then in the project root folder, just execute:
 cds deploy --to hana
 ```
 
-> To connect to your SAP HANA Cloud instance use `cds watch --profile hybrid` in Node.js or[ `mvn cds:watch` in Java](../../java/developing-applications/running#local-development-support) projects.
-
-Behind the scenes, `cds deploy` does the following:
-
-* Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
-* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the CSV files in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
-* Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
-* Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
-* Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
-
-Specify `--profile` when running `cds deploy` as follows:
+Or run it with a profile as follows:
 
 ```sh
 cds deploy --to hana --profile hybrid
@@ -215,32 +205,51 @@ cds deploy --to hana --profile hybrid
 
 Based on these profile settings, `cds deploy` executes `cds build` and also resolves additionally binding information. If a corresponding binding exists, its service name and service key are used. The development profile is used by default.
 
-[Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
+<details><summary>In more detail <code>cds deploy</code> does the following...</summary>
+
+* Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
+* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the CSV files in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
+* Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
+* Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
+* Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
+
+</details>
+
+To connect to and run with your SAP HANA Cloud instance, use:
+
+::: code-group
+```sh [Node.js]
+cds watch --profile hybrid
+```
+
+```sh [Java]
+mvn cds:watch
+```
+:::
+
 [Learn more about hybrid testing using service bindings to Cloud services.](../../tools/cds-bind#run-with-service-bindings){.learn-more}
+[Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
+[See the troubleshooting guide if you run into issues.](../../get-started/get-help#hana){.learn-more}
 
-If you run into issues, see the [Troubleshooting](../../get-started/get-help#hana) guide.
 
-#### Deploy Parameters
+#### Configuring `cds deploy`
 
-When using the option `--to hana`, you can specify the service name and logon information in several ways.
+When using `cds deploy --to hana`, you can specify the service name and logon information in several ways.
 
-<br>
+In the default mode, the service name and service key either come from the environment variable `VCAP_SERVICES` or are defaulted from the project name, for example, `myproject-db` with `myproject-db-key`. Service instances and key either exist and will be used, or otherwise they're created.
 
-`cds deploy --to hana`
-
-In this case the service name and service key either come from the environment variable `VCAP_SERVICES` or are defaulted from the project name, for example, `myproject-db` with `myproject-db-key`. Service instances and key either exist and will be used, or otherwise they're created.
-
-##### `cds deploy --to hana:myservice`
+##### `--to hana:myservice`
 
 This overwrites any information coming from environment variables. The service name `myservice` is used and the current Cloud Foundry client logon information is taken to connect to the system.
 
-##### `cds deploy --vcap-file someEnvFile.json`
+##### `--vcap-file someEnvFile.json`
 
 This takes the logon information and the service name from the `someEnvFile.json` file and overwrite any environment variable that is already set.
 
-##### `cds deploy --to hana:myservice --vcap-file someEnvFile.json`
+##### `--to hana:myservice --vcap-file someEnvFile.json`
 
 This is equivalent to `cds deploy --to hana:myservice` and ignores information coming from `--vcap-file`. A warning is printed after deploying.
+
 
 ### Using `cf deploy` or `cf push`
 
