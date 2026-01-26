@@ -1,4 +1,4 @@
-# Plugin Development Guide 
+# CAP Plugins Guide 
 Also known as *'Calipso'* {.subtitle}
 
 CAP applications frequently integrate with platform services like identity, logging, document & object storage, notifications, and telemetry. The recommended approach is to use CAP plugins, which encapsulate reusable integrations and domain artifacts following the Calesi pattern.
@@ -33,7 +33,7 @@ Plugins minimize setup and maintenance, enabling rapid adoption through plug-and
 
 ### Principles
 
-Calipso builds on the foundation of Calesi. The core Calesi concepts—such as ease of use, local testability, evolution without disruption, extrinsic extensibility and promoting reuse—should always guide Calipso plugin development.
+Calipso builds on the foundation of [Calesi](./calesi.md). The core Calesi concepts—such as ease of use, local testability, evolution without disruption, extrinsic extensibility and promoting reuse—should always guide Calipso plugin development.
 
 <p align="center">
   <img src="./assets/calipso-principles.drawio.svg" alt="The five foundations of Calesi + Calipso: Easy to use, Local testability, Evolution without disruption, extrinsic extensibility and Reuse not reinvent." />

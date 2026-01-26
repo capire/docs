@@ -18,6 +18,9 @@ Especially, when working with larger projects that may consist of many individua
 
 In the following sections, the different extension points and mechanisms are explained.
 
+> [!NOTE] Before you start
+> Read through the [Calesi](../guides/integration/calesi.md) pattern and the [Plugin Development](../guides/integration/calipso.md) guide. These patterns help ensure your plugin follows best practices for quality and consistency.
+
 ## General Considerations
 
 ### Java Version
