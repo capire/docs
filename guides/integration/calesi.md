@@ -164,7 +164,7 @@ In this guide we'll use the _XTravels_ sample application as our running example
 ![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
 ](assets/xtravels-screenshot.png)
 
-The resulting entity-relashionship model looks like that:
+The resulting entity-relationship model looks like that:
 
 ![Architecture diagram showing three systems: XFlights on the left containing Flights and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
 ](assets/xtravels-sample.drawio.svg)
