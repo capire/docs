@@ -195,7 +195,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 
 
-## Blog Posts & Podcasts
+## Blog Posts & Other Material
 
 - [Hybrid Testing and Alternative DBs](https://youtu.be/vqub4vJbZX8?si=j5ZkPR6vPb59iBBy) <br> by Thomas Jung
 - [Consume External Services](https://youtu.be/rWQFbXFEr1M) <br> by Thomas Jung
