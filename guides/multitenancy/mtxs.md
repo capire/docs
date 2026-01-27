@@ -1335,8 +1335,8 @@ Content-Type: application/json
         "_": {
             "hdi": {
                 "deploy": {
-                    "trace": "true",
-                    "version": "true"
+                    "trace": true,
+                    "version": true
                 }
             }
         }
@@ -1482,8 +1482,8 @@ Prefer: respond-async
       "_": {
           "hdi": {
               "deploy": {
-                  "trace": "true",
-                  "version": "true"
+                  "trace": true,
+                  "version": true
               }
           }
       }
