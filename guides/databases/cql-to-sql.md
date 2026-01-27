@@ -57,6 +57,7 @@ The differences are captured in these truth tables:
 | 1 | `false` | `true` | `unknown` |
 | 0 | `true` | `false` | `unknown` |
 | `null` | `unknown` | `unknown` | `unknown` |
+
 :::
 
 In other words:
@@ -76,7 +77,7 @@ The result set includes all books where genre is not 'Science Fiction', includin
 
 The behavior of CQL two-valued comparison operators `==` and `!=` is consistent with common programming languages like JavaScript and Java, as well as with the semantics of the OData operators `eq` and `ne`. On the database `==` and `!=` are translated to `IS NOT DISTINCT FROM` and `IS DISTINCT FROM` in standard SQL, to `IS` and `IS NOT` on SQLite, and to an equivalent polyfill on SAP HANA.
 
-> [!tip] Usage Recommendation
+> [!tip] Prefer == and !=
 > Prefer using  `==` and `!=` in the very most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
 
 > [!tip] Avoid using `null` values
@@ -100,9 +101,9 @@ from Books;
 :::
 ::: code-group
 ```sql [=>&nbsp; Compiled SQL query]
-SELECT CASE 
-  WHEN price > 100 THEN 'expensive' 
-  ELSE 'affordable' 
+SELECT CASE
+  WHEN price > 100 THEN 'expensive'
+  ELSE 'affordable'
 END as priceCategory
 FROM Books;
 ```
@@ -127,8 +128,8 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 - `contains(x,substring)`
 - `startswith(x,substring)`
 - `endswith(x,substring)`
-- `indexof(x,substring)` 
-- `substring(x,start, length)` 
+- `indexof(x,substring)`
+- `substring(x,start, length)`
 - `matchespattern(x,pattern)`
 
 **Numeric functions:**
@@ -163,7 +164,6 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 - `days_between(x,y)`
 - `seconds_between(x,y)`
 
----
 
 * <sup>1</sup> `countdistinct` is only supported by CAP Java.
 * <sup>2</sup> Date/time functions are not supported by CAP Java.
@@ -174,14 +174,16 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 > [!important] Function names are case-sensitive
 > The function names must be written exactly as listed above. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
 
-> [!warning] Non-portable <code>round()</code> function with more than one argument
+> [!important] Non-portable <code>round()</code> function with more than one argument
 > Note that databases support `round()` functions with multiple arguments, the second parameter being the precision. If you use that option, the `round()` function may behave differently depending on the database.
 
+> [!note] Indexes and Substring Details
+> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned.
 
 
 ### Native Functions
 
-In general, the CDS compiler doesn't 'understand' SQL functions but translates them to SQL generically as long as they follow the standard call syntax of `fn(x,y,...)`. This allows to use all native database functions inside your CDS models, like this:
+In general, the CDS compiler doesn't 'understand' SQL functions but translates them to SQL _generically_ as long as they follow the standard call syntax of `fn(x,y,...)`. This allows to use all native database functions inside your CDS models, like this:
 
 ```cds
 SELECT from Books {
@@ -189,13 +191,13 @@ SELECT from Books {
 }
 ```
 
-> [!warning] 
+> [!warning] Native functions are less portable
 > Using native functions like this makes your CDS models database-specific, and thus less portable. Therefore, prefer using the [portable functions](#portable-functions) listed above whenever possible.
 
 
 ### Window Functions
 
-Window functions with `OVER` clauses are supported as well; for example:
+[SQL window functions](https://en.wikipedia.org/wiki/Window_function_(SQL)) with `OVER` clauses are supported as well, for example:
 
 ```sql
 SELECT from Books {

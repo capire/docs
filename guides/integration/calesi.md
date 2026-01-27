@@ -11,7 +11,7 @@ Integrating remote services – from other applications, third-party services, o
 
 
 
-## Consuming Remote Services 
+## As if they were local
 
 Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how that looks in practice:
 
@@ -19,8 +19,6 @@ Service integration is much about consuming remote services from other applicati
 
    ```shell
    git clone https://github.com/capire/bookshop
-   ```
-   ```shell
    cds watch bookshop
    ```
 
@@ -29,22 +27,26 @@ Service integration is much about consuming remote services from other applicati
    ```shell
    cds repl
    ```
-   ```js :line-numbers=1
-   await cds.service.bindings // from local binding environment
-   ```
-   ```js :line-numbers=2
-   const srv = await cds.connect.to ('AdminService')
-   ```
-   ```js :line-numbers=3
-   await srv.read `ID, title` .from `Books` // SQL style
-   ```
-   ```js :line-numbers=4
-   await srv.read `Authors { 
+   ```js :line-numbers
+   cats = await cds.connect.to ('http://localhost:4004/hcql/admin')
+   await cats.read `Authors { 
      ID, name, books { 
        ID, title, genre.name as genre
      }
-   }` // CQL style w/ deep queries
+   }`
    ```
+
+::: details Requires Cloud SDK libs ...
+
+In case you get respective error messages ensure you've installed the following Cloud SDK packages in your project:
+
+```shell
+npm add @sap-cloud-sdk/connectivity
+npm add @sap-cloud-sdk/http-client
+npm add @sap-cloud-sdk/resilience
+```
+
+:::
 
 The graphic below illustrates what happened here:
 
@@ -153,7 +155,11 @@ and covers all the aspects of CAP-level service integration in detail.
 
 ## The XTravels Sample
 
-The [*@capire/xtravels*](https://github.com/capire/xtravels) sample is about an application which allows travel agents to plan travels on behalf of travellers, including bookings of flights. *Customer* data is obtained from S/4HANA, while *Flights*, *Airports* and *Airline* are master data provided by the [*@capire/xflights*](https://github.com/capire/xflights) microservice, as indicated by the green and blue areas in the screenshot below. 
+In this guide we'll use the _XTravels_ sample application as our running example for CAP-level service integration. It is an modernized adaptation of the reknown [ABAP Flight reference sample](https://help.sap.com/docs/abap-cloud/abap-rap/abap-flight-reference-scenario), reimplemented using CAP, as well as split into two microservices as follows:
+
+- The [*@capire/xflights*](https://github.com/capire/xflights) service provides flight-related master data, such as *Flights*, *Airports*, *Airlines*, and *Supplements* (like extra luggage, meals, etc.). It exposes this data via a CAP service API.
+
+- The [*@capire/xtravels*](https://github.com/capire/xtravels) application allows travel agents to plan travels on behalf of travellers, including bookings of flights. *Customer* data is obtained from a SAP S/4HANA system, while *Flights*, *Airports* and *Airline* are consumed from the *@capire/xflights*, as indicated by the green and blue areas in the screenshot below. 
 
 ![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
 ](assets/xtravels-screenshot.png)
@@ -166,7 +172,18 @@ The resulting entity-relashionship model looks like that:
 From a service integration perspective, this sample mainly shows a data federation scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. 
 
 
-So let's dive into the details of CAP-level service integration, using the XTravels sample as our running example:
+### Workflow Overview
+The key steps to achieve CAP-level service integration in scenarios like this are:
+1. **Providing APIs** – on the service provider side, you define CAP services for all outbound interfaces, and export them as Packaged APIs using `cds export`.
+2. **Importing APIs** – on the consumer side, you import the exported API packages using standard `npm add` or `mvn install`.
+3. **Consuming APIs** – you use the imported definitions within your own models, e.g., via consumption views, and mashup these definitions with your own entities.
+4. **Service Bindings** – you define service bindings to specify how to connect to remote services, e.g., using environment variables or platform-specific configurations.
+5. **Inner-Loop Development** – you can mock remote services automatically for local development and testing, using CAP's built-in mocking capabilities.
+
+
+### Getting Started...
+
+So let's dive into the details of CAP-level service integration, using the XTravels sample as our running example. Clone both repositories as follows to follow along:
 
 ```sh
 mkdir -p cap/samples
@@ -176,8 +193,12 @@ git clone https://github.com/capire/xtravels
 ```
 
 
+## Providing APIs
 
-## Defining Service APIs
+In case of CAP service providers, as for [*@capire/xflights*](https://github.com/capire/xflights) in our [sample scenario](#the-xtravels-sample), you define [CAP services](../services/) for all outbound interfaces, which includes (private) interfaces to your application's UIs, as well as public APIs to any other remote consumers. 
+
+
+### Defining Service APIs
 
 Open the _cap/samples/xflights_ folder in Visual Studio Code, and have a look at the service definition in `srv/data-service.cds` in there:
 
@@ -215,12 +236,13 @@ Reason for this more complicated definition is that we need to preserve the prim
 > Denormalized views are a common means to tailor provided APIs in a use case-oriented way. While normalization is required _within_ _XFlights_ to avoid redundancies, we flatten it here, to make life easier for external consumers. \
 > => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
 >
-> 
 
 
-## Exporting APIs
 
-Use `cds export` to export APIs. For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would print some output as shown below:
+
+### Exporting APIs
+
+Use `cds export` to export APIs for given [service definitions](#defining-service-apis). For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would print some output as shown below:
 
 ```shell
 cds export srv/data-service.cds 
@@ -239,7 +261,7 @@ By default, generated output is written to an `./apis/<service>`  subfolder, wit
 
 
 
-### Service Interfaces
+#### Exported Service Definitions
 
 The key ingredient of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** part of the given service definition: only the _inferred elements signature_ of served entities are included, while all projections to underlying entities got removed, and hence all underlying entities and definitions referred to by them. 
 
@@ -484,14 +506,11 @@ capire-xflights-data-0.1.13.tgz
 
 
 
+
+
 ## Importing APIs 
 
-
-
-```shell
-git clone https://github.com/capire/xtravels
-code xtravels
-```
+On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), ... 
 
 
 
@@ -507,7 +526,7 @@ npm add @capire/xflights-data
 
 
 
-### Other Protocols
+### From Other APIs
 
 ```shell
 cds import --edmx ...
@@ -523,14 +542,15 @@ cds import --data-product ...
 
 
 
-### Analysis
+
 
 - `cds import` ⇒ CAP service definitions
 - `cds watch` → imported models not loaded, as we don't use them yet
 
 
-
 ## Consuming APIs 
+
+On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), ... 
 
 
 

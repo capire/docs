@@ -110,13 +110,13 @@ Typically with ORMs:
 
 Similar to SQL, CDS allows to declare new entities as views on underlying entities, using queries to capture the respective mappings.
 
-```sql
+```cds
 entity MyFavoriteBooks as select from Books {
    ID, title, author.name as author
 } where ID in (SELECT book from MyFavorites)
 ```
 
-```sql
+```cds
 entity LatestBooks as projection on Books {
    ID, title, author.name as author
 } where publication >= $now - 1 year
