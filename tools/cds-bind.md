@@ -283,7 +283,6 @@ Example output:
 ```
 
 ### Run Arbitrary Commands with Service Bindings
-###### cds-bind-exec
 
 With `cds bind` you avoid storing credentials on your hard disk. If you need to start other local applications with cloud service bindings, you can use the `exec` option.
 
