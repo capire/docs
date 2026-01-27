@@ -116,6 +116,7 @@ entity MyFavoriteBooks as select from Books {
 } where ID in (SELECT book from MyFavorites)
 ```
 
+<!-- cds-mode: ignore -->
 ```cds
 entity LatestBooks as projection on Books {
    ID, title, author.name as author
