@@ -628,7 +628,7 @@ With that in place, we can connect to the remote services, and send queries to t
   ```
 
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
-](../guides/integration/assets/remote-services.drawio.svg)
+](../guides/integration/assets/remoting.drawio.svg)
 
 
 ###### CAP-level Service Integration

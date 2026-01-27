@@ -1,5 +1,5 @@
 
-# [ CAP-level Service Integration ](calesi.md) <!-- UNRELEASED -->
+# [ CAP-level Service Integration ](calesi.md)
 # [ CAP-level Data Federation ](data-federation.md) <!-- UNRELEASED -->
 # [ Reuse & Compose ](reuse-and-compose.md)
 
