@@ -4,238 +4,16 @@ synopsis: >
 impl-variants: true
 ---
 
-<script setup>
-  import { h } from 'vue'
-  const Y = () => h('span', { class: 'y',  title: 'Supported' },      ['✓'] )
-  const X = () => h('span', { class: 'x',  title: 'Not supported' },  ['✗'] )
-</script>
-<style scoped>
-  .y  { color: var(--vp-c-green-1); font-weight:900; }
-  .x  { color: var(--vp-c-red-1);   font-weight:900; }
-</style>
+
+
 
 # Consuming Services
 
-<ImplVariantsHint />
+If you want to use data from other services or you want to split your application into multiple microservices, you need a connection between those services. We call them **remote services**. As everything in CAP is a service, remote services are modeled the same way as internal services — using CDS.
 
 [[toc]]
 
-## Introduction
 
-If you want to use data from other services or you want to split your application into multiple microservices, you need a connection between those services. We call them **remote services**. As everything in CAP is a service, remote services are modeled the same way as internal services — using CDS.
-
-CAP supports service consumption with dedicated APIs to [import](#import-api) service definitions, [query](#execute-queries) remote services, [mash up](#building-mashups) services, and [work locally](#local-mocking) as much as possible.
-
-
-<!--
-While requests that are part of your application are translated into data base requests, requests to remote services are translated to OData requests, or in future possible for other protocols.
-
-CAP allows you to model your own projections on remote services to decouple from the remote service's interface and to adapt it to your needs. With a few lines of code, you can expose remote services through your services and build mash-ups.
-
-Connection in productive use works through SAP BTP Destination services or by specifying the required credentials through environment variables.
-
--->
-
-
-### Feature Overview
-
-For outbound remote service consumption, the following features are supported:
-+ OData V4
-+ OData V2 (Deprecated)
-+ [Querying API](#querying-api-features)
-+ [Projections on remote services](#supported-projection-features)
-
-### Tutorials and Examples
-| Example                                                                                                                            | Description                                                                               |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [Capire Bookstore (Fiori)](https://github.com/capire/bookstore/tree/main/app)                                                                                           | Example, Node.js, CAP-to-CAP                                                              |
-| [Example Application (Node.js)](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui)       | Complete application from the end-to-end Tutorial                                         |
-| [Example Application (Java)](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui-java)     | Complete application from the end-to-end Tutorial                                         |
-| [Incident Management (Node.js)](https://github.com/SAP-samples/btp-developer-guide-cap/tree/main/documentation/remote-service)    | Using a mock server or S/4 on Cloud Foundry or Kyma
-
-### Define Scenario
-
-Before you start your implementation, you should define your scenario. Answering the following questions gets you started:
-+ What services (remote/CAP) are involved?
-+ How do they interact?
-+ What needs to be displayed on the UI?
-
-You have all your answers and know your scenario, go on reading about [external service APIs](#external-service-api), getting an API definition from [the SAP Business Accelerator Hub](#from-api-hub) or [from a CAP project](#from-cap-service), and [importing an API definition](#import-api) to your project.
-
-#### Sample Scenario from End-to-End Tutorial
-
-![A graphic showing the flow for one possible scenario. A user can either view risks or view the suppliers. The suppliers master data is already available from a system and is consumed in an application that enables the user to add the risks. From the maintained risks the user can get information about the supplier connected to a risk. From the supplier view, it's also possible to get details about a risk that is associated with a supplier. The user can block/unblock suppliers from the risk view.](./assets/risk-mgmt.drawio.svg){style="width: 500px"}
-
-> [!info] _User Story_
-> A company wants to ensure that goods are only sourced from suppliers with acceptable risks. There shall be a software system, that allows a clerk to maintain risks for suppliers and their mitigations. The system shall block the supplier used if risks can't be mitigated.
-
-The application is an extension for SAP S/4HANA. It deals with _risks_ and _mitigations_ that are local entities in the application and _suppliers_ that are stored in SAP S/4HANA Cloud. The application helps to reduce risks associated with suppliers by automatically blocking suppliers with a high risk using a [remote API Call](#execute-queries).
-
-##### Integrate
-
-The user picks a supplier from the list. That list is coming [from the remote system and is exposed by the CAP application](#expose-remote-services). Then the user does a risk assessment. Additional supplier data, like name and blocked status, should be displayed on the UI as well, by [integrating the remote supplier service into the local risk service](#integrate-remote-into-local-services).
-
-##### Extend
-
-It should be also possible to search for suppliers and show the associated risks by extending the remote supplier service [with the local risk service](#extend-a-remote-by-a-local-service) and its risks.
-
-:::info New scenario: Incident Management
-If you want to learn about this topic based on the [Incident Management](https://github.com/cap-js/incidents-app) sample, you can follow the [BTP Developer's Guide repository](https://github.com/SAP-samples/btp-developer-guide-cap/tree/main/documentation/remote-service).
-:::
-
-## Install Dependencies { .node }
-<!-- TODO: No fixed major version numbers? -->
-```sh
-npm add @sap-cloud-sdk/http-client@4.x @sap-cloud-sdk/connectivity@4.x @sap-cloud-sdk/resilience@4.x
-```
-
-## Get and Import an External Service API { #external-service-api }
-
-To communicate to remote services, CAP needs to know their definitions. Having the definitions in your project allows you to mock them during design time.
-
-These definitions are usually made available by the service provider. As they aren't defined within your application but imported from outside, they're called *external* service APIs in CAP. Service APIs can be provided in different formats. Currently, *EDMX* files for OData V2 and V4 are supported.
-
-### From SAP Business Accelerator Hub { #from-api-hub}
-
-The [SAP Business Accelerator Hub](https://api.sap.com/) provides many relevant APIs from SAP. You can download API specifications in different formats. If available, use the EDMX format. The EDMX format describes OData interfaces.
-
-To download the [Business Partner API (A2X) from SAP S/4HANA Cloud](https://api.sap.com/api/API_BUSINESS_PARTNER/overview), go to section **API Resources**, select **API Specification**, and download the **EDMX** file.
-
-### For a Remote CAP Service { #from-cap-service}
-
-We recommend using EDMX as exchange format. Export a service API to EDMX:
-
-<!-- TODO: Should we mention this here? -->
-<!-- ::: warning
-The export-import cycle is the way to go for now. It is under investigation to improve this procedure.
-::: -->
-
-::: code-group
-
-```sh [Mac/Linux]
-cds compile srv -s OrdersService -2 edmx > OrdersService.edmx
-```
-
-```cmd [Windows]
-cds compile srv -s OrdersService -2 edmx > OrdersService.edmx
-```
-
-```powershell  [Powershell]
-cds compile srv -s OrdersService -2 edmx -o dest/
-```
-:::
-
-
-[You can try it with the orders sample in **capire/orders**.](https://github.com/capire/orders){.learn-more}
-
-By default, CAP works with OData V4 and the EDMX export is in this protocol version as well. The `cds compile` command offers options for other OData versions and flavors, call `cds help compile` for more information.
-::: warning Don't just copy the CDS file for a remote CAP service
-Simply copying CDS files from a different application comes with the following issues:
-- The effective service API depends on the used protocol.
-- CDS files often use includes, which can't be resolved anymore.
-- CAP creates unneeded database tables and views for all entities in the file.
-:::
-
-### Import API Definition { #import-api}
-
-Import the API to your project using `cds import`.
-
-```sh
-cds import <input_file> --as cds
-```
-
-> `<input_file>` can be an EDMX (OData V2, OData V4), OpenAPI or AsyncAPI file.
-
-| Option             | Description                                                                                                                                                                                                       |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--as cds`         | The import creates a CDS file (for example _API_BUSINESS_PARTNER.cds_) instead of a CSN file.                                                                                                                     |
-
-
-This adds the API in CDS format to the _srv/external_ folder and also copies the input file into that folder.
-
-<div class="impl node">
-
-Further, it adds the API as an external service to your _package.json_. You use this declaration later to connect to the remote service [using a destination](#use-destinations-with-node-js).
-
-```json
-"cds": {
-    "requires": {
-        "API_BUSINESS_PARTNER": {
-            "kind": "odata-v2",
-            "model": "srv/external/API_BUSINESS_PARTNER"
-        }
-    }
-}
-```
-
-</div>
-
-::: details Options and flags in _.cdsrc.json_
-Alternatively, you can set the options and flags for `cds import` in your _.cdsrc.json_:
-
-```json
-{
-    "import": {
-        "as": "cds",
-        "force": true,
-        "include_namespaces": "sap,c4c"
-    }
-}
-```
-
-Now run `cds import <filename>`
-
-- `--as` only supports these formats: "csn","cds", and "json"
-- `--force` is applicable only in combination with `--as` option. By default the `--force` flag is set to false.
-  > If set to true, existing CSN/CDS files from previous imports are overwritten.
-:::
-
-When importing the specification files, the `kind` is set according to the following mapping:
-
-| Imported Format | Used `kind`                    |
-|-----------------|--------------------------------|
-| OData V2        | `odata-v2`                     |
-| OData V4        | `odata` (alias for `odata-v4`) |
-| OpenAPI         | `rest`                         |
-| AsyncAPI        | `odata`                        |
-
-[Learn more about type mappings from OData to CDS and vice versa.](../../tools/apis/cds-import#odata-type-mappings){.learn-more}
-
-::: tip
-Always use OData V4 (`odata`) when calling another CAP service.
-:::
-
-::: warning Limitations
-Not all features of OData, OpenAPI, or AsyncAPI are supported in CAP which may lead to the rejection of the imported model by the CDS compiler or may result in a different API when rendered by CAP.
-Known limitations are cyclic type references and inheritance.
-:::
-
-<div class="impl java">
-
-You need to configure remote services in Spring Boot's _application.yaml_:
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-spring:
-  config.activate.on-profile: cloud
-cds:
-  remote.services:
-    API_BUSINESS_PARTNER:
-      type: "odata-v2"
-```
-:::
-To work with remote services, add the following dependency to your Maven project:
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-feature-remote-odata</artifactId>
-  <scope>runtime</scope>
-</dependency>
-```
-
-[Learn about all `cds.remote.services` configuration possibilities.](../../java/developing-applications/properties#cds-remote-services){.learn-more}
-
-</div>
 
 ## Local Mocking
 
@@ -247,7 +25,7 @@ As for any other CAP service, you can add mocking data.
 
 The CSV file needs to be added to the _srv/external/data_ folder. {.node}
 
-The CSV file needs to be added to the _db/data_ folder. {.java}
+The CSV file needs to be added to the _db/data_ folder.
 
 ::: code-group
 ```csv [API_BUSINESS_PARTNER-A_BusinessPartner.csv]
@@ -339,7 +117,7 @@ entity API_BUSINESS_PARTNER.A_BusinessPartnerAddress {
 ```
 :::
 
-To mock an association, you have to modify [the imported file](#import-api). Before doing any modifications, create a local copy and add it to your source code management system.
+To mock an association, you have to modify the imported file. Before doing any modifications, create a local copy and add it to your source code management system.
 
 <!-- TODO: Ellipsis not ideal here, not copiable -->
 ```sh
@@ -382,7 +160,7 @@ mv API_BUSINESS_PARTNER-new.cds API_BUSINESS_PARTNER-orig.cds
 
 To prevent accidental loss of modifications, the `cds import --as cds` command refuses to overwrite modified files based on a "checksum" that is included in the file.
 
-### Mock Remote Service as OData Service (Node.js) {.node}
+### Mock Remote Service as OData Service (Node.js)
 
 As shown previously you can run one process including a mocked external service. However, this mock doesn't behave like a real external service. The communication happens in-process and doesn't use HTTP or OData. For a more realistic testing, let the mocked service run in a separate process.
 
@@ -402,7 +180,7 @@ CAP tracks locally running services. The mocked service `API_BUSINESS_PARTNER` i
 
 Node.js only supports *OData V4* protocol and so does the mocked service. There might still be some differences to the real remote service if it uses a different protocol, but it's much closer to it than using only one instance. In the console output, you can also easily see how the communication between the two processes happens.
 
-### Mock Remote Service as OData Service (Java) {.java}
+### Mock Remote Service as OData Service (Java)
 
 You configure CAP to do OData and HTTP requests for a mocked service instead of doing it in-process. Configure a new Spring Boot profile (for example `mocked`):
 ::: code-group
@@ -461,11 +239,11 @@ For example:
 
 [Try out the example application.](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui-java){.learn-more}
 
-## Execute Queries {#execute-queries}
+## Execute Queries
 
 You can send requests to remote services using CAP's powerful querying API.
 
-### Execute Queries with Node.js{.node}
+### Execute Queries with Node.js
 
 Connect to the service before sending a request, as usual in CAP:
 
@@ -496,9 +274,8 @@ const result = await bupa.run(SELECT.from(A_BusinessPartner, bp => {
 
 [Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
 
-[Learn more about supported querying API features.](#querying-api-features){.learn-more}
 
-### Execute Queries with Java {.java}
+### Execute Queries with Java
 
 You can use dependency injection to get access to the remote service:
 
@@ -517,11 +294,10 @@ List<ABusinessPartner> businessPartner = bupa.run(select).listOf(ABusinessPartne
 
 [Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
 
-[Learn more about supported querying API features.](#querying-api-features){.learn-more}
 
 ### Model Projections
 
-External service definitions, like [generated CDS or CSN files during import](#import-api), can be used as any other CDS definition, but they **don't** generate database tables and views unless they are mocked.
+External service definitions, like generated CDS or CSN files during import, can be used as any other CDS definition, but they **don't** generate database tables and views unless they are mocked.
 
 It's best practice to use your own "interface" to the external service and define the relevant fields in a projection in your namespace. Your implementation is then independent of the remote service implementation and you request only the information that you require.
 
@@ -537,9 +313,8 @@ entity Suppliers as projection on bupa.A_BusinessPartner {
 
 As the example shows, you can use field aliases as well.
 
-[Learn more about supported features for projections.](#supported-projection-features){.learn-more}
 
-### Execute Queries on Projections to a Remote Service{.node}
+### Execute Queries on Projections to a Remote Service
 
 Connect to the service before sending a request, as usual in CAP:
 
@@ -562,7 +337,7 @@ A brief explanation, based on the previous query, what CAP does:
 
 This makes it convenient to work with external services.
 
-### Building Custom Requests with Node.js{.node}
+### Building Custom Requests with Node.js
 
 If you can't use the querying API, you can craft your own HTTP requests using `send`:
 
@@ -580,7 +355,7 @@ bupa.send({
 
 [Learn more about the `send` API.](../../node.js/core-services#srv-send-request){.learn-more}
 
-### Building Custom Requests with Java {.java}
+### Building Custom Requests with Java
 
 For Java, you can use the `HttpClient` API to implement your custom requests. The API is enhanced by the SAP Cloud SDK to support destinations.
 
@@ -588,11 +363,11 @@ For Java, you can use the `HttpClient` API to implement your custom requests. Th
 
 [Learn more about using destinations.](#use-destinations-with-java){.learn-more}
 
-## Integrate and Extend {#integrate-and-extend}
+## Integrate and Extend
 
 By creating projections on remote service entities and using associations, you can create services that combine data from your local service and remote services.
 
-What you need to do depends on [the scenarios](#sample-scenario-from-end-to-end-tutorial) and how your remote services should be integrated into, as well as extended by your local services.
+What you need to do depends on the scenarios and how your remote services should be integrated into, as well as extended by your local services.
 
 ### Expose Remote Services
 
@@ -759,7 +534,7 @@ service RiskService {
 }
 ```
 
-#### Extend a Remote by a Local Service { #extend-a-remote-by-a-local-service}
+#### Extend a Remote by a Local Service
 
 You can augment a projection with a new association, if the required fields for the on condition are present in the remote service. The use of managed associations isn't possible, because this requires to create new fields in the remote service.
 <!--Does it matter if it's managed or unmanaged? In other section we say, that you shouldn't make it a managed assoc b/c that would lead to runtime errors. -->
@@ -773,7 +548,7 @@ entity Suppliers as projection on bupa.A_BusinessPartner {
 };
 ```
 
-### Handle Mashups with Remote Services { #building-mashups}
+### Handle Mashups with Remote Services
 
 Depending on how the service is accessed, you need to support direct requests, navigation, or expands. CAP resolves those three request types only for service entities that are served from the database. When crossing the boundary between database and remote sourced entities, you need to take care of those requests.
 
@@ -873,7 +648,7 @@ Otherwise, you need to select the source item using that `where` block and take 
 [See an example how to handle navigations in Java.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui-java/srv/src/main/java/com/sap/cap/riskmanagement/handler/RiskServiceHandler.java){.learn-more .java}
 
 ### Limitations and Feature Matrix
-#### Required Implementations for Mashups { #required-implementations-for-mashups}
+#### Required Implementations for Mashups
 
 You need additional logic, if remote entities are in the game. The following table shows what is required. "Local" is a database entity or a projection on a database entity.
 
@@ -887,7 +662,7 @@ You need additional logic, if remote entities are in the game. The following tab
 | Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
 
 
-##### Support Analytical Queries in Java {.java}
+##### Support Analytical Queries in Java
 
 CAP Java provides out-of-the-box support for remote analytical queries.
 
@@ -920,22 +695,16 @@ The following matrix can help you to find the best approach for your scenario:
 > <sup>4</sup> Depends on the connectivity and performance of the remote system. <br>
 
 
-## Connect and Deploy {#connect-and-deploy}
-
-<!--
-### Connect to Business Services on SAP BTP
-
- TODO: Token exchange flow -->
+## Connect and Deploy
 
 
-
-### Using Destinations { #using-destinations}
+### Using Destinations
 
 Destinations contain the necessary information to connect to a remote system. They're basically an advanced URL, that can carry additional metadata like, for example, the authentication information.
 
-You can choose to use [SAP BTP destinations](#btp-destinations) or [application defined destinations](#app-defined-destinations).
+You can choose to use SAP BTP destinations or [application defined destinations](#use-application-defined-destinations).
 
-#### Use SAP BTP Destinations { #btp-destinations}
+#### Use SAP BTP Destinations
 
 CAP leverages the destination capabilities of the SAP Cloud SDK.
 
@@ -952,7 +721,8 @@ Create a destination using one or more of the following options.
 
 - **Create a destination to your application:** If you need a destination to your application, for example, to call it from a different application, then you can automatically create it in the MTA deployment.
 
-##### Use Destinations with Node.js {.node}
+
+##### Use Destinations with Node.js
 
 In your _package.json_, a configuration for the `API_BUSINESS_PARTNER` looks like this:
 
@@ -1018,7 +788,7 @@ Read [Destination Cache](https://sap.github.io/cloud-sdk/docs/js/features/connec
 
 If you want to configure additional headers for the HTTP request to the system behind the destination, for example an Application Interface Register (AIR) header, you can specify such headers in the destination definition itself using the property [_URL.headers.\<header-key\>_](https://help.sap.com/docs/CP_CONNECTIVITY/cca91383641e40ffbe03bdc78f00f681/4e1d742a3d45472d83b411e141729795.html?q=URL.headers).
 
-##### Use Destinations with Java {.java}
+##### Use Destinations with Java
 
 Destinations are configured in Spring Boot's _application.yaml_ file:
 ::: code-group
@@ -1033,15 +803,15 @@ cds:
         suffix: "/sap/opu/odata/sap"
 ```
 :::
-[Learn more about configuring destinations for Java.](../../java/cqn-services/remote-services#destination-based-scenarios){.learn-more}
+[Learn more about configuring destinations for Java.](../../java/cqn-services/remote-services){.learn-more}
 
-#### Use Application Defined Destinations { #app-defined-destinations}
+#### Use Application Defined Destinations
 
 If you don't want to use SAP BTP destinations, you can also define destinations, which means the URL, authentication type, and additional configuration properties, in your application configuration or code.
 
-Application defined destinations support a subset of [properties](#destination-properties) and [authentication types](#authentication-types) of the SAP BTP destination service.
+Application defined destinations support a subset of properties and authentication types of the SAP BTP destination service.
 
-##### Configure Application Defined Destinations in Node.js {.node}
+##### Configure Application Defined Destinations in Node.js
 
 You specify the destination properties in `credentials` instead of putting the name of a destination there.
 
@@ -1072,9 +842,7 @@ This is an example of a destination using basic authentication:
 }
 ```
 
-[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more} 
-
-[See all the supported destination properties.](#destination-properties){.learn-more}  
+[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more}
 
 ::: warning Warning: You should not put any sensitive information here!
 
@@ -1137,11 +905,11 @@ cds_requires_REVIEWS_credentials_url=http://localhost:4008/reviews
 For the _configuration path_, you **must** use the underscore ("`_`") character as delimiter. CAP supports dot ("`.`") as well, but Cloud Foundry won't recognize variables using dots. Your _service name_ **mustn't** contain underscores.
 :::
 
-##### Implement Application Defined Destinations in Node.js {.node}
+##### Implement Application Defined Destinations in Node.js
 
 There is no API to create a destination in Node.js programmatically. However, you can change the properties of a remote service before connecting to it, as shown in the previous example.
 
-##### Configure Application Defined Destinations in Java {.java}
+##### Configure Application Defined Destinations in Java
 
 Destinations are configured in Spring Boot's _application.yaml_ file.
 
@@ -1163,9 +931,8 @@ cds:
 ```
 :::
 
-[Learn more about supported destination properties.](#destination-properties){.learn-more}
 
-##### Implement Application Defined Destinations in Java {.java}
+##### Implement Application Defined Destinations in Java
 
 You can use the APIs offered by SAP Cloud SDK to create destinations programmatically. The destination can be used by its name the same way as destinations on the SAP BTP destination service.
 ::: code-group
@@ -1178,7 +945,7 @@ cds:
         name: "reviews-destination"
 ```
 :::
-[Learn more about programmatic destination registration.](../../java/cqn-services/remote-services#programmatic-destination-registration){.learn-more} [See examples for different authentication types.](../../java/cqn-services/remote-services#programmatic-destinations){.learn-more}
+[Learn more about programmatic destination registration.](../../java/cqn-services/remote-services#programmatic-destination-registration){.learn-more} [See examples for different authentication types.](../../java/cqn-services/remote-services){.learn-more}
 
 
 ### Connect to Remote Services Locally
@@ -1212,7 +979,7 @@ Your local application needs access to an XSUAA and Destination service instance
 
     [Learn more about `cds bind`.](../../tools/cds-bind#services-on-cloud-foundry){.learn-more}
 
-#### Run a Node.js Application with a Destination {.node}
+#### Run a Node.js Application with a Destination
 
 Add the destination for the remote service to the `hybrid` profile in the _.cdsrc-private.json_ file:
 
@@ -1247,7 +1014,7 @@ cds watch --profile hybrid
 If you are developing in the Business Application Studio and want to connect to an on-premise system, you will need to do so via Business Application Studio's built-in proxy, for which you need to add configuration in an `.env` file. See [Connecting to External Systems From the Business Application Studio](https://sap.github.io/cloud-sdk/docs/js/guides/bas) for more details.
 :::
 
-#### Run a Java Application with a Destination {.java}
+#### Run a Java Application with a Destination
 
 Add a new profile `hybrid` to your _application.yaml_ file that configures the destination for the remote service.
 ::: code-group
@@ -1280,13 +1047,14 @@ If you are developing in the Business Application Studio and want to connect to 
 :::
 
 
-### Connect to an Application Using the Same XSUAA (Forward Authorization Token) {#forward-auth-token}
+### Connect to an Application Using the Same XSUAA (Forward Authorization Token)
+###### Forward Auth Token
 
 If your application consists of microservices and you use one (or more) as a remote service as described in this guide, you can leverage the same XSUAA instance. In that case, you don't need an SAP BTP destination at all.
 
-Assuming that your microservices use the same XSUAA instance, you can just forward the authorization token. The URL of the remote service can be injected into the application in the [MTA or Cloud Foundry deployment](#deployment) using [application defined destinations](#app-defined-destinations).
+Assuming that your microservices use the same XSUAA instance, you can just forward the authorization token. The URL of the remote service can be injected into the application in the [MTA or Cloud Foundry deployment](#deployment) using [application defined destinations](#use-application-defined-destinations).
 
-#### Forward Authorization Token with Node.js{.node}
+#### Forward Authorization Token with Node.js
 
 To enable the token forwarding, set the `forwardAuthToken` option to `true` in your application defined destination:
 
@@ -1440,7 +1208,7 @@ cds add xsuaa,destination,connectivity
         - name: cpapp-connectivity # Required for on-premise connectivity only
     ```
     :::
-:::
+    :::
 
 Build your application:
 
@@ -1532,149 +1300,3 @@ Read more in the full reference of all [supported retrieval strategy values](htt
 
 
 </div>
-
-
-## Add Qualities
-
-<div id="inaddqualities" />
-
-### Resilience
-
-There are two ways to make your outbound communications resilient:
-
-1. Run your application in a service mesh (for example, Istio, Linkerd, etc.). For example, [Kyma is provided as service mesh](#resilience-in-kyma).
-2. Implement resilience in your application.
-
-Refer to the documentation for the service mesh of your choice for instructions. No code changes should be required.
-
-<!-- Maybe some recommended ones -->
-To build resilience into your application, there are libraries to help you implement functions, like doing retries, circuit breakers or implementing fallbacks.
-
-<div class="impl java">
-
-You can use the [resilience features](https://sap.github.io/cloud-sdk/docs/java/features/resilience) provided by the SAP Cloud SDK with CAP Java. You need to wrap your remote calls with a call of `ResilienceDecorator.executeSupplier` and a resilience configuration (`ResilienceConfiguration`). Additionally, you can provide a fallback function.
-
-```java
-ResilienceConfiguration config = ResilienceConfiguration.of(AdminServiceAddressHandler.class)
-  .timeLimiterConfiguration(TimeLimiterConfiguration.of(Duration.ofSeconds(10)));
-
-context.setResult(ResilienceDecorator.executeSupplier(() ->  {
-  // ..to access the S/4 system in a resilient way..
-  logger.info("Delegating GET Addresses to S/4 service");
-  return bupa.run(select);
-}, config, (t) -> {
-  // ..falling back to the already replicated addresses in our own database
-  logger.warn("Falling back to already replicated Addresses");
-  return db.run(select);
-}));
-```
-
-[See the full example](https://github.com/SAP-samples/cloud-cap-samples-java/blob/main/srv/src/main/java/my/bookshop/handlers/AdminServiceAddressHandler.java){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-<!-- TODO: Which ones?? -->
-There's no resilience library provided out of the box for CAP Node.js. However, you can use packages provided by the Node.js community. Usually, they provide a function to wrap your code that adds the resilience logic.
-
-</div>
-
-#### Resilience in Kyma
-
-Kyma clusters run an [Istio](https://istio.io/) service mesh. Istio allows to [configure resilience](https://istio.io/latest/docs/concepts/traffic-management/#network-resilience-and-testing) for the network destinations of your service mesh.
-
-### Tracing
-
-CAP adds headers for request correlation to its outbound requests that allows logging and tracing across micro services.
-
-[Learn more about request correlation in Node.js.](../../node.js/cds-log#node-observability-correlation){.learn-more .node}
-[Learn more about request correlation in Java.](../../java/operating-applications/observability#correlation-ids){.learn-more .java}
-
-<div id="aftertracing" />
-
-## Feature Details
-
-### Legend
-
-| Tag  | Explanation   |
-|:----:|---------------|
-| <Y/> | supported     |
-| <X/> | not supported |
-
-### Supported Protocols
-
-| Protocol | Java | Node.js |
-|----------|:----:|:-------:|
-| odata-v2 | <Y/> |  <Y/>   |
-| odata-v4 | <Y/> |  <Y/>   |
-| rest     | <X/> |  <Y/>   |
-
-::: tip
-The Node.js runtime supports `odata` as an alias for `odata-v4` as well.
-:::
-
-### Querying API Features
-
-| Feature                            | Java | Node.js |
-|------------------------------------|:----:|:-------:|
-| READ                               | <Y/> |  <Y/>   |
-| INSERT/UPDATE/DELETE               | <Y/> |  <Y/>   |
-| Actions                            | <Y/> |  <Y/>   |
-| `columns`                          | <Y/> |  <Y/>   |
-| `where`                            | <Y/> |  <Y/>   |
-| `orderby`                          | <Y/> |  <Y/>   |
-| `limit` (top & skip)               | <Y/> |  <Y/>   |
-| `$apply` (aggregate, groupby, ...) | <X/> |  <X/>   |
-| `$search` (OData v4)               | <Y/> |  <Y/>   |
-| `search` (SAP OData v2 extension)  | <Y/> |  <Y/>   |
-
-### Supported Projection Features
-
-| Feature                                                   | Java | Node.js |
-|-----------------------------------------------------------|:----:|:-------:|
-| Resolve projections to remote services                    | <Y/> |  <Y/>   |
-| Resolve multiple levels of projections to remote services | <Y/> |  <Y/>   |
-| Aliases for fields                                        | <Y/> |  <Y/>   |
-| `excluding`                                               | <Y/> |  <Y/>   |
-| Resolve associations (within the same remote service)     | <Y/> |  <Y/>   |
-| Redirected associations                                   | <Y/> |  <Y/>   |
-| Flatten associations                                      | <X/> |  <X/>   |
-| `where` conditions                                        | <X/> |  <X/>   |
-| `order by`                                                | <X/> |  <X/>   |
-| Infix filter for associations                             | <X/> |  <X/>   |
-| Model Associations with mixins                            | <Y/> |  <Y/>   |
-
-### Supported Features for Application Defined Destinations
-
-The following properties and authentication types are supported for *[application defined destinations](#app-defined-destinations)*:
-
-#### Properties { #destination-properties}
-
-These destination properties are fully supported by both, the Java and the Node.js runtime.
-::: tip
-This list specifies the properties for application defined destinations.
-:::
-
-| Properties                 | Description                               |
-| -------------------------- | ----------------------------------------- |
-| `url`                      |                                           |
-| `authentication`           | Authentication type                       |
-| `username`                 | User name for BasicAuthentication         |
-| `password`                 | Password for BasicAuthentication          |
-| `headers`                  | Map of HTTP headers                       |
-| `queries`                  | Map of URL parameters                     |
-| `forwardAuthToken`         | [Forward auth token](#forward-auth-token) |
-
-[Destination Type in SAP Cloud SDK for JavaScript](https://sap.github.io/cloud-sdk/api/v4/interfaces/sap-cloud-sdk_connectivity.Destination.html){.learn-more .node}
-[HttpDestination Type in SAP Cloud SDK for Java](https://help.sap.com/doc/82a32040212742019ce79dda40f789b9/1.0/en-US/index.html){.learn-more .java}
-
-#### Authentication Types
-
-| Authentication Types    |                                  Java                                   |            Node.js             |
-|-------------------------|:-----------------------------------------------------------------------:|:------------------------------:|
-| NoAuthentication        |                                  <Y/>                                   |              <Y/>              |
-| BasicAuthentication     |                                  <Y/>                                   |              <Y/>              |
-| TokenForwarding         |                                  <Y/>                                   | <X/><br>Use `forwardAuthToken` |
-| OAuth2ClientCredentials | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
-| UserTokenAuthentication | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |

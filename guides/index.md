@@ -22,13 +22,10 @@ The following figure illustrates a walkthrough of the most prominent tasks durin
    : CAP supports multiple protocols to expose and consume services. This guide provides an overview of the supported protocols and their characteristics.
 
 [ Databases ](databases/index.md)
-   : This guide provides instructions on how to use databases with CAP applications. Out of the box-support is provided for SAP HANA, SQLite, H2 (Java only), and PostgreSQL.
+   : These guides provide instructions on how to use databases with CAP applications. Out of the box-support is provided for SAP HANA, SQLite, H2 (Java only), and PostgreSQL.
 
-[ Data Federation ](federation/index.md) <!-- UNRELEASED -->
-   : CAP provides built-in capabilities to consume and expose data from remote services, based on OData or REST protocols. <!-- UNRELEASED -->
-
-[ Service Integration ](integration/index.md)
-   : This guide provides an overview of integration options available in CAP applications.
+[ Integration ](integration/index.md)
+   : The guides in this section covers the various CAP-level service integration and data federation patterns, as well as platform capabilities available to your CAP projects.
 
 [  Events & Messaging ](events/index.md)
    : CAP provides intrinsic support for emitting and receiving events. This is complemented by Messaging Services connecting to message brokers to exchange event messages across remote services.

@@ -428,13 +428,28 @@ footer {
   // }
 }
 
-@media (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
   .VPNavBarSearch { padding-left: 12px; }
 }
 
 // make sidebar content scroll nicely underneath the logo
-@media (min-width: 960px) {
+@media screen and (min-width: 960px) {
   .VPNavBar .has-sidebar > .title {
     background-color: var(--vp-sidebar-bg-color);
   }
+}
+
+@media print {
+  .VPNav, .VPSidebar, .VPDocAside, .VPDocFooter {
+    display: none !important;
+  }
+  .VPContent, .VPContent .vp-doc {
+    margin: 0cm !important;
+    padding: 0 !important;
+  }
+  .VPContent .vp-doc {
+    padding: 2cm
+  }
+  p, pre, code, ol, ul, li, dd, dt { font-size: 12px !important; }
+  h3 { font-size: 75% !important; }
 }
