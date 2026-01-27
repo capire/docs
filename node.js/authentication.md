@@ -671,147 +671,50 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 
 3. Retry
 
+
 ## IAS in Hybrid Setup {#ias-setup}
 
 ### Configure the Application
 
-1. Configure your application for IAS-authentication by adding the ams plugin and installing it(link to http://localhost:5173/docs/guides/security/authentication#get-ready-with-ias) :
+1. If there is no deployment descriptor yet, execute in the project root folder
+
+    ```sh
+    cds add mta
+    ```
+
+2. Enable IAS authentication for your application by adding and installing the `ams` plugin. For more information see [Adding AMS Support](../guides/security/cap-users#adding-ams-support-1) and [Adding IAS](../guides/security/authentication#adding-ias)
 
     ```sh
     cds add ams
-    npm install
+    cds install
     ```
-2. Add roles and policies with AMS(http://localhost:5173/docs/guides/security/cap-users#prepare-cds-model)
+  
+    This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
 
-3. Add App Router for fetching the IAS token (link to http://localhost:5173/docs/guides/security/authentication#testing-ias-on-ui-level)
+3. Generate roles and policies with AMS.
+  To compile the cds annotations to dcl files execute:
+
+    ```sh
+    cds build --for ams
+    ```
+    For more information see [Prepare CDS Model](../guides/security/cap-users#prepare-cds-model)
+
+4. Add App Router for fetching the IAS token.
 
     ```sh
     cds add approuter
     ```
 
-4. Install `npm` packages for App Router:
+5. Install `npm` packages for App Router:
 
     ```sh
     npm install --prefix app/router
+   
     ```
-
-5. Generate the deployment descriptor file `mta.yaml` with:
-
-    ```sh
-    cds add mta
-    ```
-    ::: details Generated deployment descriptor for IAS instance, AppRouter and binding
-    ```yaml [mta.yaml]
-    _schema-version: 3.3.0
-    ID: capire.bookshop
-    version: 2.0.4
-    description: "Our primer sample for getting started in a nutshell."
-    parameters:
-      enable-parallel-deployments: true
-    build-parameters:
-      before-all:
-        - builder: custom
-          commands:
-            - npm ci
-            - npx cds build --production
-    modules:
-      - name: bookshop-srv
-        type: nodejs
-        path: gen/srv
-        parameters:
-          instances: 1
-          buildpack: nodejs_buildpack
-          routes:
-            - route: "${default-url}"
-            - route: "${default-host}.cert.${default-domain}"
-        build-parameters:
-          builder: npm-ci
-        provides:
-          - name: srv-api # required by consumers of CAP services (e.g. approuter)
-            properties:
-              srv-url: ${default-url}
-              srv-cert-url: '${protocol}://${default-host}.cert.${default-domain}'
-        requires:
-          - name: bookshop-auth
-            parameters:
-              config:
-                credential-type: X509_GENERATED
-                app-identifier: srv
-        deployed-after:
-          - bookshop-ams-policies-deployer
-        properties:
-          AMS_DCL_ROOT: ams/dcl
-
-      - name: bookshop
-        type: approuter.nodejs
-        path: app/router
-        parameters:
-          keep-existing-routes: true
-          disk-quota: 256M
-          memory: 256M
-        requires:
-          - name: srv-api
-            group: destinations
-            properties:
-              name: srv-api # must be used in xs-app.json as well
-              url: ~{srv-cert-url}
-              forwardAuthToken: true
-              forwardAuthCertificates: true
-              strictSSL: true
-          - name: bookshop-auth
-            parameters:
-              config:
-                credential-type: X509_GENERATED
-                app-identifier: approuter
-        provides:
-          - name: app-api
-            properties:
-              app-protocol: ${protocol}
-              app-uri: ${default-uri}
-
-      - name: bookshop-ams-policies-deployer
-        type: javascript.nodejs
-        path: gen/policies
-        parameters:
-          buildpack: nodejs_buildpack
-          no-route: true
-          no-start: true
-          tasks:
-            - name: deploy-dcl
-              command: npm start
-              memory: 512M
-        requires:
-          - name: bookshop-auth
-            parameters:
-              config:
-                credential-type: X509_GENERATED
-                app-identifier: ams-policy-deployer
-
-    resources:
-      - name: bookshop-auth
-        type: org.cloudfoundry.managed-service
-        requires:
-          - name: app-api
-        parameters:
-          service: identity
-          service-name: bookshop-auth
-          service-plan: application
-          config:
-            display-name: bookshop
-            oauth2-configuration:
-              redirect-uris:
-                - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
-              post-logout-redirect-uris:
-                - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html
-            authorization:
-              enabled: true
-    ```
-    :::
-
-5. Configure the local callback URI of AppRouter in `mta.yaml` for `identity` service
+6. Configure the local callback URI of AppRouter in `mta.yaml` for `identity` service
 
   ```sh
-  - name: bookshop-auth
+  - name: bookshop-ias
       [...]
       parameters:
         service: identity
@@ -838,14 +741,19 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```sh
     cds up
     ```
-### Assign users to AMS policies (http://localhost:5173/docs/guides/security/cap-users#ams-deployment)
+
+### Assign policies in the Administrative Console
+
+1. Log in to your IAS Tenant and go to `Applications & Resources`
+
+2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment)
 
 ### Start hybrid testing
  
 1. Bind local application to the Identity Service Instance
 
     ```sh
-    cds bind -2 bookshop-auth
+    cds bind -2 bookshop-ias
     ```
     ::: details This will generate .cdsrc-private.json
     ```json .cdsrc-private.json
@@ -858,8 +766,8 @@ The login fails pointing to the correct OAuth configuration URL that is expected
               "apiEndpoint": "https://...",
               "org": "cdx-nodejs",
               "space": "dev",
-              "instance": "bookshop-auth",
-              "key": "bookshop-auth-key"
+              "instance": "bookshop-ias",
+              "key": "bookshop-ias-key"
             },
             "kind": "ias-auth",
             "vcap": {
@@ -892,10 +800,13 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 
     Since it only serves static files or delegates to the backend service, you can keep the server running. It doesn't need to be restarted after you have changed files.
 
-4. Make sure that your CAP application is running as well with the `hybrid` profile:
+3. Make sure that your CAP application is running as well with the `hybrid` profile:
 
     ```sh
     cds watch --profile hybrid
     ```
 
-5. After the App Router and CAP application are started, log in at [http://localhost:5000](http://localhost:5000) and verify that the routes are protected as expected.
+4. After the App Router and CAP application are started, log in at [http://localhost:5000](http://localhost:5000) and verify that the routes are protected as expected.
+
+
+  
