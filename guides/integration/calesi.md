@@ -6,6 +6,17 @@ Integrating remote services – from other applications, third-party services, o
 {.abstract}
 
 
+> [!tip] The <i>'Calesi'</i> Pattern – Guiding Principles
+>
+> 1. Remote services are proxied by CAP services, ... → *everything's a CAP service*
+> 2. consumed in protocol-agnostic ways → *... as if they were local*
+> 3. mocked out of the box → *inner-loop development*
+> 4. with varying implementations → *evolution w/o disruption*
+> 5. extensible through event handlers → *intrinsic extensibility*
+>
+> => Application developers stay at CAP level -> *Focused on Domain*
+
+
 [toc]:./
 [[toc]]
 
@@ -51,97 +62,9 @@ npm add @sap-cloud-sdk/resilience
 The graphic below illustrates what happened here:
 
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
-](assets/remote-services.drawio.svg)
+](assets/remoting.drawio.svg)
 
-Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they were local_**. Given a respective service bindings, `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
-
-::: details Details about `cds.service.bindings` ...
-Whenever you start a CAP server with `cds watch` it registers itself with all the provided services and their protocol-specific endpoints in a user-local `~/.cds-services.json` (or `.yaml`) file. In our example above, that would look like that:
-
-::: code-group
-```yaml [~/.cds-services.yaml]
-cds:
-  serves:
-    '@capire/bookshop':
-      root: ~/cap/samples/bookshop
-      url: http://localhost:4004
-      pid: 76123
-      serving:
-        AdminService:
-          odata: /admin
-          rest: /rest/admin
-          hcql: /hcql/admin
-        CatalogService:
-          odata: /browse
-          rest: /rest/catalog
-          hcql: /hcql/catalog
-```
-```json [~/.cds-services.json]
-{
-  "cds": {
-    "serves": {
-      "@capire/bookshop": {
-        "root": "~/cap/samples/bookshop",
-        "url": "http://localhost:4004",
-        "pid": 76123,
-        "serving": {
-          "AdminService": {
-            "odata": "/admin",
-            "rest": "/rest/admin",
-            "hcql": "/hcql/admin"
-          },
-          "CatalogService": {
-            "odata": "/browse",
-            "rest": "/rest/catalog",
-            "hcql": "/hcql/catalog"
-          }
-        }
-      }
-    }
-  }
-}
-```
-```json [~/.cds-services.json < 9.7]
-{
-  "cds": {
-    "provides": {
-      "AdminService": {
-        "endpoints": {
-          "odata": "/admin",
-          "rest": "/rest/admin",
-          "hcql": "/hcql/admin"
-        },
-        "server": 92460
-      },
-      "CatalogService": {
-        "endpoints": {
-          "odata": "/browse",
-          "rest": "/rest/catalog",
-          "hcql": "/hcql/catalog"
-        },
-        "server": 92460
-      }
-    },
-    "servers": {
-      "92460": {
-        "root": "~/cap/samples/bookshop",
-        "url": "http://localhost:4004"
-      }
-    }
-  }
-}
-```
-[Learn more about service bindings below](#service-bindings) {.learn-more}
-:::
-
-
-> [!tip] Calesi Design Principles
->
-> 1. Remote services are represented as CAP services, ... → *Everything is a CAP service*
-> 2. consumed using high-level APIs, in protocol-agnostic ways → *as if they were local*
-> 3. with built-in connectivity, resilience, and principal propagation → *under the hood*
->
-> => Application developers stay at the CAP level -> *Focused on Domain*
+Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they were local_**. `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
 
 > [!note] Model Free
 >
@@ -171,17 +94,15 @@ The resulting entity-relationship model looks like that:
 
 From a service integration perspective, this sample mainly shows a data federation scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. 
 
+## Workflow Overview
 
-### Workflow Overview
-The key steps to achieve CAP-level service integration in scenarios like this are:
-1. **Providing APIs** – on the service provider side, you define CAP services for all outbound interfaces, and export them as Packaged APIs using `cds export`.
-2. **Importing APIs** – on the consumer side, you import the exported API packages using standard `npm add` or `mvn install`.
-3. **Consuming APIs** – you use the imported definitions within your own models, e.g., via consumption views, and mashup these definitions with your own entities.
-4. **Service Bindings** – you define service bindings to specify how to connect to remote services, e.g., using environment variables or platform-specific configurations.
-5. **Inner-Loop Development** – you can mock remote services automatically for local development and testing, using CAP's built-in mocking capabilities.
+The graphic below shows the flow of essential steps for service integration, which the following sections will walk you through in detail.
+
+![Workflow diagram showing five numbered steps of CAP-level service integration. Service Provider box on left contains step 1 Service Definition in blue and Domain Models in gray. Packaged API box in center shows step 2 Service Interface in light gray. Service Consumer box on right displays step 4 Consumption Views in light blue and step 5 Own Models in blue. Arrows connect the components left to right. Below, numbered list describes: 1 Expose Service Interfaces as usual, 2 Export APIs using cds export and npm publish, 3 Import APIs using cds import or npm add, 4 Add Consumption Views defining what to consume, 5 Use with own models as if they were local.
+](assets/overview.drawio.svg)
 
 
-### Getting Started...
+#### Getting Started...
 
 So let's dive into the details of CAP-level service integration, using the XTravels sample as our running example. Clone both repositories as follows to follow along:
 
@@ -195,7 +116,7 @@ git clone https://github.com/capire/xtravels
 
 ## Providing APIs
 
-In case of CAP service providers, as for [*@capire/xflights*](https://github.com/capire/xflights) in our [sample scenario](#the-xtravels-sample), you define [CAP services](../services/) for all outbound interfaces, which includes (private) interfaces to your application's UIs, as well as public APIs to any other remote consumers. 
+In case of CAP service providers, as for [*@capire/xflights*](https://github.com/capire/xflights) in our [sample scenario](#the-xtravels-sample), you define [CAP services](../services/index) for all inbound interfaces, which includes (private) interfaces to your application's UIs, as well as public APIs to any other remote consumers. 
 
 
 ### Defining Service APIs
@@ -242,7 +163,7 @@ Reason for this more complicated definition is that we need to preserve the prim
 
 ### Exporting APIs
 
-Use `cds export` to export APIs for given [service definitions](#defining-service-apis). For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would print some output as shown below:
+Use `cds export` to generate APIs for given [service definitions](#defining-service-apis). For example, run that within the _cap/samples/xflights_ folder for the service definition we saw earlier, which would print some output as shown below:
 
 ```shell
 cds export srv/data-service.cds 
@@ -258,8 +179,6 @@ Exporting APIs to apis/data-service ...
 ```
 
 By default, generated output is written to an `./apis/<service>`  subfolder, with `<service>` being the given service definition's `.cds` file basename. You can choose a different output folder with the `--to` option of `cds export`. 
-
-
 
 #### Exported Service Definitions
 
@@ -366,6 +285,7 @@ Skipped: 31 # [!code ++]
 :::
 
 In addition to the generated `services.csn` file, an `index.cds` file was added, which you can modify as needed. It won't be overridded on subsequent runs of `cds export`.
+
 
 ### Packaged APIs 
 
@@ -510,114 +430,209 @@ capire-xflights-data-0.1.13.tgz
 
 ## Importing APIs 
 
-On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), ... 
+On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), we import packaged APIs as provided before using `npm add`, or other APIs from non-CAP sources using `cds import` as outlined below.
 
 
 
 ### From Packaged APIs
 
-With CAP-based service providers exporting Packaged APIs as shown earlier, consuming application projects like [*@capire/xtravels*](https://github.com/capire/xtravels) can just import the exported API packages using standard `npm add` or `mvn install` like that:
+Packaged APIs provided by CAP service providers are imported to consuming applications like that:
 
 ```shell
 npm add @capire/xflights-data
 ```
 
+This makes the exported models with all accompanying artifacts available in the target project's `node_modules` folder. In addition it adds a respective package dependency to the consuming application's *package.json* like that:
 
+::: code-group
+```json [package.json]
+{...
+  "dependencies": { ...
+    "@capire/xflights-data": "0.1.12"
+  }
+}
+```
+:::
+
+This allows us to update imported APIs later on using standard commands like `npm update`.
+
+
+
+### From OData EDMX
+
+We can also `cds import` APIs from other sources, such as OData APIs to integrate customer data from SAP S/4 HANA systems. Do so as follows:
+
+1. Open [*SAP Business Accelerator Hub*](https://api.sap.com) in your browser and navigate to *> [SAP S/4HANA Cloud Public Edition](https://api.sap.com/products/SAPS4HANACloud) > [APIs](https://api.sap.com/products/SAPS4HANACloud/apis) > [OData V2](https://api.sap.com/products/SAPS4HANACloud/apis/ODATA)* > [*Business Partner (A2X)*](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) and download the *OData EDMX* from the *API Specification* tab.
+
+2. Import to the current project:
+
+```shell
+cds import ~/Downloads/API_BUSINESS_PARTNER.edmx
+```
+This copies the specified *.edmx* file into the `srv/external/` subfolder of your project, and generates a `.csn` file with the same basename next to it:
+
+```zsh
+srv/external
+├── API_BUSINESS_PARTNER.csn
+└── API_BUSINESS_PARTNER.edmx
+```
+
+> Run `cds import` with option `--as cds` to generate a human-readable `.cds` file instead of `.csn`. 
+
+Further, it adds a [service binding](#service-bindings) stub to your _package.json_, which we'll learn about later.
 
 
 
 ### From Other APIs
 
-```shell
-cds import --edmx ...
-```
-
-```shell
-cds import --openapi ...
-```
+You can use `cds import` in the same way as for OData to import SAP data products, OpenAPI definitions, AsyncAPI definitions, or from [ABAP RFC](../../plugins/#abap-rfc). For example:
 
 ```shell
 cds import --data-product ...
+cds import --odata ...
+cds import --openapi ...
+cds import --asyncapi ...
+cds import --rfc ...
 ```
 
+[Learn more about `cds import` in the tools guides.](../../tools/apis/cds-import){.learn-more} 
 
 
 
-
-- `cds import` ⇒ CAP service definitions
-- `cds watch` → imported models not loaded, as we don't use them yet
 
 
 ## Consuming APIs 
 
-On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), ... 
+Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and  flights data from xflights with respective bookings.  
 
+### Declare Consumption Views
 
+Imported APIs frequently contain much more entities and elements than we actually need. So as a next step we first declare so-called *Consumption Views*, to capture what we really want to use from them. 
 
-### Via Consumption Views
+We do so in two new files `srv/external/s4.cds` and `srv/external/xflights.cds`: 
 
-Given the imported APIs we next use the definitions within our own models. In the XTravels application we want to combine Flights, Airline and Airports data with respective Bookings: 
+::: code-group
+```cds :line-numbers [srv/external/s4.cds]
+using { API_BUSINESS_PARTNER as external } from './API_BUSINESS_PARTNER';
+namespace sap.capire.s4;
 
-```cds
+entity Customers as projection on external.A_BusinessPartner {
+  BusinessPartner as ID,
+  PersonFullName  as Name,
+}
+```
+:::
+::: code-group
+```cds :line-numbers [srv/external/xflights.cds]
 using { sap.capire.flights.data as external } from '@capire/xflights-data';
 namespace sap.capire.xflights;
 
-/**
- * Consumption view declaring the subset of fields we actually want to use 
- * from the external Flights entity, with associations like airline, origin, 
- * destination flattened (aka denormalized).
- */
-@federated entity Flights as projection on external.Flights {
+entity Flights as projection on external.Flights {
   ID, date, departure, arrival,
   airline.icon     as icon,
   airline.name     as airline,
   origin.name      as origin,
   destination.name as destination,
 }
+
+entity Supplements as projection on external.Supplements {
+  ID, type, descr, price, currency
+}
 ```
+:::
+
+Noteworthy aspects here are:
+
+- We map names to match our domain, for example by renaming the imported entity from `A_Business_Partner` to `Customers`, as well as choosing simpler names for the elements we want to use.
+
+- For the `Flights` entity we also flatten data from associations directly into the `Flights` consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
+
+- The chosen namespaces `sap.capire.s4` and `sap.capire.xflights`, reflect the source systems, but are distinct from their original namespaces, which is a good practice to avoid name clashes further down the road.
+
+- The aliases `external` are just for local didactic reasons, and help us to clearly distinguish between imported definitions and our own definitions. They are not strictly required, and can be omitted if not needed.
+
+> [!tip] Always add Consumption Views
+> Even though they are optional, it's a good practice to always define consumption views on top of imported APIs. They declare what you really need, which can be used later on to automate data federation. In addition they map imported definitions to your own domain and use cases, by renaming, flattening, or restructuring them as needed. 
+
+> [!warning] Protocol-specific Limitations
+>
+> Depending on the service provider and supported protocols, limitations apply to what you can do in consumption views. In particular, OData doesn't support denormalization, such as we did in case of `Flights` consumption view above. That latter is possible, because the xflights service is also served over the HCQL protocol (indicated by the `@hcql` annotation in it's [definition](#defining-service-apis)), which is CAP's native protocol. 
 
 
 
-With that in place we can start our server again, and see that the imported models are loaded now:
+### Mashups with Local Entities
 
-```shell
-cds watch
-```
-
-```zsh
-[cds] - loaded model from 20 file(s):
-  ...
-  db/xflights.cds
-  node_modules/@capire/xflights-data/index.cds
-  node_modules/@capire/xflights-data/services.csn
-  ...
-```
+With the consumption views in place, we can now refer to them from our own models in any way we like, _as if they were local_, thereby creating mashups of definitions from imported APIs and local definitions. The CDS excerpts below all show common use cases with references to external entities via the consumption views we defined earlier.
 
 
 
-### Mashup with own entities
+#### Local → Remote Associations
 
-With the consumption views in place, we can now mashup these definitions with our own definitions, by adding associations like we do in XTravels application's `Bookings` entity: 
+In `db/schema.cds` we find the following associations which reference external entities from within local entities.
 
 ::: code-group
-
 ```cds :line-numbers [db/schema.cds]
-using { sap.capire.xflights as federated } from './xflights'; // [!code focus]
+using { sap.capire.xflights } from '../srv/external/xflights'; // [!code focus]
+using { sap.capire.s4 } from '../srv/external/s4'; // [!code focus]
+...
+entity Travels : managed { ...
+  Customer     : Association to s4.Customers; // [!code focus]
+  Bookings     : Composition of many Bookings on Bookings.Travel = $self;
+}
 ...
 entity Bookings { ...
-  Flight      : Association to federated.Flights; // [!code focus]
+  Flight      : Association to xflights.Flights; // [!code focus]
   Supplements : Composition of many { ...
-    booked   : Association to federated.Supplements; // [!code focus]
+    booked   : Association to xflights.Supplements; // [!code focus]
   }
 }
 ```
-
 :::
 
-   -  ... _as if they were local_
+#### Remote → Local Associations
+
+Also in `db/schema.cds` we find the below extensions to remote entities, which add *unmanaged* associations back to local entities. 
+
+::: code-group
+```cds :line-numbers [db/schema.cds]
+extend s4.Customers with columns {
+  Travels : Association to many Travels on Travels.Customer = $self
+}
+extend xflights.Flights with columns {
+  bookings : Association to many Bookings on bookings.Flight = $self
+}
+```
+:::
+
+> [!warning] Unmanaged Associations Only
+> Such extensions to remote entities are only possible for **_unmanaged_** associations, as all foreign keys are local. It's not possible for regular elements or _managed_ associations, as those would require changes to the remote service's data.
+
+#### Exposed through Own Services
+
+In `srv/travel-service.cds` we see that it exposed the imported entities `Flights` and `Supplements` to display travels data with related data, as well as  value help dialogs:
+
+::: code-group
+```cds :line-numbers [srv/travel-service.cds]
+@fiori service TravelService {
+	...
+  // Also expose related entities as read-only projections
+  @readonly entity TravelAgencies as projection on our.TravelAgencies;
+  @readonly entity Currencies as projection on sap.common.Currencies;
+  @readonly entity Customers as projection on s4.Customers; // [!code focus]
+  @readonly entity Flights as projection on xflights.Flights; // [!code focus]
+  @readonly entity Supplements as projection on xflights.Supplements; // [!code focus]
+
+}
+```
+:::
+
+
+
+
+### Mocked Out of the Box
+
+   - adding initial data for imported entities from OData sources
    -  … but JOINs require data federation
-
-
 
 ### Calling Remote Services
 
@@ -635,9 +650,57 @@ await xflights.read `Flights {
 ## Service Bindings
 
 
+### CAP Node.js
+
+Service bindings configure connectivity to remote services. They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
+Service bindings have this general form:
+
 ```sh
 cds.requires.<service-name> = { kind: '<protocol>' , ... }
 ```
+
+::: code-group
+```json [package.json]
+{ ...
+  "cds": {
+    "requires": {
+      "API_BUSINESS_PARTNER": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_BUSINESS_PARTNER"
+      }
+    }
+  }
+}
+```
+:::
+
+### CAP Java
+
+You need to configure remote services in Spring Boot's _application.yaml_:
+::: code-group
+
+```yaml [srv/src/main/resources/application.yaml]
+spring:
+  config.activate.on-profile: cloud
+cds:
+  remote.services:
+    API_BUSINESS_PARTNER:
+      type: "odata-v2"
+```
+
+:::
+To work with remote services, add the following dependency to your Maven project:
+
+```xml
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-feature-remote-odata</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+
+[Learn about all `cds.remote.services` configuration possibilities.](../../java/developing-applications/properties){.learn-more}
+
 
 ### Local Binding Environment
 
