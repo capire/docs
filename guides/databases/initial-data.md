@@ -1,6 +1,6 @@
 # Adding Initial Data
 
-You can add `.csv` files to fill your database with initial data and/or test data. These files are automatically loaded whenever a database gets bootstrapped in or you run `cds watch` at development time, or when deployed or upgraded for production.
+You can add `.csv` files to fill your database with initial data and/or test data. These files are automatically loaded whenever a database gets bootstrapped, or when you start an application development time, or when deployed or upgraded for production.
 {.abstract}
 
 [[toc]]
