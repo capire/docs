@@ -28,7 +28,10 @@ Inside `cds-plugin.js`, you can use the [CDS facade](./cds-facade) to hook into 
 
 ```js [cds-plugin.js]
 const cds = require('@sap/cds')
-cds.on('served', ()=>{ /**...*/ })
+const LOG = cds.log('my-plugin')
+cds.on('served', ()=>{
+  LOG.info('Hello! My Plugin Service is up!')
+})
 ```
 ```json [package.json]
 {
@@ -91,12 +94,14 @@ cds.on('served', ()=>{ /**...*/ })
 const cds = require('@sap/cds')
 const LOG = cds.log('my-plugin')
 
-module.exports = class MyService extends cds.Service {
+module.exports = class MyService extends require('myservice-mock.js') {
   init() {
     // Register handlers to execute logic ...
 
     this.on('MyEvent', async req => {
       const credentials = cds.env.requires["my-service"].credentials
+
+      LOG.info('Received MyEvent, now what to do next?')
       // Do something
     })
     return super.init()
@@ -177,7 +182,9 @@ The profiles, like "development", are explained in the [Configuration Profiles](
 All kinds need to be prefixed with the service for which they are intended to be used. Else they might clash with kinds from other plugins.
 :::
 
-The following example is from the [attachments](../plugins/index.md#attachments) plugin. Here the malware scanning service uses a model property to specify a `.cds` file used as the domain model for that service. The domain model imported via that path is then added to the domain model of the application.
+The following example is from the [attachments](../plugins/index.md#attachments) plugin. In this case, the malware scanning service uses a `model` property to specify a `.cds` file that defines the domain model for the service. By referencing this file, the plugin automatically imports its domain model into the application's overall data model.
+
+This approach is beneficial because it allows plugins to seamlessly extend the application's domain model with additional entities, services, or aspects—without requiring manual integration steps from the application developer. As a result, the application can immediately leverage new features or data structures provided by the plugin, ensuring consistency and reducing boilerplate. This also promotes modularity and reusability, as plugins can encapsulate their own domain logic and expose it in a standardized way to any consuming CAP application.
 
 ::: code-group
 
@@ -249,7 +256,7 @@ For example, with the attachments plugin:
 ```js
 // Returns the mocked service in development, 
 // and the real service in production
-await cds.connect.to('malwareScanner');
+await cds.connect.to('malwareScanner')
 ```
 
 ### Reading BTP service bindings / credentials

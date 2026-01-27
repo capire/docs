@@ -9,7 +9,11 @@ CAP applications frequently integrate with platform services like identity, logg
 
 ## What are CAP Plugins?
 
-Plugins minimize setup and maintenance, enabling rapid adoption through plug-and-play principles and simple configuration. For advanced needs, plugins can offer configurable options while adhering to CAP service conventions, allowing customization without unnecessary reimplementation. They built on top of the [CAP-level Service Integration (Calesi)](./calesi.md) pattern.
+CAP plugins are reusable modules designed to integrate external services or extend CAP functionality across multiple applications. Typical examples include the [attachment](../../plugins/index.md#attachments) and [change-tracking](../../plugins/index.md#change-tracking) plugins, which encapsulate common integration patterns and domain logic.
+
+By following plug-and-play principles, plugins minimize setup and ongoing maintenance, enabling rapid adoption with minimal configuration. They are built to work seamlessly with CAP service conventions, so developers can easily enable, configure, and customize integrations without duplicating effort or reimplementing core logic.
+
+For advanced scenarios, plugins expose configurable options—always adhering to CAP’s conventions—so teams can tailor integrations to their needs while maintaining consistency and reliability. Under the hood, plugins leverage the [CAP-level Service Integration (Calesi)](./calesi.md) pattern, ensuring that integrations are robust, testable, and evolve without disruption. This approach promotes reuse, simplifies upgrades, and accelerates development across the CAP ecosystem.
 
 <p align="center">
   <img src="./assets/calipso-usecases.drawio.svg" alt="Plugin use cases" />
@@ -181,6 +185,8 @@ If you must introduce new annotations, check if they can be added to [SAP's ODat
 ## Test Your Plugin
 
 Thoroughly testing your plugin ensures reliability, maintainability, and a smooth developer experience for consumers. Effective testing covers not only individual functions but also integration with CAP services, deployment scenarios, and performance. The following strategies help you validate that your plugin works as intended across different environments and use cases.
+
+Also ensure your plugin can run locally without requiring a hybrid connection. When external services are called, use mock data to accelerate development and support the principle of "local testability".
 
 <p align="center">
   <img src="./assets/calipso-testing.drawio.svg" alt="Outlining the following testing strategies." />
