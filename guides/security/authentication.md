@@ -117,11 +117,19 @@ As the mock user authentication is active, all (CAP) endpoints are [authenticate
 To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
 :::
 
-If you stay with the standard authentication mode, sending the OData request `curl http://localhost:8080/odata/v4/CatalogService/Books --verbose`
-results in a `401` error response from the server, indicating that the anonymous user has been rejected due to missing authentication.
+If you stay with the standard authentication mode, sending the OData request results in a `401` error response from the server, indicating that the anonymous user has been rejected due to missing authentication.
+
+```sh
+curl http://localhost:8080/odata/v4/CatalogService/Books --verbose
+```
+
 This is the case for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) with `curl http://admin:admin@localhost:8080/odata/v4/CatalogService/Books` returns successfully (HTTP response `200`).
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `admin` (password: `admin`) returns successfully (HTTP response `200`).
+
+```sh
+curl http://admin:admin@localhost:8080/odata/v4/CatalogService/Books
+```
 
 </div>
 
@@ -140,11 +148,12 @@ curl http://localhost:4004/odata/v4/admin/Books --verbose
 This results in a `401` error response from the server indicating that the anonymous user has been rejected due to missing authentication.
 This is true for all endpoints including the web application page at `/index.html`.
 
-Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (no password) with
+Mock users require **basic authentication**, hence sending the same request on behalf of mock user `alice` (no password) returns successfully (HTTP response `200`).
+
 ```sh
 curl http://alice:@localhost:4004/odata/v4/admin/Books
 ```
-returns successfully (HTTP response `200`).
+
 
 </div>
 
