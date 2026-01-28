@@ -301,7 +301,7 @@ cds.model = await cds.load('*')
 
 ### cds. app {.property}
 
-The [express.js Application object](https://expressjs.com/en/api.html#app) is constructed during bootstrapping. Several framework operations use it to add express handlers or middlewares. It's initialized in the built-in `server.js` file:
+Bootstrapping constructs the [express.js Application object](https://expressjs.com/en/api.html#app). Several framework operations use it to add express handlers or middlewares. The built-in `server.js` file initializes it:
 
 ```js
 cds.app = require('express')()
@@ -309,11 +309,11 @@ cds.app = require('express')()
 
 Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4.
 
-With `express^5` support, `express` became a standard dependency (instead of an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)) with an open range for both major versions 4 and 5 (i.e., `^4 || ^5`).
+With `express^5` support, `express` became a standard dependency (instead of an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)) with an open range for both major versions 4 and 5 (that is, `^4 || ^5`).
 If you don't require a specific version (for example, due to custom middleware), you can remove your own `express` dependency and automatically receive the latest version of `express` that is compatible with all your (transitive) dependencies.
 
-:::tip Check installed version of `express`
-With CLI command `npm ls express`, you can check the installed version(s) of `express`.
+:::tip Verify installed version of `express`
+With CLI command `npm ls express`, you can verify the installed version(s) of `express`.
 
 ```bash
 xtravels % npm ls express
@@ -323,7 +323,7 @@ xtravels % npm ls express
 ```
 :::
 
-For more information, check out the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
+For more information, refer to the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
