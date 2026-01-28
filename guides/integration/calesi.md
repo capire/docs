@@ -618,14 +618,14 @@ namespace sap.capire.xflights;
 :::
 ::: code-group
 ```cds :line-numbers [apis/capire/s4.cds]
-using { API_BUSINESS_PARTNER as s4 } from '@capire/s4';
+using { API_BUSINESS_PARTNER as S4 } from '@capire/s4';
 namespace sap.capire.s4;
 
-@federated entity Customers as projection on s4.A_BusinessPartner {
+@federated entity Customers as projection on S4.A_BusinessPartner {
   BusinessPartner as ID,
   PersonFullName  as Name,
   LastChangeDate  as modifiedAt,
-}
+} where BusinessPartnerCategory == 1; // 1 = Person
 ```
 :::
 
@@ -885,14 +885,14 @@ MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
 So, let's go on and fill this gap with required custom code...
 
 
-#### Service-level Data Federation
+### CAP-level Data Federation
 
 Displaying external data in lists UIs commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on on server, and lacking all resilience. Instead, we need to replicate the required data from remote services into local replica tables, which can then be accessed fast and reliably by UIs using good old SQL JOINs.
 
 We did implement a simple, yet quite effective, solution in `srv/data-federation.js` in the Xtravels app as shown below:
 
 ::: code-group
-```js:line-numbers {16,24,25,26} [srv/data-federation.js]
+```js:line-numbers {9,16,24,25,26} [srv/data-federation.js]
 const cds = require ('@sap/cds')
 const feed = []
 
@@ -924,53 +924,87 @@ async function replicate_entity (req) {
 ```
 :::
 
-The actual replication is accomplished by the highlighted lines – extracted below –, which implement a simple polling-based data federation mechanism, based on `modifiedAt` timestamps:
+This is a generic solution which automatically replicates all entities annotated with `@federated`, as we did in the [consumption views](#consumption-views) before, for example:
 
-```js
-  const remote = await cds.connect.to (each.remote) // done once
-```
-```js
-  let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
-  let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
-  if (rows.length) await UPSERT (rows) .into (entity); else return
+```cds :line-numbers=4
+@federated entity Customers as projection on S4.A_BusinessPartner { ... }
 ```
 
-#### Delegation to Remote Services
+These entities are detected, and, unless mocked, turned into tables to serve as local persistence for replicated data (line 9 in the code above).
+
+> [!tip] Stay Intentional -> What, not how
+> By default, consumption views on top of remote entities are virtual and do not have local persistence. By setting the `@cds.persistence.table` annotation to `true`, we instruct the CAP database layer to create actual database tables for these entities, which can then be used to store replicated data locally. 
+> 
+> Yet, you as an application developer stay intentional about **_what_** you want to achieve (-> `@federated` tags), and **avoid any eager assumptions** about **_how_** this is actually implemented. => This allows CAP runtimes – or you own _generic_ framework plugins, as with the code above – to choose the best possible implementation strategy for the given environment and use case, which may differ between development, testing, and production environments.
+
+The actual replication is accomplished by the highlighted lines 16 and 24-26, which implement a simple polling-based data federation mechanism, based on `modifiedAt` timestamps. Let's break that down line by line:
+
+```js :line-numbers=16
+const remote = await cds.connect.to (each.remote) // done once
+```
+Establishes a connection to the remote service (like the S/4 Business Partner service or XFlights service).
+
+```js :line-numbers=24
+let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
+```
+
+Queries the local replica table to find the timestamp of the most recently modified record.
+This determines the "last sync point" - only newer data needs to be fetched.
+
+```js :line-numbers=25
+let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
+```
+Fetches only records from the remote service that have been modified since the last sync.
+On an initial run, when no data exists locally, all records are fetched automatically, as `t0` will be `null`.
+
+```js :line-numbers=26
+if (rows.length) await UPSERT (rows) .into (entity)
+```
+For all received rows, `UPSERT` automatically inserts new records or updates existing ones in the local replica table.
+
+Noteworthy: 
+
+- `SELECT` and `UPSERT` commands are part of CAP Node.js' [`cds.ql`](../../node.js/cds-ql) and and create [_CQL_](../../cds/cql) query objects. When `await`ed as in line 24 and 26, they are executed against the local database, translated to database-native SQL under the hood. 
+
+- `remote.read` on the other hand executes queries against the connected remote service, translating them to the connected service's remote protocol, like OData or HCQL. It's actually a convenience shorthand for:
+  ```js
+  remote.run (SELECT.from(entity) .where `modifiedAt > ${t0}`)
+  ```
+
+- In both/all cases we work with database-agnostic and protocol-agnostic queries constructed using [`cds.ql`](../../node.js/cds-ql), while CAP runtimes handle the protocol and dialect translations under the hood.
+
+> [!tip] Agnostic Querying, ... <i>as if they were local</i>
+> Both,  queries executed against local databases, as well as queries executed against remote services using, are **database-agnostic** and **protocol-agnostic**, respectively. CAP runtimes handle all necessary translations under the hood, allowing us to write code that works regardless of where the data actually resides – be it with mocked data, replicated data, or real remote data. We can even switch between different integration and federation strategies later on.
 
 
-#### Event-Driven Integration
+### Requests to Remote
+
+In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
+
+::: code-group
+```js :line-numbers=28 [srv/travel-service.js]
+const xflights = await cds.connect.to ('sap.capire.flights.data')
+this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
+  Bookings.map (({ Flight_ID: flight, Flight_date: date }) => {
+    return xflights.send ('POST', 'BookingCreated', { flight, date })
+  })
+))
+```
+> Note: `this` is an instance of `TravelService`.
 
 
-#### Claude says...
+#### Delegating Value Help Requests
 
-##### 3. **Service Implementation** 
+Another example is delegating value help requests to remote services, which we implemented like this in `srv/travel-service.js` for `Customers` -> S/4 Business Partners:
 
-- **Line 22**: Runtime integration
-  - Subscribes to `Flights.Updated` events from the external XFlights service
-  - Updates local replica data when occupied seats change
-  - Emits `Booking.Created` events back to XFlights when new bookings are made
-  - Implements bidirectional data synchronization
+::: code-group
+```js :line-numbers=24 [srv/travel-service.js]
+const s4 = await cds.connect.to ('S4BusinessPartnerService')
+this.on ('READ', Customers, req => s4.run (req.query))
+```
+:::
 
-##### 4. **Data Federation**
-
-The `@federated` annotation on the Flights entity triggers automatic replication:
-
-- Creates local replica tables for offline access
-- Schedules periodic synchronization (every 3 seconds in development)
-- Replicates changes based on `modifiedAt` timestamps
-
-##### Architecture Pattern
-
-This implements a **federated data architecture**:
-
-- External Flights data is consumed via projection
-- Local replicas enable offline/cached access
-- Event-driven sync keeps both sides consistent
-- The domain model integrates external data seamlessly with local entities
-
-
-
-### Agnostic Service APIs
+This intercepts all `READ` requests to the `Customers` entity, and simply delegates the original request's query to the connected S/4 service. This ensures we support all kind of select clauses, and where clauses, as they are fully preserved. The CAP runtime handles the necessary protocol translations under the hood, including mapping all projections to entities known to the remote service.
 
 
 ## Service Bindings
