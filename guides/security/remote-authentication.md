@@ -29,7 +29,7 @@ This guide explains how to authenticate remote services.
 
 ## Remote Service Abstraction { #remote-services }
 
-According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (i.e., exchanged content) from connection level (i.e., established connection channel).
+According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (that is, exchanged content) from connection level (that is, established connection channel). 
 While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
 The latter is frequently subject to change and therefore should not introduce application dependencies.
 
@@ -45,15 +45,15 @@ All three service scenarios can be addressed through configuration variants of t
 
 CAP supports out-of-the-box consumption of various types of [remote services]( #remote-services):
 
-* [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (i.e., belong to the same trusted [application zone](./overview#application-zone)).
-* [External services](#app-to-app) which can be running on non-BTP platforms.
+* [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (that is, belong to the same trusted [application zone](./overview#application-zone)).
+* [External services](#app-to-app) that can be running on non-BTP platforms.
 * [BTP reuse services](#ias-reuse) consumed via service binding. <!-- INTERNAL -->
 
 
 ## Co-located Services {#co-located-services}
 
 Co-located services do not run in the same microservice, but are typically part of the same deployment unit and hence reside within the same trust boundary of the [application zone](./overview#application-zone).
-Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (e.g., different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../deploy/microservices#late-cut-microservices).
+Logically, such co-located services contribute to the application equally and could run as integrated services in the same microservice, but for technical reasons (for example, different runtime or scaling requirements) they are separated physically, often as a result of a [late-cut microservice approach](../deploy/microservices#late-cut-microservices).
 
 Technically, **they share the same identity instance, which allows direct token forwarding**:
 
@@ -200,7 +200,7 @@ xtravels-ias   identity   application   xtravels, xtravels-srv, xflights-srv, ..
 :::
 
 You can test the valid setup of the xtravels application by accessing the UI and logging in with an authorized test user of the IAS tenant.
-To do so, assign a proper AMS policy (e.g., `admin`) to the test user as described [earlier](./cap-users#ams-deployment).
+To do so, assign a proper AMS policy (for example, `admin`) to the test user as described [earlier](./cap-users#ams-deployment).
 
 
 ::: tip
@@ -215,7 +215,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-Alternatively, remote services can be configured on top of [BTP HTTP Destinations](../services/consuming-services#using-destinations) which offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
+Alternatively, remote services can be configured on top of [BTP HTTP Destinations](../services/consuming-services#using-destinations) that offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
 
 
 ### IAS App-2-App { #app-to-app }
@@ -226,7 +226,7 @@ Prerequisites are identity instances on both consumer and provider sides, plus a
 ![External services](./assets/external-services.drawio.svg){width="500px" }
 
 CAP supports communication between arbitrary IAS endpoints and remains transparent for applications as it builds on the same architectural pattern of [remote services](#remote-services).
-Technically, the connectivity component uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) in this scenario which requires a token exchange from a consumer token into a token for the provider.
+Technically, the connectivity component uses [IAS App-2-App flows](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) in this scenario that requires a token exchange from a consumer token into a token for the provider.
 The latter is issued by IAS only if the consumer is configured with a valid IAS dependency pointing to the provider accordingly.
 
 :::tip
@@ -273,7 +273,7 @@ The description helps administrators to configure the consumer application with 
 
 How can proper authorization be configured for _technical clients without user propagation_?
 OAuth tokens presented by valid consumer requests from an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
-Therefore, the corresponding CDS service can be protected by CAP role `DataConsumer` to authorize requests thoroughly:
+Therefore, you can protect the corresponding CDS service by CAP role `DataConsumer` to authorize requests thoroughly:
 
 ::: code-group
 ```cds [/srv/authorization.cds]
@@ -298,16 +298,16 @@ The API identifiers exposed by the IAS instance in list `provided-apis` are gran
 ::: warning Use different roles for technical and business users
 Use different CAP roles for technical clients without user propagation and for named business users.
 
-Instead of using the same role, expose dedicated CDS services to technical clients which aren't accessible to business users and vice versa.
+Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
 :::
 
 #### 2. Prepare and deploy the consumer application { #consumer }
 
 Like with xflights, clone [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
 
-First, a BTP destination needs to be added that points to the provider service endpoint to be called (`URL`) and that contains the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).
+First, you need to add a BTP destination that points to the provider service endpoint to be called (`URL`) and that contains the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).  
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
-The destination is required by the connectivity component to prepare the HTTP call accordingly. Also note that the authentication type of the destination is `NoAuthentication`, as the destination itself does not contribute to the authentication process.
+The connectivity component requires the destination to prepare the HTTP call accordingly. Also note that the authentication type of the destination is `NoAuthentication`, as the destination itself does not contribute to the authentication process.
 
 
 ::: code-group
@@ -390,7 +390,7 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the remote service implementation will delegate the HTTP connection setup to the connectivity component, which can recognize by the type of destination that it needs to initiate an App-2-App flow.
+Technically, the remote service implementation will delegate the HTTP connection setup to the connectivity component that can recognize by the type of destination that it needs to initiate an App-2-App flow.
 It then takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
@@ -438,8 +438,10 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 - **Don't write custom integration logic** for consumed services.
 Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
 
-- **Don't implement connectivity layer code** (e.g., to fetch or exchange tokens).
+- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens). 
 Instead, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
 
-- **Don't treat co-located services as external services**.
-This introduces unnecessary communication overhead and increases total cost of ownership (TCO).
+- **Don't treat co-located services as external services**. 
+This introduces unnecessary communication overhead and increases total cost of ownership.
+
+

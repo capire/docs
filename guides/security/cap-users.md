@@ -2,7 +2,7 @@
 # layout: cookbook
 label: CAP Users
 synopsis: >
-  This guide introduces to CAP user abstraction and role assignments.
+  This guide introduces CAP user abstraction and role assignments.
 status: released
 ---
 
@@ -23,7 +23,7 @@ status: released
 
 <ImplVariantsHint />
 
-This guide introduces to CAP user abstraction and role assignments.
+This guide introduces CAP user abstraction and role assignments.
 
 [[toc]]
 
@@ -38,8 +38,8 @@ It contains static information about the user such as name, ID, and tenant. Addi
 After _successful_ authentication, a **CAP user** is mainly represented by the following properties:
 
 - **_Logon name_** identifying the user uniquely
-- **_Tenant_** describes the tenant of the user (subscriber or provider) which implies the CDS model and business data container.
-- **_Roles_** the user has been assigned by a user administrator (business [user roles](#roles)) or roles which are derived by the authentication level ([pseudo roles](#pseudo-roles)).
+- **_Tenant_** describes the tenant of the user (subscriber or provider) that implies the CDS model and business data container.
+- **_Roles_** the user has been assigned by a user administrator (business [user roles](#roles)) or roles that are derived by the authentication level ([pseudo roles](#pseudo-roles)).
 - **_Attributes_** the user has been assigned, for example, for instance-based authorization.
 
 <div class="impl java">
@@ -64,8 +64,8 @@ CAP users can be classified in multiple dimensions:
 - Technical users operate on behalf of an entire tenant at a technical API level.
 
 **Authenticated users vs. anonymous users**
-- Authenticated users have successfully completed authentication by presenting valid credentials (e.g., a token).
-- Anonymous users are unidentifiable in general, as they usually do not present any credentials.
+- Authenticated users have successfully completed authentication by presenting valid credentials (for example, a token).
+- Anonymous users are unidentifiable in general, as they usually don't present any credentials.
 
 **Provider vs. subscriber tenant**
 - The provider tenant includes all users of the application owner.
@@ -104,12 +104,12 @@ Find more details about how to [switch the user context](#switching-users) durin
 ### Roles { #roles}
 
 CAP roles, which are defined on CDS resources such as services and entities, down to the events allowed on them, form the basis of [static access control](authorization#role-based-access-control).
-Technically, the request user is restricted to the resources for which an appropriate CAP role is assiged.
+Technically, the request user is restricted to the resources for which an appropriate CAP role is assigned.
 **Such roles should reflect basic operations performed by users interacting with the application**.
 
 In the following example, there are two different basic operations defined on domain level: 
-- `ReportIssues` describes users which view existing issues, report new issues and confirm provided solutions.
-- `ProcessIssues` describes users which process issues. They also write notes for customers.
+- `ReportIssues` describes users who view existing issues, report new issues and confirm provided solutions.
+- `ProcessIssues` describes users who process issues. They also write notes for customers.
 
 ```cds
 annotate Issues with @(restrict: [
@@ -127,8 +127,8 @@ CAP roles represent basic building blocks of authorization rules that are define
 Independently of that, user administrators combine CAP roles in higher-level policies and assign them to business users in the platform's central authorization management solution _at runtime_.
 
 Dynamic assignments of roles to users can be done by 
-- [AMS roles](#roles-assignment-ams) in case of [IAS authentication](./authentication#ias-auth).
-- [XSUAA roles](#xsuaa-roles) in case of [XSUAA authentication](./authentication#xsuaa-auth).
+- [AMS roles](#roles-assignment-ams) for [IAS authentication](./authentication#ias-auth).
+- [XSUAA roles](#xsuaa-roles) for [XSUAA authentication](./authentication#xsuaa-auth).
 
 ::: info
 CDS-based authorization deliberately avoids technical concepts, such as _scopes_ in _OAuth_, in favor of user roles, which are closer to the business domain of applications.
@@ -137,7 +137,7 @@ CDS-based authorization deliberately avoids technical concepts, such as _scopes_
 
 #### Pseudo Roles { #pseudo-roles}
  
-Often it is useful to define access rules that aren't based on an application-specific user role, but rather on the _technical authentication level_ of the request which can be mapped to a pre-defined CAP role.
+Often it is useful to define access rules that aren't based on an application-specific user role, but rather on the _technical authentication level_ of the request that can be mapped to a pre-defined CAP role.
 For instance, a service should be accessible only for technical users, with or without user propagation. 
 Such roles are called pseudo roles as they aren't assigned by user administrators, but are added by the runtime automatically on successful authentication, reflecting the technical level:
 
@@ -181,7 +181,7 @@ All technical clients that have access to the application's XSUAA or IAS service
 The object representation of the resolved CAP user is attached to the current request context and has an impact on the request flow, for instance with regard to
 - [authorizations](./authorization#restrictions)
 - [enriching business data](../domain/#managed-data) with user data
-- setting DB session variables
+- setting database session variables
 
 In the CDS model, some of the user properties can be referenced in annotations or static views:
 
@@ -497,7 +497,7 @@ annotate AdminService.Books with @ams.attributes: {
 
 In general, the `@ams` annotation operates on the entity level.
 The value of the AMS attribute needs to point to a single-value property of the target entity (paths are supported).
-You need to make use of a compiler expression in order to ensure validity of the value reference.
+You need to make use of a compiler expression to ensure validity of the value reference.
 
 
 ::: tip
@@ -688,7 +688,7 @@ You can now verify that the assigned policies enforce the expected access rules:
 - mock user `content-manager` has full access to `Books` and `Authors`.
 - mock user `stock-manager` can _read_ `Books` and `Authors` and can _edit_ `Books` (but _not_ `Authors`).
 
-For the advanced test scenario, you can define custom policies in pre-defined package `local` which is ignored during [deployment of the policies](#ams-deployment) to the Cloud service and hence will not show up in production.
+For the advanced test scenario, you can define custom policies in pre-defined package `local` that is ignored during [deployment of the policies](#ams-deployment) to the Cloud service and hence will not show up in production.
 
 Let's add a custom policy `StockManagerFiction` which is based on base policy `cap.StockManager` restricting the assigned users to the genres `Mystery` and `Fantasy`:
 
@@ -802,7 +802,7 @@ Enhancing the project by `cds add ams` automatically adds task e.g. in the MTA f
 
 
 Note that the policy deployer task requires a path to a directory structure containing the `ams` root folder with the policies to be deployed.
-By default, the path points to `srv/src/gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `srv/src/main/resources/ams`.
+By default, the path points to `srv/src/gen/policies` that is prepared automatically during build step with the appropriate policy-content copied from `srv/src/main/resources/ams`.
 In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 
 </div>
@@ -848,7 +848,7 @@ In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 
 
 Note that the policy deployer task requires a path to a directory structure containing the `ams/dcl` root folder with the policies to be deployed.
-By default, the path points to `gen/policies` which is prepared automatically during build step with the appropriate policy-content copied from `ams/dcl`.
+By default, the path points to `gen/policies` that is prepared automatically during build step with the appropriate policy-content copied from `ams/dcl`.
 In addition, `@sap/ams` needs to be referenced to add the deployer logic.
 
 </div>
@@ -872,7 +872,7 @@ Afterwards, you can now perform the following tasks in the Administrative Consol
 
 To create a custom policy with filter restrictions, follow these steps:
 1. Select **Applications & Resources** > **Applications**. Pick the IAS application of your project from the list.
-2. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, e.g. `StockManagerFiction`.
+2. In **Authorization Policies** select **Create** > **Create Restriction**. Choose an appropriate policy name, for example, `StockManagerFiction`.
 3. Customize the filter conditions for the available AMS attributes.
 4. Confirm with **Save**.
 
@@ -1127,9 +1127,9 @@ Next, you create a role collection that assigns these roles to your users.
 8. Choose *Save*
 
 
-If a user attribute isn't set for a user in the IdP of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. 
+If a user attribute isn't set for a user in the identity provider of the SAP BTP Cockpit, this means that the user has no restriction for this attribute. 
 For example, if a user has no value set for an attribute "Country", they're allowed to see data records for all countries.
-In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.
+In the _xs-security.json_, the `attribute` entity has a property `valueRequired` where you as the developer can specify whether unrestricted access is possible by not assigning a value to the attribute.
 
 
 
@@ -1254,7 +1254,7 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 
 In most cases, CAP's default mapping to the CAP user matches your requirements, but CAP also allows you to customize the mapping according to specific needs. 
 
-For instance, the logon name as injected by standard XSUAA integration might not be unique if several customer IdPs are connected to the underlying identity service.
+For instance, the logon name as injected by standard XSUAA integration might not be unique if several customer identity providers are connected to the underlying identity service.
 Here a combination of `user_name` and `origin` mapped to `$user` might be a feasible solution that you can implement in a custom adaptation.
 
 This is done by means of a custom [UserInfoProvider](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/UserInfoProvider.html) interface that can be implemented as Spring bean as demonstrated in [Registering Global Parameter Providers](../../java/event-handlers/request-contexts#global-providers):
@@ -1306,10 +1306,9 @@ Also consider data protection and privacy regulations when storing user data.
 
 There are multiple reasonable use cases in which user modification is a suitable approach:
 
-- Injecting or mixing user roles by calling `modifiableUserInfo.addRole(String role)` (In fact this is the base for [AMS plugin](#roles-assignment-ams) injecting user specifc roles).
+- Injecting or mixing user roles by calling `modifiableUserInfo.addRole(String role)` (In fact this is the base for [AMS plugin](#roles-assignment-ams) injecting user-specific roles).
 - Providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by invoking `modifiableUserInfo.setAttributeValues(String attribute, List<String> values)`.
 - Constructing a request user based on forwarded (and trusted) header information, completely replacing default authentication.
-- etc.
 
 [See more examples for custom UserInfoProvider](https://pages.github.tools.sap/cap/docs/java/event-handlers/request-contexts#global-providers){.learn-more}
 
@@ -1348,7 +1347,6 @@ There are multiple reasonable use cases in which user modification is a suitable
 
 - Overriding user roles by calling `user.roles(roles)`.
 - Overriding user attributes and providing calculated attributes used for [instance-based authorization](./authorization#user-attrs) by invoking `user.attr(attributes)`.
-- etc.
 
 ::: warning Be very careful when redefining `$user` and customizing `cds.middlewares`
 The user name is frequently stored with business data (for example, `managed` aspect) and might introduce migration efforts. 
@@ -1578,7 +1576,7 @@ Call application services on behalf of the privileged user only in case the serv
 <div class="impl java">
 
 In rare situations you might want to call a public service without sharing information of the current request user. 
-In this case, user propagation is explicitly prevented.
+In this case, you explicitly prevent user propagation.
 
 Such service calls can be executed on behalf of the anonymous user, acting as a public user without personal user claims:
 ```java
@@ -1593,7 +1591,7 @@ cdsRuntime.requestContext().anonymousUser().run(privilegedContext -> {
 <div class="impl node">
 
 In rare situations you might want to call a public service without sharing information about the current request user. 
-In this case, user propagation can explicitly be prevented by running in a context whose principal is the `anonymous` user.
+In this case, you can explicitly prevent user propagation by running in a context whose principal is the `anonymous` user.
 
 ```js
 cds.tx({ user: cds.User.anonymous }, async tx => {
@@ -1735,22 +1733,23 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 
 ## Pitfalls
 
-- **Don't write custom code against concrete user types of a specific identity service (e.g. XSUAA or IAS)**. 
-Instead, if required at all, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
-
-- **Don't try to propagate named user context in asynchronous requests**, such as when using the Outbox pattern or Messaging. 
-Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. 
-Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
+- **Don't write custom code against user types of an identity service (XSUAA / IAS)**. 
   
-- **Don't mix CAP Roles for business and technical users**. CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application.
-Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
+  Instead, if it is required at all to code against user types, use CAP's user abstraction layer (`UserInfo` in Java or `req.user` in Node.js) to handle user-related logic.
+
+- **Don't try to propagate named user context in asynchronous requests**.
+  
+  This can happen when using the Outbox pattern or Messaging. Asynchronous tasks are typically executed outside the scope of the original request context, after successful authorization. Propagating the named user context can lead to inconsistencies or security issues. Instead, use technical users for such scenarios.
+
+- **Don't mix CAP Roles for business and technical users**. 
+  
+  CAP roles should be clearly separated based on their purpose: Business user roles are designed to reflect how end users interact with the application. Technical user roles are intended for system-level operations, such as background tasks or service-to-service communication. Mixing these roles can lead to confusion and unintended access control issues.
 
 - **Don't mix AMS Policy level with CAP Role level**.
-AMS policies operate at the business level, while CAP roles are defined at the technical domain level. 
-Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
+  
+  AMS policies operate at the business level, while CAP roles are defined at the technical domain level. Avoid mixing these two layers, as this could undermine the clarity and maintainability of your authorization model.
 
-- **Don't choose AMS Attributes which do not slice the domain properly**.
-AMS attributes should have a broad, domain-wide relevance and be applicable across multiple entities. 
-Typically, only a limited number of attributes (less than 5) meet this criterion. 
-Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
+- **Don't choose entity attributes as AMS Attributes whose relevance is too small**.
+  
+  Such attributes should have a broad, domain-wide relevance and be applicable across multiple entities. Typically, only a limited number of attributes (less than 10) meet this criterion. Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
 
