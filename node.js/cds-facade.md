@@ -324,8 +324,6 @@ xtravels % npm ls express
 ```
 :::
 
-In previous versions, `express` was a _bring your own_ dependency (modeled as an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)), which meant you had to provide your own `express` dependency.
-
 For more information, check out the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
