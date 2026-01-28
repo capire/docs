@@ -307,8 +307,9 @@ The [express.js Application object](https://expressjs.com/en/api.html#app) is co
 cds.app = require('express')()
 ```
 
-Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4. With `express^5` support, `express` became a standard dependency with an open range for both major versions 4 and 5 (i.e., `^4 || ^5`).
+Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4.
 
+With `express^5` support, `express` became a standard dependency (instead of an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)) with an open range for both major versions 4 and 5 (i.e., `^4 || ^5`).
 If you don't require a specific version (for example, due to custom middleware), you can remove your own `express` dependency and automatically receive the latest version of `express` that is compatible with all your (transitive) dependencies.
 
 :::tip Check installed version of `express`
