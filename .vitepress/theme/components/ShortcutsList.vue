@@ -52,6 +52,7 @@ const commands = computed(() => [
   DOMCommand('Toggle Node.js or Java', 'SwitchImplVariant', ['v']),
   DOMCommand('Previous page', '.pager-link.prev', ['p',',']),
   DOMCommand('Next page', '.pager-link.next', ['n','.']),
+  DOMCommand('Scroll to top', '.scroll-to-top', ['t']),
   DOMCommand('Edit on GitHub', '.edit-link-button', ['e']),
   DOMCommand('Edit Secondary File on Github', 'secondary-file', ['E'], true, openSecondaryEditLink ),
   ...commandsFromConfig(),
