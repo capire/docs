@@ -307,11 +307,25 @@ The [express.js Application object](https://expressjs.com/en/api.html#app) is co
 cds.app = require('express')()
 ```
 
-:::warning
-The CAP Node.js runtime supports express.js versions 4 and 5 (beta).
-However, some other (transitive) dependencies of your project may still rely on express.js version 4.
-In this case, you must not upgrade.
+Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4.
+
+In previous versions, `express` was a _bring your own_ dependency (modeled as an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)), which meant you had to provide your own `express` dependency.
+With `express^5` support, `express` became a standard dependency with an open range for both major versions 4 and 5 (i.e., `^4 || ^5`).
+
+If you don't require a specific version (for example, due to custom middleware), you can remove your own `express` dependency and automatically receive the latest version of `express` that is compatible with all your (transitive) dependencies.
+
+:::tip Check installed version of `express`
+With CLI command `npm ls express`, you can check the installed version(s) of `express`.
 :::
+
+```bash
+xtravels % npm ls express
+@capire/xtravels@1.0.0
+└─┬ @sap/cds@9.7.0
+  └── express@5.2.1
+```
+
+For more information, check out the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
@@ -345,7 +359,7 @@ cds.db = await cds.connect.to('db')
 
 ```ts
 function cds.error (
-  status?  : number  
+  status?  : number
   message  : string | object,
   details? : object
   caller?  : function
