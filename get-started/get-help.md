@@ -9,7 +9,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 <div id="support-channels">
 
-| In order to...              | External                                                                                                                                     |
+| To...                       | External                                                                                                                                     |
 |-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | Ask Questions / Get Answers | [SAP Community](https://community.sap.com/t5/c-khhcw49343/SAP+Cloud+Application+Programming+Model/pd-p/9f13aee1-834c-4105-8e43-ee442775e5ce) |
 | Create issues / bug reports | [SAP Support Portal](https://support.sap.com)                                                                                                |
@@ -18,8 +18,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 </div>
 
 > [!tip]
-> If you encounter issues, check the Troubleshooting FAQs below.
-> Do that first before posting questions to or creating issues in the other channels.
+> If you encounter issues, check the Troubleshooting FAQs below before posting questions or creating issues in the support channels.
 
 [[toc]]
 
@@ -29,13 +28,13 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 ### Can't start VS Code from Command Line on macOS {#vscode-macos}
 
-In order to start VS Code via the `code` CLI, users on macOS must first run a command (*Shell Command: Install 'code' command in PATH*) to add the VS Code executable to the `PATH` environment variable. Read VS Code's [macOS setup guide](https://code.visualstudio.com/docs/setup/mac) for help.
+To start VS Code via the `code` CLI, users on macOS must first run a command (*Shell Command: Install 'code' command in PATH*) to add the VS Code executable to the `PATH` environment variable. Read VS Code's [macOS setup guide](https://code.visualstudio.com/docs/setup/mac) for help.
 
 
 
 ### Check the Node.js version { #node-version}
 
-Make sure you run the latest long-term support (LTS) version of Node.js with an even number like `20`, `22`, `24`, and so on. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
+Verify that you run the latest long-term support (LTS) version of Node.js with an even number like `20`, `22`, `24`, and so on. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
 
 ```sh
 node -v
@@ -68,7 +67,7 @@ Global npm installations are stored in a user-specific directory on your machine
 C:\Users\<your-username>\AppData\Roaming\npm
 ```
 
-Make sure that your `PATH`-environment variable contains this path.
+Verify that your `PATH`-environment variable contains this path.
 
 In addition, set the variable `NODE_PATH` to: <br /> ``C:\Users\<your-username>\AppData\Roaming\npm\node_modules``.
 
@@ -148,8 +147,8 @@ Make sure that:
 - _Acquiring client from pool timed out_
 - _ResourceRequest timed out_
 
-**First of all**, make sure the SAP HANA database is accessible in your application's environment.
-This includes making sure the SAP HANA is either part of or mapped to your Cloud Foundry space or Kyma cluster and the IP addresses are [in an allowed range](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). Connectivity issues are likely the root cause if you experience this error during application startup.
+Verify that the SAP HANA database is accessible in your application's environment.
+This includes verifying the SAP HANA is either part of or mapped to your Cloud Foundry space or Kyma cluster and the IP addresses are [in an allowed range](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). Connectivity issues are likely the root cause if you experience this error during application startup.
 
 [Learn how to set up SAP HANA instance mappings](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/map-sap-hana-database-to-another-environment-context){.learn-more style="margin-top:10px"}
 
@@ -161,11 +160,11 @@ If you frequently get this error during normal runtime operation your database c
 | _Root Cause 2_ | The creation of a new connection to the database takes too long.                                                                                          |
 | _Solution_     | Adapt `max` or `acquireTimeoutMillis` with more appropriate values, according to the [documentation](../node.js/databases#databaseservice-configuration). |
 
-Always make sure that database transactions are either committed or rolled back. This can work in two ways:
+Ensure that database transactions are either committed or rolled back. This can work in two ways:
 1. Couple it to your request (this happens automatically): Once the request is succeeded, the database service commits the transaction. If there was an error in one of the handlers, the database service performs a rollback.
 2. For manual transactions (for example, by writing `const tx = cds.tx()`), you need to perform the commit/rollback yourself: `await tx.commit()`/`await tx.rollback()`.
 
-If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), make sure to adjust the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) which specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
+If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), verify that the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) is adjusted appropriately. This variable specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
 
 
 ### Why are requests rejected with `502`?
@@ -221,7 +220,7 @@ module.exports = cds.server
 
 |              | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | In case the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritized the service binding. This service of course does have different endpoints than the originally targeted remote service. For more information, please refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name). |
+| _Root Cause_ | If the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritizes the service binding. This service has different endpoints than the originally targeted remote service. For more information, refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name). |
 | _Solution_   | Use different names for the service binding and the destination.                                                                                                                                                                                                                                                                                                                                                                          |
 
 
@@ -320,8 +319,8 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 
 ### How can I expose custom REST APIs with CAP?
 
-From time to time you might want to expose additional REST APIs in your CAP application, that aren't covered through CAPs existing protocol adapters (for example, OData V4). A common example for this might be a CSV file upload or another type of custom REST endpoint.
-In that case, you can leverage the powerful capabilities of Spring Web MVC, by implementing your own RestController. From within your RestController implementation, you can fully leverage all CAP Java APIs. Most commonly you'll be interacting with your services and the database through the [local service consumption API](../java/services). To learn more about Spring Web MVC, see the [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
+You might want to expose additional REST APIs in your CAP application that aren't covered through CAP's existing protocol adapters (for example, OData V4). A common example is a CSV file upload or another type of custom REST endpoint.
+In that case, you can leverage the powerful capabilities of Spring Web MVC by implementing your own RestController. From within your RestController implementation, you can fully leverage all CAP Java APIs. Most commonly you'll be interacting with your services and the database through the [local service consumption API](../java/services). To learn more about Spring Web MVC, see the [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
 
 ### How can I build a CAP Java application without SQL database?
 
