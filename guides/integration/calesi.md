@@ -590,7 +590,7 @@ npm add @capire/s4
 
 ## Consuming APIs 
 
-Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashups-with-local-entities). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
+Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashed-up-models). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
 
 ### Consumption Views
 
