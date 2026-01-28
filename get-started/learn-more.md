@@ -141,8 +141,8 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 ### Videos
 
-- [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI)
-- [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B)
+- [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
+- [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
 - [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
 - [Good to know: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9)
@@ -176,6 +176,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Miscellaneous
 
 - [The 'capref' collection – Axioms, Best Practices and Features](https://github.com/qmacro/capref/tree/main#readme)
+- [Integrating an external API into a CAP service](https://youtu.be/T_rjax3VY2E)
 
 
 ## SAP Learning Sources
@@ -191,17 +192,13 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 - [TechEd 2023 Hands-On AD264 – Build Extensions with CAP](https://github.com/SAP-samples/teched2023-AD264/)
 - [TechEd 2022 Hands-On AD264 – Verticalization, Customization, Composition](https://github.com/SAP-archive/teched2022-AD264)
-- [CAP Service Integration CodeJam](https://github.com/sap-samples/cap-service-integration-codejam) by DJ Adams
 
 
 
-## Blogs & Podcasts
+## Blog Posts & Other Material
 
-- [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) <br> by DJ Adams and Daniel Hutzel
-- [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx) <br> by DJ Adams
 - [Hybrid Testing and Alternative DBs](https://youtu.be/vqub4vJbZX8?si=j5ZkPR6vPb59iBBy) <br> by Thomas Jung
 - [Consume External Services](https://youtu.be/rWQFbXFEr1M) <br> by Thomas Jung
 - [Building a CAP app in 60 min](https://youtu.be/zoJ7umKZKB4) <br> by Martin Stenzig
-- [Integrating an external API into a CAP service](https://youtu.be/T_rjax3VY2E) <br> by DJ Adams
 - [Surviving and Thriving with the SAP Cloud Application Programming Model](https://community.sap.com/t5/tag/CAPTricks/tg-p/board-id/technology-blog-sap)  <br> by Max Streifeneder (2023)
 - [Multitenant SaaS applications on SAP BTP using CAP? Tried-and-True!](https://community.sap.com/t5/technology-blogs-by-sap/multitenant-saas-applications-on-sap-btp-using-cap-tried-and-true/ba-p/13541907) <br> by Martin Frick (2022)
