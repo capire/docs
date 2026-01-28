@@ -134,7 +134,7 @@ In most of the cases an event handler plugin for a CAP Java application can be a
 </dependencies>
 ```
 ::: info
-Please note that you as the plugin developer have to choose a version for `${cds.services.version}`. As a best practice, we recommend to take the current LTS version (last minor and patch level of the [maintenance release](releases/schedule#cap-java) of CAP Java for this version.
+Please note that you as the plugin developer have to choose a version for `${cds.services.version}`. As a best practice, we recommend to take the current LTS version (last minor and patch level of the [maintenance release](../releases/schedule#cap-java) of CAP Java for this version.
 
 With this version your plugin will be consumable by the majority of CAP applications. In order to make sure that your plugin runs with both major versions (current and prior) it is recommended to run integration tests with embedding applications configured for each major version.
 :::
