@@ -842,10 +842,10 @@ extend AdminService.Genres with @(
     'LimitedDescendantCount', 'DistanceFromRoot', 'DrillState', 'LimitedRank'
   ],
 ) columns { // Ensure we can query these columns from the database
-  null as LimitedDescendantCount : Int16,
-  null as DistanceFromRoot       : Int16,
+  null as LimitedDescendantCount : Int32,
+  null as DistanceFromRoot       : Int32,
   null as DrillState             : String,
-  null as LimitedRank            : Int16
+  null as LimitedRank            : Int32
 };
 ```
 
