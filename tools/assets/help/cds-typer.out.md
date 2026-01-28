@@ -75,6 +75,12 @@ OPTIONS
 
     Root directory to write the generated files to.
 
+  --outputDTsFiles
+  --output_d_ts_files: &lt;true | false&gt;
+    (default: false)
+
+    (experimental) If set to true, emits .d.ts files for each generated .js file. If set to false (default), emits .ts files instead. Note: skipLibCheck must be set to true in your tsconfig for this option to work properly.
+
   --propertiesOptional
   --properties_optional: &lt;true | false&gt;
     (default: true)

@@ -3,174 +3,279 @@ status: released
 ---
 
 # Getting Started
-Your First Steps {.subtitle}
+Jumpstart & Grow as You Go... {.subtitle}
 
-Welcome to CAP, and to *capire*, its one-stop documentation.
+[[toc]]
 
-[**CAP** [ˈkap(m)] — (unofficial) abbreviation for the *"SAP Cloud Application Programming Model"*](https://translate.google.com/details?sl=en&text=cap){.learn-more .dict}
 
-[**capire** [ca·pì·re] — Italian for _"understand"_](https://translate.google.com/details?sl=it&tl=en&text=capire){.learn-more .dict}
+## Initial Setup
+
+A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
+
+On macOS (and Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+
+```shell
+bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
+```
+
+::: details Alternative setup (required on Windows) ...
+
+  Instead of using Homebrew – which is not available on Windows –, you can manually download and install the required packages from their respective websites:
+
+  | Package | Install from                     | Remarks                                                 |
+  |---------|----------------------------------|---------------------------------------------------------|
+  | Node.js | https://nodejs.org               | _required_                                                |
+  | Java    | https://sapmachine.io            | _optional_                                                |
+  | Git     | https://git-scm.com              | _optional_                                                |
+  | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
+  | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
+
+Then install CAP's _cds-dk_ globally:
+
+  ```shell
+  npm add -g @sap/cds-dk
+  ```
+:::
+
 
 <style scoped>
-  a.dict { font-family: serif; font-weight: 100 }
+  .required::before { content: 'Required:'; color: #999; margin-right: 0.5em }
+  .optional::before { content: 'Optional:'; color: #999; margin-right: 0.5em }
+  .proposed::before { content: 'Proposed:'; color: #999; margin-right: 0.5em }
 </style>
 
 
 
+### Node.js and _cds-dk_ {.required}
 
-## Initial Setup {#setup}
-
-Follow the steps after this for a minimalistic local setup. Alternatively, you can use CAP in [SAP Build Code](https://pages.community.sap.com/topics/build-code), or other cloud-based setups, such as GitHub codespaces.
-
-
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org) — required for installing the `cds` command line interface
-- [SQLite](https://sqlite.org) — included in macOS and Linux → [install it](https://sqlite.org/download.html) on Windows
-- **A Terminal**{style="font-weight: 500"} — for using the `cds` command line interface (CLI)
-- **A Text Editor**{style="font-weight: 500"} → we recommend [VS Code](https://code.visualstudio.com) with [CDS plugin](../tools/cds-editors#vscode)
+```shell
+brew install node      # Node.js latest LTS
+npm i -g @sap/cds-dk   # CAP's cds-dk
+```
 
 
-### Installation
+### Java and Maven {.optional}
 
-- With the prerequisites met, install the [`cds` toolkit](../tools/cds-cli) *globally*:
+```shell
+brew install sapmachine-jdk
+brew install maven
+```
 
-    ```sh
-    npm add -g @sap/cds-dk
-    ```
 
-    [Visit the _Troubleshooting_ guide](troubleshooting.md) if you encounter any errors. {.learn-more}
+### Git and GitHub {.optional}
 
-- Run `cds` to check whether installation was successful:
+```shell
+brew install git       # Git CLI
+brew install gh        # GitHub CLI
+brew install github    # GitHub Desktop App
+```
 
-  ```sh
+
+
+### Visual Studio Code {.proposed}
+
+```shell
+brew install --cask visual-studio-code            # VS Code itself
+```
+```shell
+code --install-extension sapse.vscode-cds         # for .cds models
+code --install-extension mechatroner.rainbow-csv  # for .csv files
+code --install-extension qwtel.sqlite-viewer      # for .sqlite files
+code --install-extension humao.rest-client        # for REST requests
+code --install-extension dbaeumer.vscode-eslint   # for linting
+```
+```shell
+code --install-extension oracle.oracle-java       # for Java
+code --install-extension vscjava.vscode-maven     # for Maven
+```
+
+
+> You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
+
+
+## Command Line Interface
+
+### The `cds` command
+Run the `cds` command in your terminal to check whether installation was successful, and to see an overview of available commands, as shown below:
+  ```shell
   cds
   ```
+  ```zsh
+  SYNOPSIS
 
-  You see some output like that:
-
-  ```sh
-  USAGE
-
-      cds <command> [<args>]
-      cds <src>  =  cds compile <src>
-      cds        =  cds help
+    cds <command> [ <args> ]
+    cds <src>  =  cds compile <src>
+    cds        =  cds help
 
   COMMANDS
 
-      i | init        jump-start cds-based projects
-      a | add         add a feature to an existing project
-      c | compile     compile cds models to different outputs
-      s | serve       run your services in local server
-      w | watch       run and restart on file changes
-      r | repl        read-eval-event loop
-      e | env         inspect effective configuration
-      b | build       prepare for deployment
-      d | deploy      deploy to databases or cloud
-      v | version     get detailed version information
-      ? | help        get detailed usage information
+    i | init        jumpstart cap projects
+    a | add         add facets to projects to grow as you go
+    s | serve       run your services in local server
+    w | watch       run with auto-restarts on changes
+      | mock        mock a single service
+    r | repl        read-eval-event loop
+    e | env         inspect effective configuration
+    c | compile     compile cds models to various outputs
+    b | build       prepare for deployment
+    d | deploy      deploy to databases or cloud
+      | up          one stop build and deploy to cloud
+    v | version     get detailed version information
+    ? | help        get detailed usage information
 
-    Learn more about each command using:
-    cds help <command> or
-    cds <command> --help
+  Learn more about each command using:
+  cds <cmd> --help
+  cds help <cmd>
+  ```
+> Use `cds help` to get help on any command.
 
+
+### `cds version`
+Use `cds version` to check your installed versions of _cds-dk_ , as well as your project's local dependencies, with an output similar to this:
+  ```shell
+  cds version
+  ```
+  ```zsh
+  @sap/cds-dk:  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
+  npm root -l:           ~/cap/bookshop/node_modules
+  npm root -g:           /opt/homebrew/lib/node_modules
+  Node.js:      24.12.0  /opt/homebrew/bin/node
   ```
 
 
+## Jumpstart Projects
 
-### Optional
+### `cds init`
 
-- [Java](https://sapmachine.io) & [Maven](https://maven.apache.org/download.cgi) — if you're going for Java development → [see instructions](../java/getting-started#local).
-- [git](https://git-scm.com) — if you go for more than just some quick trials.
+Use `cds init` to jumpstart CAP projects, which creates a project root folder with a default layout as shown below:
 
-
-
-## Starting Projects
-
-- Use `cds init` to start a CAP project, and then open it in VS Code:
-
-   ```sh
-   cds init bookshop
-   ```
-
-   ```sh
-   code bookshop
-   ```
-   [Assumes you activated the `code` command on macOS as documented](../tools/cds-editors#vscode) {.learn-more}
-
-
-
-## Project Structure
-
-The default file structure of CAP projects is as follows:
-
+```shell
+cds init bookshop
+cd bookshop
+```
 ```zsh
-bookshop/        # Your project's root folder
-├─ app/          # UI-related content
-├─ srv/          # Service-related content
-├─ db/           # Domain models and database-related content
-├─ package.json  # Configuration for cds + cds-dk
-└─ readme.md     # A readme placeholder
+bookshop/           # the project's root folder
+├─ app/             # UI-related content
+├─ srv/             # Service-related content
+├─ db/              # Domain models and database-related content
+└─ readme.md        # Project readme file
 ```
 
-CAP has defaults for many things that you'd have to configure in other frameworks. The goal is that things should just work out of the box, with zero configuration, whenever possible. You can override these defaults by a specific configuration if you need to do so.
+> [!info] Convention over configuration
+> CAP uses defaults for many things you'd have to configure in other frameworks. The idea is that things just work out of the box, with zero configuration. While you _can_ override these defaults, of course, you _should not_ do so, but rather stick to the defaults, for the sake of simplicity.
 
-::: details See an example for configuring custom project layouts...
 
-::: code-group
+### `cds watch`
 
-```json [package.json]
-{ ...
-  "cds": {
-    "folders": {
-       "db": "database/",
-       "srv": "services/",
-       "app": "uis/"
-    }
+We can run `cds watch` to start a server, which would respond like this:
+
+```shell
+cds watch
+```
+```zsh
+  No models found in db/,srv/,app/,app/*.
+  Waiting for some to arrive...
+```
+
+Let's feed it with a simple service definition by running that in a secondary terminal, which adds a simple service definition as shown below:
+```shell
+cds add tiny-sample
+```
+:::code-group
+```cds [srv/cat-service.cds]
+service CatalogService {
+  entity Books {
+    key ID:Integer; title:String; author:String;
   }
 }
 ```
+:::
 
-```sh [Explore the defaults in your project]
-cds env ls defaults
+`cds watch` would react automatically with some output containing this:
+
+```shell
+[cds] - loaded model from 1 file(s):
+  srv/cat-service.cds
+[cds] - connect to db > sqlite { url: ':memory:' }
+[cds] - serving CatalogService { at: ['/odata/v4/catalog'] }
+[cds] - server listening on { url: 'http://localhost:4004' }
 ```
 
-[Learn more about project-specific configuration.](../node.js/cds-env){.learn-more}
+> [!tip] Served out of the box
+> Et voilà! Your first CAP service is up and running, with automatically bootstrapped in-memory database, and a full-fledged OData service, generically serving requests like that: http://localhost:4004/odata/v4/catalog/Books
+
+## Grow as You Go...
+
+When your project evolves, you'd use `cds add` to add features and facets as needed, for example, to add initial data, Java-specific setups, or deployment options, as outlined below. And finally, use `cds up` to build and deploy your project in one go.
+
+### `cds add`
+
+Use `cds add` to grow your project as you go:
+
+```shell
+cds add data
+cds add nodejs
+cds add java
+cds add ui5
+cds add fiori-tools
+```
+
+Use `cds add` to add deployment options
+
+```shell
+cds add multitenancy
+cds add hana
+cds add mta
+cds add kyma
+cds add github-actions
+```
+
+### `cds up`
+Use `cds up` to build and deploy your project in one go:
+
+```shell
+cds up
+cds up --to hana
+cds up --to cf
+cds up --to kyma
+```
+
+## Stay up to Date!
+
+> [!important] Staying up to date is crucial to receive important security fixes.
+> In order to benefit from the latest features and improvements, as well as receiving crucial security fixes, it's of utter importance to stay up to date with latest releases of CAP. Regularly run the following commands to do so.
+
+
+Keep your development environment up to date:
+
+```shell
+brew upgrade
+npm upgrade --global
+```
+Keep your project dependencies up to date:
+```shell
+# within your project folder
+npm upgrade
+```
+> Use `npm outdated` to check which dependencies are outdated before upgrading.
+
+> [!warning]
+> For such upgrades to work, **do not use pinned versions** in your project dependencies. Always use open semver ranges instead – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
+
+::: code-group
+```jsonc [package.json]
+  "dependencies": {
+    "@sap/cds": "9.7.0",  // DON'T use pinned versions // [!code --]
+    "@sap/cds": "^9.7.0",  // [!code ++]
+    ...
+  }
+```
 :::
 
-::: tip Convention over configuration
-We recommend sticking to CAP's way of [Convention over Configuration](https://en.wikipedia.org/wiki/Convention_over_configuration) to benefit from things just working out of the  box. Only override the defaults if you really need to do so.
-:::
+> [!tip]
+> Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are also highly recommended for managing Maven dependencies in CAP Java projects.
 
 
+## Next: Bookshop
 
-
-## Learning More {#next-steps}
-
-After the [initial setup](#setup), we recommend continuing as follows while you grow as you go...:
-
-| # | Guide                                     | Description                                            |
-|---|-------------------------------------------|--------------------------------------------------------|
-| 1 | [Introduction – What is CAP?](../about/)  | Learn about key benefits and value propositions.       |
-| 2 | [Bookshop by capire](in-a-nutshell)       | Build your first CAP application within 4-44 minutes.  |
-| 3 | [Best Practices](../about/best-practices) | Key concepts & rationales to understand → *must read*. |
-| 4 | [Anti Patterns](../about/bad-practices)   | Misconceptions & bad practices to avoid → *must read*. |
-| 5 | [Learn More](learning-sources)            | Find samples, videos, blogs, tutorials, and so on.     |
-
-
-
-## Grow as you go...
-
-After these getting started-level introductions, you would continuously revisit these guides to deepen your understanding and as reference docs:
-
-|  # | Guides & References                                                                   | Description                                    |
-|---:|---------------------------------------------------------------------------------------|------------------------------------------------|
-|  6 | [Cookbook](../guides/)                                                                | Walkthroughs for the most common tasks.        |
-|  7 | [CDS](../cds/)<br/>[Java](../java/)<br/>[Node.js](../node.js/)<br/>[Tools](../tools/) | The reference docs for these respective areas. |
-|  8 | [Plugins](../plugins/)                                                                | Curated list of recommended Calesi plugins.    |
-|  9 | [Releases](../releases/)                                                              | Your primary source to stay up to date.        |
-| 10 | [Resources](../resources/)                                                            | About support channels, community, ...         |
-
-
-This also reflects the overall structure of [this documentation](./learning-sources.md#this-documentation).
+Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.

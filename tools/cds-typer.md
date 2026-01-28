@@ -282,7 +282,7 @@ Note that (iii) through (v) are specific to TypeScript, while (i) and (ii) can a
 
 ## Fine Tuning
 ### Singular/ Plural
-The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain-modeling#naming-conventions).
+The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/index#naming-conventions).
 
 Naturally, this best practice can't be enforced on every model. Even for names that do follow best practices, the heuristic can fail. If you find that you would like to specify custom identifiers for singular or plural forms, you can do so using the `@singular` or `@plural` annotations.
 
@@ -352,7 +352,7 @@ Make sure to add the quotes around the asterisk so your shell environment does n
 ## Integrate Into Your Build Process
 Having `cds-typer` present as dependency provides the `typescript` build task. If your project also depends on the `typescript` package, this build task is automatically included when you run `cds build`.
 
-If you are [customizing your build task](../guides/deployment/custom-builds), you can add it after the `nodejs` build task:
+If you are [customizing your build task](../guides/deploy/build.md), you can add it after the `nodejs` build task:
 
 ```json {3}
 "tasks": [

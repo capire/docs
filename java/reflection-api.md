@@ -2,7 +2,6 @@
 synopsis: >
   The Model Reflection API is a set of interfaces, which provide the ability to introspect a CDS model and retrieve details on
   the services, types, entities, and their elements that are defined by the model.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -213,7 +212,7 @@ The database schema resulting from CDS build at design time contains *all* featu
 
 ### The Model Provider Service
 
-![This graphic is explained in the accompanying text.](../assets/feature-toggles.drawio.svg)
+![This graphic is explained in the accompanying text.](../guides/extensibility/assets/feature-toggles.drawio.svg)
 
 At runtime, per request, an effective CDS model is used that reflects the active feature set. To obtain the effective model that the runtime delegates to the *Model Provider Service*, which uses this feature set to resolve the CDS model code located in the `fts` folder of the active features and compiles to effective CSN and EDMX models for the current request to operate on.
 
@@ -223,7 +222,7 @@ The active feature set can't be changed within an active transaction.
 
 ### Toggling SAP Fiori UI Elements
 
-In an [SAP Fiori elements](https://experience.sap.com/fiori-design-web/smart-templates/) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../advanced/fiori#what-are-sap-fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
+In an [SAP Fiori elements](https://experience.sap.com/fiori-design-web/smart-templates/) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../guides/uis/fiori#what-are-sap-fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
 
 ### Features on the Database
 
@@ -259,7 +258,7 @@ cds:
 :::
 #### Custom Implementation
 
-Applications can implement a custom [`FeatureTogglesInfoProvider`](https://javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/FeatureTogglesInfoProvider.html) that computes a `FeatureTogglesInfo` based on the request's [`UserInfo`](https://www.javadoc.io/static/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) and [`ParameterInfo`](https://www.javadoc.io/static/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/ParameterInfo.html).
+Applications can implement a custom [`FeatureTogglesInfoProvider`](https://javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/FeatureTogglesInfoProvider.html) that computes a `FeatureTogglesInfo` based on the request's [`UserInfo`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) and [`ParameterInfo`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/ParameterInfo.html).
 
 The following example demonstrates a feature toggles info provider that enables the feature `isbn` if the user has the `expert` role:
 

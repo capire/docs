@@ -1,6 +1,5 @@
 ---
 # layout: node-js
-status: released
 label: Transactions
 ---
 
@@ -104,7 +103,7 @@ This usage variant, which accepts a function with nested operations ...
 **Only in non-managed environments** — as said above: you don't need to care for that if you are in a managed environment, that is, when implementing an event handler. In that case, the core service runtime automatically created a transaction for you already.
 :::
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 If you're using the database SQLite, it leads to deadlocks when two transactions wait for each other. Parallel transactions are not allowed and a new transaction is not started before the previous one is finished.
 :::
 

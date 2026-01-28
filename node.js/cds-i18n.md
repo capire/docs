@@ -19,7 +19,7 @@ There are two standard i18n bundles available through these static properties:
 
 ### Localized (Fiori) UIs
 
-The former, that is [`cds.i18n.labels`](#labels), is used automatically when generating OData `$metadata` documents for SAP Fiori elements to look up translations for respective [`{i18n>...}` placeholders](../guides/i18n#externalizing-texts-bundles). For example, localized texts for annotations like that will be looked up from `cds.i18n.labels`:
+The former, that is [`cds.i18n.labels`](#labels), is used automatically when generating OData `$metadata` documents for SAP Fiori elements to look up translations for respective [`{i18n>...}` placeholders](../guides/uis/i18n#externalizing-texts-bundles). For example, localized texts for annotations like that will be looked up from `cds.i18n.labels`:
 
 ::: code-group
 
@@ -114,7 +114,7 @@ cap/samples/bookshop/
 
 ### `.labels` {.property}
 
-The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
+The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/uis/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/
@@ -674,11 +674,11 @@ Ensure you correctly understand how the config option `cds.i18n.folders` work be
 These are the current i18n entries for [`cds.i18n.messages`](#messages) used by the CAP runtime, which you can provide own translations for in your app-specific `_i18n/messages_<locale>.properties` files:
 
 ```properties
-MULTIPLE_ERRORS = Multiple errors occurred. Please see the details for more information.
-ASSERT_FORMAT = Value "{0}" is not in specified format "{1}"
-ASSERT_RANGE = Value {0} is not in specified range [{1}, {2}]
-ASSERT_ENUM = Value {0} is invalid according to enum declaration {{1}}
-ASSERT_NOT_NULL = Value is required
+MULTIPLE_ERRORS = Multiple errors occurred, see details below.
+ASSERT_FORMAT = Enter a value matching the pattern {1}.
+ASSERT_RANGE = Enter a value between {1} and {2}.
+ASSERT_ENUM = Enter one of the allowed values: {1}.
+ASSERT_MANDATORY = Provide the missing value.
 ```
 
 In addition the following HTTP status codes can be translated:
