@@ -81,7 +81,21 @@ Common rules apply to text content in `.csv` files, like:
 | Numeric content should be treated as texts                       | -> enclose in double quotes |
 | Boolean values should be treated as text                         | -> enclose in double quotes |
 
+## Data Loading Order
 
+CAP loads CSV files in **alphabetical order by filename**. When tables have foreign key relationships, ensure parent tables load before child tables to avoid constraint violations.
+
+**Example:**
+```
+db/data/
+├── sap.capire.bookshop-Authors.csv       # Loads first (parent)
+└── sap.capire.bookshop-Books.csv         # Loads second (references Authors)
+```
+
+The filename prefix ensures correct order: `Authors` loads before `Books` alphabetically. If you encounter foreign key violations, verify your file naming follows dependency order.
+
+> [!tip] Large Datasets
+> For datasets with thousands of rows, consider using database-specific bulk loading tools instead of CSV files. The CSV mechanism loads all data in a single transaction, which can cause memory issues and long startup times.
 
 ## Initial vs Test Data
 
