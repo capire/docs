@@ -439,9 +439,9 @@ CREATE TABLE Books (
 
 ### Invalid Names
 
-When you use names in your CDS models that conflict with reserved words of underlying databases, or names that contain non-ASCII characters, special characters, or spaces, these names are considered invalid in many databases, and are therefore escaped by CAP in the generated DDL, and all queries sent to the database.
+When you use names in your CDS models that conflict with reserved words of underlying databases, or names that contain non-ASCII characters, special characters, or spaces, these names are considered invalid in many databases. CAP escapes these names in the generated DDL and all queries sent to the database.
 
-For example, the following is a valid CDS model, with all database-invalid named elements, so the generated DDL will escape them accordingly with double quotes:
+For example, the following is a valid CDS model with database-invalid named elements. The generated DDL escapes them with double quotes:
 
 ::: code-group
 ```cds [CDS Source]
@@ -491,7 +491,7 @@ If a constraint violation occurs, the error messages coming from the database ar
 
 ### Primary Key Constraints
 
-Primary keys defined in CDS entities are translated into SQL `PRIMARY KEY` constraints in the generated DDL. For example:
+The compiler translates primary keys defined in CDS entities into SQL `PRIMARY KEY` constraints in the generated DDL. For example:
 
 ::: code-group
 ```cds [CDS Source]
@@ -567,7 +567,7 @@ annotate OrderItems with @assert.unique.someOtherConstraint: [ ... ];
 
 - The argument is expected to be an array of flat [element references](../../cds/cdl#annotation-values) referring to elements in the entity. These elements may have the following types:
 
-  - scalar types, i.e., `String`, `Integer`, etc.
+  - scalar types - `String`, `Integer`, and so on
   - structured types – **not** elements _within_ structs.
   - _managed_ associations – **not** _unmanaged_ associations.
 
@@ -626,7 +626,7 @@ entity Books {
 
 #### Deferred Enforcement
 
-Referential integrity is enforced at the time of transaction commit by using the databases [deferred foreign key constraints](https://www.sqlite.org/foreignkeys.html), which is supported by most relational databases, including SAP HANA, SQLite, and PostgreSQL, but not for H2, hence:
+Referential integrity is enforced at the time of transaction commit. This uses the database's [deferred foreign key constraints](https://www.sqlite.org/foreignkeys.html), which are supported by most relational databases, including SAP HANA, SQLite, and PostgreSQL. However, H2 does not support deferred constraints:
 
 > [!note]  Database constraints are not supported for H2
 
