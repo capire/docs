@@ -1,0 +1,86 @@
+---
+synopsis: >
+  This guide shows how non-CAP Spring Boot applications can integrate themselves into service offerings of SAP BTP using different CAP modules without the need to completely migrate to CAP Java.
+status: released
+---
+
+# Use CAP Java modules with plain Spring Boot applications
+
+<style scoped>
+  h1:before {
+    content: "Java"; display: block; font-size: 60%; margin: 0 0 .2em;
+  }
+</style>
+
+{{ $frontmatter.synopsis }}
+
+The CAP Java framework [integrates itself with Spring Boot](./spring-boot-integration) every CAP Java app is also a Spring Boot app. But thanks to the modular nature of CAP Java every plain Spring Boot application (built without CAP) can also use dedicated CAP Java modules (features) if needed.
+
+The main use case for using CAP Java features in plain Spring Boot is to re-use existing BTP integration modules like e.g. the BTP Audit Log Service or SAP Event Hub.
+
+In general, adding a feature is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html).
+
+## SAP Audit Log service (check for correct naming)
+
+In order to add Audit log support by using a CAP Java feature you need to add the following dependencies to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-services-api</artifactId>
+    <version>${cds.services.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-framework-spring-boot</artifactId>
+    <version>${cds.services.version}</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+Please also maintain a version property in your `<properties>` section:
+
+```
+<cds.services.version>4.6.2</cds.services.version>
+```
+
+With these 2 additions you can already start using the audit log for local development. The audit log messages will be written to SLF4j's default logger using the log level `DEBUG`. In order to see the messages on the console of your app you need to set the log level to 'DEBUG':
+```yaml
+logging.level.com.sap.cds.auditlog: DEBUG
+```
+
+Now, you can write client code that is actually producing and publishing audit log messages. First, you need to choose the class/component in that you want to publish audit log messages. In that class you need to declare a new class member of type `com.sap.cds.services.auditlog.AuditLogService` and inject it via constructor injection (@Autowired works but is discouraged). With that done, you can create the message that is going to be published as a audit log:
+
+```java
+ConfigChange change = ConfigChange.create();
+DataObject object = DataObject.create();
+KeyValuePair key = KeyValuePair.create();
+key.setKeyName("id");
+key.setValue(String.valueOf(owner.getId()));
+object.setId(List.of(key));
+object.setType("Owner");
+change.setDataObject(object);
+ChangedAttribute attribute = ChangedAttribute.create();
+attribute.setName("Owner");
+attribute.setNewValue(String.valueOf(owner.getId()));
+change.setAttributes(List.of(attribute));
+```
+
+In the final step you pass the created message to the `AuditLogService`:
+
+```java
+auditLogService.logConfigChange(Action.CREATE, createOwnerConfigChange(owner.getId()));
+```
+
+As said, with the past changes you just enalbed the local variant of the audit log support. For the full integration of the deployed application with the SAP Audit Log service you also need to add this dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-feature-auditlog-ng</artifactId>
+    <version>0.0.3</version>
+</dependency>
+```
+
+For further configuration of this module please follow the [README of the module](https://github.com/cap-java/cds-feature-auditlog-ng).
