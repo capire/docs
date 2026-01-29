@@ -96,7 +96,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to check whether installation was successful, and to see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
   ```shell
   cds
   ```
@@ -177,7 +177,7 @@ cds watch
   Waiting for some to arrive...
 ```
 
-Let's feed it with a simple service definition by running that in a secondary terminal, which adds a simple service definition as shown below:
+Let's feed it with a simple service definition by running that in a _secondary terminal_, which adds a simple service definition as shown below:
 ```shell
 cds add tiny-sample
 ```
@@ -285,4 +285,4 @@ npm upgrade
 
 ## Next: Bookshop
 
-Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.
+Continue with [_The Bookshop Sample_](./bookshop) for a step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.

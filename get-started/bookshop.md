@@ -175,7 +175,7 @@ As soon as we saved the domain model, `cds watch` reacted with additional output
 > [!tip] Inner-Loop Development
 > SQLite isn't meant for productive use, but rather for development only. 
 > It drastically speeds up turn-around times in local inner-loop development. 
-> Essentially it acts as a mock stand-in for the target databases we'll use in production, i.e., SAP HANA. 
+> Essentially it acts as a mock stand-in for the target databases we'll use in production, that is, SAP HANA. 
 
 
 ### Compile to SQL {.optional}
@@ -634,7 +634,7 @@ With that in place, we can connect to the remote services, and send queries to t
 ###### CAP-level Service Integration
 ###### Calesi
 > [!tip] CAP-level Service Integration (<i>'Calesi'</i>)
-> CAP services can be consumed from other CAP applications, using the same uniform, and protocol-agnostic APIs as for local services – i.e., **_as if they were local_**. This is accomplished by the service instances returned by `cds.connect` being remote proxies, which automatically translate all requests into protocol-specific ones, sent to remote services. Thereby taking care of all connectivity, remote communication, marshalling of data, as well as generic resilience.
+> CAP services can be consumed from other CAP applications, using the same uniform, and protocol-agnostic APIs as for local services – that is, **_as if they were local_**. This is accomplished by the service instances returned by `cds.connect` being remote proxies, which automatically translate all requests into protocol-specific ones, sent to remote services. Thereby taking care of all connectivity, remote communication, marshalling of data, as well as generic resilience.
 
 
 ## Serving UIs 
