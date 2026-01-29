@@ -691,6 +691,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
   
     This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
 
+
 3. Generate roles and policies with AMS.
   To compile the cds annotations to dcl files execute:
 
@@ -705,28 +706,32 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     cds add approuter
     ```
 
+    ::: details This configures the local App Router callback URI for the `identity` service
+
+    In _mta.yaml_, this entry should now be present:
+
+    ```sh
+    - name: bookshop-ias
+        [...]
+        parameters:
+          service: identity
+          [...]
+          config:
+            display-name: bookshop
+            oauth2-configuration:
+              redirect-uris:
+                - http://localhost:5000/login/callback?authType=ias # [!code ++]
+              post-logout-redirect-uris:
+                - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html
+    ```
+
+    :::
+
 5. Install `npm` packages for App Router:
 
     ```sh
     npm install --prefix app/router
-   
     ```
-6. Configure the local callback URI of AppRouter in `mta.yaml` for `identity` service
-
-  ```sh
-  - name: bookshop-ias
-      [...]
-      parameters:
-        service: identity
-        [...]
-        config:
-          display-name: bookshop
-          oauth2-configuration:
-            redirect-uris:
-              - http://localhost:5000/login/callback?authType=ias # [!code ++]
-            post-logout-redirect-uris:
-              - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html
-  ```
 
 ### Deploy the Application
   
