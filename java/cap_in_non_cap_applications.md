@@ -20,9 +20,9 @@ The main use case for using CAP Java features in plain Spring Boot is to re-use 
 
 In general, adding a feature is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html).
 
-## SAP Audit Log service (check for correct naming)
+## SAP Audit Log Service
 
-In order to add Audit log support by using a CAP Java feature you need to add the following dependencies to your `pom.xml`:
+In order to add Audit log support you need to add the following dependencies to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -41,11 +41,14 @@ In order to add Audit log support by using a CAP Java feature you need to add th
 
 Please also maintain a version property in your `<properties>` section:
 
-```
+```xml
 <cds.services.version>4.6.2</cds.services.version>
 ```
 
-With these 2 additions you can already start using the audit log for local development. The audit log messages will be written to SLF4j's default logger using the log level `DEBUG`. In order to see the messages on the console of your app you need to set the log level to 'DEBUG':
+:::info
+As the logical layer of audit log is already part of the core CAP Java components you can already start with these 2 additions using the audit log for local development. The audit log messages will be written to SLF4j's default logger using the log level `DEBUG`. In order to see the messages on the console of your app you need to set the log level to 'DEBUG':
+:::
+
 ```yaml
 logging.level.com.sap.cds.auditlog: DEBUG
 ```
@@ -73,7 +76,9 @@ In the final step you pass the created message to the `AuditLogService`:
 auditLogService.logConfigChange(Action.CREATE, createOwnerConfigChange(owner.getId()));
 ```
 
-As said, with the past changes you just enalbed the local variant of the audit log support. For the full integration of the deployed application with the SAP Audit Log service you also need to add this dependency to your `pom.xml`:
+When you now run through the modified application code you should be able to read the logged audit message on the console of your Spring Boot application.
+
+As said, with the past changes you just enabled the local variant of the audit log support. For the full integration of the deployed application with the SAP Audit Log service you also need to add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -84,3 +89,60 @@ As said, with the past changes you just enalbed the local variant of the audit l
 ```
 
 For further configuration of this module please follow the [README of the module](https://github.com/cap-java/cds-feature-auditlog-ng).
+
+## CAP Messaging
+
+The CAP framework offers a logical messaging layer. This means that applications can emit events and messages to a `MessagingService` regardless of the target messaging infrastructure. The local default implementation for messaging is using the filesystem as the communication layer. Similar to the logical audit log support the messaging layer is already part of the core CAP Java modules. Thus, a plain Spring Boot application only needs to perform these two steps to activate CAP messaging:
+
+At first you need to make sure that the following dependencies are part of your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-services-api</artifactId>
+    <version>${cds.services.version}</version>
+</dependency>
+
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-framework-spring-boot</artifactId>
+    <version>${cds.services.version}</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+Again, you need to set a property for the `cds.services.version`:
+
+```xml
+<cds.services.version>4.6.2</cds.services.version>
+```
+
+After setting up the dependencies you just need to activate the file-based messaging in the applications configuration:
+
+```yaml
+cds.messaging.services.messaging.kind: file-based-messaging
+```
+### Emitting Messages
+
+In order to use CAP Java messaging to send messages from your application's code you need to inject an instance of `com.sap.cds.services.messaging.MessageService` into your class and set it as a class member. Then, you can use the CAP Java `MessageService` in your application's code like this to emit messages:
+
+```java
+Map<String, Object> data = Map.of("ownerId", owner.getId(), "petId", petId, "date", visit.getDate(), "descr", visit.getDescription());
+messaging.emit("org.spring.alesi.PlannedVisit", data);
+```
+
+### Handling Messages
+
+And in another 
+
+	@On(event = "org.spring.alesi.PetBabiesBorn", service = "messaging")
+	public void handlePetBabiesBorn(TopicMessageEventContext context) {
+		Map<String, Object> data = context.getDataMap();
+		int ownerId = (int) data.get("ownerId");
+		int petId = (int) data.get("motherId");
+		String count = (String) data.get("description");
+	}
+
+
+
+When you now start your application you will see new files created at the root of your application's file system. These are the files being used for exchanging messages.  run through your modified application code you will see that 
