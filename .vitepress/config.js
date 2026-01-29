@@ -116,8 +116,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.1',
-    java_cds4j: '4.6.0'
+    java_services: '4.6.2',
+    java_cds4j: '4.6.2'
   },
   gotoLinks: [],
   siteURL
