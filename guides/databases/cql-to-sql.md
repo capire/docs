@@ -1,6 +1,6 @@
 # CDS Compilation to Database-Specific SQL
 
-CAP supports a number of portable functions and operators in CQL, which are automatically translated to the best-possible database-specific native SQL equivalents. These can safely be used in CDS view definitions as well as in runtime queries expressed in CQL.
+CAP supports a number of portable functions and operators in CQL. The compiler automatically translates these to the best-possible database-specific native SQL equivalents. You can safely use these in CDS view definitions and runtime queries expressed in CQL.
 {.abstract}
 
 [[toc]]
@@ -19,7 +19,7 @@ In addition, CQL provides some extended operators as described below.
 
 ### Bivalent `==` and `!=` Operators
 
-CQL supports `==` and `!=` operators as bivalent logic variants for SQL's three-valued logic `=` and `<>`. In essence, the differences are as follows:
+CQL supports `==` and `!=` operators as bivalent logic variants for SQL's three-valued logic `=` and `<>`. The differences are as follows:
 
 ::: code-group
 ```SQL [CQL's Two-Valued Logic Operators]
@@ -52,7 +52,7 @@ The result set includes all books where genre is not 'Science Fiction', includin
 The CQL behavior is consistent with common programming languages like JavaScript and Java, as well as with OData semantics. It is implemented in database by, the translation of `!=` to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, and to an equivalent polyfill in SAP HANA.
 
 > [!tip] Prefer == and !=
-> Prefer using  `==` and `!=` in the very most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
+> Prefer using `==` and `!=` in most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
 
 ### Ternary `?:` Operator
 
@@ -74,14 +74,14 @@ FROM Books;
 ```
 :::
 
-This operator is translated to the best-possible equivalent in the target database, for example to `CASE WHEN ... THEN ... ELSE ... END` in standard SQL, or to `IF(..., ..., ...)` in SAP HANA.
+The compiler translates this operator to the best-possible equivalent in the target database: `CASE WHEN ... THEN ... ELSE ... END` in standard SQL, or `IF(..., ..., ...)` in SAP HANA.
 
 
 ## Functions
 
 ### Portable Functions
 
-Following are portable functions guaranteed by CAP. These can safely be used in CDS view definitions as well as in runtime queries expressed in CQL, and are translated to the best-possible database-specific native SQL equivalents.
+Following are portable functions supported by CAP. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
 
 String functions:
 

@@ -17,7 +17,7 @@
 
 - [guides/as-saas](guides/multitenancy/)
 - [guides/authorization](guides/security/authorization)
-- [guides/consuming-services](guides/services/consuming-services)
+- [guides/consuming-services](guides/integration/calesi)
 - [guides/data-privacy](guides/security/data-privacy)
 - [guides/deployment](guides/deploy/)
 - [guides/deploy-to-cloud](guides/deploy/)
@@ -33,9 +33,9 @@
 - [guides/providing-services](guides/services/providing-services)
 - [guides/reuse-and-compose](guides/integration/reuse-and-compose)
 - [guides/services](guides/services/providing-services)
-- [guides/services/status-flows](guides/services/providing-services#status-transition-flows)
+- [guides/services/consuming-services](guides/integration/calesi)
 - [guides/temporal-data](guides/domain/temporal-data)
-- [guides/using-services](guides/services/consuming-services)
+- [guides/using-services](guides/integration/calesi)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
