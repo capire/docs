@@ -216,29 +216,36 @@ Use `cds add` to grow your project as you go:
 cds add data
 cds add nodejs
 cds add java
+```
+<!--
 cds add ui5
 cds add fiori-tools
-```
+-->
 
-Use `cds add` to add deployment options
+Use `cds add` to add deployment options:
 
 ```shell
-cds add multitenancy
 cds add hana
+cds add xsuaa
+cds add ias
+cds add multitenancy
 cds add mta
 cds add kyma
 cds add github-actions
 ```
 
 ### `cds up`
+
 Use `cds up` to build and deploy your project in one go:
 
 ```shell
 cds up
-cds up --to hana
 cds up --to cf
 cds up --to kyma
 ```
+<!--
+cds up --to hana
+-->
 
 ## Stay up to Date!
 
