@@ -241,7 +241,7 @@ Use `cds up` to build and deploy your project in one go:
 ```shell
 cds up
 cds up --to cf
-cds up --to kyma
+cds up --to k8s
 ```
 <!--
 cds up --to hana
