@@ -34,7 +34,7 @@ To start VS Code via the `code` CLI, users on macOS must first run a command (*S
 
 ### Check the Node.js version { #node-version}
 
-Verify that you run the latest long-term support (LTS) version of Node.js with an even number like `20`, `22`, `24`, and so on. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
+Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
 
 ```sh
 node -v
@@ -48,7 +48,7 @@ For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#run
 
 ### Check access permissions on macOS or Linux
 
-In case you get error messages like `Error: EACCES: permission denied, mkdir '/usr/local/...'` when installing a global module like `@sap/cds-dk`, configure `npm` to use a different directory for global modules:
+If you get error messages like `Error: EACCES: permission denied, mkdir '/usr/local/...'` when installing a global module like `@sap/cds-dk`, configure `npm` to use a different directory for global modules:
 
 ```sh
 mkdir ~/.npm-global ; npm set prefix '~/.npm-global'
@@ -72,7 +72,7 @@ Verify that your `PATH`-environment variable contains this path.
 In addition, set the variable `NODE_PATH` to: <br /> ``C:\Users\<your-username>\AppData\Roaming\npm\node_modules``.
 
 
-### How to consume a new version of CDS? { #cds-versions}
+### Updating CDS Versions { #cds-versions}
 
 * Design time tools like `cds init`:
 
@@ -136,9 +136,9 @@ cds.on('served', async ()=>{
 
 ### Why does my app not show up in Dynatrace?
 
-Make sure that:
-- Your app's start script is `cds-serve` instead of `npx cds run`.
-- You have the dependency `@dynatrace/oneagent-sdk` in your _package.json_.
+Requirements:
+- App start script is `cds-serve` (not `npx cds run`)
+- Dependency `@dynatrace/oneagent-sdk` is in _package.json_
 
 ### Why are requests rejected with HANA timeout errors?
 
@@ -234,8 +234,8 @@ module.exports = cds.server
 | _Solution 2_   | Try `npm rebuild` or add `@cap-js/cds-types` in your _tsconfig.json_. |
 
 
-#### Install package as dev dependency
-The type definitions for `@sap/cds` are maintained in a separate package `@cap-js/cds-types` and have to be explicitly installed as a dev dependency. This can be done by adding the `typescript` facet:
+#### Install as dev dependency
+Install type definitions by adding the `typescript` facet:
 
 ::: code-group
 ```sh [facet]
@@ -250,7 +250,7 @@ npm i -D @cap-js/cds-types
 
 Installing `@cap-js/cds-types` leverages VS Code's automatic type resolution mechanism by symlinking the package in `node_modules/@types/sap__cds` in a postinstall script. If you find that this symlink is missing, try `npm rebuild` to trigger the postinstall script again.
 
-If the symlink still does not persist, you can explicitly point the type resolution mechanism to `@cap-js/cds-types` in your _tsconfig.json_:
+If the symlink doesn't persist, explicitly configure _tsconfig.json_:
 
 ::: code-group
 ```json [tsconfig.json]
@@ -262,30 +262,27 @@ If the symlink still does not persist, you can explicitly point the type resolut
 ```
 :::
 
-If you find that the types are still incomplete, open a bug report in [the `@cap-js/cds-types` repository](https://github.com/cap-js/cds-types/issues/new/choose).
+For incomplete types, report issues in [the `@cap-js/cds-types` repository](https://github.com/cap-js/cds-types/issues/new/choose).
 
 
 
 
 ### How to fix "`tar: Error is not recoverable: exiting now`"?
 
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources)
-you can try installing the tar library for better compatibility with Windows systems.
-
-Add it to your devDependencies like so:
+If you get this error (for example, when building MTX resources), install the tar library for better Windows compatibility:
 
 ```sh
 npm add -D tar
 ```
-On macOS and Linux, the built-in implementation will continue to be used.
+On macOS and Linux, the built-in implementation continues to be used.
 
 
 
 ## Java
 
-### How can I make sure that a user passes all authorization checks?
+### How to bypass authorization checks?
 
-A new option `privilegedUser()` can be leveraged when [defining](../java/event-handlers/request-contexts#defining-requestcontext) your own `RequestContext`. Adding this introduces a user, which passes all authorization restrictions. This is useful for scenarios, where a restricted service should be called through the [local service consumption API](../java/services) either in a request thread regardless of the original user's authorizations or in a background thread.
+Use `privilegedUser()` when [defining](../java/event-handlers/request-contexts#defining-requestcontext) your own `RequestContext`. This introduces a user that passes all authorization restrictions. Useful when calling a restricted service through the [local service consumption API](../java/services) regardless of the original user's authorizations or in a background thread.
 
 ### Why do I get a "User should not exist" error during build time?
 
@@ -319,8 +316,9 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 
 ### How can I expose custom REST APIs with CAP?
 
-You might want to expose additional REST APIs in your CAP application that aren't covered through CAP's existing protocol adapters (for example, OData V4). A common example is a CSV file upload or another type of custom REST endpoint.
-In that case, you can leverage the powerful capabilities of Spring Web MVC by implementing your own RestController. From within your RestController implementation, you can fully leverage all CAP Java APIs. Most commonly you'll be interacting with your services and the database through the [local service consumption API](../java/services). To learn more about Spring Web MVC, see the [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
+To expose additional REST APIs not covered by CAP's protocol adapters (for example, OData V4), implement your own Spring Web MVC RestController. Common examples include CSV file uploads or custom REST endpoints.
+
+Your RestController can fully leverage CAP Java APIs. You'll typically interact with services and the database through the [local service consumption API](../java/services). Learn more: [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
 
 ### How can I build a CAP Java application without SQL database?
 
