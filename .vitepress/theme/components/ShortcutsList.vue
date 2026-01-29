@@ -52,6 +52,7 @@ const commands = computed(() => [
   DOMCommand('Toggle Node.js or Java', 'SwitchImplVariant', ['v']),
   DOMCommand('Previous page', '.pager-link.prev', ['p',',']),
   DOMCommand('Next page', '.pager-link.next', ['n','.']),
+  DOMCommand('Scroll to top', '.scroll-to-top', ['t']),
   DOMCommand('Edit on GitHub', '.edit-link-button', ['e']),
   DOMCommand('Edit Secondary File on Github', 'secondary-file', ['E'], true, openSecondaryEditLink ),
   ...commandsFromConfig(),
@@ -210,7 +211,7 @@ td, th {
   background-color: var(--vp-c-bg-soft);
 }
 
-.modal-header h5 { 
+.modal-header h5 {
   font-weight: 600;
   margin-bottom: 20px;
   /* text-align: center; */
@@ -227,7 +228,7 @@ td, th {
   float: right;
   font-size: 20px;
   font-weight: bold;
-  margin: 5px auto;
+  margin: auto;
 }
 
 .modal-close:hover,

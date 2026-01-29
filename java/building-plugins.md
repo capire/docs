@@ -133,6 +133,11 @@ In most of the cases an event handler plugin for a CAP Java application can be a
     </dependency>
 </dependencies>
 ```
+::: info
+Please note that you as the plugin developer have to choose a version for `${cds.services.version}`. As a best practice, we recommend to take the current LTS version (last minor and patch level of the [maintenance release](../releases/schedule#cap-java) of CAP Java for this version.
+
+With this version your plugin will be consumable by the majority of CAP applications. In order to make sure that your plugin runs with both major versions (current and prior) it is recommended to run integration tests with embedding applications configured for each major version.
+:::
 
 Inside your plugin module, you can define a custom event handler and a registration hook as plain Java code. Once this module is deployed to a Maven repository it can be added to any CAP Java application as a dependency. The contained event handler code is active automatically once your CAP Java application is started along with the new reuse module.
 
@@ -194,7 +199,7 @@ In case your reuse module depends on other components managed as part of the Spr
 
 This is, however, error-prone: [Spring Boot's component scan](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/ComponentScan.html) is by default scanning downward from the package in which the main `Application` class is declared. Meaning that you need to place the plugin either in a subpackage or the same package as the `Application` class. This would hamper the reuse aspect of the plugin as it would only work applications in a specific package. You could customize the component scan of the application using your plugin but this is also error-prone as you explicitly have to remember to change the `@ComponentScan` annotation each time you include a plugin.
 
-Because of those complications it's best practice to use the `AutoConfiguration` mechanism provided by Spring Boot in reuse modules that ship Spring components. For further details, please refer to the [Spring Boot reference documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.auto-configuration).
+Because of those complications it's best practice to use the `AutoConfiguration` mechanism provided by Spring Boot in reuse modules that ship Spring components. For further details, please refer to the [Spring Boot reference for auto-configuration](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html#features.developing-auto-configuration).
 
 
 A complete end-to-end example for reusable event handlers can be found in this [blog post](https://blogs.sap.com/2023/05/16/how-to-build-reusable-plugin-components-for-cap-java-applications/).

@@ -462,9 +462,20 @@ This allows us to update imported APIs later on using standard commands like `np
 
 We can also `cds import` APIs from other sources, such as OData APIs to integrate customer data from SAP S/4 HANA systems. Do so as follows:
 
-1. Open [*SAP Business Accelerator Hub*](https://api.sap.com) in your browser and navigate to *> [SAP S/4HANA Cloud Public Edition](https://api.sap.com/products/SAPS4HANACloud) > [APIs](https://api.sap.com/products/SAPS4HANACloud/apis) > [OData V2](https://api.sap.com/products/SAPS4HANACloud/apis/ODATA)* > [*Business Partner (A2X)*](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) and download the *OData EDMX* from the *API Specification* tab.
+1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, e.g., from [*SAP Business Accelerator Hub*](https://api.sap.com):
 
-2. Import to the current project:
+   ::: details Detailed steps through SAP Business Accelerator Hub ...
+      - Open https://api.sap.com in your browser
+      - Navigate to
+      \> [_SAP S/4HANA Cloud Public Edition_](https://api.sap.com/products/SAPS4HANACloud) 
+         \> [_APIs_](https://api.sap.com/products/SAPS4HANACloud/apis)
+         \> [_OData V2_](https://api.sap.com/products/SAPS4HANACloud/apis/ODATA)
+      - Find and open [_Business Partner (A2X)_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) 
+      - Switch to the *API Specification* subtab.
+      - Click the download icon next to *OData EDMX* to download the `API_BUSINESS_PARTNER.edmx` file to your local machine.
+   :::
+
+2. Import that to the current project:
 
 ```shell
 cds import ~/Downloads/API_BUSINESS_PARTNER.edmx
@@ -494,52 +505,75 @@ Further, it adds a [service binding](#service-bindings) stub to your _package.js
 > [Learn more about `cds import` in the tools guides.](../../tools/apis/cds-import){.learn-more} 
 
 
-### Reuse Integration Packages
+### Via Reuse Packages
 
-Instead of importing the same APIs from raw EDMX or OpenAPI definitions, as shown above, again and again in each consuming project, we can also do that once and share the outcomes as reusable integration packages. We did so with the [`@capire/s4`](https://github.com/capire/s4) sample package, which we created as follows:
+Instead of importing the same APIs from raw EDMX or other non-CAP sources again and again in each consuming project, we can also do that once and share the outcomes as reusable pre-built integration packages. These basically apply the same best practice techniques than Packaged APIs created with `cds export`, and can hence be consumed in the same ways, with the same plug & play conveniences. 
 
-1. We started a new CAP project in which we imported the OData API as outlined above.
-```shell
-cds import ~/Downloads/API_BUSINESS_PARTNER.edmx
-```
+For the _XTravels_ sample, we did so with the [`@capire/s4`](https://github.com/capire/s4) sample package, which we created as follows. 
 
-2. Added some initial data using `cds add --data`.
-```shell
-cds add --data -o ./data
-```
 
-3. Added an `index.cds` file as a central entry point.
-::: code-group
-```cds :line-numbers [srv/index.cds]
-using from './external/API_BUSINESS_PARTNER';
-annotate API_BUSINESS_PARTNER with @cds.external:2; 
-```
-:::
+1. We started a new CAP project – get the outcome from Github to follow along:
 
-4. Adjusted `cds import`-generated service binding like that:
-::: code-group
-```json :line-numbers [package.json]
-{ "cds": { "requires": {
-  "S4BusinessPartnerService": { 
-    "service": "API_BUSINESS_PARTNER", 
-    "kind": "odata-v2"
-  }
-}}}
-```
-:::
+   ```shell
+   git clone https://github.com/capire/s4.git
+   code s4
+   ```
 
-5. Added an empty `cds-plugin.js` file to turn the package into a CAP plugin.
+ 2. We imported the [OData API](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) as [outlined above](#from-odata-edmx).
 
-::: code-group
-```js [cds-plugin.js]
-// just a tag file to trigger plug & play configuration in consuming apps
-```
-:::
+    ```shell
+    cds import ~/Downloads/API_BUSINESS_PARTNER.edmx
+    ```
 
-6. Finally published the package to [_Github Packages_](https://github.com/features/packages).
-```shell
-npm publish
-```
+2. Edited the `cds import`-generated `package.json` to look like that:
+   ::: code-group
+   ```json :line-numbers [package.json]
+   {
+      "name": "@capire/s4",
+      "version": "1.0.0",
+      "cds": {
+         "requires": {
+            "S4BusinessPartnerService": {
+               "service": "API_BUSINESS_PARTNER",
+               "kind": "odata-v2"
+            }
+         }
+      }
+   }
+   ```
+   :::
+
+3. Added the following files to expose the imported API in a CAP-idiomatic way:
+
+   ::: code-group
+   ```js [cds-plugin.js]
+   // just a tag file for plug & play configuration in consuming apps
+   ```
+   :::
+
+   ::: code-group
+   ```cds :line-numbers [srv/business-partners.cds]
+   using from './srv/external/API_BUSINESS_PARTNER';
+   annotate API_BUSINESS_PARTNER with @cds.external:2; 
+   ```
+   :::
+
+   ::: code-group
+   ```cds :line-numbers [index.cds]
+   // Entry point to allow imports like: using from '@capire/s4';
+   using from './srv/business-partners';
+   ```
+   :::
+
+4. Added some initial data using `cds add data`.
+   ```shell
+   cds add data -o ./srv/external/data -f A_BusinessPartner
+   ```
+
+5. Finally published the package to [_Github Packages_](https://github.com/features/packages).
+   ```shell
+   npm publish
+   ```
 
 In the consuming project [*@capire/xtravels*](https://github.com/capire/xtravels) we then simply added this package in the same way as we added the `@capire/xflights-data` package before:
 
@@ -556,41 +590,42 @@ npm add @capire/s4
 
 ## Consuming APIs 
 
-Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashups-with-local-entities). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
+Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashed-up-models). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
 
-### Declare Consumption Views
+### Consumption Views
 
 Imported APIs frequently contain much more entities and elements than we actually need. So as a next step we first declare so-called *Consumption Views*, to capture what we really want to use from them, with focus on these entities and elements we need in close access. 
 
-We do so in two new files `apis/outbound/xflights.cds` and `apis/outbound/s4.cds`: 
+We do so in two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`: 
 
 ::: code-group
-```cds :line-numbers [apis/outbound/xflights.cds]
+```cds :line-numbers [apis/capire/xflights.cds]
 using { sap.capire.flights.data as x } from '@capire/xflights-data';
 namespace sap.capire.xflights;
 
-entity Flights as projection on x.Flights {
-  ID, date, departure, arrival,
+@federated entity Flights as projection on x.Flights {
+  ID, date, departure, arrival, modifiedAt,
   airline.icon     as icon,
   airline.name     as airline,
   origin.name      as origin,
   destination.name as destination,
 }
 
-entity Supplements as projection on x.Supplements {
-  ID, type, descr, price, currency
+@federated entity Supplements as projection on x.Supplements {
+  ID, type, descr, price, currency, modifiedAt,
 }
 ```
 :::
 ::: code-group
-```cds :line-numbers [apis/outbound/s4.cds]
-using { API_BUSINESS_PARTNER as s4 } from '@capire/s4';
+```cds :line-numbers [apis/capire/s4.cds]
+using { API_BUSINESS_PARTNER as S4 } from '@capire/s4';
 namespace sap.capire.s4;
 
-entity Customers as projection on s4.A_BusinessPartner {
+@federated entity Customers as projection on S4.A_BusinessPartner {
   BusinessPartner as ID,
   PersonFullName  as Name,
-}
+  LastChangeDate  as modifiedAt,
+} where BusinessPartnerCategory == 1; // 1 = Person
 ```
 :::
 
@@ -602,8 +637,11 @@ Noteworthy aspects here are:
 
 - The chosen namespaces `sap.capire.s4` and `sap.capire.xflights`, reflect the source systems, but are distinct from their original namespaces, which is a good practice to avoid name clashes further down the road.
 
+- Finally, we annotate both consumption views with `@federated`, to trigger data federation for them, which we'll learn about in the next chapters.
 
-> [!tip] Always add Consumption Views
+
+> [!tip] Always use Consumption Views
+>
 > Even though they are optional, it's a good practice to always define consumption views on top of imported APIs. They declare what you really need, which can be used later on to automate data federation. In addition they map imported definitions to your own domain and use cases, by renaming, flattening, or restructuring them as needed. 
 
 > [!warning] Protocol-specific Limitations
@@ -612,167 +650,249 @@ Noteworthy aspects here are:
 
 
 
-### Mashups with Local Entities
+### Mashed up Models
 
-With the consumption views in place, we can now refer to them from our own models in any way we like, _as if they were local_, thereby creating mashups of definitions from imported APIs and local definitions. The CDS excerpts below show common use cases with references to external entities via the consumption views we defined earlier. 
+With the consumption views in place, we can now refer to them from our own models in any way we like, _as if they were local_, thus creating mashups of definitions from imported APIs and local definitions. 
+
+> [!tip] <i>AI Agents 'capire' CAP</i>
+> We can use AI agents to help us analysing and understanding our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context. 
 
 
+#### Domain Model Mashups
 
-#### Local → Remote Associations
-
-In `db/schema.cds` we find the following associations which reference external entities from within local entities.
-
-::: code-group
-```cds :line-numbers [db/schema.cds]
-using { sap.capire.xflights } from '../apis/outbound/xflights'; // [!code focus]
-using { sap.capire.s4 } from '../apis/outbound/s4'; // [!code focus]
-...
-entity Travels : managed { ...
-  Customer     : Association to s4.Customers; // [!code focus]
-  Bookings     : Composition of many Bookings on Bookings.Travel = $self;
-}
-...
-entity Bookings { ...
-  Flight      : Association to xflights.Flights; // [!code focus]
-  Supplements : Composition of many { ...
-    booked   : Association to xflights.Supplements; // [!code focus]
+  ::: code-group
+  ```cds :line-numbers=1 [db/schema.cds]
+  using { sap.capire.xflights as x } from '../apis/capire/xflights'; 
+  ```
+  :::
+  ```cds :line-numbers=25 
+  entity Bookings { // ...
+    Flight : Association to x.Flights; 
   }
-}
-```
+  ```
+  ```cds :line-numbers=73
+  extend x.Flights with columns {
+    Bookings : Association to many Bookings on Bookings.Flight = $self
+  }
+  ```
+- Line 26 –  Each _Booking_ references a _Flight_ from the external xflights service, which allows us to display flight details alongside bookings.
+
+- Line 74 – Adds a backlink from _Flights_ to _Bookings_ for bidirectional traversal.
+
+::: details Limitations of Remote Extensions
+Extensions to remote entities, as shown above, are only possible for elements which would not require changes to the remote service's actual data. This is the case for _virtual_ elements and _calculated_ fields, as well as **_unmanaged_** associations, as all foreign keys are local. It's not possible for regular elements or _managed_ associations, though.
 :::
 
-#### Remote → Local Associations
-
-Also in `db/schema.cds` we find the below extensions to remote entities, which add *unmanaged* associations back to local entities. 
+#### Service Exposure
 
 ::: code-group
-```cds :line-numbers [db/schema.cds]
-extend s4.Customers with columns {
-  Travels : Association to many Travels on Travels.Customer = $self
-}
-extend xflights.Flights with columns {
-  bookings : Association to many Bookings on bookings.Flight = $self
-}
+```cds :line-numbers=1 [srv/travel-service.cds]
+using { sap.capire.xflights as x } from '../apis/capire/xflights';
 ```
 :::
+```cds :line-numbers=16 
+@fiori service TravelService { ...
+  @readonly entity Flights as projection on x.Flights; 
+}
+```
 
-> [!warning] Unmanaged Associations Only
-> Such extensions to remote entities are only possible for **_unmanaged_** associations, as all foreign keys are local. It's not possible for regular elements or _managed_ associations, as those would require changes to the remote service's data.
+- Line 17 – Exposes the _Flights_ entity in the _TravelService_ for UI consumption. 
+This is required as associations to non-exposed entities would be cut off, which would apply to the _Bookings_ -> _x.Flights_ association if we did not expose _x.Flights_.
 
-#### Exposed through Own Services
 
-In `srv/travel-service.cds` we see that it exposed the imported entities `Flights` and `Supplements` to display travels data with related data, as well as  value help dialogs:
+#### Field Constraints
 
 ::: code-group
-```cds :line-numbers [srv/travel-service.cds]
-@fiori service TravelService {
-	...
-  // Also expose related entities as read-only projections
-  @readonly entity TravelAgencies as projection on our.TravelAgencies;
-  @readonly entity Currencies as projection on sap.common.Currencies;
-  @readonly entity Customers as projection on s4.Customers; // [!code focus]
-  @readonly entity Flights as projection on xflights.Flights; // [!code focus]
-  @readonly entity Supplements as projection on xflights.Supplements; // [!code focus]
-
+```cds :line-numbers=44 [srv/travel-constraints.cds]
+annotate TravelService.Bookings with { ...
+  Flight @mandatory { 
+    date @assert: (case 
+      when date not between $self.Travel.BeginDate and $self.Travel.EndDate 
+      then 'ASSERT_BOOKING_IN_TRAVEL_PERIOD'
+    end);
+  };
 }
 ```
 :::
 
+- Line 46 – Adds a constraint to the _Flight.date_ element to ensure that the flight date of a booked _Flight_ falls within the travel period of the associated _Travel_.
 
 
-### Served to Fiori UIs
+#### Fiori Annotations
 
 On top of the mashed up models we can add Fiori annotations as usual to serve Fiori UIs – again: _as if they were local_. For example, following are excerpts of Fiori annotations referring to the `A_BusinessPartner` entity imported from S/4 (via the `Customers` consumption view, and the association to that from the local `Travels` entity).
 
 ::: code-group
-```cds :line-numbers [app/common/labels.cds]
-annotate my.Travels with { ...
-  Customer @title: '{i18n>Customer}'   @Common: { // [!code focus]
-    Text: Customer.Name, TextArrangement: #TextOnly // [!code focus]
-  }; // [!code focus]
-}
-...
-annotate sap.capire.s4.Customers with @title: '{i18n>Customer}' {
-  ID @title: '{i18n>Customer}' @Common.Text: Name; // [!code focus]
-  ...
+```cds [app/common/labels.cds]
+annotate s4.Customers with @title: '{i18n>Customer}' { ...
+  ID @title: '{i18n>Customer}' @Common.Text: Name; 
 }
 ```
 :::
+```cds
+annotate our.Travels with { ...
+  Customer @title: '{i18n>Customer}' @Common: { 
+    Text: (Customer.Name), TextArrangement: #TextOnly 
+  }; 
+}
+```
+
 ::: code-group
-```cds :line-numbers [app/common/code-lists.cds]
-annotate sap.capire.travels.Travels { ...
-  Customer @Common.ValueList: {
-    CollectionPath : 'Customers', //> exposed Customers entity // [!code focus]
-    ... 
+```cds [app/common/code-lists.cds]
+annotate our.Travels { ...
+  Customer @Common.ValueList: { CollectionPath: Customers, ... }
 }
 ```
 :::
+
 ::: code-group
-```cds :line-numbers [app/travels/layouts.cds]
-annotate TravelService.Travels with @UI : { ...
-  SelectionFields : [
-    (Customer.ID), ... // [!code focus]
-  ],
-  LineItem : [ ...
-    { Value : (Customer.ID), ... }, ... // [!code focus]
-  ],
-  FieldGroup#TravelData : { Data : [ 
-    { Value : (Customer.ID) }, ... // [!code focus]
-  ]}
-}
-...
-annotate TravelService.Bookings with @UI : { ...
-  HeaderInfo : {
-    Title : { Value : Travel.Customer.Name }, ... // [!code focus]
-  },
-  FieldGroup #GeneralInformation : { Data : [ ...
-    { Value : Travel.Customer.ID }, // [!code focus]
-  ]},
+```cds [app/travels/layouts.cds]
+annotate TravelService.Travels with @UI: { ...
+  SelectionFields: [ (Customer.ID), ...  ],
+  LineItem: [ { Value: (Customer.ID), .... }, ...  ],
+  FieldGroup #Tx: { Data: [ { Value: (Customer.ID) }, ...  ]}
 }
 ```
 :::
+```cds
+annotate TravelService.Bookings with @UI: { ...
+  HeaderInfo: { Title: { Value: (Travel.Customer.Name) }, ...  },
+  FieldGroup #GI: { Data: [ { Value: (Travel.Customer.ID) },  ... ]},
+}
+```
 
 There are similar references to `Flights` entity from xflights in other parts of the Fiori annotations, which we omit here for brevity. 
 
 
 ### Mocked Out of the Box
 
-With the mashed up models and the Fiori annotations in place, we can already run the integrated application, as the imported services are mocked out of the box by CAP runtimes. 
+With the mashed up models in place, we can already run consuming applications in _'airplane mode'_ – i.e. without the upstream services running and connected –, as the imported services are mocked out of the box by CAP runtimes, _in-process_ and with mock data in the same _in-memory_ database, next to our own data. 
+
 Start the xtravels application locally using `cds watch` as usual, and note the output about the `sap.capire.flights.data` service, as well as the `S4BusinessPartnerService` being mocked automatically:
 
 ```shell
 cds watch 
 ```
 ```zsh
-...
 [cds] - mocking sap.capire.flights.data {
   at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
   decl: 'xflights/apis/data-service/services.csn:3'
 }
+```
+```zsh
 [cds] - mocking S4BusinessPartnerService {
   at: [ '/odata/v4/s4-business-partner' ],
   decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
 }
-...
 ```
 
-When we open the UIs in the browser, we see that the Fiori UIs display data from both, local and imported entities, seamlessly integrated as shown in the [screenshot](#the-xtravels-sample) earlier.
+When we open the Fiori UI in the browser, we see it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
 
-> [!note] Mock Data included with Packaged APIs
-> The actual data displayed is provided by the Packaged APIs we imported. In particular, we created the `@capire/xflights-data` package using `cds export --data` option, which created `.csv` files for the exported entities. As those `.csv` files are installed next to the `.cds` files, they are automatically detected and loaded into the in-memory database. 
+![XTravels Fiori list view showing a table of travel requests, with the Customer highlighted in green.](assets/xtravels-list.png)
+
+
+#### Providing Mock Data 
+
+There are different options to provide initial data, test data, and mock data:
+
+- In case of `@capire/xflights-data`, we generated the package content using `cds export --data` option, which added `.csv` files next to the `.cds` files. 
+- In case of `@capire/s4`, we explicitly added `.csv` files next to the `.cds` files. 
+- In addition, we could add `.csv` files for imported entities in the consuming apps `db/data` or `test/data` folders.
+
+In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.  
+
+[Learn more about *Adding Initial Data*](../databases/initial-data) {.learn-more}
 
 > [!tip] Mocking for Inner-Loop Development
-> CAP runtimes automatically mock imported services for inner-loop development. This allows us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services.
-> => See also: [_Inner-Loop Development_](#inner-loop-development) section further below.
+> A service definition is all we need to serve fully functional OData services. Hence, service APIs imported via `cds import` are automatically mocked by CAP runtimes during development. This allows us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services.\
+> See also: [_Inner-Loop Development_](#inner-loop-development) section further below.
+
 
 
 ### Required Custom Code
 
+When it comes to real non-mocked integration with external services, custom code is required to handle the actual data integration. We can see that by starting two separate processes, one for the S/4 service, and one for the Xtravels app as follows from within the `cap/samples/xtravels` project folder:
 
-#### Service-level Data Federation
+1. Start the a mocked S/4 service in terminal 1:
+
+```shell
+cds mock apis/capire/s4.cds
+```
+
+2. Start the Xtravels app in terminal 2:
+
+```shell
+cds watch
+```
+```zsh
+[cds] - mocking S4BusinessPartnerService { # [!code --]
+  at: [ '/odata/v4/s4-business-partner' ], # [!code --]
+  decl: 's4/external/API_BUSINESS_PARTNER.csn:7' # [!code --]
+} # [!code --]
+```
+
+Note that in the output there is no mention of a mocked `S4BusinessPartnerService` anymore. This is because the CAP runtime now detected that a service with that name is served by a different process within my local binding environment now, so we don't mock it in-process any longer. 
+
+When we open the Fiori UI in the browser again, we see the data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration:
+
+![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-no-s4.png)
+
+In addition, when we look into the log output of the Xtravels app, we see something like that, which indicates that the Fiori client is desparately trying to fetch the missing customer data in _$batch_ requests, with one GET request per row, 30 in total, corresponding to the default page size. If we'd scroll the list in the UI this would repeat like crazy.
+
+<span style="font-size:63%">
+
+```js
+[odata] - POST /odata/v4/travel/$batch
+[odata] - > GET /Travels(ID=4133,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4132,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4131,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4130,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4129,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4128,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4127,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4126,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4125,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4124,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4123,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4122,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4121,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4120,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4119,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4118,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4117,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4116,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4115,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4114,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4113,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4112,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4111,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4110,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4109,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4108,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4107,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4106,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4105,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+[odata] - > GET /Travels(ID=4104,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
+```
+```zsh
+(node:37548) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 
+11 shutdown listeners added to [cds]. 
+MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
+(Use `node --trace-warnings ...` to show where the warning was created)
+```
+</span>
+
+So, let's go on and fill this gap with required custom code...
+
+
+### CAP-level Data Federation
+
+Displaying external data in lists UIs commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on on server, and lacking all resilience. Instead, we need to replicate the required data from remote services into local replica tables, which can then be accessed fast and reliably by UIs using good old SQL JOINs.
+
+We did implement a simple, yet quite effective, solution in `srv/data-federation.js` in the Xtravels app as shown below:
 
 ::: code-group
-```js :line-numbers [srv/data-federation.js]
+```js:line-numbers {9,16,24,25,26} [srv/data-federation.js]
 const cds = require ('@sap/cds')
 const feed = []
 
@@ -788,25 +908,103 @@ cds.on ('loaded', csn => {
   
 // Setup and schedule replications for all collected entities
 cds.once ('served', () => Promise.all (feed.map (async each => {
-  const srv = await cds.connect.to (each.remote)
-  await srv.schedule ('replicate', each) .every ('3 seconds')
-  srv.replicate ??=!! srv.on ('replicate', replicate_entity)
+  const remote = await cds.connect.to (each.remote)
+  await remote.schedule ('replicate', each) .every ('3 seconds')
+  remote.replicate ??=!! remote.on ('replicate', replicate_entity)
 })))
 
 // Event handler for replicating single entities
 async function replicate_entity (req) { 
-  let { entity } = req.data
-  let { t0 } = await SELECT.one`max(modifiedAt) as t0`.from (entity)
-  let rows = await this.read(entity).where`modifiedAt > ${t0}` 
-  if (rows.length) await UPSERT(rows).into(entity); else return
+  let { entity } = req.data, remote = this
+  let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
+  let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
+  if (rows.length) await UPSERT (rows) .into (entity); else return
   console.log ('Replicated', rows.length, 'entries for:', { entity })
 }
 ```
 :::
 
+This is a generic solution which automatically replicates all entities annotated with `@federated`, as we did in the [consumption views](#consumption-views) before, for example:
 
-#### Delegation to Remote Services
+```cds :line-numbers=4
+@federated entity Customers as projection on S4.A_BusinessPartner { ... }
+```
 
+These entities are detected, and, unless mocked, turned into tables to serve as local persistence for replicated data (line 9 in the code above).
+
+> [!tip] Stay Intentional -> What, not how
+> By default, consumption views on top of remote entities are virtual and do not have local persistence. By setting the `@cds.persistence.table` annotation to `true`, we instruct the CAP database layer to create actual database tables for these entities, which can then be used to store replicated data locally. 
+> 
+> Yet, you as an application developer stay intentional about **_what_** you want to achieve (-> `@federated` tags), and **avoid any eager assumptions** about **_how_** this is actually implemented. => This allows CAP runtimes – or you own _generic_ framework plugins, as with the code above – to choose the best possible implementation strategy for the given environment and use case, which may differ between development, testing, and production environments.
+
+The actual replication is accomplished by the highlighted lines 16 and 24-26, which implement a simple polling-based data federation mechanism, based on `modifiedAt` timestamps. Let's break that down line by line:
+
+```js :line-numbers=16
+const remote = await cds.connect.to (each.remote) // done once
+```
+Establishes a connection to the remote service (like the S/4 Business Partner service or XFlights service).
+
+```js :line-numbers=24
+let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
+```
+
+Queries the local replica table to find the timestamp of the most recently modified record.
+This determines the "last sync point" - only newer data needs to be fetched.
+
+```js :line-numbers=25
+let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
+```
+Fetches only records from the remote service that have been modified since the last sync.
+On an initial run, when no data exists locally, all records are fetched automatically, as `t0` will be `null`.
+
+```js :line-numbers=26
+if (rows.length) await UPSERT (rows) .into (entity)
+```
+For all received rows, `UPSERT` automatically inserts new records or updates existing ones in the local replica table.
+
+Noteworthy: 
+
+- `SELECT` and `UPSERT` commands are part of CAP Node.js' [`cds.ql`](../../node.js/cds-ql) and and create [_CQL_](../../cds/cql) query objects. When `await`ed as in line 24 and 26, they are executed against the local database, translated to database-native SQL under the hood. 
+
+- `remote.read` on the other hand executes queries against the connected remote service, translating them to the connected service's remote protocol, like OData or HCQL. It's actually a convenience shorthand for:
+  ```js
+  remote.run (SELECT.from(entity) .where `modifiedAt > ${t0}`)
+  ```
+
+- In both/all cases we work with database-agnostic and protocol-agnostic queries constructed using [`cds.ql`](../../node.js/cds-ql), while CAP runtimes handle the protocol and dialect translations under the hood.
+
+> [!tip] Agnostic Querying, ... <i>as if they were local</i>
+> Both,  queries executed against local databases, as well as queries executed against remote services using, are **database-agnostic** and **protocol-agnostic**, respectively. CAP runtimes handle all necessary translations under the hood, allowing us to write code that works regardless of where the data actually resides – be it with mocked data, replicated data, or real remote data. We can even switch between different integration and federation strategies later on.
+
+
+### Requests to Remote
+
+In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
+
+::: code-group
+```js :line-numbers=28 [srv/travel-service.js]
+const xflights = await cds.connect.to ('sap.capire.flights.data')
+this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
+  Bookings.map (({ Flight_ID: flight, Flight_date: date }) => {
+    return xflights.send ('POST', 'BookingCreated', { flight, date })
+  })
+))
+```
+> Note: `this` is an instance of `TravelService`.
+
+
+#### Delegating Value Help Requests
+
+Another example is delegating value help requests to remote services, which we implemented like this in `srv/travel-service.js` for `Customers` -> S/4 Business Partners:
+
+::: code-group
+```js :line-numbers=24 [srv/travel-service.js]
+const s4 = await cds.connect.to ('S4BusinessPartnerService')
+this.on ('READ', Customers, req => s4.run (req.query))
+```
+:::
+
+This intercepts all `READ` requests to the `Customers` entity, and simply delegates the original request's query to the connected S/4 service. This ensures we support all kind of select clauses, and where clauses, as they are fully preserved. The CAP runtime handles the necessary protocol translations under the hood, including mapping all projections to entities known to the remote service.
 
 
 ## Service Bindings
