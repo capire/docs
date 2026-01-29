@@ -472,7 +472,7 @@ We can also `cds import` APIs from other sources, such as OData APIs to integrat
          \> [_OData V2_](https://api.sap.com/products/SAPS4HANACloud/apis/ODATA)
       - Find and open [_Business Partner (A2X)_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) 
       - Switch to the *API Specification* subtab.
-      - Click the download icon next to *OData EDMX* to download the `API_BUSINESS_PARTNER.edmx` file to your local machine.
+      - Click the download icon next to *OData EDMX* to download the `.edmx`  file.
    :::
 
 2. Import that to the current project:
@@ -801,6 +801,8 @@ There are different options to provide initial data, test data, and mock data:
 
 In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.  
 
+For Java, make sure to add the `--with-mocks` option to the `cds deploy` command used to generate the `schema.sql` in `srv/pom.xml`. This ensures that tables for the mocked remote entities are created in the database.
+
 [Learn more about *Adding Initial Data*](../databases/initial-data) {.learn-more}
 
 > [!tip] Mocking for Inner-Loop Development
@@ -811,33 +813,40 @@ In all cases, the `.csv` files are placed next to the `.cds` files, and hence th
 
 ### Required Custom Code
 
-When it comes to real non-mocked integration with external services, custom code is required to handle the actual data integration. We can see that by starting two separate processes, one for the S/4 service, and one for the Xtravels app as follows from within the `cap/samples/xtravels` project folder:
-
-1. Start the a mocked S/4 service in terminal 1:
+When it comes to real non-mocked integration with external services, custom code is required to handle the actual data integration. For a more realistic test, lets use `cds mock` to run the mocked services in separate processes. Run these commands **in separate terminals**:
 
 ```shell
 cds mock apis/capire/s4.cds
 ```
-
-2. Start the Xtravels app in terminal 2:
-
+```shell
+cds mock apis/capire/xflights.cds
+```
 ```shell
 cds watch
 ```
+
+In the log output of the xtravels app server we now see that it connects to the two other services instead of mocking them:
+
 ```zsh
-[cds] - mocking S4BusinessPartnerService { # [!code --]
-  at: [ '/odata/v4/s4-business-partner' ], # [!code --]
-  decl: 's4/external/API_BUSINESS_PARTNER.csn:7' # [!code --]
-} # [!code --]
+[cds] - connect to S4BusinessPartnerService > odata { 
+  url: 'http://localhost:54476/odata/v4/s4-business-partner' 
+}
+```
+```zsh
+[cds] - connect to sap.capire.flights.data > hcql { 
+  url: 'http://localhost:54475/hcql/data' 
+}
 ```
 
-Note that in the output there is no mention of a mocked `S4BusinessPartnerService` anymore. This is because the CAP runtime now detected that a service with that name is served by a different process within my local binding environment now, so we don't mock it in-process any longer. 
+This is because the CAP runtime now detected that services with that name are served by different processes within our local binding environment now, so we don't mock them in-process any longer. 
 
-When we open the Fiori UI in the browser again, we see the data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration:
+When we open the Fiori UI in the browser again, we see the data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
 
-![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-no-s4.png)
+![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
 
-In addition, when we look into the log output of the Xtravels app, we see something like that, which indicates that the Fiori client is desparately trying to fetch the missing customer data in _$batch_ requests, with one GET request per row, 30 in total, corresponding to the default page size. If we'd scroll the list in the UI this would repeat like crazy.
+![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
+
+In addition, when we again look into the log output, we see some bulk requests like shown below, which indicates that the Fiori client is desparately trying to fetch the missing customer data. If we'd scroll the list in the UI this would repeat like crazy.
 
 <span style="font-size:63%">
 
@@ -887,115 +896,143 @@ So, let's go on and fill this gap with required custom code...
 
 ### CAP-level Data Federation
 
-Displaying external data in lists UIs commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on on server, and lacking all resilience. Instead, we need to replicate the required data from remote services into local replica tables, which can then be accessed fast and reliably by UIs using good old SQL JOINs.
+Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
 
-We did implement a simple, yet quite effective, solution in `srv/data-federation.js` in the Xtravels app as shown below:
-
-::: code-group
-```js:line-numbers {9,16,24,25,26} [srv/data-federation.js]
-const cds = require ('@sap/cds')
-const feed = []
-
-// Collect all entities to be federated, and prepare replica tables
-cds.on ('loaded', csn => {
-  for (let each of cds.linked(csn).entities) if (each['@federated']) {
-    let srv = each.__proto__?._service; if (!srv) continue
-    if (!cds.requires[srv.name]?.credentials?.url) continue
-    each['@cds.persistence.table'] = true //> table for replicas
-    feed.push ({ entity: each.name, remote: srv.name })
-  }
-})
-  
-// Setup and schedule replications for all collected entities
-cds.once ('served', () => Promise.all (feed.map (async each => {
-  const remote = await cds.connect.to (each.remote)
-  await remote.schedule ('replicate', each) .every ('3 seconds')
-  remote.replicate ??=!! remote.on ('replicate', replicate_entity)
-})))
-
-// Event handler for replicating single entities
-async function replicate_entity (req) { 
-  let { entity } = req.data, remote = this
-  let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
-  let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
-  if (rows.length) await UPSERT (rows) .into (entity); else return
-  console.log ('Replicated', rows.length, 'entries for:', { entity })
-}
-```
-:::
-
-This is a generic solution which automatically replicates all entities annotated with `@federated`, as we did in the [consumption views](#consumption-views) before, for example:
+In the xtravels app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data for all [consumption views](#consumption-views) tagged with the `@federated` annotation, for example:
 
 ```cds :line-numbers=4
 @federated entity Customers as projection on S4.A_BusinessPartner { ... }
 ```
 
-These entities are detected, and, unless mocked, turned into tables to serve as local persistence for replicated data (line 9 in the code above).
+If a remote service is detected, these entities are turned into tables to serve as local persistence for replicated data (line 9 in the code below).
 
-> [!tip] Stay Intentional -> What, not how
-> By default, consumption views on top of remote entities are virtual and do not have local persistence. By setting the `@cds.persistence.table` annotation to `true`, we instruct the CAP database layer to create actual database tables for these entities, which can then be used to store replicated data locally. 
+> [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
 > 
-> Yet, you as an application developer stay intentional about **_what_** you want to achieve (-> `@federated` tags), and **avoid any eager assumptions** about **_how_** this is actually implemented. => This allows CAP runtimes – or you own _generic_ framework plugins, as with the code above – to choose the best possible implementation strategy for the given environment and use case, which may differ between development, testing, and production environments.
-
-The actual replication is accomplished by the highlighted lines 16 and 24-26, which implement a simple polling-based data federation mechanism, based on `modifiedAt` timestamps. Let's break that down line by line:
-
-```js :line-numbers=16
-const remote = await cds.connect.to (each.remote) // done once
-```
-Establishes a connection to the remote service (like the S/4 Business Partner service or XFlights service).
-
-```js :line-numbers=24
-let { t0 } = await SELECT.one `max(modifiedAt) as t0` .from (entity)
-```
-
-Queries the local replica table to find the timestamp of the most recently modified record.
-This determines the "last sync point" - only newer data needs to be fetched.
-
-```js :line-numbers=25
-let rows = await remote.read (entity) .where `modifiedAt > ${t0}` 
-```
-Fetches only records from the remote service that have been modified since the last sync.
-On an initial run, when no data exists locally, all records are fetched automatically, as `t0` will be `null`.
-
-```js :line-numbers=26
-if (rows.length) await UPSERT (rows) .into (entity)
-```
-For all received rows, `UPSERT` automatically inserts new records or updates existing ones in the local replica table.
-
-Noteworthy: 
-
-- `SELECT` and `UPSERT` commands are part of CAP Node.js' [`cds.ql`](../../node.js/cds-ql) and and create [_CQL_](../../cds/cql) query objects. When `await`ed as in line 24 and 26, they are executed against the local database, translated to database-native SQL under the hood. 
-
-- `remote.read` on the other hand executes queries against the connected remote service, translating them to the connected service's remote protocol, like OData or HCQL. It's actually a convenience shorthand for:
-  ```js
-  remote.run (SELECT.from(entity) .where `modifiedAt > ${t0}`)
-  ```
-
-- In both/all cases we work with database-agnostic and protocol-agnostic queries constructed using [`cds.ql`](../../node.js/cds-ql), while CAP runtimes handle the protocol and dialect translations under the hood.
-
-> [!tip] Agnostic Querying, ... <i>as if they were local</i>
-> Both,  queries executed against local databases, as well as queries executed against remote services using, are **database-agnostic** and **protocol-agnostic**, respectively. CAP runtimes handle all necessary translations under the hood, allowing us to write code that works regardless of where the data actually resides – be it with mocked data, replicated data, or real remote data. We can even switch between different integration and federation strategies later on.
+> By tagging entities with `@federated` we stay _intentional_ about **_what_** we want to achieve, and avoid any premature assumptions about **_how_** things are actually implemented. => This allows CAP runtimes – or your own _generic_ solutions, as in this case – to choose the best possible implementation strategies for the given environment and use case, which may differ between development, testing, and production environments, or might need to evolve over time.
 
 
-### Requests to Remote
-
-In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
+Here's the complete code, placed in file `srv/data-federation.js`:
 
 ::: code-group
-```js :line-numbers=28 [srv/travel-service.js]
-const xflights = await cds.connect.to ('sap.capire.flights.data')
-this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
-  Bookings.map (({ Flight_ID: flight, Flight_date: date }) => {
-    return xflights.send ('POST', 'BookingCreated', { flight, date })
-  })
-))
+```js:line-numbers [srv/data-federation.js]
+const PROD = process.env.NODE_ENV === 'production' /* eslint-disable no-console */
+const cds = require ('@sap/cds')
+const feed = []
+
+// Collect all entities to be federated, and prepare replica tables
+PROD || cds.on ('loaded', csn => {
+  for (let e of cds.linked(csn).entities) {
+    if (e['@federated']) {
+      let srv = remote_srv4(e)
+      if (is_remote(srv)) {
+        e['@cds.persistence.table'] = true //> turn into table for replicas
+        feed.push ({ entity: e.name, remote: srv })
+      }
+    }
+  }
+})
+  
+// Setup and schedule replications for all collected entities
+PROD || cds.once ('served', () => Promise.all (feed.map (async each => {
+  const srv = await cds.connect.to (each.remote)
+  srv._once ??=! srv.on ('replicate', replicate)
+  await srv.schedule ('replicate', each) .every ('3 seconds')
+})))
+
+// Event handler for replicating single entities
+async function replicate (req) { 
+  let { entity } = req.data, remote = this
+  let { latest } = await SELECT.one `max(modifiedAt) as latest` .from (entity)
+  let rows = await remote.run (
+    SELECT.from (entity) .where `modifiedAt > ${latest}` 
+  )
+  if (rows.length) await UPSERT (rows) .into (entity); else return
+  console.log ('Replicated', rows.length, 'entries', { for: entity, via: this.kind })
+}
+
+// Helpers to identify remote services, and check whether they are connected
+const remote_srv4 = entity => entity.__proto__._service?.name
+const is_remote = srv => cds.requires[srv]?.credentials?.url
 ```
-> Note: `this` is an instance of `TravelService`.
+:::
+
+Let's have a closer look at this code, which handles these main tasks:
+
+1. **Prepare Persistence** – When the model is `loaded`, before it's deployed to the database, we collect all to be `@federated` entities, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
+
+2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked every three seconds (line 22).
+
+3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29. 
+
+> [!tip] CAP-level Querying -> agnostic to databases & protocols
+> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
 
 
-#### Delegating Value Help Requests
+#### Test Drive
 
-Another example is delegating value help requests to remote services, which we implemented like this in `srv/travel-service.js` for `Customers` -> S/4 Business Partners:
+Let's see the outcome in action: to activate the above data federation code, edit `srv/server.js` file and uncomment the single line of code in there like this:
+
+::: code-group
+```js :line-numbers [srv/server.js]
+process.env.NODE_ENV || require ('./data-federation')
+```
+:::
+
+Restart the Xtravels app, and see these lines in the log output:
+
+```zsh
+Replicated 49 entries { for: 'sap.capire.xflights.Supplements', via: 'hcql' }
+Replicated 44 entries { for: 'sap.capire.xflights.Flights', via: 'hcql' }
+Replicated 727 entries { for: 'sap.capire.s4.Customers', via: 'odata' }
+```
+
+The S/4 Business Partner service in terminal 1 shows the incoming OData request(s):
+
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner {
+  '$select': 'BusinessPartner,PersonFullName,LastChangeDate',
+  '$filter': 'LastChangeDate gt 2024-12-31'
+}
+```
+
+While the xflights service in terminal 2 shows its incoming HCQL requests like that:
+
+```zsh
+[hcql] - GET /hcql/data/ {
+  SELECT: {
+    from: { ref: [ 'sap.capire.flights.data.Flights' ] },
+    columns: [
+      { ref: [ 'ID' ], as: 'ID' },
+      { ref: [ 'date' ], as: 'date' },
+      { ref: [ 'departure' ], as: 'departure' },
+      { ref: [ 'arrival' ], as: 'arrival' },
+      { ref: [ 'free_seats' ], as: 'free_seats' },
+      { ref: [ 'modifiedAt' ], as: 'modifiedAt' },
+      { ref: [ 'airline', 'icon' ], as: 'icon' },
+      { ref: [ 'airline', 'name' ], as: 'airline' },
+      { ref: [ 'origin', 'name' ], as: 'origin' },
+      { ref: [ 'destination', 'name' ], as: 'destination' }
+    ],
+    where: [
+      { ref: [ 'modifiedAt' ] },
+      '>',
+      { val: '2026-01-28T17:38:28.929Z' }
+    ]
+  }
+}
+```
+
+Finally, open the Fiori UI in the browser again, and see that customer data from S/4 as well as flight data from xflights is now displayed properly, thanks to the data federation implemented above.
+
+![XTravels Fiori list view showing tarvel requests, now with customer names again.](assets/xtravels-list.png)
+
+![XTravels Fiori details view showing a travel requests, now with flight data again.](assets/xtravels-bookings.png)
+
+
+
+### Delegating Requests
+
+Value helps are common use cases where delegation of requests is needed, which we implemented like this in `srv/travel-service.js` for the `Customers` entity:
 
 ::: code-group
 ```js :line-numbers=24 [srv/travel-service.js]
@@ -1004,11 +1041,52 @@ this.on ('READ', Customers, req => s4.run (req.query))
 ```
 :::
 
-This intercepts all `READ` requests to the `Customers` entity, and simply delegates the original request's query to the connected S/4 service. This ensures we support all kind of select clauses, and where clauses, as they are fully preserved. The CAP runtime handles the necessary protocol translations under the hood, including mapping all projections to entities known to the remote service.
+The event handler intercepts all `READ` requests to the `Customers` entity, and simply delegates the incoming query as-is to the connected S/4 service (line 26).
+
+Noteworthy: The incoming request refers to: 
+
+- the `TravelService.Customers` entity, which is a view on 
+  - the `Customers` entity, which in turn is a consumption view on 
+    - the remote `A_BusinessPartner` entity. 
+
+The CAP runtime is aware of that and automatically translates the query into a query to the underlying entity, known to the remote service. Thereby, all select clauses, and where clauses, are fully preserved, translated, and delegated. 
+
+
+### Requests to Remote
+
+In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
+
+::: code-group
+```js :line-numbers=28 [srv/travel-service.js]
+const xflights = await cds.connect.to ('sap.capire.flights.data') // [!code focus]
+this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
+  Bookings.map (({ Flight_ID, Flight_date }) => {
+    return xflights.BookingCreated (Flight_ID, Flight_date) // [!code focus]
+  })
+))
+```
+:::
 
 
 ## Service Bindings
 
+Service bindings configure connectivity to remote services. They are injected respective connection points configure in CAP through `cds.requires.<service-name>` configurations, which are defined like this:
+
+```tsx
+cds.requires.<service-name> = { 
+  kind?: 'odata' | 'odata-v2' | 'rest' | 'hcql' | 'graphql' ,
+  model?: '<path-to-csn-or-cds>',
+  credentials: {
+    url?: '<service-endpoint-url>',
+    username?: '<user-name>',
+    password?: '<password>',
+    token?: '<auth-token>',
+  }
+}
+```
+
+
+They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
 
 ### CAP Node.js
 
@@ -1092,6 +1170,9 @@ cds watch
 ```
 
 Open UI → flights data displayed
+
+> [!tip] Decoupled Inner-Loop Development
+> CAP runtimes automatically mock imported service APIs during development, allowing us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services. This decouples inner-loop development from external dependencies, speeding up development and increasing resilience.  
 
 
 

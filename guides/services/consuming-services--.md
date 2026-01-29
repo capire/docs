@@ -1,50 +1,3 @@
----
-synopsis: >
-  Learn how to use uniform APIs to consume local or remote services.
-impl-variants: true
----
-
-
-
-
-# Consuming Services
-
-If you want to use data from other services or you want to split your application into multiple microservices, you need a connection between those services. We call them **remote services**. As everything in CAP is a service, remote services are modeled the same way as internal services — using CDS.
-
-[[toc]]
-
-
-
-## Local Mocking
-
-When developing your application, you can mock the remote service.
-
-### Add Mock Data
-
-For Java, make sure to add the `--with-mocks` option to the `cds deploy` command used to generate the `schema.sql` in `srv/pom.xml`. This ensures that tables for the mocked remote entities are created in the database.{.java}
-
-[Find this source in the end-to-end tutorial](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui-java/srv/external/data/API_BUSINESS_PARTNER-A_BusinessPartner.csv){.learn-more}
-
-### Mock Remote Service as OData Service (Node.js)
-
-As shown previously you can run one process including a mocked external service. However, this mock doesn't behave like a real external service. The communication happens in-process and doesn't use HTTP or OData. For a more realistic testing, let the mocked service run in a separate process.
-
-Start the CAP application with the mocked remote service only:
-
-```sh
-cds mock API_BUSINESS_PARTNER
-```
-
-If the startup is completed, run `cds watch` in the same project from a **different** terminal:
-
-```sh
-cds watch
-```
-
-CAP tracks locally running services. The mocked service `API_BUSINESS_PARTNER` is registered in file _~/.cds-services.json_. `cds watch` searches for running services in that file and connects to them.
-
-Node.js only supports *OData V4* protocol and so does the mocked service. There might still be some differences to the real remote service if it uses a different protocol, but it's much closer to it than using only one instance. In the console output, you can also easily see how the communication between the two processes happens.
-
 ### Mock Remote Service as OData Service (Java)
 
 You configure CAP to do OData and HTTP requests for a mocked service instead of doing it in-process. Configure a new Spring Boot profile (for example `mocked`):
@@ -104,41 +57,6 @@ For example:
 
 [Try out the example application.](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui-java){.learn-more}
 
-## Execute Queries
-
-You can send requests to remote services using CAP's powerful querying API.
-
-### Execute Queries with Node.js
-
-Connect to the service before sending a request, as usual in CAP:
-
-```js
-const bupa = await cds.connect.to('API_BUSINESS_PARTNER');
-```
-
-Then execute your queries using the [Querying API](../../node.js/core-services#srv-run-query):
-
-```js
-const { A_BusinessPartner } = bupa.entities;
-const result = await bupa.run(SELECT(A_BusinessPartner).limit(100));
-```
-
-We recommend limiting the result set and avoid the download of large data sets in a single request. You can `limit` the result as in the example: `.limit(100)`.
-
-Many features of the querying API are supported for OData services. For example, you can resolve associations like this:
-
-```js
-const { A_BusinessPartner } = bupa.entities;
-const result = await bupa.run(SELECT.from(A_BusinessPartner, bp => {
-    bp('BusinessPartner'),
-    bp.to_BusinessPartnerAddress(addresses => {
-      addresses('*')
-    })
-  }).limit(100));
-```
-
-[Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
-
 
 ### Execute Queries with Java
 
@@ -158,81 +76,6 @@ List<ABusinessPartner> businessPartner = bupa.run(select).listOf(ABusinessPartne
 ```
 
 [Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
-
-
-### Model Projections
-
-External service definitions, like [generated CDS or CSN files during import](#import-external-apis), can be used as any other CDS definition, but they **don't** generate database tables and views unless they are mocked.
-
-It's best practice to use your own "interface" to the external service and define the relevant fields in a projection in your namespace. Your implementation is then independent of the remote service implementation and you request only the information that you require.
-
-```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
-
-entity Suppliers as projection on bupa.A_BusinessPartner {
-  key BusinessPartner as ID,
-  BusinessPartnerFullName as fullName,
-  BusinessPartnerIsBlocked as isBlocked,
-}
-```
-
-As the example shows, you can use field aliases as well.
-
-
-### Execute Queries on Projections to a Remote Service
-
-Connect to the service before sending a request, as usual in CAP:
-
-```js
-const bupa = await cds.connect.to('API_BUSINESS_PARTNER');
-```
-
-Then execute your queries:
-
-```js
-const suppliers = await bupa.run(SELECT(Suppliers).where({ID}));
-```
-
-CAP resolves projections and does the required mapping, similar to databases.
-
-A brief explanation, based on the previous query, what CAP does:
-+ Resolves the `Suppliers` projection to the external service interface `API_BUSINESS_PARTNER.A_Business_Partner`.
-+ The **where** condition for field `ID` will be mapped to the `BusinessPartner` field of `A_BusinessPartner`.
-+ The result is mapped back to the `Suppliers` projection, so that values for the `BusinessPartner` field are mapped back to `ID`.
-
-This makes it convenient to work with external services.
-
-### Building Custom Requests with Node.js
-
-If you can't use the querying API, you can craft your own HTTP requests using `send`:
-
-<!-- TODO: What is 'A_BusinessPartner' here? -->
-```js
-bupa.send({
-  method: 'PATCH',
-  path: A_BusinessPartner,
-  data: {
-    BusinessPartner: 1004155,
-    BusinessPartnerIsBlocked: true
-  }
-})
-```
-
-[Learn more about the `send` API.](../../node.js/core-services#srv-send-request){.learn-more}
-
-### Building Custom Requests with Java
-
-For Java, you can use the `HttpClient` API to implement your custom requests. The API is enhanced by the SAP Cloud SDK to support destinations.
-
-[Learn more about using the HttpClient Accessor.](https://sap.github.io/cloud-sdk/docs/java/features/connectivity/http-client){.learn-more}
-
-[Learn more about using destinations.](#use-destinations-with-java){.learn-more}
-
-## Integrate and Extend
-
-By creating projections on remote service entities and using associations, you can create services that combine data from your local service and remote services.
-
-What you need to do depends on the scenarios and how your remote services should be integrated into, as well as extended by your local services.
 
 ### Expose Remote Services
 
