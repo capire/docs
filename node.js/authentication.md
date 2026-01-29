@@ -691,6 +691,21 @@ The login fails pointing to the correct OAuth configuration URL that is expected
   
     This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
 
+
+3. Generate roles and policies with AMS.
+  To compile the cds annotations to dcl files execute:
+
+    ```sh
+    cds build --for ams
+    ```
+    For more information see [Prepare CDS Model](../guides/security/cap-users#prepare-cds-model)
+
+4. Add App Router for fetching the IAS token.
+
+    ```sh
+    cds add approuter
+    ```
+
     ::: details This configures the local App Router callback URI for the `identity` service
 
     In _mta.yaml_, this entry should now be present:
@@ -711,20 +726,6 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```
 
     :::
-
-3. Generate roles and policies with AMS.
-  To compile the cds annotations to dcl files execute:
-
-    ```sh
-    cds build --for ams
-    ```
-    For more information see [Prepare CDS Model](../guides/security/cap-users#prepare-cds-model)
-
-4. Add App Router for fetching the IAS token.
-
-    ```sh
-    cds add approuter
-    ```
 
 5. Install `npm` packages for App Router:
 
