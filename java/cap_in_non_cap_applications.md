@@ -167,6 +167,6 @@ Similar to the audit log integration the CAP messaging consist of a logical laye
 </dependency>
 ```
 
-Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your applicaton. 
+Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your applicaton. For more details you can checkout the [SAP Event Hub CAP Plugin](https://github.com/cap-java/cds-feature-event-hub).
 
 ## Use the outbox to add resilience to Audit Log and messaging
