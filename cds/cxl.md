@@ -340,7 +340,7 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 
-CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
+CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
 
 ## ref (path expression) { #ref }
 
@@ -835,4 +835,3 @@ navigates along the `author` association of the `Books` entity only if the autho
 }
 
 </style>
-

@@ -160,7 +160,7 @@ CREATE VIEW SomeProjection AS SELECT ... FROM SomeEntity;
 :::
 
 > [!tip] Views are defined using CQL
-> Both view defined per `as projection on` and those using `as select from` are defined using CQL, which supports a broad scope of database-agnostic features. Learn more about that in the following guide: [_CQL Compilation to SQL_](cql-to-sql).
+> Both view defined per `as projection on` and those using `as select from` are defined using CQL, which supports a broad scope of database-agnostic features. Learn more about that in the following guide: [_CQL Compilation to SQL_](cap-level-dbs).
 
 #### Qualified Names ⇒ Slugified
 

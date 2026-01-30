@@ -1,5 +1,5 @@
 <!-- # [ CAP-level Database Usage ](index.md) -->
-# [ Mocked Out of the Box ](cql-to-sql)
+# [ CAP-level Database Support ](cap-level-dbs)
 # [ CDL Compiled to DDL ](cdl-to-ddl)
 # [ Adding Initial Data ](initial-data.md)
 # Deployed to ...

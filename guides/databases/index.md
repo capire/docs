@@ -37,19 +37,19 @@ The illustration below shows what happens automatically under the hood:
 
 The following guides explain the details of CAP-level database integration, which are mostly database-agnostic, and apply to all supported databases:
 
-[CDL Compiled to DDL](cdl-to-ddl.md) 
+[ CAP-level Database Integration ](cap-level-dbs.md) 
 : How database-agnostic CDS models in CDL format are compiled to native DDL statements for different databases.
 
-[CQL Compiled to SQL](cql-to-sql.md) 
+[ CQL Compiled to SQL ](cdl-to-ddl.md) 
 : How database-agnostic CDS queries in CQL format are compiled to native SQL statements for different databases.
 
-[Adding Initial Data](initial-data.md) 
+[ Adding Initial Data ](initial-data.md) 
 : How to provide initial data and test data using CSV files, which are loaded into the database automatically.
 
-[Schema Evolution](schema-evolution.md) 
+[ Schema Evolution ](schema-evolution.md) 
 : How to manage schema changes with appropriate schema evolution strategies for development and production.
 
-[Performance Guide](performance.md) 
+[ Performance Guide ](performance.md) 
 : Pointing out performance considerations, and common pitfalls.
 
 
