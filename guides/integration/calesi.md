@@ -2,7 +2,7 @@
 # CAP-Level Service Integration
 The *'Calesi'* Pattern {.subtitle}
 
-Integrating remote services – from other applications, third-party services, or platform services – is a fundamental aspect of cloud application development. CAP provides an easy and platform-agnostic way to do so: Remote services are represented as CAP services, which can be consumed _as if they were local_, while the CAP runtimes manage the communication and resilience details under the hood. Not the least, remote services can be mocked automatically for local inner-loop development and testing.
+Integrating remote services - from other applications, third-party services, or platform services - is a fundamental aspect of cloud application development. CAP provides an easy and platform-agnostic way to do so: Remote services represented as CAP services, which you can consume _as if they were local_, while the CAP runtimes manage the communication and resilience details under the hood. Not the least, CAP mocks remote services automatically for local inner-loop development and testing.
 {.abstract}
 
 
@@ -24,7 +24,7 @@ Integrating remote services – from other applications, third-party services, o
 
 ## As if they were local
 
-Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how that looks in practice:
+Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how this works:
 
 1. Clone the bookshop sample, and start the server in a terminal:
 
@@ -33,7 +33,7 @@ Service integration is much about consuming remote services from other applicati
    cds watch bookshop
    ```
 
-2. Start *cds repl* in a second terminal, and run the code below in there:
+2. Start *cds repl* in a second terminal and run this code:
 
    ```shell
    cds repl
@@ -78,25 +78,25 @@ and covers all the aspects of CAP-level service integration in detail.
 
 ## The XTravels Sample
 
-In this guide we'll use the _XTravels_ sample application as our running example for CAP-level service integration. It is an modernized adaptation of the reknown [ABAP Flight reference sample](https://help.sap.com/docs/abap-cloud/abap-rap/abap-flight-reference-scenario), reimplemented using CAP, as well as split into two microservices as follows:
+In this guide we'll use the _XTravels_ sample application as our running example. It's a modernized adaptation of the renowned [ABAP Flight reference sample](https://help.sap.com/docs/abap-cloud/abap-rap/abap-flight-reference-scenario), reimplemented using CAP and split into two microservices:
 
 - The [*@capire/xflights*](https://github.com/capire/xflights) service provides flight-related master data, such as *Flights*, *Airports*, *Airlines*, and *Supplements* (like extra luggage, meals, etc.). It exposes this data via a CAP service API.
 
-- The [*@capire/xtravels*](https://github.com/capire/xtravels) application allows travel agents to plan travels on behalf of travellers, including bookings of flights. *Customer* data is obtained from a SAP S/4HANA system, while *Flights*, *Airports* and *Airline* are consumed from the *@capire/xflights*, as indicated by the green and blue areas in the screenshot below. 
+- The [*@capire/xtravels*](https://github.com/capire/xtravels) application allows travel agents to plan travels on behalf of travellers, including bookings of flights. The application obtains *Customer* data from a SAP S/4HANA system, while it consumes *Flights*, *Airports*, and *Airlines* from *@capire/xflights*, as indicated by the green and blue areas in the screenshot below. 
 
 ![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
 ](assets/xtravels-screenshot.png)
 
 The resulting entity-relationship model looks like that:
 
-![Architecture diagram showing three systems: XFlights on the left containing Flights and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
+![Architecture diagram showing three systems: XFlights on the left containing Flights, Airlines, and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
 ](assets/xtravels-sample.drawio.svg)
 
-From a service integration perspective, this sample mainly shows a data federation scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. 
+From a service integration perspective, this sample mainly shows a data federation scenario, where the application consumes data from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to display it together with the application's local data. 
 
 ## Workflow Overview
 
-The graphic below shows the flow of essential steps for service integration, which the following sections will walk you through in detail.
+The graphic below shows the flow of essential steps for service integration, which the following sections walk you through in detail:
 
 ![Workflow diagram showing five numbered steps of CAP-level service integration. Service Provider box on left contains step 1 Service Definition in blue and Domain Models in gray. Packaged API box in center shows step 2 Service Interface in light gray. Service Consumer box on right displays step 4 Consumption Views in light blue and step 5 Own Models in blue. Arrows connect the components left to right. Below, numbered list describes: 1 Expose Service Interfaces as usual, 2 Export APIs using cds export and npm publish, 3 Import APIs using cds import or npm add, 4 Add Consumption Views defining what to consume, 5 Use with own models as if they were local.
 ](assets/overview.drawio.svg)
@@ -104,7 +104,7 @@ The graphic below shows the flow of essential steps for service integration, whi
 
 #### Getting Started...
 
-So let's dive into the details of CAP-level service integration, using the XTravels sample as our running example. Clone both repositories as follows to follow along:
+Let's dive into the details of CAP-level service integration, using the XTravels sample as our running example. Clone both repositories as follows to follow along:
 
 ```sh
 mkdir -p cap/samples
@@ -139,7 +139,7 @@ This declares a CAP service named `sap.capire.flights.data`, served over _OData_
 
 #### Using Denormalized Views
 
-Lets have a closer look at the denormalized view for _Flights_, which basically flattens the association to `FlightConnection`. The projection `{flights.*,*}` shown in line 3 above, is a simplified version of the following actual definition found in `srv/data-service.cds`:
+Let's have a closer look at the denormalized view for _Flights_, which basically flattens the association to `FlightConnection`. The projection `{flights.*,*}` shown in line 3 above, is a simplified version of the following actual definition found in `srv/data-service.cds`:
 
 ```cds :line-numbers=3 [cap/samples/xflights/srv/data-service.cds]
 @readonly entity Flights as projection on x.Flights {flights.*,*}; // [!code --]
@@ -178,11 +178,11 @@ Exporting APIs to apis/data-service ...
 /done.
 ```
 
-By default, generated output is written to an `./apis/<service>`  subfolder, with `<service>` being the given service definition's `.cds` file basename. You can choose a different output folder with the `--to` option of `cds export`. 
+By default, output goes to an `./apis/<service>` subfolder, where `<service>` is the `.cds` file basename. Use the `--to` option to specify a different output folder. 
 
 #### Exported Service Definitions
 
-The key ingredient of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** part of the given service definition: only the _inferred elements signature_ of served entities are included, while all projections to underlying entities got removed, and hence all underlying entities and definitions referred to by them. 
+The key ingredient of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** part  of your service definition. It includes the _inferred elements signature_ of served entities but removes all projections to underlying entities and their dependencies. 
 
 To get an idea of the effect, run `cds export` in dry-run mode like this:
 
@@ -284,12 +284,12 @@ Skipped: 31 # [!code ++]
 
 :::
 
-In addition to the generated `services.csn` file, an `index.cds` file was added, which you can modify as needed. It won't be overridded on subsequent runs of `cds export`.
+In addition to the generated `services.csn` file, an `index.cds` file was added, which you can modify as needed. It won't be overridden on subsequent runs of `cds export`.
 
 
 ### Packaged APIs 
 
-The third file generated is a `package.json` with that content:
+The third generated file is `package.json`:
 
 ::: code-group
 
@@ -310,16 +310,16 @@ The third file generated is a `package.json` with that content:
 
 :::
 
-We can modify that as needed, changes won't be overriden on subsequent runs of `cds export`. In our xflights/xtravels sample we adjusted the package name to `@capire/xflights-data` as shown in the second tab above.
+You can modify this file. `cds export` won't overwrite your changes. In our xflights/xtravels sample, we changed the package name to `@capire/xflights-data`.
 
 > [!tip] Yet Another CAP Package (YACAP)
-> The generated output is actually a CAP project/package on its own. So we can also add additional files to the generated *./apis* subfolder as needed; such as additional models in *.cds* files, data in *.csv* files or I18n bundles, even *.js* or *.java* files with custom logic for consumers. 
+> The generated output is a complete CAP package. You can add additional files to the *./apis* subfolder: models in *.cds* files, data in *.csv* files, I18n bundles, or even *.js* or *.java* files with custom logic for consumers. 
 
 
 
 #### Adding Initial Data and I18n Bundles
 
-We can also use the following `cds export` command line options, to add I18n bundles and/or initial data , wich would generate output to the usual locations next to the generated `.csn` file as shown below:
+You can use these `cds export` options to add I18n bundles and initial data, which generates files next to the `.csn` file:
 
 ```shell
 cds export srv/data-service.cds --texts
@@ -341,13 +341,13 @@ cds export srv/data-service.cds --data
   > apis/data-service/data/sap.capire.flights.data.Supplements.csv
 ```
 
-The `.csv` data is taken from the source application's existing initial data, but reduced to and transformed to the entities exposed by the given service definition, including all denormalizations or calculated fields. It's actually read via an instance of that service.
+The `.csv` data comes from the source application's initial data, filtered and transformed for the exposed entities, including denormalizations and calculated fields. The application actually reads it via an instance of that service.
 
 
 
 #### Plug & Play Config
 
-We can also use the `--plugin` option, to turn the package into a CAP plugin, to benefit from CAP's plug & play configuration features in consuming apps:
+Use the `--plugin` option to turn the package into a CAP plugin and benefit from CAP's plug & play configuration features in consuming apps:
 
 ```shell
 cds export srv/data-service.cds --plugin
@@ -442,7 +442,7 @@ Packaged APIs provided by CAP service providers are imported to consuming applic
 npm add @capire/xflights-data
 ```
 
-This makes the exported models with all accompanying artifacts available in the target project's `node_modules` folder. In addition it adds a respective package dependency to the consuming application's *package.json* like that:
+This makes the exported models with all accompanying artifacts available in the target project's `node_modules` folder. In addition, it adds a respective package dependency to the consuming application's *package.json* like this:
 
 ::: code-group
 ```json [package.json]
@@ -460,7 +460,7 @@ This allows us to update imported APIs later on using standard commands like `np
 
 ### From OData EDMX
 
-We can also `cds import` APIs from other sources, such as OData APIs to integrate customer data from SAP S/4 HANA systems. Do so as follows:
+You can also `cds import` APIs from other sources, such as OData APIs for customer data from SAP S/4 HANA systems:
 
 1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, e.g., from [*SAP Business Accelerator Hub*](https://api.sap.com):
 
@@ -507,7 +507,7 @@ Further, it adds a [service binding](#service-bindings) stub to your _package.js
 
 ### Via Reuse Packages
 
-Instead of importing the same APIs from raw EDMX or other non-CAP sources again and again in each consuming project, we can also do that once and share the outcomes as reusable pre-built integration packages. These basically apply the same best practice techniques than Packaged APIs created with `cds export`, and can hence be consumed in the same ways, with the same plug & play conveniences. 
+Instead of importing the same APIs repeatedly in each project, you can import them once and share them as reusable packages. These packages use the same techniques as `cds export` and provide the same plug & play convenience. 
 
 For the _XTravels_ sample, we did so with the [`@capire/s4`](https://github.com/capire/s4) sample package, which we created as follows. 
 
@@ -590,13 +590,13 @@ npm add @capire/s4
 
 ## Consuming APIs 
 
-Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashed-up-models). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
+With imported APIs, you can now use them in your own models. For example, the XTravels application combines customer data from SAP S/4HANA with travels and flight bookings from xflights in a [mashup](#mashed-up-models). With the integrated models, you can already run the application, as CAP [mocks integrations automatically](#mocked-out-of-the-box). For real integration, you'll need [custom code](#required-custom-code), which we'll cover later. 
 
 ### Consumption Views
 
-Imported APIs frequently contain much more entities and elements than we actually need. So as a next step we first declare so-called *Consumption Views*, to capture what we really want to use from them, with focus on these entities and elements we need in close access. 
+Imported APIs often contain more entities and elements than you need. So as a next step we first create *Consumption Views* to capture what you actually want to use, focusing on entities and elements you need close access to. 
 
-We do so in two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`: 
+Create two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`: 
 
 ::: code-group
 ```cds :line-numbers [apis/capire/xflights.cds]
@@ -635,24 +635,24 @@ Noteworthy aspects here are:
 
 - For the `Flights` entity we also flatten data from associations directly into the `Flights` consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
 
-- The chosen namespaces `sap.capire.s4` and `sap.capire.xflights`, reflect the source systems, but are distinct from their original namespaces, which is a good practice to avoid name clashes further down the road.
+- The namespaces `sap.capire.s4` and `sap.capire.xflights` reflect the source systems but differ from the original namespaces to avoid name clashes.
 
-- Finally, we annotate both consumption views with `@federated`, to trigger data federation for them, which we'll learn about in the next chapters.
+- We annotate both views with `@federated` to trigger data federation, covered in the next chapters.
 
 
 > [!tip] Always use Consumption Views
 >
-> Even though they are optional, it's a good practice to always define consumption views on top of imported APIs. They declare what you really need, which can be used later on to automate data federation. In addition they map imported definitions to your own domain and use cases, by renaming, flattening, or restructuring them as needed. 
+> Even though they are optional, it's a good practice to always define consumption views on top of imported APIs.  They declare what you need, enabling automated data federation. They also map imported definitions to your domain by renaming, flattening, or restructuring. 
 
 > [!warning] Protocol-specific Limitations
 >
-> Depending on the service provider and supported protocols, limitations apply to what you can do in consumption views. In particular, OData doesn't support denormalization, such as we did in case of `Flights` consumption view above. That latter is possible, because the xflights service is also served over the HCQL protocol (indicated by the `@hcql` annotation in it's [definition](#defining-service-apis)), which is CAP's native protocol. 
+> Depending on the service provider and protocols, limitations apply to consumption views. In particular, OData doesn't support denormalization like we used for the `Flights` view. This works here because xflights also serves the HCQL protocol (see the `@hcql` annotation in its [definition](#defining-service-apis)), which is CAP's native protocol. 
 
 
 
 ### Mashed up Models
 
-With the consumption views in place, we can now refer to them from our own models in any way we like, _as if they were local_, thus creating mashups of definitions from imported APIs and local definitions. 
+With consumption views in place, you can now reference them from your models _as if they were local_, creating mashups of imported and local definitions. 
 
 > [!tip] <i>AI Agents 'capire' CAP</i>
 > We can use AI agents to help us analysing and understanding our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context. 
@@ -766,7 +766,7 @@ There are similar references to `Flights` entity from xflights in other parts of
 
 ### Mocked Out of the Box
 
-With the mashed up models in place, we can already run consuming applications in _'airplane mode'_ – i.e. without the upstream services running and connected –, as the imported services are mocked out of the box by CAP runtimes, _in-process_ and with mock data in the same _in-memory_ database, next to our own data. 
+With mashed up models, you can run applications in _'airplane mode'_ without upstream services running. CAP mocks imported services automatically _in-process_ with mock data in the same _in-memory_ database as your own data. 
 
 Start the xtravels application locally using `cds watch` as usual, and note the output about the `sap.capire.flights.data` service, as well as the `S4BusinessPartnerService` being mocked automatically:
 
@@ -786,7 +786,7 @@ cds watch
 }
 ```
 
-When we open the Fiori UI in the browser, we see it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
+Open the Fiori UI in the browser. It displays data from both local and imported entities seamlessly (the green-highlighted data is mocked from `@capire/s4`).
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer highlighted in green.](assets/xtravels-list.png)
 
@@ -795,11 +795,11 @@ When we open the Fiori UI in the browser, we see it displays data from both, loc
 
 There are different options to provide initial data, test data, and mock data:
 
-- In case of `@capire/xflights-data`, we generated the package content using `cds export --data` option, which added `.csv` files next to the `.cds` files. 
-- In case of `@capire/s4`, we explicitly added `.csv` files next to the `.cds` files. 
-- In addition, we could add `.csv` files for imported entities in the consuming apps `db/data` or `test/data` folders.
+- For `@capire/xflights-data`, we used `cds export --data` to add `.csv` files. 
+- For `@capire/s4`, we manually added `.csv` files next to the `.cds` files. 
+- You can also add `.csv` files in the consuming app's `db/data` or `test/data` folders.
 
-In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.  
+In all cases, you place the `.csv` files next to the `.cds` files, and the system automatically detects and loads them into the in-memory database.  
 
 For Java, make sure to add the `--with-mocks` option to the `cds deploy` command used to generate the `schema.sql` in `srv/pom.xml`. This ensures that tables for the mocked remote entities are created in the database.
 
@@ -813,7 +813,7 @@ For Java, make sure to add the `--with-mocks` option to the `cds deploy` command
 
 ### Required Custom Code
 
-When it comes to real non-mocked integration with external services, custom code is required to handle the actual data integration. For a more realistic test, lets use `cds mock` to run the mocked services in separate processes. Run these commands **in separate terminals**:
+For real integration with external services, you need custom code. Let's test with `cds mock` running services in separate processes. Run these commands **in separate terminals**:
 
 ```shell
 cds mock apis/capire/s4.cds
@@ -825,7 +825,7 @@ cds mock apis/capire/xflights.cds
 cds watch
 ```
 
-In the log output of the xtravels app server we now see that it connects to the two other services instead of mocking them:
+The xtravels app log shows it connects to the two services instead of mocking them:
 
 ```zsh
 [cds] - connect to S4BusinessPartnerService > odata { 
@@ -838,15 +838,15 @@ In the log output of the xtravels app server we now see that it connects to the 
 }
 ```
 
-This is because the CAP runtime now detected that services with that name are served by different processes within our local binding environment now, so we don't mock them in-process any longer. 
+CAP detected that these services run in different processes in our local environment, so it doesn't mock them in-process anymore. 
 
-When we open the Fiori UI in the browser again, we see the data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
+Open the Fiori UI again. The S/4 and xflights data is missing because we haven't implemented the custom integration code yet:
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
 
 ![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
 
-In addition, when we again look into the log output, we see some bulk requests like shown below, which indicates that the Fiori client is desparately trying to fetch the missing customer data. If we'd scroll the list in the UI this would repeat like crazy.
+The log shows bulk requests – the Fiori client desperately trying to fetch the missing customer data. Scrolling the list would repeat this endlessly:
 
 <span style="font-size:63%">
 
@@ -891,24 +891,24 @@ MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
 ```
 </span>
 
-So, let's go on and fill this gap with required custom code...
+Let's go on and fill this gap with required custom code...
 
 
 ### CAP-level Data Federation
 
-Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
+Displaying external data in lists requires fast access. Live calls to remote services per row would cause poor performance, excessive server load, and resilience problems. Instead, ensure all required data is available locally for fast, reliable access via SQL JOINs.
 
-In the xtravels app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data for all [consumption views](#consumption-views) tagged with the `@federated` annotation, for example:
+The xtravels app uses a simple data replication solution that automatically replicates data for all [consumption views](#consumption-views) tagged with `@federated`:
 
 ```cds :line-numbers=4
 @federated entity Customers as projection on S4.A_BusinessPartner { ... }
 ```
 
-If a remote service is detected, these entities are turned into tables to serve as local persistence for replicated data (line 9 in the code below).
+If a remote service is detected, CAP turns these entities into tables to serve as local persistence for replicated data (line 9 in the code below).
 
 > [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
 > 
-> By tagging entities with `@federated` we stay _intentional_ about **_what_** we want to achieve, and avoid any premature assumptions about **_how_** things are actually implemented. => This allows CAP runtimes – or your own _generic_ solutions, as in this case – to choose the best possible implementation strategies for the given environment and use case, which may differ between development, testing, and production environments, or might need to evolve over time.
+> By tagging entities with `@federated`, you declare your intention - **_what_** you want - without assuming **_how_** to implement it. This lets CAP runtimes or your own solutions choose the best implementation for each environment, which may differ between development, testing, and production environments, allowing evolution without disruption.
 
 
 Here's the complete code, placed in file `srv/data-federation.js`:
@@ -958,7 +958,7 @@ const is_remote = srv => cds.requires[srv]?.credentials?.url
 
 Let's have a closer look at this code, which handles these main tasks:
 
-1. **Prepare Persistence** – When the model is `loaded`, before it's deployed to the database, we collect all to be `@federated` entities, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
+1. **Prepare Persistence** – When the model is `loaded`, before deploying it to the database, we collect all `@federated` entities to be replicated, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
 
 2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked every three seconds (line 22).
 
@@ -1070,7 +1070,7 @@ this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
 
 ## Service Bindings
 
-Service bindings configure connectivity to remote services. They are injected respective connection points configure in CAP through `cds.requires.<service-name>` configurations, which are defined like this:
+Service bindings configure connectivity to remote services. They inject respective connection points that you configure in CAP through `cds.requires.<service-name>` configurations:
 
 ```tsx
 cds.requires.<service-name> = { 
@@ -1086,11 +1086,10 @@ cds.requires.<service-name> = {
 ```
 
 
-They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
+They are added to consuming applications' _package.json_ files, either manually or automatically when you use `cds import`, as we saw earlier.
 
 ### CAP Node.js
 
-Service bindings configure connectivity to remote services. They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
 Service bindings have this general form:
 
 ```sh
@@ -1226,18 +1225,18 @@ await xflights.read `Flights {
 }`
 ```
 
-⇒ equally works for both, xflights api mocked locally, as well as running remotely
+⇒ works equally well for both scenarios: the xflights API mocked locally, as well as running remotely
 
 
 
 
 ### Using Workspaces
 
-Instead of exercising a workflow like that again and again:
+Instead of repeating this workflow again and again:
 
 - ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
 
-... we can use *npm workspaces* technique to work locally and speed up things as follows:
+... you can use the *npm workspaces* technique to work locally and speed things up as follows:
 
 ```shell 
 mkdir -p cap/works; cd cap/works
@@ -1298,9 +1297,9 @@ The usage of *npm workspaces* technique as described above streamlined our workf
 - Before: ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
 - After: ( *develop* → *export* ) → ( *consume* )
 
-We can even more streamline that by eliminating the export step as follows...
+We can even streamline this further by eliminating the export step as follows...
 
-Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
+Create a new subfolder `xflights-api-shortcut` in which you add two files as follows:
 
 ```shell
 mkdir xflights-api-shortcut
