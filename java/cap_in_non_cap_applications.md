@@ -124,7 +124,7 @@ cds.messaging.services.messaging.kind: file-based-messaging
 ```
 ### Emitting Messages
 
-In order to use CAP Java messaging to send messages from your application's code you need to inject an instance of `com.sap.cds.services.messaging.MessageService` into your class and set it as a class member. Then, you can use the CAP Java `MessageService` in your application's code like this to emit messages:
+In order to use CAP Java Messaging support to send messages from your application's code you need to inject an instance of `com.sap.cds.services.messaging.MessageService` into your class and set it as a class member. Then, you can use the CAP Java `MessageService` in your application's code like this to emit messages:
 
 ```java
 Map<String, Object> data = Map.of("ownerId", owner.getId(), "petId", petId, "date", visit.getDate(), "descr", visit.getDescription());
@@ -133,16 +133,40 @@ messaging.emit("org.spring.alesi.PlannedVisit", data);
 
 ### Handling Messages
 
-And in another 
+Usually, messaging applications do not only send but also handle received messages. Handling messages with CAP Java Messaging is basically the same as [handling general CAP events](./event-handlers). In Spring Boot applications the straight forward way is to define a new event handling method either in an already existing or a new component. In both cases you have to make sure that the component's class implements the `com.sap.cds.services.handler.EventHandler` interface. The next thing you have to do is to add an event handling method like below. The event name and the actual code of course differs from case to case. 
 
+```java
 	@On(event = "org.spring.alesi.PetBabiesBorn", service = "messaging")
 	public void handlePetBabiesBorn(TopicMessageEventContext context) {
 		Map<String, Object> data = context.getDataMap();
 		int ownerId = (int) data.get("ownerId");
 		int petId = (int) data.get("motherId");
 		String count = (String) data.get("description");
+
+        // work with the received data
 	}
+```
 
+:::info
+Please not that the handling code is listening for the message named `org.spring.alesi.PetBabiesBorn` and the code sending the message is using the same name. So, if both were residing the same application the components would communicate via messaging.
+:::
 
+When you now start your application you will see new files created at the root of your application's file system. These are the files being used for exchanging messages. In case of the above sketched scenario you would need to stop the application with a debugger to actually see the file content. What you can also do is writing to those files in order to simulate messages coming from a message broker:
 
-When you now start your application you will see new files created at the root of your application's file system. These are the files being used for exchanging messages.  run through your modified application code you will see that 
+```bash
+echo 'org.shelter.PetBabiesBorn {"data":{"ownerId":11,"motherId":14,"description":"cute puppy"}}' >> events-*
+```
+
+Similar to the audit log integration the CAP messaging consist of a logical layer (as just used in the sample code) and a technical layer. The technical layer used for the sample is the file-based messaging. For this, you don't need an additional module and it can be activated via configuration. In case your want to use production-ready message brokers like Apache Kafka or SAP Event Hub you need to add the corresponding dependencies and configuration to your application. In case of the SAP Event Hub feature you would need to add this dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-feature-event-hub</artifactId>
+    <version>${latest-version}</version>
+</dependency>
+```
+
+Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your applicaton. 
+
+## Use the outbox to add resilience to Audit Log and messaging
