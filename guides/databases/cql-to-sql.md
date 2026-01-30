@@ -49,7 +49,7 @@ SELECT from Books where genre.name != 'Science Fiction';
 
 The result set includes all books where genre is not 'Science Fiction', including the ones with an unspecified genre. In contrast, using SQL's `<>` operator, the ones with unspecified genre would be excluded.
 
-The CQL behavior is consistent with common programming languages like JavaScript and Java, as well as with OData semantics. It is implemented in database by, the translation of `!=` to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, and to an equivalent polyfill in SAP HANA.
+The CQL behavior is consistent with common programming languages like JavaScript and Java, and with OData semantics. The runtime implements this by translating `!=` to `IS DISTINCT FROM` in standard SQL databases (PostgreSQL, H2), and to equivalent polyfills using `CASE` expressions in SAP HANA and SQLite.
 
 > [!tip] Prefer == and !=
 > Prefer using `==` and `!=` in most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
@@ -82,6 +82,9 @@ The compiler translates this operator to the best-possible equivalent in the tar
 ### Portable Functions
 
 Following are portable functions supported by CAP. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
+
+> [!note] Database-Specific Behavior
+> While CAP aims for consistent behavior, some functions may exhibit subtle differences across databases due to underlying SQL dialect variations. Test critical functionality on your target database.
 
 String functions:
 
