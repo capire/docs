@@ -843,47 +843,6 @@ While everything just works nicely when mocked in-process and with a shared in-m
 
 ![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
 
-The log shows bulk requests – the Fiori client desperately trying to fetch the missing customer data. Scrolling the list would repeat this endlessly:
-
-<span style="font-size:63%">
-
-```js
-[odata] - POST /odata/v4/travel/$batch
-[odata] - > GET /Travels(ID=4133,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4132,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4131,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4130,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4129,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4128,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4127,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4126,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4125,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4124,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4123,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4122,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4121,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4120,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4119,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4118,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4117,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4116,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4115,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4114,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4113,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4112,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4111,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4110,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4109,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4108,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4107,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4106,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4105,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-[odata] - > GET /Travels(ID=4104,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
-```
-</span>
-
-We see there are specific implementions required, to actually integrate remote services at runtime. We deep dive into one possible solution for that next.
-
 
 
 
@@ -938,6 +897,10 @@ The querying API is the most powerful and closest to the use cases of data-centr
 
 ### Querying Remote Data
 
+> [!tip] CAP-level Querying -> agnostic to databases & protocols
+> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
+
+
 ### Delegating Queries
 
 Value helps are common use cases where delegation of requests is needed, which we implemented like this in `srv/travel-service.js` for the `Customers` entity:
@@ -990,142 +953,25 @@ this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
 
 ### Generic Data Federation
 
-**Motivation** – Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
+Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
 
-#### Federated Consumption Views
-
-The xtravels app uses a simple data replication solution that automatically replicates data for all [consumption views](#consumption-views) tagged with `@federated`:
-
-```cds :line-numbers=4
-@federated entity Customers as projection on S4.A_BusinessPartner { ... }
-```
-
-If a remote service is detected, CAP turns these entities into tables to serve as local persistence for replicated data (line 9 in the code below).
-
-> [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
-> 
-> By tagging entities with `@federated`, you declare your intention - **_what_** you want - without assuming **_how_** to implement it. This lets CAP runtimes or your own solutions choose the best implementation for each environment, which may differ between development, testing, and production environments, allowing evolution without disruption.
-
-
-#### Generic Implementation
-
-Here's the complete code, placed in file `srv/data-federation.js`:
+In the [`@capire/xtravels`](https://github.com/capire/xtravels) app we accomplished that with a simple, yet quite effective generic data replication solution. In essence that implementation boils down to these lines of querying remote services:
 
 ::: code-group
-```js:line-numbers [srv/data-federation.js]
-const PROD = process.env.NODE_ENV === 'production' /* eslint-disable no-console */
-const cds = require ('@sap/cds')
-const feed = []
-
-// Collect all entities to be federated, and prepare replica tables
-PROD || cds.on ('loaded', csn => {
-  for (let e of cds.linked(csn).entities) {
-    if (e['@federated']) {
-      let srv = remote_srv4(e)
-      if (is_remote(srv)) {
-        e['@cds.persistence.table'] = true //> turn into table for replicas
-        feed.push ({ entity: e.name, remote: srv })
-      }
-    }
-  }
-})
-  
-// Setup and schedule replications for all collected entities
-PROD || cds.once ('served', () => Promise.all (feed.map (async each => {
-  const srv = await cds.connect.to (each.remote)
-  srv._once ??=! srv.on ('replicate', replicate)
-  await srv.schedule ('replicate', each) .every ('3 seconds')
-})))
-
-// Event handler for replicating single entities
-async function replicate (req) { 
-  let { entity } = req.data, remote = this
+```js [srv/data-federation.js]
+const remote = await cds.connect.to (each.remote)
+```
+:::
+```js 
   let { latest } = await SELECT.one `max(modifiedAt) as latest` .from (entity)
   let rows = await remote.run (
     SELECT.from (entity) .where `modifiedAt > ${latest}` 
   )
   if (rows.length) await UPSERT (rows) .into (entity); else return
-  console.log ('Replicated', rows.length, 'entries', { for: entity, via: this.kind })
-}
-
-// Helpers to identify remote services, and check whether they are connected
-const remote_srv4 = entity => entity.__proto__._service?.name
-const is_remote = srv => cds.requires[srv]?.credentials?.url
-```
-:::
-
-Let's have a closer look at this code, which handles these main tasks:
-
-1. **Prepare Persistence** – When the model is `loaded`, before deploying it to the database, we collect all `@federated` entities to be replicated, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
-
-2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked every three seconds (line 22).
-
-3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29. 
-
-> [!tip] CAP-level Querying -> agnostic to databases & protocols
-> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
-
-
-#### Test Drive
-
-Let's see the outcome in action: to activate the above data federation code, edit `srv/server.js` file and uncomment the single line of code in there like this:
-
-::: code-group
-```js :line-numbers [srv/server.js]
-process.env.NODE_ENV || require ('./data-federation')
-```
-:::
-
-Restart the Xtravels app, and see these lines in the log output:
-
-```zsh
-Replicated 49 entries { for: 'sap.capire.xflights.Supplements', via: 'hcql' }
-Replicated 44 entries { for: 'sap.capire.xflights.Flights', via: 'hcql' }
-Replicated 727 entries { for: 'sap.capire.s4.Customers', via: 'odata' }
-```
-
-The S/4 Business Partner service in terminal 1 shows the incoming OData request(s):
-
-```zsh
-[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner {
-  '$select': 'BusinessPartner,PersonFullName,LastChangeDate',
-  '$filter': 'LastChangeDate gt 2024-12-31'
 }
 ```
 
-While the xflights service in terminal 2 shows its incoming HCQL requests like that:
-
-```zsh
-[hcql] - GET /hcql/data/ {
-  SELECT: {
-    from: { ref: [ 'sap.capire.flights.data.Flights' ] },
-    columns: [
-      { ref: [ 'ID' ], as: 'ID' },
-      { ref: [ 'date' ], as: 'date' },
-      { ref: [ 'departure' ], as: 'departure' },
-      { ref: [ 'arrival' ], as: 'arrival' },
-      { ref: [ 'free_seats' ], as: 'free_seats' },
-      { ref: [ 'modifiedAt' ], as: 'modifiedAt' },
-      { ref: [ 'airline', 'icon' ], as: 'icon' },
-      { ref: [ 'airline', 'name' ], as: 'airline' },
-      { ref: [ 'origin', 'name' ], as: 'origin' },
-      { ref: [ 'destination', 'name' ], as: 'destination' }
-    ],
-    where: [
-      { ref: [ 'modifiedAt' ] },
-      '>',
-      { val: '2026-01-28T17:38:28.929Z' }
-    ]
-  }
-}
-```
-
-Finally, open the Fiori UI in the browser again, and see that customer data from S/4 as well as flight data from xflights is now displayed properly, thanks to the data federation implemented above.
-
-![XTravels Fiori list view showing tarvel requests, now with customer names again.](assets/xtravels-list.png)
-
-![XTravels Fiori details view showing a travel requests, now with flight data again.](assets/xtravels-bookings.png)
-
+[Learn more about CAP-level Data Federation in the dedicated guide.](data-federation){.learn-more}
 
 ### On-demand Replication
 
