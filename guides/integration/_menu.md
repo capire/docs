@@ -1,7 +1,9 @@
 
 # [ CAP-level Service Integration ](calesi.md)
 # [ CAP-level Data Federation ](data-federation.md) <!-- UNRELEASED -->
+# [ Inner Loop Development ](inner-loops.md) <!-- UNRELEASED -->
 # [ Reuse & Compose ](reuse-and-compose.md)
+# [ Service Bindings ](service-bindings.md) <!-- UNRELEASED -->
 
 # Platform Services <!-- UNRELEASED -->
 

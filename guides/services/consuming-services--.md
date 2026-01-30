@@ -1,4 +1,4 @@
-### Mock Remote Service as OData Service (Java)
+### Mock Remote OData Service (Java)
 
 You configure CAP to do OData and HTTP requests for a mocked service instead of doing it in-process. Configure a new Spring Boot profile (for example `mocked`):
 ::: code-group
@@ -77,28 +77,9 @@ List<ABusinessPartner> businessPartner = bupa.run(select).listOf(ABusinessPartne
 
 [Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
 
-### Expose Remote Services
+### Expose Remote Services 
 
-To expose a remote service entity, you add a projection on it to your CAP service:
-
-```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
-
-extend service RiskService with {
-  entity BusinessPartners as projection on bupa.A_BusinessPartner;
-}
-```
-
-CAP automatically tries to delegate queries to database entities, which don't exist as you're pointing to an external service. That behavior would produce an error like this:
-
-```xml
-<error xmlns="https://docs.oasis-open.org/odata/ns/metadata">
-<code>500</code>
-<message>SQLITE_ERROR: no such table: RiskService_BusinessPartners in: SELECT BusinessPartner, Customer, Supplier, AcademicTitle, AuthorizationGroup, BusinessPartnerCategory, BusinessPartnerFullName, BusinessPartnerGrouping, BusinessPartnerName, BusinessPartnerUUID, CorrespondenceLanguage, CreatedByUser, CreationDate, (...)  FROM RiskService_BusinessPartner ALIAS_1 ORDER BY BusinessPartner COLLATE NOCASE ASC LIMIT 11</message>
-</error>
-```
-
-To avoid this error, you need to handle projections. Write a handler function to delegate a query to the remote service and run the incoming query on the external service.
+Write a handler function to delegate a query to the remote service and run the incoming query on the external service.
 
 ::: code-group
 ```js [Node.js]
@@ -128,44 +109,7 @@ public class RiskServiceHandler implements EventHandler {
 
 :::
 
-[For Node.js, get more details in the end-to-end tutorial.](https://developers.sap.com/tutorials/btp-app-ext-service-add-consumption.html#0a5ed8cc-d0fa-4a52-bb56-9c864cd66e71){.learn-more}
-
-
-::: warning
-If you receive `404` errors, check if the request contains fields that don't exist in the service and start with the name of an association. `cds import` adds an empty keys declaration (`{ }`) to each association. Without this declaration, foreign keys for associations are generated in the runtime model, that don't exist in the real service. To solve this problem, you need to reimport the external service definition using `cds import`.
-:::
-
 This works when accessing the entity directly. Additional work is required to support [navigation](#handle-navigations-across-local-and-remote-entities) and [expands](#handle-expands-across-local-and-remote-entities) from or to a remote entity.
-
-Instead of exposing the remote service's entity unchanged, you can [model your own projection](#model-projections). For example, you can define a subset of fields and change their names.
-
-::: tip
-CAP does the magic that maps the incoming query, according to your projections, to the remote service and maps back the result.
-:::
-
-```cds
-using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
-
-extend service RiskService with {
-  entity Suppliers as projection on bupa.A_BusinessPartner {
-    key BusinessPartner as ID,
-    BusinessPartnerFullName as fullName,
-    BusinessPartnerIsBlocked as isBlocked
-  }
-}
-```
-
-```js
-module.exports = cds.service.impl(async function() {
-  const bupa = await cds.connect.to('API_BUSINESS_PARTNER');
-
-  this.on('READ', 'Suppliers', req => {
-      return bupa.run(req.query);
-  });
-});
-```
-
-[Learn more about queries on projections to remote services.](#execute-queries-on-projections-to-a-remote-service){.learn-more}
 
 ### Expose Remote Services with Associations
 
@@ -200,14 +144,6 @@ this.on('READ', 'Suppliers', req => {
 });
 ```
 
-If you need to resolve the association using navigation or request it independently from the source entity, add a handler for the __target entity__ as well:
-
-```js
-this.on('READ', 'SupplierAddresses', req => {
-    return bupa.run(req.query);
-});
-```
-
 As usual, you can put two handlers into one handler matching both entities:
 
 ```js
@@ -216,147 +152,13 @@ this.on('READ', ['Suppliers', 'SupplierAddresses'], req => {
 });
 ```
 
-### Mashing up with Remote Services
-
-You can combine local and remote services using associations. These associations need manual handling, because of their different data sources.
-
-#### Integrate Remote into Local Services
-
-Use managed associations from local entities to remote entities:
-
-```cds
-@path: 'service/risk'
-service RiskService {
-  entity Risks : managed {
-    key ID      : UUID  @(Core.Computed : true);
-    title       : String(100);
-    prio        : String(5);
-    supplier    : Association to Suppliers;
-  }
-
-  entity Suppliers as projection on BusinessPartner.A_BusinessPartner {
-    key BusinessPartner as ID,
-    BusinessPartnerFullName as fullName,
-    BusinessPartnerIsBlocked as isBlocked,
-  };
-}
-```
-
-#### Extend a Remote by a Local Service 
-
-You can augment a projection with a new association, if the required fields for the on condition are present in the remote service. The use of managed associations isn't possible, because this requires to create new fields in the remote service.
-<!--Does it matter if it's managed or unmanaged? In other section we say, that you shouldn't make it a managed assoc b/c that would lead to runtime errors. -->
-
-```cds
-entity Suppliers as projection on bupa.A_BusinessPartner {
-  key BusinessPartner as ID,
-  BusinessPartnerFullName as fullName,
-  BusinessPartnerIsBlocked as isBlocked,
-  risks : Association to many Risks on risks.supplier.ID = ID,
-};
-```
-
 ### Handle Mashups with Remote Services
 
 Depending on how the service is accessed, you need to support direct requests, navigation, or expands. CAP resolves those three request types only for service entities that are served from the database. When crossing the boundary between database and remote sourced entities, you need to take care of those requests.
 
 The list of [required implementations for mashups](#required-implementations-for-mashups) explains the different combinations.
 
-#### Handle Expands Across Local and Remote Entities
-
-Expands add data from associated entities to the response. For example, for a risk, you want to display the suppliers name instead of just the technical ID. But this property is part of the (remote) supplier and not part of the (local) risk.
-
-To handle expands, you need to add a handler for the main entity:
-1. Check if a relevant `$expand` column is present.
-2. Remove the `$expand` column from the request.
-3. Get the data for the request.
-4. Execute a new request for the expand.
-5. Add the expand data to the returned data from the request.
-
-Example of a CQN request with an expand:
-
-```json
-{
-  "from": { "ref": [ "RiskService.Suppliers" ] },
-  "columns": [
-    { "ref": [ "ID" ] },
-    { "ref": [ "fullName" ] },
-    { "ref": [ "isBlocked" ] },
-    { "ref": [ "risks" ] },
-    { "expand": [
-      { "ref": [ "ID" ] },
-      { "ref": [ "title" ] },
-      { "ref": [ "descr" ] },
-      { "ref": [ "supplier_ID" ] }
-    ] }
-  ]
-}
-```
-
-[See an example how to handle expands in Node.js.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/srv/risk-service.js){.node .learn-more}
-
-[See an example how to handle expands in Java.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui-java/srv/src/main/java/com/sap/cap/riskmanagement/handler/RiskServiceHandler.java){.java .learn-more}
-
-
-Expands across local and remote can cause stability and performance issues. For a list of items, you need to collect all IDs and send it to the database or the remote system. This can become long and may exceed the limits of a URL string in case of OData. Do you really need expands for a list of items?
-
-```http
-GET /service/risk/Risks?$expand=supplier
-```
-
-Or is it sufficient for single items?
-
-```http
-GET /service/risk/Risks(545A3CF9-84CF-46C8-93DC-E29F0F2BC6BE)/?$expand=supplier
-```
-::: warning Keep performance in mind
-Consider to reject expands if it's requested on a list of items.
-:::
-
-#### Handle Navigations Across Local and Remote Entities
-
-Navigations allow to address items via an association from a different entity:
-
-```http
-GET /service/risks/Risks(20466922-7d57-4e76-b14c-e53fd97dcb11)/supplier
-```
-
-The CQN consists of a `from` condition with 2 values for `ref`. The first `ref` selects the record of the source entity of the navigation. The second `ref` selects the name of the association, to navigate to the target entity.
-
-```json
-{
-  "from": {
-    "ref": [ {
-      "id": "RiskService.Risks",
-      "where": [
-        { "ref": [ "ID" ] },
-        "=",
-        { "val": "20466922-7d57-4e76-b14c-e53fd97dcb11" }
-      ]},
-      "supplier"
-    ]
-  },
-  "columns": [
-    { "ref": [ "ID" ] },
-    { "ref": [ "fullName" ] },
-    { "ref": [ "isBlocked" ] }
-  ],
-  "one": true
-}
-```
-
-To handle navigations, you need to check in your code if the `from.ref` object contains 2 elements. Be aware, that for navigations the handler of the **target** entity is called.
-
-If the association's on condition equals the key of the source entity, you can directly select the target entity using the key's value. You find the value in the `where` block of the first `from.ref` entry.
-
-Otherwise, you need to select the source item using that `where` block and take the required fields for the associations on condition from that result.
-
-[See an example how to handle navigations in Node.js.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/srv/risk-service.js){.learn-more .node}
-
-[See an example how to handle navigations in Java.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui-java/srv/src/main/java/com/sap/cap/riskmanagement/handler/RiskServiceHandler.java){.learn-more .java}
-
-### Limitations and Feature Matrix
-#### Required Implementations for Mashups 
+### Required Implementations for Mashups 
 
 You need additional logic, if remote entities are in the game. The following table shows what is required. "Local" is a database entity or a projection on a database entity.
 
@@ -370,37 +172,6 @@ You need additional logic, if remote entities are in the game. The following tab
 | Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
 
 
-##### Support Analytical Queries in Java
-
-CAP Java provides out-of-the-box support for remote analytical queries.
-
-| **Request**                                                           | **Example**                              | **Implementation**                                                |
-| --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
-| Remote: Analytical queries                                            | `/service/risks/Suppliers?$apply=...`    | Delegate query to remote service                                  |
-
-
-#### Transient Access vs. Replication
-
-> This chapter shows only techniques for transient access.
-
-The following matrix can help you to find the best approach for your scenario:
-
-| **Feature**                                           | **Transient Access**  | **Replication**                   |
-|-------------------------------------------------------|-----------------------|-----------------------------------|
-| Filtering on local **or** remote fields <sup>1</sup>  | Possible              | Possible                          |
-| Filtering on local **and** remote fields <sup>2</sup> | Not possible          | Possible                          |
-| Relationship: Uni-/Bidirectional associations         | Possible              | Possible                          |
-| Relationship: Flatten                                 | Not possible          | Possible                          |
-| Evaluate user permissions in remote system            | Possible              | Requires workarounds <sup>3</sup> |
-| Data freshness                                        | Live data             | Outdated until replicated         |
-| Performance                                           | Degraded <sup>4</sup> | Best                              |
-
-<br>
-
-> <sup>1</sup> It's **not required** to filter both, on local and remote fields, in the same request. <br>
-> <sup>2</sup> It's **required** to filter both, on local and remote fields, in the same request. <br>
-> <sup>3</sup> Because replicated data is accessed, the user permission checks of the remote system aren't evaluated. <br>
-> <sup>4</sup> Depends on the connectivity and performance of the remote system. <br>
 
 
 ## Connect and Deploy
@@ -421,7 +192,6 @@ CAP leverages the destination capabilities of the SAP Cloud SDK.
 Create a destination using one or more of the following options.
 
 - **Register a system in your global account:** You can check here how to [Register an SAP System](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/2ffdaff0f1454acdb046876045321c91.html) in your SAP BTP global account and which systems are supported for registration. Once the system is registered and assigned to your subaccount, you can create a service instance. A destination is automatically created along with the service instance.
-<!--  TODO: risk management link -->
 
 - **Connect to an on-premise system:** With SAP BTP [Cloud Connector](https://help.sap.com/docs/CP_CONNECTIVITY/cca91383641e40ffbe03bdc78f00f681/e6c7616abb5710148cfcf3e75d96d596.html), you can create a connection from your cloud application to an on-premise system.
 
