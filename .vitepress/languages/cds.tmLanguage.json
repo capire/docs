@@ -206,8 +206,7 @@
       "name": "constant.language.cds"
     },
     {
-      "match": "(?<!\\.)\\b(super|this)(?!\\s*:)\\b",
-      "name": "variable.language.cds"
+      "include": "#selfKeyword"
     },
     {
       "match": ";",
@@ -359,6 +358,10 @@
           "name": "entity.name.type.cds"
         }
       ]
+    },
+    "selfKeyword": {
+      "name": "variable.language.cds",
+      "match": "(?<!\\.|\\w)\\$self\\b"
     },
     "comment": {
       "name": "comment",
@@ -612,7 +615,7 @@
         },
         {
           "comment": "Element name or type",
-          "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?=\\s*[:{,@])",
+          "match": "(?<!@)(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)(?=\\s*[:{,@=])",
           "name": "entity.other.attribute-name.cds"
         },
         {
@@ -946,7 +949,7 @@
       "name": "atAnnoNoParen",
       "begin": "(@)(?!\\s*\\()",
       "comment": "'end' uses lookahead, since end of annotation value itself cannot currently be safely determined",
-      "end": "(?<=[}\\]'`])(?=\\s*($|[@;]))|(?<![@:])(?!\\s*:)(?=$|[\\s@,;(){}\\[\\]'`/\"!]|\\b\\p{ID_Start})",
+      "end": "(?<=[}\\]'`])(?=\\s*($|[@;]))|(?<![@:])(?!\\s*:)(?=$|[\\s@,;(){}\\[\\]'`/\"!])",
       "captures": {
         "1": {
           "name": "entity.name.tag.at.cds"
@@ -1352,17 +1355,29 @@
           "include": "#keyword"
         },
         {
-          "match": "(?i)(?<!@|select from )(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
-          "name": "entity.other.attribute-name.cds"
+          "include": "#selfKeyword"
         },
         {
-          "include": "#identifier"
+          "include": "#string"
+        },
+        {
+          "include": "#number"
         },
         {
           "include": "#operator"
         },
         {
-          "include": "#string"
+          "include": "#bracketedExpression"
+        },
+        {
+          "include": "#squareBrackets"
+        },
+        {
+          "match": "(?i)(?<!@|select from )(?:\"[^\"]*(?:\"\"[^\"]*)*\"|!\\[[^\\]]*(?:\\]\\][^\\]]*)*\\]|[$_\\p{ID_Start}][$\\p{ID_Continue}\\u200C\\u200D]*)",
+          "name": "entity.other.attribute-name.cds"
+        },
+        {
+          "include": "#identifier"
         }
       ]
     },
