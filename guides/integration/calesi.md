@@ -10,7 +10,7 @@ Integrating remote services - from other applications, third-party services, or 
 >
 > 1. Remote services are proxied by CAP services, ... → *everything's a CAP service*
 > 2. consumed in protocol-agnostic ways → *... as if they were local*
-> 3. mocked out of the box → *inner-loop development*
+> 3. mocked out of the box → *fast-track inner-loop development*
 > 4. with varying implementations → *evolution w/o disruption*
 > 5. extensible through event handlers → *intrinsic extensibility*
 >
@@ -801,12 +801,16 @@ With mashed up models, you can run applications in _'airplane mode'_ without ups
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer highlighted in green.](assets/xtravels-list.png)
 
+> [!tip] Fast-track Inner-Loop Development → Spawning Parallel Tracks
+>
+> The mocked-out-of-the-box capabilities of CAP, with remoted services mocked in-process and a shared in-memory database, allows us to greatly speed up development and time to market. For real remote operations there is additional investment required, of course. But the agnostic nature of CAP-level Service Integration also allows you to spawn two working tracks running in parallel: One team to focus on domain and functionality, and another one to work on the integration logic under the hood. 
+
 We'll learn more about mocking and inner loop development in the [next chapter](#inner-loop-development).
 
 
 #### Integration Logic Required
 
-While everything just works nicely when mocked in-process and with a shared in-memory database, let's get a bit more realistic and use `cds mock` to run the services in separate processes. 
+While everything just works nicely when mocked in-process and with a shared in-memory database, let's move closer to the target setup and use `cds mock` to run the services to be integrated in separate processes. 
 
 1. First run these commands **in two separate terminals**:
 
@@ -881,11 +885,56 @@ The log shows bulk requests – the Fiori client desperately trying to fetch the
 We see there are specific implementions required, to actually integrate remote services at runtime. We deep dive into one possible solution for that next.
 
 
+
+
 ## Integration Logic
 
-To actually integrate remote services at runtime, custom code is required. In the xtravels sample we implemented that in `srv/travel-service.js`, which is automatically picked up by the CAP runtime as service implementation for the `TravelService` defined in `srv/travel-service.cds`.
+This chapter walks you through the typical use cases and solution patterns that you should be aware of when implementing required integration logic. The following sections do that on the example of [CAP Node.js SDK](../../node.js/); the same principles and patterns apply to CAP Java, as documented in the [CAP Java SDK](../../java/) reference documentation.
+
+
 
 ### Connecting to Remote Services
+
+It all starts with connecting to remote services, which we do like that in the xtravels project: 
+
+::: code-group
+
+```js :line-numbers=21 [srv/travel-service.js]
+const xflights = await cds.connect.to ('sap.capire.flights.data')
+const s4 = await cds.connect.to ('S4BusinessPartnerService')
+```
+
+:::
+
+The `cds.connect` functions used here is the common way to address service instances, that is commonly used for and works the same way for both, local as well as remote services: 
+
+- for **local** services, it returns the local service providers – i.e., instances of [`cds.ApplicationService`](../../node.js/app-services), or your application-specific subclases thereof. 
+- for **remote** services, it returns a remote service proxy – i.e., instances of [`cds.RemoteService`](../../node.js/remote-services), generically constructed by the client libs.
+- **both** inherit from the [`cds.Service`](../../node.js/core-services) base class, which constitutes the uniform programming interface for consuming CAP services – agnostic to underlying protocols, and agnostic to whether its local or remote at all.
+
+![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
+](assets/remoting.drawio.svg)
+
+### Uniform, Agnostic APIs
+
+The uniform, agnostic programming interface offered through [`cds.Service`](../../node.js/core-services) is centered around these methods: 
+
+- [`srv.send (<request>)`](../../node.js/core-services#srv-send-request) → synchronous communication, for all kinds of services.
+- [`srv.emit (<event>)`](../../node.js/core-services#srv-emit-event) → asynchronous communication, via messaging middlewares.
+- [`srv.run (<query>)`](../../node.js/core-services#srv-run-query) →  execute CRUD queries with services that support that, like CAP services, OData services, or GraphQL services.
+
+Here are some typical usages found in xtravels: 
+
+```js
+await xflights.send ('POST','BookingCreated', { flight, date, seats })
+await xflights.emit ('FlightsUpdated', { flight, date, free_seats })
+await xflights.run (SELECT.from`Flights`.where`modifiedAt > ${latest}`)
+```
+
+The querying API is the most powerful and closest to the use cases of data-centric business applications.
+
+ 
+
 
 ### Querying Remote Data
 
