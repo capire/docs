@@ -22,7 +22,9 @@ Integrating remote services – from other applications, third-party services, o
 
 
 
-## As if they were local
+## Introduction & Overview
+
+### As if they were local
 
 Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how that looks in practice:
 
@@ -76,7 +78,7 @@ and covers all the aspects of CAP-level service integration in detail.
 
 
 
-## The XTravels Sample
+### The XTravels Sample
 
 In this guide we'll use the _XTravels_ sample application as our running example for CAP-level service integration. It is an modernized adaptation of the reknown [ABAP Flight reference sample](https://help.sap.com/docs/abap-cloud/abap-rap/abap-flight-reference-scenario), reimplemented using CAP, as well as split into two microservices as follows:
 
@@ -94,7 +96,7 @@ The resulting entity-relationship model looks like that:
 
 From a service integration perspective, this sample mainly shows a data federation scenario, where data is consumed from different upstream systems (XFlights and S/4HANA) – most frequently in a readonly fashion – to be displayed together with an application's local data. 
 
-## Workflow Overview
+### Workflow Overview
 
 The graphic below shows the flow of essential steps for service integration, which the following sections will walk you through in detail.
 
@@ -114,7 +116,7 @@ git clone https://github.com/capire/xtravels
 ```
 
 
-## Providing APIs
+## Providing CAP-level APIs
 
 In case of CAP service providers, as for [*@capire/xflights*](https://github.com/capire/xflights) in our [sample scenario](#the-xtravels-sample), you define [CAP services](../services/index) for all inbound interfaces, which includes (private) interfaces to your application's UIs, as well as public APIs to any other remote consumers. 
 
@@ -588,9 +590,13 @@ npm add @capire/s4
 
 
 
-## Consuming APIs 
+## Integrating Models
 
 Given the imported APIs we next use the definitions within our own models. For example, in the XTravels application we want to combine customer data obtained from SAP S/4HANA with travels, and flights data from xflights with respective bookings, like a [mashup of own and imported entities](#mashed-up-models). With the integrated models given, we can already run the integrated application, as most integrations are [mocked out of the box](#mocked-out-of-the-box) by CAP runtimes. For the real non-mocked integration, [custom code is required](#required-custom-code), of course, which we'll deep dive in in the last secion of this chapter. 
+
+> [!tip] <i>AI Agents 'capire' CAP</i>
+> We can use AI agents to help us analysing and understanding our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context. 
+
 
 ### Consumption Views
 
@@ -650,15 +656,10 @@ Noteworthy aspects here are:
 
 
 
-### Mashed up Models
+### Associations to Remote
 
 With the consumption views in place, we can now refer to them from our own models in any way we like, _as if they were local_, thus creating mashups of definitions from imported APIs and local definitions. 
 
-> [!tip] <i>AI Agents 'capire' CAP</i>
-> We can use AI agents to help us analysing and understanding our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context. 
-
-
-#### Domain Model Mashups
 
   ::: code-group
   ```cds :line-numbers=1 [db/schema.cds]
@@ -670,12 +671,21 @@ With the consumption views in place, we can now refer to them from our own model
     Flight : Association to x.Flights; 
   }
   ```
+- Line 26 –  Each _Booking_ references a _Flight_ from the external xflights service, which allows us to display flight details alongside bookings.
+
+#### Associations from Remote
+
+  ::: code-group
+  ```cds :line-numbers=1 [db/schema.cds]
+  using { sap.capire.xflights as x } from '../apis/capire/xflights'; 
+  ```
+  :::
   ```cds :line-numbers=73
   extend x.Flights with columns {
     Bookings : Association to many Bookings on Bookings.Flight = $self
   }
   ```
-- Line 26 –  Each _Booking_ references a _Flight_ from the external xflights service, which allows us to display flight details alongside bookings.
+
 
 - Line 74 – Adds a backlink from _Flights_ to _Bookings_ for bidirectional traversal.
 
@@ -683,24 +693,8 @@ With the consumption views in place, we can now refer to them from our own model
 Extensions to remote entities, as shown above, are only possible for elements which would not require changes to the remote service's actual data. This is the case for _virtual_ elements and _calculated_ fields, as well as **_unmanaged_** associations, as all foreign keys are local. It's not possible for regular elements or _managed_ associations, though.
 :::
 
-#### Service Exposure
 
-::: code-group
-```cds :line-numbers=1 [srv/travel-service.cds]
-using { sap.capire.xflights as x } from '../apis/capire/xflights';
-```
-:::
-```cds :line-numbers=16 
-@fiori service TravelService { ...
-  @readonly entity Flights as projection on x.Flights; 
-}
-```
-
-- Line 17 – Exposes the _Flights_ entity in the _TravelService_ for UI consumption. 
-This is required as associations to non-exposed entities would be cut off, which would apply to the _Bookings_ -> _x.Flights_ association if we did not expose _x.Flights_.
-
-
-#### Field Constraints
+### Field Constraints
 
 ::: code-group
 ```cds :line-numbers=44 [srv/travel-constraints.cds]
@@ -716,6 +710,23 @@ annotate TravelService.Bookings with { ...
 :::
 
 - Line 46 – Adds a constraint to the _Flight.date_ element to ensure that the flight date of a booked _Flight_ falls within the travel period of the associated _Travel_.
+
+
+### Serving to Fiori UIs
+
+::: code-group
+```cds :line-numbers=1 [srv/travel-service.cds]
+using { sap.capire.xflights as x } from '../apis/capire/xflights';
+```
+:::
+```cds :line-numbers=16 
+@fiori service TravelService { ...
+  @readonly entity Flights as projection on x.Flights; 
+}
+```
+
+- Line 17 – Exposes the _Flights_ entity in the _TravelService_ for UI consumption. 
+This is required as associations to non-exposed entities would be cut off, which would apply to the _Bookings_ -> _x.Flights_ association if we did not expose _x.Flights_.
 
 
 #### Fiori Annotations
@@ -768,79 +779,61 @@ There are similar references to `Flights` entity from xflights in other parts of
 
 With the mashed up models in place, we can already run consuming applications in _'airplane mode'_ – i.e. without the upstream services running and connected –, as the imported services are mocked out of the box by CAP runtimes, _in-process_ and with mock data in the same _in-memory_ database, next to our own data. 
 
-Start the xtravels application locally using `cds watch` as usual, and note the output about the `sap.capire.flights.data` service, as well as the `S4BusinessPartnerService` being mocked automatically:
+1. Start the xtravels application locally using `cds watch` as usual, and note the output about the integrated services being mocked automatically:
 
-```shell
-cds watch 
-```
-```zsh
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: 'xflights/apis/data-service/services.csn:3'
-}
-```
-```zsh
-[cds] - mocking S4BusinessPartnerService {
-  at: [ '/odata/v4/s4-business-partner' ],
-  decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
-}
-```
+    ```shell
+    cds watch 
+    ```
+    ```zsh
+    [cds] - mocking sap.capire.flights.data {
+      at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
+      decl: 'xflights/apis/data-service/services.csn:3'
+    }
+    ```
+    ```zsh
+    [cds] - mocking S4BusinessPartnerService {
+      at: [ '/odata/v4/s4-business-partner' ],
+      decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
+    }
+    ```
 
-When we open the Fiori UI in the browser, we see it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
+2. Open the Fiori UI in the browser -> it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer highlighted in green.](assets/xtravels-list.png)
 
-
-#### Providing Mock Data 
-
-There are different options to provide initial data, test data, and mock data:
-
-- In case of `@capire/xflights-data`, we generated the package content using `cds export --data` option, which added `.csv` files next to the `.cds` files. 
-- In case of `@capire/s4`, we explicitly added `.csv` files next to the `.cds` files. 
-- In addition, we could add `.csv` files for imported entities in the consuming apps `db/data` or `test/data` folders.
-
-In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.  
-
-For Java, make sure to add the `--with-mocks` option to the `cds deploy` command used to generate the `schema.sql` in `srv/pom.xml`. This ensures that tables for the mocked remote entities are created in the database.
-
-[Learn more about *Adding Initial Data*](../databases/initial-data) {.learn-more}
-
-> [!tip] Mocking for Inner-Loop Development
-> A service definition is all we need to serve fully functional OData services. Hence, service APIs imported via `cds import` are automatically mocked by CAP runtimes during development. This allows us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services.\
-> See also: [_Inner-Loop Development_](#inner-loop-development) section further below.
+We'll learn more about mocking and inner loop development in the [next chapter](#inner-loop-development).
 
 
+#### Integration Logic Required
 
-### Required Custom Code
+While everything just works nicely when mocked in-process and with a shared in-memory database, let's get a bit more realistic and use `cds mock` to run the services in separate processes. 
 
-When it comes to real non-mocked integration with external services, custom code is required to handle the actual data integration. For a more realistic test, lets use `cds mock` to run the mocked services in separate processes. Run these commands **in separate terminals**:
+1. First run these commands **in two separate terminals**:
 
-```shell
-cds mock apis/capire/s4.cds
-```
-```shell
-cds mock apis/capire/xflights.cds
-```
-```shell
-cds watch
-```
+    ```shell
+    cds mock apis/capire/s4.cds
+    ```
+    ```shell
+    cds mock apis/capire/xflights.cds
+    ```
 
-In the log output of the xtravels app server we now see that it connects to the two other services instead of mocking them:
+2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
 
-```zsh
-[cds] - connect to S4BusinessPartnerService > odata { 
-  url: 'http://localhost:54476/odata/v4/s4-business-partner' 
-}
-```
-```zsh
-[cds] - connect to sap.capire.flights.data > hcql { 
-  url: 'http://localhost:54475/hcql/data' 
-}
-```
+    ```shell
+    cds watch
+    ```
+    ```zsh
+    [cds] - connect to S4BusinessPartnerService > odata { 
+      url: 'http://localhost:54476/odata/v4/s4-business-partner' 
+    }
+    ```
+    ```zsh
+    [cds] - connect to sap.capire.flights.data > hcql { 
+      url: 'http://localhost:54475/hcql/data' 
+    }
+    ```
 
-This is because the CAP runtime now detected that services with that name are served by different processes within our local binding environment now, so we don't mock them in-process any longer. 
-
-When we open the Fiori UI in the browser again, we see the data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
+2. Open the Fiori UI in the browser again -> data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
 
@@ -883,20 +876,74 @@ In addition, when we again look into the log output, we see some bulk requests l
 [odata] - > GET /Travels(ID=4105,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
 [odata] - > GET /Travels(ID=4104,IsActiveEntity=true) { '$select': 'Customer', '$expand': 'Customer($select=ID,Name)' }
 ```
-```zsh
-(node:37548) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 
-11 shutdown listeners added to [cds]. 
-MaxListeners is 10. Use emitter.setMaxListeners() to increase limit
-(Use `node --trace-warnings ...` to show where the warning was created)
-```
 </span>
 
-So, let's go on and fill this gap with required custom code...
+We see there are specific implementions required, to actually integrate remote services at runtime. We deep dive into one possible solution for that next.
 
 
-### CAP-level Data Federation
+## Integration Logic
 
-Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
+To actually integrate remote services at runtime, custom code is required. In the xtravels sample we implemented that in `srv/travel-service.js`, which is automatically picked up by the CAP runtime as service implementation for the `TravelService` defined in `srv/travel-service.cds`.
+
+### Connecting to Remote Services
+
+### Querying Remote Data
+
+### Delegating Queries
+
+Value helps are common use cases where delegation of requests is needed, which we implemented like this in `srv/travel-service.js` for the `Customers` entity:
+
+::: code-group
+```js :line-numbers=24 [srv/travel-service.js]
+const s4 = await cds.connect.to ('S4BusinessPartnerService')
+this.on ('READ', Customers, req => s4.run (req.query))
+```
+:::
+
+The event handler intercepts all `READ` requests to the `Customers` entity, and simply delegates the incoming query as-is to the connected S/4 service (line 26).
+
+Noteworthy: The incoming request refers to: 
+
+- the `TravelService.Customers` entity, which is a view on 
+  - the `Customers` entity, which in turn is a consumption view on 
+    - the remote `A_BusinessPartner` entity. 
+
+The CAP runtime is aware of that and automatically translates the query into a query to the underlying entity, known to the remote service. Thereby, all select clauses, and where clauses, are fully preserved, translated, and delegated. 
+
+### Navigation & Expands
+
+### Calling Remote Actions
+
+In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
+
+::: code-group
+```js :line-numbers=28 [srv/travel-service.js]
+const xflights = await cds.connect.to ('sap.capire.flights.data') // [!code focus]
+this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
+  Bookings.map (({ Flight_ID, Flight_date }) => {
+    return xflights.BookingCreated (Flight_ID, Flight_date) // [!code focus]
+  })
+))
+```
+:::
+
+### Sending Arbitratry Requests
+
+
+
+### Events-based Integration
+
+#### Emitting Events
+
+#### Subscribing to Events
+
+### Generic Integration Logic
+
+### Generic Data Federation
+
+**Motivation** – Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
+
+#### Federated Consumption Views
 
 In the xtravels app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data for all [consumption views](#consumption-views) tagged with the `@federated` annotation, for example:
 
@@ -910,6 +957,8 @@ If a remote service is detected, these entities are turned into tables to serve 
 > 
 > By tagging entities with `@federated` we stay _intentional_ about **_what_** we want to achieve, and avoid any premature assumptions about **_how_** things are actually implemented. => This allows CAP runtimes – or your own _generic_ solutions, as in this case – to choose the best possible implementation strategies for the given environment and use case, which may differ between development, testing, and production environments, or might need to evolve over time.
 
+
+#### Generic Implementation
 
 Here's the complete code, placed in file `srv/data-federation.js`:
 
@@ -1029,374 +1078,16 @@ Finally, open the Fiori UI in the browser again, and see that customer data from
 ![XTravels Fiori details view showing a travel requests, now with flight data again.](assets/xtravels-bookings.png)
 
 
+### On-demand Replication
 
-### Delegating Requests
 
-Value helps are common use cases where delegation of requests is needed, which we implemented like this in `srv/travel-service.js` for the `Customers` entity:
+### Resilience Out of the Box
 
-::: code-group
-```js :line-numbers=24 [srv/travel-service.js]
-const s4 = await cds.connect.to ('S4BusinessPartnerService')
-this.on ('READ', Customers, req => s4.run (req.query))
-```
-:::
 
-The event handler intercepts all `READ` requests to the `Customers` entity, and simply delegates the incoming query as-is to the connected S/4 service (line 26).
+## Learn More
 
-Noteworthy: The incoming request refers to: 
+- [CAP-level Data Federation](data-federation) – Explore different patterns and strategies for data federation in CAP applications.
 
-- the `TravelService.Customers` entity, which is a view on 
-  - the `Customers` entity, which in turn is a consumption view on 
-    - the remote `A_BusinessPartner` entity. 
+- [Inner Loop Development](inner-loops) – Understand how to develop and test integrated applications efficiently using CAP's inner loop development features.
 
-The CAP runtime is aware of that and automatically translates the query into a query to the underlying entity, known to the remote service. Thereby, all select clauses, and where clauses, are fully preserved, translated, and delegated. 
-
-
-### Requests to Remote
-
-In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
-
-::: code-group
-```js :line-numbers=28 [srv/travel-service.js]
-const xflights = await cds.connect.to ('sap.capire.flights.data') // [!code focus]
-this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
-  Bookings.map (({ Flight_ID, Flight_date }) => {
-    return xflights.BookingCreated (Flight_ID, Flight_date) // [!code focus]
-  })
-))
-```
-:::
-
-
-## Service Bindings
-
-Service bindings configure connectivity to remote services. They are injected respective connection points configure in CAP through `cds.requires.<service-name>` configurations, which are defined like this:
-
-```tsx
-cds.requires.<service-name> = { 
-  kind?: 'odata' | 'odata-v2' | 'rest' | 'hcql' | 'graphql' ,
-  model?: '<path-to-csn-or-cds>',
-  credentials: {
-    url?: '<service-endpoint-url>',
-    username?: '<user-name>',
-    password?: '<password>',
-    token?: '<auth-token>',
-  }
-}
-```
-
-
-They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
-
-### CAP Node.js
-
-Service bindings configure connectivity to remote services. They are added to consuming applications' _package.json_ files, either manually, or automatically when using `cds import` as we saw earlier.
-Service bindings have this general form:
-
-```sh
-cds.requires.<service-name> = { kind: '<protocol>' , ... }
-```
-
-::: code-group
-```json [package.json]
-{ ...
-  "cds": {
-    "requires": {
-      "API_BUSINESS_PARTNER": {
-        "kind": "odata-v2",
-        "model": "srv/external/API_BUSINESS_PARTNER"
-      }
-    }
-  }
-}
-```
-:::
-
-### CAP Java
-
-You need to configure remote services in Spring Boot's _application.yaml_:
-::: code-group
-
-```yaml [srv/src/main/resources/application.yaml]
-spring:
-  config.activate.on-profile: cloud
-cds:
-  remote.services:
-    API_BUSINESS_PARTNER:
-      type: "odata-v2"
-```
-
-:::
-To work with remote services, add the following dependency to your Maven project:
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-feature-remote-odata</artifactId>
-  <scope>runtime</scope>
-</dependency>
-```
-
-[Learn about all `cds.remote.services` configuration possibilities.](../../java/developing-applications/properties){.learn-more}
-
-
-### Local Binding Environment
-
-
-### Cloud Foundry
-
-### Kyma / K8s
-
-### Destinations
-
-
-## Inner-Loop Development
-
-### Mocked Out of the Box
-
-In same process ...
-
-```shell
-cds watch 
-```
-
-```zsh
-...
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: '@capire/xflights-data/services.csn:3'
-}
-...
-```
-
-Open UI → flights data displayed
-
-> [!tip] Decoupled Inner-Loop Development
-> CAP runtimes automatically mock imported service APIs during development, allowing us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services. This decouples inner-loop development from external dependencies, speeding up development and increasing resilience.  
-
-
-
-### Using `cds mock`
-
-Run this in terminal 1:
-
-```shell
-cds mock db/xflights.cds
-```
-
-```zsh
-...
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: '@capire/xflights-data/services.csn:3'
-}
-...
-```
-
-Run this in terminal 2:
-
-```shell
-cds watch 
-```
-
-```zsh
-[cds] - connect to sap.capire.flights.data > hcql { 
-  url: 'http://localhost:56350/hcql/data' 
-}
-```
-
-Open UI → flights data missing
-
-
-
-### Test in `cds repl`
-
-
-
-```shell
-cds repl ./
-```
-
-```js
-const xflights = await cds.connect.to ('sap.capire.flights.data')
-await xflights.read `Flights {
-   ID, date, departure, 
-   origin.name as ![from], 
-   destination.name as ![to]
-}`
-```
-
-⇒ equally works for both, xflights api mocked locally, as well as running remotely
-
-
-
-
-### Using Workspaces
-
-Instead of exercising a workflow like that again and again:
-
-- ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
-
-... we can use *npm workspaces* technique to work locally and speed up things as follows:
-
-```shell 
-mkdir -p cap/works; cd cap/works
-git clone https://github.com/capire/xflights
-git clone https://github.com/capire/xtravels
-echo '{"workspaces":["xflights","xtravels"]}' > package.json
-```
-
-Add a link to the local `@capire/xflights-data` API package, enclosed with the cloned xflights sources:
-
-```shell
-npm add ./xflights/apis/data-service
-```
-
-Check the installation using `npm ls`, which would yield output as below, showing that `@capire/xtravel`'s dependency to `@capire/xflights-data` is nicely fulfilled by a local link to `./xflights/apis/data-service`:
-
-```shell
-npm ls @capire/xflights-data
-```
-
-```zsh
-works@ ~/cap/works
-├── @capire/xflights-data@0.1.11 -> ./xflights/apis/data-service
-└─┬ @capire/xtravels@1.0.0 -> ./xtravels
-  └── @capire/xflights-data@0.1.11 deduped -> ./xflights/apis/data-service
-```
-
-Start the xtravels application → and note the sources loaded from *./xflights/apis/data-service*, and the information further below about the `sap.capire.flights.data` service mocked automatically:
-
-```shell
-cds watch xtravels
-```
-
-```zsh
-[cds] - loaded model from 20 file(s):
-
-  xtravels/srv/travel-service.cds
-  xtravels/db/schema.cds
-  xtravels/db/xflights.cds
-  xflights/apis/data-service/index.cds
-  xflights/apis/data-service/services.csn
-  ...
-```
-
-```zsh
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: 'xflights/apis/data-service/services.csn:3',
-}
-```
-
-
-
-### Using Proxy Packages
-
-The usage of *npm workspaces* technique as described above streamlined our workflows as follows:
-
-- Before: ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
-- After: ( *develop* → *export* ) → ( *consume* )
-
-We can even more streamline that by eliminating the export step as follows...
-
-Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
-
-```shell
-mkdir xflights-api-shortcut
-```
-
-Add a `package.json` file in there with that content:
-
-```json
-{
-  "name": "@capire/xflights-data",
-  "dependencies": {
-    "@capire/xflights": "*"
-  }
-}
-```
-
-And an `index.cds` file with that content:
-
-```cds
-using from '@capire/xflights/srv/data-service';
-```
-
-<details> <summary> Using the shell's "here document" technique </summary>
-
-  You can also create those two files from the command line as follows:
-  ```shell
-  cat > xflights-api-shortcut/package.json << EOF
-  {
-    "name": "@capire/xflights-data",
-    "dependencies": {
-      "@capire/xflights": "*"
-    }
-  }
-  EOF
-  ```
-
-  Take the same approach for the `index.cds` file:
-  ```shell
-  cat > xflights-api-shortcut/index.cds << EOF
-  using from '@capire/xflights/srv/data-service';
-  EOF
-  ```
-
-</details>
-With that in place, change our API package dependency in the workspace root as follows:
-
-```shell
-npm add ./xflights-api-shortcut
-```
-
-Check the effect of that → note how `@capire/xflights-data` dependencies now link to `./xflights-api-shortcut`:
-
-```shell
-npm ls @capire/xflights-data
-```
-
-```zsh
-works@ ~/cap/works
-├── @capire/xflights-data@ -> ./xflights-api-shortcut
-└─┬ @capire/xtravels@1.0.0 -> ./xtravels
-  └── @capire/xflights-data@ deduped -> ./xflights-api-shortcut≤
-```
-
-Start the *xtravels* application → and note the sources loaded from *./xflights-api-shortcut*, and the information further below about the `sap.capire.flights.data` service now being _served_, not _mocked_ anymore:
-
-```shell
-cds watch xtravels
-```
-
-```zsh
-[cds] - loaded model from 20 file(s):
-
-  xtravels/srv/travel-service.cds
-  xtravels/db/schema.cds
-  xtravels/db/xflights.cds
-  xflights-api-shortcut/index.cds
-  xflights/srv/data-service.cds
-  xflights/db/schema.cds  
-  ...
-```
-
-```zsh
-[cds] - serving sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: 'xflights/apis/data-service/services.csn:3',
-}
-```
-
-Which means we've streamlined our workflows as follows:
-
-- Before: ( *change* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
-- Step 1: ( *change* → *export* ) → ( *consume* )
-- Step 2: ( *change* ) → ( *consume* )
-
-
-
-
-
-## Intrinsic Extensibility 
+- [Service Bindings](service-bindings) – Learn how to configure connections to external services in a declarative way using service bindings.
