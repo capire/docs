@@ -4,11 +4,11 @@ CAP applications can integrate and federate data from multiple external data sou
 {.abstract}
 
 
-## Introduction
+## Introduction & Motivation
 
 Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
 
-For example, we saw the need for that already in the [CAP-level Service Integration](calesi.md#coding-required) guide, where the `Customer` field in the travel requests list is populated from the remote S/4 Business Partner service, but missing when running the services separately:
+For example, we saw the need for that already in the [CAP-level Service Integration](calesi.md#integration-logic-required) guide, where the `Customer` field in the travel requests list is populated from the remote S/4 Business Partner service, but missing when running the services separately:
 
 1. First run these commands **in two separate terminals**:
 
@@ -80,16 +80,28 @@ In addition, when we again look into the log output, we see some bulk requests l
 ```
 </span>
 
-In the xtravels app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data as follows...
+
+## Get The XTravels Sample
+
+In the [`@capire/xtravels`](https://github.com/capire/xtravels) app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data as documented below. 
+
+Clone the project from GitHub and open it in VS Code to follow along:
+
+```shell
+git clone https://github.com/capire/xtravels.git cap/samples/xtravels
+code cap/samples/xtravels
+```
 
 
 ## Federated Consumption Views
 
-Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, i.e. in close access locally, for example:
+Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, i.e. in close access locally. For example, we did so in out consumption view for S/4 Business Partners:
 
-```cds :line-numbers=4
+::: code-group
+```cds :line-numbers=4 [apis/capire/s4.cds]
 @federated entity Customers as projection on S4.A_BusinessPartner { ... }
 ```
+:::
 
 > [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
 > 
@@ -98,7 +110,7 @@ Tag [consumption views](calesi#consumption-views) with the `@federated` annotati
 
 ## Generic Implementation
 
-Here's the complete code, placed in file `srv/data-federation.js`:
+Here's the complete code, as found in [`srv/data-federation.js`](https://github.com/capire/xtravels/blob/main/srv/data-federation.js):
 
 ::: code-group
 ```js:line-numbers [srv/data-federation.js]
@@ -155,7 +167,7 @@ Let's have a closer look at this code, which handles these main tasks:
 > We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
 
 
-### Test Drive Locally
+## Test Drive Locally
 
 Let's see the outcome in action: to activate the above data federation code, edit `srv/server.js` file and uncomment the single line of code in there like this:
 
@@ -216,16 +228,13 @@ Finally, open the Fiori UI in the browser again, and see that customer data from
 ![XTravels Fiori details view showing a travel requests, now with flight data again.](assets/xtravels-bookings.png)
 
 
-
-## Service-level Replication
-
-### Initial Loads
-### Delta Loads
-### On-Demand Replication
-### Event-driven Updates
-
-## HANA Virtual Tables
-
-## HANA Synonyms
-
-## HANA Data Products
+<!--
+## Service-level Replication 
+### Initial Loads 
+### Delta Loads 
+### On-Demand Replication 
+### Event-driven Updates 
+## HANA Virtual Tables 
+## HANA Synonyms 
+## HANA Data Products 
+-->
