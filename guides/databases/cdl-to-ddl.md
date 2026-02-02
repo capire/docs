@@ -492,7 +492,7 @@ However, even though CAP allows this, and handles all accesses correctly, it is 
 > It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords-identifiers) in CDS models in the first place, as that impacts readability of your models.
 
 > [!warning]  Avoid using reserved Java keywords
-> A CAP Java project usually uses generated [accessor interfaces](../../java/cds-data#generated-accessor-interfaces). Avoid using reserved Java keywords as identifiers in a CDS model as using Java keywords might cause generated interfaces that don't compile. You may use the `@cds.java.name` annotation to mitigate such conflicts.
+> CAP Java generates [accessor interfaces](../../java/cds-data#generated-accessor-interfaces) for CDS entities, using Java keywords as identifiers in a CDS model may result in generated interfaces that fail to compile. Use the `@cds.java.name` annotation to mitigate such conflicts, if you can't change the identifier names.
 
 
 ###### reserved-words
