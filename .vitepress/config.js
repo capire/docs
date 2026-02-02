@@ -80,7 +80,7 @@ const config = defineConfig({
   ],
 
   vite: {
-    plugins: [node(), cap()],
+    plugins: [node(), cap(), templates([path.join(__dirname, 'templates')])],
     esbuild: {
       supported: {
         'top-level-await': true //browsers can handle top-level-await features
@@ -211,6 +211,7 @@ config.markdown.config = md => {
 // Add custom buildEnd hook
 import * as cdsMavenSite from './lib/cds-maven-site'
 import { promises as fs } from 'node:fs'
+import templates from './lib/vite-plugin-templates.js'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')

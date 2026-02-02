@@ -54,46 +54,28 @@ async function initialize() {
   const cds = (await import('@sap/cds')).default;
   const sqlite = (await import('better-sqlite3')).default;
   const express = (await import('express')).default;
+  const templates = (await import('virtual:templates')).default;
+
+  const { bookshop } = templates
+  const model = Object.fromEntries(bookshop
+    ?.filter(file => file.path.endsWith('.cds') || file.path.startsWith('@sap/cds'))
+    ?.map(file => [file.path, file.content]) ?? [])
+
+  const csvs = Object.fromEntries(bookshop
+      ?.filter(f => f.path.endsWith('.csv'))
+      ?.map(f => [f.path, f.content]) ?? [])
 
   window.cds = cds
   //======= compile a csn model =======
-  const csn = cds.compile(`
-
-  entity Books {
-    key ID   : Integer;
-    author   : Association to Authors @mandatory;
-    title    : localized String @mandatory;
-    descr    : localized String(2000);
-    stock    : Integer;
-    price    : Decimal;
-    currency : String;
-  }
-
-  entity Authors {
-    key ID       : Integer;
-    name         : String @mandatory;
-    dateOfBirth  : Date;
-    dateOfDeath  : Date;
-    placeOfBirth : String;
-    placeOfDeath : String;
-    books        : Association to many Books on books.author = $self;
-  }
-  `);
+  const csn = cds.compile(model);
+  csn.namespace = 'sap.capire.bookshop';
 
   //======= start a cds server =======
   await sqlite.initialized // wait for sqlite3-wasm to be ready (part of polyfill)
   injectLogger(sqlite);
 
   cds.db = await cds.connect.to('db');
-  await cds.deploy(csn).to(cds.db);
-
-  await INSERT.into('Authors').entries([
-    {ID: 1, name: 'JRR Tolkien'}
-  ])
-
-  await INSERT.into('Books').entries([
-    {ID: 1, title: 'LOTR', author_ID: 1}
-  ])
+  await cds.deploy(csn, null, csvs).to(cds.db);
 
   const app = express();
   await cds.serve('all').from(csn).in(app);
@@ -150,7 +132,7 @@ to the respective calculation in the generated query when the entity is queried.
 <InteractiveQuery language="cds" :onExecute="cdsQL" />
 
 <InteractiveQuery initialQuery="await INSERT.into('Books').entries(
-  { ID: 2, author_ID: 1, title: 'LOTR 2' }
+  { ID: 2, author_ID: 150, title: 'Eldorado' }
 )" :onExecute="evalJS" />
 
 
