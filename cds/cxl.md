@@ -373,10 +373,10 @@ INSERT INTO sap_capire_bookshop_Books (createdAt,createdBy,modifiedAt,modifiedBy
 SELECT json_insert('{}','$."ID"',ID,'$."@assert:stock"',"@assert:stock") as _json_
 FROM (
   SELECT
-    "$B".ID,
-    case when "$B".stock < ? then ? end as "@assert:stock"
-  FROM AdminService_Books as "$B"
-  WHERE ("$B".ID) in ((?))
+    Books.ID,
+    case when Books.stock < ? then ? end as "@assert:stock"
+  FROM AdminService_Books as Books
+  WHERE (Books.ID) in ((?))
 ) [ 0, 'Enter a positive number', 277 ]
 
 -- result of evaluation contains violated constraints,
@@ -458,7 +458,7 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 
-CAP supports a set of [portable functions](../guides/databases/cql-to-sql.md#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
+CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
 
 ## ref (path expression) { #ref }
 
@@ -741,6 +741,10 @@ But we can also move this condition to an infix filter:
 ```
 
 ```sql [SQL]
+SELECT author.name as name
+FROM sap_capire_bookshop_Books as Books
+  LEFT JOIN sap_capire_bookshop_Authors as author ON author.ID = Books.author_ID
+WHERE Books.price > 19.99
 ```
 :::
 
@@ -949,4 +953,3 @@ navigates along the `author` association of the `Books` entity only if the autho
 }
 
 </style>
-

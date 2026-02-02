@@ -17,7 +17,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 </style>
 
 
-# CAP Authorization { #authorization }
+# CAP-level Authorization { #authorization }
 
 <ImplVariantsHint />
 
@@ -533,7 +533,7 @@ You can leverage the `exists` predicate in `where` conditions to define filters 
 service ProjectService @(requires: 'authenticated-user') {
   entity Projects @(restrict: [
      { grant: ['READ', 'WRITE'],
-       where: (exists members[userId = $user and role = `Editor`]) } ]) {
+       where: (exists members[userId = $user and role = 'Editor']) } ]) {
     members: Association to many Members; /*...*/
   }
   @readonly entity Members {

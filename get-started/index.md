@@ -96,7 +96,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to check whether installation was successful, and to see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
   ```shell
   cds
   ```
@@ -162,7 +162,7 @@ bookshop/           # the project's root folder
 ```
 
 > [!info] Convention over configuration
-> CAP uses defaults for many things you'd have to configure in other frameworks. Goal is that things should just work out of the box, with zero configuration, as much as possible. While you _can_ override these defaults, of course, you _should not_ do so, but rather stick to the defaults, for the sake of simplicity.
+> CAP uses defaults for many things you'd have to configure in other frameworks. The idea is that things just work out of the box, with zero configuration. While you _can_ override these defaults, of course, you _should not_ do so, but rather stick to the defaults, for the sake of simplicity.
 
 
 ### `cds watch`
@@ -177,7 +177,7 @@ cds watch
   Waiting for some to arrive...
 ```
 
-Let's feed it with a simple service definition by running that in a secondary terminal, which adds a simple service definition as shown below:
+Let's feed it with a simple service definition by running that in a _secondary terminal_, which adds a simple service definition as shown below:
 ```shell
 cds add tiny-sample
 ```
@@ -216,36 +216,42 @@ Use `cds add` to grow your project as you go:
 cds add data
 cds add nodejs
 cds add java
+```
+<!--
 cds add ui5
 cds add fiori-tools
-```
+-->
 
-Use `cds add` to add deployment options
+Use `cds add` to add deployment options:
 
 ```shell
-cds add multitenancy
 cds add hana
+cds add xsuaa
+cds add ias
+cds add multitenancy
 cds add mta
 cds add kyma
 cds add github-actions
 ```
 
 ### `cds up`
+
 Use `cds up` to build and deploy your project in one go:
 
 ```shell
 cds up
-cds up --to hana
 cds up --to cf
-cds up --to kyma
+cds up --to k8s
 ```
+<!--
+cds up --to hana
+-->
 
 ## Stay up to Date!
 
-> [!important]
+> [!important] Staying up to date is crucial to receive important security fixes.
 > In order to benefit from the latest features and improvements, as well as receiving crucial security fixes, it's of utter importance to stay up to date with latest releases of CAP. Regularly run the following commands to do so.
 
-> [!caution] Staying up to date is crucial to receive important security fixes.
 
 Keep your development environment up to date:
 
@@ -279,4 +285,4 @@ npm upgrade
 
 ## Next: Bookshop
 
-Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.
+Continue with [_The Bookshop Sample_](./bookshop) for a step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.

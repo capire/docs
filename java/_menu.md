@@ -22,7 +22,6 @@
 # [Change Tracking](change-tracking)
 # [Transactional Outbox](outbox)
 # [Multitenancy](multitenancy)
-  ## [Multitenancy (Classic)](multitenancy-classic) <!-- INTERNAL -->
 # [Security](security)
 # [Spring Boot Integration](spring-boot-integration)
 # [Developing Applications](developing-applications/)

@@ -128,7 +128,7 @@ List<Map<String, Object>> readMyEntity(CdsReadEventContext context) {
 
 `UPDATE` and `DELETE` statements have an optional filter condition (where clause) which determines the entities to be updated/deleted. Handlers _must_ return a `Result` object with the number of entities that match this filter condition and have been updated/deleted. Use the [ResultBuilder](#result-builder) to create the `Result` object.
 
-::: warning _❗ Warning_<br>
+::: warning <br>
 If an event handler for an `UPDATE` or `DELETE` event does not specify a result the number of updated/deleted rows is automatically set to 0 and the OData protocol adapter will translate this into an HTTP response with status code `404` (Not Found).
 :::
 

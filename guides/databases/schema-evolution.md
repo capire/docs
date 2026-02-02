@@ -8,13 +8,13 @@ Schema evolution is the capability of a database to adapt its schema (tables, co
 
 ## Drop-Create in Development
 
-During development, schema evolution is typically handled using a "drop-create" strategy, where the existing databases or schemas are dropped and recreated based on the current CDS model. This approach is simple and effective, and most suitable for development phases, as it:
+During development, schema evolution is typically handled using a "drop-create" strategy, where you drop and recreate the existing databases or schemas based on the current CDS model. This approach is simple and effective, and most suitable for development phases, as it:
 
-- allows developers to quickly iterate on their data models 
-- with incompatible changes being the standard, such as
-- adding, removing, or renaming entities and fields
+- Allows you to quickly iterate on your data models
+- Makes incompatible changes the standard, such as:
+  - Adding, removing, or renaming entities and fields
 
-We see that in action when running `cds deploy`, which generates the necessary SQL statements to drop existing tables and recreate them or new ones according to the current CDS definitions:
+You can see this in action when you run `cds deploy`, which generates the necessary SQL statements to drop existing tables and recreate them or new ones according to the current CDS definitions:
 
 ```shell
 cds deploy --dry
@@ -38,7 +38,7 @@ In addition to dropping and recreating tables in-place, you can and should also 
 ## Schema Evolution by CAP
 
 
-In production environments, a drop-create strategy is not feasible, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that can be reviewed and applied to the database. 
+In production environments, you can't use a drop-create strategy, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that you can review and apply to the database. 
 
 Let's simulate the workflow with the [@capire/bookshop](https://github.com/capire/bookshop) example. 
 
@@ -47,7 +47,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
    cds deploy --dry --model-only -o former.csn
    ```
 
-2. Make changes to our models, for example let's edit `db/schema.cds` like this:
+2. Make changes to your models. For example, edit `db/schema.cds` like this:
 
    ::: code-group
    ```cds [db/schema.cds]
@@ -113,7 +113,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
 
 ### Disallowed Changes
 
-Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. Examples of such changes include:
+Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. The following list shows examples of such changes:
 
 - Renaming entities or fields (instead, add new ones and migrate data)
 - Changing data types in incompatible ways (e.g., from String to Integer)
@@ -121,9 +121,9 @@ Some changes to the CDS model are considered disallowed in the context of schema
 - Reducing the length of strings or binary fields
 - Reducing the precision of numeric fields
 
-When such disallowed changes are detected during the generation of migration scripts, `cds deploy --script` will print a warning, and also add corresponding comments to the generated SQL script, which can then be reviewed and addressed manually.
+When `cds deploy --script` detects such disallowed changes during the generation of migration scripts, it prints a warning and adds corresponding comments to the generated SQL script, which you can then review and address manually.
 
-For example, if we would rename the `descr` field to `details` like that:
+For example, if you rename the `descr` field to `details` like this:
 
    ::: code-group
    ```cds [db/schema.cds]
@@ -171,14 +171,14 @@ You can enable automatic schema evolution in your `db` configuration:
    ```
    :::
 
-This will enable automatic schema migration when running `cds deploy` in production-like environments as follows:
+This enables automatic schema migration when you run `cds deploy` in production-like environments. The migration process works as follows:
 
-- Whenever a `cds deploy` is executed successfully, the resulting state of the database schema is stored in an internal table.
+- Whenever you execute `cds deploy` successfully, CAP stores the resulting state of the database schema in an internal table.
 
-- Before applying any changes, CAP compares the new state of the CDS models with the stored state. Any differences are translated into appropriate SQL statements to migrate the schema.
+- Before applying any changes, CAP compares the new state of the CDS models with the stored state and translates any differences into appropriate SQL statements to migrate the schema.
 
 > [!important] 
-> Only non-lossy changes are applied automatically. If lossy changes are detected, `cds deploy` will abort with respective errors and include comments in the generated SQL script, similar to the general approach described above.
+> CAP applies only non-lossy changes automatically. If it detects lossy changes, `cds deploy` aborts with respective errors and includes comments in the generated SQL script, similar to the general approach described above.
 
 
 ## Schema Evolution by HDI
@@ -193,6 +193,6 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 
 ## Liquibase for Java Projects
 
-For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. 
+For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how you deploy database changes. 
 
 Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).

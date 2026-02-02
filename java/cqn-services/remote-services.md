@@ -69,7 +69,7 @@ The `type` property defines the protocol used by the remote API. The CAP Java SD
 
 ::: tip
 You can use the `cds import` command to generate a CDS service definition from an EDMX API specification.
-To learn more about this, have a look at the section [Importing Service Definitions](../../guides/services/consuming-services#import-api).
+To learn more about this, have a look at the section [Importing Service Definitions](../../guides/integration/calesi#importing-apis).
 :::
 
 [Learn about all `cds.remote.services` configuration possibilities in our **CDS Properties Reference**.](../developing-applications/properties#cds-remote-services){.learn-more}

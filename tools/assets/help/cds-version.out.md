@@ -2,8 +2,8 @@
 <pre class="log">
 > cds version
 
-@sap/cds: 9.6.2
-@sap/cds-compiler: 6.6.0
+@sap/cds: 9.6.4
+@sap/cds-compiler: 6.6.2
 @sap/cds-dk (global): 9.6.1
 @sap/cds-fiori: 2.1.1
 @sap/cds-mtxs: 3.6.1
@@ -11,5 +11,5 @@
 @cap-js/db-service: 2.8.1
 @cap-js/openapi: 1.3.1
 @cap-js/sqlite: 2.1.2
-Node.js: v22.21.1
+Node.js: v22.22.0
 </pre>

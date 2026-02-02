@@ -104,6 +104,7 @@ The _capire_ samples at https://github.com/capire are the official and curated c
 [![](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
 
 
+
 ## Featured Samples
 
 
@@ -131,6 +132,53 @@ The Sustainable SaaS (SuSaaS) sample application has been built in a partner col
 
 
 
+
+## The *qmacro* Series
+
+![](assets/learn-more/qmacro.png){style="float:right; width: 144px; margin: 0px 1em"}
+
+SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number of learning resources around CAP, published under the umbrella of _qmacro_, which are most recommended to both beginners and advanced users of CAP:
+
+### Videos
+
+- [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
+- [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
+- [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
+- [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
+- [Good to know: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9)
+- [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5)
+- [How things work: CAP Node.js plugins](https://www.youtube.com/playlist?list=PL6RpkC85SLQDwzbi9eVuMStRlpVMBqidQ)
+- [Hands-on SAP Dev general live stream series](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0)
+
+### Blog post series
+
+- [The Art and Science of CAP](https://qmacro.org/blog/posts/2024/12/06/the-art-and-science-of-cap/)
+- [Modules, modularity & reuse in CDS models](https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/)
+- [CAP Node.js Plugins](https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/)
+- [All posts tagged with 'cap'](https://qmacro.org/tags/cap/)
+
+### Selected individual articles
+
+- [A deep dive into OData and CDS annotations](https://qmacro.org/blog/posts/2023/03/10/a-deep-dive-into-odata-and-cds-annotations/)
+- [Five reasons to use CAP](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/)
+- [Flattening the hierarchy with mixins](https://qmacro.org/blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/)
+- [A reCAP intro to the cds REPL](https://qmacro.org/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)
+- [Using @capire modules from GitHub Packages](https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/)
+- [Modelling contained-in relationships with compositions in CDS](https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/)
+- [A simple exploration of status transition flows in CAP](https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/)
+
+### Workshop exercise content
+
+- [Service integration with SAP Cloud Application Programming Model](https://github.com/SAP-samples/cap-service-integration-codejam)
+- [Stay cool, stay local: CAP local development workshop](https://github.com/SAP-samples/cap-local-development-workshop)
+- [Hands-on with CAP CDS](https://github.com/SAP-samples/cap-cds-hands-on)
+
+### Miscellaneous
+
+- [The 'capref' collection – Axioms, Best Practices and Features](https://github.com/qmacro/capref/tree/main#readme)
+- [Integrating an external API into a CAP service](https://youtu.be/T_rjax3VY2E)
+
+
 ## SAP Learning Sources
 
    - [SAP Learning Courses](https://learning.sap.com/courses?lsc_product=SAP+Cloud+Application+Programming+Model)
@@ -139,21 +187,18 @@ The Sustainable SaaS (SuSaaS) sample application has been built in a partner col
    - [SAP Discovery Center Missions](https://discovery-center.cloud.sap/missionCatalog/?search=cap&product=32)
 
 
+
 ## Hands-Ons & CodeJams
 
 - [TechEd 2023 Hands-On AD264 – Build Extensions with CAP](https://github.com/SAP-samples/teched2023-AD264/)
 - [TechEd 2022 Hands-On AD264 – Verticalization, Customization, Composition](https://github.com/SAP-archive/teched2022-AD264)
-- [CAP Service Integration CodeJam](https://github.com/sap-samples/cap-service-integration-codejam) by DJ Adams
 
 
 
-## Blogs & Podcasts
+## Blog Posts & Other Material
 
-- [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) <br> by DJ Adams and Daniel Hutzel
-- [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx) <br> by DJ Adams
 - [Hybrid Testing and Alternative DBs](https://youtu.be/vqub4vJbZX8?si=j5ZkPR6vPb59iBBy) <br> by Thomas Jung
 - [Consume External Services](https://youtu.be/rWQFbXFEr1M) <br> by Thomas Jung
 - [Building a CAP app in 60 min](https://youtu.be/zoJ7umKZKB4) <br> by Martin Stenzig
-- [Integrating an external API into a CAP service](https://youtu.be/T_rjax3VY2E) <br> by DJ Adams
 - [Surviving and Thriving with the SAP Cloud Application Programming Model](https://community.sap.com/t5/tag/CAPTricks/tg-p/board-id/technology-blog-sap)  <br> by Max Streifeneder (2023)
 - [Multitenant SaaS applications on SAP BTP using CAP? Tried-and-True!](https://community.sap.com/t5/technology-blogs-by-sap/multitenant-saas-applications-on-sap-btp-using-cap-tried-and-true/ba-p/13541907) <br> by Martin Frick (2022)

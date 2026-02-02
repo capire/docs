@@ -1,17 +1,6 @@
 
-# [ CAP-level Service Integration ](calesi.md) <!-- UNRELEASED -->
-# [ Reuse & Compose ](composition.md)
-# [ Using Microservices ](microservices.md) <!-- UNRELEASED -->
-
-# Platform Services <!-- UNRELEASED -->
-
-   ## [ Application Gateways ](app-gateways.md) <!-- UNRELEASED -->
-   ## [ Identity & Authentication ](ias-xsuaa.md) <!-- UNRELEASED -->
-   ## [ Portal Services ](portal-services.md) <!-- UNRELEASED -->
-   ## [ Attachments ](attachments.md)  <!-- UNRELEASED -->
-   ## [ Audit Logging ](audit-logging.md)  <!-- UNRELEASED -->
-   ## [ Notifications ](notifications.md)  <!-- UNRELEASED -->
-   ## [ Telemetry ](telemetry.md)  <!-- UNRELEASED -->
-   ## [ Change Tracking ](change-tracking.md)  <!-- UNRELEASED -->
-
-# [ CAP Plugins Guide  ](plugins-guide.md) <!-- UNRELEASED -->
+# [ CAP-level Service Integration ](calesi.md)
+# [ CAP-level Data Federation ](data-federation.md) 
+# [ Inner Loop Development ](inner-loops.md) 
+# [ Reuse & Compose ](reuse-and-compose.md)
+# [ Service Bindings ](service-bindings.md) <!-- UNRELEASED -->

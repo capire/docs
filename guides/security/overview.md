@@ -28,7 +28,7 @@ The building blocks are:
 - [Authentication](./authentication )
 - [CAP Users](./cap-users)
 - [CAP Authorization](./authorization)
-- [Remote Authentication](./remote-authentication)
+- [Outbound Authentication](./remote-authentication)
 
 **By separating these concerns**, CAP ensures that each security function can be configured and customized independently without affecting other parts of the system, providing maximum flexibility.
 
@@ -66,6 +66,10 @@ As a welcome side effect, this also allows testing application security in a **l
 For instance, CAP allows performing outbound service calls via [Remote Services while handling authentication completely under the hood](./remote-authentication#remote-services). 
 This abstraction layer ensures that developers do not need to worry about the details of authentication. 
 
+::: warn
+Application code that doesn't build on the abstractions provided by CAP, but instead uses the interfaces of the underlying security services directly, is highly vulnerable to configuration changes or behavioral changes on this level.
+For example, the application cannot be switched from TLS to mTLS-based communication with the platform services without rewriting custom code, if it doesn't consistently use Remote Services.
+:::
 
 ### Secure by Default { #key-concept-secure-by-default }
 
@@ -76,7 +80,7 @@ For instance, endpoints of deployed CAP applications are [automatically authenti
 Making endpoints public requires manual configuration in either the CAP model or the middleware.
 
 ::: warning
-CAP cannot guarantee end-to-end security across all application layers by default.
+CAP cannot guarantee end-to-end [product security](./data-protection) across all application layers by default.
 The application is responsible for coordinated overall configuration.
 :::
 
@@ -127,7 +131,7 @@ Application providers (platform users) have privileged access to the application
 In contrast, application subscribers (business users) are restricted to a minimal interface.
 
 ::: warning
-❗ Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
+Application providers **must not share any secrets from the application zone** such as binding information with other components or persons.
 In a production environment, we recommend deploying and operating the application on behalf of a technical user.
 :::
 
@@ -151,7 +155,7 @@ Custom domain certificates must be signed by a trusted certificate authority.
 :::
 
 ::: warning
-❗ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
+ **In general, application endpoints are visible to public zone**. Hence, CAP applications need to protect all exposed endpoints.
 :::
 
 
@@ -162,7 +166,7 @@ The underlying framework has a major impact on the security of the application,
 regardless of whether it runs a [cloud environment](#cloud) or [local environment](#local).
 Moreover, CAP applications are tightly integrated with [platform services](#btp-services), in particular with identity and persistence service.
 
-::: warning ❗ End-to-end security necessarily requires compliance with all security policies of all involved components
+::: warning  End-to-end security necessarily requires compliance with all security policies of all involved components
 CAP application security requires consistent security configuration of the underlying platform and all consumed services. Consult the relevant security documentation accordingly.
 :::
 
