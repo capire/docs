@@ -492,8 +492,6 @@ srv/external
 
 > Run `cds import` with option `--as cds` to generate a human-readable `.cds` file instead of `.csn`.
 
-Further, it adds a [service binding](./service-bindings) stub to your _package.json_, which we'll learn about later.
-
 
 > [!tip] Import from other APIs
 > You can use `cds import` in the same way as for OData to import SAP data products, [_OpenAPI_](../protocols/openapi) definitions, [_AsyncAPI_](../protocols/asyncapi) definitions, or from [_ABAP RFC_](../../plugins/#abap-rfc). For example:
