@@ -31,6 +31,7 @@
 - [guides/localized-data](guides/uis/localized-data)
 - [guides/media-data](guides/services/media-data)
 - [guides/messaging/(.*)](guides/events/$1)
+- [guides/messaging/event-broker](guides/events/event-hub)
 - [guides/providing-services](guides/services/providing-services)
 - [guides/reuse-and-compose](guides/integration/reuse-and-compose)
 - [guides/services](guides/services/providing-services)
