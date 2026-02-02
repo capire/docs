@@ -24,7 +24,7 @@ Integrating remote services - from other applications, third-party services, or 
 
 ## Introduction & Overview
 
-### As if they were local
+### As If They Were Local 
 
 Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how this works:
 
@@ -436,7 +436,7 @@ On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtrave
 
 
 
-### From Packaged APIs
+### Packaged APIs
 
 Packaged APIs provided by CAP service providers are imported to consuming applications like that:
 
@@ -460,7 +460,7 @@ This allows us to update imported APIs later on using standard commands like `np
 
 
 
-### From OData EDMX
+### OData APIs
 
 You can also `cds import` APIs from other sources, such as OData APIs for customer data from SAP S/4 HANA systems:
 
@@ -507,7 +507,7 @@ Further, it adds a [service binding](#service-bindings) stub to your _package.js
 > [Learn more about `cds import` in the tools guides.](../../tools/apis/cds-import){.learn-more} 
 
 
-### Via Reuse Packages
+### Reuse Packages
 
 Instead of importing the same APIs repeatedly in each project, you can import them once and share them as reusable packages. These packages use the same techniques as `cds export` and provide the same plug & play convenience. 
 
@@ -535,7 +535,7 @@ For the _XTravels_ sample, we did so with the [`@capire/s4`](https://github.com/
       "version": "1.0.0",
       "cds": {
          "requires": {
-            "S4BusinessPartnerService": {
+            "sap.capire.s4.business-partner": {
                "service": "API_BUSINESS_PARTNER",
                "kind": "odata-v2"
             }
@@ -630,14 +630,14 @@ namespace sap.capire.s4;
 @federated entity Customers as projection on S4.A_BusinessPartner {
   BusinessPartner as ID,
   PersonFullName  as Name,
-  LastChangeDate  as modifiedAt,
+  LastChangeDate || 'T' || LastChangeTime || 'Z' as modifiedAt,
 } where BusinessPartnerCategory == 1; // 1 = Person
 ```
 :::
 
 Noteworthy aspects here are:
 
-- We map names to match our domain, for example by renaming the imported entity from `A_Business_Partner` to `Customers`, as well as choosing simpler names for the elements we want to use.
+- We map names to match our domain, for example by renaming the imported entity from `A_Business_Partner` to `Customers`, choose simpler names for the elements we want to use, and combine date and time fields into a single `modifiedAt` timestamp in ISO 8601 format.
 
 - For the `Flights` entity we also flatten data from associations directly into the `Flights` consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
 
@@ -656,7 +656,7 @@ Noteworthy aspects here are:
 
 
 
-### Associations to Remote
+### Associations
 
 With consumption views in place, you can now reference them from your models _as if they were local_, creating mashups of imported and local definitions. 
 
@@ -694,7 +694,7 @@ Extensions to remote entities, as shown above, are only possible for elements wh
 :::
 
 
-### Field Constraints
+### Constraints
 
 ::: code-group
 ```cds :line-numbers=44 [srv/travel-constraints.cds]
@@ -712,7 +712,7 @@ annotate TravelService.Bookings with { ...
 - Line 46 – Adds a constraint to the _Flight.date_ element to ensure that the flight date of a booked _Flight_ falls within the travel period of the associated _Travel_.
 
 
-### Serving to Fiori UIs
+### Serving UIs
 
 ::: code-group
 ```cds :line-numbers=1 [srv/travel-service.cds]
@@ -785,16 +785,16 @@ With mashed up models, you can run applications in _'airplane mode'_ without ups
     cds watch 
     ```
     ```zsh
+    [cds] - mocking sap.capire.s4.business-partner {
+      at: [ '/odata/v4/s4-business-partner' ],
+      decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
+    }
+    ```zsh
     [cds] - mocking sap.capire.flights.data {
       at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
       decl: 'xflights/apis/data-service/services.csn:3'
     }
     ```
-    ```zsh
-    [cds] - mocking S4BusinessPartnerService {
-      at: [ '/odata/v4/s4-business-partner' ],
-      decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
-    }
     ```
 
 2. Open the Fiori UI in the browser -> it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
@@ -814,20 +814,20 @@ While everything just works nicely when mocked in-process and with a shared in-m
 
 1. First run these commands **in two separate terminals**:
 
-    ```shell
-    cds mock apis/capire/s4.cds
-    ```
-    ```shell
+    ```shell :line-numbers=1
     cds mock apis/capire/xflights.cds
+    ```
+    ```shell  :line-numbers=2
+    cds mock apis/capire/s4.cds
     ```
 
 2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
 
-    ```shell
+    ```shell :line-numbers=3
     cds watch
     ```
     ```zsh
-    [cds] - connect to S4BusinessPartnerService > odata { 
+    [cds] - connect to sap.capire.s4.business-partner > odata { 
       url: 'http://localhost:54476/odata/v4/s4-business-partner' 
     }
     ```
@@ -859,124 +859,458 @@ It all starts with connecting to remote services, which we do like that in the x
 ::: code-group
 
 ```js :line-numbers=21 [srv/travel-service.js]
+const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
 const xflights = await cds.connect.to ('sap.capire.flights.data')
-const s4 = await cds.connect.to ('S4BusinessPartnerService')
 ```
 
 :::
 
-The `cds.connect` functions used here is the common way to address service instances, that is commonly used for and works the same way for both, local as well as remote services: 
+The `cds.connect.to(<service>)` function used here is the single common way to address service instances. It's used for and works the same way for both, local as well as remote services: 
 
 - for **local** services, it returns the local service providers – i.e., instances of [`cds.ApplicationService`](../../node.js/app-services), or your application-specific subclases thereof. 
+
 - for **remote** services, it returns a remote service proxy – i.e., instances of [`cds.RemoteService`](../../node.js/remote-services), generically constructed by the client libs.
-- **both** inherit from the [`cds.Service`](../../node.js/core-services) base class, which constitutes the uniform programming interface for consuming CAP services – agnostic to underlying protocols, and agnostic to whether its local or remote at all.
 
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
 ](assets/remoting.drawio.svg)
 
+> [!tip] Agnostic to Location and Protocol
+> Always use `cds.connect.to(<service>)` to connect to both local and remote services. Both inherit from the [`cds.Service`](../../node.js/core-services) base class, which constitutes the uniform interface for consuming CAP services – in turn agnostic to underlying protocols, and agnostic to whether its local or remote at all.
+
+
 ### Uniform, Agnostic APIs
 
-The uniform, agnostic programming interface offered through [`cds.Service`](../../node.js/core-services) is centered around these methods: 
+The uniform and protocol-agnostic programming interface offered through [`cds.Service`](../../node.js/core-services) is centered around these methods: 
 
+- [`cds.connect.to (<service>)`](../../node.js/cds-connect) → connects to remote services, as shown above.
+- [`srv.run (<query>)`](../../node.js/core-services#srv-run-query) → executes advanced, deep queries with remote services.
 - [`srv.send (<request>)`](../../node.js/core-services#srv-send-request) → synchronous communication, for all kinds of services.
 - [`srv.emit (<event>)`](../../node.js/core-services#srv-emit-event) → asynchronous communication, via messaging middlewares.
-- [`srv.run (<query>)`](../../node.js/core-services#srv-run-query) →  execute CRUD queries with services that support that, like CAP services, OData services, or GraphQL services.
+- [`srv.on (<event>)`](../../node.js/core-services#srv-on-event) → subscribe event handlers to events from other services.
 
-Here are some typical usages found in xtravels: 
+Here are some typical usages found in the xflights/xtravels sample: 
 
-```js
-await xflights.send ('POST','BookingCreated', { flight, date, seats })
-await xflights.emit ('FlightsUpdated', { flight, date, free_seats })
+```js :line-numbers=1 
 await xflights.run (SELECT.from`Flights`.where`modifiedAt > ${latest}`)
+await xflights.send ('POST','BookingCreated', { flight, date, seats })
+await this.emit ('Flights.Updated', { flight, date, free_seats }) // this = xflights service
+xflights.on ('Flights.Updated', async msg => { ... })
+```
+- Line 1 – queries the xflights service for updated flights since the last sync
+- Line 2 – calls a custom action of the xflights service (synchronously).
+- Line 3 – emits asynchronous events from the xflights service.
+- Line 4 – subscribes an event handler to events from the xflights service.
+
+The [`srv.send(<request>)`](../../node.js/core-services#srv-send-request) method – and its [_REST-style_ derivatives](../../node.js/core-services#rest-style-api) – is the most flexible option, as it allows to send all kinds of requests to all kinds of services – including non-CAP services, and non-OData services, down to very technical services, for which no API schema might exist at all. 
+
+The, [`srv.emit(<event>)`](../../node.js/core-services#srv-emit-event) method – with [`srv.on(<event>)`](../../node.js/core-services#srv-on-event) on subscribers' side – promotes asynchronous communication via events, which is most recommended for reasons of decoupling and scalability. It requires the target service to be connected via a messaging middleware, though.
+
+The [`srv.run(<query>)`](../../node.js/core-services#srv-run-query) method – and its [_CRUD-style_ derivatives](../../node.js/core-services#crud-style-api) – is the most powerful option, and closest to the use cases of data-centric business applications. It requires the target service to support querying, though, like CAP application services, OData services, or GraphQL services. 
+
+> [!tip] Choosing the Right Method
+> Choose the method that best fits your use case and the capabilities of the target service. Prefer `srv.run(<query>)` for its power and conceptual expressiveness with data-centric operations. Consider `srv.emit(<event>)` for decoupled, asynchronous communication whenever possible. Retreat to `srv.send(<request>)` for maximum flexibility only when needed.
+
+> [!tip] Staying at CAP Level
+> Always stay at CAP level when integrating services, using the uniform and protocol-agnostic [_Core Service APIs_](../../node.js/core-services) outlined above, combined with [_CQL_](../../cds/cql) as CAP's universal query language. This allows CAP to automate things like protocol translations, data federation, resilience for you, as well as mocking services out of the box, thereby promoting fast inner loops. Only retreat to lower levels when absolutely necessary.
+
+### Testing with `cds repl` 
+
+We can use `cds repl` to experiment the options to send requests and queries to remote services interactively. Do so as follows...
+
+From within the xtravels project's root folder `cap/samples/xtravels`, start by mocking the remote services in separate terminals, then start xtravels server within `cds repl` in a third terminal:
+
+```shell :line-numbers=1
+cds mock apis/capire/xflights.cds
+```
+```shell :line-numbers=2
+cds mock apis/capire/s4.cds
+```
+```shell :line-numbers=3
+cds repl ./
 ```
 
-The querying API is the most powerful and closest to the use cases of data-centric business applications.
+Within the REPL, connect to local and remote services:
 
- 
+```js
+const TravelService = await cds.connect.to ('TravelService')
+const xflights = await cds.connect.to ('sap.capire.flights.data')
+const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
+```
+
+Read data directly from the remote `A_BusinessPartner` entity. 
+```js
+await s4.run (SELECT.from`A_BusinessPartner`.limit (3))
+await s4.read`A_BusinessPartner`.limit (3) // shorthand // [!code focus]
+```
+> The variant on line 2 is a convenient shorthand for the one on line 1.
+
+::: details See results output ...
+```zsh
+=> [
+  {
+    BusinessPartner: '000001',
+    PersonFullName: 'Mrs. Theresia Buchholm',
+    LastChangeDate: '2024-01-19',
+    LastChangeTime: '21:48:32',
+    BusinessPartnerCategory: '1'
+  },
+  {
+    BusinessPartner: '000002',
+    PersonFullName: 'Mr. Johannes Buchholm',
+    LastChangeDate: '2024-01-08',
+    LastChangeTime: '11:22:01',
+    BusinessPartnerCategory: '1'
+  },
+  {
+    BusinessPartner: '000003',
+    PersonFullName: 'Mr. James Buchholm',
+    LastChangeDate: '2022-11-04',
+    LastChangeTime: '15:27:46',
+    BusinessPartnerCategory: '1'
+  }
+]
+```
+:::
+
+Read the same data via the `s4.capire.s4.Customers` consumption view:
+```js
+const { Customers } = cds.entities ('sap.capire.s4')
+await s4.read (Customers) .limit (3) // [!code focus]
+```
+::: details See results output ...
+```zsh
+=> [
+  { ID: '000001', Name: 'Mrs. Theresia Buchholm', modifiedAt: '2024-01-19' },
+  { ID: '000002', Name: 'Mr. Johannes Buchholm', modifiedAt: '2024-01-08' },
+  { ID: '000003', Name: 'Mr. James Buchholm', modifiedAt: '2022-11-04' }
+]
+```
+Note how field names and structure are adapted to our domain.
+:::
+
+::: details See OData requests ...
+Watch the log output in the second terminal to see the translated OData requests being received by the remote service, for example:
+
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner { 
+  '$top': '3' 
+}
+```
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner {
+  '$select': 'BusinessPartner,PersonFullName,LastChangeDate',
+  '$top': '3'
+}
+```
+:::
+
+CRUD some data into remote `A_BusinessPartner` entity, still via the `s4.capire.s4.Customers` consumption view:
+```js
+await s4.insert ({ ID: '123', Name: 'Sherlock' }) .into (Customers)
+await s4.create (Customers, { ID: '456', Name: 'Holmes' })
+await s4.read`ID, Name` .from (Customers) .where`length(ID) <= 3`
+await s4.update (Customers,'123') .with ({ modifiedAt: '2026-01-01' })
+await s4.delete (Customers,'123')
+await s4.delete (Customers) .where`ID = ${'456'}`
+```
+
+> [!tip] Always use Consumption Views
+> Even when accessing remote services directly, always prefer doing so via consumption views as shown above. They map the remote definitions to your domain, and allow CAP to automatically translate queries accordingly. This includes renaming, flattening, restructuring, as well as filtering out unnecessary data.
 
 
-### Querying Remote Data
+### Modifying CQNs
 
-> [!tip] CAP-level Querying -> agnostic to databases & protocols
-> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
+Queries in CAP are represented as first-class [CQN](../../cds/cqn) objects under the hood. When querying remote services, we can inspect and modify those query objects prior to forwarding them to target services for execution.
+
+Let's try that out in `cds repl`, which we [started before](#testing-with-cds-repl). 
+
+1. Construct and inspect an example of an inbound query:
+
+```js
+q1 = SELECT`ID, Name`.from (Customers) .where`length(ID) <= 3`
+```
+```zsh
+=> cds.ql {
+  SELECT: { 
+    from: { ref: [ 'sap.capire.s4.Customers' ] },
+    columns: [ 
+      { ref: [ 'ID' ] }, 
+      { ref: [ 'Name' ] } 
+    ],
+    where: [
+      { func:'length', args: [ {ref:['ID']} ] },  '<=',  { val:3 }
+    ],
+  }
+}
+```
+
+2. Create a clone of that query to modify it without changing the original one:
+```js
+q2 = cds.ql.clone (q1) // get a clone to keep q1 intact
+```
+
+3. Modify our cloned query as needed. For example, let's replace the existing where clause, and add an order by clause like this:
+```js
+q2.SELECT.where = cds.ql.predicate`contains (Name,'Astrid')`
+q2.orderBy `Name asc`
+```
+```zsh
+=> cds.ql {
+  SELECT: { // ... as before ...,
+    where: [
+      { func: 'contains', args: [ {ref:['Name']}, {val:'Astrid'} ] } # [!code focus]
+    ],
+    orderBy: [ {ref:['Name'], sort: 'asc' } ] # [!code focus]
+  },
+}
+```
+
+4. Finally forward / run the modified query:
+```js
+await s4.run (q2)
+```
+::: details See results output ...
+```zsh
+=> [
+  { ID: '000096', Name: 'Mrs. Astrid Detemple' },
+  { ID: '000037', Name: 'Mrs. Astrid Gutenberg' },
+  { ID: '000164', Name: 'Mrs. Astrid Hoffen' },
+  { ID: '000399', Name: 'Mrs. Astrid Kramer' },
+  { ID: '000087', Name: 'Mrs. Astrid Martin' },
+  { ID: '000527', Name: 'Mrs. Astrid Sommer' },
+  { ID: '000203', Name: 'Mrs. Astrid Waldmann' }
+]
+```
+:::
+
+> [!tip] Powerful Query Adaptation
+> Modifying queries prior to forwarding them to remote services is a powerful technique to implement advanced integration scenarios. For example, you can adapt queries to the capabilities of target services, implement custom filtering, paging, or sorting logic, or even split and merge queries across multiple services. 
+
+::: details First-Class Query Objects
+On a side note: We leverage key principles of [_first-class objects_](https://google.com/search?q=first+class+objects+programming) here, as known from functional programming and dynamic languages: As queries are represented as first-class CQN objects, we can construct and manipulate them programmatically at runtime, pass them as arguments, and return them from functions. And, not the least, this opens the doors for things like higher-order queries, query delegation – e.g. push down to databases –, and late materialization.
+:::
+
+> [!warning] Always Clone Before Modifying
+> As always, great power comes with great responsibility: Ensure to [`cds.ql.clone`](../../node.js/cds-ql#cds-ql-clone) CQNs before modifying them, as they are shared across the entire request processing pipeline. Failing to do so may lead to unexpected side effects and hard-to-debug issues. And CAP runtimes can only optimize for _immutable_ CQNs.
 
 
-### Delegating Queries
+### Data Federation
 
-Value helps are common use cases where delegation of requests is needed, which we implemented like this in `srv/travel-service.js` for the `Customers` entity:
+There are many scenarios where data from remote services needs to be in close access locally. For example, in the xtravels app we want to display lists of flight details alongside bookings in Fiori UIs. This requires joining data from the local `Bookings` entity with data from the remote `Flights` entity. 
+
+Relying on live calls to remote services per row is clearly not an option. Instead, we'd rather ensure that data required in close access is really available locally, so it can be joined with own data using SQL JOINs. This is what _data federation_ is all about.
+
+
+#### Basic Implementation
+
+Following would be a basic implementation for replicating flights data from the remote xflights service into local database tables of the xtravels app:
+
+1. Annotate your consumption _views_ with `@cds.persistence.table` to turn them into _tables_ to persist replicated data locally:
 
 ::: code-group
-```js :line-numbers=24 [srv/travel-service.js]
-const s4 = await cds.connect.to ('S4BusinessPartnerService')
+```cds [db/schema.cds]
+// turn into table to persist replicated data
+annotate x.Flights with @cds.persistence.table;
+```
+:::
+
+2. Implement logic to replicate updated data, for example like that:
+
+```js [srv/data-replication.js]
+const xflight = await cds.connect.to ('sap.capire.flights.data')
+const {Flights} = cds.entities ('sap.capire.xflights')
+let {latest} = await SELECT.one`max(modifiedAt) as latest`.from (Flights)
+let touched = await xflight.read (Flights).where`modifiedAt > ${latest||0}` 
+if (touched.length) await UPSERT (touched).into (Flights)
+```
+
+#### Generic Implementation
+
+While the above is a valid implementation for data replication, it is specific to the `Flights` entity, which means we would need to write similar code for each entity we want to replicate. Therefore, we actually implemented a more generic solution for data federation in xtravels, which automatically kicks in on any entity tagged with the `@federated` annotated, which we already used in our [consumption views](#consumption-views):
+
+::: code-group
+```cds [apis/capire/xflights.cds]
+@federated entity Flights as projection on x.Flights { ... }
+@federated entity Supplements as projection on x.Supplements { ... }
+```
+```cds [apis/capire/s4.cds]
+@federated entity Customers as projection on S4.A_BusinessPartner { ... }
+```
+:::
+
+Besides the advantages of reusability and maintainability, this also allows us to easily add new entities for data federation just by annotating them with `@federated`, without the need to write any custom code at all. The projections defined in such _`@federated` consumption views_ also declare exactly what data needs to be in close access, and what not, thereby avoiding overfetching.
+
+Learn more about that generic solution in the [_CAP-level Data Federation_](data-federation) guide.
+
+> [!tip] When to Use Data Federation
+> Data federation is essential when remote data is needed in close access for joins with local data, filtering, or sorting operations. It drastically improves read performance and reduces latency, as well as overall load. It also increases resilience and high availability by reducing dependencies on other services.
+
+
+
+### Delegation
+
+Even with [data federation](#data-federation) in place, there are still several scenarios where we need to reach out to remote services on demand. Value helps are a prime example for that; for example, to select `Customers` from a drop-down list when creating new travels. Although we could serve that from replicated data as well, this would require replicating **_all_** relevant customer data locally, which is often overkill. 
+
+The code below shows how we simply delegate value help requests for `Customers` in xtravels to the connected S/4 service:
+
+::: code-group
+```js [srv/travel-service.js]
 this.on ('READ', Customers, req => s4.run (req.query))
 ```
 :::
 
-The event handler intercepts all `READ` requests to the `Customers` entity, and simply delegates the incoming query as-is to the connected S/4 service (line 26).
+The event handler intercepts all direct `READ` requests to the `Customers` entity, and just forwards the query as-is to the connected S/4 service. 
 
-Noteworthy: The incoming request refers to: 
+::: details Try this in `cds repl` ...
 
-- the `TravelService.Customers` entity, which is a view on 
-  - the `Customers` entity, which in turn is a consumption view on 
-    - the remote `A_BusinessPartner` entity. 
-
-The CAP runtime is aware of that and automatically translates the query into a query to the underlying entity, known to the remote service. Thereby, all select clauses, and where clauses, are fully preserved, translated, and delegated. 
-
-### Navigation & Expands
-
-### Calling Remote Actions
-
-In addition to replication, there are also use cases where we need to send requests directly to the remote services. For example, when creating new bookings, we need to inform the external xflights service so it can reduce its records of free seats. This is accomplished by the following code in `srv/travel-service.js`:
-
-::: code-group
-```js :line-numbers=28 [srv/travel-service.js]
-const xflights = await cds.connect.to ('sap.capire.flights.data') // [!code focus]
-this.after ('SAVE', Travels, ({ Bookings=[] }) => Promise.all (
-  Bookings.map (({ Flight_ID, Flight_date }) => {
-    return xflights.BookingCreated (Flight_ID, Flight_date) // [!code focus]
-  })
-))
+```shell :line-numbers=1
+cds mock apis/capire/s4.cds
 ```
-:::
-
-### Sending Arbitratry Requests
-
-
-
-### Events-based Integration
-
-#### Emitting Events
-
-#### Subscribing to Events
-
-### Generic Integration Logic
-
-### Generic Data Federation
-
-Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
-
-In the [`@capire/xtravels`](https://github.com/capire/xtravels) app we accomplished that with a simple, yet quite effective generic data replication solution. In essence that implementation boils down to these lines of querying remote services:
-
-::: code-group
-```js [srv/data-federation.js]
-const remote = await cds.connect.to (each.remote)
+```shell :line-numbers=2
+cds repl ./
 ```
-:::
-```js 
-  let { latest } = await SELECT.one `max(modifiedAt) as latest` .from (entity)
-  let rows = await remote.run (
-    SELECT.from (entity) .where `modifiedAt > ${latest}` 
-  )
-  if (rows.length) await UPSERT (rows) .into (entity); else return
+
+Within the `cds repl` session in the second terminal, run this:
+
+```js
+await TravelService.read`ID, Name`.from`Customers`.limit(3)
+```
+
+This issues a `READ` request to the local `TravelService.Customers` entity, which is intercepted by the above event handler, and delegated to the remote S/4 service. The result comes back translated to the structure of the `Customers` consumption view:
+
+```zsh
+=> [
+  { ID: '000001', Name: 'Mrs. Theresia Buchholm' },
+  { ID: '000002', Name: 'Mr. Johannes Buchholm' },
+  { ID: '000003', Name: 'Mr. James Buchholm' }
+]
+```
+
+See the log output of in the first terminal where we `cds mock`ed the S/4 service to observe the translated OData request being received by the remote service:
+
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner { 
+  '$select': 'BusinessPartner,PersonFullName', 
+  '$top': '3' 
 }
 ```
-
-[Learn more about CAP-level Data Federation in the dedicated guide.](data-federation){.learn-more}
-
-### On-demand Replication
+:::
 
 
-### Resilience Out of the Box
+#### Automatic Query Translation
+
+Note that for the handler above, incoming requests always refer to: 
+
+- the [`TravelService.Customers`](#serving-uis) entity – which is a view on:
+  - the [`sap.capire.s4.Customers`](#consumption-views) entity – which in turn is a view on:
+    - the [`A_BusinessPartner`](#odata-apis) remote entity. 
+
+In effect, we are delegating a query to the S/4 service, which refers to an entity actually not known to that remote service. How could that work at all?
+
+It works because we fuelled the CAP runtime with CDS models, so the generic handlers detect such situations, and automatically translate delegated queries into valid queries targeted to underlying remote entities – i.e. `A_BusinessPartner` in our example. When doing so, all column references in select clauses, where clauses, etc., are translated and delegated as well, and the results' structure transformed back to that of the original target – i.e., `TravelService.Customers` above. 
+
+
+
+### Navigation
+
+Automatic translation of delegated queries, [as shown above](#automatic-query-translation), has limitations when navigations and expands are involved. 
+Let's explore those limitations and how to deal with them on the example of the _Bookings -> Flights_ association.
+
+Try running the following query in `cds repl`, with the xflights service mocked in a separate process, as before:
+
+```js
+const { Bookings } = cds.entities ('sap.capire.travels')
+```
+```js
+await SELECT.from (Bookings) .where`Flight.origin like '%Ken%'`
+```
+
+- With data federation in place, this would work (if all flight data had been replicated). 
+- Without data federation, though, this would fail with a runtime error.
+
+For that to really work cross-service – that is, without data federation, or bypassing it – we'd have to split the query, manually dispatch the parts to involved services, and correlate results back, for example, like this:
+
+```js
+await SELECT.from (Bookings) .where`Flight.ID in ${(
+  await xflights.read`ID`.from`Flights`.where`origin.name like '%Ken%'`
+).map (f => f.ID)}`
+```
+::: details 
+The above can also be written like that, of course:
+```js
+const flights = await xflights.read`ID`.from`Flights`.where`origin.name like '%Ken%'`
+const flightIDs = flights.map (f => f.ID)
+await SELECT.from (Bookings) .where`Flight.ID in ${flightIDs}`
+```
+:::
+
+> [!tip] What is 'Navigation'?
+> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
+
+
+### Expands 
+
+Similar to navigations, expands across associations also require special handling when we cannot serve them from federated data. Try running the following query in `cds repl`, with the xflights service mocked in a separate process, as before:
+
+```js
+await SELECT.from (Bookings) .columns`{
+  Flight { ID, date, destination }
+}` .where`exists Flight` .limit(3)
+```
+::: details See results output ...
+```zsh
+=> [
+  { Flight: { ID: 'SW1537', date: '2023-08-04', destination: 'Miami International Airport' } },
+  { Flight: { ID: 'SW1537', date: '2023-08-04', destination: 'Miami International Airport' } },
+  { Flight: { ID: 'SW1537', date: '2023-08-04', destination: 'Miami International Airport' } }
+]
+```
+:::
+
+To achieve the same without data federation, we'd have to manually fetch nested data from the remote service for each row, and fill it into the outer results, for example like this:
+
+```js
+await SELECT.from(Bookings).columns`Flight_ID, Flight_date`.limit(3) 
+.then (all => Promise.all (all.map (async b => ({ 
+  Flight: await xflights.read`ID, date, destination.name as destination`
+    .from`Flights`.where`ID = ${b.Flight_ID} and date = ${b.Flight_date}`
+}))))
+```
+
+We can do similar things for expands across associations from remote data to local ones, for example like that:
+
+```js
+const { Customers } = cds.entities ('sap.capire.s4')
+const { Travels } = cds.entities ('sap.capire.travels')
+await s4.read(Customers).columns`{ ID, Name }` 
+.then (all => Promise.all (all.map (async c => Object.assign (c, {
+  Travels: await SELECT`ID`.from(Travels).where`Customer.ID = ${c.ID}`
+}))))
+```
+
+
+
+### Outboxed Emits
+
+Use [_transactional outbox_](../../guides/events/event-queues) for write operations, which you want to take place reliably, but don't need the results in your current execution context. As in this event hander example:
+
+::: code-group
+```js :line-numbers=30 [srv/travel-service.js]
+const xflights_ = cds.outboxed (xflights) // [!code focus]
+this.after ('SAVE', Travels, ({ Bookings=[] }) => {
+  return Promise.all (Bookings.map (booking => {
+    let { Flight_ID: flight, Flight_date: date } = booking
+    return xflights_.send ('POST', 'BookingCreated', { flight, date }) // [!code focus]
+  }))
+})
+```
+:::
+
+- Line 29 – We create an _outboxed_ version of the connected xflights service.
+- Line 34 – We use that outboxed service to send events to the xflights service.
+
+This creates ultimate resilience, as the events are stored in a local outbox table within the same transaction as the `SAVE` operation on `Travels`. A separate process then takes care of reliably forwarding those events to the xflights service, retrying in case of failures, etc.
+
 
 
 ## Learn More
@@ -985,4 +1319,6 @@ const remote = await cds.connect.to (each.remote)
 
 - [Inner Loop Development](inner-loops) – Understand how to develop and test integrated applications efficiently using CAP's inner loop development features.
 
-- [Service Bindings](service-bindings) – Learn how to configure connections to external services in a declarative way using service bindings.
+<!-- 
+- [Service Bindings](service-bindings) – Learn how to configure connections to external services in a declarative way using service bindings. 
+-->

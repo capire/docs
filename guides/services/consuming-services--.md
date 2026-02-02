@@ -57,27 +57,7 @@ For example:
 
 [Try out the example application.](https://github.com/SAP-samples/cloud-cap-risk-management/tree/ext-service-s4hc-suppliers-ui-java){.learn-more}
 
-
-### Execute Queries with Java
-
-You can use dependency injection to get access to the remote service:
-
-```java
-@Autowired
-@Qualifier(ApiBusinessPartner_.CDS_NAME)
-CqnService bupa;
-```
-
-Then execute your queries using the [Querying API](../../java/working-with-cql/query-execution):
-
-```java
-CqnSelect select = Select.from(ABusinessPartner_.class).limit(100);
-List<ABusinessPartner> businessPartner = bupa.run(select).listOf(ABusinessPartner.class);
-```
-
-[Learn more about querying API examples.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui/test/odata-examples.js){.learn-more}
-
-### Expose Remote Services 
+### Delegation with Java
 
 Write a handler function to delegate a query to the remote service and run the incoming query on the external service.
 
@@ -110,68 +90,6 @@ public class RiskServiceHandler implements EventHandler {
 :::
 
 This works when accessing the entity directly. Additional work is required to support [navigation](#handle-navigations-across-local-and-remote-entities) and [expands](#handle-expands-across-local-and-remote-entities) from or to a remote entity.
-
-### Expose Remote Services with Associations
-
-It's possible to expose associations of a remote service entity. You can adjust the [projection for the association target](#model-projections) and change the name of the association:
-
-```cds
-using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
-
-extend service RiskService with {
-  entity Suppliers as projection on bupa.A_BusinessPartner {
-    key BusinessPartner as ID,
-    BusinessPartnerFullName as fullName,
-    BusinessPartnerIsBlocked as isBlocked,
-    to_BusinessPartnerAddress as addresses: redirected to SupplierAddresses
-  }
-
-  entity SupplierAddresses as projection on bupa.A_BusinessPartnerAddress {
-    BusinessPartner as bupaID,
-    AddressID as ID,
-    CityName as city,
-    StreetName as street,
-    County as county
-  }
-}
-```
-
-As long as the association is only resolved using expands (for example `.../risk/Suppliers?$expand=addresses`), a handler for the __source entity__ is sufficient:
-
-```js
-this.on('READ', 'Suppliers', req => {
-    return bupa.run(req.query);
-});
-```
-
-As usual, you can put two handlers into one handler matching both entities:
-
-```js
-this.on('READ', ['Suppliers', 'SupplierAddresses'], req => {
-    return bupa.run(req.query);
-});
-```
-
-### Handle Mashups with Remote Services
-
-Depending on how the service is accessed, you need to support direct requests, navigation, or expands. CAP resolves those three request types only for service entities that are served from the database. When crossing the boundary between database and remote sourced entities, you need to take care of those requests.
-
-The list of [required implementations for mashups](#required-implementations-for-mashups) explains the different combinations.
-
-### Required Implementations for Mashups 
-
-You need additional logic, if remote entities are in the game. The following table shows what is required. "Local" is a database entity or a projection on a database entity.
-
-| **Request**                                                           | **Example**                              | **Implementation**                                                |
-| --------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
-| Local (including navigations and expands)                             | `/service/risks/Risks`                   | Handled by CAP                                                    |
-| Local: Expand remote                                                  | `/service/risks/Risks?$expand=supplier`  | Delegate query w/o expand to local service and implement expand.  |
-| Local: Navigate to remote                                             | `/service/risks(...)/supplier`           | Implement navigation and delegate query target to remote service. |
-| Remote (including navigations and expands to the same remote service) | `/service/risks/Suppliers`               | Delegate query to remote service                                  |
-| Remote: Expand local                                                  | `/service/risks/Suppliers?$expand=risks` | Delegate query w/o expand to remote service and implement expand. |
-| Remote: Navigate to local                                             | `/service/Suppliers(...)/risks`          | Implement navigation, delegate query for target to local service  |
-
-
 
 
 ## Connect and Deploy

@@ -25,7 +25,7 @@ For example, we saw the need for that already in the [CAP-level Service Integrat
     cds watch
     ```
     ```zsh
-    [cds] - connect to S4BusinessPartnerService > odata { 
+    [cds] - connect to sap.capire.s4.business-partner > odata { 
       url: 'http://localhost:54476/odata/v4/s4-business-partner' 
     }
     ```
