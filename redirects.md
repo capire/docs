@@ -1,8 +1,9 @@
 ## Getting Started Guides
 
-- [about](get-started/concepts)
+- [about/](get-started/concepts)
 - [about/best-practices](get-started/features#served-out-of-the-box)
 - [about/features](get-started/features)
+
 - [get-started/in-a-nutshell](get-started/bookshop)
 - [get-started/learning-sources](get-started/learn-more)
 - [get-started/troubleshooting](get-started/get-help)
@@ -29,7 +30,7 @@
 - [guides/i18n](guides/uis/i18n)
 - [guides/localized-data](guides/uis/localized-data)
 - [guides/media-data](guides/services/media-data)
-- [guides/messaging](guides/events/)
+- [guides/messaging/(.*)](guides/events/$1)
 - [guides/providing-services](guides/services/providing-services)
 - [guides/reuse-and-compose](guides/integration/reuse-and-compose)
 - [guides/services](guides/services/providing-services)
