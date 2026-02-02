@@ -10,7 +10,7 @@ CAP supports a number of portable functions and operators in CQL. The compiler a
 
 When using CAP's mocked out-of-the-box database integration, these functions and operators are supported in the in-memory SQLite database used for development and testing.
 
-#### TODO: 
+#### TODO:
 
 - Mocked by in-memory SQLite or H2 databases
 - With SAP HANA or PostgreSQL for production
@@ -92,6 +92,7 @@ The compiler translates this operator to the best-possible equivalent in the tar
 
 
 ## Standard Functions
+###### Portable Functions
 
 The following sections list standardized string, numeric, data/time, and aggregate functions supported by CAP, and guaranteed to work across all supported databases with feature parity. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
 
@@ -120,7 +121,7 @@ SELECT concat (firstName,' ',lastName) as fullName from Authors;
 ```
 ```sql
 SELECT firstName || ' ' || lastName as fullName from Authors;
-``` 
+```
 
 
 > [!important] Indexes and Substring Details
