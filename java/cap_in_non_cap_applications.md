@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Use CAP Java modules with plain Spring Boot applications
+# Spring Boot applications with CAP Java Modules
 
 <style scoped>
   h1:before {
@@ -14,11 +14,16 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-The CAP Java framework [integrates itself with Spring Boot](./spring-boot-integration) every CAP Java app is also a Spring Boot app. But thanks to the modular nature of CAP Java every plain Spring Boot application (built without CAP) can also use dedicated CAP Java modules (features) if needed.
+The CAP Java framework [integrates itself with Spring Boot](./spring-boot-integration) every CAP Java app is also a Spring Boot app. Thus, CAP Java applications can also declare native Spring Boot components in order to integrate legacy code or features that are not yet supported by CAP Java.
 
-The main use case for using CAP Java features in plain Spring Boot is to re-use existing BTP integration modules like e.g. the BTP Audit Log Service or SAP Event Hub.
 
-In general, adding a feature is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html).
+::: info
+The foundation for this guide is that you can take complete applications built with idiomatic Spring Web MVC and Spring Data JPA and combine them with parts of of the CAP Java framework. This works because the core of CAP Java is just an event machine working with String identifiers and maps ([Cds Data](./cds-data)) and don't have a dependency to a CDS model or database schema.
+
+Although our sample applications and also documentation convey the impresssion that a CDS model and the deployment of that model to a DB is mandatory to use CAP Java this is not the case. A lot of modules integrate themselves via event and have no direct dependency on a [CDS runtime model](https://github.com/cap-java/cds-feature-event-hub/issues).
+:::
+
+In general, adding a CAP Java feature to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP modules to integrate a Spring Boot application into different SAP BTP services.
 
 ## SAP Audit Log Service
 
@@ -157,7 +162,13 @@ When you now start your application you will see new files created at the root o
 echo 'org.shelter.PetBabiesBorn {"data":{"ownerId":11,"motherId":14,"description":"cute puppy"}}' >> events-*
 ```
 
-Similar to the audit log integration the CAP messaging consist of a logical layer (as just used in the sample code) and a technical layer. The technical layer used for the sample is the file-based messaging. For this, you don't need an additional module and it can be activated via configuration. In case your want to use production-ready message brokers like Apache Kafka or SAP Event Hub you need to add the corresponding dependencies and configuration to your application. In case of the SAP Event Hub feature you would need to add this dependency to your `pom.xml`:
+### Connecting Message Brokers
+
+Similar to the audit log integration the CAP messaging consist of a logical layer (as just used in the sample code) and a technical layer. The technical layer used for the sample is the file-based messaging. For this, you don't need an additional module and it can be activated via configuration. In case your want to use production-ready message brokers like SAP Event Hub you need to add the corresponding dependencies and configuration to your application.
+
+#### SAP Event Hub
+
+In case of the SAP Event Hub feature you would need to add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -167,6 +178,12 @@ Similar to the audit log integration the CAP messaging consist of a logical laye
 </dependency>
 ```
 
-Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your applicaton. For more details you can checkout the [SAP Event Hub CAP Plugin](https://github.com/cap-java/cds-feature-event-hub).
+Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your application. For more details you can have a look at the the [SAP Event Hub CAP Plugin](https://github.com/cap-java/cds-feature-event-hub).
 
-## Use the outbox to add resilience to Audit Log and messaging
+## Use the Transactional Outbox to add Resilience to Audit Log and Messaging
+
+The CAP Java transactional outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. With added persistence for the outbox you can even make the *outboxed* calls resilient against applicaton restarts.
+
+CAP Java services supporting the Transactional Outbox are automatically connected and each call to the given service will be handled by the Transactional Outbox. In our case the two previously described services Audit Log and Messaging can both be used together with the Outbox.
+
+Since 
