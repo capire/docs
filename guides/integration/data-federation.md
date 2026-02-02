@@ -12,16 +12,16 @@ For example, we saw the need for that already in the [CAP-level Service Integrat
 
 1. First run these commands **in two separate terminals**:
 
-    ```shell
+    ```shell :line-numbers=1
     cds mock apis/capire/s4.cds
     ```
-    ```shell
+    ```shell :line-numbers=2
     cds mock apis/capire/xflights.cds
     ```
 
 2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
 
-    ```shell
+    ```shell :line-numbers=3
     cds watch
     ```
     ```zsh
