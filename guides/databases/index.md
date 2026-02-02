@@ -1,5 +1,5 @@
 
-# CAP-level Database Integration
+# CAP-Level Database Integration
 
 CAP application developers [focus on their domain](../../get-started/features#focus-on-domain), while CAP takes care of all aspects of database integration. This includes translating CDS models to native persistence models, schema evolution, deployment, as well as runtime querying – all of that in a database-agnostic way. [SQLite](./sqlite) <sup>1</sup> in-memory databases are automatically used in inner-loop development, while in production, [SAP HANA](./hana) <sup>2</sup> is used by default.
 {.abstract}

@@ -1,4 +1,4 @@
-# CAP-Level Database Integration
+# CAP-Level Database Support
 
 CAP supports a number of portable functions and operators in CQL. The compiler automatically translates these to the best-possible database-specific native SQL equivalents. You can safely use these in CDS view definitions and runtime queries expressed in CQL.
 {.abstract}
