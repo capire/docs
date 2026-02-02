@@ -490,7 +490,7 @@ srv/external
 └── API_BUSINESS_PARTNER.edmx
 ```
 
-> Run `cds import` with option `--as cds` to generate a human-readable `.cds` file instead of `.csn`.
+> Add option `--as cds` to generate a human-readable `.cds` file instead of `.csn`.
 
 
 > [!tip] Import from other APIs
@@ -628,20 +628,20 @@ namespace sap.capire.s4;
 @federated entity Customers as projection on S4.A_BusinessPartner {
   BusinessPartner as ID,
   PersonFullName  as Name,
-  LastChangeDate || 'T' || LastChangeTime || 'Z' as modifiedAt,
+  LastChangeDate  as modifiedAt,
 } where BusinessPartnerCategory == 1; // 1 = Person
 ```
 :::
 
 Noteworthy aspects here are:
 
-- We map names to match our domain, for example by renaming the imported entity from `A_Business_Partner` to `Customers`, choose simpler names for the elements we want to use, and combine date and time fields into a single `modifiedAt` timestamp in ISO 8601 format.
+- We map names to match our domain, e.g., `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
 
-- For the `Flights` entity we also flatten data from associations directly into the `Flights` consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
+- For entity `Flights` we flatten data from associations directly into the consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
 
 - The namespaces `sap.capire.s4` and `sap.capire.xflights` reflect the source systems but differ from the original namespaces to avoid name clashes.
 
-- We annotate both views with `@federated` to trigger data federation, covered in the next chapters.
+- We add `@federated` annotations, which we'll use later on to automate [data federation](#data-federation).
 
 
 > [!tip] Always use Consumption Views
@@ -669,7 +669,7 @@ With consumption views in place, you can now reference them from your models _as
     Flight : Association to x.Flights;
   }
   ```
-- Line 26 –  Each _Booking_ references a _Flight_ from the external xflights service, which allows us to display flight details alongside bookings.
+- Each _Booking_ references a _Flight_ from the external xflights service, which allows us to display flight details alongside bookings.
 
 #### Associations from Remote
 
@@ -683,9 +683,7 @@ With consumption views in place, you can now reference them from your models _as
     Bookings : Association to many Bookings on Bookings.Flight = $self
   }
   ```
-
-
-- Line 74 – Adds a backlink from _Flights_ to _Bookings_ for bidirectional traversal.
+- Adds a backlink from _Flights_ to _Bookings_ for bidirectional traversal.
 
 ::: details Limitations of Remote Extensions
 Extensions to remote entities, as shown above, are only possible for elements which would not require changes to the remote service's actual data. This is the case for _virtual_ elements and _calculated_ fields, as well as **_unmanaged_** associations, as all foreign keys are local. It's not possible for regular elements or _managed_ associations, though.
@@ -707,7 +705,7 @@ annotate TravelService.Bookings with { ...
 ```
 :::
 
-- Line 46 – Adds a constraint to the _Flight.date_ element to ensure that the flight date of a booked _Flight_ falls within the travel period of the associated _Travel_.
+- Adds a constraint to the _Flight.date_ element to ensure that the flight date of a booked _Flight_ falls within the travel period of the associated _Travel_.
 
 
 ### Serving UIs
@@ -723,7 +721,7 @@ using { sap.capire.xflights as x } from '../apis/capire/xflights';
 }
 ```
 
-- Line 17 – Exposes the _Flights_ entity in the _TravelService_ for UI consumption.
+- Exposes the _Flights_ entity in the _TravelService_ for UI consumption.
 This is required as associations to non-exposed entities would be cut off, which would apply to the _Bookings_ -> _x.Flights_ association if we did not expose _x.Flights_.
 
 
@@ -779,7 +777,7 @@ With mashed up models, you can run applications in _'airplane mode'_ without ups
 
 1. Start the xtravels application locally using `cds watch` as usual, and note the output about the integrated services being mocked automatically:
 
-    ```shell
+    ```shell :line-numbers=1
     cds watch
     ```
     ```zsh
@@ -787,12 +785,12 @@ With mashed up models, you can run applications in _'airplane mode'_ without ups
       at: [ '/odata/v4/s4-business-partner' ],
       decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
     }
+    ```
     ```zsh
     [cds] - mocking sap.capire.flights.data {
       at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
       decl: 'xflights/apis/data-service/services.csn:3'
     }
-    ```
     ```
 
 2. Open the Fiori UI in the browser -> it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
