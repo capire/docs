@@ -193,6 +193,10 @@ main .vp-doc {
     .dark & { background: #222 }
   }
 
+  code {
+    white-space: nowrap;
+  }
+
   .cols-2 {
     display: flex;
     flex-wrap: wrap;
