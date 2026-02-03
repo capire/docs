@@ -156,7 +156,7 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 - `seconds_between(x,y)` -> number
 
 > [!note] CAP Java support coming soon...
-> The above `*_between` functions are currently only supported by CAP Node.js. \
+> The above date / time functions are currently only supported by CAP Node.js. \
 > Support for CAP Java is planned for a future release.
 
 
