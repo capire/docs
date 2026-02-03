@@ -483,7 +483,7 @@ The startup log should confirm the activated IAS authentication:
 
 </div>
 
-::: tip Local at this point?
+::: tip
 The local setup is still runnable on basis of mock users as there is no IAS binding in the environment.
 :::
 
@@ -1390,13 +1390,13 @@ In such architectures, CAP authentication is obsolete and can be deactivated ent
 [Learn more about how to switch off authentication.](../../java/security#custom-spring-security-alone){.learn-more}
 
 </div>
-
+<!--
 <div class="node">
 
 TODO
 
 </div>
-
+-->
 
 ## Pitfalls
 - **Don't miss to configure security middleware.**
