@@ -27,7 +27,7 @@ The following sections are based on a new project that you can create like this:
 <div class="impl node">
 
 ```sh
-cds init bookshop --add sample
+cds init bookshop --nodejs --add sample
 cd bookshop
 ```
 
