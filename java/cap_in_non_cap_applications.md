@@ -1,10 +1,10 @@
 ---
 synopsis: >
-  This guide shows how non-CAP Spring Boot applications can integrate themselves into service offerings of SAP BTP using different CAP modules without the need to completely migrate to CAP Java.
+  This guide shows how legacy Spring Boot applications can integrate themselves into service offerings of SAP BTP using different CAP modules without the need to completely migrate to CAP Java.
 status: released
 ---
 
-# Connecting non-CAP Applications with SAP BTP services using CAP Java
+# Legacy Applications using SAP BTP services with CAP Java
 
 <style scoped>
   h1:before {
@@ -14,15 +14,15 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP (Java) is that it offers a variety of integrations into SAP BTP services while keeping applications free of technical depdendencies to such services. But not only CAP applications can benefit from these integrations: Although CAP itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
+One of the strengths of CAP (Java) is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical depdendencies to such services. But not only CAP applications can benefit from these plugins. CAP Java  itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
 
-This integration enables CAP Java applications to easily integrate existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
+This integration enables CAP Java applications to easily integrate with existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java plugins to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
 
-In general, adding a CAP Java feature to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP modules to integrate a Spring Boot application into different SAP BTP services.
+In general, adding a CAP Java plugin to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP plugin to integrate a Spring Boot application with different SAP BTP services.
 
 ## SAP Audit Log Service
 
-In order to add Audit log support you need to add the following dependencies to your `pom.xml`:
+In order to add audit log support you need to add the following dependencies to your `pom.xml`:
 
 ```xml
 <dependency>
@@ -92,7 +92,7 @@ For further configuration of this module please follow the [README of the module
 
 ## CAP Messaging
 
-The CAP framework offers a logical messaging layer. This means that applications can emit events and messages to a `MessagingService` regardless of the target messaging infrastructure. The local default implementation for messaging is using the filesystem as the communication layer. Similar to the logical audit log support the messaging layer is already part of the core CAP Java modules. Thus, a plain Spring Boot application only needs to perform these two steps to activate CAP messaging:
+The CAP framework offers an abstraction layer for messaging services. CAP applications can emit events and messages to a `MessagingService` regardless of the target messaging infrastructure. The local default implementation for messaging is using the filesystem as the communication layer. Similar to the logical audit log support the messaging layer is already part of the core APIs of CAP Java. A plain Spring Boot application can use these APIs, too and only needs to perform these two steps to activate CAP messaging:
 
 At first you need to make sure that the following dependencies are part of your `pom.xml`:
 
@@ -117,14 +117,14 @@ Again, you need to set a property for the `cds.services.version`:
 <cds.services.version>4.6.2</cds.services.version>
 ```
 
-After setting up the dependencies you just need to activate the file-based messaging in the applications configuration:
+After setting up the dependencies you just need to activate the file-based messaging in the application's configuration:
 
 ```yaml
 cds.messaging.services.messaging.kind: file-based-messaging
 ```
 ### Emitting Messages
 
-In order to use CAP Java Messaging support to send messages from your application's code you need to inject an instance of `com.sap.cds.services.messaging.MessageService` into your class and set it as a class member. Then, you can use the CAP Java `MessageService` in your application's code like this to emit messages:
+In order to use CAP Java Messaging support to send messages from your application's code you need to inject an instance of `com.sap.cds.services.messaging.MessageService` into your class and set it as a class member. Then, you can use the CAP Java `MessageService` in your code like this to emit messages:
 
 ```java
 Map<String, Object> data = Map.of("ownerId", owner.getId(), "petId", petId, "date", visit.getDate(), "descr", visit.getDescription());
