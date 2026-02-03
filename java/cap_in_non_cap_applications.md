@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Spring Boot applications with CAP Java Modules
+# Connecting non-CAP Applications with SAP BTP services using CAP Java
 
 <style scoped>
   h1:before {
@@ -14,14 +14,9 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-The CAP Java framework [integrates itself with Spring Boot](./spring-boot-integration) every CAP Java app is also a Spring Boot app. Thus, CAP Java applications can also declare native Spring Boot components in order to integrate legacy code or features that are not yet supported by CAP Java.
+One of the strengths of CAP (Java) is that it offers a variety of integrations into SAP BTP services while keeping applications free of technical depdendencies to such services. But not only CAP applications can benefit from these integrations: Although CAP itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
 
-
-::: info
-The foundation for this guide is that you can take complete applications built with idiomatic Spring Web MVC and Spring Data JPA and combine them with parts of of the CAP Java framework. This works because the core of CAP Java is just an event machine working with String identifiers and maps ([Cds Data](./cds-data)) and don't have a dependency to a CDS model or database schema.
-
-Although our sample applications and also documentation convey the impresssion that a CDS model and the deployment of that model to a DB is mandatory to use CAP Java this is not the case. A lot of modules integrate themselves via event and have no direct dependency on a [CDS runtime model](https://github.com/cap-java/cds-feature-event-hub/issues).
-:::
+This integration enables CAP Java applications to easily integrate existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
 
 In general, adding a CAP Java feature to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP modules to integrate a Spring Boot application into different SAP BTP services.
 
