@@ -422,6 +422,13 @@ Authorization: Basic alice:
 ```
 :::
 
+::: details `cds add http` can help you with the file creation:
+```shell
+cds add http
+```
+[Learn more in the _CLI reference_.](../tools/cds-cli#http){.learn-more}
+:::
+
 > [!tip] Served automatically by generic providers
 > Simple service definitions in CDS are all we need to serve full-fledged OData services. Behind the scenes, built-in generic providers handle all the heavy lifting for us, such as parsing OData requests, and translating them into appropriate SQL queries executed against a primary database, and returning results as OData responses.
 
@@ -792,7 +799,7 @@ mvn cds:watch
 In CAP Java, service implementations go into subclasses of `EventHandler`, annotated with `@Component` and `@ServiceName`, and the respective event handlers are methods within these classes annotated with `@On`, `@Before`, or `@After`, depending on the desired interception phase:
 
 ::: code-group
-```java [srv/src/main/java/sap/capire/bookshop/CatalogServiceHandler.java]{16}
+```java [srv/src/main/java/sap/capire/bookshop/CatalogServiceHandler.java]
 package sap.capire.bookshop;
 
 import java.util.List;
@@ -805,18 +812,18 @@ import cds.gen.catalogservice.Books;
 import cds.gen.catalogservice.Books_;
 import cds.gen.catalogservice.CatalogService_;
 
-@Component 
-@ServiceName(CatalogService_.CDS_NAME)
-public class CatalogServiceHandler implements EventHandler {
+@Component // [!code focus]
+@ServiceName(CatalogService_.CDS_NAME) // [!code focus]
+public class CatalogServiceHandler implements EventHandler { // [!code focus]
 
   // After READ handler on Books to add discount info
-  @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME) 
-  public void addDiscountIfApplicable (List<Books> books) { 
-    for (Books book : books) {  
-      if (book.getStock() != null && book.getStock() > 111) 
-        book.setTitle (book.getTitle() + " -- 11% discount!"); 
-    } 
-  } 
+  @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME) // [!code focus]
+  public void addDiscountIfApplicable (List<Books> books) { // [!code focus]
+    for (Books book : books) { // [!code focus]
+      if (book.getStock() != null && book.getStock() > 111) // [!code focus]
+        book.setTitle (book.getTitle() + " -- 11% discount!"); // [!code focus]
+    } // [!code focus]
+  } // [!code focus]
 
 }
 ```
