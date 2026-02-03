@@ -184,6 +184,6 @@ Credentials and service coordinates for connecting to a SAP Event Hub instance n
 
 The CAP Java transactional outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. With added persistence for the outbox you can even make the *outboxed* calls resilient against applicaton restarts.
 
-CAP Java services supporting the Transactional Outbox are automatically connected and each call to the given service will be handled by the Transactional Outbox. In our case the two previously described services Audit Log and Messaging can both be used together with the Outbox.
+CAP Java services supporting the transactional outbox are automatically connected and each call to the given service will be handled by the transactional outbox. Both, the Audit Log as well as the Messaging feature automatically integrate their services with the transactional outbox. Nothing needs to be done from your side.
 
-Since 
+In order to have added persistence for resilience against (accidental) application restart you need to add 2 things
