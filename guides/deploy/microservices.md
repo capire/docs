@@ -127,7 +127,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 1. Add another `cds` project to collect the models from these projects:
 
    ```sh
-   cds init shared-db --add hana
+   cds init shared-db --nodejs --add hana
    ```
 
    ```sh
