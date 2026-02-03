@@ -47,7 +47,7 @@ For a complete reference of the syntax, there are clickable [syntax diagrams](ht
 To try the samples by yourself, create a simple CAP app:
 
 ```sh
-cds init bookshop --add sample && cd bookshop
+cds init bookshop --nodejs --add sample && cd bookshop
 ```
 
 We encourage you to play around with the snippets.

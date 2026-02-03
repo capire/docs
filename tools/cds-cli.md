@@ -98,7 +98,7 @@ In addition, you can add (most of) the project 'facets' from [below](#cds-add) r
 For example to create a project with a sample bookshop model and configuration for SAP HANA, use:
 
 ```sh
-cds init --add sample,hana
+cds init --nodejs --add sample,hana
 ```
 
 ::: details See the full help text of `cds init`
