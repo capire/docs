@@ -267,8 +267,7 @@ Restrictions can be defined on different types of CDS resources, but there are s
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
-::: code-group
-```cds [Model w/ unsupported privilege properties]
+```cds
 service CatalogService {
   entity Products as projection on db.Products { ... }
   actions {
@@ -278,20 +277,6 @@ service CatalogService {
   function getViewsCount @(restrict: [{ grant: 'READ' to: 'Admin' }]) () returns Integer;
 }
 ```
-```cds [Resulting model]
-service CatalogService {
-  entity Products as projection on db.Products { ... }
-  actions {
-    @(requires: 'Admin') // is already in implicit {grant: '*'}
-    action addRating (stars: Integer);
-  }
-   //unsupported property is removed, means implicit { grant: '*'}
-  function getViewsCount @(restrict: [{ to: 'Admin' }]) () returns Integer; 
-}
-
-```
-:::
-
 
 ### Combined Restrictions { #combined-restrictions}
 
