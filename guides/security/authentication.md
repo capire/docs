@@ -479,6 +479,7 @@ The startup log should confirm the activated IAS authentication:
     kind: 'ias',
     impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/ias-auth.js'
 }
+```
 
 </div>
 
