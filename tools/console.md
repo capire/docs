@@ -164,7 +164,7 @@ If you don't want CAP console to open an SSH tunnel, you can disable SSH for you
 
 Even though the SSH tunnel is only opened to one specific port of your application container, you are still opening up a potential attack vector. CAP console tries to minimize this risk by only opening the tunnel for the duration of the connection. Once you close the CAP console, switch environments, or your user loses access to the CF Space, the SSH tunnel is closed automatically. You must ensure that you and your team understand the security implications of opening SSH tunnels in your environment and read the [Cloud Foundry SSH Documentation](https://docs.cloudfoundry.org/devguide/deploy-apps/ssh-apps.html). If attackers exploit the SSH tunnel, they will also be able to access the WebSocket and read all data transmitted via it.
 
-## Telemetry and Data Collection <Since version="1.3.0" />
+## Telemetry and Data Collection <Since version="1.3.0" of="CAP console" />
 
 CAP console collects anonymous usage data to improve user experience, prioritize feature development, ensure reliability across different environments, and optimize performance. The collected data is sent to SAP in accordance with our [Privacy Statement](https://www.sap.com/about/legal/privacy.html). No personally identifiable information, project names, source code, or other sensitive details are collected. You can disable telemetry collection in the application settings if desired.
 
