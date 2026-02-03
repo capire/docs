@@ -221,6 +221,9 @@ cds.on('served', async (services) => {
 
 This event supports _asynchronous_ event handlers.
 
+::: danger Everything in CAP is a service
+`cds.connect.to`  connects you to a service. This however means that only after the service is initalized, you can connect to it. For example `cds.connect.to('db')` will only function after the `db` service is served, e.g. should only be used in the `served` and `listening` events.
+:::
 
 ### listening {.event}
 
