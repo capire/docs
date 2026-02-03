@@ -475,8 +475,10 @@ The startup log should confirm the activated IAS authentication:
 <div class="node">
 
 ```sh
-TODO
-```
+[cds] - using auth strategy { 
+    kind: 'ias',
+    impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/ias-auth.js'
+}
 
 </div>
 
