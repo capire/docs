@@ -274,7 +274,7 @@ service CatalogService {
     @(requires: 'Admin')
     action addRating (stars: Integer);
   }
-  function getViewsCount @(restrict: [{ grant: 'READ' to: 'Admin' }]) () returns Integer;
+  function getViewsCount @(restrict: [{ grant: 'READ', to: 'Admin' }]) () returns Integer;
 }
 ```
 
