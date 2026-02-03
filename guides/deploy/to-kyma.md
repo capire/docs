@@ -127,7 +127,7 @@ cds add hana,xsuaa
 <div class="impl node">
 
 ```sh
-cds init bookshop --add sample && cd bookshop
+cds init bookshop --nodejs --add sample && cd bookshop
 cds add hana,xsuaa
 ```
 

@@ -5,8 +5,8 @@ CAP applications integrate at multiple levels — from reusing services and data
 
 <br/>
 
-[CAP-level Service Integration](calesi.md) <!-- UNRELEASED -->
-: Learn how to consume and expose services using CAP's built-in service integration features (Calesi), enabling seamless communication between services at the framework level. <!-- UNRELEASED -->
+[CAP-level Service Integration](calesi.md)
+: Learn how to consume and expose services using CAP's built-in service integration features (Calesi), enabling seamless communication between services at the framework level.
 
 [CAP-level Data Federation](data-federation.md) <!-- UNRELEASED -->
 : On top of CAP-level service integration, CAP provides advanced data federation capabilities out-of-the-box, including service-level replication, HANA virtual tables, synonyms, and SAP data products. <!-- UNRELEASED -->

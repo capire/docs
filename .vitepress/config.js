@@ -116,8 +116,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.1',
-    java_cds4j: '4.6.0'
+    java_services: '4.7.0',
+    java_cds4j: '4.7.0'
   },
   gotoLinks: [],
   siteURL
@@ -184,11 +184,11 @@ config.themeConfig.search = {
   }
 }
 
-// Add twoslash transformer to the markdown config
+// Add twoslash transformer to the markdown config (if requested as it slows down builds)
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
-config.markdown.codeTransformers = [
-  transformerTwoslash()
-]
+if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
+  config.markdown.codeTransformers = [ transformerTwoslash() ]
+}
 
 // Add custom markdown renderers...
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'

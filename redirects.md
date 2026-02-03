@@ -1,8 +1,9 @@
 ## Getting Started Guides
 
-- [about](get-started/concepts)
+- [about/](get-started/concepts)
 - [about/best-practices](get-started/features#served-out-of-the-box)
 - [about/features](get-started/features)
+
 - [get-started/in-a-nutshell](get-started/bookshop)
 - [get-started/learning-sources](get-started/learn-more)
 - [get-started/troubleshooting](get-started/get-help)
@@ -17,10 +18,10 @@
 
 - [guides/as-saas](guides/multitenancy/)
 - [guides/authorization](guides/security/authorization)
-- [guides/consuming-services](guides/services/consuming-services)
+- [guides/consuming-services](guides/integration/calesi)
 - [guides/data-privacy](guides/security/data-privacy)
-- [guides/deployment](guides/deploy/)
 - [guides/deploy-to-cloud](guides/deploy/)
+- [guides/deployment/(.*)](guides/deploy/$1)
 - [guides/deployment/deploy-to-kyma](guides/deploy/to-kyma)
 - [guides/domain-models](guides/domain/)
 - [guides/domain-modeling](guides/domain/)
@@ -29,13 +30,14 @@
 - [guides/i18n](guides/uis/i18n)
 - [guides/localized-data](guides/uis/localized-data)
 - [guides/media-data](guides/services/media-data)
-- [guides/messaging](guides/events/)
+- [guides/messaging/(.*)](guides/events/$1)
+- [guides/messaging/event-broker](guides/events/event-hub)
 - [guides/providing-services](guides/services/providing-services)
 - [guides/reuse-and-compose](guides/integration/reuse-and-compose)
 - [guides/services](guides/services/providing-services)
-- [guides/services/status-flows](guides/services/providing-services#status-transition-flows)
+- [guides/services/consuming-services](guides/integration/calesi)
 - [guides/temporal-data](guides/domain/temporal-data)
-- [guides/using-services](guides/services/consuming-services)
+- [guides/using-services](guides/integration/calesi)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
@@ -63,7 +65,6 @@
 ## Java
 
 - [java/advanced](java/cqn-services/persistence-services)
-- [java/advanced#multitenancy](java/multitenancy) <!-- this doesn't work, redirect goes to java/cqn-services/persistence-services#multitenancy -->
 - [java/application-services](java/cqn-services/application-services)
 - [java/architecture](java/developing-applications/building)
 - [java/cds-ql](java/working-with-cql/query-api)
@@ -80,7 +81,6 @@
 - [java/indicating-errors](java/event-handlers/indicating-errors)
 - [java/messaging-foundation](java/messaging)
 - [java/observability](java/operating-applications/observability)
-- [java/observability#profiling](java/operating-applications/optimizing) <!-- doesn't work as expected -->
 - [java/overview](java/getting-started)
 - [java/persistence-services](java/cqn-services/persistence-services)
 - [java/provisioning-api](java/event-handlers)

@@ -72,7 +72,7 @@ Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all requi
 <div class="impl node">
 
 ```sh
-cds init bookshop --add sample && cd ./bookshop
+cds init bookshop --nodejs --add sample && cd ./bookshop
 cds watch
 ```
 
