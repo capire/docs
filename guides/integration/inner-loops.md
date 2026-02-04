@@ -1,35 +1,151 @@
 
 # Inner-Loop Development
 
+CAP promotes fast inner-loop development by allowing us to easily swap production-grade services with local mocks during development, without any changes to CDS models nor implementations. Similar in the context of application service integration, imported APIs of remote services and applications can be mocked out of the box in consuming applications. This in turn greatly promotes decoupled parallel development of distributed teams working on different microservices.
+{.abstract}
+
+[[toc]]
+
+
+
+## Preliminaries
+
+### What is Inner Loop?
+
+![inner-loop-turntable](assets/inner-loop-turntable.png){.ignore-dark style="width:50%; border-radius: 22px; float: right; margin-top: -3em"} 
+
+Many of us likely remember that turntable thing in the playgrounds: stay close to the center – the inner loop –, and it rotates at ultimate speed, lean out and it slows down. 
+
+We see similar effects when we have to run through full *code - build - deploy* cycles to see the effects of our work in cloud development. And it's not only the turnaround times for individual developers, it's also the runtime for tests, the operating costs induced by both, the impact on support (local setups allow to reproduce things, complex setups don't), up to severe resilience issues (whenever a cloud service isn't available development stops for whole teams). 
+
+Here's a very rough comparison from a real world example:
+
+| Aspect                            | Cloud-Based | Local Inner Loop |  Gain  |
+|-----------------------------------|:-----------:|:----------------:|:------:|
+| Turnaround times                  |   6+ min    |      2 sec       | > 100x |
+| Test pipelines                    |   40+ min   |      4 min       | > 10x  |
+| Support time to reproduce/resolve | hours, days |     minutes      | > 10x  |
+| Resilience re service outages     |    poor     |     ultimate     |        |
+| Operating costs / TCD             |    high     |       low        |        |
+
+
+
+### The XTravels Sample
+
+We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
+
+```sh
+mkdir -p cap/samples
+cd cap/samples
+git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xflights
+git clone https://github.com/capire/s4
+```
+
+[@capire/xtravels]: https://github.com/capire/xtravels
+[@capire/xflights]: https://github.com/capire/xflights
+[@capire/s4]: https://github.com/capire/s4
+
+
+
 ## Mocked Out of the Box
 
-In same process ...
+Within the context of application service integration and microservice architecture, we'd need to mock remote services in a consuming app to reach inner loop. CAP greatly does that for us, based on: 
 
-```shell
-cds watch 
-```
+- A CDS service definition is all we need to serve a fully functional OData service
+- APIs imported via `cds export` and `cds import` are CDS service definition
+- ⇒ CAP can serve/mock remote APIs out of the box
 
-```zsh
-...
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: '@capire/xflights-data/services.csn:3'
-}
-...
-```
+Let's demonstrate that within the xtravels project...
 
-Open UI → flights data displayed
+
+
+### In-Process, Shared DB – `cds watch`
+
+With mashed up models in place, we can run applications in _'airplane mode'_ without upstream services running. CAP mocks imported services automatically _in-process_ with mock data in the same _in-memory_ database as our own data.
+
+1. Start the xtravels application locally using `cds watch` as usual, and note the output about the integrated services being mocked automatically:
+
+   ```shell :line-numbers=1
+   cds watch
+   ```
+
+   ```zsh
+   [cds] - mocking sap.capire.s4.business-partner {
+     at: [ '/odata/v4/s4-business-partner' ],
+     decl: 's4/external/API_BUSINESS_PARTNER.csn:7'
+   }
+   ```
+
+   ```zsh
+   [cds] - mocking sap.capire.flights.data {
+     at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
+     decl: 'xflights/apis/data-service/services.csn:3'
+   }
+   ```
+
+2. Open the Fiori UI in the browser -> it displays data from both, local and imported entities, seamlessly integrated as shown in the screenshot below (the data highlighted in green is mocked data from `@capire/s4`).
+
+![XTravels Fiori list view showing a table of travel requests, with the Customer highlighted in green.](assets/xtravels-list.png)
+
+
+
+### Separate Processes – `cds mock`
+
+We can also use `cds mock` to mock remote services in separate processes, which brings us closer to the target setup:
+
+1. First run these commands **in two separate terminals**:
+
+   ```shell :line-numbers=1
+   cds mock apis/capire/xflights.cds
+   ```
+
+   ```shell  :line-numbers=2
+   cds mock apis/capire/s4.cds
+   ```
+
+2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
+
+   ```shell :line-numbers=3
+   cds watch
+   ```
+
+   ```zsh
+   [cds] - connect to sap.capire.s4.business-partner > odata {
+     url: 'http://localhost:54476/odata/v4/s4-business-partner'
+   }
+   ```
+
+   ```zsh
+   [cds] - connect to sap.capire.flights.data > hcql {
+     url: 'http://localhost:54475/hcql/data'
+   }
+   ```
+
+3. Open the Fiori UI in the browser again -> data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
+
+![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
+
+![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
+
+
+
+
 
 > [!tip] Mocking for Inner-Loop Development
-> A service definition is all we need to serve fully functional OData services. Hence, service APIs imported via `cds import` are automatically mocked by CAP runtimes during development. This allows us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services.\
-> See also: [_Inner-Loop Development_](#inner-loop-development) section further below.
+> A service definition is all we need to serve fully functional CAP services via OData or HCQL. Hence, service APIs imported via `cds import` are automatically mocked by CAP runtimes during development. This allows us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services.
 
-> [!tip] Decoupled Inner-Loop Development
-> CAP runtimes automatically mock imported service APIs during development, allowing us to develop and test integrated applications in fast inner loops, without the need to connect to real remote services. This decouples inner-loop development from external dependencies, speeding up development and increasing resilience.  
+> [!tip] Decoupled Development → Contracts First
+>
+> Local inner loops allow promote decoupled development of separate parts / applications / microservices in larger solution projects. Each team can focus on their local domain and functionality with the required remote services mocked for them based on imported APIs. These APIs are the contracts between the individual teams.
+
+> [!tip] Fast-track Inner-Loop Development → Spawning Parallel Tracks
+>
+> The mocked-out-of-the-box capabilities of CAP, with remoted services mocked in-process and a shared in-memory database, allows us to greatly speed up development and time to market. For real remote operations there is additional investment required, of course. But the agnostic nature of CAP-level Service Integration also allows you to spawn two working tracks running in parallel: One team to focus on domain and functionality, and another one to work on the integration logic under the hood.
 
 
 
-## Providing Mock Data 
+### Providing Mock Data 
 
 There are different options to provide initial data, test data, and mock data:
 
@@ -43,42 +159,11 @@ For Java, make sure to add the `--with-mocks` option to the `cds deploy` command
 
 [Learn more about *Adding Initial Data*](../databases/initial-data) {.learn-more}
 
-## Using `cds mock`
-
-Run this in terminal 1:
-
-```shell
-cds mock db/xflights.cds
-```
-
-```zsh
-...
-[cds] - mocking sap.capire.flights.data {
-  at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
-  decl: '@capire/xflights-data/services.csn:3'
-}
-...
-```
-
-Run this in terminal 2:
-
-```shell
-cds watch 
-```
-
-```zsh
-[cds] - connect to sap.capire.flights.data > hcql { 
-  url: 'http://localhost:56350/hcql/data' 
-}
-```
-
-Open UI → flights data missing
-
-This is because the CAP runtime now detected that services with that name are served by different processes within our local binding environment now, so we don't mock them in-process any longer.
 
 
 
-## Test in `cds repl`
+
+## Test-drive w/ `cds repl`
 
 
 
