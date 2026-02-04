@@ -112,7 +112,7 @@ const cats = await cds.connect.to ('CatalogService')
 let books = await cats.run (query)
 ```
 
-> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via http.
+> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
 The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
 
@@ -281,7 +281,7 @@ cds.ql {
 You can also test-drive the query by executing it with a running application:
 
 ```sh
-cds repl -u ql -r cap/samples/bookshpop
+cds repl -u ql -r cap/samples/bookshop
 ```
 ```js
 await cds.ql`SELECT from Authors {
@@ -338,7 +338,7 @@ q1 === q2 //> true
 
 ## cds.ql.clone() {.method}
 
-Use the `cds.ql.clone()` method to create clones of given queries, which can by plain CQN objects, or instances of `cds.Query` themselves. This is useful to avoid side effects when modifying queries prior to execution. The returned clone is always an instance of [`cds.Query`](#class-cds-ql-query).
+Use the `cds.ql.clone()` method to create clones of given queries, which can be plain CQN objects, or instances of `cds.Query` themselves. This is useful to avoid side effects when modifying queries prior to execution. The returned clone is always an instance of [`cds.Query`](#class-cds-ql-query).
 
 For example, given this original query, which would be captured in CQN as shown below:
 
