@@ -76,7 +76,7 @@ Add a subfolder per feature to folder *fts* and put `.cds` files into it. The na
 
 ### Feature *fts/isbn*
 
-Create a file *fiori/fts/isbn/schema.cds* with this content:
+Create a file *fts/isbn/schema.cds* with this content:
 
 ```cds
 using { CatalogService, sap.capire.bookshop.Books }
@@ -101,7 +101,7 @@ Note that all features will be deployed to each tenant database in order to allo
 
 ### Feature *fts/reviews*
 
-Create a file *fiori/fts/reviews/schema.cds* with this content:
+Create a file *fts/reviews/schema.cds* with this content:
 
 ```cds
 using { CatalogService } from '../../app/browse/fiori-service';
