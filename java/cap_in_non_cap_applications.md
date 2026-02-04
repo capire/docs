@@ -14,7 +14,7 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP (Java) is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical depdendencies to such services. But not only CAP applications can benefit from these plugins. CAP Java  itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
+One of the strengths of CAP (Java) is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. But not only CAP applications can benefit from these plugins. CAP Java  itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
 
 This integration enables CAP Java applications to easily integrate with existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java plugins to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
 
@@ -175,10 +175,7 @@ In case of the SAP Event Hub feature you would need to add this dependency to yo
 
 Credentials and service coordinates for connecting to a SAP Event Hub instance need to be provided by the runtime environment of your application. For more details you can have a look at the the [SAP Event Hub CAP Plugin](https://github.com/cap-java/cds-feature-event-hub).
 
-## Use the Transactional Outbox to add Resilience to Audit Log and Messaging
 
-The CAP Java transactional outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. With added persistence for the outbox you can even make the *outboxed* calls resilient against applicaton restarts.
-
-CAP Java services supporting the transactional outbox are automatically connected and each call to the given service will be handled by the transactional outbox. Both, the Audit Log as well as the Messaging feature automatically integrate their services with the transactional outbox. Nothing needs to be done from your side.
-
-In order to have added persistence for resilience against (accidental) application restart you need to add 2 things
+::: info
+Both, the Audit Log and the Messaging of CAP Java use the transactional outbox by default. The outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. This frees you the application developer from the task to implement compensation logic in case of failed transactions.
+:::
