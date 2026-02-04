@@ -9,10 +9,10 @@ Integrating remote services - from other applications, third-party services, or 
 > [!tip] The <i>'Calesi'</i> Pattern – Guiding Principles
 >
 > 1. Remote services are proxied by CAP services, ... → *everything's a CAP service*
-> 2. consumed in protocol-agnostic ways → *... as if they were local*
-> 3. mocked out of the box → *fast-track inner-loop development*
-> 4. with varying implementations → *evolution w/o disruption*
-> 5. extensible through event handlers → *intrinsic extensibility*
+> 2. Consumed in protocol-agnostic ways → *... as if they're local*
+> 3. Mocked out of the box → *fast-track inner-loop development*
+> 4. With varying implementations → *evolution w/o disruption*
+> 5. Extensible through event handlers → *intrinsic extensibility*
 >
 > => Application developers stay at CAP level -> *Focused on Domain*
 
@@ -24,9 +24,9 @@ Integrating remote services - from other applications, third-party services, or 
 
 ## Introduction & Overview
 
-### As If They Were Local
+### As If They’re Local
 
-Service integration is much about consuming remote services from other applications, third-party services, or platform services. CAP greatly simplifies this by allowing to call remote services _as if they were local_. Let's see how this works:
+With CAP, Service integration is greatly simplified. Consumption of remote services from other applications, third-party services, or platform services is as easy as calling them _as if they're local_:
 
 1. Clone the bookshop sample, and start the server in a terminal:
 
@@ -66,7 +66,7 @@ The graphic below illustrates what happened here:
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
 ](assets/remoting.drawio.svg)
 
-Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they were local_**. `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
+Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they're local_**. `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
 
 > [!note] Model Free
 >
@@ -100,7 +100,7 @@ From a service integration perspective, this sample mainly shows a data federati
 
 The graphic below shows the flow of essential steps for service integration, which the following sections walk you through in detail:
 
-![Workflow diagram showing five numbered steps of CAP-level service integration. Service Provider box on left contains step 1 Service Definition in blue and Domain Models in gray. Packaged API box in center shows step 2 Service Interface in light gray. Service Consumer box on right displays step 4 Consumption Views in light blue and step 5 Own Models in blue. Arrows connect the components left to right. Below, numbered list describes: 1 Expose Service Interfaces as usual, 2 Export APIs using cds export and npm publish, 3 Import APIs using cds import or npm add, 4 Add Consumption Views defining what to consume, 5 Use with own models as if they were local.
+![Workflow diagram showing five numbered steps of CAP-level service integration. Service Provider box on left contains step 1 Service Definition in blue and Domain Models in gray. Packaged API box in center shows step 2 Service Interface in light gray. Service Consumer box on right displays step 4 Consumption Views in light blue and step 5 Own Models in blue. Arrows connect the components left to right. Below, numbered list describes: 1 Expose Service Interfaces as usual, 2 Export APIs using cds export and npm publish, 3 Import APIs using cds import or npm add, 4 Add Consumption Views defining what to consume, 5 Use with own models as if they're local.
 ](assets/overview.drawio.svg)
 
 
@@ -656,7 +656,7 @@ Noteworthy aspects here are:
 
 ### Associations
 
-With consumption views in place, you can now reference them from your models _as if they were local_, creating mashups of imported and local definitions.
+With consumption views in place, you can now reference them from your models _as if they're local_, creating mashups of imported and local definitions.
 
 
   ::: code-group
@@ -727,7 +727,7 @@ This is required as associations to non-exposed entities would be cut off, which
 
 #### Fiori Annotations
 
-On top of the mashed up models we can add Fiori annotations as usual to serve Fiori UIs – again: _as if they were local_. For example, following are excerpts of Fiori annotations referring to the `A_BusinessPartner` entity imported from S/4 (via the `Customers` consumption view, and the association to that from the local `Travels` entity).
+On top of the mashed up models we can add Fiori annotations as usual to serve Fiori UIs – again: _as if they're local_. For example, following are excerpts of Fiori annotations referring to the `A_BusinessPartner` entity imported from S/4 (via the `Customers` consumption view, and the association to that from the local `Travels` entity).
 
 ::: code-group
 ```cds [app/common/labels.cds]
