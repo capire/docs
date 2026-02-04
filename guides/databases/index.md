@@ -25,9 +25,9 @@ The illustration below shows what happens automatically under the hood:
 > [!tip] Following the Calesi Pattern
 > The implementations of the CAP database layers follow the design principles of CAP-level Service Integration which means the following for database services:
 > - They are CAP services themselves.
-> - They provide database-agnostic interfaces to applications.
-> - They provide mocks for local development out of the box.
-> - They can be extended through event handlers, as any other CAP service.
+> - Provide database-agnostic interfaces to applications.
+> - Provide mocks for local development out of the box.
+> - Can be extended through event handlers, as any other CAP service.
 
 > [!tip] Promoting Fast Inner-Loop Development
 > Through the ability to easily swap production-grade databases like SAP HANA with SQLite or H2 in-memory databases during development, without any changes to CDS models nor implementations, we greatly promote inner-loop development with fast turnaround cycles, as well as speeding up test pipelines and minimizing TCD.
