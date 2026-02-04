@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  This guide shows how legacy Spring Boot applications can integrate themselves into service offerings of SAP BTP using different CAP modules without the need to completely migrate to CAP Java.
+  This guide shows how legacy Spring Boot applications can integrate themselves with service offerings of SAP BTP using different CAP plugins without the need to completely migrate to CAP Java.
 status: released
 ---
 
