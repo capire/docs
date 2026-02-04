@@ -161,7 +161,7 @@ FROM sap_capire_bookshop_Books as Books
 
 ### In Queries
 
-Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
+Expressions can be used in various parts of a query, for example, on the select list, in the where clause, in order by clauses, and more:
 
 :::code-group
 ```js [CQL]
@@ -315,7 +315,7 @@ They are independent of model elements and evaluate to the same value.
 
 ::: info A unary operator is an operator that operates on exactly one operand.
 
-E.g. in the expression `-price`, the `-` operator is a unary operator
+For example, in the expression `-price`, the `-` operator is a unary operator
 that operates on the single operand `price`. It negates the value of `price`.
 :::
 
@@ -327,7 +327,7 @@ that operates on the single operand `price`. It negates the value of `price`.
 
 
 ::: info A binary operator is an operator that operates on two operands.
-E.g. in the expression `price * quantity`, the `*` operator is a binary operator
+For example, in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
 
@@ -491,7 +491,7 @@ To achieve this, use the [exists](#in-exists-predicate) predicate.
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
 
-E.g., to select all authors that have written **at least** one book:
+For example, to select all authors that have written **at least** one book:
 
 :::code-group
 ```js [CQL]
@@ -685,7 +685,7 @@ In the `Authors` entity in the `Books.cds` file add a new element `cheapBooks`:
 ```
 
 Now we can use `cheapBooks` just like any other association.
-E.g. to select the set of authors which have no cheap books:
+For example, to select the set of authors which have no cheap books:
 
 :::code-group
 ```js [CQL]
