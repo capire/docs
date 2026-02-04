@@ -340,7 +340,7 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 
-CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. Those functions are passed through to the underlying database, allowing you to leverage the same functions for different databases, which greatly enhances portability.
+CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler automatically translates these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
 ## ref (path expression) { #ref }
 
@@ -409,7 +409,7 @@ FROM
 :::
 
 In this example, we select all books together with the name of their author.
-The association `author` defined in the `Books` entity relates a book to it's author.
+The association `author` defined in the `Books` entity relates a book to its author.
 
 ::: warning Flattening of to-many associations
 When navigating along a to-many association to a leaf element, the result is flattened:
@@ -523,11 +523,11 @@ This allows you to specify conditions on subsets of associated entities, enablin
 
 ## infix filter { #infix-filter }
 
-An infix in linguistics refer to a letter or group of letters that are added in the middle of a word to make a new word.
+An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
 If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
 that is applied to a path-segment of a [path-expression](#ref).
-This allows to filter the target of an association based on certain criteria.
+This allows you to filter the target of an association based on certain criteria.
 
 <div class="diagram">
 <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
