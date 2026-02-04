@@ -340,7 +340,7 @@ that multiplies the two factors `price` and `quantity`.
 </div>
 
 
-CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler automatically translates these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
+CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
 ## ref (path expression) { #ref }
 
