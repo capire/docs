@@ -70,7 +70,7 @@ Remote CAP services can be consumed using the same high-level, uniform APIs as f
 
 > [!note] Model Free
 >
-> Note that in the exercise above, the consumer side didn't even have any information about the service provider, except for the URL endpoint and protocols served, which it got from the service binding. In particular no API/service definitions at all – neither in *CDS*, *OData*, nor *OpenAPI*.
+> Note that in the exercise above, the consumer side didn't even have any information about the service provider, except for the URL endpoint and protocols served, which it got from the service binding. In particular no API/service definitions at all – neither in *CDS*, *OData*, nor in *OpenAPI*.
 
 
 
@@ -98,7 +98,7 @@ In this guide we use the _XTravels_ sample application as our running example. I
 ![XTravels application interface showing a travel request form. The interface displays customer information including name, email, and address fields highlighted in green, sourced from S/4HANA. Below that, a flight booking section shows departure and arrival airports, dates, and times highlighted in blue, sourced from the XFlights service. The layout demonstrates data federation from multiple backend systems presented in a unified user interface.
 ](assets/xtravels-screenshot.png)
 
-The resulting entity-relationship model looks like that:
+The resulting entity-relationship model:
 
 ![Architecture diagram showing three systems: XFlights on the left containing Flights, Airlines, and Airports entities in light blue, XTravels in the center containing Travels, Bookings, and Supplements entities in darker blue, and S/4HANA on the right containing Customers entity in gray. Arrows connect Bookings to Flights, Travels to Customers, and Bookings to Supplements, illustrating data relationships between the systems in a federated service integration pattern.
 ](assets/xtravels-sample.drawio.svg)
@@ -159,10 +159,10 @@ Let's have a closer look at the denormalized view for _Flights_, which basically
 } excluding { flight };       // which we flattened above
 ```
 
-Reason for this more complicated definition is that we need to preserve the primary keys elements  `flight.ID` and `date`, as OData disallows entities without keys.
+This definition is more complicated because we need to preserve the primary keys elements  `flight.ID` and `date`, as OData disallows entities without keys.
 
 > [!tip] Use Case-Oriented Services
-> Denormalized views are a common means to tailor provided APIs in a use case-oriented way. While normalization is required _within_ _XFlights_ to avoid redundancies, we flatten it here, to make life easier for external consumers. \
+> Denormalized views are a common way to tailor provided APIs to fit your use case. While normalization is required _within_ _XFlights_ to avoid redundancies, we flatten it here, to make life easier for external consumers. \
 > => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
 >
 
@@ -186,11 +186,11 @@ Exporting APIs to apis/data-service ...
 /done.
 ```
 
-By default, output goes to an `./apis/<service>` subfolder, where `<service>` is the `.cds` file basename. Use the `--to` option to specify a different output folder.
+By default, it outputs to an `./apis/<service>` subfolder, where `<service>` is the `.cds` file's basename. Use the `--to` option to specify a different output folder.
 
 #### Exported Service Definitions
 
-The key ingredient of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** part  of your service definition. It includes the _inferred elements signature_ of served entities but removes all projections to underlying entities and their dependencies.
+The essential component of the generated output is the `services.csn` file, which contains a cleansed, ***interface-only*** version of your service definition. It includes the _inferred element signatures_ of served entities but removes all projections to underlying entities and their dependencies.
 
 To get an idea of the effect, run `cds export` in dry-run mode like this:
 
@@ -399,7 +399,7 @@ Within the [_capire_](https://github.com/capire) org, we're publishing to [GitHu
   ```sh
   npm login --scope=@capire --registry=https://npm.pkg.github.com
   ```
-As password you're using a Personal Access Token (classic) with `read:packages` scope (for retrieving and installing a package). Read more about that in the [_GitHub Packages_](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) docs.
+As for the password, use a 'Personal Access Token (classic)' with the `read:packages` scope (for retrieving and installing a package). Read more about that in the [_GitHub Packages_](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) docs.
 :::
 
 ::: details Not using npm registries ...
@@ -423,14 +423,14 @@ capire-xflights-data-0.1.13.tgz
 
 > [!warning]
 >
-> Not using package registries like *npm* or *Maven* also means you'll loose all their support for semver-based dependency management.
+> Not using package registries like *npm* or *Maven* also means that you'll loose all their support for semver-based dependency management.
 
 :::
 
 
 
 > [!tip] Best Practice: Using Proven Standards
-> CAP leverages standard and widely adopted package management tools and practices, such as _npm_ or _Maven_, for sharing and distributing reuse packages. This allows you to use established and battle-tested workflows and tools for versioning, publishing, consuming, and upgrading packages. At the same time it allows us to not reinvent those wheels, and focus on what matters most: allowing you to focus on domain, and be as productive as possible.
+> CAP leverages standard and widely adopted package management tools and practices, such as _npm_ and _Maven_ for sharing and distributing reuse packages. This allows you to use established and battle-tested workflows and tools for versioning, publishing, consuming, and upgrading packages. At the same time it allows us to not reinvent those wheels, and focus on what matters most: allowing you to focus on domain, and be as productive as possible.
 
 
 
@@ -438,13 +438,13 @@ capire-xflights-data-0.1.13.tgz
 
 ## Importing APIs
 
-On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), we import packaged APIs as provided before using `npm add`, or other APIs from non-CAP sources using `cds import` as outlined below.
+On the consumer side, like [*@capire/xtravels*](https://github.com/capire/xtravels) in our [sample scenario](#the-xtravels-sample), we import packaged APIs from CAP and non-CAP sources using `npm add` and `cds import` respectively.
 
 
 
 ### Packaged APIs
 
-Packaged APIs provided by CAP service providers are imported to consuming applications like that:
+Import packaged APIs provided by CAP service providers like that:
 
 ```shell
 npm add @capire/xflights-data
@@ -513,9 +513,9 @@ srv/external
 
 ### Reuse Packages
 
-Instead of importing the same APIs repeatedly in each project, you can import them once and share them as reusable packages. These packages use the same techniques as `cds export` and provide the same plug & play convenience.
+If you find yourself importing the same APIs every time in new projects, you can create a package that imports the APIs once and reuse it instead. Reusable packages use the same techniques as `cds export` and provide the same plug & play convenience.
 
-For the _XTravels_ sample, we did so with the [`@capire/s4`](https://github.com/capire/s4) sample package, which we created as follows.
+For the _XTravels_ sample, we created the [`@capire/s4`](https://github.com/capire/s4) reuse package as follows:
 
 
 1. We started a new CAP project – clone the repository into the [`cap/samples`] folder we created in the beginning and open it in VS Code to follow along:
@@ -588,7 +588,7 @@ npm add @capire/s4
 ```
 
 > [!tip] Pre-built Integration Packages
-> In effect, pre-built integration packages apply the same best practice techniques as the `cds export` command does when generating [Packaged APIs](#packaged-apis). Such packages can be reused in any CAP project by a simple `npm add` command, thereby avoiding the need to re-import raw API definitions in each consuming project from scratch. Last but not least, they allow central version management based _npm_ and _Maven_.
+> In effect, pre-built integration packages apply the same best practice techniques as the `cds export` command does when generating [Packaged APIs](#packaged-apis). Such packages can be reused in any CAP project by a simple `npm add` command, thereby avoiding the need to re-import raw API definitions in each consuming project from scratch. Last but not least, they allow central version management based on _npm_ and _Maven_.
 
 
 
@@ -599,12 +599,12 @@ npm add @capire/s4
 With imported APIs, you can now use them in your own models. For example, the XTravels application combines customer data from SAP S/4HANA with travels and flight bookings from xflights. With the integrated models, you can already run the application, as CAP [mocks integrations automatically](#mocked-out-of-the-box). For real integration, you'll need [custom code](#integration-logic), which we'll cover later.
 
 > [!tip] <i>AI Agents 'capire' CAP</i>
-> We can use AI agents to help us analysing and understanding our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context.
+> We can use AI agents to help us analyse and understand our models. Actually, the following sections are based on a response by *Claude Sonnet* to the question: *"Find and explain all references"*, with the entity definition for the `Flights` consumption view selected as context.
 
 
 ### Consumption Views
 
-Imported APIs often contain more entities and elements than you need. So as a next step we first create *Consumption Views* to capture what you actually want to use, focusing on entities and elements you need close access to.
+Imported APIs often contain more entities and elements than you need. So, before we continue, we first create *Consumption Views* to capture what you actually want to use, focusing on entities and elements you need close access to.
 
 Create two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`:
 
@@ -639,7 +639,7 @@ namespace sap.capire.s4;
 ```
 :::
 
-Noteworthy aspects here are:
+The noteworthy aspects here are:
 
 - We map names to match our domain, e.g., `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
 
