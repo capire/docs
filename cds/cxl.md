@@ -36,13 +36,13 @@ to the respective calculation in the generated query when the entity is queried.
 :::
 
 
-## How to read this guide { #how-to }
+## How to Read This Guide { #how-to }
 
 
 In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
 For a complete reference of the syntax, there are clickable [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram) (aka railroad diagrams) for each language construct.
 
-### samples
+### Samples
 
 To try the samples by yourself, create a simple CAP app:
 
@@ -78,7 +78,7 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-### syntax diagrams
+### Syntax Diagrams
 
 Each language construct is illustrated by a clickable [syntax diagram](https://en.wikipedia.org/wiki/Syntax_diagram).
 
@@ -93,7 +93,7 @@ The following diagram illustrates how to read the diagrams:
 </div>
 
 
-## expr { #expr }
+## expr - Expressions { #expr }
 
 An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
 ```cds
@@ -121,7 +121,7 @@ This syntax diagram describes the possible expressions:
 An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
 :::
 
-### in model definitions
+### In Model Definitions
 
 Expressions can be used to define calculated elements.
 Typically, this is done on the select list of a query. CAP
@@ -159,7 +159,7 @@ FROM sap_capire_bookshop_Books as Books
 
 [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
 
-### in queries
+### In Queries
 
 Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
 
@@ -195,7 +195,7 @@ WHERE Books.price > 10
 :::
 
 
-### in annotations
+### In Annotations
 
 Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
 The meaning and effect of the expression depend on the specific annotation being used.
@@ -273,7 +273,7 @@ The `@assert` annotation lets you capture the intent via an expression, without 
 This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
 :::
 
-## literal value { #literal-value }
+## Literal Value { #literal-value }
 
 Literal values represent constant data embedded directly in an expression.
 They are independent of model elements and evaluate to the same value.
@@ -305,9 +305,9 @@ They are independent of model elements and evaluate to the same value.
 
 [Learn more about literals.](./csn.md#literals){ .learn-more }
 
-## operators
+## Operators
 
-### unary operator { #unary-operator }
+### Unary Operator { #unary-operator }
 
 <div class="diagram">
 <div v-html="unaryOperator"></div>
@@ -319,7 +319,7 @@ E.g. in the expression `-price`, the `-` operator is a unary operator
 that operates on the single operand `price`. It negates the value of `price`.
 :::
 
-### binary operator { #binary-operator }
+### Binary Operator { #binary-operator }
 
 <div class="diagram">
 <div v-html="binaryOperator"></div>
@@ -331,7 +331,7 @@ E.g. in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
 
-## function { #function }
+## Function { #function }
 
 
 <div class="diagram" >
@@ -486,7 +486,7 @@ When writing annotation expressions, it's often important to ensure that the res
 To achieve this, use the [exists](#in-exists-predicate) predicate.
 :::
 
-### in `exists` predicate
+### In `exists` Predicate
 
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
@@ -521,7 +521,7 @@ WHERE exists (
 The `exists` predicate can be further enhanced by [combining it with infix filters](#exists-infix-filter).
 This allows you to specify conditions on subsets of associated entities, enabling more precise and expressive queries.
 
-## infix filter { #infix-filter }
+## Infix Filter { #infix-filter }
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
@@ -536,7 +536,7 @@ This allows you to filter the target of an association based on certain criteria
 
 
 
-### applied to `exists` predicate { #exists-infix-filter }
+### Applied to `exists` Predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -592,7 +592,7 @@ WHERE exists (
 :::
 
 
-### applied to `from` clause
+### Applied to `from` Clause
 
 Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
 
@@ -672,7 +672,7 @@ WHERE exists (
 ```
 :::
 
-### in calculated element
+### In Calculated Element
 
 You can also use the infix filter notation to derive
 another more specific association from an existing one.
@@ -755,7 +755,7 @@ FROM sap_capire_bookshop_Authors as Authors
 :::
 
 
-### between path segments
+### Between Path Segments
 
 Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
 
