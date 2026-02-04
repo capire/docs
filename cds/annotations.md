@@ -50,7 +50,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 | Annotation           | Description                                                                             |
 |----------------------|-----------------------------------------------------------------------------------------|
 | `@path`              | see [Services](./cdl#service-definitions)                                               |
-| `@impl`              | see [Reuse & Compose](../guides/integration//composition#reuse-code)                    |
+| `@impl`              | see [Reuse & Compose](../guides/integration/reuse-and-compose#reuse-code)                    |
 | `@odata.etag`        | see [Providing Services](../guides/services/served-ootb#etag)                           |
 | `@cds.autoexpose`    | see [Providing Services](../guides/services/providing-services#auto-exposed-entities)   |
 | `@cds.api.ignore`    | see [OData](../guides/protocols/odata#omitting-elements-from-apis)                      |

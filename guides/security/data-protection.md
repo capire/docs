@@ -131,7 +131,7 @@ Learn more about user model and identity providers here:
 CAP microservices consume remote services and hence need to be authenticated as technical client as well.
 Similar to [request authentication](#authenticate-requests), CAP saves applications from having to implement secure setup of service to service communication:
 - CAP interacts with platform services such as [Event Mesh](../events/index.md) or [SaaS Provisioning Service](../deploy/to-cf) on basis of platform-injected service bindings.
-- CAP offers consumption of [Remote Services](../services/consuming-services) on basis of [SAP BTP destinations](../services/consuming-services#btp-destinations).
+- CAP offers consumption of [Remote Services](../services/consuming-services) on basis of SAP BTP destinations.
 
 Note that the applied authentication strategy is specified by server offering and resp. configuration and not limited by CAP.
 
@@ -155,7 +155,7 @@ Hence, authentication is still mandatory for CAP microservices.
 <!-- #SEC-309 -->
 
 To run a CAP application that authenticates users and consumes remote services, **it isn't required to manage any secrets such as keys, tokens, or passwords**.
-Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./overview#platform-environment) or [destinations](../services/consuming-services#btp-destinations).
+Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./overview#platform-environment) or destinations.
 
 ::: tip
 In case you still need to store any secrets, use a platform service [SAP Credential Store](https://help.sap.com/docs/CREDENTIAL_STORE).

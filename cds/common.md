@@ -470,7 +470,7 @@ Use it in your `cds` files:
 using from '@sap/cds-common-content';
 ```
 
-[Learn more about integrating reuse packages](../guides/integration/composition){.learn-more}
+[Learn more about integrating reuse packages](../guides/integration/reuse-and-compose){.learn-more}
 
 
 ## Adapting to Your Needs
@@ -482,7 +482,7 @@ Let's look at a few examples of what could be done. You can combine these extens
 You can do such extensions in the models of your project. You can also collect your extensions into reuse packages and share them as common definitions with several consuming projects, similar to _@sap/cds/common_ itself.
 :::
 
-[Learn more about providing reuse packages.](../guides/integration/composition){ .learn-more}
+[Learn more about providing reuse packages.](../guides/integration/reuse-and-compose){ .learn-more}
 
 
 ### Adding Detailed Fields as of [ISO 3166-1]
