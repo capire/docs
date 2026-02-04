@@ -1,5 +1,5 @@
-<!-- # [ CAP-level Database Usage ](index.md) -->
-# [ CAP-level Database Support ](cap-level-dbs)
+<!-- # [ CAP-Level Database Usage ](index.md) -->
+# [ CAP-Level Database Support ](cap-level-dbs)
 # [ CDL Compiled to DDL ](cdl-to-ddl)
 # [ Adding Initial Data ](initial-data.md)
 # Deployed to ...
