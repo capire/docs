@@ -1390,15 +1390,20 @@ In such architectures, CAP authentication is obsolete and can be deactivated ent
 [Learn more about how to switch off authentication.](../../java/security#custom-spring-security-alone){.learn-more}
 
 </div>
-<!--
+
 <div class="node">
 
-TODO
+In such architectures, CAP authentication is obsolete and can be deactivated entirely.
+In CAP Node.js, this can be achieved via an empty custom authentication implementation.
+
+[Learn more about custom authentication in Node.js.](../../node.js/authentication.md#custom){.learn-more}
 
 </div>
--->
+
+
 
 ## Pitfalls
+
 - **Don't miss to configure security middleware.**
   Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
   Without security middleware configured, CDS services are exposed to the public. 
