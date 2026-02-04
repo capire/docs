@@ -34,17 +34,23 @@ Here's a very rough comparison from a real world example:
 
 We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
 
-```sh
+```sh :line-numbers
 mkdir -p cap/samples
 cd cap/samples
-git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xtravels 
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
 ```
 
 [@capire/xtravels]: https://github.com/capire/xtravels
 [@capire/xflights]: https://github.com/capire/xflights
 [@capire/s4]: https://github.com/capire/s4
+
+> [!note]
+>
+> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces`. For the time being this simply optimizes the `npm install`. We'll revisit that in chapter [*Using `npm` Workspaces*](#using-npm-workspaces) below. 
 
 
 
@@ -92,43 +98,38 @@ With mashed up models in place, we can run applications in _'airplane mode'_ wit
 
 ### Separate Processes – `cds mock`
 
+###### cds-mock
+
 We can also use `cds mock` to mock remote services in separate processes, which brings us closer to the target setup:
 
-1. First run these commands **in two separate terminals**:
+1. From within the xtravels project's root folder `cap/samples/xtravels`, start by mocking the remote services in separate terminals, then start xtravels server in a third terminal:
 
-   ```shell :line-numbers=1
-   cds mock apis/capire/xflights.cds
-   ```
-
-   ```shell  :line-numbers=2
-   cds mock apis/capire/s4.cds
-   ```
-
-2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
-
-   ```shell :line-numbers=3
-   cds watch
-   ```
-
-   ```zsh
-   [cds] - connect to sap.capire.s4.business-partner > odata {
+    ```shell :line-numbers=1
+    cds mock apis/capire/xflights.cds
+    ```
+    ```shell :line-numbers=2
+    cds mock apis/capire/s4.cds
+    ```
+    ```shell :line-numbers=3
+    cds watch
+    ```
+    Note in the log output of the xtravels server that it now _connects_ to the other services instead of mocking them:
+    ```zsh
+    [cds] - connect to sap.capire.s4.business-partner > odata {
      url: 'http://localhost:54476/odata/v4/s4-business-partner'
-   }
-   ```
-
-   ```zsh
-   [cds] - connect to sap.capire.flights.data > hcql {
+    }
+    ```
+    ```zsh
+    [cds] - connect to sap.capire.flights.data > hcql {
      url: 'http://localhost:54475/hcql/data'
-   }
-   ```
+    }
+    ```
 
-3. Open the Fiori UI in the browser again -> data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
+2. Open the Fiori UI in the browser again -> data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
 
 ![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
-
-
 
 
 
@@ -163,38 +164,175 @@ For Java, make sure to add the `--with-mocks` option to the `cds deploy` command
 
 
 
+## Run with Real Services 
+
+Instead of mocking required services by the imported APIs [using `cds mock` as shown above](#cds-mock), we can also run the real *xflights* service from its respective home folder which we [cloned already in the beginning](#the-xtravels-sample). We can combine that with `s4` still mocked from the imported API, as above.
+
+Do so by running the following commands from within the `cap/samples` root folder in separate terminals, and in that order:
+
+```shell :line-numbers=1
+cd xtravels; cds mock apis/capire/s4.cds
+```
+```shell :line-numbers=2
+cds watch xflights
+```
+```shell :line-numbers=3
+cds watch xtravels
+```
+
+In the log output of the xtravels server we should see that it _connects_ to the other services, in the same way as above:
+```zsh
+[cds] - connect to sap.capire.s4.business-partner > odata {
+ url: 'http://localhost:54476/odata/v4/s4-business-partner'
+}
+```
+```zsh
+[cds] - connect to sap.capire.flights.data > hcql {
+ url: 'http://localhost:54475/hcql/data'
+}
+```
+
+[Go on as above...](#cds-mock)
+
+
+
 ## Test-drive w/ `cds repl`
 
+We can use `cds repl` to experiment the options to send requests and queries to remote services interactively. Do so as follows...
 
+From within the xtravels project's root folder `cap/samples/xtravels`, start by mocking the remote services in separate terminals, then start xtravels server within `cds repl` (instead of `cds watch`) in a third terminal:
 
-```shell
-cds repl ./
+```shell :line-numbers=1
+cd xtravels; cds mock apis/capire/s4.cds
 ```
+
+```shell :line-numbers=2
+cds watch xflights
+```
+
+```shell :line-numbers=3
+cds repl xtravels
+```
+
+Within the REPL, connect to local and remote services:
 
 ```js
+const TravelService = await cds.connect.to ('TravelService')
 const xflights = await cds.connect.to ('sap.capire.flights.data')
-await xflights.read `Flights {
-   ID, date, departure, 
-   origin.name as ![from], 
-   destination.name as ![to]
-}`
+const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
 ```
 
-⇒ equally works for both, xflights api mocked locally, as well as running remotely
+Read data directly from the remote `A_BusinessPartner` entity.
+
+```js
+await s4.run (SELECT.from`A_BusinessPartner`.limit (3))
+await s4.read`A_BusinessPartner`.limit (3) // shorthand // [!code focus]
+```
+
+> The variant on line 2 is a convenient shorthand for the one on line 1.
+
+::: details See results output ...
+
+```zsh
+=> [
+  {
+    BusinessPartner: '000001',
+    PersonFullName: 'Mrs. Theresia Buchholm',
+    LastChangeDate: '2024-01-19',
+    LastChangeTime: '21:48:32',
+    BusinessPartnerCategory: '1'
+  },
+  {
+    BusinessPartner: '000002',
+    PersonFullName: 'Mr. Johannes Buchholm',
+    LastChangeDate: '2024-01-08',
+    LastChangeTime: '11:22:01',
+    BusinessPartnerCategory: '1'
+  },
+  {
+    BusinessPartner: '000003',
+    PersonFullName: 'Mr. James Buchholm',
+    LastChangeDate: '2022-11-04',
+    LastChangeTime: '15:27:46',
+    BusinessPartnerCategory: '1'
+  }
+]
+```
+
+:::
+
+Read the same data via the `sap.capire.s4.Customers` consumption view:
+
+```js
+const { Customers } = cds.entities ('sap.capire.s4')
+await s4.read (Customers) .limit (3) // [!code focus]
+```
+
+::: details See results output ...
+
+```zsh
+=> [
+  { ID: '000001', Name: 'Mrs. Theresia Buchholm', modifiedAt: '2024-01-19' },
+  { ID: '000002', Name: 'Mr. Johannes Buchholm', modifiedAt: '2024-01-08' },
+  { ID: '000003', Name: 'Mr. James Buchholm', modifiedAt: '2022-11-04' }
+]
+```
+
+Note how field names and structure are adapted to our domain.
+:::
+
+::: details See OData requests ...
+Watch the log output in the second terminal to see the translated OData requests being received by the remote service, for example:
+
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner {
+  '$top': '3'
+}
+```
+
+```zsh
+[odata] - GET /odata/v4/s4-business-partner/A_BusinessPartner {
+  '$select': 'BusinessPartner,PersonFullName,LastChangeDate',
+  '$top': '3'
+}
+```
+
+:::
+
+CRUD some data into remote `A_BusinessPartner` entity, still via the `sap.capire.s4.Customers` consumption view:
+
+```js
+await s4.insert ({ ID: '123', Name: 'Sherlock' }) .into (Customers)
+await s4.create (Customers, { ID: '456', Name: 'Holmes' })
+await s4.read`ID, Name` .from (Customers) .where`length(ID) <= 3`
+await s4.update (Customers,'123') .with ({ modifiedAt: '2026-01-01' })
+await s4.delete (Customers,'123')
+await s4.delete (Customers) .where`ID = ${'456'}`
+```
+
+Go on like that and try out similar requests with the other services, that is, `TravelService` and `xflights`. For the latter you might run into `401` errors, in that case run the following once in the REPL to run in privileged mode: 
+
+```js
+cds.User.default = cds.User.privileged
+```
 
 
 
 
-## Using Workspaces
 
-Instead of exercising a workflow like that again and again:
+
+## Using `npm` Workspaces
+
+So far we assumed we mainly wirked within the *xtravels* project, and we consumed thte APIs from xflights via `npm publish` / `npm install` . There might be situations where we would want to shortcut this process. For example, we might want to consume a very latest version of the xflights API, which is not yet published to the *npm* registry. Or we might even want to work on both projects simultaneously, and test our latest changes to *xflights* in *xtravels* in close loops. 
+
+So, in essence, instead of exercising a workflow like that again and again:
 
 - ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
 
-... we can use *npm workspaces* technique to work locally and speed up things as follows:
+... we can use *npm workspaces* technique to work locally and speed up things as follows (we did that already above, shown here again for local completeness):
 
 ```shell 
-mkdir -p cap/works; cd cap/works
+mkdir -p cap/samples; cd cap/samples
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/xtravels
 echo '{"workspaces":["xflights","xtravels"]}' > package.json
@@ -242,6 +380,13 @@ cds watch xtravels
   decl: 'xflights/apis/data-service/services.csn:3',
 }
 ```
+
+> [!tip]
+>
+> So, using `npm` workspaces we've streamlined our workflows as follows:
+>
+> - Before: ( *change* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
+> - After: ( *change* → *export* ) → ( *consume* )
 
 
 
@@ -343,8 +488,12 @@ cds watch xtravels
 }
 ```
 
-Which means we've streamlined our workflows as follows:
 
-- Before: ( *change* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
-- Step 1: ( *change* → *export* ) → ( *consume* )
-- Step 2: ( *change* ) → ( *consume* )
+
+> [!tip]
+>
+> So, in total, we've streamlined our workflows as follows:
+>
+> - Before: ( *change* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
+> - Step 1: ( *change* → *export* ) → ( *consume* )
+> - Step 2: ( *change* ) → ( *consume* )
