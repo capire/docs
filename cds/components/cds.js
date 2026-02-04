@@ -1,7 +1,3 @@
-import cds from '@sap/cds';
-import express from 'express';
-import templates from 'virtual:templates';
-
 function simpleSqlFormat(sql) {
   return sql
     .replace(/\b(select|from|where|group by|order by|having|limit|offset|join|left join|right join|inner join|outer join)\b/gi, "\n$1")
@@ -35,6 +31,9 @@ function injectLogger(sqlite) {
 
 async function initialize() {
   // revisit: make this a static import with ssr handling
+  const cds = (await import('@sap/cds')).default;
+  const express = (await import('express')).default;
+  const templates = (await import('virtual:templates')).default;
   const sqlite = (await import('better-sqlite3')).default;
 
   const { bookshop } = templates
@@ -70,12 +69,14 @@ if (!import.meta.env.SSR) {
   initialized = initialize();
 }
 
+const AsyncFunction = async function () {}.constructor;
 async function evalJS(code) {
   await initialized;
-  const { result, formatted } = await sql.trace(() => eval(`(async () => {${code}})()`));
+  const fn = new AsyncFunction(code);
+  const { result, formatted } = await sql.trace(fn);
   const kind = result? 'json' : 'plaintext'
   return [
-    { value: result ?? "success", kind, name: 'Result' },
+    { value: result ? typeof result !== 'string' ? JSON.stringify(result, null, 2) : result : "success", kind, name: 'Result' },
     { value: formatted, kind: 'sql', name: 'SQL'}
   ];
 }

@@ -15,7 +15,7 @@
 
     <div v-if="queryResult" :class="`vp-code-group vp-adaptive-theme ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
-        <template v-for="tab in tabs" :key="tab.key">
+        <template v-for="tab in tabs.filter(({value}) => value?.trim?.())" :key="tab.key">
           <input type="radio" :id="tab.key" v-model="selectedTab" :value="tab.key">
           <label :for="tab.key">{{ tab.name }}</label>
         </template>
