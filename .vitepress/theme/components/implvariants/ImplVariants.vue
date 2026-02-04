@@ -95,6 +95,7 @@ transition: none !important;
 }
 
 watchEffect(() => {
+  if (!supportsVariants.value) return
   setTimeout(() => { // otherwise DOM is not ready
     if (typeof document !== 'undefined') {
       animationsOff(() => setClass(currentCheckState()) )
