@@ -99,10 +99,10 @@ An expression can hold various elements, such as references, literals, function 
 ```cds
 select from Books {
   42                     as answer,         // literal
-  title,                                    // reference ("ref")
+  title,                                    // element reference
   price * quantity       as totalPrice,     // binary operator
   substring(title, 1, 3) as shortTitle,     // function call
-  author.name            as authorName,     // ref with path expression
+  author.name            as authorName,     // path expression
   chapters[number < 3]   as earlyChapters,  // ref with infix filter
   exists chapters        as hasChapters,    // exists
   count(chapters)        as chapterCount,   // aggregate function
@@ -342,9 +342,9 @@ that multiplies the two factors `price` and `quantity`.
 
 CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler automatically translates these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
-## ref (path expression) { #ref }
+## ref — Element References & Path Expressions { #ref }
 
-A `ref` (short for reference) is used to refer to an element within the model.
+A `ref` (short for reference) is the CXL syntax element used to reference elements within the model.
 It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
@@ -358,9 +358,9 @@ Leaf elements as opposed to associations and structured elements represent scala
 They typically manifest as columns in database tables.
 :::
 
-### simple element reference
+### Simple Element References
 
-In its simplest form, a `ref` can be used to reference an element:
+The simplest form of a `ref` references a single element:
 
 :::code-group
 ```js [CQL] {1}
@@ -381,9 +381,9 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 
 In this example, we select the `title` element from the `Books` entity.
 
-### path navigation {#path-navigation}
+### Path Expressions {#path-expressions}
 
-A path expression can be used to navigate to any element of the associations target:
+A path expression navigates to elements of an association's target:
 
 :::code-group
 ```js [CQL]
@@ -525,8 +525,8 @@ This allows you to specify conditions on subsets of associated entities, enablin
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
-If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
-that is applied to a path-segment of a [path-expression](#ref).
+If we apply this terminology to path expressions, an infix filter condition is an expression 
+that is applied to a path segment of a path expression.
 This allows you to filter the target of an association based on certain criteria.
 
 <div class="diagram">
