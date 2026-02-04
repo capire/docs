@@ -301,11 +301,29 @@ cds.model = await cds.load('*')
 
 ### cds. app {.property}
 
-The [express.js Application object](https://expressjs.com/de/4x/api.html#app) constructed during bootstrapping. Several framework operations use that to add express handlers or middlewares. It is initialised in built-in `server.js` like so:
+Bootstrapping constructs the [express.js Application object](https://expressjs.com/en/api.html#app). Several framework operations use it to add express handlers or middlewares. The built-in `server.js` file initializes it:
 
 ```js
 cds.app = require('express')()
 ```
+
+Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4.
+
+With `express^5` support, `express` became a standard dependency (instead of an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)) with an open range for both major versions 4 and 5 (that is, `^4 || ^5`).
+If you don't require a specific version (for example, due to custom middleware), you can remove your own `express` dependency and automatically receive the latest version of `express` that is compatible with all your (transitive) dependencies.
+
+:::tip Verify installed version of `express`
+With CLI command `npm ls express`, you can verify the installed version(s) of `express`.
+
+```bash
+xtravels % npm ls express
+@capire/xtravels@1.0.0
+└─┬ @sap/cds@9.7.0
+  └── express@5.2.1
+```
+:::
+
+For more information, refer to the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
@@ -339,7 +357,7 @@ cds.db = await cds.connect.to('db')
 
 ```ts
 function cds.error (
-  status?  : number  
+  status?  : number
   message  : string | object,
   details? : object
   caller?  : function

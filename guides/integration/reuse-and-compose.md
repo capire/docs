@@ -58,7 +58,7 @@ npm install
 **2)** &nbsp; Start a sample project:
 
 ```sh
-cds init sample
+cds init sample --nodejs
 cd sample
 npm i
 # ... run the upcoming commands in here

@@ -153,7 +153,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
    ```sh
    cd ..
-   cds init orders-ext
+   cds init orders-ext --nodejs
    code orders-ext # open in VS Code
    ```
 

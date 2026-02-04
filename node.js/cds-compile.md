@@ -186,7 +186,7 @@ for (let [edm,{file,suffix}] of all)
 
 Use [`cds.compile.to.hana`](#hana) instead.
 
-### .hana() <Since version="8.0.0" of="@sap/cds" /> {.method}
+### .hana() <Since version="8.0.0" package="@sap/cds" /> {.method}
 
 Generates `hdbtable/hdbview` output.
 

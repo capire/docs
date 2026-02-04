@@ -23,6 +23,3 @@ status: released
 
 [Serving Media Data](media-data.md)
    : Store and stream media and binary data either in the database or external repositories using OData V4's media resource support.
-
-[Consuming Services](consuming-services.md)
-   : Connect to local or remote services using uniform APIs for importing definitions, querying, and building service mashups.

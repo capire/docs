@@ -336,6 +336,54 @@ q1 === q2 //> true
 ```
 
 
+## cds.ql.clone() {.method}
+
+Use the `cds.ql.clone()` method to create clones of given queries, which can by plain CQN objects, or instances of `cds.Query` themselves. This is useful to avoid side effects when modifying queries prior to execution. The returned clone is always an instance of [`cds.Query`](#class-cds-ql-query).
+
+For example, given this original query, which would be captured in CQN as shown below:
+
+```js
+q1 = SELECT.from`Books` .where`title like 'Wu%'`.orderBy`genre.name`
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'title' ] }, 'like', { val: 'Wu%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] } ]
+  }
+}
+```
+
+We can create a clone and modify it like this:
+```js
+q2 = cds.ql.clone (q1)
+```
+We can then modify `q2` without changing `q1`, for example like this:
+```js
+// Override where clause 
+q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
+```
+```js
+// Append an additional order by clause
+q2.orderBy`title asc`
+```
+
+We can use the `.flat()` method to see the effective modified query:
+```js
+q2.flat()
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'author', 'name' ] }, '=', { val: 'Emily%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] }, { ref: [ 'title' ], sort: 'asc' } ]
+  }
+}
+```
+
+
 ## cds.ql. Query {#class-cds-ql-query .class}
 
 Instances of `cds.Query` capture queries at runtime. Subclasses provide [fluent APIs](#constructing-queries) to construct queries as highlighted below.

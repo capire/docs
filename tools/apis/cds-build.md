@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Implement Build Plugins <Since version="7.5.0" of="@sap/cds-dk" /> 
+# Implement Build Plugins <Since version="7.5.0" package="@sap/cds-dk" />
 
 CDS already offers build plugins to create deployment layouts for the most use cases. However, you will find cases where these plugins are not enough and you have to develop your own. This section shows how such a build plugin can be implemented and how it can be used in projects.
 
@@ -67,7 +67,7 @@ The compiled CSN model can be accessed using the asynchronous methods `model()` 
 - To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to-xyz), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
 - Use [`cds.reflect`](../../node.js/cds-reflect) to access advanced query and filter functionality on the CDS model.
 
-## Add build task type to cds schema <Since version="7.6.0" of="@sap/cds-dk" />
+## Add build task type to cds schema <Since version="7.6.0" package="@sap/cds-dk" />
 
 In addition you can also add a new build task type provided by your plugin. This build task type will then be part of code completion suggestions for `package.json` and `.cdsrc.json` files.
 

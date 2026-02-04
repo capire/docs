@@ -46,12 +46,12 @@ const { frontmatter } = useData()
     </template>
   </Layout>
 
-  <Ribbon v-if="isPreview">
+  <Ribbon v-if="archiveVersion">
+    {{ archiveVersion }}<br>Archive
+  </Ribbon>
+  <Ribbon v-else-if="isPreview">
     DEV PREVIEW<br>
     See <a href="https://cap.cloud.sap" target="_blank" rel="noopener noreferrer">cap.cloud.sap</a>
-  </Ribbon>
-  <Ribbon v-else-if="archiveVersion">
-    {{ archiveVersion }}<br>Archive
   </Ribbon>
 
   <ShortcutsList />

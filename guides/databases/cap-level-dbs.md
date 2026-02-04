@@ -1,12 +1,26 @@
-# CDS Compilation to Database-Specific SQL
+# CAP-Level Database Support
 
-CAP supports a number of portable functions and operators in CQL, which are automatically translated to the best-possible database-specific native SQL equivalents. These can safely be used in CDS view definitions as well as in runtime queries expressed in CQL.
+CAP supports a number of portable functions and operators in CQL. The compiler automatically translates these to the best-possible database-specific native SQL equivalents. You can safely use these in CDS view definitions and runtime queries expressed in CQL.
 {.abstract}
 
 [[toc]]
 
 
-## Operators
+## Mocked Out of the Box
+
+When using CAP's mocked out-of-the-box database integration, these functions and operators are supported in the in-memory SQLite database used for development and testing.
+
+#### TODO:
+
+- Mocked by in-memory SQLite or H2 databases
+- With SAP HANA or PostgreSQL for production
+- With a defined set of portable functions and operators
+
+## Standard Operators
+
+This chapter lists standardized operators supported by CAP, and guaranteed to work across all supported databases with feature parity. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
+
+### Standard SQL Operators
 
 Most native SQL operators are supported in CQL as-is, like these from the SQL92 standard:
 
@@ -57,7 +71,6 @@ The differences are captured in these truth tables:
 | 1 | `false` | `true` | `unknown` |
 | 0 | `true` | `false` | `unknown` |
 | `null` | `unknown` | `unknown` | `unknown` |
-
 :::
 
 In other words:
@@ -78,7 +91,10 @@ The result set includes all books where genre is not 'Science Fiction', includin
 The behavior of CQL two-valued comparison operators `==` and `!=` is consistent with common programming languages like JavaScript and Java, as well as with the semantics of the OData operators `eq` and `ne`. On the database `==` and `!=` are translated to `IS NOT DISTINCT FROM` and `IS DISTINCT FROM` in standard SQL, to `IS` and `IS NOT` on SQLite, and to an equivalent polyfill on SAP HANA.
 
 > [!tip] Prefer == and !=
-> Prefer using  `==` and `!=` in the very most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
+> Prefer using `==` and `!=` in most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
+
+> [!warning] Semantics of != differs from SQL
+> Be ware that the `!=` operator in CQL uses two-valued logic whereas the `!=` operator uses three-valued logic. 
 
 > [!tip] Avoid using `null` values
 > Declare elements as `not null` where applicable. Or use a non-null value to represent "initial" state.
@@ -109,16 +125,18 @@ FROM Books;
 ```
 :::
 
-This operator is translated to the best-possible equivalent in the target database, for example to `CASE WHEN ... THEN ... ELSE ... END` in standard SQL, or to `IF(..., ..., ...)` in SAP HANA.
+The compiler translates this operator to the best-possible equivalent in the target database: `CASE WHEN ... THEN ... ELSE ... END` in standard SQL, or `IF(..., ..., ...)` in SAP HANA.
 
 
-## Functions
+## Standard Functions
+###### Portable Functions
 
-### Portable Functions
+The following sections list standardized string, numeric, date/time, and aggregate functions supported by CAP, and guaranteed to work across all supported databases with feature parity. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
 
-Following are portable functions guaranteed by CAP. These can safely be used in CDS view definitions as well as in runtime queries expressed in CQL, and are translated to the best-possible database-specific native SQL equivalents.
+> [!important] Function names are case-sensitive
+> The names for standardized functions must be written exactly as listed below. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
 
-**String functions:**
+### String Functions
 
 - `concat(x,y,...)`
 - `length(x)`
@@ -132,56 +150,60 @@ Following are portable functions guaranteed by CAP. These can safely be used in 
 - `substring(x,start, length)`
 - `matchespattern(x,pattern)`
 
-**Numeric functions:**
+In addition to `concat()`, CAP also supports the common `||` operator for string concatenation in CQL queries, same as in SQL queries. For example, these two queries are equivalent:
 
-- `ceiling(x)`
+```sql
+SELECT concat (firstName,' ',lastName) as fullName from Authors;
+```
+```sql
+SELECT firstName || ' ' || lastName as fullName from Authors;
+```
+
+
+> [!important] Indexes and Substring Details
+> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned.
+
+
+### Numeric Functions
+
+- `ceil(x)`, `ceiling(x)`
 - `floor(x)`
 - `round(x)`
 
-**Aggregate functions:**
+> [!warning] Non-portable <code>round()</code> function with more than one argument
+> Note that databases support `round()` functions with multiple arguments, the second parameter being the precision. If you use that option, the `round()` function may behave differently depending on the database.
+
+
+### Date / Time Functions
+
+- `date(x)` -> `yyyy-MM-dd` strings
+- `time(x)` -> `HH:mm:ss` strings
+   <br/><br/>
+- `year(x)` -> integer
+- `month(x)` -> integer
+- `day(x)` -> integer
+- `hour(x)` -> integer
+- `minute(x)` -> integer
+- `second(x)` -> integer
+   <br/><br/>
+- `years_between(x,y)` -> number
+- `months_between(x,y)` -> number
+- `days_between(x,y)` -> number
+- `seconds_between(x,y)` -> number
+
+> [!note] CAP Java support coming soon...
+> The above date / time functions are currently only supported by CAP Node.js. \
+> Support for CAP Java is planned for a future release.
+
+### Aggregate Functions
 
 - `avg(x)`, `average(x)`
 - `min(x)`, `max(x)`
 - `sum(x)`
 - `count(x)`
-- `countdistinct(x)`<sup>1</sup>
+- `countdistinct(x)` (CAP Java only)
 
-**Date/time functions:**<sup>2</sup>
-
-- `date(x)` -> `yyyy-MM-dd`
-- `time(x)` -> `HH:mm:ss`
-- `year(x)`
-- `month(x)`
-- `day(x)`
-- `hour(x)`
-- `minute(x)`
-- `second(x)`
-
-**SAP HANA date/time functions:**<sup>2</sup>
-
-- `years_between(x,y)`
-- `months_between(x,y)`
-- `days_between(x,y)`
-- `seconds_between(x,y)`
-
-
-* <sup>1</sup> `countdistinct` is only supported by CAP Java.
-* <sup>2</sup> Date/time functions are not supported by CAP Java.
-
-> [!note] Indexes and Substring Details
-> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned. 
-
-> [!important] Function names are case-sensitive
-> The function names must be written exactly as listed above. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
-
-> [!important] Non-portable <code>round()</code> function with more than one argument
-> Note that databases support `round()` functions with multiple arguments, the second parameter being the precision. If you use that option, the `round()` function may behave differently depending on the database.
-
-> [!note] Indexes and Substring Details
-> The return value of `indexof()` as well as the `start` parameter in `substring()` are zero-based index values. If the substring is not found, `indexof()` returns `-1`. If the `start` index in `substring()` is negative, it is counted from the end of the string. If the `length` parameter is omitted, the substring to the end of the string is returned.
-
-
-### Native Functions
+## Native Functions
 
 In general, the CDS compiler doesn't 'understand' SQL functions but translates them to SQL _generically_ as long as they follow the standard call syntax of `fn(x,y,...)`. This allows to use all native database functions inside your CDS models, like this:
 
@@ -195,7 +217,7 @@ SELECT from Books {
 > Using native functions like this makes your CDS models database-specific, and thus less portable. Therefore, prefer using the [portable functions](#portable-functions) listed above whenever possible.
 
 
-### Window Functions
+## Window Functions
 
 [SQL window functions](https://en.wikipedia.org/wiki/Window_function_(SQL)) with `OVER` clauses are supported as well, for example:
 

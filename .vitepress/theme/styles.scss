@@ -20,6 +20,7 @@ html {
 :root {
 
   --vp-font-family-avenir: 'Avenir Next', var(--vp-font-family-base);
+  --vp-font-family-mono: Menlo, Monaco, 'Courier New', monospace;
 
   // Layout sizes
   // .VPContent .aside { max-width: 270px};
@@ -190,6 +191,10 @@ main .vp-doc {
     top: -1px;
     background: #f3f3f3;
     .dark & { background: #222 }
+  }
+
+  code {
+    white-space: nowrap;
   }
 
   .cols-2 {
