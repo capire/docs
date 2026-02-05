@@ -2,7 +2,7 @@
 # [Concepts & Architecture](overview)
 # [Authentication](authentication)
 ## [Users & Roles](cap-users)
-## [Principal Propagation](remote-authentication)
+## [Outbound Authentication](remote-authentication)
 # [Authorization](authorization)
 
 # [Data Privacy](data-privacy)
