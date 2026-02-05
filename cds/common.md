@@ -2,7 +2,6 @@
 # layout: cds-ref
 synopsis: >
   Introduces <i>@sap/cds/common</i>, a prebuilt CDS model shipped with <i>@sap/cds</i> that provides common types and aspects.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -23,20 +22,20 @@ CDS ships with a prebuilt model *`@sap/cds/common`* that provides common types a
 [ISO 4217]: https://en.wikipedia.org/wiki/ISO_4217
 [ISO/IEC 15897]: https://en.wikipedia.org/wiki/ISO/IEC_15897
 [tzdata]: https://en.wikipedia.org/wiki/Tz_database
-[localized data]: ../guides/localized-data
-[temporal data]: ../guides/temporal-data
+[localized data]: ../guides/uis/localized-data
+[temporal data]: ../guides/domain/temporal-data
 
 ## Why Use _@sap/cds/common_?
 
 It's recommended that all applications use the common types and aspects provided through _@sap/cds/common_ to benefit from these features:
 
-* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain-modeling)
+* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/index)
 * **Foster interoperability** between all applications
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
-* **Automatic** support for [localized](../guides/localized-data) code lists and [value helps](../advanced/fiori#pre-defined-types-in-sap-cds-common)
-* **Extensibility** using [Aspects](../guides/domain-modeling#aspect-oriented-modeling)
+* **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
+* **Extensibility** using [Aspects](../guides/domain/index#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 
 For example, usage is as simple as indicated in the following sample:
@@ -83,7 +82,7 @@ entity Foo {
 
 > The service provider runtimes automatically fill in UUID-typed keys like these with auto-generated UUIDs.
 
-[Learn more about **canonical keys** and **UUIDs**.](../guides/domain-modeling#prefer-canonic-keys){ .learn-more}
+[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/index#prefer-canonic-keys){ .learn-more}
 
 
 ### Aspect `managed`
@@ -110,12 +109,12 @@ entity Foo {
 
 The annotations `@cds.on.insert/update` are handled in generic service providers so to fill in those fields automatically.
 
-[Learn more about **generic service features**.](../guides/domain-modeling#managed-data){ .learn-more}
+[Learn more about **generic service features**.](../guides/domain/index#managed-data){ .learn-more}
 
 
 ### Aspect `temporal`
 
-This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you've to do is, add the temporal aspect to respective entities as follows:
+This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/domain/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you've to do is, add the temporal aspect to respective entities as follows:
 
 ```cds
 entity Contract : temporal {...}
@@ -213,7 +212,7 @@ aspect sap.common.CodeList {
   descr : localized String(1111);
 }
 ```
-[Learn more about **localized** keyword.](../guides/localized-data){ .learn-more}
+[Learn more about **localized** keyword.](../guides/uis/localized-data){ .learn-more}
 
 
 ### Entity `Countries`
@@ -249,7 +248,7 @@ entity sap.common.Languages : CodeList {
   key code : sap.common.Locale; //> for example, en_GB
 }
 ```
-[Learn more on **normalized locales**.](../guides/i18n#normalized-locales){ .learn-more}
+[Learn more on **normalized locales**.](../guides/uis/i18n#normalized-locales){ .learn-more}
 
 ### Entity `Timezones`
 
@@ -297,7 +296,7 @@ Assumption is that ~80% of all apps don't need more than what is already covered
 
 ## Aspects for Localized Data
 
-Following are types and aspects mostly used behind the scenes for [localized data](../guides/localized-data). <br>
+Following are types and aspects mostly used behind the scenes for [localized data](../guides/uis/localized-data). <br>
 For example given this entity definition:
 
 ```cds
@@ -355,7 +354,7 @@ aspect sap.common.TextsAspect {
 }
 ```
 
-[Learn more about **Extending .texts entities**.](../guides/localized-data#extending-texts-entities){ .learn-more}
+[Learn more about **Extending .texts entities**.](../guides/uis/localized-data#extending-texts-entities){ .learn-more}
 
 ### Type `Locale` {#locale-type}
 
@@ -365,7 +364,7 @@ type sap.common.Locale : String(14) @title: '{i18n>LanguageCode}';
 
 The reuse type `sap.common.Locale` is used when generating `.texts` entities for the unfolding of *localized* elements.
 
-[Learn more about **localized data**.](../guides/localized-data){ .learn-more}
+[Learn more about **localized data**.](../guides/uis/localized-data){ .learn-more}
 
 ### SQL Persistence
 
@@ -395,7 +394,7 @@ FROM Foo (
 )
 ```
 
-[Learn more about **localized data**.](../guides/localized-data){ .learn-more}
+[Learn more about **localized data**.](../guides/uis/localized-data){ .learn-more}
 
 ## Providing Initial Data
 
@@ -421,7 +420,7 @@ EU;European Union;European Union
 ```
 :::
 
-[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases#providing-initial-data){ .learn-more}
+[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases/initial-data){ .learn-more}
 
 
 ### Add Translated Texts
@@ -446,7 +445,7 @@ EU;de;Europäische Union;Europäische Union
 ```
 :::
 
-[Learn more about **Localization/i18n**.](../guides/localized-data){ .learn-more}
+[Learn more about **Localization/i18n**.](../guides/uis/localized-data){ .learn-more}
 
 
 ### Using Tools like Excel
@@ -471,7 +470,7 @@ Use it in your `cds` files:
 using from '@sap/cds-common-content';
 ```
 
-[Learn more about integrating reuse packages](../guides/extensibility/composition){.learn-more}
+[Learn more about integrating reuse packages](../guides/integration/reuse-and-compose){.learn-more}
 
 
 ## Adapting to Your Needs
@@ -483,7 +482,7 @@ Let's look at a few examples of what could be done. You can combine these extens
 You can do such extensions in the models of your project. You can also collect your extensions into reuse packages and share them as common definitions with several consuming projects, similar to _@sap/cds/common_ itself.
 :::
 
-[Learn more about providing reuse packages.](../guides/extensibility/composition){ .learn-more}
+[Learn more about providing reuse packages.](../guides/integration/reuse-and-compose){ .learn-more}
 
 
 ### Adding Detailed Fields as of [ISO 3166-1]

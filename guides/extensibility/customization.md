@@ -153,7 +153,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
    ```sh
    cd ..
-   cds init orders-ext
+   cds init orders-ext --nodejs
    code orders-ext # open in VS Code
    ```
 
@@ -211,12 +211,10 @@ annotate OrdersService.Orders with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-[Learn more about project layouts.](../../get-started/#project-structure){.learn-more}
-
 ::: tip Keep it simple
 We recommend putting all extension files into `./app` and removing `./srv` and `./db` from extension projects.
 
-You may want to consider [separating concerns](../domain-modeling#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
+You may want to consider [separating concerns](../domain/index#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
 :::
 
 #### Add Test Data
@@ -285,21 +283,21 @@ Here's a rough checklist what this guide should cover:
 
 ### 5. Deploy Application
 
-Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/#test-locally).
+Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
 Prepare this by going back to your app with `cd orders`.
 
-With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deployment/).
+With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deploy/).
 
 ## As a SaaS Customer {#prep-as-operator}
 
 The following sections provide step-by-step instructions on adding extensions.
-All steps are based on our Orders Management sample which can be [started locally for testing](../multitenancy/#test-locally).
+All steps are based on our Orders Management sample which can be [started locally for testing](../multitenancy/index#test-drive-locally).
 
 ::: details On BTP…
 
-To extend a SaaS app deployed to BTP, you'll need to subscribe to it [through the BTP cockpit](../multitenancy/#subscribe).
+To extend a SaaS app deployed to BTP, you'll need to subscribe to it [through the BTP cockpit](../multitenancy/index#subscribe-via-btp-cockpit).
 
-Refer to the [Deployment Guide](../deployment/to-cf) for more details on remote deployments.
+Refer to the [Deployment Guide](../deploy/to-cf) for more details on remote deployments.
 
 Also, you have to replace local URLs used in `cds` commands later with the URL of the deployed App Router.
 Use a passcode to authenticate and authorize you.
@@ -456,7 +454,7 @@ annotate OrdersService.Orders with @UI.LineItem: [
 Make sure **no syntax errors** are shown in the [CDS editor](../../tools/cds-editors#vscode) before going on to the next steps.
 :::
 
-### 7. Test-Drive Locally {#test-locally }
+### 7. Test-Drive Locally {#test-locally}
 
 To conduct an initial test of your extension, run it locally with `cds watch`:
 
@@ -662,7 +660,7 @@ entity x_Remarks : cuid, managed {
 ```
 
 ::: tip
-This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../providing-services#input-validation).
+This example provides annotations for business logic handled automatically by CAP as documented in [_Providing Services_](../services/constraints).
 :::
 Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#annotate) {.learn-more}
 
@@ -670,7 +668,7 @@ Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#an
 
 In the existing in `OrdersService`, the new entities `x_CustomerPostalAddresses` and `x_Remarks` are automatically included since they are targets of the corresponding _compositions_.
 
-The new entities `x_Customers` and `x_SalesRegion` are [autoexposed](../providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
+The new entities `x_Customers` and `x_SalesRegion` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
 
 ```cds
 using { OrdersService } from '@capire/fiori';
@@ -909,7 +907,7 @@ Properties files must be placed in the `i18n` folder.  If an entry with the same
 
 > This feature is available with `@sap/cds` 6.3.0 or higher.
 
-[Learn more about localization](../i18n){.learn-more}
+[Learn more about localization](../uis/i18n){.learn-more}
 
 ## Simplify Your Workflow With `cds login` {#cds-login}
 
@@ -969,7 +967,7 @@ Obtain these two from the `VCAP_SERVICES` environment variable in your deployed 
 
 **Note:** The `key` and `clientsecret` properties are secrets that should not be stored in an unsafe location in productive scenarios!
 
-[Learn more about environment variables / `VCAP_Services`.](/node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
+[Learn more about environment variables / `VCAP_Services`.](../../node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
 
 If you leave out the respective secret (enclosed in square brackets above), you will be prompted to enter it interactively.
 This can be used to feed the secret from the environment to `cds login` via standard input, like so:
@@ -1069,7 +1067,7 @@ ID;x_priority;x_salesRegion_code
 
 :::
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 Adding data only for the missing columns doesn't work when using SAP HANA as a database. With SAP HANA, you always have to provide the full set of data.
 :::
 

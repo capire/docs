@@ -1,19 +1,16 @@
 ---
-synopsis: >
-  Declarative constraints allow you to express conditions using CXL expressions that are validated automatically whenever data is written, greatly reducing the need for extensive custom code for input validation.
 status: released
 ---
 
 # Declarative Constraints
 
-Declarative constraints allow you to express conditions using [CDS Expression Language (CXL)](/cds/cxl) that are validated automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
-
-> [!note] 
-> Don't confuse declarative constraints as discussed in here with [database constraints](../databases#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
-
-
+Declarative constraints allow you to express data validity conditions using [CDS Expression Language (CXL)](../../cds/cxl.md) that are enforced automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation. 
+{.abstract}
 
 [[toc]]
+
+> [!note]
+> Don't confuse constraints as discussed in here with [database constraints](../databases/cdl-to-ddl#database-constraints). Declarative constraints are meant for domain-specific input validation with error messages meant to be shown to end users, while database constraints are meant to prevent data corruption due to programming error, with error messages not intended for end users.
 
 
 
@@ -59,7 +56,8 @@ annotate TravelService.Travels with {
 
 :::
 
-> [!tip] BEST PRACTICES
+> [!tip] 
+> **BEST PRACTICES** applied here
 >
 > **Separation of Concerns** – always put secondary concerns, such as  constraints in this case, into separate files as in the example, instead of polluting your core service definitions.
 >
@@ -81,7 +79,7 @@ Some of the checks, e.g. the static `@mandatory` checks, are validated directly 
 
 ::: details Behind the scenes...
 
-The automatically compiled and executed validation query would look like that (in [CQL](/cds/cql)) for the constraints from the sample above: 
+The automatically compiled and executed validation query would look like that (in [CQL](../../cds/cql)) for the constraints from the sample above: 
 
 ```sql
 SELECT from TravelService.Travels {
@@ -116,7 +114,8 @@ SELECT from TravelService.Travels {
 
 
 
-> [!tip] BEST PRACTICES
+> [!tip] 
+> **BEST PRACTICES** applied here
 >
 > **Push down to the database** is a general principle applied in CAP. Applied to input validation with declarative constraints it means that instead of reading a lot of related data into the service layer to do the checks there, we push down the respective checks to where the data is (in the database). 
 >
@@ -130,7 +129,7 @@ SELECT from TravelService.Travels {
 
 For Fiori UIs as clients the error messages will be automatically be equiped with relevant `target` properties to attach them to the respective fields on the UIs. For example a Fiori UI for the sample above, would display returned errors like that:
 
-![image-20251219115646302](./assets/constraints/fiori-errors.png)
+![image-20251219115646302](./assets/fiori-errors.png)
 
 ::: details Behind the scenes ...
 
@@ -225,7 +224,7 @@ annotate TravelService.Bookings with {
 
 ```
 
-We can also do checks with sets of related data using path expressions which navigate along **to-many associations** or compositions, combined with SQL's `exists` quantifier, and optional [infix filters](../..//cds/cql#with-infix-filters), as shown in this example:
+We can also do checks with sets of related data using path expressions which navigate along **to-many associations** or compositions, combined with SQL's `exists` quantifier, and optional [infix filters](../../cds/cql#with-infix-filters), as shown in this example:
 
 ```cds
 annotate TravelService.Travels with {
@@ -312,7 +311,7 @@ dependent values were inserted before the current transaction. For example, in a
 The `@assert.target` check constraint is meant to **validate user input** and not to ensure referential integrity.
 Therefore only `CREATE`, and `UPDATE` events are supported (`DELETE` events are not supported). To ensure that every
 non-null foreign key in a table has a corresponding primary key in the associated/referenced target table
-(ensure referential integrity), the [`@assert.integrity`](../databases#database-constraints) constraint must be used instead.
+(ensure referential integrity), the [`@assert.integrity`](../databases/cdl-to-ddl#database-constraints) constraint must be used instead.
 
 If the reference's target doesn't exist, an HTTP response
 (error message) is provided to HTTP client applications and logged to stdout in debug mode. The HTTP response body's
@@ -387,7 +386,7 @@ Elements annotated with `@readonly`, as well as [_calculated elements_](../../cd
 
 By default [`virtual` elements](../../cds/cdl#virtual-elements) are also _calculated_.
 ::: tip
-The same applies for fields with the [OData Annotations](../../advanced/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
+The same applies for fields with the [OData Annotations](../protocols/odata#annotations) `@FieldControl.ReadOnly` (static), `@Core.Computed`, or `@Core.Immutable` (the latter only on UPDATEs).
 :::
 
 ::: warning Not allowed on keys
@@ -455,7 +454,7 @@ entity Person : cuid {
 
 ### Localized Messages
 
-Whenever you specify an error message with the annotations above, i.e., in the `then` part of an `@assert: (<constraints>)` or in `@mandatory.message`,  `@assert.format.message`, or  `@assert.range.message`, you can either specify a plain text, or a [I18n text bundle key](../i18n#externalizing-texts-bundles).
+Whenever you specify an error message with the annotations above, i.e., in the `then` part of an `@assert: (<constraints>)` or in `@mandatory.message`,  `@assert.format.message`, or  `@assert.range.message`, you can either specify a plain text, or a [I18n text bundle key](../uis/i18n#externalizing-texts-bundles).
 
 Actually, we saw this already in the [sample in the introduction](#introduction):
 
@@ -494,7 +493,7 @@ annotate TravelService.Travels with {
 
 If you use a message key, the message is automatically looked up in the message bundle of the service with the current user's preferred locale.
 
-[Learn more about localized messages.](../i18n){.learn-more}
+[Learn more about localized messages.](../uis/i18n){.learn-more}
 
 
 
@@ -534,7 +533,7 @@ Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it
 @UI.Hidden: (status <> 'visible')
 ```
 
-[Learn more about that in the *OData guide*](/advanced/odata#expression-annotations) {.learn-more}
+[Learn more about that in the *OData guide*](../protocols/odata#expression-annotations) {.learn-more}
 
 
 

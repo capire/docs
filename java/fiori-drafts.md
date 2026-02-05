@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes which events occur in combination with SAP Fiori Drafts.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -17,7 +16,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Overview { #draftevents}
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 ## Reading Drafts
 

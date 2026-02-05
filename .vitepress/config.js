@@ -2,12 +2,10 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
+import path from 'node:path'
 import { defineConfig } from 'vitepress'
 import languages from './languages'
-import path from 'node:path'
 import { Menu } from './menu.js'
-
-const menu = await Menu.from ('./menu.md')
 
 const config = defineConfig({
 
@@ -26,8 +24,12 @@ const config = defineConfig({
     '**/LICENSE.md',
     '**/CONTRIBUTING.md',
     '**/CODE_OF_CONDUCT.md',
+    '**/redirects.md',
     '**/menu.md',
-    '**/-*.md'
+    '**/_menu.md',
+    '**/-*.md',
+    '**/internal.md',
+    '**/FIXME.md',
   ],
 
   markdown: {
@@ -35,12 +37,20 @@ const config = defineConfig({
     toc: {
       level: [2,3]
     },
-  },
+    container: { // Doesn't seem to work yet
+      infoLabel: 'Info',
+      noteLabel: 'Note',
+      tipLabel: 'Tip',
+      warningLabel: 'Warning',
+      dangerLabel: 'Danger!',
+      cautionLabel: 'Caution!',
+      importantLabel: 'Important!',
+      detailsLabel: 'Details'
+    }
+ },
 
   themeConfig: {
-    sidebar: menu.items,
-    nav: menu.navbar,
-    logo: '/cap-logo.svg',
+    logo: '/logos/cap.svg',
     outline: [2,3],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/capire/docs' }
@@ -64,7 +74,7 @@ const config = defineConfig({
     ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'" }],
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'cap-logo.png' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
     ['script', { src: base+'script.js' } ]
   ],
 
@@ -95,21 +105,22 @@ import rewrites from './rewrites'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
-// if (process.cwd() === path.dirname(__dirname)) {
-//   const menu_md = path.resolve (__filename,'../../menu.md')
-//   const Menu = await import('./menu')
-//   const menu = await Menu.from (menu_md, rewrites)
-//   config.themeConfig.sidebar = menu.items
-//   config.themeConfig.nav = menu.navbar
-// }
+if (process.cwd() === path.dirname(__dirname)) {
+  const menu = await Menu.from ('./menu.md', rewrites)
+  config.themeConfig.sidebar = menu.items
+  config.themeConfig.nav = menu.navbar
+}
 
 // Add custom capire info to the theme config
+const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs/')
+if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.0',
-    java_cds4j: '4.6.0'
+    java_services: '4.7.0',
+    java_cds4j: '4.7.0'
   },
-  gotoLinks: []
+  gotoLinks: [],
+  siteURL
 }
 
 // Add meta tag to prevent indexing of preview deployments
@@ -173,32 +184,28 @@ config.themeConfig.search = {
   }
 }
 
-// Add twoslash transformer to the markdown config
+// Add twoslash transformer to the markdown config (if requested as it slows down builds)
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
-config.markdown.codeTransformers = [
-  transformerTwoslash()
-]
+if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
+  config.markdown.codeTransformers = [ transformerTwoslash() ]
+}
 
 // Add custom markdown renderers...
+import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
+
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
-}
-
-// Add sitemap
-const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs')
-if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
-config.sitemap = {
-  hostname: siteURL.href
+  md.use(dl)
 }
 
 // Add custom buildEnd hook
-import * as cdsMavenSite from './lib/cds-maven-site'
 import { promises as fs } from 'node:fs'
+import * as cdsMavenSite from './lib/cds-maven-site'
 config.buildEnd = async ({ outDir, site }) => {
-  const sitemapURL = new URL(siteURL.href)
+  const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')
   console.debug('✓ writing robots.txt with sitemap URL', sitemapURL.href) // eslint-disable-line no-console
   const robots = (await fs.readFile(path.resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
@@ -206,13 +213,6 @@ config.buildEnd = async ({ outDir, site }) => {
 
   // disabled by default to avoid online fetches during local build
   if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-    // zip assets aren't copied automatically, and `vite.assetInclude` doesn't work either
-    const hanaAssetDir = 'advanced/assets'
-    const hanaAsset = path.join(hanaAssetDir, 'native-hana-samples.zip')
-    await fs.mkdir(path.join(outDir, hanaAssetDir), {recursive: true})
-    console.debug('✓ copying HANA assets to ', path.join(outDir, hanaAsset)) // eslint-disable-line no-console
-
-    await fs.copyFile(path.join(__dirname, '..', hanaAsset), path.join(outDir, hanaAsset))
     await cdsMavenSite.copySiteAssets(path.join(outDir, 'java/assets/cds-maven-plugin-site'), site)
   }
 }

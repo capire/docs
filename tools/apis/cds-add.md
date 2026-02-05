@@ -82,15 +82,15 @@ Our `cds add postgres` will:
 
 1. Register with `cds-dk`
 2. Add a Dockerfile to start a PostgreSQL instance for development
-3. Integrate with `cds add mta` for [Cloud Foundry](../../guides/deployment/to-cf) deployment
-4. Integrate with `cds add kyma` for [Kyma](../../guides/deployment/to-kyma) deployment
+3. Integrate with `cds add mta` for [Cloud Foundry](../../guides/deploy/to-cf) deployment
+4. Integrate with `cds add kyma` for [Kyma](../../guides/deploy/to-kyma) deployment
 5. Integrate with `cds help`
 
 Starting with <span class="list-item">1</span>, register the plugin:
 
 ::: code-group
 ```js [cds-plugin.js]
-cds.add?.register?.('postgres', require('lib/add')) // ...or inline:
+cds.add?.register?.('postgres', require('./lib/add')) // ...or inline:
 cds.add?.register?.('postgres', class extends cds.add.Plugin {})
 :::
 

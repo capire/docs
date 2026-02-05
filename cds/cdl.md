@@ -3,7 +3,6 @@
 synopsis: >
   Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -322,7 +321,7 @@ cds.compile(..., { docs: true })
 
 ::: tip Doc comments are automatically enabled in CAP Java.
 In CAP Java, doc comments are automatically enabled by the [CDS Maven Plugin](../java/developing-applications/building#cds-maven-plugin).
-In generated interfaces they are [converted to corresponding Javadoc comments](../java/assets/cds-maven-plugin-site/generate-mojo.html#documentation){target="_blank"}.
+In generated interfaces they are converted to corresponding Javadoc comments.
 :::
 
 When generating output for deployment to SAP HANA, the first paragraph of a doc comment is translated
@@ -450,12 +449,12 @@ type EmailAddress : { kind:String; address:String; }
 
 > Keywords `many` and `array of` are mere syntax variants with identical semantics and implementations.
 
-When deployed to SQL databases, such fields are mapped to [LargeString](types) columns and the data is stored denormalized as JSON array.
+When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array. 
 With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
 ::: warning
-Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/providing-services#searching-data) are not supported on arrayed elements.
+Filter expressions, [instance-based authorization](../guides/security/authorization#instance-based-auth) and [search](../guides/services/served-ootb#searching-data) are not supported on arrayed elements.
 :::
 
 #### Null Values
@@ -838,9 +837,9 @@ entity UsingView ( bar: Boolean )
 as SELECT * from SomeView(foo: 17, bar: :bar);
 ```
 
-For Node.js, there's no programmatic API yet. You need to provide a [CQN snippet](/cds/cqn#select).
+For Node.js, there's no programmatic API yet. You need to provide a [CQN snippet](cqn#select).
 
-In CAP Java, run a select statement against the view with named [parameter values](/java/working-with-cql/query-execution#querying-views):
+In CAP Java, run a select statement against the view with named [parameter values](../java/working-with-cql/query-execution#querying-views):
 
 ::: code-group
 ```js [Node]
@@ -854,11 +853,11 @@ Result result = service.run(Select.from("UsingView"), params);
 
 
 [Learn more about how to expose views with parameters in **Services - Exposed Entities**.](#exposed-entities){ .learn-more}
-[Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../advanced/hana){ .learn-more}
+[Learn more about views with parameters for existing HANA artifacts in **Native SAP HANA Artifacts**.](../guides/databases/hana-native){ .learn-more}
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 
@@ -934,7 +933,8 @@ entity Addresses {
 ```
 
 
-### Managed (To-One) Associations {#managed-associations}
+### Managed (To-One) Associations 
+###### managed-associations
 
 For to-one associations, CDS can automatically resolve and add requisite foreign key elements from the target's primary keys and implicitly add respective join conditions.
 
@@ -948,7 +948,7 @@ This example is equivalent to the [unmanaged example above](#unmanaged-associati
 key element `address_ID` being added automatically upon activation to a SQL database.
 The names of the automatically added foreign key elements cannot be changed.
 
-> Note: For adding foreign key constraints on database level, see [Database Constraints.](../guides/databases#database-constraints).
+> Note: For adding foreign key constraints on database level, see [Database Constraints.](../guides/databases/cdl-to-ddl#database-constraints).
 
 If the target has a single primary key, a default value can be provided.
 This default applies to the generated foreign key element `address_ID`:
@@ -1031,7 +1031,7 @@ Essentially, Compositions are the same as _[associations](#associations)_, just 
 Using compositions of one for entities is discouraged. There is often no added value of using them as the information can be placed in the root entity. Compositions of one have limitations as follow:
 - Very limited Draft support. Fiori elements does not support compositions of one unless you take care of their creation in a custom handler.
 - No extensive support for modifications over paths if compositions of one are involved. You must fill in foreign keys manually in a custom handler.
-See the [Keep it Simple, Stupid](/guides/domain-modeling#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](/guides/domain-modeling#prefer-flat-models) section.
+See the [Keep it Simple, Stupid](../guides/domain/index#keep-it-simple-stupid) best practice, especially the [Prefer Flat Models](../guides/domain/index#prefer-flat-models) section.
 :::
 
 ### Managed Compositions of Aspects {#managed-compositions}
@@ -1180,9 +1180,9 @@ Publishing a _composition_ with a filter is similar, with an important differenc
 in a deep Update, Insert, or Delete statement the respective operation does not cascade to the target entities.
 Thus the type of the resulting element is set to `cds.Association`.
 
-[Learn more about `cds.Association`.](/cds/csn#associations){.learn-more}
+[Learn more about `cds.Association`.](csn#associations){.learn-more}
 
-In [SAP Fiori Draft](../advanced/fiori#draft-support), it behaves
+In [SAP Fiori Draft](../guides/uis/fiori#draft-support), it behaves
 like an "enclosed" association, that means, it points to the target draft entity.
 
 In the following example, `singleItem` has type `cds.Association`.
@@ -1199,7 +1199,7 @@ entity P_orders as projection on Orders {
 
 ## Annotations
 
-This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../advanced/odata#annotations) guide.
+This section describes how to add Annotations to model definitions written in CDL, focused on the common syntax options, and fundamental concepts. Find additional information in the [OData Annotations](../guides/protocols/odata#annotations) guide.
 
 - [Annotation Syntax](#annotation-syntax)
 - [Annotation Targets](#annotation-targets)
@@ -1429,7 +1429,7 @@ Propagation of annotations can be stopped via value `null`, for example, `@anno:
 :::
 
 
-### Expressions as Annotation Values {#expressions-as-annotation-values}
+### Expressions as Annotation Values
 
 In order to use an expression as an annotation value, it must be enclosed in parentheses:
 ```cds
@@ -1575,8 +1575,7 @@ rewritten to `@Common.Text: (descr)`.
 
 ::: info
 
-There may be situations where automatic rewriting doesn't work, resulting in the compiler error
-[`anno-missing-rewrite`](https://cap.cloud.sap/docs/cds/compiler/messages#anno-missing-rewrite).
+There may be situations where automatic rewriting doesn't work, resulting in a compiler error, with message ID `anno-missing-rewrite`.
 In these cases you can overwrite the annotation with the correct expression in the new location.
 
 :::
@@ -1602,7 +1601,7 @@ the annotations.
 #### OData Annotations
 
 The OData backend of the CAP CDS compiler supports expression-valued annotations.
-See [Expressions in OData Annotations](../advanced/odata#expression-annotations).
+See [Expressions in OData Annotations](../guides/protocols/odata#expression-annotations).
 
 
 
@@ -1935,7 +1934,7 @@ Entities can be also exposed as views with parameters:
 
 ```cds
 service MyOrders {
-  entity OrderWithParameter( foo: Integer ) as select from data.Orders where id=:foo;
+  entity OrderWithParameter( foo: Integer, bar: Boolean ) as select from data.Orders where id=:foo;
 }
 ```
 A parametrized view like modeled in the section on [`view with parameter`](#views-with-parameters) can be exposed as follows:
@@ -2076,8 +2075,8 @@ extend service Zoo with { // auto-exposed entities:
 You can still expose such entities explicitly, for example, to make them read-write:
 
 ```cds
-service Sue {
-  entity Foo { /*...*/ }
+service MyOrders {
+  entity Orders { /*...*/ }
   entity Bar as projection on my.Bar;
 }
 ```
@@ -2147,7 +2146,7 @@ Explicitly modelled binding parameters are ignored for OData V2.
 
 #### Returning Media Data Streams { #actions-returning-media}
 
-Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](/guides/providing-services#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
+Actions and functions can also be modeled to return streamed media data such as images and CSV files. To achieve this, the return type of the actions or functions must refer to a [predefined type](#types), annotated with [media data annotations](../guides/services/media-data#annotating-media-elements), that is defined in the same service. The minimum set of annotations required is `@Core.MediaType`.
 
 ```cds
 service CatalogService {
@@ -2204,5 +2203,3 @@ extend entity CatalogService.Products with actions {
   function getRatings() returns Integer;
 }
 ```
-
-<div id="beforenamespaces" />

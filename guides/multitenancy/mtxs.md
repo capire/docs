@@ -1,11 +1,8 @@
 ---
 
 label: MTX Reference
-# layout: reference-doc
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - MTX Reference
+synopsis: >
+  API reference for multitenancy and extensibility.
 status: released
 ---
 
@@ -151,7 +148,7 @@ cds watch --profile local-multitenancy
 
 ### Testing With Minimal Setup
 
-When designing test suites that run frequently in CI/CD pipelines, you can shorten runtimes and reduce costs. First run a set of functional tests which use MTX in minimized setups – that is, with local servers and in-memory databases as introduced in the [_Multitenancy_ guide](../multitenancy/#test-locally).
+When designing test suites that run frequently in CI/CD pipelines, you can shorten runtimes and reduce costs. First run a set of functional tests which use MTX in minimized setups – that is, with local servers and in-memory databases as introduced in the [_Multitenancy_ guide](../multitenancy/index#test-drive-locally).
 
 Only in the second and third phases, you would then run the more advanced hybrid tests. These hybrid tests could include testing tenant subscriptions with SAP HANA, or integration tests with the full set of required cloud services.
 
@@ -1275,7 +1272,7 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 "cds.xt.SaasProvisioningService": {
   "jobs": {
     "queueSize": 5, // default: 100
-    "workerSize": 5, // default: 1
+    "workerSize": 5, // default: 4
     "clusterSize": 5, // default: 1
   }
 }
@@ -1338,8 +1335,8 @@ Content-Type: application/json
         "_": {
             "hdi": {
                 "deploy": {
-                    "trace": "true",
-                    "version": "true"
+                    "trace": true,
+                    "version": true
                 }
             }
         }
@@ -1485,8 +1482,8 @@ Prefer: respond-async
       "_": {
           "hdi": {
               "deploy": {
-                  "trace": "true",
-                  "version": "true"
+                  "trace": true,
+                  "version": true
               }
           }
       }

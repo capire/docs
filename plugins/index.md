@@ -13,10 +13,6 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 [[toc]]
 
 <style scoped>
-   main .vp-doc h2 + .subtitle {
-      font-style: italic;
-      margin: -44px 0 40px;
-   }
    main .vp-doc a:has(> img) {
       display: inline-flex;
       align-items: center;
@@ -34,7 +30,7 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 
 ## As _cds-plugins_ for Node.js
 
-For Node.js all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/data-privacy/audit-logging) plugin:
+For Node.js all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/security/dpp-audit-logging.md) plugin:
 
 1. Add the plugin:
 
@@ -96,7 +92,7 @@ Use one of the support channels below, in this order:
 
    This applies to all plugins, especially those without public repositories. Or if you're not quite sure that the problem is caused by the plugin.
 
-3. Open incidents through [SAP Support Portal](/resources/#support-channels).
+3. Open incidents through [SAP Support Portal](/resources/index#support-channels).
 
    Note that plugins by external parties, like the [CAP JS](https://github.com/cap-js-community/) community, are out of scope for incidents.
 
@@ -119,10 +115,10 @@ OData V2 has been deprecated. Use the plugin only if you need to support existin
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/odata-v2-adapter#readme)
-[![Java](../assets/logos/java.svg 'Link to the documentation of the OData feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/migration#v2adapter)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/odata-v2-adapter#readme)
+[![Java](/logos/java.svg 'Link to the documentation of the OData feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/migration#v2adapter)
 
-See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../advanced/odata#v2-support) {.learn-more}
+See also [Cookbook > Protocols/APIs > OData APIs > V2 Support](../guides/protocols/odata#v2-support) {.learn-more}
 
 ## WebSocket
 
@@ -140,7 +136,7 @@ service ChatService {
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/websocket#readme)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js-community/websocket#readme)
 
 ## UI5 Dev Server
 
@@ -149,7 +145,7 @@ The UI5 Dev Server is a CDS server plugin that enables the integration of UI5 (U
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/cds-plugin-ui5#cds-plugin-ui5)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/cds-plugin-ui5#cds-plugin-ui5)
 
 ## GraphQL Adapter
 
@@ -161,7 +157,7 @@ The GraphQL Adapter is a protocol adapter that generically generates a GraphQL s
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/graphql#readme)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/graphql#readme)
 
 
 
@@ -200,8 +196,8 @@ Features:
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg 'Link to the repository for cap-js attachments.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/attachments#readme)
-[![Java](../assets/logos/java.svg 'Link to the repository for cap-java-attachments.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-attachments#readme)
+[![Node.js logo](/logos/nodejs.svg 'Link to the repository for cap-js attachments.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/attachments#readme)
+[![Java](/logos/java.svg 'Link to the repository for cap-java-attachments.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-attachments#readme)
 
 
 
@@ -236,8 +232,8 @@ Outlook:
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/sdm/#readme)
-[![Java](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/sdm/#readme)
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/sdm/#readme)
+[![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/sdm/#readme)
 
 
 
@@ -268,10 +264,10 @@ Features:
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/audit-logging#readme)
-![Java](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
+[![Node.js logo](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/audit-logging#readme)
+![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
 
-Learn more about audit logging in [Node.js](../guides/data-privacy/audit-logging) and in [Java](../java/auditlog) {.learn-more}
+Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging.md) and in [Java](../java/auditlog) {.learn-more}
 
 
 ## Change Tracking
@@ -291,8 +287,8 @@ annotate my.Incidents {
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/change-tracking#readme)
-[![Java](../assets/logos/java.svg 'Link to the documentation of the change-tracking feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/change-tracking)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/change-tracking#readme)
+[![Java](/logos/java.svg 'Link to the documentation of the change-tracking feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/change-tracking)
 
 
 ## Notifications
@@ -320,7 +316,7 @@ Features:
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
 
 
 ## Telemetry
@@ -347,8 +343,8 @@ Telemetry data can be exported to [SAP Cloud Logging](https://help.sap.com/docs/
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/telemetry#readme)
-[![Java](../assets/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/operating-applications/observability#open-telemetry)
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/telemetry#readme)
+[![Java](/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](../java/operating-applications/observability#open-telemetry)
 
 ## ORD (Open Resource Discovery)
 
@@ -362,8 +358,8 @@ You can get the ORD document in multiple ways, see the readme of the plugin.
 
 Available for:
 
-[![Link to the repository for cap-js ORD](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ord)
-[![Java](../assets/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://javadoc.io/doc/com.sap.cds/cds-feature-ord/latest/index.html)
+[![Link to the repository for cap-js ORD](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ord)
+[![Java](/logos/java.svg 'Link to the documentation of the telemetry feature.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://javadoc.io/doc/com.sap.cds/cds-feature-ord/latest/index.html)
 
 
 ## CAP Operator for Kubernetes {#cap-operator-plugin}
@@ -374,8 +370,8 @@ This is where the CAP Operator **plugin** is very useful, as it provides an easy
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/cap-operator-plugin#readme)
-![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/cap-operator-plugin#readme)
+![Java logo](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
 
 
 ## SAP Cloud Application Event Hub {#event-hub}
@@ -389,12 +385,12 @@ S4bupa.on ('BusinessPartner.Changed', msg => {...})
 
 <div id="eh-plugin-mt" />
 
-For more details, please see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/messaging/#sap-event-broker).
+For more details, please see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/events/event-hub).
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/event-broker#readme)
-[![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-event-hub#readme)
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/event-broker#readme)
+[![Java logo](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-event-hub#readme)
 
 
 ## SAP Integration Suite, Advanced Event Mesh {#advanced-event-mesh}
@@ -403,8 +399,8 @@ Available for:
 
 Available for:
 
-[![Node.js logo](../assets/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/advanced-event-mesh#readme)
-[![Java logo](../assets/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-advanced-event-mesh#readme)
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/advanced-event-mesh#readme)
+[![Java logo](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-advanced-event-mesh#readme)
 
 
 ## ABAP RFC
@@ -414,7 +410,7 @@ ABAP systems and to call these functions in your custom code.
 
 Available for:
 
-[![Node.js](../assets/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://www.npmjs.com/package/@sap/cds-rfc)
+[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://www.npmjs.com/package/@sap/cds-rfc)
 
 <div id="rfc-plugin" />
 
@@ -423,4 +419,3 @@ Available for:
 <div id="upcoming-plugins" />
 
 <div id="planned-plugins" />
-

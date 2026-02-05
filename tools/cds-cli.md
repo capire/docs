@@ -1,7 +1,6 @@
 ---
-status: released
 synopsis: >
-  Available commands of the <code>cds</code> command line client
+  Available commands of the <code>cds</code> command line client.
 ---
 
 <script setup>
@@ -47,7 +46,7 @@ Using `--markdown` you can get the information in markdown format:
 <!--@include: ./assets/help/cds-version-md.out.md-->
 
 
-## cds completion <Since version="7.9.0" of="@sap/cds-dk" />
+## cds completion <Since version="7.9.0" package="@sap/cds-dk" />
 
 The `cds` command supports shell completion with the <kbd>tab</kbd> key for several shells and operating systems.
 
@@ -99,7 +98,7 @@ In addition, you can add (most of) the project 'facets' from [below](#cds-add) r
 For example to create a project with a sample bookshop model and configuration for SAP HANA, use:
 
 ```sh
-cds init --add sample,hana
+cds init --nodejs --add sample,hana
 ```
 
 ::: details See the full help text of `cds init`
@@ -167,13 +166,13 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 
 ### sample {.add}
 
-Creates a bookshop application including custom code (Node.js or Java) and a UI with [SAP Fiori Elements](../advanced/fiori).
+Creates a bookshop application including custom code (Node.js or Java) and a UI with [SAP Fiori Elements](../guides/uis/fiori).
 
 ```sh
 cds add sample
 ```
 
-This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/in-a-nutshell).
+This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/bookshop).
 
 ### tiny-sample {.add}
 
@@ -195,7 +194,7 @@ cds add data
 
 adds _csv_ files with a single header line for all entities to the _db/data/_ folder.  The name of the files matches the entities' namespace and name, separated by `-`.
 
-#### Filtering <Since version="7.9.0" of="@sap/cds-dk" /> {#data-filtering}
+#### Filtering <Since version="7.9.0" package="@sap/cds-dk" /> {#data-filtering}
 
 To create data for some entities only, use `--filter`.  For example:
 
@@ -216,7 +215,7 @@ cds add data --filter "books$"
 The escape character is usually the backslash, for example, `\?`.  Quote characters are `'` or `"` with varying rules between shells.  Consult the documentation for your shell here.
 :::
 
-#### Sample records <Since version="7.9.0" of="@sap/cds-dk" />
+#### Sample records <Since version="7.9.0" package="@sap/cds-dk" />
 
 To create actual data (along with the header line), use `--records` with a number for how many records you wish to have.
 
@@ -228,7 +227,7 @@ cds add data --records 2
 
 [Watch a short video by DJ Adams to see this in action.](https://www.youtube.com/shorts/_YVvCA2oSco){.learn-more}
 
-#### Formats <Since version="7.9.0" of="@sap/cds-dk" />
+#### Formats <Since version="7.9.0" package="@sap/cds-dk" />
 
 By default, the data format is _CSV_.  You can change this to JSON with the `--content-type` option:
 
@@ -260,15 +259,15 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
 - Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
-- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/providing-services#input-validation) are respected as well, in a best effort way.
+- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/constraints) are respected as well, in a best effort way.
 :::
 
-#### Interactively in VS Code <Since version="7.9.0" of="@sap/cds-dk" />
+#### Interactively in VS Code <Since version="7.9.0" package="@sap/cds-dk" />
 
 In [VS Code](./cds-editors#vscode), use the commands _Generate Model Data as JSON / CSV_ to insert test data at the cursor position for a selected entity.
 
 
-### http <Since version="7.9.0" of="@sap/cds-dk" /> {.add}
+### http <Since version="7.9.0" package="@sap/cds-dk" /> {.add}
 
 Adds `.http` files with sample read and write requests.
 
@@ -347,7 +346,7 @@ assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this a
 For CloudFoundry, use `cf login ...` and select org and space.
 :::
 
-### handler <Since version="8.5.0" of="@sap/cds-dk" /> {.add}
+### handler <Since version="8.5.0" package="@sap/cds-dk" /> {.add}
 
 Generates handler stubs for actions and functions for both Java and Node.js projects.
 
@@ -398,14 +397,14 @@ Also, the [multitenancy sidecar](../java/multitenancy) is a Node.js application,
 
 Compiles the specified models to [CSN](../cds/csn) or other formats.
 
-[See simple examples in the getting started page](../get-started/in-a-nutshell#cli).{.learn-more}
+[See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
 [For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
 
 
 In addition, the following formats are available:
 
-### mermaid <Since version="8.0.0" of="@sap/cds-dk" /> {.compile}
+### mermaid <Since version="8.0.0" package="@sap/cds-dk" /> {.compile}
 
 This produces text for a [Mermaid class diagram](https://mermaid.js.org/syntax/classDiagram.html):
 
@@ -485,7 +484,7 @@ could look like this:
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
 
-@data.product @hcql @rest @odata 
+@data.product @hcql @rest @odata
 service sap.capire.flights.data {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
@@ -544,7 +543,7 @@ Use `cds watch` to watch for changed files, restarting your Node.js server.
 For CAP Java applications, you can use [`mvn cds:watch`](../java/developing-applications/running#cds-watch) instead.
 :::
 
-### Includes and Excludes <Since version="8.7.0" of="@sap/cds-dk" />
+### Includes and Excludes <Since version="8.7.0" package="@sap/cds-dk" />
 
 Additional watched or ignored paths can be specified via CLI options:
 
@@ -619,7 +618,7 @@ There a couple of shortcuts and convenience functions:
 
 ::: tip Repl for Java
 `cds repl` does not run Java code, but can still be useful:
-For example, if you work on Node.js things like [building plugins](../guides/deployment/custom-builds#custom-build-plugins) that make use of Node.js APIs.
+For example, if you work on Node.js things that make use of Node.js APIs.
 :::
 
 
@@ -687,7 +686,7 @@ Opening Chrome DevTools at devtools://devtools/bundled/inspector.html?ws=...
 </pre>
 
 
-### Java Applications <Since version="8.7.0" of="@sap/cds-dk" />
+### Java Applications <Since version="8.7.0" package="@sap/cds-dk" />
 
 #### Remote Applications
 
@@ -724,7 +723,7 @@ Make sure the port matches to what the debug tunnel uses (see the message in the
 
 > [!NOTE] SapMachine is required
 > SapMachine is required as Java runtime environment for this feature to work.<br>
-> There is nothing to do if you set up your MTA deployment descriptors with [`cds add mta`](../guides/deployment/to-cf#add-mta-yaml) or CAP project wizards.
+> There is nothing to do if you set up your MTA deployment descriptors with [`cds add mta`](../guides/deploy/to-cf#add-mta-yaml) or CAP project wizards.
 > See the [documentation of SapMachine](https://help.sap.com/docs/btp/sap-business-technology-platform/sapmachine) for how to configure this manually.
 
 #### Local Applications

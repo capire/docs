@@ -1,13 +1,6 @@
 ---
-shorty: Old MTX
 synopsis: >
   API reference documentation for MTX Services.
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - Old MTX
-# layout: cookbook
-status: released
 search: false
 ---
 
@@ -150,7 +143,7 @@ The `extension` element must be a JSON array of arrays. Each first-level array e
 
 If the `undeployExtension` flag is set, all extensions are undeployed from the database that are no longer part of the extensions in the current activation call.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 `undeployExtension` has to be used with care as it potentially removes tables and their content from the database.
 :::
 
@@ -198,7 +191,7 @@ Request body (example):
 
 Use this API to deactivate extension. To activate and deactivate an extension in one call, use `activate` with `undeployExtension: true`.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 The API has to be used with care as it removes tables and their content from the database.
 :::
 
@@ -218,7 +211,7 @@ Request body (example):
 
 Use this API to remove all extensions.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 The API has to be used with care as it removes tables and their content from the database.
 :::
 <!-- Calling `deactivate` requires scope `ExtendCDSDelete`. -->
@@ -506,9 +499,6 @@ Configure your App Router as follows.
 
 <div id="shared-service-manager" />
 
-## [Old SaaS Extensibility Guide](../extensibility/assets/customization-old) {.toc-redirect}
-
-[See the old guide for Extending and Customizing SaaS Solutions.](../extensibility/assets/customization-old)
 
 ## Further Readings
 

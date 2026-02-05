@@ -644,7 +644,7 @@ For example, you can enable it in the _package.json_ file for your production pr
 ```
 
 ::: warning
-This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](../releases/schedule#yearly-major-releases).
+This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](/releases/schedule#yearly-major-releases).
 :::
 
 Each service that has credentials and a `vcap.label` property is put into the `VCAP_SERVICES` env variable. All properties from the service's `vcap` object will be taken over to the service binding.
@@ -742,7 +742,7 @@ The resulting `VCAP_SERVICES` env variable looks like this:
 
 ### Through _.cdsrc-private.json_ File for Hybrid Testing
 
-[Learn more about hybrid testing using _.cdsrc-private.json_.](../advanced/hybrid-testing#bind-to-cloud-services)
+[Learn more about hybrid testing using _.cdsrc-private.json_.](../tools/cds-bind#bind-to-cloud-services)
 
 ```json
 {
@@ -786,11 +786,3 @@ cds.requires.db.credentials.database = sqlite.db
 > Never check in or deploy such _.env_ files!
 
 <div id="endofconnect" />
-
-
-
-## Importing Service APIs
-
-
-
-## Mocking Required Services

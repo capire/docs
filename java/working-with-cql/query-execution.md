@@ -1,6 +1,5 @@
 ---
 synopsis: API to execute CQL statements on services accepting CQN queries.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -93,7 +92,7 @@ The maximum batch size for update and delete can be configured via `cds.sql.max-
 
 #### Querying Parameterized Views on SAP HANA { #querying-views}
 
-To query [views with parameters](../../advanced/hana#views-with-parameters) on SAP HANA, build a select statement and execute it with [named parameter](#named-parameters) values that correspond to the view's parameters.
+To query [views with parameters](../../guides/databases/hana-native#views-with-parameters) on SAP HANA, build a select statement and execute it with [named parameter](#named-parameters) values that correspond to the view's parameters.
 
 Let's consider the following `Books` entity and a parameterized view `BooksView`, which returns the `ID` and `title` of `Books` with `stock` greater or equal to the value of the parameter `minStock`:
 
@@ -143,7 +142,7 @@ CqnUpdate update = Update.entity("bookshop.Books").data(book).byId(101);
 Result updateResult = service.run(update);
 ```
 
-The update `Result` contains the data that is written by the statement execution. Additionally to the given data, it may contain values generated for [managed data](../../guides/domain-modeling#managed-data) and foreign key values.
+The update `Result` contains the data that is written by the statement execution. Additionally to the given data, it may contain values generated for [managed data](../../guides/domain/index#managed-data) and foreign key values.
 
 The [row count](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsResult.html#rowCount()) of the update `CdsResult` indicates how many rows where updated during the statement execution:
 
@@ -166,7 +165,7 @@ It's possible to work with structured data as the insert, update, and delete ope
 
 #### Cascading over Associations { #cascading-over-associations}
 
-By default, *insert*, *update* and *delete* operations cascade over [compositions](../../guides/domain-modeling#compositions) only. For associations, this can be enabled using the `@cascade` annotation.
+By default, *insert*, *update* and *delete* operations cascade over [compositions](../../guides/domain/index#compositions) only. For associations, this can be enabled using the `@cascade` annotation.
 
 ::: warning Avoid cascading over associations
 Cascading operations over associations isn't considered good practice and should be avoided.
@@ -193,7 +192,7 @@ entity Author {
 ::: warning _Warning_
 - For inactive draft entities `@cascade` annotations are ignored.
 
-- The `@cascade` annotation is not respected by foreign key constraints on the database. To avoid unexpected behaviour you might have to disable a foreign key constraint with [`@assert.integrity:false`](../../guides/databases#database-constraints).
+- The `@cascade` annotation is not respected by foreign key constraints on the database. To avoid unexpected behaviour you might have to disable a foreign key constraint with [`@assert.integrity:false`](../../guides/databases/cdl-to-ddl#database-constraints).
 :::
 
 #### Deep Insert / Upsert { #deep-insert-upsert}
@@ -226,7 +225,7 @@ long deleteCount = service.run(delete).rowCount();
 
 With CDS [views](../../cds/cdl#views-projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
 
-From the CDS model the CDS compiler generates [DDL](../../guides/databases?impl-variant=java#generating-sql-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
+From the CDS model the CDS compiler generates [DDL](../../guides/databases/cdl-to-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
 
 For *read-only* views, you can use the full feature set of [selects](../../cds/cdl#as-select-from), including *aggregations* to summarize, as well as *joins* and *unions* to combine data from multiple entities. However, such complex views are *not writable* and require a schema redeployment if the view definition is changed.
 
@@ -239,7 +238,7 @@ To [write data](#updatable-views) or [delete](#delete-via-view) through views, o
 For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL views can be avoided by using [runtime views](#runtimeviews). This allows you to change the view definition without redeploying the database schema and is the prerequisite for lightweight extensibility via predefined extension fields.
 
 ::: tip Prefer simple views
-Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Single-Purposed Services](../../guides/providing-services#single-purposed-services)), rather than one complex view for many scenarios.
+Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Use Case-Oriented Services](../../guides/services/providing-services#use-case-oriented-services)), rather than one complex view for many scenarios.
 :::
 ::: warning Avoid selecting paths over to-many Associations
 Do not use [path expressions](../../cds/cql#path-expressions-in-all-other-clauses) over [*to-many associations*](../../cds/cdl#to-many-associations) in the select clause of CDS views. This blocks write operations and may cause performance issues due to record duplication on read.
@@ -406,9 +405,9 @@ Use _optimistic_ concurrency control to detect concurrent modification of data _
 
 #### Optimistic Concurrency Control in OData
 
-In the [OData protocol](../../guides/providing-services#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
+In the [OData protocol](../../guides/services/served-ootb#etag), the implementation relies on `ETag` and `If-Match` headers in the HTTP request.
 
-The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/providing-services#etag):
+The `@odata.etag` annotation indicates to the OData protocol adapter that the value of an annotated element should be [used as the ETag for conflict detection](../../guides/services/served-ootb#etag):
 
 {#on-update-example}
 
@@ -449,7 +448,7 @@ No exception is thrown if an ETag validation does not match. Instead, the execut
 
 #### Providing new ETag Values with Update Data
 
-A convenient option to determine a new ETag value upon update is the [@cds.on.update](../../guides/domain-modeling#cds-on-update) annotation as in the [example above](#on-update-example). The CAP Java runtime automatically handles the `@cds.on.update` annotation and sets a new value in the data before the update is executed. Such _managed data_ can be used with ETags of type `Timestamp` or `UUID` only.
+A convenient option to determine a new ETag value upon update is the [@cds.on.update](../../guides/domain/index#cds-on-update) annotation as in the [example above](#on-update-example). The CAP Java runtime automatically handles the `@cds.on.update` annotation and sets a new value in the data before the update is executed. Such _managed data_ can be used with ETags of type `Timestamp` or `UUID` only.
 
 We do not recommend providing a new ETag value by custom code in a `@Before`-update handler. If you do set a value explicitly in custom code and an ETag element is annotated with `@cds.on.update`, the runtime does not generate a new value upon update for this element. Instead, the value that comes from your custom code is used.
 
@@ -468,7 +467,7 @@ entity Order : cuid {
 
 Compared to `@cds.on.update`, which allows for ETag elements with type `Timestamp` or `UUID` only, `@cds.java.version` additionally supports all integral types `Uint8`, ... `Int64`. For timestamp, the value is set to `$now` upon update, for elements of type UUID a new UUID is generated, and for elements of integral type the value is incremented.
 
-Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/providing-services#etag) in OData.
+Version elements can be used with an [ETag predicate](#etag-predicate) to programmatically check an expected ETag value. Moreover, if additionally annotated with `@odata.etag`, they can be used for [conflict detection](../../guides/services/served-ootb#etag) in OData.
 
 ##### Expected Version from Data
 
