@@ -1,7 +1,7 @@
 
 # Inner-Loop Development
 
-CAP promotes fast inner-loop development by allowing us to easily swap production-grade services with local mocks during development, without any changes to CDS models nor implementations. Similar in the context of application service integration, imported APIs of remote services and applications can be mocked out of the box in consuming applications. This in turn greatly promotes decoupled parallel development of distributed teams working on different microservices.
+CAP promotes fast inner-loop development by allowing us to easily swap production-grade services with local mocks during development, without any changes to CDS models nor implementations. Similar in the context of application service integration, imported APIs of remote services and applications can be mocked out of the box in consuming applications. This in turn greatly promotes decoupled parallel development across distributed teams working on different microservices.
 {.abstract}
 
 [[toc]]
