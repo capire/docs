@@ -179,3 +179,8 @@ Credentials and service coordinates for connecting to a SAP Event Hub instance n
 ::: info
 Both, the Audit Log and the Messaging of CAP Java use the transactional outbox by default. The outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. This frees you the application developer from the task to implement compensation logic in case of failed transactions.
 :::
+
+
+<div id="alesi-cds-feature-ucl" />
+
+##
