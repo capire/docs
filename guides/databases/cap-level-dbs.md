@@ -24,36 +24,61 @@ This chapter lists standardized operators supported by CAP, and guaranteed to wo
 
 Most native SQL operators are supported in CQL as-is, like these from the SQL92 standard:
 
-- Arithmetic operators: `+`, `-`, `*`, `/`, `%`
+- Arithmetic operators: `+`, `-`, `*`, `/` <sup>1</sup>
 - Comparison operators: `<`, `>`, `<=`, `>=`, `=`, `<>`
 - Logical operators: `AND`, `OR`, `NOT`
 - Other operators: `IN`, `LIKE`, `BETWEEN`, `IS NULL`, `IS NOT NULL`, etc.
 
-In addition, CQL provides some extended operators as described below.
+<sup>1</sup> CAP Node.js additionally supports `%`.
+
+In addition, CQL provides some extended comparison operators as described below.
 
 ### Bivalent `==` and `!=` Operators
 
-CQL supports `==` and `!=` operators as bivalent logic variants for SQL's three-valued logic `=` and `<>`. The differences are as follows:
+CQL supports `==` and `!=` operators as two-valued logic variants for SQL's three-valued logic `=` and `<>`. 
 
-::: code-group
-```SQL [CQL's Two-Valued Logic Operators]
-SELECT 1 == null, 1 != null, null == null, null != null;
---> false, true, true, false
-```
-:::
-::: code-group
-```SQL [SQL's Three-Valued Logic]
-SELECT 1 = null, 1 <> null, null = null, null <> null;
---> null, null, null, null
-```
+::: details 
+The differences are captured in these truth tables:
+
+#### two-valued equality (`==`, CQL)
+
+| == | 1 | 0 | `null` |
+|---|---|---|---|
+| 1 | `true` | `false` | `false` |
+| 0 | `false` | `true` | `false` |
+| `null` | `false` | `false` | `true` |
+
+#### three-valued equality (`=`, CQL & SQL)
+
+| = | 1 | 0 | `null` |
+|---|---|---|---|
+| 1 | `true` | `false` | `unknown` |
+| 0 | `false` | `true` | `unknown` |
+| `null` | `unknown` | `unknown` | `unknown` |
+
+#### two-valued inequality (`!=`, CQL)
+
+| != | 1 | 0 | `null` |
+|---|---|---|---|
+| 1 | `false` | `true` | `true` |
+| 0 | `true` | `false` | `true` |
+| `null` | `true` | `true` | `false` |
+
+#### three-valued inequality (`<>`, CQL & SQL)
+
+| <> | 1 | 0 | `null` |
+|---|---|---|---|
+| 1 | `false` | `true` | `unknown` |
+| 0 | `true` | `false` | `unknown` |
+| `null` | `unknown` | `unknown` | `unknown` |
 :::
 
 In other words:
 
-- CQL's `x == null` -> `true` if `x` is `null`, otherwise `false`
-- CQL's `x != null` -> `false` if `x` is `null`, otherwise `true`
-- SQL's `x = null` -> `null` for all `x` (even if `x` is `null`)
-- SQL's `x <> null` -> `null` for all `x` (even if `x` is not `null`)
+- CQL's `x == null` -> `true` if `x` is `null`
+- CQL's `x != null` -> `true` if `x` is not `null`
+- SQL's `x = null` -> `unknown` for all `x` (even if `x` is `null`)
+- SQL's `x <> null` -> `unknown` for all `x` (even if `x` is not `null`)
 
 A real-world example makes this clearer. Consider this CQL query:
 
@@ -63,10 +88,22 @@ SELECT from Books where genre.name != 'Science Fiction';
 
 The result set includes all books where genre is not 'Science Fiction', including the ones with an unspecified genre. In contrast, using SQL's `<>` operator, the ones with unspecified genre would be excluded.
 
-The CQL behavior is consistent with common programming languages like JavaScript and Java, as well as with OData semantics. It is implemented in database by, the translation of `!=` to `IS NOT` in SQLite, or to `IS DISTINCT FROM` in standard SQL, and to an equivalent polyfill in SAP HANA.
+The behavior of CQL two-valued comparison operators `==` and `!=` is consistent with common programming languages like JavaScript and Java, as well as with the semantics of the OData operators `eq` and `ne`. On the database `==` and `!=` are translated to `IS NOT DISTINCT FROM` and `IS DISTINCT FROM` in standard SQL, to `IS` and `IS NOT` on SQLite, and to an equivalent polyfill on SAP HANA.
 
 > [!tip] Prefer == and !=
 > Prefer using `==` and `!=` in most cases to avoid unexpected `null` results. Only use `=` and `<>` if you _really_ want SQL's three-valued logic behavior.
+
+> [!warning] Semantics of != differs from SQL
+> Be ware that the `!=` operator in CQL uses two-valued logic whereas the `!=` operator uses three-valued logic. 
+
+> [!tip] Avoid using `null` values
+> Declare elements as `not null` where applicable. Or use a non-null value to represent "initial" state.
+
+> [!tip] Compare list values in CAP Java
+> In CAP Java, you may use the comparison operators to compare [list values](../../java/working-with-cql/query-api#list-values) like in this CQL query:
+> ```sql
+> SELECT from Books where (year, month) > (2014, 7)
+> ```
 
 ### Ternary `?:` Operator
 
@@ -98,7 +135,6 @@ The following sections list standardized string, numeric, date/time, and aggrega
 
 > [!important] Function names are case-sensitive
 > The names for standardized functions must be written exactly as listed below. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
-
 
 ### String Functions
 
@@ -159,16 +195,13 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 > The above date / time functions are currently only supported by CAP Node.js. \
 > Support for CAP Java is planned for a future release.
 
-
 ### Aggregate Functions
 
 - `avg(x)`, `average(x)`
 - `min(x)`, `max(x)`
 - `sum(x)`
 - `count(x)`
-<!-- - `countdistinct(x)` -->
-
-
+- `countdistinct(x)` (CAP Java only)
 
 ## Native Functions
 
