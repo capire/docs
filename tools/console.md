@@ -14,9 +14,14 @@ The CAP console is a native desktop app, available for Windows & macOS, designed
 
 ## Setup CAP Console
 
-Download the CAP console from [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole) and install it.
+Download the CAP console for [macOS (arm64)](https://cap-console-updater.cfapps.eu10-005.hana.ondemand.com/arm64-cap-console.dmg), [macOS (x64)](https://cap-console-updater.cfapps.eu10-005.hana.ondemand.com/x64-cap-console.dmg) and [Windows (x64)](https://cap-console-updater.cfapps.eu10-005.hana.ondemand.com/cap-console-win-x64.exe).
 
-![](assets/console/console-download-tools.png){style="width:450px; box-shadow: 1px 1px 5px #888888"}
+For macOS users we also provide a Homebrew tap for easy installation and updates. You can install CAP console via Homebrew by running the following commands:
+
+```bash
+brew tap capire/tap
+brew install cap-console
+```
 
 Start the CAP console and access your running CAP projects:
 
@@ -116,8 +121,6 @@ Deploying your application is as simple as clicking through a guided dialog. CAP
 You can choose between two deployment modes:
 
 - **In-App Deployment**: Uses pre-packaged CLI tools with the correct versions — no need to install anything locally.
-  > [!note]
-  > Currently you still have to locally install [cds-dk](https://www.npmjs.com/package/@sap/cds-dk?activeTab=dependencies), [mbt](https://sap.github.io/cloud-mta-build-tool/download/) and in case of windows [make](https://sap.github.io/cloud-mta-build-tool/makefile/), but we are working on it!
 - **CLI-Based Deployment**: Copy all necessary commands and run them in your own terminal.
 
 ### Designed for Simplicity
