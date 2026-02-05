@@ -36,8 +36,8 @@ features:
   icon: ⭕️
   details:
     •&nbsp; Jumpstart & Grow as you go... <br/>
-    •&nbsp; Fast local inner loops <br/>
-    •&nbsp; Decoupled dev tracks <br/>
+    •&nbsp; Inner loop fast tracks <br/>
+    •&nbsp; Decoupled dev teams <br/>
   link: get-started/
   linkText: Getting Started
 
