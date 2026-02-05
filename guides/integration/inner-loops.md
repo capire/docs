@@ -21,12 +21,12 @@ We see similar effects when running through full *code - build - deploy - start*
 Here's a very rough comparison from a real world example:
 
 | Aspect                            | Overly Cloud-Based | Local Inner Loop |  Gain  |
-|-----------------------------------|:-----------:|:----------------:|:------:|
-| Turnaround times                  |   6+ min    |      2 sec       | > 100x |
-| Test pipelines                    |   40+ min   |      4 min       | > 10x  |
-| Support time to reproduce/resolve | hours, days |     minutes      | > 10x  |
-| Resilience re service outages     |    poor     |     ultimate     |        |
-| Operating costs / TCD             |    high     |       low        |        |
+|-----------------------------------|:------------------:|:----------------:|:------:|
+| Turnaround times                  |       6+ min       |      2 sec       | > 100x |
+| Test pipelines                    |      40+ min       |      4 min       | > 10x  |
+| Support time to reproduce/resolve |    hours, days     |     minutes      | > 10x  |
+| Resilience re service outages     |        poor        |     ultimate     |  high  |
+| Operating costs / TCD             |        high        |       low        |  high  |
 
 
 
