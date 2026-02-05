@@ -16,11 +16,11 @@ CAP promotes fast inner-loop development by allowing us to easily swap productio
 
 Many of us likely remember that turntable thing in the playgrounds: stay close to the center – the inner loop –, and it rotates at ultimate speed, lean out and it slows down. 
 
-We see similar effects when we have to run through full *code - build - deploy* cycles to see the effects of our work in cloud development. And it's not only the turnaround times for individual developers, it's also the runtime for tests, the operating costs induced by both, the impact on support (local setups allow to reproduce things, complex setups don't), up to severe resilience issues (whenever a cloud service isn't available development stops for whole teams). 
+We see similar effects when running through full *code - build - deploy - start* cycles to see the effects of incremental changes in traditional cloud development setups. And it's not only the turnaround times for individual developers, it's also the runtime for tests, the operating costs induced by both, the impact on support (local setups allow to reproduce things, complex setups don't), up to severe resilience issues (whenever a cloud service isn't available development stops for whole teams). 
 
 Here's a very rough comparison from a real world example:
 
-| Aspect                            | Cloud-Based | Local Inner Loop |  Gain  |
+| Aspect                            | Overly Cloud-Based | Local Inner Loop |  Gain  |
 |-----------------------------------|:-----------:|:----------------:|:------:|
 | Turnaround times                  |   6+ min    |      2 sec       | > 100x |
 | Test pipelines                    |   40+ min   |      4 min       | > 10x  |
