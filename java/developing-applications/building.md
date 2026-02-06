@@ -366,7 +366,7 @@ It can be used in CAP Java projects to perform the following build tasks:
 Since CAP Java 1.7.0, the CDS Maven Archetype sets up projects to leverage the CDS Maven plugin to perform the previous mentioned build tasks.
 To have an example on how you can modify a project generated with a previous version of the CDS Maven Archetype, see [this commit](https://github.com/SAP-samples/cloud-cap-samples-java/commit/ceb47b52b1e30c9a3f6e0ea29e207a3dad3c0190).
 
-See [CDS Maven Plugin documentation](/java/assets/cds-maven-plugin-site/plugin-info.html){target="_blank"} for more details.
+See [CDS Maven Plugin documentation](../assets/cds-maven-plugin-site/plugin-info.html){target="_blank"} for more details.
 
 ::: tip
 Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk` in case defaults are not appropriate.
@@ -378,7 +378,7 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 ## Code Generation for Typed Access {#codegen-config}
 
 The [interfaces for typed access](../cds-data#generated-accessor-interfaces) are generated at each build
-by the [`cds:generate`](/java/assets/cds-maven-plugin-site/generate-mojo.html) goal of the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html).
+by the [`cds:generate`](../assets/cds-maven-plugin-site/generate-mojo.html) goal of the [CDS Maven Plugin](../assets/cds-maven-plugin-site/plugin-info.html).
 
 You configure this goal just like any other Maven plugin via its configuration options via your application's POM. For example:
 
@@ -395,20 +395,20 @@ You configure this goal just like any other Maven plugin via its configuration o
 </execution>
 ```
 
-Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control. 
+Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control.
 
 ### Typed Results
 
-Set the [`linkedInterfaces`](/java/assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+Set the [`linkedInterfaces`](../assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
 
 ### Package for Generated Code
 
-The option [`basePackage`](/java/assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
+The option [`basePackage`](../assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
 
 ### Filter for CDS Entities
 
 By default, the complete model of your application is generated including all imported or re-used models.
-You can use options [`includes`](/java/assets/cds-maven-plugin-site/generate-mojo.html#includes) and [`excludes`](/java/assets/cds-maven-plugin-site/generate-mojo.html#excludes) to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
+You can use options [`includes`](../assets/cds-maven-plugin-site/generate-mojo.html#includes) and [`excludes`](../assets/cds-maven-plugin-site/generate-mojo.html#excludes) to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
 
 These options use patterns that are applied on the fully qualified names of the entities in CDS models. For example, the pattern `my.bookshop.*` will cover all definitions with namespace `my.bookshop` and the pattern `my.bookshop.**` will cover all definitions with fully qualified name starting with `my.bookshop`.
 
@@ -438,7 +438,7 @@ Alternatively, you can generate accessor interfaces in _fluent style_. In this m
    Books.create().author(author).title("Wuthering Heights");
 ```
 
-The generation mode is configured by the option [`methodStyle`](/java/assets/cds-maven-plugin-site/generate-mojo.html#methodStyle). The selected style affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+The generation mode is configured by the option [`methodStyle`](../assets/cds-maven-plugin-site/generate-mojo.html#methodStyle). The selected style affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
 
 Once, when starting a project, decide on the style of the interfaces that is best for your team and project.
 
@@ -450,7 +450,7 @@ Moreover, it doesn't change the way how event contexts, delivered by CAP, look l
 
 Other options in this goal enable or disable certain features that change the way generated code looks in a certain aspect. These changes can be incompatible with the existing code and require manual adaptation.
 
-- [`strictSetters`](/java/assets/cds-maven-plugin-site/generate-mojo.html#strictSetters)
+- [`strictSetters`](../assets/cds-maven-plugin-site/generate-mojo.html#strictSetters)
 
   This switch changes the signature of the setter methods in typed access interfaces so that they require concrete type instead of generic `Map` interface.
   For example:
@@ -462,7 +462,7 @@ Other options in this goal enable or disable certain features that change the wa
 
   It does not introduce any additional type checks at runtime, the correctness of the assignment is checked only at the time of compilation.
 
-- [`interfacesForAspects`](/java/assets/cds-maven-plugin-site/generate-mojo.html#interfacesForAspects)
+- [`interfacesForAspects`](../assets/cds-maven-plugin-site/generate-mojo.html#interfacesForAspects)
 
   If your entity is modelled with the [composition of aspects](../../cds/cdl#with-named-targets), the generated interfaces always reference original aspect as type for setters and getters.
   When this switch is enabled, the code generator uses the type generated by the compiler instead of the type of the aspect itself and will include methods to fetch keys, for example.
@@ -471,18 +471,18 @@ Other options in this goal enable or disable certain features that change the wa
   This is supported only for the named aspects (inline targets are not supported) and does not respect all possible options how such entities might be exposed by services.
   :::
 
-- [`betterNames`](/java/assets/cds-maven-plugin-site/generate-mojo.html#betterNames)
+- [`betterNames`](../assets/cds-maven-plugin-site/generate-mojo.html#betterNames)
 
   CDS models from external sources might include elements that have some special characters in their names or include elements that clash with Java keywords. Such cases always can be solved with the [renaming features](../cds-data#renaming-elements-in-java) provided by code generator, but in case of large models, this is tedious.
   When this switch is enabled, characters `/` and `$` behave as a separators for the name during case conversions, similar to `_` and `.`. For example, `GET_MATERIAL` yields `GetMaterial` (or `getMaterial` for attributes and methods). The same now applies for the names with `/`, for example, name `/DMO/GET_MATERIAL` will be converted to `DmoGetMaterial`.
-  
-  The following conversions are applied:  
+
+  The following conversions are applied:
     - Names from CDS model that are Java keywords are suffixed with `_`.
     - Names from CDS model that use characters that are not valid as Java identifiers, are replaced by `_`. This, however, might lead to a conflicts between names that yield the same name in Java.
     - Leading `_` will remain in the name after conversions. This supports conventions where an association and its foreign key have names like `_assoc` and `assoc`.
   These conversions no longer influence the splitting.
 
-- [`cqnServiceGetters`](/java/assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
+- [`cqnServiceGetters`](../assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
 
@@ -491,11 +491,11 @@ In major releases of CAP Java, some of these switches can be made the new defaul
 in your application that needs to be fixed.
 :::
 
-See [Maven Plugin Documentation](/java/assets/cds-maven-plugin-site/generate-mojo.html) for actual status of deprecation and switches that are not described here. {.learn-more}
+See [Maven Plugin Documentation](../assets/cds-maven-plugin-site/generate-mojo.html) for actual status of deprecation and switches that are not described here. {.learn-more}
 
 ### Annotation Detail Level
 
-The option [`annotationDetailLevel`](/java/assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel) lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
+The option [`annotationDetailLevel`](../assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel) lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
 
 Following levels of the details are available:
 - `MINIMAL` (default) - only the annotation is added, no additional information is added.
