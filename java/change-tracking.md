@@ -436,6 +436,44 @@ public class ChangeTrackingHandler implements EventHandler {
 
 You can query the change log entries via CQN statements, as usual.
 
+## Tips and Tricks
+
+### Entities from imported services
+
+In general, Change Tracking expects that everything that needs change tracking is stored in the local database.
+You might, however, need to model an association to the remote entity that, as a general rule, requires custom implementation.
+The only possible option with associations like this is to track changes for its foreign key values.
+
+:::warning Configuration change required! 
+Enable [optimization for path expressions](/releases/2025/aug25#optimized-path-expressions).
+:::
+
+Let's take the following model as an example:
+
+```cds
+@cds.external: true
+entity Remote {
+  key ID    : UUID;
+  ...
+}
+
+entity Local {
+  key ID       : UUID;
+      toRemote : Association to Remote;
+}
+```
+
+You model the association like this: 
+
+```cds
+entity Local {
+  key ID       : UUID;
+      toRemote : Association to Remote @changelog: [toRemote.ID]; // [!code focus]
+}
+```
+
+The entity's primary key is the only field you can use here, as rest of the association's target fields is not readable with standard persistence. The change log will contain one entry for the field `toRemote` just like the other associations with [human-readable values](#human-readable-values-for-associations).
+
 ## Things to Consider when Using Change Tracking
 
 - Consider the storage costs of the change log. The change log can grow very fast and can consume a lot of space
