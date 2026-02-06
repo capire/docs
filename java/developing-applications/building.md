@@ -378,7 +378,7 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 ## Code Generation for Typed Access {#codegen-config}
 
 The [interfaces for typed access](../cds-data#generated-accessor-interfaces) are generated at each build
-by the [`cds:generate`](../assets/cds-maven-plugin-site/generate-mojo.html) goal of the [CDS Maven Plugin](../assets/cds-maven-plugin-site/plugin-info.html).
+by the [`cds:generate`](../assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"} goal of the [CDS Maven Plugin](../assets/cds-maven-plugin-site/plugin-info.html){target="_blank"}.
 
 You configure this goal just like any other Maven plugin via its configuration options via your application's POM. For example:
 
@@ -399,16 +399,16 @@ Each time your application is built, these interfaces are regenerated. By defaul
 
 ### Typed Results
 
-Set the [`linkedInterfaces`](../assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces) option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+Set the [`linkedInterfaces`](../assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces){target="_blank"} option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
 
 ### Package for Generated Code
 
-The option [`basePackage`](../assets/cds-maven-plugin-site/generate-mojo.html#basePackage) can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
+The option [`basePackage`](../assets/cds-maven-plugin-site/generate-mojo.html#basePackage){target="_blank"} can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
 
 ### Filter for CDS Entities
 
 By default, the complete model of your application is generated including all imported or re-used models.
-You can use options [`includes`](../assets/cds-maven-plugin-site/generate-mojo.html#includes) and [`excludes`](../assets/cds-maven-plugin-site/generate-mojo.html#excludes) to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
+You can use options [`includes`](../assets/cds-maven-plugin-site/generate-mojo.html#includes){target="_blank"} and [`excludes`](../assets/cds-maven-plugin-site/generate-mojo.html#excludes){target="_blank"} to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
 
 These options use patterns that are applied on the fully qualified names of the entities in CDS models. For example, the pattern `my.bookshop.*` will cover all definitions with namespace `my.bookshop` and the pattern `my.bookshop.**` will cover all definitions with fully qualified name starting with `my.bookshop`.
 
@@ -491,11 +491,11 @@ In major releases of CAP Java, some of these switches can be made the new defaul
 in your application that needs to be fixed.
 :::
 
-See [Maven Plugin Documentation](../assets/cds-maven-plugin-site/generate-mojo.html) for actual status of deprecation and switches that are not described here. {.learn-more}
+See [Maven Plugin Documentation](../assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"} for actual status of deprecation and switches that are not described here. {.learn-more}
 
 ### Annotation Detail Level
 
-The option [`annotationDetailLevel`](../assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel) lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
+The option [`annotationDetailLevel`](../assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel){target="_blank"} lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
 
 Following levels of the details are available:
 - `MINIMAL` (default) - only the annotation is added, no additional information is added.

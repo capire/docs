@@ -521,7 +521,7 @@ The name of the CDS element referred to by a getter or setter, is defined throug
 
 ### Generated Accessor Interfaces
 
-For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
+For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./assets/cds-maven-plugin-site/plugin-info.html){target="_blank"}. The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
 ```java
    Authors author = Authors.create().name("Emily Brontë");
