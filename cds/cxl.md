@@ -18,7 +18,12 @@ import intro from './assets/cxl/intro.drawio.svg?raw'
 </script>
 
 
-# CDS Expression Language (CXL) { #expressions }
+# CDS Expression Language (CXL)
+
+[[toc]]
+
+## Preliminaries
+
 The CDS Expression Language (`CXL`) is a language to express calculations, conditions,
 and other expressions in the context of CDS models and queries.
 **`CXL` is based on the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
@@ -733,7 +738,7 @@ ON
       )
     )
   ) / 12) < ?
-  ```
+```
 :::
 
 The path expression `author[ age < 40 ].name`
