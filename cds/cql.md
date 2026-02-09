@@ -14,8 +14,24 @@ CDS Query Language (CQL) is based on standard SQL, which it enhances by...
 [[toc]]
 
 
+
+## SELECT
+
+![](./assets/cql/select.drawio.svg)
+
+> Using: Query Source, Select Item, Expressions, Ordering Term
+
+
+
+## Select Item
+
+![](./assets/cql/select-item.drawio.svg)
+
+
 ## Postfix Projections
 {#postfix-projections}
+
+![](./assets/cql/postfix-projection.drawio.svg)
 
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
@@ -28,6 +44,10 @@ SELECT from Authors { name, address.street }
 
 ### Nested Expands <Beta />
 {#nested-expands}
+
+
+![](./assets/cql/nested-expand.drawio.svg)
+
 
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
 This allows **expand** results along associations and hence read deeply structured documents:
@@ -124,6 +144,8 @@ results = [
 ```
 
 ### Nested Inlines <Beta /> {#nested-inlines}
+
+![](./assets/cql/nested-inline.drawio.svg)
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
