@@ -413,7 +413,7 @@ FROM sap_capire_bookshop_Authors as Authors
 
 ::: warning Annotation expressions expect single-valued results
 When writing annotation expressions, it's often important to ensure that the result yields a single value for each entry in the annotated entity.
-To achieve this, use the [exists](#in-exists-predicate) predicate.
+To achieve this, use the [exists](#in-exists-predicates) predicate.
 :::
 
 ### In `exists` Predicates
