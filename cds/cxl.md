@@ -40,7 +40,7 @@ In the following chapters we illustrate the `CXL` syntax based on simple and mor
 The language syntax is described using [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram).
 
 
-### Trying it out it `cds repl`
+### Trying it with `cds repl`
 
 To try the samples by yourself, create a simple CAP app:
 
