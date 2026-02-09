@@ -1,18 +1,7 @@
 ---
-# layout: cds-ref
-shorty: Expressions
 synopsis: >
   Specification of the CDS Expression Language (CXL) used to capture expressions in CDS.
-status: released
 ---
-
-<script setup>
-import infixFilter from './assets/cxl/infix-filter.drawio.svg?raw'
-import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
-import functionDef from './assets/cxl/function-def.drawio.svg?raw'
-import intro from './assets/cxl/intro.drawio.svg?raw'
-</script>
-
 
 # CDS Expression Language (CXL)
 
@@ -457,10 +446,7 @@ If we apply this terminology to [path-expressions](#ref), an infix filter condit
 that is applied to a path-segment of a [path-expression](#ref).
 This allows you to filter the target of an association based on certain criteria.
 
-<div class="diagram">
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-<div v-html="infixFilter"></div>
-</div>
+![](assets/cxl/infix-filter.drawio.svg)
 
 
 
@@ -798,11 +784,7 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 
 ## Functions
 
-<div class="diagram" >
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div class="diagram" v-html="functionDef"></div>
-</div>
-
+![](assets/cxl/function.drawio.svg)
 
 CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
@@ -811,10 +793,6 @@ CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#por
 
 Literal values represent constant data embedded directly in an expression.
 They are independent of model elements and evaluate to the same value.
-
-<div class="diagram" >
-<div v-html="literalValue"></div>
-</div>
 
 :::code-group
 ```js [cds repl]
