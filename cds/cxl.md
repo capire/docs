@@ -768,7 +768,7 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 ## Operators
 
-Depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
+As depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
 
 ![](assets/cxl/operators.drawio.svg)
 
@@ -783,8 +783,8 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 | `=`, `==`, `!=`, `<>` | Equality. | `price == 100` |
 | `is null`, `is not null` | Null checks (postfix). | `price is null` |
 | `like`, `not like` | Pattern matching. | `name like 'A%'` |
-| `between ... and` | Range checking. | `x between 1 and 10` |
-| `case when then` | Case checking. | `case when 1 then 2 end` |
+| `between`-`and` | Range checking. | `x between 1 and 10` |
+| `case`-`when`-`then` | Case checking. | `case when 1 then 2 end` |
 | `exists`, `not exists` | Existence checking (prefix). | `name like 'A%'` |
 | `and`, `or` | Logical operators. | `x>1 or y<2` |
 
