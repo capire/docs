@@ -11,6 +11,7 @@ import Concept from './components/Concept.vue'
 import Since from './components/Since.vue';
 import UnderConstruction from './components/UnderConstruction.vue';
 import CfgInspect from './components/ConfigInspect.vue';
+import MigrationTool from './components/MigrationTool.vue';
 import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
 
 import '@shikijs/vitepress-twoslash/style.css'
@@ -35,6 +36,7 @@ export default {
     ctx.app.component('Concept', Concept)
     ctx.app.component('Since', Since)
     ctx.app.component('UnderConstruction', UnderConstruction)
+    ctx.app.component('MigrationTool', MigrationTool)
     ctx.app.use(TwoslashFloatingVue)
   }
 }
