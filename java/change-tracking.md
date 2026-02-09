@@ -438,9 +438,9 @@ You can query the change log entries via CQN statements, as usual.
 
 ## Tips and Tricks
 
-### Entities from imported services
+### Entities from Remote Services
 
-In general, Change Tracking expects that everything that needs change tracking is stored in the local database.
+In general, Change Tracking expects that everything is stored in the local database.
 You might, however, need to model an association to the remote entity that, as a general rule, requires custom implementation.
 The only possible option with associations like this is to track changes for its foreign key values.
 
@@ -473,6 +473,8 @@ entity Local {
 ```
 
 The entity's primary key is the only field you can use here, as rest of the association's target fields is not readable with standard persistence. The change log will contain one entry for the field `toRemote` just like the other associations with [human-readable values](#human-readable-values-for-associations).
+
+If you need a custom identifier, it is up to you to implement in a custom handler. 
 
 ## Things to Consider when Using Change Tracking
 
