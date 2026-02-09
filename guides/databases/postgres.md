@@ -79,8 +79,6 @@ Output:
 }
 ```
 
-[See also the general information on installing database packages](index#setup-configurationmore}
-
 ## Provisioning a DB Instance
 
 To connect to a PostgreSQL offering from the cloud provider in Production, leverage the [PostgreSQL on SAP BTP, hyperscaler option](https://discovery-center.cloud.sap/serviceCatalog/postgresql-hyperscaler-option). For local development and testing convenience, you can run PostgreSQL in a [docker container](#using-docker).
@@ -617,7 +615,7 @@ If the changes in the model could lead to data loss, an error is raised.
 
 ## Migration { .node }
 
-Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. 
+Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes.
 
 ### `cds deploy --model-only`
 
