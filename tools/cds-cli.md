@@ -1,6 +1,7 @@
 ---
 synopsis: >
   Available commands of the <code>cds</code> command line client.
+impl-variants: true
 ---
 
 <script setup>

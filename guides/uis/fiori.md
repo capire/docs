@@ -12,6 +12,8 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 [[toc]]
 
 
+<ImplVariantsHint />
+
 ## SAP Fiori Preview
 
 For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.

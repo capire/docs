@@ -2,6 +2,7 @@
 synopsis: >
   The guide provides an overview of custom build processes for CAP projects, explaining how to tailor the standard build process to specific project requirements.
 status: released
+impl-variants: true
 ---
 
 # Implement Build Plugins <Since version="7.5.0" package="@sap/cds-dk" />
@@ -11,6 +12,9 @@ CDS already offers build plugins to create deployment layouts for the most use c
 Build plugins are run by `cds build` to generate the required deployment artifacts. Build tasks hold the actual project specific configuration. The task's `for` property value has to match the build plugin ID.
 
 The following description uses the [postgres build plugin](https://github.com/cap-js/cds-dbs/blob/55e511471743c0445d41e8297f5530abe167a270/postgres/cds-plugin.js#L9-L48) as reference implementation. It combines runtime and design-time integration in a single plugin `@cap-js/postgres`.
+
+<ImplVariantsHint />
+
 ## Add Build Logic
 
 A build plugin is a Node.js module complying to the [CDS plugin architecture](../../node.js/cds-plugins).
