@@ -7,11 +7,7 @@ status: released
 ---
 
 <script setup>
-import expr from './assets/cxl/expr.drawio.svg?raw'
-import ref from './assets/cxl/ref.drawio.svg?raw'
 import infixFilter from './assets/cxl/infix-filter.drawio.svg?raw'
-import unaryOperator from './assets/cxl/unary-operator.drawio.svg?raw'
-import binaryOperator from './assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
 import functionDef from './assets/cxl/function-def.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
@@ -772,29 +768,33 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 ## Operators
 
-### Unary Operators
+Depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
 
-<div class="diagram">
-<div v-html="unaryOperator"></div>
-</div>
+![](assets/cxl/operators.drawio.svg)
 
-::: info A unary operator is an operator that operates on exactly one operand.
+Following table gives an overview of the guaranteed supported operators in CXL:
 
-E.g. in the expression `-price`, the `-` operator is a unary operator
-that operates on the single operand `price`. It negates the value of `price`.
-:::
+| Operator | Description | Example |
+| -------- | ----------- | ------- |
+| `\|\|` | String concatenation. | `'Hello ' \|\| world` |
+| `*`, `/`, `%` | Multiplication, division, and modulo. | `price * quantity` |
+| `+`, `-` | Addition and subtraction. | `price + tax` |
+| `<`, `>`, `<=`, `>=` | Comparison. | `price < 100` |
+| `=`, `==`, `!=`, `<>` | Equality. | `price == 100` |
+| `is null`, `is not null` | Null checks (postfix). | `price is null` |
+| `like`, `not like` | Pattern matching. | `name like 'A%'` |
+| `between ... and` | Range checking. | `x between 1 and 10` |
+| `case when then` | Case checking. | `case when 1 then 2 end` |
+| `exists`, `not exists` | Existence checking (prefix). | `name like 'A%'` |
+| `and`, `or` | Logical operators. | `x>1 or y<2` |
 
-### Binary Operators
+> [!tip] Bivalent `==` and `!=` Operators
+> In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent-and-operators) section of the databases documentation.
 
-<div class="diagram">
-<div v-html="binaryOperator"></div>
-</div>
+> [!tip] Ternary `?:` Operator 
+> In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary-operator) section of the databases documentation.
 
 
-::: info A binary operator is an operator that operates on two operands.
-E.g. in the expression `price * quantity`, the `*` operator is a binary operator
-that multiplies the two factors `price` and `quantity`.
-:::
 
 ## Functions
 
