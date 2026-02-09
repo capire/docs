@@ -18,16 +18,21 @@ import intro from './assets/cxl/intro.drawio.svg?raw'
 </script>
 
 
-# CDS Expression Language (CXL) { #expressions }
+# CDS Expression Language (CXL)
+
+[[toc]]
+
+## Preliminaries
+
 The CDS Expression Language (`CXL`) is a language to express calculations, conditions,
 and other expressions in the context of CDS models and queries.
 **`CXL` is based on the SQL expression language**, so many syntax elements from SQL are also available in `CXL`.
 
 `CXL` can be used in various places:
-- In [CQL](./cql#path-expressions) (select list, where clause, …)
-- In [CDL](./cdl)
-  + In [calculated elements](./cdl#calculated-elements)
-  + In [annotations](./cdl.md#expressions-as-annotation-values)
+
+- In [CQL queries](./cql#path-expressions) created at runtime via respective language bindings, such as the [`cds.ql`](../node.js/cds-ql) template tag API in JavaScript, or the fluent API variants.
+
+- In [CDL views and projections](./cdl#views), as well as in on-conditions of [unmanaged associations](./cdl#associations), in [calculated elements](./cdl#calculated-elements), and in [annotations](./cdl.md#expressions-as-annotation-values)
 
 ::: tip Expressions in CAP are materialized in the context of queries
 No matter where `CXL` is used, it always manifests in queries.
@@ -35,14 +40,11 @@ For example, [a calculated element](./cdl#calculated-elements) defined in an ent
 to the respective calculation in the generated query when the entity is queried.
 :::
 
-
-## How to read this guide { #how-to }
-
-
 In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
-For a complete reference of the syntax, there are clickable [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram) (aka railroad diagrams) for each language construct.
+The language syntax is described using [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram).
 
-### samples
+
+### Trying it out it `cds repl`
 
 To try the samples by yourself, create a simple CAP app:
 
@@ -78,22 +80,9 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-### syntax diagrams
 
-Each language construct is illustrated by a clickable [syntax diagram](https://en.wikipedia.org/wiki/Syntax_diagram).
-
-They show the syntax of CAPs expression language as a sequence of building blocks.
-By clicking on the individual blocks, you can get more information about the respective building block.
-
-The following diagram illustrates how to read the diagrams:
-
-<div class="diagram">
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div  v-html="intro"></div>
-</div>
-
-
-## expr { #expr }
+## Expressions (`expr`)
+###### expr
 
 An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
 ```cds
@@ -111,254 +100,195 @@ select from Books {
 
 This syntax diagram describes the possible expressions:
 
-<div class="diagram">
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div  v-html="expr"></div>
-</div>
+![](assets/cxl/expr.drawio.svg)
+
+  ::: tip
+  An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
+  :::
+
+### In Calculated Elements
+
+  Expressions can be used to define calculated elements.
+  Typically, this is done on the select list of a query. CAP
+  also allows to define calculated elements directly in the model:
+
+  ```cds
+  extend Books with {
+    total = price * stock;
+  }
+  ```
+
+  In this example, we define a calculated element `total` in the `Books` entity
+  that calculates the total value of all books in stock by multiplying the `price` with the `stock`.
 
 
-::: tip
-An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
-:::
-
-### in model definitions
-
-Expressions can be used to define calculated elements.
-Typically, this is done on the select list of a query. CAP
-also allows to define calculated elements directly in the model:
-
-```cds
-extend Books with {
-  total = price * stock;
-}
-```
-
-In this example, we define a calculated element `total` in the `Books` entity
-that calculates the total value of all books in stock by multiplying the `price` with the `stock`.
-
-
-:::code-group
-```js [CQL]
-> await cds.ql`SELECT title, total from Books` // [!code focus]
-[
-  { title: 'Wuthering Heights', total: 133.32 },
-  { title: 'Jane Eyre', total: 135.74 },
-  { title: 'The Raven', total: 4372.29 },
-  { title: 'Eleonora', total: 7770 },
-  { title: 'Catweazle', total: 3300 }
-]
-```
-
-```sql [SQL]
-SELECT
-  Books.title,
-  Books.price * Books.stock as total -- calculated element is resolved
-FROM sap_capire_bookshop_Books as Books
-```
-:::
-
-[Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
-
-### in queries
-
-Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
-
-:::code-group
-```js [CQL]
-> await cds.ql`
-  SELECT from Books {
-    title,
-    stock,
-    price,
-    price * stock as total } where price > 10` // [!code focus]
-[
-  { title: 'Wuthering Heights', stock: 12, price: 11.11, total: 133.32},
-  { title: 'Jane Eyre', stock: 11, price: 12.34, total: 135.74 },
-  { title: 'The Raven', stock: 333, price: 13.13, total: 4372.29 },
-  { title: 'Eleonora', stock: 555, price: 14, total: 7770 },
-  { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
-]
-```
-
-Compared to the previous example, we now use the expression directly in the query
-to calculate the total value of all books in stock.
-
-```sql [SQL]
-SELECT
-  Books.title,
-  Books.stock,
-  Books.price,
-  Books.price * Books.stock as total
-FROM sap_capire_bookshop_Books as Books
-WHERE Books.price > 10
-```
-:::
-
-
-### in annotations
-
-Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
-The meaning and effect of the expression depend on the specific annotation being used.
-
-For example, the [`@assert` annotation](../guides/services/constraints.md#assert-constraint) lets us declaratively define input validation constraints.
-In this example, we want to make sure that no Books with negative stocks are created:
-
-
-```cds
-annotate AdminService.Books:stock with @assert: (case
-  when stock < 0 then 'Enter a positive number'
-end);
-```
-
-Upon insert, the expression is evaluated against the updated data:
-
-:::code-group
-```js [cds repl]
-> const { Books } = AdminService.entities
-> const insert = INSERT.into(Books).entries({  // [!code focus]
-    ID: 277,
-    author_ID: 101,
-    title: 'Lord of the Rings',
-    stock: -2,  // [!code focus]
-  })
-> await AdminService.run(insert)
-
-Uncaught:
-{
-  status: 400,  // [!code focus]
-  code: 'ASSERT',  // [!code focus]
-  target: 'stock',  // [!code focus]
-  numericSeverity: 4,
-  '@Common.numericSeverity': 4,
-  message: 'Enter a positive number'  // [!code focus]
-}
-```
-
-```sql [sql log]
-BEGIN
-
--- sql statement for the insert:
-INSERT INTO sap_capire_bookshop_Books (createdAt,createdBy,modifiedAt,modifiedBy,ID,author_ID,title,descr,genre_ID,stock,price,currency_code) SELECT (CASE WHEN json_type(value,'$."createdAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."createdAt"') END),(CASE WHEN json_type(value,'$."createdBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."createdBy"' END),(CASE WHEN json_type(value,'$."modifiedAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."modifiedAt"') END),(CASE WHEN json_type(value,'$."modifiedBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."modifiedBy"' END),value->>'$."ID"',value->>'$."author_ID"',value->>'$."title"',value->>'$."descr"',value->>'$."genre_ID"',value->>'$."stock"',value->>'$."price"',value->>'$."currency_code"' FROM json_each(?) [
+  :::code-group
+  ```js [CQL]
+  > await cds.ql`SELECT title, total from Books` // [!code focus]
   [
+    { title: 'Wuthering Heights', total: 133.32 },
+    { title: 'Jane Eyre', total: 135.74 },
+    { title: 'The Raven', total: 4372.29 },
+    { title: 'Eleonora', total: 7770 },
+    { title: 'Catweazle', total: 3300 }
+  ]
+  ```
+
+  ```sql [SQL]
+  SELECT
+    Books.title,
+    Books.price * Books.stock as total -- calculated element is resolved
+  FROM sap_capire_bookshop_Books as Books
+  ```
+  :::
+
+  [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
+
+  ### In Queries
+
+  Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
+
+  :::code-group
+  ```js [CQL]
+  > await cds.ql`
+    SELECT from Books {
+      title,
+      stock,
+      price,
+      price * stock as total } where price > 10` // [!code focus]
+  [
+    { title: 'Wuthering Heights', stock: 12, price: 11.11, total: 133.32},
+    { title: 'Jane Eyre', stock: 11, price: 12.34, total: 135.74 },
+    { title: 'The Raven', stock: 333, price: 13.13, total: 4372.29 },
+    { title: 'Eleonora', stock: 555, price: 14, total: 7770 },
+    { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
+  ]
+  ```
+
+  Compared to the previous example, we now use the expression directly in the query
+  to calculate the total value of all books in stock.
+
+  ```sql [SQL]
+  SELECT
+    Books.title,
+    Books.stock,
+    Books.price,
+    Books.price * Books.stock as total
+  FROM sap_capire_bookshop_Books as Books
+  WHERE Books.price > 10
+  ```
+  :::
+
+
+  ### In Annotations
+
+  Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
+  The meaning and effect of the expression depend on the specific annotation being used.
+
+  For example, the [`@assert` annotation](../guides/services/constraints.md#assert-constraint) lets us declaratively define input validation constraints.
+  In this example, we want to make sure that no Books with negative stocks are created:
+
+
+  ```cds
+  annotate AdminService.Books:stock with @assert: (case
+    when stock < 0 then 'Enter a positive number'
+  end);
+  ```
+
+  Upon insert, the expression is evaluated against the updated data:
+
+  :::code-group
+  ```js [cds repl]
+  > const { Books } = AdminService.entities
+  > const insert = INSERT.into(Books).entries({  // [!code focus]
+      ID: 277,
+      author_ID: 101,
+      title: 'Lord of the Rings',
+      stock: -2,  // [!code focus]
+    })
+  > await AdminService.run(insert)
+
+  Uncaught:
+  {
+    status: 400,  // [!code focus]
+    code: 'ASSERT',  // [!code focus]
+    target: 'stock',  // [!code focus]
+    numericSeverity: 4,
+    '@Common.numericSeverity': 4,
+    message: 'Enter a positive number'  // [!code focus]
+  }
+  ```
+
+  ```sql [sql log]
+  BEGIN
+
+  -- sql statement for the insert:
+  INSERT INTO sap_capire_bookshop_Books (createdAt,createdBy,modifiedAt,modifiedBy,ID,author_ID,title,descr,genre_ID,stock,price,currency_code) SELECT (CASE WHEN json_type(value,'$."createdAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."createdAt"') END),(CASE WHEN json_type(value,'$."createdBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."createdBy"' END),(CASE WHEN json_type(value,'$."modifiedAt"') IS NULL THEN ISO(session_context('$now')) ELSE ISO(value->>'$."modifiedAt"') END),(CASE WHEN json_type(value,'$."modifiedBy"') IS NULL THEN session_context('$user.id') ELSE value->>'$."modifiedBy"' END),value->>'$."ID"',value->>'$."author_ID"',value->>'$."title"',value->>'$."descr"',value->>'$."genre_ID"',value->>'$."stock"',value->>'$."price"',value->>'$."currency_code"' FROM json_each(?) [
     [
-      {
-        ID: 277,
-        author_ID: 101,
-        title: 'Lord of the Rings',
-        stock: -2
-      }
+      [
+        {
+          ID: 277,
+          author_ID: 101,
+          title: 'Lord of the Rings',
+          stock: -2
+        }
+      ]
     ]
   ]
-]
 
--- assert expressions are evaluated:
-SELECT json_insert('{}','$."ID"',ID,'$."@assert:stock"',"@assert:stock") as _json_
-FROM (
-  SELECT
-    Books.ID,
-    case when Books.stock < ? then ? end as "@assert:stock"
-  FROM AdminService_Books as Books
-  WHERE (Books.ID) in ((?))
-) [ 0, 'Enter a positive number', 277 ]
+  -- assert expressions are evaluated:
+  SELECT json_insert('{}','$."ID"',ID,'$."@assert:stock"',"@assert:stock") as _json_
+  FROM (
+    SELECT
+      Books.ID,
+      case when Books.stock < ? then ? end as "@assert:stock"
+    FROM AdminService_Books as Books
+    WHERE (Books.ID) in ((?))
+  ) [ 0, 'Enter a positive number', 277 ]
 
--- result of evaluation contains violated constraints,
--- which leads to a rollback:
-ROLLBACK
-```
-:::
-
-
-::: tip What-not-how!
-The `@assert` annotation lets you capture the intent via an expression, without having to deal with the technical details.
-This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
-:::
-
-## literal value { #literal-value }
-
-Literal values represent constant data embedded directly in an expression.
-They are independent of model elements and evaluate to the same value.
-
-<div class="diagram" >
-<div v-html="literalValue"></div>
-</div>
-
-:::code-group
-```js [cds repl]
-> cds.parse.expr ` 42 `
-{ val: 42 }
-> cds.parse.expr ` 'Hello World' `
-{ val: 'Hello World' }
-> cds.parse.expr ` null `
-{ val: null }
-> cds.parse.expr ` true `
-{ val: true }
-> cds.parse.expr ` false `
-{ val: false }
-> cds.parse.expr ` Date'2026-01-01' `
-{ val: '2026-01-01', literal: 'date' }
-> cds.parse.expr ` Time'08:42:15.000' `
-{ val: '08:42:15.000', literal: 'time' }
-> cds.parse.expr ` TimeStamp'2026-01-14T10:30:00Z' `
-{ val: '2026-01-14T10:30:00Z', literal: 'timestamp' }
-```
-:::
-
-[Learn more about literals.](./csn.md#literals){ .learn-more }
-
-## operators
-
-### unary operator { #unary-operator }
-
-<div class="diagram">
-<div v-html="unaryOperator"></div>
-</div>
-
-::: info A unary operator is an operator that operates on exactly one operand.
-
-E.g. in the expression `-price`, the `-` operator is a unary operator
-that operates on the single operand `price`. It negates the value of `price`.
-:::
-
-### binary operator { #binary-operator }
-
-<div class="diagram">
-<div v-html="binaryOperator"></div>
-</div>
+  -- result of evaluation contains violated constraints,
+  -- which leads to a rollback:
+  ROLLBACK
+  ```
+  :::
 
 
-::: info A binary operator is an operator that operates on two operands.
-E.g. in the expression `price * quantity`, the `*` operator is a binary operator
-that multiplies the two factors `price` and `quantity`.
-:::
-
-## function { #function }
+  ::: tip What-not-how!
+  The `@assert` annotation lets you capture the intent via an expression, without having to deal with the technical details.
+  This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
+  :::
 
 
-<div class="diagram" >
-<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
-<div class="diagram" v-html="functionDef"></div>
-</div>
 
-
-CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
-
-## ref (path expression) { #ref }
+## Path Expressions (`ref`) 
+###### ref 
 
 A `ref` (short for reference) is used to refer to an element within the model.
 It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
-<div class="diagram">
-  <Badge class="badge-inline" type="tip" text="💡 clickable diagram" /> 
-  <div v-html="ref"></div>
-</div>
+![](assets/cxl/ref.drawio.svg)
+
+See also:
+
+- [Infix Filters](#infix-filters)
+
+Examples:
+
+```zsh
+element
+struct.element
+assoc.element
+assoc[filter].element
+assoc[filter].struct.assoc.element
+```
 
 ::: info Leaf elements
 Leaf elements as opposed to associations and structured elements represent scalar values, such as strings, numbers, dates, as well as the array and map types.
 They typically manifest as columns in database tables.
 :::
 
-### simple element reference
+### Simple Element Reference
 
 In its simplest form, a `ref` can be used to reference an element:
 
@@ -381,7 +311,8 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 
 In this example, we select the `title` element from the `Books` entity.
 
-### path navigation {#path-navigation}
+
+### Path Navigation
 
 A path expression can be used to navigate to any element of the associations target:
 
@@ -486,7 +417,7 @@ When writing annotation expressions, it's often important to ensure that the res
 To achieve this, use the [exists](#in-exists-predicate) predicate.
 :::
 
-### in `exists` predicate
+### In `exists` Predicates
 
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
@@ -521,7 +452,8 @@ WHERE exists (
 The `exists` predicate can be further enhanced by [combining it with infix filters](#exists-infix-filter).
 This allows you to specify conditions on subsets of associated entities, enabling more precise and expressive queries.
 
-## infix filter { #infix-filter }
+
+## Infix Filters
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
@@ -536,7 +468,7 @@ This allows you to filter the target of an association based on certain criteria
 
 
 
-### applied to `exists` predicate { #exists-infix-filter }
+### Applied to `exists` predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -592,7 +524,7 @@ WHERE exists (
 :::
 
 
-### applied to `from` clause
+### Applied to `from` clause
 
 Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
 
@@ -672,7 +604,7 @@ WHERE exists (
 ```
 :::
 
-### in calculated element
+### In Calculated Elements
 
 You can also use the infix filter notation to derive
 another more specific association from an existing one.
@@ -755,7 +687,7 @@ FROM sap_capire_bookshop_Authors as Authors
 :::
 
 
-### between path segments
+### Between Path Segments
 
 Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
 
@@ -806,7 +738,7 @@ ON
       )
     )
   ) / 12) < ?
-  ```
+```
 :::
 
 The path expression `author[ age < 40 ].name`
@@ -835,3 +767,74 @@ navigates along the `author` association of the `Books` entity only if the autho
 }
 
 </style>
+
+
+
+## Operators
+
+### Unary Operators
+
+<div class="diagram">
+<div v-html="unaryOperator"></div>
+</div>
+
+::: info A unary operator is an operator that operates on exactly one operand.
+
+E.g. in the expression `-price`, the `-` operator is a unary operator
+that operates on the single operand `price`. It negates the value of `price`.
+:::
+
+### Binary Operators
+
+<div class="diagram">
+<div v-html="binaryOperator"></div>
+</div>
+
+
+::: info A binary operator is an operator that operates on two operands.
+E.g. in the expression `price * quantity`, the `*` operator is a binary operator
+that multiplies the two factors `price` and `quantity`.
+:::
+
+## Functions
+
+<div class="diagram" >
+<Badge class="badge-inline" type="tip" text="💡 clickable diagram" />
+<div class="diagram" v-html="functionDef"></div>
+</div>
+
+
+CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
+
+
+## Literals
+
+Literal values represent constant data embedded directly in an expression.
+They are independent of model elements and evaluate to the same value.
+
+<div class="diagram" >
+<div v-html="literalValue"></div>
+</div>
+
+:::code-group
+```js [cds repl]
+> cds.parse.expr ` 42 `
+{ val: 42 }
+> cds.parse.expr ` 'Hello World' `
+{ val: 'Hello World' }
+> cds.parse.expr ` null `
+{ val: null }
+> cds.parse.expr ` true `
+{ val: true }
+> cds.parse.expr ` false `
+{ val: false }
+> cds.parse.expr ` Date'2026-01-01' `
+{ val: '2026-01-01', literal: 'date' }
+> cds.parse.expr ` Time'08:42:15.000' `
+{ val: '08:42:15.000', literal: 'time' }
+> cds.parse.expr ` TimeStamp'2026-01-14T10:30:00Z' `
+{ val: '2026-01-14T10:30:00Z', literal: 'timestamp' }
+```
+:::
+
+[Learn more about literals.](./csn.md#literals){ .learn-more }
