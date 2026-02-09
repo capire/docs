@@ -440,9 +440,8 @@ You can query the change log entries via CQN statements, as usual.
 
 ### Entities from Remote Services
 
-In general, Change Tracking expects that everything is stored in the local database.
-You might, however, need to model an association to the remote entity that, as a general rule, requires custom implementation.
-The only possible option with associations like this is to track changes for its foreign key values.
+Change Tracking expects that everything is stored in the local database. 
+If you need to model an association to the remote entity, the only possible option is to track changes for its foreign key.
 
 :::warning Configuration change required! 
 Enable [optimization for path expressions](/releases/2025/aug25#optimized-path-expressions).
