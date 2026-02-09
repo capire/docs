@@ -1,6 +1,6 @@
 {
   "name": "@capire/docs",
-  "version": "2026.2.0",
+  "version": "2026.1.1",
   "description": "Capire on VitePress",
   "type": "module",
   "scripts": {
