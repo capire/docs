@@ -40,7 +40,7 @@ OData is an OASIS standard that enhances plain REST with standardized system que
 | [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
 - <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../services/served-ootb#searching-data).
-- <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
+- <sup>(2)</sup> Node.js only supports a limited subset.
 - <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
 - <sup>(4)</sup> Supported for key values and for parameters of functions only.
 
