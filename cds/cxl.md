@@ -36,13 +36,13 @@ to the respective calculation in the generated query when the entity is queried.
 :::
 
 
-## How to read this guide { #how-to }
+## How to Read This Guide { #how-to }
 
 
 In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
 For a complete reference of the syntax, there are clickable [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram) (aka railroad diagrams) for each language construct.
 
-### samples
+### Samples
 
 To try the samples by yourself, create a simple CAP app:
 
@@ -78,7 +78,7 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 ```
 :::
 
-### syntax diagrams
+### Syntax Diagrams
 
 Each language construct is illustrated by a clickable [syntax diagram](https://en.wikipedia.org/wiki/Syntax_diagram).
 
@@ -93,16 +93,16 @@ The following diagram illustrates how to read the diagrams:
 </div>
 
 
-## expr { #expr }
+## expr - Expressions { #expr }
 
 An expression can hold various elements, such as references, literals, function calls, operators, and more. A few examples, in the context of a select list:
 ```cds
 select from Books {
   42                     as answer,         // literal
-  title,                                    // reference ("ref")
+  title,                                    // element reference
   price * quantity       as totalPrice,     // binary operator
   substring(title, 1, 3) as shortTitle,     // function call
-  author.name            as authorName,     // ref with path expression
+  author.name            as authorName,     // path expression
   chapters[number < 3]   as earlyChapters,  // ref with infix filter
   exists chapters        as hasChapters,    // exists
   count(chapters)        as chapterCount,   // aggregate function
@@ -121,7 +121,7 @@ This syntax diagram describes the possible expressions:
 An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
 :::
 
-### in model definitions
+### In Model Definitions
 
 Expressions can be used to define calculated elements.
 Typically, this is done on the select list of a query. CAP
@@ -159,9 +159,9 @@ FROM sap_capire_bookshop_Books as Books
 
 [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
 
-### in queries
+### In Queries
 
-Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
+Expressions can be used in various parts of a query, for example, on the select list, in the where clause, in order by clauses, and more:
 
 :::code-group
 ```js [CQL]
@@ -195,7 +195,7 @@ WHERE Books.price > 10
 :::
 
 
-### in annotations
+### In Annotations
 
 Annotations can [contain expressions](./cdl.md#expressions-as-annotation-values) as their value.
 The meaning and effect of the expression depend on the specific annotation being used.
@@ -273,7 +273,7 @@ The `@assert` annotation lets you capture the intent via an expression, without 
 This conforms to the core principle [what-not-how](../guides/domain/index#capture-intent-—-what-not-how) of CAP.
 :::
 
-## literal value { #literal-value }
+## Literal Value { #literal-value }
 
 Literal values represent constant data embedded directly in an expression.
 They are independent of model elements and evaluate to the same value.
@@ -305,9 +305,9 @@ They are independent of model elements and evaluate to the same value.
 
 [Learn more about literals.](./csn.md#literals){ .learn-more }
 
-## operators
+## Operators
 
-### unary operator { #unary-operator }
+### Unary Operator { #unary-operator }
 
 <div class="diagram">
 <div v-html="unaryOperator"></div>
@@ -315,11 +315,11 @@ They are independent of model elements and evaluate to the same value.
 
 ::: info A unary operator is an operator that operates on exactly one operand.
 
-E.g. in the expression `-price`, the `-` operator is a unary operator
+For example, in the expression `-price`, the `-` operator is a unary operator
 that operates on the single operand `price`. It negates the value of `price`.
 :::
 
-### binary operator { #binary-operator }
+### Binary Operator { #binary-operator }
 
 <div class="diagram">
 <div v-html="binaryOperator"></div>
@@ -327,11 +327,11 @@ that operates on the single operand `price`. It negates the value of `price`.
 
 
 ::: info A binary operator is an operator that operates on two operands.
-E.g. in the expression `price * quantity`, the `*` operator is a binary operator
+For example, in the expression `price * quantity`, the `*` operator is a binary operator
 that multiplies the two factors `price` and `quantity`.
 :::
 
-## function { #function }
+## Function { #function }
 
 
 <div class="diagram" >
@@ -342,9 +342,9 @@ that multiplies the two factors `price` and `quantity`.
 
 CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
-## ref (path expression) { #ref }
+## ref — Element References & Path Expressions { #ref }
 
-A `ref` (short for reference) is used to refer to an element within the model.
+A `ref` (short for reference) is the CXL syntax element used to reference elements within the model.
 It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
@@ -358,9 +358,9 @@ Leaf elements as opposed to associations and structured elements represent scala
 They typically manifest as columns in database tables.
 :::
 
-### simple element reference
+### Simple Element References
 
-In its simplest form, a `ref` can be used to reference an element:
+The simplest form of a `ref` references a single element:
 
 :::code-group
 ```js [CQL] {1}
@@ -381,9 +381,9 @@ SELECT title FROM sap_capire_bookshop_Books as Books
 
 In this example, we select the `title` element from the `Books` entity.
 
-### path navigation {#path-navigation}
+### Path Expressions {#path-expressions}
 
-A path expression can be used to navigate to any element of the associations target:
+A path expression navigates to elements of an association's target:
 
 :::code-group
 ```js [CQL]
@@ -486,12 +486,12 @@ When writing annotation expressions, it's often important to ensure that the res
 To achieve this, use the [exists](#in-exists-predicate) predicate.
 :::
 
-### in `exists` predicate
+### In `exists` Predicate
 
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
 
-E.g., to select all authors that have written **at least** one book:
+For example, to select all authors that have written **at least** one book:
 
 :::code-group
 ```js [CQL]
@@ -521,12 +521,12 @@ WHERE exists (
 The `exists` predicate can be further enhanced by [combining it with infix filters](#exists-infix-filter).
 This allows you to specify conditions on subsets of associated entities, enabling more precise and expressive queries.
 
-## infix filter { #infix-filter }
+## Infix Filter { #infix-filter }
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
-If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
-that is applied to a path-segment of a [path-expression](#ref).
+If we apply this terminology to path expressions, an infix filter condition is an expression 
+that is applied to a path segment of a path expression.
 This allows you to filter the target of an association based on certain criteria.
 
 <div class="diagram">
@@ -536,7 +536,7 @@ This allows you to filter the target of an association based on certain criteria
 
 
 
-### applied to `exists` predicate { #exists-infix-filter }
+### Applied to `exists` Predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -592,7 +592,7 @@ WHERE exists (
 :::
 
 
-### applied to `from` clause
+### Applied to `from` Clause
 
 Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
 
@@ -672,7 +672,7 @@ WHERE exists (
 ```
 :::
 
-### in calculated element
+### In Calculated Element
 
 You can also use the infix filter notation to derive
 another more specific association from an existing one.
@@ -685,7 +685,7 @@ In the `Authors` entity in the `Books.cds` file add a new element `cheapBooks`:
 ```
 
 Now we can use `cheapBooks` just like any other association.
-E.g. to select the set of authors which have no cheap books:
+For example, to select the set of authors which have no cheap books:
 
 :::code-group
 ```js [CQL]
@@ -755,7 +755,7 @@ FROM sap_capire_bookshop_Authors as Authors
 :::
 
 
-### between path segments
+### Between Path Segments
 
 Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
 
