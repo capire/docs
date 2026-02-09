@@ -57,6 +57,8 @@ async function createEditor() {
     lineNumbers: 'off',
     glyphMargin: false,
     lineDecorationsWidth: 0,
+    lineNumbersMinChars: 0,
+    folding: false,
     renderLineHighlight: 'none',
     renderIndentGuides: false,
     renderWhitespace: 'none',
@@ -74,7 +76,6 @@ async function createEditor() {
     },
     minimap: { enabled: false },
     fontSize: 14,
-    fontFamily: 'inherit',
     lineHeight,
     padding: { top: editorPaddingTop, bottom: editorPaddingBottom },
   })
@@ -136,17 +137,12 @@ watch(() => isDark.value, (dark) => {
 .monaco-editor-container {
   background-color: var(--vp-code-block-bg) !important;
   font-family: var(--vp-font-family-mono) !important;
-  font-size: var(--vp-code-font-size) !important;
-  line-height: var(--vp-code-line-height) !important;
   width: 100%;
   border-radius: 8px;
-  margin-bottom: 0.5em;
 }
 
 .monaco-editor, .monaco-editor .margin, .monaco-editor-background {
     background-color: var(--vp-code-block-bg) !important;
     font-family: var(--vp-font-family-mono) !important;
-    font-size: var(--vp-code-font-size) !important;
-    line-height: var(--vp-code-line-height) !important;
 }
 </style>

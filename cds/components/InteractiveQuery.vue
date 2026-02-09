@@ -1,4 +1,30 @@
 <template>
+  <div class="language-sh vp-adaptive-theme" v-html="format?.({value: queryText, kind: props.language}, isDark)">
+  </div>
+  <div class="language-sh vp-adaptive-theme">
+    <div class="editor-row" >
+      <div class="editor" v-html="format?.({value: queryText, kind: props.language}, isDark)"></div>
+      <button class="icon-button" @click="runQuery" aria-label="Run Query">
+        <div v-html="play"></div>
+      </button>
+    </div>
+  </div>
+  <div class="interactive-query">
+    <!-- <div class="shiki github-dark" style="background-color: #24292e; color: #e1e4e8;"> -->
+      <div class="editor-row">
+        <MonacoEditor
+          v-model="queryText"
+          :rows="props.rows"
+          :language="props.language"
+          @execute="runQuery"
+          class="editor"
+        />
+        <button class="icon-button" @click="runQuery" aria-label="Run Query">
+          <div v-html="play"></div>
+        </button>
+      </div>
+    <!-- </div> -->
+  </div>
   <div class="interactive-query">
     <div class="editor-row">
       <MonacoEditor
@@ -73,14 +99,24 @@ const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
 const format = ref()
 
-function _format({value, kind}, dark) {
+const transformers = [
+  {
+    root: node => {
+      // debugger;
+      node.children[0] = node.children[0].children[0]
+    }
+  }
+]
+
+function _format({value, kind, transformers}, dark) {
   // const highlighter = (await import('./highlighter')).default
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
   }
   const html = highlighter.codeToHtml(
     typeof value === 'string' ? value : JSON.stringify(value, null, 2),
-    { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
+    { lang: kind, theme: dark ? 'github-dark' : 'github-light', transformers })
+  // debugger;
   return html
 }
 
@@ -139,10 +175,22 @@ async function runQuery() {
 
 <style scoped>
 .interactive-query {
-  margin: 1em 0;
-  padding: 1em;
+  margin: 16px -24px;
   border-radius: 8px;
   background-color: var(--vp-code-block-bg);
+  @media (min-width: 640px) {
+    margin: 16px 0;
+    border-radius: 8px;
+  }
+}
+
+pre .editor-row {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+.interactive-query .editor-row {
+  padding: 12px 12px 12px 22px;
 }
 
 .editor-row {
@@ -156,7 +204,15 @@ async function runQuery() {
   min-width: 0;
 }
 
-.interactive-query .icon-button {
+.vp-adaptive-theme :deep(pre) {
+  margin: 4px 0;
+}
+
+.vp-adaptive-theme .icon-button {
+  margin: 12px 12px 12px 0;
+}
+
+.icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -165,8 +221,8 @@ async function runQuery() {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 2.5em;
-  height: 2.5em;
+  width: 30px;
+  height: 30px;
   padding: 0.25em;
   color: var(--vp-c-tip-1);
   flex-shrink: 0;
@@ -179,7 +235,7 @@ async function runQuery() {
   }
 }
 
-.interactive-query .icon-button:hover {
+.icon-button:hover {
   background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-hover-text);
 }
@@ -187,6 +243,13 @@ async function runQuery() {
 .error {
   border: 1px solid var(--vp-c-danger-2);
   border-radius: 4px;
+}
+
+.interactive-query .vp-code-group {
+  margin: 0 24px;
+  @media (min-width: 640px) {
+    margin: unset;
+  }
 }
 
 .vp-code-group.error input:checked + label::after {
