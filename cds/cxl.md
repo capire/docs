@@ -693,7 +693,7 @@ FROM sap_capire_bookshop_Authors as Authors
 
 ### Between Path Segments
 
-Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
+Assuming you have the [calculated element](#in-calculated-elements) `age` in place on the Authors entity:
 
 ```cds
 extend Authors with {
