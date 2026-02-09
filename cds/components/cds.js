@@ -64,7 +64,7 @@ async function initialize() {
 let initialized;
 if (!import.meta.env.SSR) {
   // runs only in the browser
-  console.log("Initialize CAP runtime")
+  console.debug("Initialize CAP runtime")
 
   initialized = initialize();
 }

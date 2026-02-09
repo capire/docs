@@ -15,7 +15,7 @@
 
     <div v-if="queryResult" :class="`vp-code-group vp-adaptive-theme ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
-        <template v-for="tab in tabs.filter(({value}) => value?.trim?.())" :key="tab.key">
+        <template v-for="tab in tabs" :key="tab.key">
           <input type="radio" :id="tab.key" v-model="selectedTab" :value="tab.key">
           <label :for="tab.key">{{ tab.name }}</label>
         </template>
@@ -89,26 +89,31 @@ onMounted(async () => {
   format.value = _format
 })
 
-async function runQuery() {
-  queryResult.value = null
-  try {
-    const result = await props.onExecute(queryText.value)
+function formatTabs(result) {
     if (result && result.kind && result.value) {
       const { kind, name = 'Result', value } = result
-      tabs.value = [
+      return [
         { key: `${uid}-${name}`, kind, name, value }
       ]
     }
     else if (Array.isArray(result) && result[0] && result[0].kind && result[0].value) {
-      tabs.value = result.map(r => {
+      return result.map(r => {
         const { kind, name = kind, value } = r
         return { key: `${uid}-${name}`, kind, name, value }
       })
     } else {
-      tabs.value = [
+      return [
         { key: `${uid}-Result`, name: 'Result', value: result }
       ]
     }
+
+}
+
+async function runQuery() {
+  queryResult.value = null
+  try {
+    const result = await props.onExecute(queryText.value)
+    tabs.value = formatTabs(result).filter(({ value }) => value)
 
     if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key
   } catch (error) {
