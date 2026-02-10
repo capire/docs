@@ -13,33 +13,27 @@ CDS Query Language (CQL) is based on standard SQL, which it enhances by...
 
 [[toc]]
 
-<script setup>
-import select from './assets/cql/select.drawio.svg?raw'
-import querySource from './assets/cql/query-source.drawio.svg?raw'
-import orderingTerm from './assets/cql/ordering-term.drawio.svg?raw'
-</script>
-
 
 ## SELECT
 
-<div class="diagram" v-html="select"></div>
+![](./assets/cql/select.drawio.svg?raw)
 
 > Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
 
 
 ## Query Source
 
-<div class="diagram" v-html="querySource"></div>
+![](./assets/cql/query-source.drawio.svg?raw)
 
 ## Select Item
 
-![](./assets/cql/select-item.drawio.svg)
+![](./assets/cql/select-item.drawio.svg?raw)
 
 
 ## Postfix Projections
 {#postfix-projections}
 
-![](./assets/cql/postfix-projection.drawio.svg)
+![](./assets/cql/postfix-projection.drawio.svg?raw)
 
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
@@ -54,7 +48,7 @@ SELECT from Authors { name, address.street }
 {#nested-expands}
 
 
-![](./assets/cql/nested-expand.drawio.svg)
+![](./assets/cql/nested-expand.drawio.svg?raw)
 
 
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
@@ -153,7 +147,7 @@ results = [
 
 ### Nested Inlines <Beta /> {#nested-inlines}
 
-![](./assets/cql/nested-inline.drawio.svg)
+![](./assets/cql/nested-inline.drawio.svg?raw)
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
@@ -500,23 +494,4 @@ extend BookReviews with columns {
 
 ## Ordering Term
 
-<div class="diagram" v-html="orderingTerm"></div>
-
-
-<style>
-
-.diagram {
-  all: initial;
-
-  .dark & {
-    filter: brightness(.884) invert(1) hue-rotate(177deg);
-  }
-
-  svg {
-    max-width: 100%;
-    height: auto;
-    margin: 30px auto;
-  }
-}
-
-</style>
+![](./assets/cql/ordering-term.drawio.svg?raw)
