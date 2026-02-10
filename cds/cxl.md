@@ -240,9 +240,6 @@ This syntax diagram describes the possible expressions:
   ]
   ```
 
-  Compared to the previous example, we now use the expression directly in the query
-  to calculate the total value of all books in stock.
-
   ```sql [SQL]
   SELECT
     Books.title,
@@ -254,6 +251,8 @@ This syntax diagram describes the possible expressions:
   ```
   :::
 
+Compared to the previous example, we now use the expression directly in the query
+to calculate the total value of all books in stock.
 
 
 ## Path Expressions (`ref`) 
