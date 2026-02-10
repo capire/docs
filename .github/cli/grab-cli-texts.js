@@ -22,6 +22,7 @@ const toOutput = (str) => [
     str
         .replace(/([\S]+)\/node_modules/g, '.../node_modules') // remove system-specific paths
         .replace(/([\S]+)\/bin\/node/g, '.../bin/node')
+        .replace(/([\S]+)\/your-project/g, '.../your-project') // sample project path
         .replace(/\<(.*?)\>/g, '&lt;$1&gt;') // <foo> -> &lt;foo&gt;
         .replace(/^\x1b\[1m(.*?)\x1b\[(?:0|39|49)m\n/gm, '<strong>$1</strong>') // bold at beginning of line -> strong
         .replace(/(\s*)\x1b\[(?:2|4)m(.*?)\x1b\[(?:0|39|49)m/g, '$1<i>$2</i>') // underline or grey -> i
