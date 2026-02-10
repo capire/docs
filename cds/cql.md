@@ -13,14 +13,21 @@ CDS Query Language (CQL) is based on standard SQL, which it enhances by...
 
 [[toc]]
 
+<script setup>
+import select from './assets/cql/select.drawio.svg?raw'
+</script>
 
 
 ## SELECT
 
-![](./assets/cql/select.drawio.svg)
+<div class="diagram">
+<div v-html="select"></div>
+</div>
 
-> Using: Query Source, Select Item, Expressions, Ordering Term
+> Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
 
+
+## Query Source
 
 
 ## Select Item
@@ -488,3 +495,10 @@ extend BookReviews with columns {
   book : Association to Books on book.ID = bookID
 };
 ```
+<style>
+
+.diagram {
+  all: initial;
+}
+
+</style>
