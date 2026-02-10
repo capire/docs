@@ -22,18 +22,14 @@ import orderingTerm from './assets/cql/ordering-term.drawio.svg?raw'
 
 ## SELECT
 
-<div class="diagram">
-<div v-html="select"></div>
-</div>
+<div class="diagram" v-html="select"></div>
 
 > Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
 
 
 ## Query Source
 
-<div class="diagram">
-<div v-html="querySource"></div>
-</div>
+<div class="diagram" v-html="querySource"></div>
 
 ## Select Item
 
@@ -504,26 +500,23 @@ extend BookReviews with columns {
 
 ## Ordering Term
 
-<div class="diagram">
-<div v-html="orderingTerm"></div>
-</div>
+<div class="diagram" v-html="orderingTerm"></div>
 
 
 <style>
 
 .diagram {
   all: initial;
-  max-width: 100%;
-}
 
-.diagram > div > svg {
-  max-width: 100%;
-  height: auto;
-}
+  .dark & {
+    filter: brightness(.884) invert(1) hue-rotate(177deg);
+  }
 
-.diagram > svg {
-  max-width: 100%;
-  height: auto;
+  svg {
+    max-width: 100%;
+    height: auto;
+    margin: 30px auto;
+  }
 }
 
 </style>
