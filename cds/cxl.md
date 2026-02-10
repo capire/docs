@@ -87,6 +87,17 @@ This syntax diagram describes the possible expressions:
 
 ![](assets/cxl/expr.drawio.svg)
 
+> Using:
+> [Path Expressions](#ref),
+> [Operators](#xpr),
+> [Literals](#val),
+> [Functions](#func),
+> 
+> Used in:
+> [Calculated Elements](#in-calculated-elements),
+> [Annotations](#in-annotations),
+> [Queries](#in-queries),
+
   ::: tip
   An expression can be used in various places, in the following sections we will give a brief overview of _some_ use cases.
   :::
@@ -128,42 +139,6 @@ This syntax diagram describes the possible expressions:
   :::
 
   [Learn more about calculated elements](./cdl.md#calculated-elements){ .learn-more }
-
-  ### In Queries
-
-  Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
-
-  :::code-group
-  ```js [CQL]
-  > await cds.ql`
-    SELECT from Books {
-      title,
-      stock,
-      price,
-      price * stock as total } where price > 10` // [!code focus]
-  [
-    { title: 'Wuthering Heights', stock: 12, price: 11.11, total: 133.32},
-    { title: 'Jane Eyre', stock: 11, price: 12.34, total: 135.74 },
-    { title: 'The Raven', stock: 333, price: 13.13, total: 4372.29 },
-    { title: 'Eleonora', stock: 555, price: 14, total: 7770 },
-    { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
-  ]
-  ```
-
-  Compared to the previous example, we now use the expression directly in the query
-  to calculate the total value of all books in stock.
-
-  ```sql [SQL]
-  SELECT
-    Books.title,
-    Books.stock,
-    Books.price,
-    Books.price * Books.stock as total
-  FROM sap_capire_bookshop_Books as Books
-  WHERE Books.price > 10
-  ```
-  :::
-
 
   ### In Annotations
 
@@ -244,6 +219,41 @@ This syntax diagram describes the possible expressions:
   :::
 
 
+  ### In Queries
+
+  Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
+
+  :::code-group
+  ```js [CQL]
+  > await cds.ql`
+    SELECT from Books {
+      title,
+      stock,
+      price,
+      price * stock as total } where price > 10` // [!code focus]
+  [
+    { title: 'Wuthering Heights', stock: 12, price: 11.11, total: 133.32},
+    { title: 'Jane Eyre', stock: 11, price: 12.34, total: 135.74 },
+    { title: 'The Raven', stock: 333, price: 13.13, total: 4372.29 },
+    { title: 'Eleonora', stock: 555, price: 14, total: 7770 },
+    { title: 'Catweazle', stock: 22, price: 150, total: 3300 }
+  ]
+  ```
+
+  ```sql [SQL]
+  SELECT
+    Books.title,
+    Books.stock,
+    Books.price,
+    Books.price * Books.stock as total
+  FROM sap_capire_bookshop_Books as Books
+  WHERE Books.price > 10
+  ```
+  :::
+
+Compared to the previous example, we now use the expression directly in the query
+to calculate the total value of all books in stock.
+
 
 ## Path Expressions (`ref`) 
 ###### ref 
@@ -254,9 +264,12 @@ referred to as a **path expression**.
 
 ![](assets/cxl/ref.drawio.svg)
 
-See also:
+> Using:
+> [Infix Filters](#infix-filters)
+> 
+> Used in:
+> [Expressions](#expr)
 
-- [Infix Filters](#infix-filters)
 
 Examples:
 
@@ -399,7 +412,7 @@ FROM sap_capire_bookshop_Authors as Authors
 
 ::: warning Annotation expressions expect single-valued results
 When writing annotation expressions, it's often important to ensure that the result yields a single value for each entry in the annotated entity.
-To achieve this, use the [exists](#in-exists-predicate) predicate.
+To achieve this, use the [exists](#in-exists-predicates) predicate.
 :::
 
 ### In `exists` Predicates
@@ -447,6 +460,14 @@ that is applied to a path-segment of a [path-expression](#ref).
 This allows you to filter the target of an association based on certain criteria.
 
 ![](assets/cxl/infix-filter.drawio.svg)
+
+> Using:
+> [Expressions](#expr)
+> 
+> Used in:
+> [Path Expressions](#ref)
+
+
 
 
 
@@ -671,7 +692,7 @@ FROM sap_capire_bookshop_Authors as Authors
 
 ### Between Path Segments
 
-Assuming you have the [calculated element](#in-calculated-element) `age` in place on the Authors entity:
+Assuming you have the [calculated element](#in-calculated-elements) `age` in place on the Authors entity:
 
 ```cds
 extend Authors with {
@@ -752,11 +773,19 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 
 
-## Operators
+## Operators (`xpr`)
+###### xpr
 
 As depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
 
 ![](assets/cxl/operators.drawio.svg)
+
+> Using:
+> [Expressions](#expr)
+> 
+> Used in:
+> [Expressions](#expr)
+
 
 Following table gives an overview of the guaranteed supported operators in CXL:
 
@@ -782,14 +811,22 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 
 
 
-## Functions
+## Functions (`func`)
+###### func
 
 ![](assets/cxl/function.drawio.svg)
+
+> Using:
+> [Expressions](#expr)
+> 
+> Used in:
+> [Expressions](#expr)
 
 CAP supports a set of [portable functions](../guides/databases/cap-level-dbs#portable-functions) that can be used in all expressions. The CAP compiler, and the CAP runtimes, automatically translate these functions to database-specific native equivalents, allowing you to use the same functions across different databases, which greatly enhances portability.
 
 
-## Literals
+## Literals (`val`)
+###### val
 
 Literal values represent constant data embedded directly in an expression.
 They are independent of model elements and evaluate to the same value.
@@ -814,5 +851,8 @@ They are independent of model elements and evaluate to the same value.
 { val: '2026-01-14T10:30:00Z', literal: 'timestamp' }
 ```
 :::
+
+> Using:
+> [Expressions](#expr)
 
 [Learn more about literals.](./csn.md#literals){ .learn-more }
