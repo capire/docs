@@ -297,12 +297,11 @@ In [VS Code](./cds-editors#vscode), use the command _Generate HTTP Requests_ to 
 
 #### Authentication / Authorization
 
-##### To local applications
+##### -> To local applications
 
-<div class="impl node">
+By default, an authorization header with a local mock user is written to the `http` file, and `localhost` is the target host.
 
-By default, an authorization header with a [local mock user](../node.js/authentication#mock-users) is written to the `http` file, and `localhost` is the target host.
-
+::: code-group
 ```http [Node.js]
 @server = http://localhost:4004
 @auth = Authorization: Basic alice:
@@ -312,24 +311,23 @@ GET {{server}}/odata/v4/admin/Books
 {{auth}}
 ...
 ```
-</div>
-
-<div class="impl java">
-
-By default, an authorization header with a [local mock user](../java/security#mock-users) is written to the `http` file, and `localhost` is the target host.
-
 ```http [Java]
 @server = http://localhost:8080
 
 ### CatalogService.Books
 GET {{server}}/odata/v4/admin/Books
-{{auth}}
+
 ...
 ```
-</div>
+:::
+
+[Learn more about mock users in Node.js.](../node.js/authentication#mock-users){.learn-more}
+[Learn more about mock users in Java.](../java/security#mock-users){.learn-more}
 
 
-##### To remote applications
+
+
+##### -> To remote applications
 
 Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For example:
 
@@ -337,7 +335,7 @@ Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For ex
 cds add http --for-app bookshop
 ```
 
-assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
+This assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
 
 ```http
 @server = https://...
