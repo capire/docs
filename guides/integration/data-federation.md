@@ -1,47 +1,35 @@
 # CAP-level Data Federation
 
-CAP applications can integrate and federate data from multiple external data sources, enabling seamless access and manipulation of distributed data. This guide provides an overview of the core concepts and techniques for implementing data federation in CAP applications, including service-level replication, HANA virtual tables, synonyms, and data products.
+CAP applications can integrate and federate data from multiple external data sources, enabling close access to distributed data. This guide provides an overview of the core concepts and techniques for implementing data federation in CAP applications, and how CAP helps solving this generically, and thus serving data federation out of the box.
 {.abstract}
 
+[[toc]]
 
-## Introduction & Motivation
 
-Displaying external data in lists commonly requires fast access to that data. Relying on live calls to remote services per row is clearly not an option, as that would lead to poor performance, excessive load on server, and a nightmare regarding resilience. Instead, we somehow need to ensure that all required data is available locally, so that it can be accessed fast and reliably by UIs, using good old SQL JOINs.
+## Preliminaries
 
-For example, we saw the need for that already in the [CAP-level Service Integration](calesi.md#integration-logic-required) guide, where the `Customer` field in the travel requests list is populated from the remote S/4 Business Partner service, but missing when running the services separately:
+### Prerequisites
 
-1. First run these commands **in two separate terminals**:
+You should be familiar with the content in the [_CAP-level Service Integration_](calesi.md) guide, as we build upon that foundation here. In particular, you should have read and understood these sections:
 
-    ```shell :line-numbers=1
-    cds mock apis/capire/s4.cds
-    ```
-    ```shell :line-numbers=2
-    cds mock apis/capire/xflights.cds
-    ```
+- [*Overview* of *CAP-level Service Integration*](calesi.md#overview) 
+- [_Providing & Exporting APIs_](calesi.md#providing-cap-level-apis)
+- [_Importing APIs_](calesi.md#importing-apis)
+- [_Consumption Views_](calesi.md#consumption-views)
 
-2. Start the xtravels server as usual **in a third terminal**, and note that it now _connects_ to the other services instead of mocking them:
+In addition, you should have read the introduction to [the _XTravels_ sample](calesi.md#the-xtravels-sample) application, which we continue to use as our running example. 
 
-    ```shell :line-numbers=3
-    cds watch
-    ```
-    ```zsh
-    [cds] - connect to sap.capire.s4.business-partner > odata { 
-      url: 'http://localhost:54476/odata/v4/s4-business-partner' 
-    }
-    ```
-    ```zsh
-    [cds] - connect to sap.capire.flights.data > hcql { 
-      url: 'http://localhost:54475/hcql/data' 
-    }
-    ```
 
-2. Open the Fiori UI in the browser again -> data from the S/4 service is missing now, as we have not yet implemented the required custom code for the actual data integration, the same applies to the flight data from _xflights_:
+
+### Motivation
+
+There are many scenarios where data from remote services needs to be in close access locally. For example when we display lists of local data joined with remote data, as we introduce in the [*CAP-level Service Integration*](calesi.md#integration-logic-required) guide:
 
 ![XTravels Fiori list view showing a table of travel requests, with the Customer column empty.](assets/xtravels-list-.png)
 
 ![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
 
-In addition, when we again look into the log output, we see some bulk requests like shown below, which indicates that the Fiori client is desparately trying to fetch the missing customer data. If we'd scroll the list in the UI this would repeat like crazy.
+When we run that and look into the log output of the xtravels app server, we see some bulk requests as shown below, which indicates that the Fiori client is desparately trying to fetch the missing customer data. If we'd scroll the list in the UI this would repeat like crazy.
 
 <span style="font-size:63%">
 
@@ -80,27 +68,52 @@ In addition, when we again look into the log output, we see some bulk requests l
 ```
 </span>
 
+Relying on live calls to remote services per row is clearly not an option. Instead, we'd rather ensure that data required in close access is really available locally, so it can be joined with own data using SQL JOINs. This is what _data federation_ is all about.
 
-## Get The XTravels Sample
 
-In the [`@capire/xtravels`](https://github.com/capire/xtravels) app we accomplished that with a simple, yet quite effective data replication solution, which automatically replicates data as documented below. 
 
-Clone the project from GitHub and open it in VS Code to follow along:
 
-```shell
-git clone https://github.com/capire/xtravels.git cap/samples/xtravels
-code cap/samples/xtravels
+### The XTravels Sample
+
+We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
+
+```sh
+mkdir -p cap/samples
+cd cap/samples
+git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xflights
+git clone https://github.com/capire/s4
 ```
+
+[@capire/xtravels]: https://github.com/capire/xtravels
+[@capire/xflights]: https://github.com/capire/xflights
+[@capire/s4]: https://github.com/capire/s4
+
+
 
 
 ## Federated Consumption Views
 
-Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, i.e. in close access locally. For example, we did so in out consumption view for S/4 Business Partners:
+Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, i.e. in close access locally. For example, we did so in our consumption view for entities imported from XFlights as well as for the S/4 Business Partners entity:
 
 ::: code-group
-```cds :line-numbers=4 [apis/capire/s4.cds]
-@federated entity Customers as projection on S4.A_BusinessPartner { ... }
+
+```cds :line-numbers [apis/capire/xflights.cds]
+@federated entity Flights as projection on x.Flights { ... }
+@federated entity Supplements as projection on x.Supplements { ... }
 ```
+
+:::
+::: code-group
+
+```cds :line-numbers [apis/capire/s4.cds]
+@federated entity Customers as projection on S4.A_BusinessPartner {
+  BusinessPartner as ID,
+  PersonFullName  as Name,
+  LastChangeDate  as modifiedAt,
+} where BusinessPartnerCategory == 1; // 1 = Person
+```
+
 :::
 
 > [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
@@ -108,9 +121,9 @@ Tag [consumption views](calesi#consumption-views) with the `@federated` annotati
 > By tagging entities with `@federated` we stay _intentional_ about **_what_** we want to achieve, and avoid any premature assumptions about **_how_** things are actually implemented. => This allows CAP runtimes – or your own _generic_ solutions, as in this case – to choose the best possible implementation strategies for the given environment and use case, which may differ between development, testing, and production environments, or might need to evolve over time.
 
 
-## Generic Implementation
+## Service-level Replication
 
-Here's the complete code, as found in [`srv/data-federation.js`](https://github.com/capire/xtravels/blob/main/srv/data-federation.js):
+Next we implement a generic solution for data federation, which automates the basic hard-coded approach for data federation presented [before](calesi#data-federation). Here's the complete code, as found in [`srv/data-federation.js`](https://github.com/capire/xtravels/blob/main/srv/data-federation.js):
 
 ::: code-group
 ```js:line-numbers [srv/data-federation.js]
@@ -135,7 +148,7 @@ PROD || cds.on ('loaded', csn => {
 PROD || cds.once ('served', () => Promise.all (feed.map (async each => {
   const srv = await cds.connect.to (each.remote)
   srv._once ??=! srv.on ('replicate', replicate)
-  await srv.schedule ('replicate', each) .every ('3 seconds')
+  await srv.schedule ('replicate', each) .every ('10 minutes')
 })))
 
 // Event handler for replicating single entities
@@ -158,9 +171,7 @@ const is_remote = srv => cds.requires[srv]?.credentials?.url
 Let's have a closer look at this code, which handles these main tasks:
 
 1. **Prepare Persistence** – When the model is `loaded`, before it's deployed to the database, we collect all to be `@federated` entities, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
-
-2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked every three seconds (line 22).
-
+2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked repeatedly (line 22).
 3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29. 
 
 > [!tip] CAP-level Querying -> agnostic to databases & protocols
