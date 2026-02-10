@@ -112,7 +112,7 @@
 // @ts-ignore
 import { ref, computed } from 'vue'
 // @ts-ignore
-import migrationDataJson from '../../../../migration-data.json'
+import migrationDataJson from '../../../tools/assets/migration-data.json'
 
 // Type definitions
 interface Migration {
