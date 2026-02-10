@@ -170,7 +170,7 @@ If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-clien
 
 |              | Explanation                                                                                                          |
 |--------------|----------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, Node.js rejects the request during the initial parsing phase, before it reaches the application, middleware, or logging logic. Therefore, the request is not processed or logged by the application.                                    |
+| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, the Node.js HTTP server rejects the request during the initial parsing phase before it reaches CAP. Therefore, the request is not logged by the application.                                    |
 | _Solution_   | Inspect the request headers and check their size, especially the Authorization header for large `JWT` tokens. Reduce the header size if possible (for example, by removing unnecessary roles or attributes). If large headers are required and cannot be reduced, increase the maximum allowed HTTP header size in Node.js by setting the following environment variable `NODE_OPTIONS="--max-http-header-size=65536"` |
 
 
