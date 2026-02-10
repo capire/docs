@@ -89,17 +89,19 @@ Use `cds help <command>` or `cds <command> ?` to get specific help:
 
 Use `cds init` to create new projects.
 
-The simplest form creates a minimal Node.js project.  For Java, use
-
-```sh
-cds init --java
-```
-
+The simplest form creates a minimal project.
 In addition, you can add (most of) the project 'facets' from [below](#cds-add) right when creating the project.
-For example to create a project with a sample bookshop model and configuration for SAP HANA, use:
+For example to create a Node.js project with a sample bookshop model and configuration for SAP HANA, use:
 
 ```sh
 cds init --nodejs --add sample,hana
+```
+
+To create just a basic Node.js or Java project, use
+
+```sh
+cds init --nodejs # OR
+cds init --java
 ```
 
 ::: details See the full help text of `cds init`
