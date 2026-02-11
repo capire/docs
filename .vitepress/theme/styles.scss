@@ -322,6 +322,11 @@ img, video.bright {
     max-width: 100%;
     height: auto;
     margin: 30px auto;
+
+    * {
+      // drawio line-height is not updated when font size is changed leading to misaligned text
+      line-height: unset !important;
+    }
   }
 }
 
