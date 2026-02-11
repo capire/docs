@@ -438,7 +438,7 @@ You can query the change log entries via CQN statements, as usual.
 
 ## Tips and Tricks
 
-### Optimize Change Logs for Associated Entities
+### Advanced Identifiers for Associated Entities
 
 By default, the identifier is read from the association when the feature captures images of the data. 
 Additional joins might be expensive or impossible under some circumstances.
