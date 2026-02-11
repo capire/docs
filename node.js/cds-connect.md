@@ -786,11 +786,3 @@ cds.requires.db.credentials.database = sqlite.db
 > Never check in or deploy such _.env_ files!
 
 <div id="endofconnect" />
-
-
-
-## Importing Service APIs
-
-
-
-## Mocking Required Services

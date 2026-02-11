@@ -65,7 +65,7 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 
 ### Using [`cds add`](../../tools/cds-cli#sample)
 
-Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --add sample`.
+Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --nodejs --add sample`.
 
 
 ### From [Capire Samples](https://github.com/capire)

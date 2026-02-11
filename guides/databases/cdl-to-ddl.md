@@ -39,9 +39,9 @@ cds compile \* | grep entity | wc -l
 
 
 
-### Database-specific Dialects
+### Database-Specific Dialects
 
-Add the `--dialect` option, to generate DDL for a specific databases. For example, to see the SAP HANA-specific variant, run:
+Add the `--dialect` option to generate DDL for specific databases. For example, to see the SAP HANA-specific variant, run:
 
 ```shell
 cds compile \* --to sql --dialect hana
@@ -63,7 +63,7 @@ code --diff _out/c/sqlite.sql _out/c/h2.sql
 
 ### Dialects by `cds env` Profiles
 
-The dialect is automatically inferred from your project configuration, and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically.
+The dialect is automatically inferred from your project configuration and the current profile, so you typically don't need to specify it explicitly. For example, if your project is configured to use SAP HANA in production and SQLite in development, the respective dialects will be applied automatically.
 Try this out using the `--profile` option:
 
 ```shell
@@ -129,7 +129,7 @@ Essentially, `cds deploy`  calls  `cds compile --to sql` under the hood, but goe
 
 - **Schema Evolution** – the `diff` shows additional `DROP TABLE` statements, which are a schema evolution strategy most suitable for development. For production, more sophisticated strategies are applied. Learn more about that in the [_Schema Evolution_](schema-evolution) guide.
 
-- **Database-specific Artifacts** – for [SAP HANA](hana), the output of `cds deploy` is not a single SQL DDL script anymore; but a number of `.hdbtable`, `.hdbview`, and other so-called HDI artifacts are generated.
+- **Database-Specific Artifacts** – for [SAP HANA](hana), the output of `cds deploy` is not a single SQL DDL script anymore; but a number of `.hdbtable`, `.hdbview`, and other so-called HDI artifacts are generated.
 
 > [!note] Ad-hoc Deployments
 > Without the `--dry` option, `cds deploy` would not only compile your CDS models to DDL, but would also do an ad-hoc deployment to the target database, if available. How that works is explained in more detail in the database-specific guides for [_SAP HANA_](hana), [_SQLite_](sqlite), and [_PostgreSQL_](postgres).
@@ -160,7 +160,7 @@ CREATE VIEW SomeProjection AS SELECT ... FROM SomeEntity;
 :::
 
 > [!tip] Views are defined using CQL
-> Both view defined per `as projection on` and those using `as select from` are defined using CQL, which supports a broad scope of database-agnostic features. Learn more about that in the following guide: [_CQL Compilation to SQL_](cql-to-sql).
+> Both view defined per `as projection on` and those using `as select from` are defined using CQL, which supports a broad scope of database-agnostic features. Learn more about that in the following guide: [_CQL Compilation to SQL_](cap-level-dbs).
 
 #### Qualified Names ⇒ Slugified
 
