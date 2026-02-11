@@ -14,7 +14,7 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP (Java) is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. But not only CAP applications can benefit from these plugins. CAP Java  itself is designed independent of other application frameworks it offers an [integration layer to Spring Boot](./spring-boot-integration).
+One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. But not only CAP applications can benefit from these plugins - most of them can be consumed by Java applications without CDS model and running with any application framework.
 
 This integration enables CAP Java applications to easily integrate with existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java plugins to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
 
