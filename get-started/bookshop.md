@@ -45,20 +45,25 @@ git clone https://github.com/sap-samples/cloud-cap-samples-java bookshop
 
 Open the created project folder in [_Visual Studio Code_](https://code.visualstudio.com/):
 
-```shell
+```sh
 code cap/bookshop
 ```
 
 Run [`cds watch`](./#cds-watch) in an [*integrated terminal*](https://code.visualstudio.com/docs/terminal/basics), to watch out for content to come:
 
-```shell
+::: code-group 
+```sh [Node.js]
 cds watch
 ```
+```sh [Java]
+mvn cds watch
+```
+:::
 
-  ```zsh
-    No models found in db/,srv/,app/,app/*
-    Waiting for some to arrive..
-  ```
+```sh [Node.js]
+  No models found in db/,srv/,app/,app/*
+  Waiting for some to arrive..
+```
 
 So, let's feed it with content in the sections below...
 
@@ -164,10 +169,15 @@ cds compile db/schema.cds --to sql
 
 As soon as we saved the domain model, `cds watch` reacted with additional output as shown below, which indicates that the model has been compiled, and an in-memory database has been deployed automatically:
 
-```shell
+::: code-group
+```sh [Node.js]
 [cds] - connect to db > sqlite { url: ':memory:' }
 /> successfully deployed to in-memory database.
 ```
+```sh [Java]
+[...] Registered service PersistenceService$Default
+```
+:::
 
 ![](assets/bookshop/databases.drawio.svg)
 
@@ -276,6 +286,10 @@ We can query the database using CDS Query Language (CQL), for example, in CAP's 
 ```shell
 cds repl ./
 ```
+
+::: info
+CAP Java has no equivalent of the `cds repl` command.
+:::
 
 ::: details About _cds repl_ ...
 
