@@ -14,9 +14,7 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. But not only CAP applications can benefit from these plugins - most of them can be consumed by Java applications without CDS model and running with any application framework.
-
-This integration enables CAP Java applications to easily integrate with existing Spring Boot components. But one could also think in the opposite direction and take existing (Spring Boot) applications and add CAP Java plugins to it. Most of the modules integrating SAP BTP services are pretty lightweight and have no dependencies on CDS models or the database schema.
+One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. In the CAP ecosystem, we call this approach CALESI (CAP level service integration). Most of those CALESI plugins expose themselves as a CDS service which also can be injected as a Spring Boot service. Take this together with the fact that the CAP runtime can run alongside a idiomatic Spring Boot application and you have service integration (via CAP plugins) with a growing set of BTP platform services.
 
 In general, adding a CAP Java plugin to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP plugin to integrate a Spring Boot application with different SAP BTP services.
 
