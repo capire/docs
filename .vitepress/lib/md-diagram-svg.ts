@@ -20,12 +20,34 @@ export function install(md: MarkdownRenderer) {
     if (!/\.svg\?raw$/.test(src)) {
         return defaultImage(tokens, idx, options, env, self)
     }
-    const mdDir = dirname(env.realPath ?? env.path)
-    const filePath = join(mdDir, src.replace('?raw', ''))
-    const content = readFileSync(filePath, 'utf-8')
-    const sanitized = content.replace(/<\?xml[\s\S]*?\?>/, '') // remove XML declaration
-      .replace(/<!DOCTYPE[\s\S]*?>/, '') // remove DOCTYPE
-      .replace(/<--([\s\S]*?)-->/g, '') // remove comments
-    return `<span class="diagram">${sanitized}</span>`
+
+    const name = 'svg_' + src.replace('?raw', '').replace(/[^a-zA-Z0-9_]/g, '_') // stable variable name for the imported SVG content
+    const importPath = src.startsWith('/') && src.startsWith('.') ? src : './' + src
+
+    const sfcBlocks = env.sfcBlocks! 
+    if (!sfcBlocks.scriptSetup) {
+      sfcBlocks.scriptSetup = {
+        content: '<script setup>\n</script>',
+        contentStripped: '\n',
+        tagClose: '</script>',
+        tagOpen: '<script setup>',
+        type: 'script'
+      }
+      sfcBlocks.scripts.push(sfcBlocks.scriptSetup)
+    }
+
+    const { scriptSetup } = sfcBlocks
+    const { tagOpen, tagClose, contentStripped: rest } = scriptSetup
+
+    const imp = `import ${name} from "${importPath}";`
+
+    if (!scriptSetup.content.includes(imp)) {
+      scriptSetup.contentStripped = `${imp}\n${rest}`
+      scriptSetup.content = `${tagOpen}${imp}\n${rest}${tagClose}`
+    }
+
+    // use v-html to render the SVG content as actual elements
+    // with v-html, vite's HMR update works on diagram change
+    return `<span class="diagram" v-html="${name}"></span>`
   }
 }
