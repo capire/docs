@@ -312,6 +312,18 @@ img, video.bright {
   }
 }
 
+// Raw svg diagrams
+.diagram {
+  all: initial; // preserve original svg formatting
+  .dark & { // recolor in dark mode
+    filter: brightness(.884) invert(1) hue-rotate(177deg);
+  }
+  svg {
+    max-width: 100%;
+    height: auto;
+    margin: 30px auto;
+  }
+}
 
 
 .VPBadge {
