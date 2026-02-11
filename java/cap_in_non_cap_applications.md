@@ -14,7 +14,7 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins) while keeping applications free of technical dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CDS service which also can be injected as a Spring Boot service. Take this together with the fact that the CAP runtime can run alongside a idiomatic Spring Boot application and you have robust and provden service integration (via CAP plugins) with a growing set of BTP platform services.
+One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins/) while keeping applications free of technical dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CDS service which also can be injected as a Spring Boot service. Take this together with the fact that the CAP runtime can run alongside a idiomatic Spring Boot application and you have robust and provden service integration (via CAP plugins) with a growing set of BTP platform services.
 
 In general, adding a CAP Java plugin to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html)). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP plugin to integrate a Spring Boot application with different SAP BTP services.
 
@@ -131,7 +131,7 @@ messaging.emit("org.spring.alesi.PlannedVisit", data);
 
 ### Handling Messages
 
-Usually, messaging applications do not only send but also handle received messages. Handling messages with CAP Java Messaging is basically the same as [handling general CAP events](./event-handlers). In Spring Boot applications the straight forward way is to define a new event handling method either in an already existing or a new component. In both cases you have to make sure that the component's class implements the `com.sap.cds.services.handler.EventHandler` interface. The next thing you have to do is to add an event handling method like below. The event name and the actual code of course differs from case to case. 
+Usually, messaging applications do not only send but also handle received messages. Handling messages with CAP Java Messaging is basically the same as [handling general CAP events](./event-handlers/). In Spring Boot applications the straight forward way is to define a new event handling method either in an already existing or a new component. In both cases you have to make sure that the component's class implements the `com.sap.cds.services.handler.EventHandler` interface. The next thing you have to do is to add an event handling method like below. The event name and the actual code of course differs from case to case. 
 
 ```java
 	@On(event = "org.spring.alesi.PetBabiesBorn", service = "messaging")
