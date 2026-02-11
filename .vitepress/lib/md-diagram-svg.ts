@@ -23,6 +23,9 @@ export function install(md: MarkdownRenderer) {
     const mdDir = dirname(env.realPath ?? env.path)
     const filePath = join(mdDir, src.replace('?raw', ''))
     const content = readFileSync(filePath, 'utf-8')
-    return `<span class="diagram">${content}</span>`
+    const sanitized = content.replace(/<\?xml[\s\S]*?\?>/, '') // remove XML declaration
+      .replace(/<!DOCTYPE[\s\S]*?>/, '') // remove DOCTYPE
+      .replace(/<--([\s\S]*?)-->/g, '') // remove comments
+    return `<span class="diagram">${sanitized}</span>`
   }
 }
