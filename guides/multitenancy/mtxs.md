@@ -1300,7 +1300,7 @@ Requests are implicitly asynchronous when `status_callback` is set.
 
 Using the `"_"` section of the payload, you can pass deployment parameters for an individual tenant. The syntax is identical with the [static deployment configuration of `cds.xt.DeploymentService`](#deployment-config).
 
-In most cases, the requests are received from a third party, so the deployment parameters need to be added in [a handler implementation](#adding-custom-lifecycle-event-handlers) for service `cds.xt.SaasProvisioningService`.
+In most cases, the requests are received from a third party, so the deployment parameters need to be added in [a handler implementation](#adding-custom-lifecycle-event-handlers) for `cds.xt.SaasProvisioningService`.
 
 ##### Example Usage
 
