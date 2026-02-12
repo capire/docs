@@ -200,11 +200,13 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 // Add custom markdown renderers...
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
+import * as MdLiveCode from './lib/md-live-code'
 import { dl } from '@mdit/plugin-dl'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
+  MdLiveCode.install(md)
   md.use(dl)
 }
 

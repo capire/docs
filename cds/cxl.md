@@ -39,11 +39,15 @@ to the respective calculation in the generated query when the entity is queried.
 SELECT from Books { title }
 ```
 
-<LiveCode initialQuery="SELECT from Books { title }" language="cds" />
+```cds live
+SELECT from Books { title }
+```
 
-<LiveCode initialQuery="await INSERT.into('Books').entries(
+```js live
+await INSERT.into('Books').entries(
   { ID: 2, author_ID: 150, title: 'Eldorado' }
-)" />
+)
+```
 
 
 ## How to read this guide { #how-to }
