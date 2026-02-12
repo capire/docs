@@ -112,7 +112,7 @@ At first you need to make sure that the following dependencies are part of your 
 Again, you need to set a property for the `cds.services.version`:
 
 ```xml
-<cds.services.version>4.6.2</cds.services.version>
+<cds.services.version>4.7.0</cds.services.version>
 ```
 
 After setting up the dependencies you just need to activate the file-based messaging in the application's configuration:
