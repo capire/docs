@@ -12,15 +12,21 @@ Jumpstart & Grow as You Go... {.subtitle}
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-On macOS (and Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+### macOS, Linux and WSL
+
+On macOS, Linux and WSL, we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
 
 ```shell
+# silently install
+#   curl (required to get Homebrew)
+#   git (required by Homebrew)
+sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
 
 ::: details Alternative setup (required on Windows) ...
 
-  Instead of using Homebrew – which is not available on Windows –, you can manually download and install the required packages from their respective websites:
+  You can also manually download and install the required packages from their respective websites:
 
   | Package | Install from                     | Remarks                                                 |
   |---------|----------------------------------|---------------------------------------------------------|
@@ -30,11 +36,6 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
   | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
   | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
 
-Then install CAP's _cds-dk_ globally:
-
-  ```shell
-  npm add -g @sap/cds-dk
-  ```
 :::
 
 
@@ -65,7 +66,7 @@ brew install maven
 ### Git and GitHub {.optional}
 
 ```shell
-brew install git       # Git CLI
+brew install git       # Git CLI (for completeness, already installed for Homebrew)
 brew install gh        # GitHub CLI
 brew install github    # GitHub Desktop App
 ```
@@ -77,6 +78,8 @@ brew install github    # GitHub Desktop App
 ```shell
 brew install --cask visual-studio-code            # VS Code itself
 ```
+
+#### Visual Studio Code proposed extensions
 ```shell
 code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
@@ -91,6 +94,42 @@ code --install-extension vscjava.vscode-maven     # for Maven
 
 
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
+
+## Setup for Windows PowerShell
+
+### Node.js and _cds-dk_ {.required}
+```pwsh
+winget install --silent OpenJS.NodeJS.LTS
+# restart the shell to activate node command
+npm i -g @sap/cds-dk
+```
+### SQLite {.require}
+```pwsh
+winget install --silent SQLite.SQLite
+```
+
+### Java and Maven {.optional}
+```pwsh
+winget install --silent SAP.SapMachine.25.JDK
+```
+
+Since Apache Maven is not available using winget, here is a one liner to install it directly. Note the configurable version number at the beginning.
+
+```pwsh
+$v="3.9.6"; curl -o "$env:LOCALAPPDATA\maven.zip" "https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; tar -xf "$env:LOCALAPPDATA\maven.zip" -C "$env:LOCALAPPDATA"; setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; rm "$env:LOCALAPPDATA\maven.zip"
+```
+### Git and GitHub {.optional}
+```pwsh
+winget install --silent Git.Git
+winget install --silent GitHub.cli
+winget install --silent GitHub.GitHubDesktop
+```
+
+### Visual Studio Code {.proposed}
+```pwsh
+winget install --silent Microsoft.VisualStudioCode
+```
+See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extensions) for recommenden Visual Studio Code extensions.
 
 
 ## Command Line Interface
