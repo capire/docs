@@ -129,7 +129,7 @@ winget install --silent GitHub.GitHubDesktop
 ```pwsh
 winget install --silent Microsoft.VisualStudioCode
 ```
-See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extensions) for recommenden Visual Studio Code extensions.
+See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extensions) for recommended Visual Studio Code extensions.
 
 
 ## Command Line Interface
