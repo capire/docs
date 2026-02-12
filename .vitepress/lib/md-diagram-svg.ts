@@ -1,6 +1,4 @@
 import { MarkdownEnv, MarkdownRenderer } from 'vitepress'
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
 
 /**
  * Renders SVG diagrams in markdown files as <svg> element.
