@@ -64,6 +64,7 @@ import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
 import { runners } from './runners'
+import highlighter from './highlighter'
 
 const uid = useId()
 
@@ -91,10 +92,8 @@ const props = defineProps({
 const tabs = ref([])
 const selectedTab = ref(`${uid}-Result`)
 
-let highlighter
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
-const format = ref()
 
 const transformers = [
   {
@@ -105,7 +104,7 @@ const transformers = [
   }
 ]
 
-function _format({value, kind, transformers}, dark) {
+function format({value, kind, transformers}, dark) {
   // const highlighter = (await import('./highlighter')).default
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
@@ -116,11 +115,6 @@ function _format({value, kind, transformers}, dark) {
   // debugger;
   return html
 }
-
-onMounted(async () => {
-  highlighter = (await import('./highlighter')).default
-  format.value = _format
-})
 
 function formatTabs(result) {
     if (result && result.kind && result.value) {
