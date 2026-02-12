@@ -39,7 +39,7 @@ const emit = defineEmits(['update:modelValue', 'execute'])
 const editorContainer = ref()
 let editor
 let monaco
-const lineHeight = 22
+const lineHeight = 24
 const editorPaddingTop = 4
 const editorPaddingBottom = 4
 const editorHeight = ref(props.rows * lineHeight + editorPaddingTop + editorPaddingBottom + 0)

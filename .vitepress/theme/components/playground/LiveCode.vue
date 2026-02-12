@@ -1,41 +1,35 @@
 <template>
-  <div class="language-sh vp-adaptive-theme" v-html="format?.({value: queryText, kind: props.language}, isDark)">
+  <div class="language-sh vp-adaptive-theme">
+    <button title="Copy Code" class="copy"></button>
+    <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
+    <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
   </div>
   <div class="interactive-query">
-    <div class="language-sh vp-adaptive-theme">
-      <div class="editor-row" >
-        <div class="editor" v-html="format?.({value: queryText, kind: props.language}, isDark)"></div>
-        <button class="icon-button" @click="runQuery" aria-label="Run Query">
-          <div v-html="play"></div>
-        </button>
+    <div class="editor-row" >
+      <div class="editor">
+        <div class="language-sh vp-adaptive-theme">
+          <button title="Copy Code" class="copy"></button>
+          <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
+          <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
+        </div>
       </div>
+      <button class="icon-button" @click="runQuery" aria-label="Run Query">
+        <div v-html="play"></div>
+      </button>
     </div>
   </div>
   <div class="interactive-query">
-    <!-- <div class="shiki github-dark" style="background-color: #24292e; color: #e1e4e8;"> -->
-      <div class="editor-row">
+    <div class="editor-row">
+      <div class="editor language-sh">
+        <button title="Copy Code" class="copy"></button>
+        <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
         <MonacoEditor
           v-model="queryText"
           :rows="props.rows"
           :language="props.language"
           @execute="runQuery"
-          class="editor"
         />
-        <button class="icon-button" @click="runQuery" aria-label="Run Query">
-          <div v-html="play"></div>
-        </button>
       </div>
-    <!-- </div> -->
-  </div>
-  <div class="interactive-query">
-    <div class="editor-row">
-      <MonacoEditor
-        v-model="queryText"
-        :rows="props.rows"
-        :language="props.language"
-        @execute="runQuery"
-        class="editor"
-      />
       <button class="icon-button" @click="runQuery" aria-label="Run Query">
         <div v-html="play"></div>
       </button>
@@ -190,7 +184,7 @@ async function runQuery() {
 }
 
 .interactive-query .editor-row {
-  padding: 8px 12px 8px 22px;
+  padding: 0px 12px 0px 22px;
 }
 
 .editor-row {
@@ -204,14 +198,19 @@ async function runQuery() {
   min-width: 0;
 }
 
-/* Shiki in place of an editor */
-.interactive-query .vp-adaptive-theme .editor-row {
-  :deep(code) {
-    padding: 0 !important;
-  }
+.editor {
+  margin: 0 !important;
+}
 
-  :deep(pre) {
-    margin: 4px 0;
+.interactive-query .editor-row .monaco-editor-container {
+  margin: 8px 0;
+}
+
+/* Shiki in place of an editor */
+.interactive-query .editor-row .vp-adaptive-theme {
+  margin: 0;
+  :deep(code) {
+    line-height: 24px;
     padding: 0 !important;
   }
 }
@@ -257,6 +256,11 @@ async function runQuery() {
   background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-hover-text);
 }
+
+.editor-row .icon-button {
+  margin-top: 8px;
+}
+
 
 .error {
   border: 1px solid var(--vp-c-danger-2);
