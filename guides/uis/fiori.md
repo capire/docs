@@ -1,5 +1,5 @@
 ---
-impl-variants: true
+
 ---
 
 # Serving SAP Fiori UIs
@@ -18,23 +18,11 @@ For entities exposed via OData V4 there is a _Fiori preview_ link on the index p
 
 ::: details Be aware that this is **not meant for production**.
 
-<div class="impl node">
-
 The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is only active locally where the [development profile](../../node.js/cds-env#profiles) is enabled.
 
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
+For Node.js, it's only active locally where the [development profile](../../node.js/cds-env#profiles) is enabled. To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
 
-</div>
-
-<div class="impl java">
-
-The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is active by default, but disabled automatically in case the [production profile](../../java/developing-applications/configuring#production-profile) is enabled.
-
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
-
-</div>
+For Java, it's active by default, but disabled automatically in case the [production profile](../../java/developing-applications/configuring#production-profile) is enabled. To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
 
 :::
 
@@ -65,7 +53,7 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 
 ### Using [`cds add`](../../tools/cds-cli#sample)
 
-Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --nodejs --add sample`.
+Use `cds add sample` to add Fiori sample code to an existing project, or create a new Node.js project with `cds init <project> --nodejs --add sample`. To create a Java project use `cds init <project> --java --add sample`.
 
 
 ### From [Capire Samples](https://github.com/capire)
