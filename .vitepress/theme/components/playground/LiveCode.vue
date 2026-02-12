@@ -1,32 +1,21 @@
 <template>
-  <div class="language-sh vp-adaptive-theme">
-    <button title="Copy Code" class="copy"></button>
-    <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
-    <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
-  </div>
   <div class="interactive-query">
-    <div class="editor-row" >
-      <div class="editor">
+    <div class="editor-row">
+      <div class="editor" :hidden="loaded">
         <div class="language-sh vp-adaptive-theme">
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
           <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
         </div>
       </div>
-      <button class="icon-button" @click="runQuery" aria-label="Run Query">
-        <div v-html="play"></div>
-      </button>
-    </div>
-  </div>
-  <div class="interactive-query">
-    <div class="editor-row">
-      <div class="editor language-sh">
+      <div class="editor language-sh" :hidden="!loaded">
         <button title="Copy Code" class="copy"></button>
         <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
         <MonacoEditor
           v-model="queryText"
           :rows="props.rows"
           :language="props.language"
+          @loaded="loaded = true"
           @execute="runQuery"
         />
       </div>
@@ -88,6 +77,8 @@ const props = defineProps({
     required: true
   }
 })
+
+const loaded = ref(false)
 
 const tabs = ref([])
 const selectedTab = ref(`${uid}-Result`)

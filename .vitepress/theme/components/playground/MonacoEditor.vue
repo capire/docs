@@ -34,7 +34,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'execute'])
+const emit = defineEmits(['update:modelValue', 'execute', 'loaded'])
 
 const editorContainer = ref()
 let editor
@@ -107,6 +107,8 @@ async function createEditor() {
   model?.onDidChangeContent(() => {
     emit('update:modelValue', model.getValue())
   })
+
+  emit('loaded')
 
   onUnmounted(() => {
     try { contentSizeDispose?.dispose?.() } catch {}
