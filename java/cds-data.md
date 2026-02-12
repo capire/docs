@@ -521,14 +521,14 @@ The name of the CDS element referred to by a getter or setter, is defined throug
 
 ### Generated Accessor Interfaces
 
-For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
+For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./assets/cds-maven-plugin-site/plugin-info.html){target="_blank"}. The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
 ```java
    Authors author = Authors.create().name("Emily Brontë");
    Books.create().author(author).title("Wuthering Heights");
 ```
 
-The generation mode is configured by the property [`<methodStyle>`](/java/assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+The generation mode is configured by the property [`<methodStyle>`](./assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
 
 Once, when starting a project, decide on the style of the interfaces that is best for your team and project. We recommend the default JavaBeans style.
 
@@ -670,9 +670,9 @@ This feature requires version 8.2.0 of the [CDS Command Line Interface](../tools
 
 #### Excluding Elements
 
-You can exclude elements from accessor interfaces with the annotation `@cds.java.ignore`. 
+You can exclude elements from accessor interfaces with the annotation `@cds.java.ignore`.
 
-For example, you can exclude an element from the entity like this: 
+For example, you can exclude an element from the entity like this:
 
 ```cds
 namespace my.bookshop;
@@ -706,7 +706,7 @@ service CatalogService {
 }
 ```
 
-This annotation propagates across projections and they also omit the ignored elements. This can be overridden with the following annotation: 
+This annotation propagates across projections and they also omit the ignored elements. This can be overridden with the following annotation:
 
 ```cds
 annotate Books:ignored with @cds.java.ignore: false;
