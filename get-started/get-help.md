@@ -166,6 +166,13 @@ Ensure that database transactions are either committed or rolled back. This can 
 
 If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), verify that the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) is adjusted appropriately. This variable specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
 
+### Why are requests rejected with `431` and not logged?
+
+|              | Explanation                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, the Node.js HTTP server rejects the request during the initial parsing phase before it reaches CAP. Therefore, the request is not logged by the application.                                    |
+| _Solution_   | Inspect the request headers and check their size. If large headers are required and cannot be reduced, increase the maximum allowed HTTP header size in Node.js by setting the following environment variable `NODE_OPTIONS="--max-http-header-size=65536"` |
+
 
 ### Why are requests rejected with `502`?
 
@@ -642,6 +649,8 @@ This message indicates that extensions exist, but the application is not configu
 See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
+
+<div id="hana-tms-errors" />
 
 ## BTP
 
