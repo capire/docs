@@ -1,12 +1,14 @@
 <template>
   <div class="language-sh vp-adaptive-theme" v-html="format?.({value: queryText, kind: props.language}, isDark)">
   </div>
-  <div class="language-sh vp-adaptive-theme">
-    <div class="editor-row" >
-      <div class="editor" v-html="format?.({value: queryText, kind: props.language}, isDark)"></div>
-      <button class="icon-button" @click="runQuery" aria-label="Run Query">
-        <div v-html="play"></div>
-      </button>
+  <div class="interactive-query">
+    <div class="language-sh vp-adaptive-theme">
+      <div class="editor-row" >
+        <div class="editor" v-html="format?.({value: queryText, kind: props.language}, isDark)"></div>
+        <button class="icon-button" @click="runQuery" aria-label="Run Query">
+          <div v-html="play"></div>
+        </button>
+      </div>
     </div>
   </div>
   <div class="interactive-query">
@@ -184,13 +186,8 @@ async function runQuery() {
   }
 }
 
-pre .editor-row {
-  padding-left: 22px;
-  padding-right: 22px;
-}
-
 .interactive-query .editor-row {
-  padding: 12px 12px 12px 22px;
+  padding: 8px 12px 8px 22px;
 }
 
 .editor-row {
@@ -204,14 +201,32 @@ pre .editor-row {
   min-width: 0;
 }
 
-.vp-adaptive-theme :deep(pre) {
-  margin: 4px 0;
+/* Shiki in place of an editor */
+.interactive-query .vp-adaptive-theme .editor-row {
+  :deep(code) {
+    padding: 0 !important;
+  }
+
+  :deep(pre) {
+    margin: 4px 0;
+    padding: 0 !important;
+  }
 }
 
-.vp-adaptive-theme .icon-button {
-  margin: 12px 12px 12px 0;
+/* Result tabs layout */
+.interactive-query .vp-code-group {
+  margin: 0 24px;
+  @media (min-width: 640px) {
+    margin: unset;
+  }
 }
 
+/* Override shiki inline styles */
+:deep(.shiki) {
+  background-color: var(--vp-code-block-bg) !important;
+}
+
+/* Icon */
 .icon-button {
   display: inline-flex;
   align-items: center;
@@ -245,12 +260,6 @@ pre .editor-row {
   border-radius: 4px;
 }
 
-.interactive-query .vp-code-group {
-  margin: 0 24px;
-  @media (min-width: 640px) {
-    margin: unset;
-  }
-}
 
 .vp-code-group.error input:checked + label::after {
   background-color: var(--vp-c-danger-2);
@@ -260,7 +269,5 @@ pre .editor-row {
   padding: 0 22px;
 }
 
-:deep(.shiki) {
-  background-color: var(--vp-code-block-bg) !important;
-}
+
 </style>
