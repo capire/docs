@@ -108,7 +108,9 @@ async function createEditor() {
     emit('update:modelValue', model.getValue())
   })
 
-  emit('loaded')
+  setTimeout(() => {
+    emit('loaded')
+  }, 50) // wait for syntax highlighting to apply before showing editor
 
   onUnmounted(() => {
     try { contentSizeDispose?.dispose?.() } catch {}
