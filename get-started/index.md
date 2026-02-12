@@ -12,7 +12,7 @@ Jumpstart & Grow as You Go... {.subtitle}
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-### macOS, Linux and WSL
+### macOS, Linux and WSL (Windows Subsystem for Linux)
 
 On macOS, Linux and WSL, we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
 
@@ -20,6 +20,7 @@ On macOS, Linux and WSL, we recommend using [Homebrew](https://brew.sh), and run
 # silently install
 #   curl (required to get Homebrew)
 #   git (required by Homebrew)
+# just for completeness, this might already be installed on your machine
 sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
@@ -81,44 +82,44 @@ code --install-extension vscjava.vscode-maven     # for Maven
 
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
 
-## Setup for Windows PowerShell
+### Windows PowerShell
 
-### Node.js and _cds-dk_ {.required}
+#### Node.js and _cds-dk_ {.required}
 ```powershell
 winget install --silent OpenJS.NodeJS.LTS
 # restart the shell to activate node command
 npm i -g @sap/cds-dk
 ```
-### SQLite {.require}
+#### SQLite {.require}
 ```powershell
 winget install --silent SQLite.SQLite
 ```
 
-### Java and Maven {.optional}
+#### Java and Maven {.optional}
 ```powershell
 winget install --silent SAP.SapMachine.25.JDK
 ```
 
-Since Apache Maven is not available using winget, here is a script to install it directly. Note the configurable version number at the beginning.
+Since Apache Maven is not available using `winget`, here is a script to install it directly.
+Note the configurable version number at the beginning.
 
 ```powershell
-$v="3.9.6"
-$url="https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"
-$mvnzip="$env:LOCALAPPDATA\maven.zip"
-curl $url -o $mvnzip
-tar -xf $mvnzip -C "$env:LOCALAPPDATA"
-setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"
+$v="3.9.6"; `
+$url="https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
+$mvnzip="$env:LOCALAPPDATA\maven.zip"; `
+curl $url -o $mvnzip; `
+tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
+setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
 rm $mvnzip
-# Installation complete
 ```
-### Git and GitHub {.optional}
+#### Git and GitHub {.optional}
 ```powershell
 winget install --silent Git.Git
 winget install --silent GitHub.cli
 winget install --silent GitHub.GitHubDesktop
 ```
 
-### Visual Studio Code {.proposed}
+#### Visual Studio Code {.proposed}
 ```powershell
 winget install --silent Microsoft.VisualStudioCode
 ```
