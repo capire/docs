@@ -24,20 +24,6 @@ sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
 
-::: details Alternative setup (required on Windows) ...
-
-  You can also manually download and install the required packages from their respective websites:
-
-  | Package | Install from                     | Remarks                                                 |
-  |---------|----------------------------------|---------------------------------------------------------|
-  | Node.js | https://nodejs.org               | _required_                                                |
-  | Java    | https://sapmachine.io            | _optional_                                                |
-  | Git     | https://git-scm.com              | _optional_                                                |
-  | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
-  | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
-
-:::
-
 
 <style scoped>
   .required::before { content: 'Required:'; color: #999; margin-right: 0.5em }
@@ -79,7 +65,7 @@ brew install github    # GitHub Desktop App
 brew install --cask visual-studio-code            # VS Code itself
 ```
 
-#### Visual Studio Code proposed extensions
+#### Visual Studio Code proposed extensions {.proposed}
 ```shell
 code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
@@ -98,38 +84,59 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Setup for Windows PowerShell
 
 ### Node.js and _cds-dk_ {.required}
-```pwsh
+```powershell
 winget install --silent OpenJS.NodeJS.LTS
 # restart the shell to activate node command
 npm i -g @sap/cds-dk
 ```
 ### SQLite {.require}
-```pwsh
+```powershell
 winget install --silent SQLite.SQLite
 ```
 
 ### Java and Maven {.optional}
-```pwsh
+```powershell
 winget install --silent SAP.SapMachine.25.JDK
 ```
 
-Since Apache Maven is not available using winget, here is a one liner to install it directly. Note the configurable version number at the beginning.
+Since Apache Maven is not available using winget, here is a script to install it directly. Note the configurable version number at the beginning.
 
-```pwsh
-$v="3.9.6"; curl -o "$env:LOCALAPPDATA\maven.zip" "https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; tar -xf "$env:LOCALAPPDATA\maven.zip" -C "$env:LOCALAPPDATA"; setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; rm "$env:LOCALAPPDATA\maven.zip"
+```powershell
+$v="3.9.6"
+$url="https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"
+$mvnzip="$env:LOCALAPPDATA\maven.zip"
+curl $url -o $mvnzip
+tar -xf $mvnzip -C "$env:LOCALAPPDATA"
+setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"
+rm $mvnzip
+# Installation complete
 ```
 ### Git and GitHub {.optional}
-```pwsh
+```powershell
 winget install --silent Git.Git
 winget install --silent GitHub.cli
 winget install --silent GitHub.GitHubDesktop
 ```
 
 ### Visual Studio Code {.proposed}
-```pwsh
+```powershell
 winget install --silent Microsoft.VisualStudioCode
 ```
 See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extensions) for recommended Visual Studio Code extensions.
+
+::: details Alternative setup ...
+
+  You can also manually download and install the required packages from their respective websites:
+
+  | Package | Install from                     | Remarks                                                 |
+  |---------|----------------------------------|---------------------------------------------------------|
+  | Node.js | https://nodejs.org               | _required_                                                |
+  | Java    | https://sapmachine.io            | _optional_                                                |
+  | Git     | https://git-scm.com              | _optional_                                                |
+  | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
+  | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
+
+:::
 
 
 ## Command Line Interface
