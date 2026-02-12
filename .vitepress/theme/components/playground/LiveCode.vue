@@ -69,6 +69,7 @@ import { onMounted, ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
+import { runners } from './runners'
 
 const uid = useId()
 
@@ -77,7 +78,7 @@ const { isDark } = useData()
 const props = defineProps({
   initialQuery: {
     type: String,
-    default: 'SELECT from Books { title }'
+    default: ''
   },
   rows: {
     type: Number,
@@ -150,7 +151,9 @@ function formatTabs(result) {
 async function runQuery() {
   queryResult.value = null
   try {
-    const result = await props.onExecute(queryText.value)
+    const exec = props.onExecute ?? runners[props.language]
+    if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
+    const result = await exec(queryText.value)
     tabs.value = formatTabs(result).filter(({ value }) => value)
 
     if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key

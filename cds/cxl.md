@@ -15,9 +15,6 @@ import binaryOperator from './assets/cxl/binary-operator.drawio.svg?raw'
 import literalValue from './assets/cxl/literal-value.drawio.svg?raw'
 import functionDef from './assets/cxl/function-def.drawio.svg?raw'
 import intro from './assets/cxl/intro.drawio.svg?raw'
-
-import InteractiveQuery from './components/InteractiveQuery.vue'
-import { cdsQL, evalJS } from './components/cds.js'
 </script>
 
 
@@ -42,11 +39,11 @@ to the respective calculation in the generated query when the entity is queried.
 SELECT from Books { title }
 ```
 
-<InteractiveQuery initialQuery="SELECT from Books { title }" language="cds" :onExecute="cdsQL" />
+<LiveCode initialQuery="SELECT from Books { title }" language="cds" />
 
-<InteractiveQuery initialQuery="await INSERT.into('Books').entries(
+<LiveCode initialQuery="await INSERT.into('Books').entries(
   { ID: 2, author_ID: 150, title: 'Eldorado' }
-)" :onExecute="evalJS" />
+)" />
 
 
 ## How to read this guide { #how-to }

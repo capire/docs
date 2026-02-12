@@ -24,6 +24,7 @@ async function setupMonaco() {
   monaco.languages.register({ id: 'javascript' })
   monaco.languages.register({ id: 'js' })
   monaco.languages.register({ id: 'cds' })
+  monaco.languages.register({ id: 'cql' })
   monaco.languages.register({ id: 'typescript' })
   monaco.languages.register({ id: 'vue' })
 

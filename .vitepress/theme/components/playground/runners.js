@@ -95,3 +95,9 @@ export {
     evalJS,
     cdsQL,
 }
+
+export const runners = {
+  js: evalJS,
+  cql: cdsQL,
+  cds: cdsQL,
+}

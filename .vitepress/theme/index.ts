@@ -10,6 +10,7 @@ import Gamma from './components/Gamma.vue';
 import Concept from './components/Concept.vue'
 import Since from './components/Since.vue';
 import UnderConstruction from './components/UnderConstruction.vue';
+import LiveCode from './components/playground/LiveCode.vue';
 import CfgInspect from './components/ConfigInspect.vue';
 import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
 
@@ -35,6 +36,7 @@ export default {
     ctx.app.component('Concept', Concept)
     ctx.app.component('Since', Since)
     ctx.app.component('UnderConstruction', UnderConstruction)
+    ctx.app.component('LiveCode', LiveCode)
     ctx.app.use(TwoslashFloatingVue)
   }
 }
