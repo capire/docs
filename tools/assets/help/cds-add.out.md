@@ -70,9 +70,9 @@
 
       Overwrite all files in case the target files already exist.
 
-    <em>--package</em> &lt;name&gt;
+    <em>--package | -p</em> &lt;name&gt;
 
-      Pull a package from your npm registry.
+      Pull a package from your configured npm registry.
 
 
 <strong>FEATURE OPTIONS</strong>

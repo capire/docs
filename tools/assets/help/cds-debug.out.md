@@ -5,37 +5,49 @@
 <strong>SYNOPSIS</strong>
     <em>cds debug</em> [&lt;app&gt;]
 
-    Debug applications running locally or remotely on Cloud Foundry.
-    Local applications will be started in debug mode, while remote applications
-    are put into debug mode.
+    Debug applications running locally or remotely on Cloud Foundry or Kubernetes.
 
-    If &lt;app&gt; is given, it's assumed to be running on the currently logged-in
-    Cloud Foundry space (check with 'cf target').
-    SSH access to the app is required (check with 'cf ssh-enabled').
-    Chrome DevTools are opened automatically for Node.js applications.
+    If &lt;app&gt; is given, it's assumed to be running on a remote system. The command defaults
+    to Kubernetes if Helm deployment descriptors are present, otherwise Cloud Foundry.
+
+    For Cloud Foundry, the currently targeted space is used (check with 'cf target').
+    For Kubernetes, the current context and namespace are used (check with 'kubectl config get-contexts').
+
+    SSH access to the app is required (check with 'cf ssh-enabled' on Cloud Foundry).
 
     If no &lt;app&gt; is given, the app in the current working directory is started
     (with 'cds watch --debug' for Node.js and 'mvn spring-boot:run' for Java).
 
+    For Node.js, Chrome DevTools are opened automatically unless <em>--no-devtools</em> is set.
+
 <strong>OPTIONS</strong>
     <em>-h</em> | <em>--host</em>
 
-      the debug host (default: '127.0.0.1')
+      The debug host (default: '127.0.0.1').
 
     <em>-p</em> | <em>--port</em>
 
-      the debug port (default: '9229' for Node.js, '8000' for Java)
+      The debug port (default: '9229' for Node.js, '8000' for Java).
+
+    <em>--cf</em>
+
+      Force Cloud Foundry mode.
+
+    <em>--k8s</em>
+
+      Force Kubernetes mode. Use env vars KUBE_NAMESPACE or NAMESPACE to select a namespace.
 
     <em>--no-devtools</em>
 
-      don't open developer tools automatically
+      Don't open developer tools automatically (Node.js only).
 
     <em>-f</em> | <em>--force</em>
 
-      if necessary, automatically enable ssh for the app and restart it
+      If necessary, automatically enable SSH for the app and restart it.
 
 <strong>EXAMPLES</strong>
     <em>cds debug</em>
     <em>cds debug</em> bookshop-srv --port 8001
     <em>cds debug</em> bookshop-srv --host 0.0.0.0
+    <em>cds debug</em> --k8s bookshop-srv
 </pre>

@@ -2,10 +2,10 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
+import path from 'node:path'
 import { defineConfig } from 'vitepress'
 import { node, cap } from 'vite-plugin-cds'
 import languages from './languages'
-import path from 'node:path'
 import { Menu } from './menu.js'
 
 const config = defineConfig({
@@ -123,7 +123,7 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.6.2',
+    java_services: '4.7.0',
     java_cds4j: '4.7.0'
   },
   gotoLinks: [],
@@ -198,10 +198,10 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 }
 
 // Add custom markdown renderers...
+import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
 import * as MdLiveCode from './lib/md-live-code'
-import { dl } from '@mdit/plugin-dl'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -211,9 +211,9 @@ config.markdown.config = md => {
 }
 
 // Add custom buildEnd hook
-import * as cdsMavenSite from './lib/cds-maven-site'
 import { promises as fs } from 'node:fs'
 import templates from './lib/vite-plugin-templates.js'
+import * as cdsMavenSite from './lib/cds-maven-site'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')

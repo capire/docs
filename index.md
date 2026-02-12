@@ -8,10 +8,9 @@ hero:
   image: /logos/cap.svg
 
   tagline:
-    Build cloud-native applications
-    with maximized productivity
-    at minimized costs,
-    and proven best practices
+    Build enterprise-grade cloud applications
+    with maximized productivity, 
+    fueled by proven best practices, 
     served out of the box.
 
   actions:
@@ -36,9 +35,9 @@ features:
 - title: Rapid Development
   icon: ⭕️
   details:
-    •&nbsp; Jumpstart & grow as you go... <br/>
-    •&nbsp; Fast, local inner loops <br/>
-    •&nbsp; Minimized boilerplate <br/>
+    •&nbsp; Jumpstart & Grow as you go... <br/>
+    •&nbsp; Inner loop fast tracks <br/>
+    •&nbsp; Decoupled dev teams <br/>
   link: get-started/
   linkText: Getting Started
 
@@ -47,7 +46,7 @@ features:
   details:
     •&nbsp; Capture intent → What, not how! <br/>
     •&nbsp; Separation of concerns <br/>
-    •&nbsp; Minimized technical debts <br/>
+    •&nbsp; Minimized technical debt <br/>
   link: get-started/features
   linkText: Features Overview
 

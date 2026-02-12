@@ -49,7 +49,7 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node      # Node.js latest LTS
+brew install node@24   # Node.js LTS
 npm i -g @sap/cds-dk   # CAP's cds-dk
 ```
 
@@ -266,20 +266,20 @@ npm upgrade
 ```
 > Use `npm outdated` to check which dependencies are outdated before upgrading.
 
-> [!warning]
-> For such upgrades to work, **do not use pinned versions** in your project dependencies. Always use open semver ranges instead – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
+> [!warning] Do not use pinned versions
+> For such upgrades to work, always **use open version ranges** in your project dependencies – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
 
 ::: code-group
 ```jsonc [package.json]
   "dependencies": {
-    "@sap/cds": "9.7.0",  // DON'T use pinned versions // [!code --]
-    "@sap/cds": "^9.7.0",  // [!code ++]
+    "@sap/cds": "9.7.0",   // DON'T use pinned versions // [!code --]
+    "@sap/cds": "^9.7.0",  // DO allow new minor versions [!code ++]
     ...
   }
 ```
 :::
 
-> [!tip]
+> [!tip] Automate dependency updates
 > Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are also highly recommended for managing Maven dependencies in CAP Java projects.
 
 
