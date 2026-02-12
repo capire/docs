@@ -20,9 +20,7 @@ For entities exposed via OData V4 there is a _Fiori preview_ link on the index p
 
 The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
 
-For Node.js, it's only active locally where the [development profile](../../node.js/cds-env#profiles) is enabled. To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
-
-For Java, it's active by default, but disabled automatically in case the [production profile](../../java/developing-applications/configuring#production-profile) is enabled. To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
+It's active by default, but disabled automatically in production.  To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config> for Node.js apps, or <Config java>cds.index-page.enabled:true</Config> for Java.
 
 :::
 
@@ -800,7 +798,7 @@ You can now start the server with `cds watch` and see the hierarchical tree view
 ![Fiori UI with hierarchical tree view.](hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The compiler automatically expands the shortcut annotation `@hierarchy` to the
-following `annotate` and `extend` statements. 
+following `annotate` and `extend` statements.
 
 ### Manual Approach
 
