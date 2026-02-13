@@ -19,6 +19,8 @@ If you want to use data from other services or you want to split your applicatio
 
 [[toc]]
 
+<ImplVariantsHint />
+
 ## Introduction
 
 If you want to use data from other services or you want to split your application into multiple microservices, you need a connection between those services. We call them **remote services**. As everything in CAP is a service, remote services are modeled the same way as internal services — using CDS.
