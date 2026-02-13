@@ -13,8 +13,6 @@ Build plugins are run by `cds build` to generate the required deployment artifac
 
 The following description uses the [postgres build plugin](https://github.com/cap-js/cds-dbs/blob/55e511471743c0445d41e8297f5530abe167a270/postgres/cds-plugin.js#L9-L48) as reference implementation. It combines runtime and design-time integration in a single plugin `@cap-js/postgres`.
 
-<ImplVariantsHint />
-
 ## Add Build Logic
 
 A build plugin is a Node.js module complying to the [CDS plugin architecture](../../node.js/cds-plugins).
