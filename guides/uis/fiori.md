@@ -12,7 +12,6 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 [[toc]]
 
 
-<ImplVariantsHint />
 
 ## SAP Fiori Preview
 
