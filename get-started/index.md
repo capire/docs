@@ -104,8 +104,8 @@ Since Apache Maven is not available using `winget`, here is a script to install 
 Note the configurable version number at the beginning.
 
 ```powershell
-$v="3.9.6"; `
-$url="https://archive.apache.org/dist/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
+$v="3.9.12"; `
+$url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
 $mvnzip="$env:LOCALAPPDATA\maven.zip"; `
 curl $url -o $mvnzip; `
 tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
