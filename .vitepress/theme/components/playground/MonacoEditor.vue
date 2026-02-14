@@ -39,6 +39,7 @@ const emit = defineEmits(['update:modelValue', 'execute', 'loaded'])
 const editorContainer = ref()
 let editor
 let monaco
+let unmountActions = []
 const lineHeight = 24
 const editorPaddingTop = 4
 const editorPaddingBottom = 4
@@ -112,13 +113,18 @@ async function createEditor() {
     emit('loaded')
   }, 50) // wait for syntax highlighting to apply before showing editor
 
-  onUnmounted(() => {
+  unmountActions.push(() => {
     try { contentSizeDispose?.dispose?.() } catch {}
+  })
+  unmountActions.push(() => {
+    try { editor?.dispose?.() } catch {}
   })
 }
 
 
 onMounted(createEditor)
+
+onUnmounted(() => unmountActions.forEach(fn => fn()))
 
 watch(() => props.language, async (newLang) => {
   if (!editor || !monaco) return

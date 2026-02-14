@@ -25,10 +25,6 @@ For example, [a calculated element](./cdl#calculated-elements) defined in an ent
 to the respective calculation in the generated query when the entity is queried.
 :::
 
-```cds
-SELECT from Books { title }
-```
-
 ```cds live
 SELECT from Books { title }
 ```

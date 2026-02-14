@@ -8,7 +8,7 @@
           <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
         </div>
       </div>
-      <div class="editor language-sh" :hidden="!loaded">
+      <div class="editor language-sh" :hidden="!loaded" v-if="!readonly">
         <button title="Copy Code" class="copy"></button>
         <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
         <MonacoEditor
@@ -64,6 +64,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  readonly: {
+    type: Boolean,
+    default: false
+  },
   rows: {
     type: Number,
     default: 3
@@ -73,8 +77,7 @@ const props = defineProps({
     default: 'js'
   },
   onExecute: {
-    type: Function,
-    required: true
+    type: Function
   }
 })
 
@@ -185,6 +188,18 @@ async function runQuery() {
 
 .editor {
   margin: 0 !important;
+}
+
+.editor .language-sh {
+  :deep(pre), :deep(code) {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+.editor.language-sh {
+  overflow: unset;
 }
 
 .interactive-query .editor-row .monaco-editor-container {
