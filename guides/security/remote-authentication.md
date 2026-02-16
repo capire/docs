@@ -113,6 +113,10 @@ You can find CDS service definition of `sap.capire.flights.data` in file `target
 The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
 Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
 
+::: tip
+On behalf of `systemUser` works both in pure single tenant and in pure multitenant scenarios.
+In case you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
+:::
 
 Now you are ready to deploy the application with
 
