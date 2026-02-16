@@ -9,21 +9,159 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 # Query Language (CQL)
 
-CDS Query Language (CQL) is based on standard SQL, which it enhances by...
-
 [[toc]]
 
+## Preliminaries
+
+The CDS Query Language (CQL) is based on standard SQL and extends it with CDS-specific capabilities.
+
+### Trying it with `cds repl`
+
+> TODO: Change this once live CQL is available.
+
+To try the samples by yourself, create a simple CAP app:
+
+```sh
+cds init bookshop --nodejs --add sample && cd bookshop
+```
+
+We encourage you to play around with the snippets.
+Just create the sample app as described above and start a repl session within the newly created app by running:
+
+```sh
+cds repl --run .
+```
+
+:::info All of the example expressions follow the same pattern:
+1. A **`CXL`** is shown in the context of a query.
+2. The resulting **`SQL`** is shown.
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title }` // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+```sql [SQL]
+SELECT title FROM sap_capire_bookshop_Books as Books
+```
+:::
 
 ## SELECT
+
+> TODO do we want to capitalize the `SELECT` (and other keywords) also in the samples?, if yes, we should do it in all the samples.
+
+The CQL `SELECT` clause extends the well-known SQL `SELECT` with CDS-specific capabilities like [postfix projections](#postfix-projections), structured results, and [path expressions](./cxl#path-expressions-ref). It supports expanded navigation across associations, inline projections for concise field lists, and smart `*` handling with `excluding`.
 
 ![](./assets/cql/select.drawio.svg?raw)
 
 > Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
 
+For example we can select the _available_ `Books` while
+excluding the `stock` and some technical details from the result:
+
+```cds
+select from Books { * }
+excluding {
+  stock,
+  createdAt,  createdBy,
+  modifiedAt, modifiedBy
+} where stock > 0
+```
+
+Or we can calculate the average price of books per author:
+
+```cds
+select from Authors {
+  avg(books.price),
+  name as author
+} group by ID
+```
+
+Or we can select all `Authors` that have written a `Fantasy` book:
+
+```cds
+select from Authors where exists books[genre.name = 'Fantasy']
+```
+
 
 ## Query Source
 
+The query source defines the data set a `SELECT` reads from. It can be a single entity or a path expression that navigates associations.
+
 ![](./assets/cql/query-source.drawio.svg?raw)
+> Using: [Infix Filter](./cxl#infix-filters), [Path Expression](./cxl#path-expressions-ref)
+
+### Using Entity Names
+
+We can select from the `Books` entity by refering to it's fully qualified name (namespace + entity name):
+
+```cds
+select from sap.capire.bookshop.Books
+```
+
+runtimes alternatively allow to refer to the entity by its short name:
+
+> TODO: java way of doing this
+
+```cds
+select from Books
+```
+
+### Using Infix Filters
+
+We can apply infix filters to the query source to narrow down the set of entries read from the source. For example, the following query selects all books of the genre `Fantasy`:
+
+> TODO: enable this in db-service
+```cds
+select from Books[genre.name = 'Fantasy'] { title }
+```
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Books { title } where genre.name = 'Fantasy'
+```
+:::
+
+### Using Path Expressions
+
+By using a path expressions after the `:`, we can navigate from one entity to associated entities.
+The entity at the end of the path expression is the actual query source.
+
+We navigate from existing books to their authors:
+
+```cds
+SELECT from Books:author { name }
+```
+
+::: tip the above is equivalent to: 
+Selecting from `Authors` and checking for the existence of associated books:
+
+```cds
+SELECT from Authors { name } where exists books
+```
+:::
+
+In the following example, we start with a filtered set of `Authors`.
+By using a path expressions after the `:`, we navigate from the authors to _their_ `books` and further to the books' `genre`.
+
+For example with the following we can get a list of genres of books written by `Edgar Allen Poe`:
+
+```cds
+SELECT from Authors[name='Edgar Allen Poe']:books.genre { name }
+```
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Books { title } where exists author[name='Edgar Allen Poe']
+```
+:::
 
 ## Select Item
 
@@ -492,6 +630,6 @@ extend BookReviews with columns {
 ```
 
 
-## Ordering Term
+## Ordering Term {#ordering-term}
 
 ![](./assets/cql/ordering-term.drawio.svg?raw)
