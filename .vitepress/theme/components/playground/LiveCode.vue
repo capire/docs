@@ -27,8 +27,13 @@
     <div v-if="queryResult" :class="`vp-code-group vp-adaptive-theme ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
         <template v-for="tab in tabs" :key="tab.key">
-          <input type="radio" :id="tab.key" v-model="selectedTab" :value="tab.key">
-          <label :for="tab.key">{{ tab.name }}</label>
+          <input
+            type="radio"
+            :id="tab.key"
+            :checked="selectedTab === tab.key"
+            @click.prevent="toggleTab(tab.key)"
+          >
+          <label :for="tab.key" @click.prevent="toggleTab(tab.key)">{{ tab.name }}</label>
         </template>
       </div>
 
@@ -128,6 +133,10 @@ function formatTabs(result) {
       ]
     }
 
+}
+
+function toggleTab(key) {
+  selectedTab.value = selectedTab.value === key ? null : key
 }
 
 async function runQuery() {
