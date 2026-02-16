@@ -10,6 +10,8 @@ entity Books {
   stock    : Integer;
   price    : Price;
   currency : Currency;
+
+  total = price * stock;
 }
 
 entity Authors {
@@ -20,6 +22,9 @@ entity Authors {
   placeOfBirth : String;
   placeOfDeath : String;
   books        : Association to many Books on books.author = $self;
+
+  cheapBooks   = books[price < 19.99]; // based on `books` association
+  age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
 }
 
 /** Hierarchically organized Code List for Genres */
