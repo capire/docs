@@ -28,7 +28,7 @@ This guide explains how to authenticate remote services.
 
 ## Remote Service Abstraction { #remote-services }
 
-According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (that is, exchanged content) from connection level (that is, established connection channel).
+According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), CAP's [Remote Services](../services/consuming-services#consuming-services) architecture decouples the protocol level (exchanged content) from the connection level (established connection channel).
 While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
 The latter is frequently subject to change and therefore should not introduce application dependencies.
 
@@ -115,7 +115,7 @@ Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on b
 
 ::: tip
 On behalf of `systemUser` works both in pure single tenant and in pure multitenant scenarios.
-In case you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
+If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
 :::
 
 Now you are ready to deploy the application with
@@ -347,7 +347,7 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the remote service implementation will initiate an App-2-App flow.
+Technically, the remote service implementation initiates an App-2-App flow.
 It takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
@@ -355,7 +355,7 @@ Note that property `oauth2-configuration.token-policy.access-token-format: jwt` 
 
 #### 3. Connect consumer with provider { #connect }
 
-Now let's create the missing IAS dependency to establish trust for the API service call targeting provided API with id `data-consumer`.
+Now create the missing IAS dependency to establish trust for the API service call targeting the provided API with id `data-consumer`.
 
 Open the Administrative Console for the IAS tenant (see prerequisites [here](./authentication#ias-admin)):
 
