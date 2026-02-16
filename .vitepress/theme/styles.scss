@@ -312,6 +312,23 @@ img, video.bright {
   }
 }
 
+// Raw svg diagrams
+.diagram {
+  all: initial; // preserve original svg formatting
+  svg {
+    .dark & { // recolor in dark mode
+      filter: brightness(.884) invert(1) hue-rotate(177deg);
+    }
+    max-width: 100%;
+    height: auto;
+    margin: 30px auto;
+
+    * {
+      // drawio line-height is not updated when font size is changed leading to misaligned text
+      line-height: unset !important;
+    }
+  }
+}
 
 
 .VPBadge {
