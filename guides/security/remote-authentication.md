@@ -97,7 +97,8 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
-      http.suffix: /hcql
+      http:
+        suffix: /hcql
       binding:
         name: xtravels-ias
         onBehalfOf: systemUser
@@ -318,7 +319,8 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
-      http.suffix: /hcql
+      http:
+        suffix: /hcql
       binding:
         name: xtravels-ias
         onBehalfOf: systemUser
