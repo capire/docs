@@ -310,7 +310,7 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 Like with xflights, clone [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
 
 The remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
-You only need to add the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).
+You only need to add the information about the IAS dependency to be called (`ias-dependency-name`).
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
 
 ::: code-group
@@ -361,7 +361,7 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](./a
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
-3. Type `data-consumer` as dependency name (needs to match property value `cloudsdk.ias-dependency-name`) and pick provided API `data-consumer` from the provider IAS application `xflights`.
+3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name`) and pick provided API `data-consumer` from the provider IAS application `xflights`.
 4. Confirm with **Save**
 
 ::: details Create IAS dependency in Administrative Console
