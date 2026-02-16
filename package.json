@@ -23,7 +23,7 @@
     "@mdit/plugin-dl": ">=0.22.2",
     "@sap/cds": "^9.6.2",
     "@shikijs/vitepress-twoslash": "^3",
-    "@sqlite.org/sqlite-wasm": "^3",
+    "@sqlite.org/sqlite-wasm": "3.51.2-build6",
     "@types/adm-zip": ">=0.5.0",
     "@types/express": "^4.17.21",
     "@typescript-eslint/parser": "^8.0.0",
