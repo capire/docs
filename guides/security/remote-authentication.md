@@ -21,7 +21,6 @@ status: released
 
 # Outbound Authentication { #remote-authentication }
 
-<ImplVariantsHint />
 
 This guide explains how to authenticate remote services.
 
