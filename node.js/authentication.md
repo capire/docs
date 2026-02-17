@@ -464,9 +464,11 @@ require('@sap/xssec').Token.decodeCache = false
 [Learn more about caching CPU intensive operations in `@sap/xssec`](https://www.npmjs.com/package/@sap/xssec#caching-cpu-intensive-operations){.learn-more}
 
 
-## XSUAA in Hybrid Setup {#xsuaa-setup}
+## Authentication in Hybrid Setup {#hybrid-setup}
 
-### Prepare Local Environment
+### with XSUAA {#xsuaa-setup}
+
+#### Prepare Local Environment
 
 The following steps assume you've set up the [**Cloud Foundry Command Line Interface**](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/856119883b8c4c97b6a766cc6a09b48c.html).
 
@@ -517,7 +519,7 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
     This step is necessary for locally running apps and for apps deployed on Cloud Foundry.
     :::
 
-### Configure the Application
+#### Configure the Application
 
 1. Create a service key:
 
@@ -560,7 +562,7 @@ cds env list requires.auth --resolve-bindings --profile hybrid
 This prints the full `auth` configuration including the credentials.
 
 
-### Set Up the Roles for the Application { #auth-in-cockpit}
+#### Set Up the Roles for the Application { #auth-in-cockpit}
 
 By creating a service instance of the `xsuaa` service, all the roles from the _xs-security.json_ file are added to your subaccount. Next, you create a role collection that assigns these roles to your users.
 
@@ -579,7 +581,7 @@ By creating a service instance of the `xsuaa` service, all the roles from the _x
 7. Add the email addresses for your users to the *Users* list.
 8. Choose *Save*
 
-### Running App Router
+#### Running App Router
 
 The App Router component implements the necessary authentication flow with XSUAA to let the user log in interactively.
 The resulting JWT token is sent to the application where it's used to enforce authorization and check the user's roles.
@@ -672,9 +674,9 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 3. Retry
 
 
-## IAS in Hybrid Setup {#ias-setup}
+### with IAS {#ias-setup}
 
-### Configure the Application
+#### Configure the Application
 
 1. If there is no deployment descriptor yet, execute in the project root folder
 
@@ -733,7 +735,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     npm install --prefix app/router
     ```
 
-### Deploy the Application
+#### Deploy the Application
   
 1. Log in to Cloud Foundry:
     ```sh
@@ -747,13 +749,13 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     cds up
     ```
 
-### Assign policies in the Administrative Console
+#### Assign policies in the Administrative Console
 
 1. Log in to your IAS Tenant and go to `Applications & Resources`
 
 2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment)
 
-### Start hybrid testing
+#### Start hybrid testing
  
 1. Bind local application to the Identity Service Instance
 
