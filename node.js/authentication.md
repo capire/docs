@@ -801,7 +801,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```
     :::
 
-    [Learn more about `cds bind --exec`.](../advanced/hybrid-testing#cds-bind-exec){.learn-more}
+    [Learn more about `cds bind --exec`.](../tools/cds-bind#hybrid-testing){.learn-more}
 
     This starts an [App Router](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/0117b71251314272bfe904a2600e89c0.html) instance on [http://localhost:5000](http://localhost:5000) with the credentials for the IAS service that you have bound using `cds bind`.
 
