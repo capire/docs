@@ -202,11 +202,13 @@ import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
 import * as MdLiveCode from './lib/md-live-code'
+import * as MdDiagramSvg from './lib/md-diagram-svg'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
   MdLiveCode.install(md)
+  MdDiagramSvg.install(md)
   md.use(dl)
 }
 

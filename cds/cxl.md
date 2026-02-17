@@ -99,7 +99,7 @@ select from Books {
 
 This syntax diagram describes the possible expressions:
 
-![](assets/cxl/expr.drawio.svg)
+![](assets/cxl/expr.drawio.svg?raw)
 
 > Using:
 > [Path Expressions](#ref),
@@ -241,7 +241,7 @@ A `ref` (short for reference) is used to refer to an element within the model.
 It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
-![](assets/cxl/ref.drawio.svg)
+![](assets/cxl/ref.drawio.svg?raw)
 
 > Using:
 > [Infix Filters](#infix-filters)
@@ -389,7 +389,7 @@ If we apply this terminology to [path-expressions](#ref), an infix filter condit
 that is applied to a path-segment of a [path-expression](#ref).
 This allows you to filter the target of an association based on certain criteria.
 
-![](assets/cxl/infix-filter.drawio.svg)
+![](assets/cxl/infix-filter.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
@@ -533,7 +533,7 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 As depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
 
-![](assets/cxl/operators.drawio.svg)
+![](assets/cxl/operators.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
@@ -569,7 +569,7 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 ## Functions (`func`)
 ###### func
 
-![](assets/cxl/function.drawio.svg)
+![](assets/cxl/function.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
