@@ -12,6 +12,8 @@ const toggle = typeof localStorage !== 'undefined' ? useVariant() : () => {}
 const knownImplVariants = ['node', 'java']
 
 onMounted(() => {
+  if (!supportsVariants.value) return
+
   let check = currentCheckState()
   // Persist value even intially. If query param was used, users expect to get this value from now on, even if not using the query anymore.
   const variantNew = check ? 'java' : 'node'
@@ -93,6 +95,7 @@ transition: none !important;
 }
 
 watchEffect(() => {
+  if (!supportsVariants.value) return
   setTimeout(() => { // otherwise DOM is not ready
     if (typeof document !== 'undefined') {
       animationsOff(() => setClass(currentCheckState()) )

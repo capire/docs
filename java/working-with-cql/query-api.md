@@ -713,7 +713,7 @@ You can aggregate data in two ways:
 
 #### Aggregation Functions { #aggregation-functions }
 
-Use [aggregation functions](../../guides/databases/cql-to-sql#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+Use [aggregation functions](../../guides/databases/cap-level-dbs#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
 
 
 #### Grouping { #grouping }

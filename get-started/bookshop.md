@@ -4,7 +4,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 ---
 
 
-# The Bookshop Sample 
+# The Bookshop Sample
 A Step-by-Step Walkthrough {.subtitle}
 
 Follow along as we build a simple bookshop application step-by-step, to gain hands-on experience with the most common tasks as an application developer, core concepts and best practices of CAP. {.abstract}
@@ -77,16 +77,16 @@ We can capture that in a rudimentary way using CDS as follows (create a file nam
 
 ::: code-group
 ```cds [db/schema.cds]
-entity Authors { 
+entity Authors {
   name   : String;
   books  : Association to many Books;
 }
-entity Books { 
+entity Books {
   title  : String;
   author : Association to Authors;
   genre  : Association to Genres;
 }
-entity Genres { 
+entity Genres {
   name   : String;
   parent : Association to Genres;
 }
@@ -95,7 +95,7 @@ entity Genres {
 
 > [!tip] Domain models are essentially entity-relationship models
 > - [_Entities_](../cds/cdl#entities) represent the core concepts of your domain.
-> - [_Associations_](../cds/cdl#associations) express relationships between them. 
+> - [_Associations_](../cds/cdl#associations) express relationships between them.
 
 
 ### Complete Domain Model
@@ -105,9 +105,9 @@ Let's enhance the rudimentary model above with some essentials, such as key elem
 ::: code-group
 ```cds [db/schema.cds]
 using { Currency, managed, sap } from '@sap/cds/common';
-namespace sap.capire.bookshop; 
+namespace sap.capire.bookshop;
 
-entity Books : managed { 
+entity Books : managed {
   key ID : Integer;
   title  : localized String;
   descr  : localized String;
@@ -118,13 +118,13 @@ entity Books : managed {
   currency : Currency;
 }
 
-entity Authors : managed { 
+entity Authors : managed {
   key ID : Integer;
   name   : String;
   books  : Association to many Books on books.author = $self;
 }
 
-entity Genres : sap.common.CodeList { 
+entity Genres : sap.common.CodeList {
   key ID : Integer;
   parent : Association to Genres;
 }
@@ -132,7 +132,7 @@ entity Genres : sap.common.CodeList {
 :::
 
 ###### Focus on Domain
-> [!tip] Primary Focus on Domain 
+> [!tip] Primary Focus on Domain
 > Strive to keep your domain models simple, concise and comprehensible, focused on the core concepts of your domain, i.e., [_“Keep it simple, stupid!”_](https://en.wikipedia.org/wiki/kiss_principle). Factor out secondary concerns into separate sources, which _extend_ and _annotate_ the core models.\
 > See also: [_Separation of Concerns_](#separation-of-concerns).
 
@@ -173,14 +173,14 @@ As soon as we saved the domain model, `cds watch` reacted with additional output
 
 ###### Inner Loop
 > [!tip] Inner-Loop Development
-> SQLite isn't meant for productive use, but rather for development only. 
-> It drastically speeds up turn-around times in local inner-loop development. 
-> Essentially it acts as a mock stand-in for the target databases we'll use in production, i.e., SAP HANA. 
+> SQLite isn't meant for productive use, but rather for development only.
+> It drastically speeds up turn-around times in local inner-loop development.
+> Essentially it acts as a mock stand-in for the target databases we'll use in production, that is, SAP HANA.
 
 
 ### Compile to SQL {.optional}
 
-To see what happens under the hood, we can optionally use `cds compile -2 sql` 
+To see what happens under the hood, we can optionally use `cds compile -2 sql`
 to test-compile our models to SQL, which would yield output as shown below:
 
 ```shell
@@ -279,7 +279,7 @@ cds repl ./
 
 ::: details About _cds repl_ ...
 
-The `cds repl` command boots up a minimal CAP environment in an interactive shell that allows us to enter and execute CAP JavaScript commands, with results printed to the console. It's a great way to explore and interact with our models, services, and data in an ad-hoc way. 
+The `cds repl` command boots up a minimal CAP environment in an interactive shell that allows us to enter and execute CAP JavaScript commands, with results printed to the console. It's a great way to explore and interact with our models, services, and data in an ad-hoc way.
 
 The acronym _REPL_ stands for [_Read-Eval-Print Loop_](https://en.wikipedia.org/wiki/Read–eval–print_loop), which was first coined by LISP in the late 1950s like that: `(loop (print (eval (read))))`
 :::
@@ -323,14 +323,14 @@ Waiting for some to arrive...
 So, let's go on feeding it with service definitions ...
 
 
-### Use Case-Specific Services 
+### Use Case-Specific Services
 
 We add two files in folder _./srv_ with respective content as follows:
 
 ::: code-group
 ```cds [srv/admin-service.cds]
 using { sap.capire.bookshop as my } from '../db/schema';
-service AdminService @(odata:'/admin') { 
+service AdminService @(odata:'/admin') {
   entity Authors as projection on my.Authors;
   entity Books as projection on my.Books;
   entity Genres as projection on my.Genres;
@@ -340,38 +340,38 @@ service AdminService @(odata:'/admin') {
 ::: code-group
 ```cds [srv/cat-service.cds]
 using { sap.capire.bookshop as my } from '../db/schema';
-service CatalogService @(odata:'/browse') { 
-  @readonly entity Books as projection on my.Books { 
+service CatalogService @(odata:'/browse') {
+  @readonly entity Books as projection on my.Books {
     *, // all fields with the following denormalizations:
-    author.name as author, 
+    author.name as author,
     genre.name as genre,
   } excluding { createdBy, modifiedBy };
 }
 ```
 :::
 
-The two services reflect different use cases, and corresponding user personas, as depicted in the illustration below. 
+The two services reflect different use cases, and corresponding user personas, as depicted in the illustration below.
 
 ![Illustration showing two use case-specific services: AdminService for administrators to maintain master data, and CatalogService for visitors to browse and order books.](assets/bookshop/services.drawio.svg)
 
  - **_AdminService_** is for *administrators to **maintain*** master data.
    It exposes all entities as-is from the domain model, allowing full CRUD access to all data.
-  
+
  - **_CatalogService_** is for *visitors to **browse*** and order books.
-   It serves denormalized read-only views on `Books`, with flattened fields for `author` and `genre`, to simplify browsing. Entities `Authors` and `Genres` are not exposed, nor internal admin details `createdBy` and `modifiedBy`. 
-   
+   It serves denormalized read-only views on `Books`, with flattened fields for `author` and `genre`, to simplify browsing. Entities `Authors` and `Genres` are not exposed, nor internal admin details `createdBy` and `modifiedBy`.
+
 
 
 ###### Services as Interfaces
 ###### Services as Facades
 >  [!tip] Services as Interfaces and Facades
 > Services constitute the **interfaces** of an application to consumers in the outside world, such as UIs or other services. They can be published as respective APIs. At the same time, they act as **facades** which handle all inbound requests, and restrict access to an application’s inner domain data.
-  
+
 ###### Use Case-Oriented Services
 > [!tip] Use Case-Oriented Services
-> Always design services with respective consumers – and in case of UIs 
-> respective end user personas – in mind. 
-> Services can use **_denormalized views_** on underlying data, to expose only 
+> Always design services with respective consumers – and in case of UIs
+> respective end user personas – in mind.
+> Services can use **_denormalized views_** on underlying data, to expose only
 > subsets of information relevant to the respective use case.
 
 [Learn more about **Defining Services**.](../guides/services/providing-services){.learn-more}
@@ -399,8 +399,8 @@ This time `cds watch` reacted with additional output as shown below, which shows
 #### Send Requests from Browser
 We can access these endpoints through these OData URLs opened in a browser:
 
-- _[/browse/Books?$select=ID,title,genre](http://localhost:4004/browse/Books?$select=ID,title,genre)_ 
-- _[/admin/Authors?$select=ID,name&$expand=books($select=ID,title)](http://localhost:4004/admin/Authors?$select=ID,name&$expand=books($select=ID,title))_ 
+- _[/browse/Books?$select=ID,title,genre](http://localhost:4004/browse/Books?$select=ID,title,genre)_
+- _[/admin/Authors?$select=ID,name&$expand=books($select=ID,title)](http://localhost:4004/admin/Authors?$select=ID,name&$expand=books($select=ID,title))_
 
 
 #### Send Requests from REST Client
@@ -414,12 +414,19 @@ GET http://localhost:4004/browse/Books?
 &$select=ID,title,author
 &$filter=contains(author,'Bro')
 
-### AdminService.read Authors 
+### AdminService.read Authors
 GET http://localhost:4004/admin/Authors?
 &$select=ID,name
 &$expand=books($select=ID,title)
 Authorization: Basic alice:
 ```
+:::
+
+::: details `cds add http` can help you with the file creation:
+```shell
+cds add http
+```
+[Learn more in the _CLI reference_.](../tools/cds-cli#http){.learn-more}
 :::
 
 > [!tip] Served automatically by generic providers
@@ -434,7 +441,7 @@ Authorization: Basic alice:
 
 ### Compile to EDMX {.optional}
 
-We can optionally also compile service definitions explicitly, for example 
+We can optionally also compile service definitions explicitly, for example
 to [OData EDMX metadata documents](https://docs.oasis-open.org/odata/odata/v4.0/odata-v4.0-part3-csdl.html):
 
 ```shell
@@ -445,7 +452,7 @@ Essentially, this invokes what happened automatically behind the scenes in the p
 
 
 
-## Querying 
+## Querying
 
 Now that we have a deployed SQLite database, filled with some initial data, as well as services to serve requests from the outside, we can send queries to them, based on [CDS Query Language (CQL)](../cds/cql) and the OData protocol.
 
@@ -482,9 +489,9 @@ await SELECT `ID, title, genre.name as genre` .from `Books`
 We can also run deeply nested queries along to-many associations or compositions, for example, to get authors along with their written books like this:
 
 ```js
-await SELECT.from `Authors { 
-  ID, name, books { 
-    ID, title, genre.name as genre 
+await SELECT.from `Authors {
+  ID, name, books {
+    ID, title, genre.name as genre
   }
 }`
 ```
@@ -522,15 +529,15 @@ We can send CQL queries to CAP services in very similar ways as we did before ag
 
 ```js
 const CatalogService = await cds.connect.to ('CatalogService')
-const AdminService   = await cds.connect.to ('AdminService')  
+const AdminService   = await cds.connect.to ('AdminService')
 ```
 
 And send queries to them like this (which would yield the same results as before):
 
 ```js
 await CatalogService .read `ID, title, genre` .from `Books`
-await AdminService .read `Authors { 
-  ID, name, books { 
+await AdminService .read `Authors {
+  ID, name, books {
     ID, title, genre.name as genre
   }
 }`
@@ -547,19 +554,19 @@ await AdminService .read `Authors {
 
 ![](assets/bookshop/pushdown.drawio.svg)
 
-::: details Details: How queries are delegated to database ... 
+::: details Details: How queries are delegated to database ...
 Assumed we got an inbound query like that:
 ```js
-let query = SELECT `ID, title` .from `Books` 
+let query = SELECT `ID, title` .from `Books`
 ```
 When we run it against a service like this:
 ```js
 const CatalogService = await cds.connect.to ('CatalogService')
-await CatalogService.run (query) 
+await CatalogService.run (query)
 ```
 It is delegated to the primary database like so:
 ```js
-const db = await cds.connect.to ('db') // the primary database 
+const db = await cds.connect.to ('db') // the primary database
 await db.run (query)
 ```
 :::
@@ -580,7 +587,7 @@ We can also send such OData requests programmatically, for example, doing the ve
 2. Start the REPL in terminal 2:
     ```shell
     cds repl
-    ``` 
+    ```
 
 3. Within the REPL, run this to load remote service bindings:
 
@@ -588,7 +595,7 @@ We can also send such OData requests programmatically, for example, doing the ve
     await cds.service.bindings
     ```
     ::: details About _cds.service.bindings_ ...
-    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, e.g., within `cds repl`. 
+    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, e.g., within `cds repl`.
     ```js
     [cds] - using bindings from: { registry: '~/.cds-services.json' }
     Bindings {
@@ -616,12 +623,12 @@ With that in place, we can connect to the remote services, and send queries to t
 
   ```js
   const CatalogService = await cds.connect.to ('CatalogService')
-  const AdminService   = await cds.connect.to ('AdminService')  
+  const AdminService   = await cds.connect.to ('AdminService')
   ```
   ```js
   await CatalogService .read `ID, title, genre` .from `Books`
-  await AdminService .read `Authors { 
-    ID, name, books { 
+  await AdminService .read `Authors {
+    ID, name, books {
       ID, title, genre.name as genre
     }
   }`
@@ -634,16 +641,16 @@ With that in place, we can connect to the remote services, and send queries to t
 ###### CAP-level Service Integration
 ###### Calesi
 > [!tip] CAP-level Service Integration (<i>'Calesi'</i>)
-> CAP services can be consumed from other CAP applications, using the same uniform, and protocol-agnostic APIs as for local services – i.e., **_as if they were local_**. This is accomplished by the service instances returned by `cds.connect` being remote proxies, which automatically translate all requests into protocol-specific ones, sent to remote services. Thereby taking care of all connectivity, remote communication, marshalling of data, as well as generic resilience.
+> CAP services can be consumed from other CAP applications, using the same uniform, and protocol-agnostic APIs as for local services – that is, **_as if they were local_**. This is accomplished by the service instances returned by `cds.connect` being remote proxies, which automatically translate all requests into protocol-specific ones, sent to remote services. Thereby taking care of all connectivity, remote communication, marshalling of data, as well as generic resilience.
 
 
-## Serving UIs 
+## Serving UIs
 
 
 ### Generic *index.html*
 
 Unless replaced by a custom `index.html` in the `app/` folder, CAP serves a generic welcome page at the root of the server.
-Open _<http://localhost:4004>_ in your browser and see the generated _index.html_ page: 
+Open _<http://localhost:4004>_ in your browser and see the generated _index.html_ page:
 
 ![Generic welcome page generated by CAP that list all endpoints.
 ](assets/bookshop/index-html.png){style="width:450px; box-shadow: 1px 1px 5px #888888"}
@@ -666,7 +673,7 @@ CAP provides out-of-the-box support for SAP Fiori UIs, for example, with respect
 ###### Vuejs UIs
 
 Besides Fiori UIs, CAP services can be consumed from any UI frontends using standard AJAX requests.
-For example, you can [find a simple Vue.js app in the GitHub repo](https://github.com/capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to the `CatalogService` API we defined above. 
+For example, you can [find a simple Vue.js app in the GitHub repo](https://github.com/capire/bookshop/tree/main/app/vue), which demonstrates browsing and ordering books using OData requests to the `CatalogService` API we defined above.
 
 ![Shows the famous bookshop catalog service in a simple Vue.js UI.](assets/bookshop/vue-app.png){style="margin:0"}
 
@@ -682,7 +689,7 @@ While the generic providers serve most CRUD requests out of the box, you can add
 
 > [!note] Choosing between Node.js and Java
 > The latter is the first time in this guide where you need to choose between Node.js and Java as your CAP runtime.
-> You can pick either of them, depending on your team's skillset and other boundary conditions, and add respective configuration using `cds add nodejs` or `cds add java` explained below. 
+> You can pick either of them, depending on your team's skillset and other boundary conditions, and add respective configuration using `cds add nodejs` or `cds add java` explained below.
 
 ### Declarative Constraints
 
@@ -693,14 +700,14 @@ Custom logic frequently deals with input validation. We can accomplish that by a
 ```cds [srv/admin-constraints.cds]
 using { AdminService } from './admin-service.cds';
 annotate AdminService.Books with {
-  
+
   title @mandatory;
 
-  author @assert: (case 
+  author @assert: (case
     when not exists author then 'Specified Author does not exist'
   end);
 
-  genre @mandatory @assert: (case 
+  genre @mandatory @assert: (case
     when not exists genre then 'Specified Genre does not exist'
   end);
 
@@ -722,7 +729,7 @@ annotate AdminService.Books with {
 
 
 
-### Custom Handlers in Node.js 
+### Custom Handlers in Node.js
 
 Prepare your project for custom coding in Node.js by adding the respective facet:
 ```shell
@@ -745,9 +752,9 @@ const cds = require('@sap/cds')
 class CatalogService extends cds.ApplicationService { init() {
 
   // After READ handler on Books to add discount info
-  this.after ('READ', 'Books', results => results.forEach (book => { 
+  this.after ('READ', 'Books', results => results.forEach (book => {
     if (book.stock > 111) book.title += ` -- 11% discount!`
-  }) 
+  }))
 
   return super.init()
 }}
@@ -758,9 +765,9 @@ import cds from '@sap/cds'
 export class CatalogService extends cds.ApplicationService { init() {
 
   // After READ handler on Books to add discount info
-  this.after ('READ', 'Books', results => results.forEach (book => { 
+  this.after ('READ', 'Books', results => results.forEach (book => {
     if (book.stock > 111) book.title += ` -- 11% discount!`
-  }) 
+  }))
 
   return super.init()
 }}
@@ -774,7 +781,7 @@ export class CatalogService extends cds.ApplicationService { init() {
 ![](assets/bookshop/event-handlers.drawio.svg)
 
 > [!tip] On / Before / After Hooks
-> Event handlers can intercept any CRUD event, as well as custom Actions and Functions. They can be registered for different phases of request processing, such as: **_on_**,  that is _instead of_ the default processing, **_before_** the default processing, or **_after_** it. 
+> Event handlers can intercept any CRUD event, as well as custom Actions and Functions. They can be registered for different phases of request processing, such as: **_on_**,  that is _instead of_ the default processing, **_before_** the default processing, or **_after_** it.
 
 
 
@@ -792,7 +799,7 @@ mvn cds:watch
 In CAP Java, service implementations go into subclasses of `EventHandler`, annotated with `@Component` and `@ServiceName`, and the respective event handlers are methods within these classes annotated with `@On`, `@Before`, or `@After`, depending on the desired interception phase:
 
 ::: code-group
-```java [srv/src/main/java/sap/capire/bookshop/CatalogServiceHandler.java]{16}
+```java [srv/src/main/java/sap/capire/bookshop/CatalogServiceHandler.java]
 package sap.capire.bookshop;
 
 import java.util.List;
@@ -805,18 +812,18 @@ import cds.gen.catalogservice.Books;
 import cds.gen.catalogservice.Books_;
 import cds.gen.catalogservice.CatalogService_;
 
-@Component 
-@ServiceName(CatalogService_.CDS_NAME)
-public class CatalogServiceHandler implements EventHandler {
+@Component // [!code focus]
+@ServiceName(CatalogService_.CDS_NAME) // [!code focus]
+public class CatalogServiceHandler implements EventHandler { // [!code focus]
 
   // After READ handler on Books to add discount info
-  @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME) 
-  public void addDiscountIfApplicable (List<Books> books) { 
-    for (Books book : books) {  
-      if (book.getStock() != null && book.getStock() > 111) 
-        book.setTitle (book.getTitle() + " -- 11% discount!"); 
-    } 
-  } 
+  @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME) // [!code focus]
+  public void addDiscountIfApplicable (List<Books> books) { // [!code focus]
+    for (Books book : books) { // [!code focus]
+      if (book.getStock() != null && book.getStock() > 111) // [!code focus]
+        book.setTitle (book.getTitle() + " -- 11% discount!"); // [!code focus]
+    } // [!code focus]
+  } // [!code focus]
 
 }
 ```
@@ -844,9 +851,9 @@ While you **_can_** add custom handlers for standard CRUD events, you **_have to
   // Action handler for submitOrder
   this.on ('submitOrder', async req => {
     let { book:id, quantity } = req.data
-    let affected = await UPDATE (Books,id) 
-      .with `stock = stock - ${quantity}` 
-      .where `stock >= ${quantity}` 
+    let affected = await UPDATE (Books,id)
+      .with `stock = stock - ${quantity}`
+      .where `stock >= ${quantity}`
     if (!affected) req.error `${quantity} exceeds stock for book #${id}`
   })
 ```
@@ -881,17 +888,17 @@ We have now built a simple bookshop application step-by-step, thereby following 
 
 Thereby we touched upon some best practices of CAP, such as:
 
-::: tip [Inner-Loop Development](#inner-loop) 
-::: 
-::: tip [Focus on Domain](#focus-on-domain) 
+::: tip [Inner-Loop Development](#inner-loop)
 :::
-::: tip [Separation of Concerns](#separation-of-concerns) 
+::: tip [Focus on Domain](#focus-on-domain)
+:::
+::: tip [Separation of Concerns](#separation-of-concerns)
 :::
 ::: tip [Use Case-Oriented Services](#use-case-oriented-services)
 :::
 ::: tip [Served Out-of-the-Box](#served-out-of-the-box)
 :::
-::: tip [Pushdown to Database](#pushed-down-to-db-1) 
+::: tip [Pushdown to Database](#pushed-down-to-db-1)
 :::
 
 Learn more about these practices and guiding principles in the [_Core Concepts_](./concepts) guide following next, and the [_Key Features_](./features) guide thereafter. After that, go ahead and explore further on your own in the respective deep dive guides in the [_Develop_ section](../guides/).

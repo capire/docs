@@ -49,7 +49,7 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node      # Node.js latest LTS
+brew install node@24   # Node.js LTS
 npm i -g @sap/cds-dk   # CAP's cds-dk
 ```
 
@@ -96,7 +96,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to check whether installation was successful, and to see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
   ```shell
   cds
   ```
@@ -177,7 +177,7 @@ cds watch
   Waiting for some to arrive...
 ```
 
-Let's feed it with a simple service definition by running that in a secondary terminal, which adds a simple service definition as shown below:
+Let's feed it with a simple service definition by running that in a _secondary terminal_, which adds a simple service definition as shown below:
 ```shell
 cds add tiny-sample
 ```
@@ -216,29 +216,36 @@ Use `cds add` to grow your project as you go:
 cds add data
 cds add nodejs
 cds add java
+```
+<!--
 cds add ui5
 cds add fiori-tools
-```
+-->
 
-Use `cds add` to add deployment options
+Use `cds add` to add deployment options:
 
 ```shell
-cds add multitenancy
 cds add hana
+cds add xsuaa
+cds add ias
+cds add multitenancy
 cds add mta
 cds add kyma
 cds add github-actions
 ```
 
 ### `cds up`
+
 Use `cds up` to build and deploy your project in one go:
 
 ```shell
 cds up
-cds up --to hana
 cds up --to cf
-cds up --to kyma
+cds up --to k8s
 ```
+<!--
+cds up --to hana
+-->
 
 ## Stay up to Date!
 
@@ -259,23 +266,23 @@ npm upgrade
 ```
 > Use `npm outdated` to check which dependencies are outdated before upgrading.
 
-> [!warning]
-> For such upgrades to work, **do not use pinned versions** in your project dependencies. Always use open semver ranges instead – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
+> [!warning] Do not use pinned versions
+> For such upgrades to work, always **use open version ranges** in your project dependencies – with a leading caret, as in `^9.7.0`, and as shown below –, combined with [`package-lock.json`](https://docs.npmjs.com/cli/configuring-npm/package-lock-json), and [`npm ci`](https://docs.npmjs.com/cli/commands/npm-ci) for repeatable builds and deployments.
 
 ::: code-group
 ```jsonc [package.json]
   "dependencies": {
-    "@sap/cds": "9.7.0",  // DON'T use pinned versions // [!code --]
-    "@sap/cds": "^9.7.0",  // [!code ++]
+    "@sap/cds": "9.7.0",   // DON'T use pinned versions // [!code --]
+    "@sap/cds": "^9.7.0",  // DO allow new minor versions [!code ++]
     ...
   }
 ```
 :::
 
-> [!tip]
+> [!tip] Automate dependency updates
 > Consider using tools like [Dependabot](https://docs.github.com/en/code-security/getting-started/dependabot-quickstart-guide) or [Renovate](https://www.mend.io/renovate/) to automate dependency updates for you. These tools automatically open pull requests in your Git repositories whenever new versions of your dependencies are released. They are also highly recommended for managing Maven dependencies in CAP Java projects.
 
 
 ## Next: Bookshop
 
-Continue with [_The Bookshop Sample_](./bookshop) for an step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.
+Continue with [_The Bookshop Sample_](./bookshop) for a step-by-step walkthrough of the most common development tasks in CAP projects. Then explore the [_Core Concepts_](./concepts) and [_Key Features_](./features) of CAP, before going on to the other [_Learning Sources_](./learn-more) within this documentation, or outside.

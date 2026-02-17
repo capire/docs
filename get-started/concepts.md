@@ -441,7 +441,7 @@ All data processed and served by CAP services is *passive*, and represented by *
 
 ### Extensible Data
 
-Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
+Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. With CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
 
 For example, an extension like that can automatically be served by CAP:
 
@@ -608,7 +608,7 @@ So, in total, and in effect, we learn:
 
 
 
-The *[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)* (aka *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
+The *[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
 
 *"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {.indent style="font-family:serif"}
 
@@ -756,7 +756,7 @@ The *DatabaseService* subclasses provide implementations for the different datab
 
 
 
-SaaS customers of CAP applications use the very same techniques than any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
+SaaS customers of CAP applications use the very same techniques as any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
 
 ### Extending Models
 

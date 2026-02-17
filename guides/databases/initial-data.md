@@ -1,6 +1,6 @@
 # Adding Initial Data
 
-You can add `.csv` files to fill your database with initial data and/or test data. These files are automatically loaded whenever a database gets bootstrapped in or you run `cds watch` at development time, or when deployed or upgraded for production.
+You can add `.csv` files to fill your database with initial data and test data. The runtime automatically loads these files whenever you bootstrap a database, run `cds watch` in development, or deploy and upgrade for production.
 {.abstract}
 
 [[toc]]
@@ -8,7 +8,7 @@ You can add `.csv` files to fill your database with initial data and/or test dat
 
 ## Using `cds add data`
 
-Use `cds add data` to generate empty `.csv` files, with column headers based on the entities in your CDS model. For example, if we do so in our [*@capire/bookshop*](../../get-started/bookshop) sample project, we'd see output as shown below:
+Use `cds add data` to generate empty `.csv` files, with column headers based on the entities in your CDS model. For example, if you run this in the [*@capire/bookshop*](../../get-started/bookshop) sample project, you can see the following output:
 
 ```shell
 cds add data
@@ -25,7 +25,7 @@ Adding facet: data
 Successfully added features to your project
 ```
 
-By default, the generated files are placed in the _db/data_ folder of your project structure:
+By default, the command generates the files in the _db/data_ folder of your project structure:
 
 ```zsh
 cap/bookshop/
@@ -35,7 +35,7 @@ cap/bookshop/
 ...
 ```
 
-You can also specify other folders by providing the `--out` option, e.g.:
+You can also specify other folders by providing the `--out` option, for example:
 
 ```shell
 cds add data -o test/data
@@ -45,7 +45,7 @@ Each file contains a CSV header line reflecting the structure of the entity to w
 
 ## Editing `.csv` Files
 
-Go ahead and fill these files with initial data by editing them in your favorite editor. For example, the content of _db/data/sap.capire.bookshop-Books.csv_ looks like that:
+Fill these files with initial data by editing them in your preferred editor. For example, the content of _db/data/sap.capire.bookshop-Books.csv_ looks like this:
 
 ::: code-group
 
@@ -72,7 +72,7 @@ cds add data --records 10
 
 
 
-Common rules apply to text content in `.csv` files, like:
+The following table shows common rules that apply to text content in `.csv` files:
 
 | Condition                                                        | Handling                    |
 |------------------------------------------------------------------|-----------------------------|
@@ -85,7 +85,7 @@ Common rules apply to text content in `.csv` files, like:
 
 ## Initial vs Test Data
 
-Quite frequently, you need to distinguish between _(real) initial data_, that is data meant for production, such as configuration, code lists, and _test data_, meant for development and testing purposes only. CAP supports this by putting respective .csv files in two major places:
+You need to distinguish between _(real) initial data_ meant for production (configuration, code lists) and _test data_ meant for development and testing purposes only. CAP supports this by organizing CSV files in two locations:
 
 ```zsh
 cap/bookshop/
@@ -99,13 +99,15 @@ cap/bookshop/
 ...
 ```
 
+The following table describes the purpose and deployment scope of each location:
+
 | Location        | Purpose             | Deployed...          |
 |-----------------|---------------------|----------------------|
 | **`db/data`**   | (real) initial data | always, dev and prod |
 | **`test/data`** | test data           | in development only  |
 
 ::: details Bookshop data is actually test data...
-Note that the initial data provided in the [_@capire/bookshop_](../../get-started/bookshop) sample is actually test data, and hence should have been placed in the _test/data_ folder. But for simplicity, it's placed in _db/data_, also because the whole purpose of that project is to be a _sample_.
+Note that the initial data provided in the [_@capire/bookshop_](../../get-started/bookshop) sample is actually test data, and hence we would typically place it in the _test/data_ folder. But for simplicity, it's placed in _db/data_, also because the whole purpose of that project is to be a _sample_.
 ::::
 
 > [!danger] Don't let users modify productive initial data
@@ -114,7 +116,7 @@ Note that the initial data provided in the [_@capire/bookshop_](../../get-starte
 
 ### Custom Folders
 
-You can also configure other folders to read data from in different profiles. Use config option <Config>cds.requires.db.data</Config> to do so. The default configuration is like that, which you can override in your `package.json` or `.cdsrc.yaml` file as appropriate:
+You can also configure other folders to read data from in different profiles. Use config option <Config>cds.requires.db.data</Config> to do so. The default configuration is as follows, which you can override in your `package.json` or `.cdsrc.yaml` file as appropriate:
 
 ::: code-group
 ```json [package.json]
@@ -144,7 +146,7 @@ cds env requires.db.data --profile development
 
 ## Next to `.cds` Files
 
-In addition to the [configured](#custom-folders) folders for initial data and test data – that is `db/data` and `test/data`  by default –, you can place `.csv` files into `data` folders anywhere next to your CDS model source files. For example:
+In addition to the [configured](#custom-folders) folders for initial data and test data (that is, `db/data` and `test/data` by default), you can place `.csv` files into `data` folders anywhere next to your CDS model source files. For example:
 
 ```zsh
 myproject/
@@ -157,16 +159,16 @@ myproject/
 ...
 ```
 
-All `db/data/*.csv` and  `srv/data/*.csv` files are automatically loaded, because they are located in a `data` folder next to `.cds` model sources.
+The runtime automatically loads all `db/data/*.csv` and `srv/data/*.csv` files located in a `data` folder next to `.cds` model sources.
 
-This is especially useful for remote service definitions imported with `cds import` (by default into `srv/external/`) so that data for such services can also be served when mocking.
+This is especially useful for remote service definitions imported with `cds import` (by default into `srv/external/`), allowing you to serve mock data for external services.
 
 
 ## From Reuse Packages
 
-The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages whose main purpose is to provide initial data.
+The [_in-the-neighborhood-of-models_](#next-to-cds-files) technique enables reuse packages that provide initial data.
 
-Find an example for such a content reuse package at [*@capire/common*](https://github.com/capire/common) which showcases how one could provide ISO reuse data for `Countries`, `Currencies` and `Languages` code lists, as defined in [`@sap/cds/common`](../../cds/common). It essentially consists of these files as content:
+An example of such a content reuse package is [*@capire/common*](https://github.com/capire/common), which showcases how to provide ISO reuse data for `Countries`, `Currencies`, and `Languages` code lists, as defined in [`@sap/cds/common`](../../cds/common). It essentially consists of these files as content:
 
 ```zsh
 @capire/common
@@ -182,8 +184,8 @@ Find an example for such a content reuse package at [*@capire/common*](https://g
 └── package.json
 ```
 
-Such packages get installed via `npm` or `mvn`, and hence their content will reside under `node_modules` folders, or Maven `target` folders.
-As long as they also enclose reuse models, like the `index.cds` above, the .csv files in the `data` folder next to it will be automatically found and loaded into a consuming application's database.
+Install such packages via `npm` or `mvn`. Their content will reside under `node_modules` folders or Maven `target` folders.
+When packages include reuse models (like `index.cds` above), the runtime automatically discovers and loads CSV files from the adjacent `data` folder into the consuming application's database.
 
 > [!tip] How to 'enable' reuse packages
 >
@@ -199,12 +201,12 @@ As long as they also enclose reuse models, like the `index.cds` above, the .csv 
 > }
 > ```
 >
-> In absence of such a plugin configuration, you could add a `using from '@capire/common';` clause to one of your cds files.
+> Without such plugin configuration, add a `using from '@capire/common';` clause to one of your CDS files.
 
 
-##  Plug-and-Play Reuse
+## Plug-and-Play Reuse
 
-Reuse packages, such as the `@capire/common` one described above, can be consumed in any CAP project by simply installing them via `npm` or `mvn`, as shown  in the [`@capire/bookstore`](https://github.com/capire/bookstore) sample project:
+You can consume reuse packages, such as the `@capire/common` one described above, in any CAP project by simply installing them via `npm` or `mvn`, as shown in the [`@capire/bookstore`](https://github.com/capire/bookstore) sample project:
 
 ```json [package.json]
 {
@@ -217,7 +219,7 @@ Reuse packages, such as the `@capire/common` one described above, can be consume
 }
 ```
 
-When running `cds watch`, the `@capire/common/index.cds` model file is automatically picked up, and so are all `.csv` files in its `data` folder, as indicated in the following output:
+When you run `cds watch`, the runtime automatically picks up the `@capire/common/index.cds` model file and all CSV files in its `data` folder, as shown in the following output:
 
 ```zsh
 [cds] - loaded model from 27 file(s):

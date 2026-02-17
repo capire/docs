@@ -5,4 +5,3 @@
 # [Event Handlers](custom-code)
 # [Actions & Functions](custom-actions)
 # [Serving Media Data](media-data)
-# [Consuming Services](consuming-services)

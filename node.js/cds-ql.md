@@ -112,7 +112,7 @@ const cats = await cds.connect.to ('CatalogService')
 let books = await cats.run (query)
 ```
 
-> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via http.
+> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
 The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
 
@@ -281,7 +281,7 @@ cds.ql {
 You can also test-drive the query by executing it with a running application:
 
 ```sh
-cds repl -u ql -r cap/samples/bookshpop
+cds repl -u ql -r cap/samples/bookshop
 ```
 ```js
 await cds.ql`SELECT from Authors {
@@ -333,6 +333,54 @@ If the input is already a `cds.Query` instance, it is returned unchanged:
 let q1 = cds.ql `SELECT from Books`
 let q2 = cds.ql (q1)
 q1 === q2 //> true
+```
+
+
+## cds.ql.clone() {.method}
+
+Use the `cds.ql.clone()` method to create clones of given queries, which can be plain CQN objects, or instances of `cds.Query` themselves. This is useful to avoid side effects when modifying queries prior to execution. The returned clone is always an instance of [`cds.Query`](#class-cds-ql-query).
+
+For example, given this original query, which would be captured in CQN as shown below:
+
+```js
+q1 = SELECT.from`Books` .where`title like 'Wu%'`.orderBy`genre.name`
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'title' ] }, 'like', { val: 'Wu%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] } ]
+  }
+}
+```
+
+We can create a clone and modify it like this:
+```js
+q2 = cds.ql.clone (q1)
+```
+We can then modify `q2` without changing `q1`, for example like this:
+```js
+// Override where clause 
+q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
+```
+```js
+// Append an additional order by clause
+q2.orderBy`title asc`
+```
+
+We can use the `.flat()` method to see the effective modified query:
+```js
+q2.flat()
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'author', 'name' ] }, '=', { val: 'Emily%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] }, { ref: [ 'title' ], sort: 'asc' } ]
+  }
+}
 ```
 
 
@@ -890,6 +938,12 @@ INSERT.into (Books) .columns (
    [ 252, 'Eleonora', 150, 234 ]
 )
 ```
+
+::: tip In Essence:
+
+[Managed fields](../guides/domain/index#managed-data) and [UUIDs](../guides/domain/index#prefer-uuids-for-keys) are automatically filled with `INSERT.entries()`, but not when using `INSERT.columns().values()` or `INSERT.columns().rows()`.
+:::
+
 ### from() {.method #from}
 
 

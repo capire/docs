@@ -9,7 +9,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 <div id="support-channels">
 
-| In order to...              | External                                                                                                                                     |
+| To...                       | External                                                                                                                                     |
 |-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | Ask Questions / Get Answers | [SAP Community](https://community.sap.com/t5/c-khhcw49343/SAP+Cloud+Application+Programming+Model/pd-p/9f13aee1-834c-4105-8e43-ee442775e5ce) |
 | Create issues / bug reports | [SAP Support Portal](https://support.sap.com)                                                                                                |
@@ -18,8 +18,7 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 </div>
 
 > [!tip]
-> If you encounter issues, check the Troubleshooting FAQs below.
-> Do that first before posting questions to or creating issues in the other channels.
+> If you encounter issues, check the Troubleshooting FAQs below before posting questions or creating issues in the support channels.
 
 [[toc]]
 
@@ -29,13 +28,13 @@ Support Channels & Troubleshooting FAQs {.subtitle}
 
 ### Can't start VS Code from Command Line on macOS {#vscode-macos}
 
-In order to start VS Code via the `code` CLI, users on macOS must first run a command (*Shell Command: Install 'code' command in PATH*) to add the VS Code executable to the `PATH` environment variable. Read VS Code's [macOS setup guide](https://code.visualstudio.com/docs/setup/mac) for help.
+To start VS Code via the `code` CLI, users on macOS must first run a command (*Shell Command: Install 'code' command in PATH*) to add the VS Code executable to the `PATH` environment variable. Read VS Code's [macOS setup guide](https://code.visualstudio.com/docs/setup/mac) for help.
 
 
 
 ### Check the Node.js version { #node-version}
 
-Make sure you run the latest long-term support (LTS) version of Node.js with an even number like `20`, `22`, `24`, and so on. Refrain from using odd versions, for which some modules with native parts will have no support and thus might even fail to install. Check version with:
+Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
 
 ```sh
 node -v
@@ -49,7 +48,7 @@ For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#run
 
 ### Check access permissions on macOS or Linux
 
-In case you get error messages like `Error: EACCES: permission denied, mkdir '/usr/local/...'` when installing a global module like `@sap/cds-dk`, configure `npm` to use a different directory for global modules:
+If you get error messages like `Error: EACCES: permission denied, mkdir '/usr/local/...'` when installing a global module like `@sap/cds-dk`, configure `npm` to use a different directory for global modules:
 
 ```sh
 mkdir ~/.npm-global ; npm set prefix '~/.npm-global'
@@ -68,12 +67,12 @@ Global npm installations are stored in a user-specific directory on your machine
 C:\Users\<your-username>\AppData\Roaming\npm
 ```
 
-Make sure that your `PATH`-environment variable contains this path.
+Verify that your `PATH`-environment variable contains this path.
 
 In addition, set the variable `NODE_PATH` to: <br /> ``C:\Users\<your-username>\AppData\Roaming\npm\node_modules``.
 
 
-### How to consume a new version of CDS? { #cds-versions}
+### Updating CDS Versions { #cds-versions}
 
 * Design time tools like `cds init`:
 
@@ -137,9 +136,9 @@ cds.on('served', async ()=>{
 
 ### Why does my app not show up in Dynatrace?
 
-Make sure that:
-- Your app's start script is `cds-serve` instead of `npx cds run`.
-- You have the dependency `@dynatrace/oneagent-sdk` in your _package.json_.
+Requirements:
+- App start script is `cds-serve` (not `npx cds run`)
+- Dependency `@dynatrace/oneagent-sdk` is in _package.json_
 
 ### Why are requests rejected with HANA timeout errors?
 
@@ -148,8 +147,8 @@ Make sure that:
 - _Acquiring client from pool timed out_
 - _ResourceRequest timed out_
 
-**First of all**, make sure the SAP HANA database is accessible in your application's environment.
-This includes making sure the SAP HANA is either part of or mapped to your Cloud Foundry space or Kyma cluster and the IP addresses are [in an allowed range](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). Connectivity issues are likely the root cause if you experience this error during application startup.
+Verify that the SAP HANA database is accessible in your application's environment.
+This includes verifying the SAP HANA is either part of or mapped to your Cloud Foundry space or Kyma cluster and the IP addresses are [in an allowed range](https://help.sap.com/docs/HANA_SERVICE_CF/cc53ad464a57404b8d453bbadbc81ceb/71eb651f84274a0cb2f2b4380df91724.html). Connectivity issues are likely the root cause if you experience this error during application startup.
 
 [Learn how to set up SAP HANA instance mappings](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/map-sap-hana-database-to-another-environment-context){.learn-more style="margin-top:10px"}
 
@@ -161,11 +160,18 @@ If you frequently get this error during normal runtime operation your database c
 | _Root Cause 2_ | The creation of a new connection to the database takes too long.                                                                                          |
 | _Solution_     | Adapt `max` or `acquireTimeoutMillis` with more appropriate values, according to the [documentation](../node.js/databases#databaseservice-configuration). |
 
-Always make sure that database transactions are either committed or rolled back. This can work in two ways:
+Ensure that database transactions are either committed or rolled back. This can work in two ways:
 1. Couple it to your request (this happens automatically): Once the request is succeeded, the database service commits the transaction. If there was an error in one of the handlers, the database service performs a rollback.
 2. For manual transactions (for example, by writing `const tx = cds.tx()`), you need to perform the commit/rollback yourself: `await tx.commit()`/`await tx.rollback()`.
 
-If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), make sure to adjust the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) which specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
+If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), verify that the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) is adjusted appropriately. This variable specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
+
+### Why are requests rejected with `431` and not logged?
+
+|              | Explanation                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, the Node.js HTTP server rejects the request during the initial parsing phase before it reaches CAP. Therefore, the request is not logged by the application.                                    |
+| _Solution_   | Inspect the request headers and check their size. If large headers are required and cannot be reduced, increase the maximum allowed HTTP header size in Node.js by setting the following environment variable `NODE_OPTIONS="--max-http-header-size=65536"` |
 
 
 ### Why are requests rejected with `502`?
@@ -221,7 +227,7 @@ module.exports = cds.server
 
 |              | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| _Root Cause_ | In case the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritized the service binding. This service of course does have different endpoints than the originally targeted remote service. For more information, please refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name). |
+| _Root Cause_ | If the application has a service binding with the same name as the requested destination, the SAP Cloud SDK prioritizes the service binding. This service has different endpoints than the originally targeted remote service. For more information, refer to the [SAP Cloud SDK documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#referencing-destinations-by-name). |
 | _Solution_   | Use different names for the service binding and the destination.                                                                                                                                                                                                                                                                                                                                                                          |
 
 
@@ -235,8 +241,8 @@ module.exports = cds.server
 | _Solution 2_   | Try `npm rebuild` or add `@cap-js/cds-types` in your _tsconfig.json_. |
 
 
-#### Install package as dev dependency
-The type definitions for `@sap/cds` are maintained in a separate package `@cap-js/cds-types` and have to be explicitly installed as a dev dependency. This can be done by adding the `typescript` facet:
+#### Install as dev dependency
+Install type definitions by adding the `typescript` facet:
 
 ::: code-group
 ```sh [facet]
@@ -251,7 +257,7 @@ npm i -D @cap-js/cds-types
 
 Installing `@cap-js/cds-types` leverages VS Code's automatic type resolution mechanism by symlinking the package in `node_modules/@types/sap__cds` in a postinstall script. If you find that this symlink is missing, try `npm rebuild` to trigger the postinstall script again.
 
-If the symlink still does not persist, you can explicitly point the type resolution mechanism to `@cap-js/cds-types` in your _tsconfig.json_:
+If the symlink doesn't persist, explicitly configure _tsconfig.json_:
 
 ::: code-group
 ```json [tsconfig.json]
@@ -263,30 +269,27 @@ If the symlink still does not persist, you can explicitly point the type resolut
 ```
 :::
 
-If you find that the types are still incomplete, open a bug report in [the `@cap-js/cds-types` repository](https://github.com/cap-js/cds-types/issues/new/choose).
+For incomplete types, report issues in [the `@cap-js/cds-types` repository](https://github.com/cap-js/cds-types/issues/new/choose).
 
 
 
 
 ### How to fix "`tar: Error is not recoverable: exiting now`"?
 
-If you get the error `tar: Error is not recoverable: exiting now` (for example, when building MTX resources)
-you can try installing the tar library for better compatibility with Windows systems.
-
-Add it to your devDependencies like so:
+If you get this error (for example, when building MTX resources), install the tar library for better Windows compatibility:
 
 ```sh
 npm add -D tar
 ```
-On macOS and Linux, the built-in implementation will continue to be used.
+On macOS and Linux, the built-in implementation continues to be used.
 
 
 
 ## Java
 
-### How can I make sure that a user passes all authorization checks?
+### How to bypass authorization checks?
 
-A new option `privilegedUser()` can be leveraged when [defining](../java/event-handlers/request-contexts#defining-requestcontext) your own `RequestContext`. Adding this introduces a user, which passes all authorization restrictions. This is useful for scenarios, where a restricted service should be called through the [local service consumption API](../java/services) either in a request thread regardless of the original user's authorizations or in a background thread.
+Use `privilegedUser()` when [defining](../java/event-handlers/request-contexts#defining-requestcontext) your own `RequestContext`. This introduces a user that passes all authorization restrictions. Useful when calling a restricted service through the [local service consumption API](../java/services) regardless of the original user's authorizations or in a background thread.
 
 ### Why do I get a "User should not exist" error during build time?
 
@@ -316,12 +319,13 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 
 ```
 
-[Learn more about the install-node goal.](/java/assets/cds-maven-plugin-site/install-node-mojo.html){.learn-more target="_blank"}
+[Learn more about the install-node goal.](../java/assets/cds-maven-plugin-site/install-node-mojo.html){.learn-more target="_blank"}
 
 ### How can I expose custom REST APIs with CAP?
 
-From time to time you might want to expose additional REST APIs in your CAP application, that aren't covered through CAPs existing protocol adapters (for example, OData V4). A common example for this might be a CSV file upload or another type of custom REST endpoint.
-In that case, you can leverage the powerful capabilities of Spring Web MVC, by implementing your own RestController. From within your RestController implementation, you can fully leverage all CAP Java APIs. Most commonly you'll be interacting with your services and the database through the [local service consumption API](../java/services). To learn more about Spring Web MVC, see the [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
+To expose additional REST APIs not covered by CAP's protocol adapters (for example, OData V4), implement your own Spring Web MVC RestController. Common examples include CSV file uploads or custom REST endpoints.
+
+Your RestController can fully leverage CAP Java APIs. You'll typically interact with services and the database through the [local service consumption API](../java/services). Learn more: [Spring docs](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc), [Spring Boot docs](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-spring-mvc), and this [tutorial](https://spring.io/guides/gs/serving-web-content/).
 
 ### How can I build a CAP Java application without SQL database?
 
@@ -641,6 +645,8 @@ This message indicates that extensions exist, but the application is not configu
 See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
+
+<div id="hana-tms-errors" />
 
 ## BTP
 

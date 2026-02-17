@@ -153,7 +153,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
    ```sh
    cd ..
-   cds init orders-ext
+   cds init orders-ext --nodejs
    code orders-ext # open in VS Code
    ```
 
@@ -224,9 +224,9 @@ To support [quick-turnaround tests of extensions](#test-locally) using `cds watc
 ::: code-group
 
 ```csv [test/data/sap.capire.orders-Orders.csv]
-ID;createdAt;buyer;OrderNo;currency_code;
-7e2f2640-6866-4dcf-8f4d-3027aa831cad;2019-01-31;john.doe@test.com;1;EUR
-64e718c9-ff99-47f1-8ca3-950c850777d4;2019-01-30;jane.doe@test.com;2;EUR
+ID,createdAt,buyer,OrderNo,currency_code
+7e2f2640-6866-4dcf-8f4d-3027aa831cad,2019-01-31,john.doe@test.com,1,EUR
+64e718c9-ff99-47f1-8ca3-950c850777d4,2019-01-30,jane.doe@test.com,2,EUR
 ```
 
 :::
@@ -474,9 +474,9 @@ Edit the template-provided file `test/data/sap.capire.orders-Orders.csv` and add
 ::: code-group
 
 ```csv [test/data/sap.capire.orders-Orders.csv]
-ID;createdAt;buyer;OrderNo;currency_code;x_priority;x_salesRegion_code
-7e2f2640-6866-4dcf-8f4d-3027aa831cad;2019-01-31;john.doe@test.com;1;EUR;high;EMEA
-64e718c9-ff99-47f1-8ca3-950c850777d4;2019-01-30;jane.doe@test.com;2;EUR;low;APJ
+ID,createdAt,buyer,OrderNo,currency_code,x_priority,x_salesRegion_code
+7e2f2640-6866-4dcf-8f4d-3027aa831cad,2019-01-31,john.doe@test.com,1,EUR,high,EMEA
+64e718c9-ff99-47f1-8ca3-950c850777d4,2019-01-30,jane.doe@test.com,2,EUR,low,APJ
 ```
 
 :::
@@ -486,10 +486,10 @@ Create a new file `test/data/x_orders.ext-x_SalesRegion.csv` with this content:
 ::: code-group
 
 ```csv [test/data/x_orders.ext-x_SalesRegion.csv]
-code;name;descr
-AMER;Americas;North, Central and South America
-EMEA;Europe, the Middle East and Africa;Europe, the Middle East and Africa
-APJ;Asia Pacific and Japan;Asia Pacific and Japan
+code,name,descr
+AMER,"Americas","North, Central and South America"
+EMEA,"Europe, the Middle East and Africa","Europe, the Middle East and Africa"
+APJ,"Asia Pacific and Japan","Asia Pacific and Japan"
 ```
 
 :::
@@ -1029,8 +1029,8 @@ Append `--delete-settings` to include saved project settings for the current pro
 
 `cds help logout` is available for more details.
 
-::: tip
-When your role-collection assignments have changed, run `cds logout` followed by `cds login` in order to fetch a token containing the new set of scopes.
+::: tip Re-authenticate when your role-collection assignments have changed
+Run `cds logout` followed by `cds login` in order to fetch a token with the new scopes.
 :::
 
 ### Debugging
@@ -1060,15 +1060,15 @@ As described in [Add Data](#add-data), you can provide local test data and initi
 ::: code-group
 
 ```csv [sap.capire.orders-Orders.csv]
-ID;x_priority;x_salesRegion_code
-7e2f2640-6866-4dcf-8f4d-3027aa831cad;high;EMEA
-64e718c9-ff99-47f1-8ca3-950c850777d4;low;APJ
+ID,x_priority,x_salesRegion_code
+7e2f2640-6866-4dcf-8f4d-3027aa831cad,high,EMEA
+64e718c9-ff99-47f1-8ca3-950c850777d4,low,APJ
 ```
 
 :::
 
-::: warning _
-Adding data only for the missing columns doesn't work when using SAP HANA as a database. With SAP HANA, you always have to provide the full set of data.
+::: warning Adding data only for missing columns doesn't work with SAP HANA
+With SAP HANA, you always have to provide the full set of data.
 :::
 
 <span id="afterAddingData" />

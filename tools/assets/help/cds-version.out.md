@@ -2,14 +2,15 @@
 <pre class="log">
 > cds version
 
-@sap/cds: 9.6.4
-@sap/cds-compiler: 6.6.2
-@sap/cds-dk (global): 9.6.1
-@sap/cds-fiori: 2.1.1
-@sap/cds-mtxs: 3.6.1
-@cap-js/asyncapi: 1.0.3
-@cap-js/db-service: 2.8.1
-@cap-js/openapi: 1.3.1
-@cap-js/sqlite: 2.1.2
-Node.js: v22.21.1
+ <em> @sap/cds-dk (global) </em><em> 9.7.1   </em><i> .../node_modules/@sap/cds-dk </i>
+ <em> @sap/cds             </em><em> 9.7.1   </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> @sap/cds-compiler    </em><em> 6.7.2   </em><i> .../node_modules/@sap/cds-compiler                                   </i>
+ <em> @sap/cds-fiori       </em><em> 2.2.0   </em><i> .../node_modules/@sap/cds-fiori                                      </i>
+ <em> @cap-js/db-service   </em><em> 2.8.2   </em><i> .../node_modules/@cap-js/db-service                                  </i>
+ <em> @cap-js/sqlite       </em><em> 2.1.3   </em><i> .../node_modules/@cap-js/sqlite                                      </i>
+ <em> cds.home             </em><em>         </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> cds.root             </em><em>         </em><i> .../your-project                                                  </i>
+ <em> npm root -l          </em><em>         </em><i> .../node_modules                                                     </i>
+ <em> npm root -g          </em><em>         </em><i> .../node_modules             </i>
+ <em> Node.js              </em><em> 24.13.0 </em><i> .../bin/node                     </i>
 </pre>
