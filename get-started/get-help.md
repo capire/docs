@@ -634,7 +634,7 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
 
 ### How do I get detailed HANA deployment logs
 
-The deployment logs are part of the [application logs](#cflogs-recent). To avoid problems with the logging infrastructure, the default detail level of the deployment logs is limited. To get more details, you need to increase the log level by setting the environment `DEBUG=deploy`.
+The deployment logs are part of the [application logs](#cflogs-recent). To avoid problems with the logging infrastructure, the default detail level of the deployment logs is limited to logs printed to `stderr`. To get more details, you need to increase the log level by setting the environment variable `DEBUG=deploy`.
 
 ### Why do I get 'Extensions exist, but extensibility is disabled'?
 
