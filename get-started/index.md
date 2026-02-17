@@ -109,14 +109,15 @@ git -v # display Git cli version
 ### Visual Studio Code {.proposed}
 ::: code-group
 ```shell [macOS]
-brew install --cask visual-studio-code            # VS Code itself
+brew install --cask visual-studio-code # VS Code itself
 ```
 ```PowerShell [Windows]
 winget install --silent Microsoft.VisualStudioCode
 # restart PowerShell to activate the new command
 ```
 ```bash [Linux]
-snap install --classic code # VS Code on Homebrew is only supported for macOS
+# VS Code on Homebrew is only supported for macOS
+sudo snap install --classic code
 ```
 :::
 ```shell
