@@ -43,18 +43,21 @@ brew install node@24   # Node.js LTS
 ```
 ```PowerShell [Windows]
 winget install --silent OpenJS.NodeJS.LTS
-# restart the shell to activate node command
+# restart PowerShell to activate the new command
 ```
 :::
 ```shell
-npm i -g @sap/cds-dk   # install CAP's cds-dk globally
+npm i -g @sap/cds-dk  # install CAP's cds-dk globally
+cds -v                # check cds version
 ```
 
-#### SQLite {.require}
+### SQLite (Windows) {.required}
 
 ::: code-group
 ```PowerShell [Windows]
 winget install --silent SQLite.SQLite
+# restart PowerShell to activate the new command
+sqlite3 -version
 ```
 :::
 
@@ -76,8 +79,12 @@ curl $url -o $mvnzip; `
 tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
 setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
 rm $mvnzip
+# restart PowerShell to activate the new commands
 ```
 :::
+```shell
+mvn -version  # display Maven and Java versions
+```
 
 ### Git and GitHub {.optional}
 
@@ -91,8 +98,12 @@ brew install github    # GitHub Desktop App
 winget install --silent Git.Git
 winget install --silent GitHub.cli
 winget install --silent GitHub.GitHubDesktop
+# restart PowerShell to activate the new commands
 ```
 :::
+```shell
+git -v # display Git cli version
+```
 
 
 ### Visual Studio Code {.proposed}
@@ -102,11 +113,15 @@ brew install --cask visual-studio-code            # VS Code itself
 ```
 ```PowerShell [Windows]
 winget install --silent Microsoft.VisualStudioCode
+# restart PowerShell to activate the new command
 ```
 ```bash [Linux]
-snap install --classic code # VS Code on Homwbrew is only supported for macOS
+snap install --classic code # VS Code on Homebrew is only supported for macOS
 ```
 :::
+```shell
+code -v # display VS Code's version
+```
 
 #### Visual Studio Code proposed extensions {.proposed}
 ```shell
