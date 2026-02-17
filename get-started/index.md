@@ -12,11 +12,14 @@ Jumpstart & Grow as You Go... {.subtitle}
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-### macOS, Linux and WSL (Windows Subsystem for Linux)
+### Preparation
 
-On macOS, Linux and WSL, we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+On Windows PowerShell you can use the built-in `WinGet` command.
 
-```shell
+
+::: code-group
+```shell [macOS / Linux / WSL]
 # silently install
 #   curl (required to get Homebrew)
 #   git (required by Homebrew)
@@ -24,7 +27,7 @@ On macOS, Linux and WSL, we recommend using [Homebrew](https://brew.sh), and run
 sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
-
+:::
 
 <style scoped>
   .required::before { content: 'Required:'; color: #999; margin-right: 0.5em }
@@ -32,39 +35,78 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
   .proposed::before { content: 'Proposed:'; color: #999; margin-right: 0.5em }
 </style>
 
-
-
 ### Node.js and _cds-dk_ {.required}
 
-```shell
+::: code-group
+```shell [macOS / Linux / WSL]
 brew install node@24   # Node.js LTS
-npm i -g @sap/cds-dk   # CAP's cds-dk
+```
+```PowerShell [Windows]
+winget install --silent OpenJS.NodeJS.LTS
+# restart the shell to activate node command
+```
+:::
+```shell
+npm i -g @sap/cds-dk   # install CAP's cds-dk globally
 ```
 
+#### SQLite {.require}
+
+::: code-group
+```PowerShell [Windows]
+winget install --silent SQLite.SQLite
+```
+:::
 
 ### Java and Maven {.optional}
 
-```shell
+::: code-group
+```shell [macOS / Linux / WSL]
 brew install sapmachine-jdk
 brew install maven
 ```
+```PowerShell [Windows]
+winget install --silent SAP.SapMachine.25.JDK
 
+# Apache Maven is not available using winget so download it directly
+$v="3.9.12"; `
+$url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
+$mvnzip="$env:LOCALAPPDATA\maven.zip"; `
+curl $url -o $mvnzip; `
+tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
+setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
+rm $mvnzip
+```
+:::
 
 ### Git and GitHub {.optional}
 
-```shell
+::: code-group
+```shell [macOS / Linux / WSL]
 brew install git       # Git CLI (for completeness, already installed for Homebrew)
 brew install gh        # GitHub CLI
 brew install github    # GitHub Desktop App
 ```
-
+```PowerShell [Windows]
+winget install --silent Git.Git
+winget install --silent GitHub.cli
+winget install --silent GitHub.GitHubDesktop
+```
+:::
 
 
 ### Visual Studio Code {.proposed}
-
-```shell
+::: code-group
+```shell [macOS]
 brew install --cask visual-studio-code            # VS Code itself
 ```
+```PowerShell [Windows]
+winget install --silent Microsoft.VisualStudioCode
+```
+```bash [Linux]
+snap install --classic code # VS Code on Homwbrew is only supported for macOS
+```
+:::
 
 #### Visual Studio Code proposed extensions {.proposed}
 ```shell
@@ -82,49 +124,6 @@ code --install-extension vscjava.vscode-maven     # for Maven
 
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
 
-### Windows PowerShell
-
-#### Node.js and _cds-dk_ {.required}
-```powershell
-winget install --silent OpenJS.NodeJS.LTS
-# restart the shell to activate node command
-npm i -g @sap/cds-dk
-```
-#### SQLite {.require}
-```powershell
-winget install --silent SQLite.SQLite
-```
-
-#### Java and Maven {.optional}
-```powershell
-winget install --silent SAP.SapMachine.25.JDK
-```
-
-Since Apache Maven is not available using `winget`, here is a script to install it directly.
-Note the configurable version number at the beginning.
-
-```powershell
-$v="3.9.12"; `
-$url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
-$mvnzip="$env:LOCALAPPDATA\maven.zip"; `
-curl $url -o $mvnzip; `
-tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
-setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
-rm $mvnzip
-```
-#### Git and GitHub {.optional}
-```powershell
-winget install --silent Git.Git
-winget install --silent GitHub.cli
-winget install --silent GitHub.GitHubDesktop
-```
-
-#### Visual Studio Code {.proposed}
-```powershell
-winget install --silent Microsoft.VisualStudioCode
-```
-See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extensions) for recommended Visual Studio Code extensions.
-
 ::: details Alternative setup ...
 
   You can also manually download and install the required packages from their respective websites:
@@ -136,9 +135,7 @@ See [Visual Studio Code proposed extensions](#visual-studio-code-proposed-extens
   | Git     | https://git-scm.com              | _optional_                                                |
   | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
   | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
-
 :::
-
 
 ## Command Line Interface
 
