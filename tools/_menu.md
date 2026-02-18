@@ -3,6 +3,7 @@
 # [Hybrid Testing w/ cds bind](./cds-bind)
 # [Editors & IDEs](cds-editors)
 # [CDS 2 TypeScript](cds-typer)
+# [CAP Migration Tool](migration)
 
 # [CLI Plugin APIs](apis/)
 
