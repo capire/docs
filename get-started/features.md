@@ -77,7 +77,7 @@ cds add hana,redis,mta,helm,mtx,multitenancy,extensibility...
 
 Most of your development happens in inner loops, where developers would **code**, **run**, and **test** in **fast iteration**. However, at least in mediocre cloud-based development approaches, this is slowed down drastically, for example, by the need to always be connected to platform services, up to the need to always deploy to the cloud to see and test the effects of recent changes.
 
-![inner-loop](./assets/features/inner-loop.png){style="zoom:75%"}
+![inner-loop](./assets/features/inner-loop.drawio.svg){style="zoom:75%"}
 
 CAP applications are [**agnostic by design**](concepts#agnostic-by-design), which allows to stay in fast inner loops by using local mock variants as stand-ins for many platform services and features, thereby eliminating the need to always connect to or deploy to the cloud; developers can stay in fast inner loops, without connection to cloud – aka. ***airplane*** mode development. Only when necessary, they can test in ***hybrid*** mode or do ad-hoc deployments to the cloud.
 
