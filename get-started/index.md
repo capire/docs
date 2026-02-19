@@ -39,7 +39,7 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 
 ::: code-group
 ```shell [macOS / Linux / WSL]
-brew install node@24   # Node.js LTS
+brew install node   # Node.js LTS
 ```
 ```PowerShell [Windows]
 winget install --silent OpenJS.NodeJS.LTS
@@ -172,7 +172,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and view an overview of available commands, as shown below:
   ```shell
   cds
   ```
