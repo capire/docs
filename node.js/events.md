@@ -183,6 +183,16 @@ this.before ('UPDATE',Books, req => {
 })
 ```
 
+::: danger Flexibility of `req.data`
+
+`req.data` can contain multiple properties to be modified or just one. When the Fiori elements UI sends requests usually only one modification will be send at a time, as `PATCH` requests are triggered when the field focus changes. However a curious user could send the `PATCH` request themselves and include multiple updates at once.
+
+Thus if you implement validation logic for property "A" but you use updatable property "B" for the validation, it is not sufficient to just query property "B" from the database when property "A" is updated. You need to prioritise `req.data.B` over the database result for the correct validation.
+
+Furthermore for `SAVE` events `req.data` might appear to contain all elements, but `@Core.Computed` or `@Core.Immutable` elements won't show up if it is not the initial `SAVE` where the active record is first created.
+
+:::
+
 ### . headers {.property}
 
 Provides access to headers of the event message or request. In the case of asynchronous event messages, it's the headers information sent by the event source. For HTTP requests it's the [standard Node.js request headers](https://nodejs.org/api/http.html#http_message_headers).
@@ -344,6 +354,18 @@ req.query = {SELECT:{from:{ref:['Books']}}}
 ```
 
 For bound custom operations, `req.query` contains the query to the entity on which the operation is called. For unbound custom operations, `req.query` contains an empty object.
+
+::: danger Be aware of the flexibility of `req.query`
+`req.query` can have all kinds of formats. Thus make as few assumptions as possible when asserting checks or modifying it.
+
+Important pieces you need to consider:
+
+- `SELECT.from` usually contains an object with `ref` which includes the access path and where you can get the targeted or root entity. However analytical queries leverage `SELECT.from.SELECT` to model nested `SELECT`s. This allows analytical queries to add on the topmost layer custom properties, which were created by a lower level aggregation and which are not part of `req.target.elements`.
+- The order of operators in `SELECT.where` is not granted. A malicious attacker could for example send `1 eq myProp` instead of the usual `myProp eq 1`. When extracting the value you need to be aware of that.
+- Furthermore expressions could be wrapped in brackets `(myProp eq 1)`, which will modify the CQN, to have an `xpr` element. Thus when extracting values you should recursively go through the where clause to cover `xpr` elements as well.
+- Check for `req.query.SELECT.count`. If that is true OData's `/$count` is requested and if you do anything column related your handler should likely be skipped.
+- Check if the `SELECT.columns` property only contains a stream property. In these cases column modifications can be skipped as well.
+:::
 
 ### . subject {.property}
 
