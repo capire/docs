@@ -21,8 +21,8 @@ jobs:
       - uses: SAP/ai-assisted-github-actions/pr-review@v3
         with:
           aicore-service-key: ${{ secrets.AICORE_SERVICE_KEY }}
-          model: gpt-5-mini
-          model-parameters: '{"temperature": 0.3, "max_tokens": 2000}'
+          model: sonar
+          model-parameters: '{"temperature": 0.1, "max_tokens": 2000}'
           prompt: |
             As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation.
             - Refer to .github/workflows/assets/editor.md and apply its guidelines.
