@@ -461,8 +461,10 @@ another more specific association from an existing one.
 In the `Authors` entity in the `Books.cds` file add a new element `cheapBooks`:
 
 ```cds
+entity Authors {
   books        : Association to many Books on books.author = $self;
   cheapBooks   = books[price < 19.99]; // based on `books` association
+}
 ```
 
 Now we can use `cheapBooks` just like any other association.
