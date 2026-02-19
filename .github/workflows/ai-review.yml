@@ -24,7 +24,7 @@ jobs:
           model: mistralai--mistral-small-instruct
           model-parameters: '{"temperature": 0.1}'
           prompt: |
-            - As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation:
+            As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation:
             - Use U.S. English spelling and punctuation.
             - Check for spelling errors and provide corrections.
             - Identify and correct grammatical errors and incorrect punctuation.
