@@ -15,7 +15,7 @@ Databases are deployed based on the entity definitions in your CDS models. This 
 
 CDS compilation to database-specific DDLs is handled by the `cds compile` command, which is part of the [`cds` CLI](../../tools/cds-cli). When you run `cds deploy` or `cds watch`, this command is invoked automatically to generate the necessary DDL statements for your target database.
 
-You can also run the command manually to see the generated DDL for your models. For example, to inspect what the SQL DDL for your entire model would look like, simply run:
+You can also run the command manually to view the generated DDL for your models. For example, to inspect what the SQL DDL for your entire model would look like, simply run:
 
 ```shell
 cds compile \* --to sql
@@ -41,7 +41,7 @@ cds compile \* | grep entity | wc -l
 
 ### Database-Specific Dialects
 
-Add the `--dialect` option to generate DDL for specific databases. For example, to see the SAP HANA-specific variant, run:
+Add the `--dialect` option to generate DDL for specific databases. For example, to view the SAP HANA-specific variant, run:
 
 ```shell
 cds compile \* --to sql --dialect hana
@@ -58,7 +58,7 @@ code --diff _out/c/sqlite.sql _out/c/h2.sql
 ```
 
 > [!tip] CDS models are database-agnostic
-> CDS models are designed to be database-agnostic, allowing you to switch between different databases with minimal changes. The `--dialect` option helps you see how your models translate to different database-specific DDLs. \
+> CDS models are designed to be database-agnostic, allowing you to switch between different databases with minimal changes. The `--dialect` option shows how your models translate to different database-specific DDLs. \
 
 
 ### Dialects by `cds env` Profiles
@@ -676,7 +676,7 @@ When using `@cds.persistence.exists` for ...
 - User-defined functions (UDFs), annotate it with `@cds.persistence.udf` in addition.
 - Calculation views, annotate it with `@cds.persistence.calcview` in addition.
 
-See [Calculated Views and User-Defined Functions](./hana-native#calculated-views-and-user-defined-functions) for more details.
+Refer to [Calculated Views and User-Defined Functions](./hana-native#calculated-views-and-user-defined-functions) for more details.
 :::
 
 
@@ -736,7 +736,7 @@ CREATE VIEW ListOfBooks AS SELECT ... FROM Books WITH DDL ONLY;
 - `@sql.prepend` is only supported for entities translating to tables. It can't be used with views or with elements.
 
 > [!note] Note for SAP HANA
-> Ensure to read [Schema Evolution Support of Native Database Clauses](hana#schema-evolution-native-db-clauses) if you plan to use these annotations in combination with [`@cds.persistence.journal`](hana#enabling-hdbmigrationtable-generation).
+> Ensure to review [Schema Evolution Support of Native Database Clauses](hana#schema-evolution-native-db-clauses) if you plan to use these annotations in combination with [`@cds.persistence.journal`](hana#enabling-hdbmigrationtable-generation).
 
 > [!caution]
 > The content of these annotations is inserted as-is into the generated DDL statements without any validation or other processing by the compiler. Use this feature with caution, as incorrect SQL clauses may lead to deployment failures or runtime errors. You're responsible to ensure that the resulting statement is valid and doesn't negatively impact your database or your application. **We don't provide support for problems caused by using this feature.**
