@@ -96,7 +96,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and view an overview of available commands, as shown below:
   ```shell
   cds
   ```

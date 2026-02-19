@@ -40,7 +40,7 @@ Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd vers
 node -v
 ```
 
-Should you see an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
+If you encounter an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
 For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#runtime), use the `engines` field in _package.json_.
 
 [Learn more about the release schedule of **Node.js**.](https://github.com/nodejs/release#release-schedule/){.learn-more}

@@ -116,7 +116,7 @@ For processing at runtime CDS models are compiled into a *machine-readable* plai
 
 ![cdl-csn.drawio](./assets/concepts/cdl-csn.drawio.svg)
 
-See also *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
+Refer to *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
 
 
 
