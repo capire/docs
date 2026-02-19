@@ -22,6 +22,7 @@
     "@cap-js/sqlite": "^2.1.2",
     "@mdit/plugin-dl": ">=0.22.2",
     "@sap/cds": "^9.6.2",
+    "@shikijs/monaco": "^3.21.0",
     "@shikijs/vitepress-twoslash": "^3",
     "@sqlite.org/sqlite-wasm": "3.51.2-build6",
     "@types/adm-zip": ">=0.5.0",
@@ -35,9 +36,10 @@
     "fflate": "^0.8.2",
     "markdownlint-cli": ">=0.35.0",
     "markdownlint-rule-search-replace": "^1.1.1",
+    "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
     "vite": "^7.3.1",
-    "vite-plugin-cds": "^0.1.5",
+    "vite-plugin-cds": "^0.1.7",
     "vitepress": "^1"
   }
 }
