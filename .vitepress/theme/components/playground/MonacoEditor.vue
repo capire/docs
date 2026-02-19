@@ -108,9 +108,10 @@ async function createEditor() {
     emit('update:modelValue', model.getValue())
   })
 
-  setTimeout(() => {
+  const highlightingFinished = editor.onDidChangeModelTokens(() => {
+    highlightingFinished.dispose()
     emit('loaded')
-  }, 50) // wait for syntax highlighting to apply before showing editor
+  })
 
   unmountActions.push(() => {
     // eslint-disable-next-line no-console
