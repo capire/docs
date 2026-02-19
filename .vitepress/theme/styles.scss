@@ -424,8 +424,8 @@ footer {
 
 /* expand width on big screens */
 @media screen and (min-width: 1600px) {
-  div[class*='language-']:hover,
-  div[class*='language-']:focus,
+  div[class*='language-']:not(.vp-code-group div[class*='language-']):hover,
+  div[class*='language-']:not(.vp-code-group div[class*='language-']):focus,
   pre.log:hover,
   pre.log:focus {
     min-width: fit-content;
@@ -439,7 +439,7 @@ footer {
   tr {
     z-index: 1; position: relative;  // draw wide rows over outline
   }
-  [class*='language-'] pre {
+  [class*='language-']:not(.vp-code-group [class*='language-']) pre {
     overflow: hidden !important;
   }
   // expand navbar to cover wide content (see java/development/properties)
@@ -459,6 +459,19 @@ footer {
   .VPNavBar .has-sidebar > .title {
     background-color: var(--vp-sidebar-bg-color);
   }
+}
+
+/* Hide scrollbars by default, show on hover */
+[class*='language-'] pre,
+pre.log {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+[class*='language-']:hover pre,
+pre.log:hover {
+  scrollbar-width: thin;
+  &::-webkit-scrollbar { display: block; }
 }
 
 @media print {

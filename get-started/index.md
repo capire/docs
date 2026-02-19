@@ -12,31 +12,22 @@ Jumpstart & Grow as You Go... {.subtitle}
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-On macOS (and Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+### Preparation
 
-```shell
+On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+On Windows PowerShell you can use the built-in `WinGet` command.
+
+
+::: code-group
+```shell [macOS / Linux / WSL]
+# silently install
+#   curl (required to get Homebrew)
+#   git (required by Homebrew)
+# just for completeness, this might already be installed on your machine
+sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
-
-::: details Alternative setup (required on Windows) ...
-
-  Instead of using Homebrew – which is not available on Windows –, you can manually download and install the required packages from their respective websites:
-
-  | Package | Install from                     | Remarks                                                 |
-  |---------|----------------------------------|---------------------------------------------------------|
-  | Node.js | https://nodejs.org               | _required_                                                |
-  | Java    | https://sapmachine.io            | _optional_                                                |
-  | Git     | https://git-scm.com              | _optional_                                                |
-  | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
-  | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
-
-Then install CAP's _cds-dk_ globally:
-
-  ```shell
-  npm add -g @sap/cds-dk
-  ```
 :::
-
 
 <style scoped>
   .required::before { content: 'Required:'; color: #999; margin-right: 0.5em }
@@ -44,39 +35,112 @@ Then install CAP's _cds-dk_ globally:
   .proposed::before { content: 'Proposed:'; color: #999; margin-right: 0.5em }
 </style>
 
-
-
 ### Node.js and _cds-dk_ {.required}
 
+::: code-group
+```shell [macOS / Linux / WSL]
+brew install node   # Node.js LTS
+```
+```PowerShell [Windows]
+winget install --silent OpenJS.NodeJS.LTS
+# restart PowerShell to activate the new command
+```
+:::
 ```shell
-brew install node      # Node.js
-npm i -g @sap/cds-dk   # CAP's cds-dk
+npm i -g @sap/cds-dk  # install CAP's cds-dk globally
+cds -v                # check cds version
 ```
 
+### SQLite (Windows) {.required}
+
+::: code-group
+```PowerShell [Windows]
+winget install --silent SQLite.SQLite
+# restart PowerShell to activate the new command
+sqlite3 -version
+```
+:::
 
 ### Java and Maven {.optional}
 
-```shell
+::: code-group
+```shell [macOS / Linux / WSL]
 brew install sapmachine-jdk
 brew install maven
 ```
+```PowerShell [Windows]
+winget install --silent SAP.SapMachine.25.JDK
 
+# Apache Maven is not available using winget so download it directly
+$v="3.9.12"; `
+$url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
+$mvnzip="$env:LOCALAPPDATA\maven.zip"; `
+curl $url -o $mvnzip; `
+tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
+setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
+rm $mvnzip
+# restart PowerShell to activate the new commands
+```
+:::
+```shell
+mvn -version  # display Maven and Java versions
+```
 
 ### Git and GitHub {.optional}
 
-```shell
-brew install git       # Git CLI
+::: code-group
+```shell [macOS / Linux / WSL]
+brew install git       # Git CLI (for completeness, already installed for Homebrew)
 brew install gh        # GitHub CLI
+```
+```PowerShell [Windows]
+winget install --silent Git.Git
+winget install --silent GitHub.cli
+# restart PowerShell to activate the new commands
+```
+:::
+::: code-group
+```shell [macOS]
 brew install github    # GitHub Desktop App
 ```
-
+```shell [Linux / WSL]
+# Github-Desktop on Homebrew is only supported for macOS
+GHD_VERSION="3.3.12"
+curl -L \
+  https://github.com/shiftkey/desktop/releases/download/release-${GHD_VERSION}-linux1/GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb \
+  -o github-desktop.deb
+sudo apt install ./github-desktop.deb
+rm ./github-desktop.deb
+```
+```PowerShell [Windows]
+winget install --silent GitHub.GitHubDesktop
+# restart PowerShell to activate the new commands
+```
+:::
+```shell
+git -v # display Git cli version
+```
 
 
 ### Visual Studio Code {.proposed}
-
-```shell
-brew install --cask visual-studio-code            # VS Code itself
+::: code-group
+```shell [macOS]
+brew install --cask visual-studio-code # VS Code itself
 ```
+```bash [Linux / WSL]
+# VS Code on Homebrew is only supported for macOS
+sudo snap install --classic code
+```
+```PowerShell [Windows]
+winget install --silent Microsoft.VisualStudioCode
+# restart PowerShell to activate the new command
+```
+:::
+```shell
+code -v # display VS Code's version
+```
+
+#### Visual Studio Code proposed extensions {.proposed}
 ```shell
 code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
@@ -92,6 +156,18 @@ code --install-extension vscjava.vscode-maven     # for Maven
 
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
 
+::: details Alternative setup ...
+
+  You can also manually download and install the required packages from their respective websites:
+
+  | Package | Install from                     | Remarks                                                 |
+  |---------|----------------------------------|---------------------------------------------------------|
+  | Node.js | https://nodejs.org               | _required_                                                |
+  | Java    | https://sapmachine.io            | _optional_                                                |
+  | Git     | https://git-scm.com              | _optional_                                                |
+  | VS Code | https://code.visualstudio.com    | + [recommended extensions](../tools/cds-editors#vscode) |
+  | SQLite  | https://sqlite.org/download.html | _required_ on Windows                                     |
+:::
 
 ## Command Line Interface
 
