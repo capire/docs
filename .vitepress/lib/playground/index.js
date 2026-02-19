@@ -3,7 +3,6 @@ import path from 'path'
 
 let enabled = false
 let plugins = () => []
-let LiveCode = null
 
 try {
   const { node, cap } = await import('vite-plugin-cds')
@@ -12,8 +11,9 @@ try {
   }
   enabled = true
 }
-catch (e) {
-  console.error('vite-plugin-cds not installed - run `npm i` to update your modules')
+catch {
+  // eslint-disable-next-line no-console
+  console.error('live code not available - run `npm i` to update your modules')
 }
 
 export {

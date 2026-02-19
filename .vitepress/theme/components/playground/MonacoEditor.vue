@@ -12,12 +12,11 @@
 <script setup>
 // Monaco Editor Vue Component
 // Note: Do not create many of these: https://github.com/microsoft/monaco-editor/issues/2326
-import { ref, watch, onMounted, onUnmounted, useId } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
 
 const { isDark } = useData()
-const uid = useId()
 
 const props = defineProps({
   modelValue: {
@@ -114,10 +113,12 @@ async function createEditor() {
   }, 50) // wait for syntax highlighting to apply before showing editor
 
   unmountActions.push(() => {
-    try { contentSizeDispose?.dispose?.() } catch {}
+    // eslint-disable-next-line no-console
+    try { contentSizeDispose?.dispose?.() } catch (e) { console.warn(e) }
   })
   unmountActions.push(() => {
-    try { editor?.dispose?.() } catch {}
+    // eslint-disable-next-line no-console
+    try { editor?.dispose?.() } catch (e) { console.warn(e) }
   })
 }
 

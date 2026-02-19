@@ -59,13 +59,13 @@ async function initialize() {
 
   const app = express();
   await cds.serve('all').from(csn).in(app);
+
+  return cds;
 }
 
 let initialized;
 if (!import.meta.env.SSR) {
   // runs only in the browser
-  console.debug("Initialize CAP runtime")
-
   initialized = initialize();
 }
 
@@ -82,7 +82,7 @@ async function evalJS(code) {
 }
 
 async function cdsQL(query) {
-  await initialized;
+  const cds = await initialized;
 
   const { result, formatted } = await sql.trace(() => cds.ql(query));
   return [

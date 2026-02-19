@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, useId } from 'vue'
+import { ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
@@ -94,23 +94,15 @@ const selectedTab = ref(`${uid}-Result`)
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
 
-const transformers = [
-  {
-    root: node => {
-      // debugger;
-      node.children[0] = node.children[0].children[0]
-    }
-  }
-]
 
-function format({value, kind, transformers}, dark) {
+function format({ value, kind }, dark) {
   // const highlighter = (await import('./highlighter')).default
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
   }
   const html = highlighter.codeToHtml(
     typeof value === 'string' ? value : JSON.stringify(value, null, 2),
-    { lang: kind, theme: dark ? 'github-dark' : 'github-light', transformers })
+    { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
   // debugger;
   return html
 }
