@@ -23,10 +23,13 @@ jobs:
           aicore-service-key: ${{ secrets.AICORE_SERVICE_KEY }}
           show-model-metadata-footer: true
           model: mistralai--mistral-medium-instruct
+          model-parameters: '{"temperature": 0.1}'
           prompt: |
             As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation.
             - Refer to .github/workflows/assets/editor.md and apply its guidelines.
-            - Provide inline suggestions and include all proposals that target the same line into one suggestions. Do not create multiple suggestions for the same line or paragraph.
+            - Provide inline suggestions and include all proposals that target the same line into one suggestion. 
+            - Do not create multiple suggestions for the same line or paragraph.
+            - Do not create suggestions on deleted lines.
             - Ensure that the tone is appropriate for technical documentation, maintaining a professional and informative style.
             - Verify that the structure of the document is logical and that headings and subheadings are used effectively.
             - Check for consistency in terminology and style throughout the document.
