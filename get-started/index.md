@@ -107,10 +107,10 @@ brew install github    # GitHub Desktop App
 # Github-Desktop on Homebrew is only supported for macOS
 GHD_VERSION="3.3.12"
 curl -L \
-  https://github.com/shiftkey/desktop/releases/download/release-${GHD_VERSION}-linux1\
-/GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb \
+  https://github.com/shiftkey/desktop/releases/download/release-${GHD_VERSION}-linux1/GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb \
   -o github-desktop.deb
 sudo apt install ./github-desktop.deb
+rm ./github-desktop.deb
 ```
 ```PowerShell [Windows]
 winget install --silent GitHub.GitHubDesktop
