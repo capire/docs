@@ -21,8 +21,8 @@ jobs:
       - uses: SAP/ai-assisted-github-actions/pr-review@v3
         with:
           aicore-service-key: ${{ secrets.AICORE_SERVICE_KEY }}
+          show-model-metadata-footer: true
           model: sonar
-          model-parameters: '{"temperature": 0.1, "max_tokens": 2000}'
           prompt: |
             As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation.
             - Refer to .github/workflows/assets/editor.md and apply its guidelines.
@@ -30,4 +30,7 @@ jobs:
             - Ensure that the tone is appropriate for technical documentation, maintaining a professional and informative style.
             - Verify that the structure of the document is logical and that headings and subheadings are used effectively.
             - Check for consistency in terminology and style throughout the document.
+          header-text: |
+            # AI-Assisted Review
+            This pull request has been reviewed by an AI bot to ensure high-quality documentation. The review focuses on improving the clarity, accuracy, and overall quality of the documentation while adhering to established guidelines.
             
