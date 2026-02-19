@@ -92,11 +92,27 @@ mvn -version  # display Maven and Java versions
 ```shell [macOS / Linux / WSL]
 brew install git       # Git CLI (for completeness, already installed for Homebrew)
 brew install gh        # GitHub CLI
-brew install github    # GitHub Desktop App
 ```
 ```PowerShell [Windows]
 winget install --silent Git.Git
 winget install --silent GitHub.cli
+# restart PowerShell to activate the new commands
+```
+:::
+::: code-group
+```shell [macOS]
+brew install github    # GitHub Desktop App
+```
+```shell [Linux / WSL]
+# Github-Desktop on Homebrew is only supported for macOS
+GHD_VERSION="3.3.12"
+curl -L \
+  https://github.com/shiftkey/desktop/releases/download/release-${GHD_VERSION}-linux1\
+/GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb \
+  -o github-desktop.deb
+sudo apt install ./github-desktop.deb
+```
+```PowerShell [Windows]
 winget install --silent GitHub.GitHubDesktop
 # restart PowerShell to activate the new commands
 ```
@@ -111,13 +127,13 @@ git -v # display Git cli version
 ```shell [macOS]
 brew install --cask visual-studio-code # VS Code itself
 ```
+```bash [Linux / WSL]
+# VS Code on Homebrew is only supported for macOS
+sudo snap install --classic code
+```
 ```PowerShell [Windows]
 winget install --silent Microsoft.VisualStudioCode
 # restart PowerShell to activate the new command
-```
-```bash [Linux]
-# VS Code on Homebrew is only supported for macOS
-sudo snap install --classic code
 ```
 :::
 ```shell
