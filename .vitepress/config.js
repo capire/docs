@@ -4,7 +4,7 @@ const base =  process.env.GH_BASE || '/docs/'
 // Construct vitepress config object...
 import path from 'node:path'
 import { defineConfig } from 'vitepress'
-import { node, cap } from 'vite-plugin-cds'
+import playground from './lib/playground'
 import languages from './languages'
 import { Menu } from './menu.js'
 
@@ -80,7 +80,7 @@ const config = defineConfig({
   ],
 
   vite: {
-    plugins: [node(), cap(), templates([path.join(__dirname, 'templates')])],
+    plugins: [...playground.plugins()],
     esbuild: {
       supported: {
         'top-level-await': true //browsers can handle top-level-await features
@@ -201,7 +201,7 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
-import * as MdLiveCode from './lib/md-live-code'
+import * as MdLiveCode from './lib/playground/md-live-code'
 import * as MdDiagramSvg from './lib/md-diagram-svg'
 
 config.markdown.config = md => {
@@ -214,7 +214,6 @@ config.markdown.config = md => {
 
 // Add custom buildEnd hook
 import { promises as fs } from 'node:fs'
-import templates from './lib/vite-plugin-templates.js'
 import * as cdsMavenSite from './lib/cds-maven-site'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
