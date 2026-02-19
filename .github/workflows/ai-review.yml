@@ -22,7 +22,7 @@ jobs:
         with:
           aicore-service-key: ${{ secrets.AICORE_SERVICE_KEY }}
           show-model-metadata-footer: true
-          model: sonar
+          model: mistralai--mistral-medium-instruct
           prompt: |
             As an AI bot reviewing documentation pull requests on GitHub, please focus on the following areas to ensure high-quality and effective documentation.
             - Refer to .github/workflows/assets/editor.md and apply its guidelines.
