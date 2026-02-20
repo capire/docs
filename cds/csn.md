@@ -55,11 +55,10 @@ definitions:
     elements:
       foo: {type: cds.Integer}
       bar: {type: cds.String}
-extensions: [
+extensions:
   - extend: Foo
     elements:
       bar: {type: cds.String}
-]
 ```
 
 The same model as a **plain JavaScript** object:

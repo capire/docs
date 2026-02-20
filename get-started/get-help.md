@@ -40,7 +40,7 @@ Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd vers
 node -v
 ```
 
-Should you see an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
+If you encounter an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
 For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#runtime), use the `engines` field in _package.json_.
 
 [Learn more about the release schedule of **Node.js**.](https://github.com/nodejs/release#release-schedule/){.learn-more}
@@ -631,6 +631,10 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
     > This won't affect application runtime performance.
 
 4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
+
+### How do I get detailed SAP HANA deployment logs
+
+The deployment logs are part of the [application logs](#cflogs-recent). To avoid problems with the logging infrastructure, the default detail level of the deployment logs is limited to logs printed to `stderr`. To get more details, you need to increase the log level by setting the environment variable `DEBUG=deploy`.
 
 ### Why do I get 'Extensions exist, but extensibility is disabled'?
 
