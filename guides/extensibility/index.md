@@ -6,7 +6,6 @@ breadcrumbs:
 synopsis: >
   Learn here about intrinsic capabilities to extend your applications in verticalization
   and customization scenarios.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 ---
 
@@ -14,7 +13,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 {{ $frontmatter.synopsis }}
 
-Extensibility of CAP applications is greatly fueled by **CDS Aspects**, which allow to easily extend existing models with new fields, entities, relationships, or new or overridden annotations [&rarr; Learn more about using CDS Aspects in the Domain Modeling guide](../domain/modeling#separation-of-concerns).
+Extensibility of CAP applications is greatly fueled by **CDS Aspects**, which allow to easily extend existing models with new fields, entities, relationships, or new or overridden annotations [&rarr; Learn more about using CDS Aspects in the Domain Modeling guide](../domain/index#separation-of-concerns).
 
 ![This screenshot is explained in the accompanying text.](assets/extensibility.drawio.svg)
 

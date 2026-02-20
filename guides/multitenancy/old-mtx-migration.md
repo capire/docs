@@ -7,7 +7,6 @@ breadcrumbs:
   - Multitenancy
   - Migration
 # layout: cookbook
-status: released
 impl-variants: true
 ---
 
@@ -419,7 +418,7 @@ See also [Extensibility configuration](./mtxs.md#extensibility-config)
 
 ### Verify Application Locally
 
-As first verification of your configuration changes, you can try to run your application locally in [hybrid mode](../advanced/hybrid-testing#run-with-service-bindings). To bind all the service
+As first verification of your configuration changes, you can try to run your application locally in [hybrid mode](../../tools/cds-bind#run-with-service-bindings). To bind all the service
 that are bound to your existing application, you can call `cds bind -a <your application>`. Afterwards, you can run `cds run --profile hybrid --resolve-bindings`.
 
 ### Migrate Tenant Content of Existing Applications
@@ -483,7 +482,7 @@ The migration script is part of `@sap/cds-mtxs`. You can run it locally or durin
 The script has to run in the (Node.js) application environment resulting from `cds build --production` to correctly simulate the execution in the deployment environment.
 For Node.js applications, this result is the `gen/srv` folder generated in the application root, for Java applications, this result is the `gen` folder of the new `@sap/cds-mtxs` sidecar (`mtx/sidecar/gen`).
 
-It also needs access to the application bindings. That means, when running locally, it has to [run in hybrid mode](../advanced/hybrid-testing#run-with-service-bindings).
+It also needs access to the application bindings. That means, when running locally, it has to [run in hybrid mode](../../tools/cds-bind#run-with-service-bindings).
 
 You also need to add the `production` profile to ensure that the models are resolved correctly.
 

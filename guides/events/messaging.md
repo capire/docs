@@ -7,10 +7,6 @@ status: released
 
 # CAP-level Messaging
 
-<!-- <div id="impl-variants" style="margin:-80px 0 80px 3px;">
-  <a impl-variant="node" class="impl-variant" title="Content for Node.js">Node.js</a>
-  <a impl-variant="java" class="impl-variant" title="Content for Java">Java</a>
-</div> -->
 
 {{ $frontmatter.synopsis }}
 
@@ -123,7 +119,7 @@ Without touching any code the event emitted from the `ReviewsService` got transp
 
 You can simulate a server outage to demonstrate the value of messaging for resilience as follows:
 
-1. Terminate the `bookstore` server with <kbd>Ctrl</kbd> + <kbd>C</kbd> in the respective terminal.
+1. Terminate the `bookstore` server with `Ctrl` + `C` in the respective terminal.
 2. Add or update more reviews as described before.
 3. Restart the receiver with `cds watch bookstore`.
 

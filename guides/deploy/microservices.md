@@ -81,7 +81,7 @@ This guide describes a way to manage development and deployment via *[monorepos]
 
    In Node.js, each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
 
-   [Learn more about Automatic Bindings by `cds watch`](../extensibility/composition#bindings-via-cds-watch){.learn-more}
+   [Learn more about Automatic Bindings by `cds watch`](../integration/reuse-and-compose#bindings-via-cds-watch){.learn-more}
 
 
 ::: details The project structure
@@ -147,7 +147,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 1. Add another `cds` project to collect the models from these projects:
 
    ```sh
-   cds init shared-db --add hana
+   cds init shared-db --nodejs --add hana
    ```
 
    ::: code-group
@@ -479,7 +479,7 @@ Note that we use the *--ws-pack* option for some modules. It's important for nod
 
 ### Authentication
 
-Add [security configuration](../security/authorization#xsuaa-configuration) using the command:
+Add [security configuration](../security/authentication) using the command:
 
 ```shell
 cds add xsuaa --for production
@@ -669,7 +669,7 @@ resources:
 
 ### Destinations
 
-Add [destination configuration](https://cap.cloud.sap/docs/guides/services/using-services#using-destinations) for connectivity between the apps:
+Add [destination configuration](https://cap.cloud.sap/docs/guides/services/consuming-services#using-destinations) for connectivity between the apps:
 
 ```shell
 cds add destination

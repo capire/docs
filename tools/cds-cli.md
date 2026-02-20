@@ -1,7 +1,6 @@
 ---
-status: released
 synopsis: >
-  Available commands of the <code>cds</code> command line client
+  Available commands of the <code>cds</code> command line client.
 ---
 
 <script setup>
@@ -32,8 +31,6 @@ To use `cds` from your command line, install package  `@sap/cds-dk` globally:
 npm i -g @sap/cds-dk
 ```
 
-<ImplVariantsHint />
-
 [[toc]]
 
 ## cds version
@@ -47,7 +44,7 @@ Using `--markdown` you can get the information in markdown format:
 <!--@include: ./assets/help/cds-version-md.out.md-->
 
 
-## cds completion <Since version="7.9.0" of="@sap/cds-dk" />
+## cds completion <Since version="7.9.0" package="@sap/cds-dk" />
 
 The `cds` command supports shell completion with the <kbd>tab</kbd> key for several shells and operating systems.
 
@@ -89,17 +86,19 @@ Use `cds help <command>` or `cds <command> ?` to get specific help:
 
 Use `cds init` to create new projects.
 
-The simplest form creates a minimal Node.js project.  For Java, use
+The simplest form creates a minimal project.
+In addition, you can add (most of) the project 'facets' from [below](#cds-add) right when creating the project.
+For example to create a Node.js project with a sample bookshop model and configuration for SAP HANA, use:
 
 ```sh
-cds init --java
+cds init --nodejs --add sample,hana
 ```
 
-In addition, you can add (most of) the project 'facets' from [below](#cds-add) right when creating the project.
-For example to create a project with a sample bookshop model and configuration for SAP HANA, use:
+To create just a basic Node.js or Java project, use
 
 ```sh
-cds init --add sample,hana
+cds init --nodejs # OR
+cds init --java
 ```
 
 ::: details See the full help text of `cds init`
@@ -173,7 +172,7 @@ Creates a bookshop application including custom code (Node.js or Java) and a UI 
 cds add sample
 ```
 
-This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/in-a-nutshell).
+This corresponds to the result of the [_Getting Started in a Nutshell_ guide](../get-started/bookshop).
 
 ### tiny-sample {.add}
 
@@ -195,7 +194,7 @@ cds add data
 
 adds _csv_ files with a single header line for all entities to the _db/data/_ folder.  The name of the files matches the entities' namespace and name, separated by `-`.
 
-#### Filtering <Since version="7.9.0" of="@sap/cds-dk" /> {#data-filtering}
+#### Filtering <Since version="7.9.0" package="@sap/cds-dk" /> {#data-filtering}
 
 To create data for some entities only, use `--filter`.  For example:
 
@@ -216,7 +215,7 @@ cds add data --filter "books$"
 The escape character is usually the backslash, for example, `\?`.  Quote characters are `'` or `"` with varying rules between shells.  Consult the documentation for your shell here.
 :::
 
-#### Sample records <Since version="7.9.0" of="@sap/cds-dk" />
+#### Sample records <Since version="7.9.0" package="@sap/cds-dk" />
 
 To create actual data (along with the header line), use `--records` with a number for how many records you wish to have.
 
@@ -228,7 +227,7 @@ cds add data --records 2
 
 [Watch a short video by DJ Adams to see this in action.](https://www.youtube.com/shorts/_YVvCA2oSco){.learn-more}
 
-#### Formats <Since version="7.9.0" of="@sap/cds-dk" />
+#### Formats <Since version="7.9.0" package="@sap/cds-dk" />
 
 By default, the data format is _CSV_.  You can change this to JSON with the `--content-type` option:
 
@@ -260,15 +259,15 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
 - Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
-- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/providing-services#input-validation) are respected as well, in a best effort way.
+- Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/constraints) are respected as well, in a best effort way.
 :::
 
-#### Interactively in VS Code <Since version="7.9.0" of="@sap/cds-dk" />
+#### Interactively in VS Code <Since version="7.9.0" package="@sap/cds-dk" />
 
 In [VS Code](./cds-editors#vscode), use the commands _Generate Model Data as JSON / CSV_ to insert test data at the cursor position for a selected entity.
 
 
-### http <Since version="7.9.0" of="@sap/cds-dk" /> {.add}
+### http <Since version="7.9.0" package="@sap/cds-dk" /> {.add}
 
 Adds `.http` files with sample read and write requests.
 
@@ -296,12 +295,11 @@ In [VS Code](./cds-editors#vscode), use the command _Generate HTTP Requests_ to 
 
 #### Authentication / Authorization
 
-##### To local applications
+##### -> To local applications
 
-<div class="impl node">
+By default, an authorization header with a local mock user is written to the `http` file, and `localhost` is the target host.
 
-By default, an authorization header with a [local mock user](../node.js/authentication#mock-users) is written to the `http` file, and `localhost` is the target host.
-
+::: code-group
 ```http [Node.js]
 @server = http://localhost:4004
 @auth = Authorization: Basic alice:
@@ -311,24 +309,23 @@ GET {{server}}/odata/v4/admin/Books
 {{auth}}
 ...
 ```
-</div>
-
-<div class="impl java">
-
-By default, an authorization header with a [local mock user](../java/security#mock-users) is written to the `http` file, and `localhost` is the target host.
-
 ```http [Java]
 @server = http://localhost:8080
 
 ### CatalogService.Books
 GET {{server}}/odata/v4/admin/Books
-{{auth}}
+
 ...
 ```
-</div>
+:::
+
+[Learn more about mock users in Node.js.](../node.js/authentication#mock-users){.learn-more}
+[Learn more about mock users in Java.](../java/security#mock-users){.learn-more}
 
 
-##### To remote applications
+
+
+##### -> To remote applications
 
 Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For example:
 
@@ -336,7 +333,7 @@ Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For ex
 cds add http --for-app bookshop
 ```
 
-assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
+This assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
 
 ```http
 @server = https://...
@@ -347,7 +344,7 @@ assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this a
 For CloudFoundry, use `cf login ...` and select org and space.
 :::
 
-### handler <Since version="8.5.0" of="@sap/cds-dk" /> {.add}
+### handler <Since version="8.5.0" package="@sap/cds-dk" /> {.add}
 
 Generates handler stubs for actions and functions for both Java and Node.js projects.
 
@@ -398,14 +395,14 @@ Also, the [multitenancy sidecar](../java/multitenancy) is a Node.js application,
 
 Compiles the specified models to [CSN](../cds/csn) or other formats.
 
-[See simple examples in the getting started page](../get-started/in-a-nutshell#cli).{.learn-more}
+[See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
 [For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
 
 
 In addition, the following formats are available:
 
-### mermaid <Since version="8.0.0" of="@sap/cds-dk" /> {.compile}
+### mermaid <Since version="8.0.0" package="@sap/cds-dk" /> {.compile}
 
 This produces text for a [Mermaid class diagram](https://mermaid.js.org/syntax/classDiagram.html):
 
@@ -485,7 +482,7 @@ could look like this:
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
 
-@data.product @hcql @rest @odata 
+@data.product @hcql @rest @odata
 service sap.capire.flights.data {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
@@ -544,7 +541,7 @@ Use `cds watch` to watch for changed files, restarting your Node.js server.
 For CAP Java applications, you can use [`mvn cds:watch`](../java/developing-applications/running#cds-watch) instead.
 :::
 
-### Includes and Excludes <Since version="8.7.0" of="@sap/cds-dk" />
+### Includes and Excludes <Since version="8.7.0" package="@sap/cds-dk" />
 
 Additional watched or ignored paths can be specified via CLI options:
 
@@ -687,7 +684,7 @@ Opening Chrome DevTools at devtools://devtools/bundled/inspector.html?ws=...
 </pre>
 
 
-### Java Applications <Since version="8.7.0" of="@sap/cds-dk" />
+### Java Applications <Since version="8.7.0" package="@sap/cds-dk" />
 
 #### Remote Applications
 

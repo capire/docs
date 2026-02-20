@@ -1,12 +1,11 @@
 ---
 synopsis: >
   CAP provides several features to ensure data protection that meet industry standards and regulatory requirements.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 impl-variants: true
 ---
 
-# Data Protection
+# Product Security Overview
 
 {{ $frontmatter.synopsis }}
 
@@ -118,7 +117,7 @@ CAP doesn't require any specific authentication strategy, but it provides out of
 On configured authentication, *all CAP endpoints are authenticated by default*.
 
 ::: warning
-❗ **CAP applications need to ensure that an appropriate [authentication method](authorization#prerequisite-authentication) is configured**.
+❗ **CAP applications need to ensure that an appropriate [authentication method](authentication) is configured**.
 It's highly recommended to establish integration tests to safeguard a valid configuration.
 :::
 
@@ -132,7 +131,7 @@ Learn more about user model and identity providers here:
 CAP microservices consume remote services and hence need to be authenticated as technical client as well.
 Similar to [request authentication](#authenticate-requests), CAP saves applications from having to implement secure setup of service to service communication:
 - CAP interacts with platform services such as [Event Mesh](../events/index.md) or [SaaS Provisioning Service](../deploy/to-cf) on basis of platform-injected service bindings.
-- CAP offers consumption of [Remote Services](../services/using-services) on basis of [SAP BTP destinations](../services/using-services#btp-destinations).
+- CAP offers consumption of [Remote Services](../services/consuming-services) on basis of SAP BTP destinations.
 
 Note that the applied authentication strategy is specified by server offering and resp. configuration and not limited by CAP.
 
@@ -156,7 +155,7 @@ Hence, authentication is still mandatory for CAP microservices.
 <!-- #SEC-309 -->
 
 To run a CAP application that authenticates users and consumes remote services, **it isn't required to manage any secrets such as keys, tokens, or passwords**.
-Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./overview#platform-environment) or [destinations](../services/using-services#btp-destinations).
+Also CAP doesn't store any of them, but relies on platform [injection mechanisms](./overview#platform-environment) or destinations.
 
 ::: tip
 In case you still need to store any secrets, use a platform service [SAP Credential Store](https://help.sap.com/docs/CREDENTIAL_STORE).
@@ -196,7 +195,7 @@ To verify CAP authorizations in your model, it's recommended to use [CDS lint ru
 
 The rules prepared by application developers are applied to business users according to grants given by the subscribers user administrator, that is, they're applied tenant-specific.
 
-CAP authorizations can be defined dependently from [user claims](authorization#user-claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
+CAP authorizations can be defined dependently from [user claims](cap-users#claims) such as [XSUAA scopes or attributes](https://help.sap.com/docs/btp/sap-business-technology-platform/application-security-descriptor-configuration-syntax)
 that are deployed by application developers and granted by the user administrator of the subscriber.
 Hence, CAP provides a seamless integration of central identity service without technical lock-in.
 
@@ -388,7 +387,7 @@ Attackers can send malicious input data in a regular request to make the server 
 <!-- #SEC-100 #SEC-283 #SEC-228  -->
 
 - CAP's intrinsic data querying engine is immune with regards to [SQL injections](https://owasp.org/www-community/attacks/SQL_Injection) that are introduced by query parameter values that are derived from malicious user input.
-[CQL statements](../querying/index) are transformed into prepared statements that are executed in SQL databases such as SAP HANA.
+CQL statements are transformed into prepared statements that are executed in SQL databases such as SAP HANA.
 Be aware that injections are still possible even via CQL when the query structure (target entity, columns and so on) is based on user input:
 
   <div class="impl java">
@@ -462,7 +461,7 @@ Moreover, deserialization errors terminate the request and are tracked in the ap
 In general, to achieve perfect injection resistance, applications should have input validation, output validation, and a proper Content-Security-Policy in place.
 
 - CAP provides built-in support for **input validation**.
-Developers can use the [`@assert`](../services/providing-services#input-validation) annotation to define field-specific input checks.
+Developers can use the [`@assert`](../services/constraints) annotation to define field-specific input checks.
 
   ::: warning
   Applications need to validate or sanitize all input variables according to the business context.
@@ -523,7 +522,7 @@ If you want to apply an application-specific sizing, consult the corresponding f
 See section [Maximum Request Body Size](../../node.js/cds-server#maximum-request-body-size) to find out how to restrict incoming requests to a CAP Node.js application depending on the body size.
 :::
 
-Moreover, CAP adapters automatically introduce query results pagination in order to limit memory peaks (customize with [`@cds.query.limit`](../services/providing-services#annotation-cds-query-limit)).
+Moreover, CAP adapters automatically introduce query results pagination in order to limit memory peaks (customize with [`@cds.query.limit`](../services/served-ootb#annotation-cds-query-limit)).
 The total number of request of OData batches can be limited by application configuration.
 
 <div class="impl java">
@@ -541,7 +540,7 @@ To prevent clients from _requesting too much data_, you can define restrictions 
   - Or you can set an **application-wide limit** with <Config java>cds.query.restrictions.expand.maxLevels = \<max depth\></Config> that applies to all entities. Value `-1` indicates absence of limit.
 
 :::warning
-These restrictions are enforced on 'READ' events on [Application services](/java/cqn-services/#application-services).
+These restrictions are enforced on 'READ' events on [Application services](../../java/cqn-services/#application-services).
 :::
 
 Good candidates for expand restrictions are associations to the same type (for example, when your entity represents a tree or a hierarchy<sup>1</sup>), backlink associations of compositions, or many-to-many associations.
@@ -633,13 +632,13 @@ This can be achieved automatically by consuming [Application Autoscaler](https:/
 <!-- #SEC-278 #SEC-238 #SEC-235 #SEC-282 -->
 
 There are additional attack vectors to consider. For instance, naive URL handling in the server endpoints frequently introduces security gaps.
-Luckily, CAP applications don't have to implement HTTP/URL processing on their own as CAP offers sophisticated [protocol adapters](../../get-started/features#consuming-services) such as OData V2/V4 that have the necessary security validations in place.
+Luckily, CAP applications don't have to implement HTTP/URL processing on their own as CAP offers sophisticated [protocol adapters](../../get-started/feature-matrix#consuming-services) such as OData V2/V4 that have the necessary security validations in place.
 The adapters also transform the HTTP requests into a corresponding CQN statement.
 Access control is performed on basis of CQN level according to the CDS model and hence HTTP Verb Tampering attacks are avoided. Also HTTP method override, using `X-Http-Method-Override` or `X-Http-Method` header, is not accepted by the runtime.
 
 The OData protocol allows to encode field values in query parameters of the request URL or in the response headers. This is, for example, used to specify:
-- [Pagination (implicit sort order)](../services/providing-services#pagination-sorting)
-- [Searching Data](../services/providing-services#searching-data)
+- [Pagination (implicit sort order)](../services/served-ootb#pagination-sorting)
+- [Searching Data](../services/served-ootb#searching-data)
 - Filtering
 
 ::: warning
@@ -655,7 +654,7 @@ In addition, CAP runs on a virtual machine with a managed heap that protects fro
 
 CAP also brings some tools to effectively reduce the attack vector of race condition vulnerabilities.
 These might be exposed when the state of resources can be manipulated concurrently and a consumer faces an unexpected state.
-CAP provides basic means of [concurrency control](../services/providing-services#concurrency-control) on different layers, for example [ETags](../services/providing-services#etag) and [pessimistic locks](../services/providing-services#select-for-update). Moreover, Messages received from the [message queue](../events/index.md) are always in order.
+CAP provides basic means of [concurrency control](../services/served-ootb#concurrency-control) on different layers, for example [ETags](../services/served-ootb#etag) and [pessimistic locks](../services/served-ootb#select-for-update). Moreover, Messages received from the [message queue](../events/index.md) are always in order.
 
 ::: tip
 Applications have to ensure a consistent data processing taking concurrency into account.

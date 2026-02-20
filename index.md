@@ -1,7 +1,6 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
-status: released
 title: Home
 
 hero:
@@ -9,10 +8,9 @@ hero:
   image: /logos/cap.svg
 
   tagline:
-    Build cloud-native applications
-    with maximized productivity
-    at minimized costs,
-    and proven best practices
+    Build enterprise-grade cloud applications
+    with maximized productivity, 
+    fueled by proven best practices, 
     served out of the box.
 
   actions:
@@ -37,29 +35,29 @@ features:
 - title: Rapid Development
   icon: ⭕️
   details:
-    •&nbsp; Jumpstart w/ minimal setup <br/>
-    •&nbsp; Fast inner loops <br/>
-    •&nbsp; Grow as you go... <br/>
-  link: get-started/in-a-nutshell
-  linkText: Get Started in a Nutshell
-
-- title: Proven Best Practices
-  icon: 🏆
-  details:
-    •&nbsp; Enterprise-grade solutions <br/>
-    •&nbsp; Battle tested in SAP products <br/>
-    •&nbsp; Served out of the box <br/>
-  link: get-started/best-practices
-  linkText: Key Concepts & Rationales
+    •&nbsp; Jumpstart & Grow as you go... <br/>
+    •&nbsp; Inner loop fast tracks <br/>
+    •&nbsp; Decoupled dev teams <br/>
+  link: get-started/
+  linkText: Getting Started
 
 - title: Focus on Domain!
   icon: 🍀
   details:
     •&nbsp; Capture intent → What, not how! <br/>
     •&nbsp; Separation of concerns <br/>
-    •&nbsp; Minimized technical debts <br/>
-  link: get-started/about
-  linkText: Read the Primer
+    •&nbsp; Minimized technical debt <br/>
+  link: get-started/features
+  linkText: Features Overview
+
+- title: Proven Best Practices
+  icon: 🏆
+  details:
+    •&nbsp; Enterprise-grade solutions <br/>
+    •&nbsp; Battle-tested in real products <br/>
+    •&nbsp; Served out of the box <br/>
+  link: get-started/concepts
+  linkText: Core Concepts
 
 - title: Cloud Native by Design
   icon: 💯
@@ -67,7 +65,7 @@ features:
     •&nbsp; Multitenancy, Scalability, ... <br/>
     •&nbsp; Intrinsic Extensibility <br/>
     •&nbsp; Evolution w/o disruption <br/>
-  link: get-started/about#cloud-native-by-design
+  link: get-started/features#cloud-native-by-design
   linkText: Intrinsic Cloud Qualities
 
 ---

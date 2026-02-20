@@ -742,7 +742,7 @@ The resulting `VCAP_SERVICES` env variable looks like this:
 
 ### Through _.cdsrc-private.json_ File for Hybrid Testing
 
-[Learn more about hybrid testing using _.cdsrc-private.json_.](../guides/advanced/hybrid-testing#bind-to-cloud-services)
+[Learn more about hybrid testing using _.cdsrc-private.json_.](../tools/cds-bind#bind-to-cloud-services)
 
 ```json
 {
@@ -786,11 +786,3 @@ cds.requires.db.credentials.database = sqlite.db
 > Never check in or deploy such _.env_ files!
 
 <div id="endofconnect" />
-
-
-
-## Importing Service APIs
-
-
-
-## Mocking Required Services

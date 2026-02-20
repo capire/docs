@@ -8,6 +8,7 @@ import ScrollToTop from './components/ScrollToTop.vue'
 import Ribbon from './components/Ribbon.vue'
 
 const isPreview = !!import.meta.env.VITE_CAPIRE_PREVIEW
+const archiveVersion = import.meta.env.VITE_CAPIRE_VERSION
 
 const { Layout } = DefaultTheme
 const { frontmatter } = useData()
@@ -45,7 +46,10 @@ const { frontmatter } = useData()
     </template>
   </Layout>
 
-  <Ribbon v-if="isPreview">
+  <Ribbon v-if="archiveVersion">
+    {{ archiveVersion }}<br>Archive
+  </Ribbon>
+  <Ribbon v-else-if="isPreview">
     DEV PREVIEW<br>
     See <a href="https://cap.cloud.sap" target="_blank" rel="noopener noreferrer">cap.cloud.sap</a>
   </Ribbon>

@@ -26,7 +26,7 @@ If you are planning to use cds-typer in a TypeScript project, you should read th
 5. Saving any _.cds_ file of your model from VS Code triggers the type generation process.
 6. Model types now have to be imported to service implementation files by traditional imports of the generated files:
 
-```js
+```js twoslash
 // @noErrors
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
@@ -38,7 +38,7 @@ service.before('CREATE', Books, ({ data }) => { /* data is of type any */})
 ```
 <p/>
 
-```js
+```js twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
@@ -69,7 +69,7 @@ The types emitted by the type generator are tightly integrated with the CDS API.
 
 Most CQL constructs have an overloaded signature to support passing in generated types. Chained calls will offer code completion related to the type you pass in.
 
-```js
+```js twoslash
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
 // ---cut---
@@ -99,7 +99,7 @@ Note that your entities will expose additional capabilities in the context of CQ
 ### CRUD Handlers
 The CRUD handlers `before`, `on`, and `after` accept generated types:
 
-```js
+```js twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
@@ -132,7 +132,7 @@ service.on('READ', Book,  req => req.data.ID)
 
 In the same manner, actions can be combined with `on`:
 
-```js
+```js twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
@@ -154,7 +154,7 @@ You can remedy this by specifying the expected type with one of the following op
 
 Using [JSDoc](https://jsdoc.app/) in JavaScript projects:
 
-```js
+```js twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
@@ -173,7 +173,7 @@ function readBooksHandler (req) {
 <br>
 Using `import` in TypeScript projects:
 
-```ts
+```ts twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 import cds from '@sap/cds'
@@ -197,7 +197,7 @@ CDS enums are supported by `cds-typer` and are represented during runtime as wel
 
 <<< assets/incidents/db/schema.cds
 
-```js
+```js twoslash
 // @paths: {"#cds-models/*": ["%typedModels:incidents:resolved%"]}
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
@@ -253,7 +253,7 @@ class Book {
 
 In consequence, you will get called out by the type system when trying to chain property calls. You can overcome this in a variety of ways:
 
-```ts
+```ts twoslash
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 import cds from '@sap/cds'
 // ---cut---
@@ -282,7 +282,7 @@ Note that (iii) through (v) are specific to TypeScript, while (i) and (ii) can a
 
 ## Fine Tuning
 ### Singular/ Plural
-The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/modeling#naming-conventions).
+The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/index#naming-conventions).
 
 Naturally, this best practice can't be enforced on every model. Even for names that do follow best practices, the heuristic can fail. If you find that you would like to specify custom identifiers for singular or plural forms, you can do so using the `@singular` or `@plural` annotations.
 
@@ -292,7 +292,7 @@ CDS file:
 
 Generated classes:
 
-```ts
+```ts twoslash
 // @paths: {"#cds-models/*": ["%typedModels:farm:resolved%"]}
 import { Mouse, Mice, Sheep, FlockOfSheep } from '#cds-models/farm'
 ```
@@ -457,7 +457,7 @@ const { Books } = require('#cds-models/sap/capire/bookshop')
 
 These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.js/cds-reflect#entities) during runtime, but offer you code completion and type hinting at design time:
 
-```js
+```js twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
@@ -476,7 +476,7 @@ class CatalogService extends cds.ApplicationService { init(){
 
 Similar to `cds.entities(…)`, you can't use static imports here. Instead, you need to use dynamic imports. However, there's an exception for [static top-level imports](#typer-top-level-imports).
 
-```js
+```js twoslash
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 const cds = require('@sap/cds')
 // ---cut---
@@ -491,7 +491,7 @@ class CatalogService extends cds.ApplicationService { init(){
 
 In TypeScript you can use [type-only imports](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export) on top level if you just want the types for annotation purposes. The counterpart for the JavaScript example above that works during design time _and_ runtime is a [dynamic import expression](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#dynamic-import-expressions):
 
-```ts
+```ts twoslash
 // @noErrors
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 import cds from '@sap/cds'
@@ -507,10 +507,10 @@ class CatalogService extends cds.ApplicationService { async init(){
 }}
 ```
 
-### Static Top-Level Imports <Since version="0.26.0" of="@cap-js/cds-typer" /> {#typer-top-level-imports}
+### Static Top-Level Imports <Since version="0.26.0" package="@cap-js/cds-typer" /> {#typer-top-level-imports}
 You can pass a new option, `useEntitiesProxy`, to `cds-typer`. This option allows you to statically import your entities at the top level, as you intuitively would. However, you can still only _use these entities_ in a context where the CDS runtime is fully booted, like in a service definition:
 
-```ts
+```ts twoslash
 // @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
 import cds from '@sap/cds'
 // ---cut---

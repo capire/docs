@@ -1,11 +1,8 @@
 ---
 
 label: MTX Reference
-# layout: reference-doc
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - MTX Reference
+synopsis: >
+  API reference for multitenancy and extensibility.
 status: released
 ---
 
@@ -1275,7 +1272,7 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 "cds.xt.SaasProvisioningService": {
   "jobs": {
     "queueSize": 5, // default: 100
-    "workerSize": 5, // default: 1
+    "workerSize": 5, // default: 4
     "clusterSize": 5, // default: 1
   }
 }
@@ -1298,6 +1295,12 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 ::: tip No `prefer: respond-async` needed with callback
 Requests are implicitly asynchronous when `status_callback` is set.
 :::
+
+##### Passing tenant-specific deployment parameters
+
+Using the `"_"` section of the payload, you can pass deployment parameters for an individual tenant. The syntax is identical with the [static deployment configuration of `cds.xt.DeploymentService`](#deployment-config).
+
+In most cases, the requests are received from a third party, so the deployment parameters need to be added in [a handler implementation](#adding-custom-lifecycle-event-handlers) for `cds.xt.SaasProvisioningService`.
 
 ##### Example Usage
 
@@ -1338,8 +1341,8 @@ Content-Type: application/json
         "_": {
             "hdi": {
                 "deploy": {
-                    "trace": "true",
-                    "version": "true"
+                    "trace": true,
+                    "version": true
                 }
             }
         }
@@ -1439,7 +1442,12 @@ Content-Type: application/json
 {
   "subscribedTenantId": "t1",
   "subscribedSubdomain": "subdomain1",
-  "eventType": "CREATE"
+  "eventType": "CREATE",
+  "_": {
+    "hdi": {
+      ...
+    }
+  }
 }
 ```
 
@@ -1485,8 +1493,8 @@ Prefer: respond-async
       "_": {
           "hdi": {
               "deploy": {
-                  "trace": "true",
-                  "version": "true"
+                  "trace": true,
+                  "version": true
               }
           }
       }

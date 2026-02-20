@@ -16,7 +16,7 @@ status: released
 
 ## Intrinsic Eventing in CAP
 
-As introduced in [About CAP](../../get-started/best-practices#events), everything happening at runtime is in response to events, and all service implementations take place in [event handlers](../services/providing-services#event-handlers). All CAP services intrinsically support emitting and reacting to events, as shown in this simple code snippet (you can copy & run it in `cds repl`):
+As introduced in [About CAP](../../get-started/concepts#events), everything happening at runtime is in response to events, and all service implementations take place in [event handlers](../services/custom-code#custom-event-handlers). All CAP services intrinsically support emitting and reacting to events, as shown in this simple code snippet (you can copy & run it in `cds repl`):
 
 ```js
 let srv = new cds.Service
@@ -101,7 +101,7 @@ Follow the instructions in [*cap/samples/readme*](https://github.com/capire/samp
 
 ### Declaring Events in CDS
 
-Package `@capire/reviews` provides a `ReviewsService` API, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-api.cds):
+Package `@capire/reviews` provides a `ReviewsService` API, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-service.cds):
 
 ```cds
 service ReviewsService @(path:'reviews/api') {
@@ -171,7 +171,7 @@ The message payload is in the `data` property of the inbound `msg` object.
 
 
 ::: tip
-To have more control over imported service definitions, you can set the `model` configuration of your external service to a cds file where you define the external service and only use the imported definitions your app needs. This way, plugins like [Open Resource Discovery (ORD)](../../plugins/index.md#ord-open-resource-discovery) know which parts of the external service you actually use in your application.
+To have more control over imported service definitions, you can set the `model` configuration of your external service to a cds file where you define the external service and only use the imported definitions your app needs. This way, plugins like [Open Resource Discovery (ORD)](../../plugins/index#ord-open-resource-discovery) know which parts of the external service you actually use in your application.
 :::
 
 

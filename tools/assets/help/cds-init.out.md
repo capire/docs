@@ -66,6 +66,11 @@
       <em>lint</em>                         - configure cds lint
       <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
       <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
+      <em>console</em>                      - installs the CAP console plugin
+
+    <em>--nodejs</em>
+
+        Create a CAP Node.js project.
 
     <em>--java</em>
 
@@ -83,6 +88,7 @@
 
 <strong>EXAMPLES</strong>
     <em>cds init</em> bookshop
+    <em>cds init</em> bookshop --nodejs
     <em>cds init</em> bookshop --java
     <em>cds init</em> bookshop --add hana
     <em>cds init</em> bookshop --add multitenancy,mta

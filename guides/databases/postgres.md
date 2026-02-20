@@ -1,5 +1,4 @@
 ---
-status: released
 impl-variants: true
 ---
 
@@ -56,7 +55,7 @@ npm add @cap-js/postgres
 
 <div class="impl java">
 
-After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#deployment-using-liquibase) for PostgreSQL.
+After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#using-liquibase-java) for PostgreSQL.
 
 </div>
 
@@ -79,8 +78,6 @@ Output:
   kind: 'postgres'
 }
 ```
-
-[See also the general information on installing database packages](index#setup-configurationmore}
 
 ## Provisioning a DB Instance
 
@@ -518,9 +515,9 @@ to your database!
 :::
 
 
-## Deployment Using Liquibase  { .java }
+## Using Liquibase (Java)
 
-You can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. Liquibase lets you define database changes [in an SQL file](https://docs.liquibase.com/change-types/sql-file.html), use `cds deploy` to quickly generate DDL scripts which can be used by Liquibase.
+In CAP Java projects you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. Liquibase lets you define database changes [in an SQL file](https://docs.liquibase.com/change-types/sql-file.html), use `cds deploy` to quickly generate DDL scripts which can be used by Liquibase.
 
 Add a Maven dependency to Liquibase in `srv/pom.xml`:
 
@@ -618,7 +615,7 @@ If the changes in the model could lead to data loss, an error is raised.
 
 ## Migration { .node }
 
-Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes. Nevertheless, please check the instructions in the [SQLite Migration guide](sqlite#migration), with by and large applies also to the new PostgreSQL service.
+Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes.
 
 ### `cds deploy --model-only`
 

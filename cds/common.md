@@ -2,7 +2,6 @@
 # layout: cds-ref
 synopsis: >
   Introduces <i>@sap/cds/common</i>, a prebuilt CDS model shipped with <i>@sap/cds</i> that provides common types and aspects.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -30,13 +29,13 @@ CDS ships with a prebuilt model *`@sap/cds/common`* that provides common types a
 
 It's recommended that all applications use the common types and aspects provided through _@sap/cds/common_ to benefit from these features:
 
-* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/modeling)
+* **Concise** and **comprehensible** models &rarr; see also [Conceptual Modeling](../guides/domain/index)
 * **Foster interoperability** between all applications
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
 * **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
-* **Extensibility** using [Aspects](../guides/domain/modeling#aspect-oriented-modeling)
+* **Extensibility** using [Aspects](../guides/domain/index#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 
 For example, usage is as simple as indicated in the following sample:
@@ -83,7 +82,7 @@ entity Foo {
 
 > The service provider runtimes automatically fill in UUID-typed keys like these with auto-generated UUIDs.
 
-[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/modeling#prefer-canonic-keys){ .learn-more}
+[Learn more about **canonical keys** and **UUIDs**.](../guides/domain/index#prefer-canonic-keys){ .learn-more}
 
 
 ### Aspect `managed`
@@ -110,7 +109,7 @@ entity Foo {
 
 The annotations `@cds.on.insert/update` are handled in generic service providers so to fill in those fields automatically.
 
-[Learn more about **generic service features**.](../guides/domain/modeling#managed-data){ .learn-more}
+[Learn more about **generic service features**.](../guides/domain/index#managed-data){ .learn-more}
 
 
 ### Aspect `temporal`
@@ -421,7 +420,7 @@ EU;European Union;European Union
 ```
 :::
 
-[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases/index#providing-initial-data){ .learn-more}
+[Learn more about the database aspects of **Providing Initial Data**.](../guides/databases/initial-data){ .learn-more}
 
 
 ### Add Translated Texts
@@ -471,7 +470,7 @@ Use it in your `cds` files:
 using from '@sap/cds-common-content';
 ```
 
-[Learn more about integrating reuse packages](../guides/extensibility/composition){.learn-more}
+[Learn more about integrating reuse packages](../guides/integration/reuse-and-compose){.learn-more}
 
 
 ## Adapting to Your Needs
@@ -483,7 +482,7 @@ Let's look at a few examples of what could be done. You can combine these extens
 You can do such extensions in the models of your project. You can also collect your extensions into reuse packages and share them as common definitions with several consuming projects, similar to _@sap/cds/common_ itself.
 :::
 
-[Learn more about providing reuse packages.](../guides/extensibility/composition){ .learn-more}
+[Learn more about providing reuse packages.](../guides/integration/reuse-and-compose){ .learn-more}
 
 
 ### Adding Detailed Fields as of [ISO 3166-1]

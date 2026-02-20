@@ -11,30 +11,21 @@ status: released
 
 ## Automatic Build Tasks
 
-`cds build` runs _build tasks_ on your project folders to prepare them for deployment. Build tasks compile _source files_ (typically CDS sources) and create required artifacts, for example, EDMX files or SAP HANA design-time artifacts.
+`cds build` runs _build tasks_ on your project to prepare it for deployment.
 
-The following build tasks represent the default configuration dynamically determined by `cds build` for a minimal Node.js project when executing `cds build --production` or `cds build --profile production` :
+Build tasks compile _source files_ (typically CDS sources) and create required artifacts, for example, EDMX files or SAP HANA design-time artifacts.
 
-::: code-group
-```json [package.json]
-{ "cds": {
-  "build": {
-    "target": "gen",
-    "tasks": [
-      { "for": "hana", "src": "db", "options": {"model": ["db","srv"] } },
-      { "for": "nodejs", "src": "srv", "options": {"model": ["db","srv"] } }
-    ]
-  }
-}}
+For a full production build, this command should be enough for most projects:
+```sh
+cds build --production
 ```
-:::
 
 Build tasks are derived from the CDS configuration and project context. By default, CDS models are resolved from these sources:
 
-- _db/_, _srv/_, _app/_ — [default root folders](../../get-started/index.md#project-structure)
+- _db/_, _srv/_, _app/_ — default root folders of a CAP project
 - _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
-- CDS model folders and files defined by [required services](../../node.js/cds-env#services), including built-in ones
-  - Examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
+- CDS model folders and files defined by [required services](../../node.js/cds-env#services)
+  - Built-in examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
 - Explicit `src` folder configured in the build task
 
 
@@ -42,15 +33,25 @@ Feature toggle folders and required built-in service models will also be added i
 
 [Learn more about `cds.resolve`](../../node.js/cds-compile#cds-resolve){.learn-more}
 
-::: tip The executed build tasks are logged to the command line
-You can use them as a blue print – copy & paste them into your CDS configuration and adapt them to your needs.
-:::
+## Extending `cds build`
 
+Provide additional service integrations by writing a `cds build` plugin:
 
+```js
+// cds-plugin.js
+const cds = require('@sap/cds')
+cds.build?.register?.('my-plugin',
+  class extends cds.build.Plugin {
+    async build() { /* ... */ }
+  }
+)
+```
+[Learn more about `cds build` plugins](../../tools/apis/cds-build){.learn-more}{style="margin-top: 0px"}
 
 ## Custom Build Tasks
 
-If custom build tasks are configured, those properties have precedence
+If custom build tasks are configured, those properties have precedence.
+
 For example, you want to configure the _src_ folder and add the default models. To achieve this, do not define the _model_ option in your build task:
 
 ::: code-group
@@ -68,7 +69,7 @@ For example, you want to configure the _src_ folder and add the default models. 
 
  This way, the model paths will still be dynamically determined, but the _src_ folder is taken from the build task configuration. You still benefit from the automatic determination of models – for example when adding a new external services or when CAP is changing any built-in service defaults.
 
-To control which tasks `cds build` executes, you can add them as part of your [project configuration](../../node.js/cds-env#project-settings) in _package.json_ or _.cdsrc.json_, as outlined [in the following chapter](#build-task-properties).
+To control which tasks `cds build` executes, you can add them as part of your [project configuration](../../node.js/cds-env#project-settings) in _package.json_ or _.cdsrc.json_, as outlined in the following chapter.
 
 
 ## Build Task Types
@@ -111,7 +112,7 @@ Alternatively you can execute build tasks and pass the described arguments to th
 
 ## Build Target Folder {#build-target-folder}
 
-If you want to change the default target folder, use the <Config keyOnly>cds.build.target=path/to/my/folder</Config> property. It is resolved based on the root folder of your project.
+To change the default target folder, use the <Config keyOnly>cds.build.target=path/to/my/folder</Config>. It is resolved based on the root folder of your project.
 
 
 #### Node.js

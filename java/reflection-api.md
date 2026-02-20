@@ -2,7 +2,6 @@
 synopsis: >
   The Model Reflection API is a set of interfaces, which provide the ability to introspect a CDS model and retrieve details on
   the services, types, entities, and their elements that are defined by the model.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 

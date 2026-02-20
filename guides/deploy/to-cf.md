@@ -1,16 +1,7 @@
 ---
-index: 70
-breadcrumbs:
-  - Cookbook
-  - Deployment
-  - Deploy to Cloud Foundry
-# shorty: Deploy to CF
 synopsis: >
   A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP)  to SAP BTP Cloud Foundry environment.
-#notebook: true
 impl-variants: true
-# layout: cookbook
-status: released
 ---
 
 # Deploy to Cloud Foundry
@@ -21,7 +12,7 @@ status: released
 
 ## Intro & Overview
 
-After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/in-a-nutshell) or [Cookbook](../) guides, you would finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
+After completing the functional implementation of your CAP application by following the [Getting Started](../../get-started/bookshop) or [Cookbook](../) guides, you finally deploy it to the cloud for production. The essential steps are illustrated in the following graphic:
 
 ![First prepare for production (once) and then freeze your dependencies (once and on upgrades). Next build and assemble and then deploy.](assets/deploy-setps.drawio.svg){style="margin: 30px auto"}
 
@@ -36,7 +27,7 @@ The following sections are based on a new project that you can create like this:
 <div class="impl node">
 
 ```sh
-cds init bookshop --add sample
+cds init bookshop --nodejs --add sample
 cd bookshop
 ```
 
@@ -77,7 +68,7 @@ In addition, you need to prepare the following:
 - A [Cloud Foundry space](https://help.sap.com/docs/btp/sap-business-technology-platform/create-spaces?version=Cloud)
 <!-- - A Cloud Foundry quota plan assigned to your space -->
 ::: tip Starting the SAP HANA database takes several minutes
-Therefore, we recommend doing these steps early on. In trial accounts, you need to start the database **every day**.
+Therefore, do these steps early on. In trial accounts, you need to start the database **every day**.
 :::
 
 #### 2. Latest Versions of `@sap/cds-dk` {#latest-cds}
@@ -104,7 +95,7 @@ npm i @sap/cds        #> if necessary
 
 - Run `mbt` in a terminal to check whether you've installed it.
 - If not, install it according to the [MTA Build Tool's documentation](https://sap.github.io/cloud-mta-build-tool/download).
-- For macOS/Linux machines best is to install using `npm`:
+- For macOS/Linux machines, it's best to install using `npm`:
 
   ```sh
   npm i -g mbt
@@ -134,13 +125,13 @@ The `cds add <facets>` command ensures required services are configured correctl
 
 <div class="impl node">
 
-While we used SQLite as a low-cost stand-in during development, we're using an SAP HANA Cloud database for production:
+While you used SQLite as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
 
 </div>
 
 <div class="impl java">
 
-While we used SQLite or H2 as a low-cost stand-in during development, we're going to use an SAP HANA Cloud database for production:
+While you used SQLite or H2 as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
 
 </div>
 
@@ -159,14 +150,14 @@ cds add xsuaa
 ```
 
 ::: tip This will also generate an `xs-security.json` file
-The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [_Authorization_ guide](../security/authorization#xsuaa-configuration) whenever there are changes to these annotations.
+The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [_Security_ guide](../security/cap-users#xsuaa-roles) whenever there are changes to these annotations.
 :::
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
 ### 3. MTA-Based Deployment { #add-mta-yaml}
 
-We'll be using the [Cloud MTA Build Tool](https://sap.github.io/cloud-mta-build-tool/) to execute the deployment. The modules and services are configured in an _mta.yaml_ deployment descriptor:
+You use the [Cloud MTA Build Tool](https://sap.github.io/cloud-mta-build-tool/) to execute the deployment. The modules and services are configured in an _mta.yaml_ deployment descriptor:
 
 ```sh
 cds add mta
@@ -178,7 +169,7 @@ cds add mta
 
 #### Option A: SAP Cloud Portal
 
-If you intend to deploy **multitenant** applications with a UI, we recommend to set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+If you intend to deploy **multitenant** applications with a UI, set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
 
 ```sh
 cds add portal
@@ -206,7 +197,7 @@ For **single-tenant** applications, you can integrate with SAP Build Work Zone, 
 cds add workzone
 ```
 
-This approach uses the **managed App Router** provided by SAP Fiori Launchpad&nbsp;—&nbsp;you don't need to deploy your own. Instead, destinations are configured.
+This approach uses the **managed App Router** provided by SAP Fiori Launchpad — you don't need to deploy your own. Instead, destinations are configured.
 
 <br>
 
@@ -286,7 +277,7 @@ cf deploy gen/mta.tar -f
 
 ::: details Test with `cds build`
 
-While `cds build` is already ran as part of `mbt build` in `cds up`, you can also run it standalone to inspect what is generated for production:
+While `cds build` is already run as part of `mbt build` in `cds up`, you can also run it standalone to inspect what is generated for production:
 
 ```sh
 cds build --production
@@ -296,8 +287,8 @@ cds build --production
 
 :::
 
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#mta){.learn-more}
-[Learn how to reduce the MTA archive size **during development**.](../../get-started/troubleshooting#reduce-mta-size){.learn-more}
+[Got errors? See the troubleshooting guide.](../../get-started/get-help#mta){.learn-more}
+[Learn how to reduce the MTA archive size **during development**.](../../get-started/get-help#reduce-mta-size){.learn-more}
 
 This process can take some minutes and finally logs an output like this:
 
@@ -317,20 +308,18 @@ Share the generic App-Router URL with SaaS consumers for logging in as extension
 :::
 
 ::: tip No index page and SAP Fiori preview in the cloud
-The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you are used to seeing during local development, are only meant for the development profile and not available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through on of the [user interface options](#add-ui) outlined before.
+The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
 :::
 
 ### Inspect Apps in BTP Cockpit
 
 Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/144e1733d0d64d58a7176e817fa6aeb3.html) to see the deployed apps:
 
-![The screenshot shows the SAP BTP cockpit, when a user navigates to his dev space in the trial account and looks at all deployed applications.](./assets/apps-cockpit.png)
+![The screenshot shows the SAP BTP cockpit, when a user navigates to their dev space in the trial account and views all deployed applications.](./assets/apps-cockpit.png)
 
 ::: tip Next up: Assign the _admin_ role
-In order to access the admin APIs you need to assign the _admin_ role required by `AdminService`. Create a role collection and [assign the role and your user](https://developers.sap.com/tutorials/btp-app-role-assignment.html) to get access.
+To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
 :::
-
-[Got errors? See the troubleshooting guide.](../../get-started/troubleshooting#cflogs-recent){.learn-more}
 
 
 ## Staying Up-to-date { #freeze-dependencies }
@@ -344,9 +333,9 @@ We recommend setting up [Dependabot](https://docs.github.com/en/code-security/de
 
 ## Upgrade Tenants {.java}
 
-The CAP Java SDK offers `main` methods for Subscribe/Unsubscribe in the classes `com.sap.cds.framework.spring.utils.Subscribe/Unsubscribe` that can be called from the command line. This way, you can run the tenant subscribe/unsubscribe for the specified tenant. This would trigger also your custom handlers, which is useful for the local testing scenarios.
+The CAP Java SDK offers `main` methods for Subscribe/Unsubscribe in the classes `com.sap.cds.framework.spring.utils.Subscribe/Unsubscribe` that can be called from the command line. This way, you can run the tenant subscribe/unsubscribe for the specified tenant. This triggers your custom handlers, which is useful for local testing scenarios.
 
-In order to register all handlers of the application properly during the execution of a tenant operation `main` method, the component scan package must be configured. To set the component scan, the property <Config java>cds.multitenancy.component-scan</Config> must be set to the package name of your application.
+To register all handlers of the application properly during the execution of a tenant operation `main` method, the component scan package must be configured. To set the component scan, the property <Config java>cds.multitenancy.component-scan</Config> must be set to the package name of your application.
 
 The handler registration provides additional information that is used for the tenant subscribe, for example, messaging subscriptions that are created.
 
@@ -354,7 +343,7 @@ The handler registration provides additional information that is used for the te
 You can stop the CAP Java backend when you call this method, but the MTX sidecar application must be running!
 :::
 
-This synchronization can also be automated, for example using [Cloud Foundry Tasks](https://docs.cloudfoundry.org/devguide/using-tasks.html) on SAP BTP and [Module Hooks](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/b9245ba90aa14681a416065df8e8c593.html) in your MTA.
+You can also automate this synchronization, for example using [Cloud Foundry Tasks](https://docs.cloudfoundry.org/devguide/using-tasks.html) on SAP BTP and [Module Hooks](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/b9245ba90aa14681a416065df8e8c593.html) in your MTA.
 
 The `main` method optionally takes tenant ID (string) as the first input argument and tenant options (JSON string) as the second input argument. Alternatively, you can use the environment variables `MTCOMMAND_TENANTS` and `MTCOMMAND_OPTIONS` instead of arguments. The command-line arguments have higher priority, so you can use them to override the environment variables.
 

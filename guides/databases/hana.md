@@ -4,20 +4,18 @@ status: released
 
 # Using SAP HANA Cloud for Production
 
+[toc]:./
 [[toc]]
 
 
 [SAP HANA Cloud](https://www.sap.com/products/technology-platform/hana.html) is supported as the CAP standard database and recommended for productive use with full support for schema evolution and multitenancy.
 
-::: warning Validation strategy
-
-CAP isn't validated with other variants of SAP HANA, like "SAP HANA Database as a Service" or "SAP HANA (on premise)".
-
-The database services are validated against the latest maintained QRC version of SAP HANA Cloud. It's not guaranteed that outdated versions are fully functional with the latest database services.
-
-[See the official SAP HANA Cloud documentation for their maintenance strategy.](https://help.sap.com/docs/HANA_CLOUD_CN/1f64fe39189f4176bf659e737d62222a/6ced4d164e234b74aa9bea82435ce9a8.html){.learn-more}
-
-:::
+> [!note] Supported SAP HANA versions and variants
+> CAP isn't validated with variants other than _SAP HANA Cloud_, like _SAP HANA Database as a Service_ or _SAP HANA (on premise)_.
+>
+> CAP's database services are validated against the latest maintained QRC version of SAP HANA Cloud. It's not guaranteed that outdated versions are fully functional with the latest database services.
+>
+> [See the official SAP HANA Cloud documentation for its maintenance strategy.](https://help.sap.com/docs/HANA_CLOUD_CN/1f64fe39189f4176bf659e737d62222a/6ced4d164e234b74aa9bea82435ce9a8.html){.learn-more}
 
 ## Setup & Configuration
 
@@ -59,7 +57,7 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 ## Running `cds build`
 
-Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?) which in turn requires running `cds build` to generate all the deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
+Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?). Use `cds build` to generate all necessary deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
 
 ```sh
 cds build --for hana
@@ -158,6 +156,8 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
    gen/db/src/sap.capire.bookshop.Books.hdbindex // [!code focus]
    ```
 
+> [!note]
+Use folder `db/src` here because `src` is HDI's default source folder.
 
 [Learn more about HDI Design-Time Resources and Build Plug-ins](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/hdi-design-time-resources-and-build-plug-ins?){.learn-more}
 
@@ -166,7 +166,7 @@ In addition to the generated HDI artifacts, you can add custom ones by adding ac
 
 There are two ways to include SAP HANA in your setup: Use SAP HANA in a [hybrid mode](#cds-deploy-hana), meaning running your services locally and connecting to your database in the cloud, or running your [whole application](../deploy/index.md) on SAP Business Technology Platform. This is possible either in trial accounts or in productive accounts.
 
-To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/troubleshooting#get-hana) to learn about your options.
+To make the following configuration steps work, we assume that you've provisioned, set up, and started, for example, your SAP HANA Cloud instance in the [trial environment](https://cockpit.hanatrial.ondemand.com). If you need to prepare your SAP HANA first, see [How to Get an SAP HANA Cloud Instance for SAP Business Technology Platform, Cloud Foundry environment](../../get-started/get-help#get-hana) to learn about your options.
 
 ### Prepare for Production { #configure-hana }
 
@@ -176,9 +176,9 @@ To prepare the project, execute:
 cds add hana --for hybrid
 ```
 
-This configures deployment for SAP HANA to use the _hdbtable_ and _hdbview_ formats. The configuration is added to a `[hybrid]` profile in your _package.json_.
+This configures deployment for SAP HANA. The configuration is added to a `[hybrid]` profile in your _package.json_.
 
-::: tip The profile `hybrid` relates to [the hybrid testing](../advanced/hybrid-testing) scenario
+::: tip The profile `hybrid` relates to [the hybrid testing](../../tools/cds-bind) scenario
 If you want to prepare your project for production and use the profile `production`, read the [Deploy to Cloud](../deploy/index.md) guide.
 :::
 
@@ -197,17 +197,7 @@ Then in the project root folder, just execute:
 cds deploy --to hana
 ```
 
-> To connect to your SAP HANA Cloud instance use `cds watch --profile hybrid` in Node.js or[ `mvn cds:watch` in Java](../../java/developing-applications/running#local-development-support) projects.
-
-Behind the scenes, `cds deploy` does the following:
-
-* Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
-* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the CSV files in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
-* Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
-* Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
-* Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
-
-Specify `--profile` when running `cds deploy` as follows:
+Or run it with a profile as follows:
 
 ```sh
 cds deploy --to hana --profile hybrid
@@ -215,32 +205,51 @@ cds deploy --to hana --profile hybrid
 
 Based on these profile settings, `cds deploy` executes `cds build` and also resolves additionally binding information. If a corresponding binding exists, its service name and service key are used. The development profile is used by default.
 
+<details><summary>In more detail <code>cds deploy</code> does the following...</summary>
+
+* Compiles the CDS model to SAP HANA files (usually in _gen/db_, or _db/src/gen_)
+* Generates _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ files for the CSV files in the project. If a _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ file is already present next to the CSV files, no new file is generated.
+* Creates a Cloud Foundry service of type `hdi-shared`, which creates an HDI container. Also, you can explicitly specify the name like so: `cds deploy --to hana:<myService>`.
+* Starts `@sap/hdi-deploy` locally. If you need a tunnel to access the database, you can specify its address with `--tunnel-address <host:port>`.
+* Stores the binding information with profile `hybrid` in the _.cdsrc-private.json_ file of your project. You can use a different profile with parameter `--for`. With this information, `cds watch`/`run` can fetch the SAP HANA credentials at runtime, so that the server can connect to it.
+
+</details>
+
+To connect to and run with your SAP HANA Cloud instance, use:
+
+::: code-group
+```sh [Node.js]
+cds watch --profile hybrid
+```
+
+```sh [Java]
+mvn cds:watch
+```
+:::
+
+[Learn more about hybrid testing using service bindings to Cloud services.](../../tools/cds-bind#run-with-service-bindings){.learn-more}
 [Learn more about the deployment using HDI.](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?){.learn-more}
-[Learn more about hybrid testing using service bindings to Cloud services.](../advanced/hybrid-testing#run-with-service-bindings){.learn-more}
+[See the troubleshooting guide if you run into issues.](../../get-started/get-help#hana){.learn-more}
 
-If you run into issues, see the [Troubleshooting](../../get-started/troubleshooting#hana) guide.
 
-#### Deploy Parameters
+#### Configuring `cds deploy`
 
-When using the option `--to hana`, you can specify the service name and logon information in several ways.
+When using `cds deploy --to hana`, you can specify the service name and logon information in several ways.
 
-<br>
+In the default mode, the service name and service key either come from the environment variable `VCAP_SERVICES` or are defaulted from the project name, for example, `myproject-db` with `myproject-db-key`. Service instances and key either exist and will be used, or otherwise they're created.
 
-`cds deploy --to hana`
-
-In this case the service name and service key either come from the environment variable `VCAP_SERVICES` or are defaulted from the project name, for example, `myproject-db` with `myproject-db-key`. Service instances and key either exist and will be used, or otherwise they're created.
-
-##### `cds deploy --to hana:myservice`
+##### `--to hana:myservice`
 
 This overwrites any information coming from environment variables. The service name `myservice` is used and the current Cloud Foundry client logon information is taken to connect to the system.
 
-##### `cds deploy --vcap-file someEnvFile.json`
+##### `--vcap-file someEnvFile.json`
 
 This takes the logon information and the service name from the `someEnvFile.json` file and overwrite any environment variable that is already set.
 
-##### `cds deploy --to hana:myservice --vcap-file someEnvFile.json`
+##### `--to hana:myservice --vcap-file someEnvFile.json`
 
 This is equivalent to `cds deploy --to hana:myservice` and ignores information coming from `--vcap-file`. A warning is printed after deploying.
+
 
 ### Using `cf deploy` or `cf push`
 
@@ -294,14 +303,16 @@ At runtime, use SAP HANA's built-in vector functions to search for similar items
 var request = new OpenAiEmbeddingRequest(List.of("How to use vector embeddings in CAP?"));
 CdsVector userQuestion = CdsVector.of(
  aiClient.embedding(request).getEmbeddingVectors().get(0));
+
 // Compute similarity between user question and book embeddings
 var similarity = CQL.cosineSimilarity( // computed on SAP HANA
   CQL.get(Books.EMBEDDING), userQuestion);
+
 // Find Books related to user question ordered by similarity
 hana.run(Select.from(BOOKS).limit(10)
-.columns(b -> b.ID(), b -> b.title(),
-		 b -> similarity.as("similarity"))
-.orderBy(b -> b.get("similarity").desc()));
+  .columns(b -> b.ID(), b -> b.title(), b -> similarity.as("similarity"))
+  .orderBy(b -> b.get("similarity").desc())
+);
 ```
 
 ```js [Node.js]
@@ -310,29 +321,24 @@ const response = await new AzureOpenAiEmbeddingClient(
 ).run({
  input: 'How to use vector embeddings in CAP?'
 });
+
 const questionEmbedding = response.getEmbedding();
 let similarBooks = await SELECT.from('Books')
   .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.9`;
 ```
-
 :::
 
-:::tip
+:::tip Evolve embeddings with your model
 Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
 :::
 
-:::tip SAP Cloud SDK for AI
+:::tip Use SAP Cloud SDK for AI
 Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access to embedding models and large language models (LLMs) from [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core).
 :::
 
-
-[Learn more about the SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) {.learn-more}
+Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
-
-[Learn more about the SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
-
-
 
 
 ### Geospatial Functions
@@ -381,13 +387,13 @@ entity V as select
 SAP HANA allows to omit the parentheses for functions that don't expect arguments. For example:
 
 ```cds
-entity Foo { key ID : UUID; }
-entity Bar as select from Foo {
+entity Books { key ID : UUID; }
+entity CatalogService.Books as select from Books {
   ID, current_timestamp
 };
 ```
 
-Some of which are well-known standard functions like `current_timestamp` in the previous example, which can be written without parentheses in CDS models. However, there are many unknown ones, that aren't known to the compiler, for example:
+Some of which are well-known standard functions like `current_timestamp` in the previous example, which can be written without parentheses in CDS models. However, there are many that aren't known to the compiler, for example:
 
 - `current_connection`
 - `current_schema`
@@ -397,19 +403,17 @@ Some of which are well-known standard functions like `current_timestamp` in the 
 - `current_utctimestamp`
 - `sysuuid`
 
-To use these in CDS models, you have to add the parentheses so that CDS generic support for using native features can kick in:
+To use these in CDS models, add parentheses `()`:
 
 ```cds
-entity Foo { key ID : UUID; }
-entity Bar as select from Foo {
+entity Books { key ID : UUID; }
+entity CatalogService.Books as select from Books {
   ID, current_timestamp,
   sysuuid() as sysid // [!code focus]
 };
 ```
 
-
-
-
+[Learn more on SAP HANA functions.](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/20a61f29751910149f99f0300dd95cd9.html){.learn-more}
 
 ### Regex Functions
 
@@ -423,10 +427,6 @@ first_value(name order by price desc)
 Restriction: `COLLATE` isn't supported.
 
 For other functions, where the syntax isn't supported by the compiler (for example, `xmltable(...)`), a native _.hdbview_ can be used. See [Using Native SAP HANA Artifacts](./hana-native) for more details.
-
-
-
-
 
 
 
@@ -450,16 +450,16 @@ CAP supports database schema updates by detecting changes to the CDS model when 
 > <sup>2</sup> Changing targets may lead to renamed foreign keys. Possibly hard to detect data integrity issues due to non-matching foreign key values if target key names remain the same (for example "ID").
 
 ::: warning No support for incompatible schema changes
-Currently there's no framework support for incompatible schema changes that require scripted data migration steps (like changing field constraints NULL > NOT NULL). However, the CDS build does detect those changes and renders them as non-executable statements, requesting the user to take manual resolution steps. We recommend avoiding those changes in productive environments.
+Currently there's no framework support for incompatible schema changes that require scripted data migration steps (like changing field constraints NULL > NOT NULL). However, `cds build` detects those changes and renders them as non-executable statements, requesting the user to take manual resolution steps. We recommend avoiding those changes in productive environments.
 :::
 
 ### Schema Evolution and Multitenancy/Extensibility
 
 There's full support for schema evolution when the _cds-mtxs_ library is used for multitenancy handling. It ensures that all schema changes during base-model upgrades are rolled out to the tenant databases.
 
-::: warning
-Tenant-specific extensibility using the _cds-mtxs_ library isn't supported yet
-Right now, you can't activate extensions on entities annotated with `@cds.persistence.journal`.
+::: warning No tenant extensibility
+Tenant-specific extensibility using the _cds-mtxs_ library isn't supported yet.
+You can't activate extensions on entities annotated with `@cds.persistence.journal`.
 :::
 
 ### Schema Updates with SAP HANA {#schema-updates-with-sap-hana}
@@ -470,19 +470,18 @@ Schema updates using _.hdbtable_ deployments are a challenge for tables with lar
 
 #### Deploy Artifact Transitions as Supported by HDI {#deploy-artifact-transitions}
 
-| Current format    | hdbcds | hdbtable | hdbmigrationtable |
-|-------------------|:------:|:--------:|:-----------------:|
-| hdbcds            |        |  yes  |      n/a      |
-| hdbtable          | n/a |          |       yes       |
-| hdbmigrationtable | n/a |  Yes  |                   |
+| Target format / <br>Current format | hdbcds<br><br> | hdbtable<br><br> | hdbmigrationtable<br><br> |
+|------------------------------------|:--------------:|:----------------:|:-------------------------:|
+| hdbcds                             |                |       yes        |            n/a            |
+| hdbtable                           |      n/a       |                  |            yes            |
+| hdbmigrationtable                  |      n/a       |       Yes        |                           |
 
-::: warning
-Direct migration from _.hdbcds_ to _.hdbmigrationtable_ isn't supported by HDI. A deployment using _.hdbtable_ is required up front.
-
-[Learn more in the **Enhance Project Configuration for SAP HANA Cloud** section.](#configure-hana){.learn-more}
-
-During the transition from _.hdbtable_ to _.hdbmigrationtable_ you have to deploy version=1 of the _.hdbmigrationtable_ artifact, which must not include any migration steps.
-:::
+> [!note] No direct transition from .hdbcds to .hdbmigrationtable
+> Direct migration from _.hdbcds_ to _.hdbmigrationtable_ isn't supported by HDI. A deployment using _.hdbtable_ is required up front.
+>
+> During the transition from _.hdbtable_ to _.hdbmigrationtable_ you have to deploy version=1 of the _.hdbmigrationtable_ artifact, which must not include any migration steps.
+>
+> [Learn more in the **Enhance Project Configuration for SAP HANA Cloud** section.](#configure-hana){.learn-more}
 
 HDI supports the _hdbcds → hdbtable → hdbmigrationtable_ migration flow without data loss. Even going back from _.hdbmigrationtable_ to _.hdbtable_ is possible. Keep in mind that you lose the migration history in this case.
 For all transitions you want to execute in HDI, you need to specify an undeploy allowlist as described in [HDI Delta Deployment and Undeploy Allow List](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/hdi-delta-deployment-and-undeploy-allow-list?) in the SAP HANA documentation.
@@ -493,9 +492,9 @@ There a migration guide providing you step-by-step instructions for making the s
 [Learn more about Moving From _.hdbcds_ To _.hdbtable_](../../cds/compiler/hdbcds-to-hdbtable){.learn-more}
 :::
 
-#### Enabling hdbmigrationtable Generation for Selected Entities During CDS Build {#enabling-hdbmigrationtable-generation}
+#### Enabling hdbmigrationtable Generation for Selected Entities During `cds build` {#enabling-hdbmigrationtable-generation}
 
-If you're migrating your already deployed scenario to _.hdbmigrationtable_ deployment, you've to consider the remarks in [Deploy Artifact Transitions as Supported by HDI](#deploy-artifact-transitions).
+If you're migrating your already deployed scenario to _.hdbmigrationtable_ deployment, consider the remarks in [Deploy Artifact Transitions as Supported by HDI](#deploy-artifact-transitions).
 
 By default, all entities are still compiled to _.hdbtable_ and you only selectively choose the entities for which you want to build _.hdbmigrationtable_ by annotating them with `@cds.persistence.journal`.
 
@@ -504,17 +503,18 @@ Example:
 ```cds
 namespace data.model;
 
-  @cds.persistence.journal
-  entity LargeBook {
-    key id : Integer;
-    title : String(100);
-    content : LargeString;
-  }
+@cds.persistence.journal
+entity LargeBook {
+  key id : Integer;
+  title : String(100);
+  content : LargeString;
+}
 ```
 
-CDS build generates _.hdbmigrationtable_ source files for annotated entities as well as a _last-dev/csn.json_ source file representing the CDS model state of the last build.
+`cds build` generates _.hdbmigrationtable_ source files for annotated entities as well as a _last-dev/csn.json_ source file representing the CDS model state of the last build.
 
-> These source files have to be checked into the version control system.
+> [!note] .hdbmigrationtable files are source files.
+> These source files **must** be checked into the version control system.
 
 Subsequent model changes are applied automatically as respective migration versions including the required schema update statements to accomplish the new target state.
 There are cases where you have to resolve or refactor the generated statements, like for reducing field lengths. As they can't be executed without data loss (for example, `String(100)` -> `String(50)`), the required migration steps are only added as comments for you to process explicitly.
@@ -532,7 +532,7 @@ Example:
 -- ALTER TABLE my_bookshop_Books ADD (title NVARCHAR(50));
 ```
 
-Changing the type of a field causes CDS build to create a corresponding ALTER TABLE statement. [Data type conversion rules](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/data-type-conversion?) are applied by the SAP HANA database as part of the deployment step. This may cause the deployment to fail if the column contents can't be converted to the new format.
+Changing the type of a field causes `cds build` to create a corresponding ALTER TABLE statement. [Data type conversion rules](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/data-type-conversion?) are applied by the SAP HANA database as part of the deployment step. This may cause the deployment to fail if the column contents can't be converted to the new format.
 
 Examples:
 
@@ -547,17 +547,17 @@ When choosing to use _.hdbmigrationtable_ for an entity with
 the generated `.texts` and composition child entities are automatically handled via _.hdbmigrationtable_, too.
 If this is not desired, annotate these generated entities with `@cds.persistence.journal: false`.
 
-::: tip
-Sticking to _.hdbtable_ for the actual application development phase avoids lots of initial migration versions that would need to be applied to the database schema.
-:::
+`cds build` performs rudimentary checks on generated _.hdmigrationtable_ files:
 
-CDS build performs rudimentary checks on generated _.hdmigrationtable_ files:
+- `cds build` fails if inconsistencies are encountered between the generated _.hdbmigrationtable_ files and the _last-dev/csn.json_ model state. For example, the last migration version not matching the table version is such an inconsistency.
+- `cds build` fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
 
-- CDS build fails if inconsistencies are encountered between the generated _.hdbmigrationtable_ files and the _last-dev/csn.json_ model state. For example, the last migration version not matching the table version is such an inconsistency.
-- CDS build fails if manual resolution comments starting with `>>>>>` exist in one of the generated _.hdbmigrationtable_ files. This ensures that manual resolution is performed before deployment.
+> [!tip] Stick to hdbtable during (early) development.
+> Sticking to _.hdbtable_ for the actual application development phase avoids lots of initial migration versions that would need to be applied to the database schema.
+
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
-Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](index#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
+Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
 
 Schema evolution requires that any changes are applied by corresponding ALTER statements. See [ALTER TABLE statement reference](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alter-table-statement-data-definition?version=2024_1_QRC) for more information. A new migration version is generated whenever an `@sql.append` or `@sql.prepend` annotation is added, changed, or removed. ALTER statements define the individual changes that create the final database schema. This schema has to match the schema defined by the TABLE statement in the _.hdbmigrationtable_ artifact.
 Please note that the compiler doesn't evaluate or process these SQL snippets. Any snippet is taken as is and inserted into the TABLE statement and the corresponding ALTER statement. The deployment fails in case of syntax errors.
@@ -586,7 +586,7 @@ ALTER TABLE E PERSISTENT MEMORY ON;
 ALTER TABLE E ALTER (text NVARCHAR(100) FUZZY SEARCH INDEX ON);
 ```
 
-It's important to understand that during deployment new migration versions will be applied on the existing database schema. If the resulting schema doesn't match the schema as defined by the TABLE statement, deployment fails and any changes are rolled-back. In consequence, when removing or replacing an existing `@sql.append` annotation, the original ALTER statements need to be undone. As the required statements can't automatically be determined, manual resolution is required. The CDS build generates comments starting with `>>>>` in order to provide some guidance and enforce manual resolution.
+It's important to understand that during deployment new migration versions will be applied on the existing database schema. If the resulting schema doesn't match the schema as defined by the TABLE statement, deployment fails and any changes are rolled-back. In consequence, when removing or replacing an existing `@sql.append` annotation, the original ALTER statements need to be undone. As the required statements can't automatically be determined, manual resolution is required. The `cds build` generates comments starting with `>>>>` in order to provide some guidance and enforce manual resolution.
 
 Generated file with comments:
 ```txt
@@ -640,20 +640,14 @@ The `change-mode` option determines whether `ALTER TABLE ... ALTER` (`"alter"`) 
 
 ## Caveats
 
-
-
 ### CSV Data Gets Overridden
 
-HDI deploys CSV data as _.hdbtabledata_ and assumes exclusive ownership of the data. It's overridden with the next application deployment; hence:
+HDI deploys CSV data as _.hdbtabledata_ and assumes exclusive ownership of the data. It's **overridden with the next application deployment**; hence:
 
-::: tip
-
-Only use CSV files for _configuration data_ that can't be changed by application users.
-
-:::
-
-Yet, if you need to support initial data with user changes, you can use the `include_filter` option that _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ offers.
-
+> [!danger] Do not let application users modify initial data
+> Only use CSV files for configuration data that can't be changed by application users but only through new deployments of your application. There must be no application endpoint through which it can be modified.
+>
+> Yet, if you need to support initial data with user changes, you can use the `include_filter` option that _[.hdbtabledata](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata)_ offers.
 
 
 ### Undeploying Artifacts
@@ -679,19 +673,26 @@ By default, `cds add hana` creates an `undeploy.json` like this:
 If you need to remove deployed CSV files, also add this entry:
 
 ::: code-group
-
 ```json [db/undeploy.json]
 [
   [...]
   "src/gen/**/*.hdbtabledata"
 ]
 ```
-
 :::
 
-*See this [troubleshooting](../../get-started/troubleshooting#hana-csv) entry for more information.*{.learn-more}
+*See this [troubleshooting](../../get-started/get-help#hana-csv) entry for more information.*{.learn-more}
 
-### SAP HANA Cloud System Limits
+> [!danger] Never undeploy hdbtable files
+> Never have entries for _tables_ in _undeploy.json_, as this leads to data loss for all tables that are not part of the deploy set.
+> ::: code-group
+> ```json [db/undeploy.json]
+>   "src/...hdbtable" // [!code error] data loss!
+> ```
+> :::
+
+
+### System Limits
 
 All limitations for the SAP HANA Cloud database can be found in the [SAP Help Portal](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/system-limitations?version=2024_2_QRC).
 
@@ -706,7 +707,7 @@ indirect dependencies between other objects, which can trigger other unnecessary
 or even unnecessary drop/create of indexes.
 
 As CAP doesn't need these native associations, by default no native HANA associations
-are created anymore starting with CAP 9. 
+are created anymore starting with CAP 9.
 
 In the unlikely case that you need native HANA associations because you explicitly use them
 in other native HANA objects or in custom code, you can switch them back on with <Config>cds.sql.native_hana_associations = true</Config>.
