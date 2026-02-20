@@ -82,7 +82,7 @@ Simply use `cds.ql` to run CXL as part of a CQL query:
 
 <Since version="9.8.0" package="@sap/cds-dk" /> There's also a CQL mode:
 
-```cds
+```js
 > .ql // [!code focus]
 cql> select from Books { title } // [!code focus]
 [
