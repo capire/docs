@@ -49,7 +49,7 @@ Then install CAP's _cds-dk_ globally:
 ### Node.js and _cds-dk_ {.required}
 
 ```shell
-brew install node@24   # Node.js LTS
+brew install node      # Node.js
 npm i -g @sap/cds-dk   # CAP's cds-dk
 ```
 
@@ -96,7 +96,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 ## Command Line Interface
 
 ### The `cds` command
-Run the `cds` command in your terminal to verify your installation and see an overview of available commands, as shown below:
+Run the `cds` command in your terminal to verify your installation and view an overview of available commands, as shown below:
   ```shell
   cds
   ```
