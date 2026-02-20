@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="editor language-sh" :hidden="!loaded" v-if="!readonly">
-        <button title="Copy Code" class="copy"></button>
+        <button title="Copy Code" class="copy" @click.prevent="copyCode"></button>
         <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
         <MonacoEditor
           v-model="queryText"
@@ -129,6 +129,24 @@ function formatTabs(result) {
 
 function toggleTab(key) {
   selectedTab.value = selectedTab.value === key ? null : key
+}
+
+// monaco inserts non-breaking spaces
+// so we override vitepress's default copy behavior
+const timeoutIdMap = new WeakMap()
+async function copyCode(event) {
+  const el = event.target
+  event.stopPropagation()
+  await navigator.clipboard.writeText(queryText.value)
+
+  el.classList.add('copied')
+  clearTimeout(timeoutIdMap.get(el))
+  const timeoutId = setTimeout(() => {
+    el.classList.remove('copied')
+    el.blur()
+    timeoutIdMap.delete(el)
+  }, 2000)
+  timeoutIdMap.set(el, timeoutId)
 }
 
 async function runQuery() {
