@@ -25,22 +25,31 @@ For example, [a calculated element](./cdl#calculated-elements) defined in an ent
 to the respective calculation in the generated query when the entity is queried.
 :::
 
+
+### Live Code
+
+The language syntax is described using [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram).
+Most of the accompanying samples are runnable directly in the browser.
+Press the play button to see the result and the corresponding sql:
+
 ```cds live
 SELECT from Books { title }
 ```
+
+You can also edit the query, making this your personal playground.
+
+:::info Application Context
+The cds model initialized on this page is a slightly modified version of the [capire/bookshop](https://github.com/capire/bookshop).
+
+All samples run on a single browser-local `cds` instance, you can access it via the dev tools
+or run statements in the following code block:
 
 ```js live
 await INSERT.into('Books').entries(
   { ID: 2, author_ID: 150, title: 'Eldorado' }
 )
 ```
-
-
-## How to read this guide { #how-to }
-
-
-In the following chapters we illustrate the `CXL` syntax based on simple and more complex examples.
-The language syntax is described using [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram).
+:::
 
 
 ### Trying it with `cds repl`
@@ -58,12 +67,9 @@ Just create the sample app as described above and start a repl session within th
 cds repl --run .
 ```
 
-:::info All of the example expressions follow the same pattern:
-1. A **`CXL`** is shown in the context of a query.
-2. The resulting **`SQL`** is shown.
+Simply use `cds.ql` to run CXL as part of a CQL query:
 
-:::code-group
-```js [CQL]
+```js
 > await cds.ql`SELECT from Books { title }` // [!code focus]
 [
   { title: 'Wuthering Heights' },
@@ -74,10 +80,19 @@ cds repl --run .
 ]
 ```
 
-```sql [SQL]
-SELECT title FROM sap_capire_bookshop_Books as Books
+<Since version="9.8.0" package="@sap/cds-dk" /> There's also a CQL mode:
+
+```cds
+> .ql // [!code focus]
+cql> select from Books { title } // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
 ```
-:::
 
 
 ## Expressions (`expr`)

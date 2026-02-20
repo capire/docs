@@ -246,6 +246,9 @@ async function runQuery() {
 :deep(.shiki) {
   background-color: var(--vp-code-block-bg) !important;
 }
+:deep(.shiki code) {
+  font-size: 14px;
+}
 
 /* Icon */
 .icon-button {
