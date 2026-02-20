@@ -10,8 +10,6 @@
 </template>
 
 <script setup>
-// Monaco Editor Vue Component
-// Note: Do not create many of these: https://github.com/microsoft/monaco-editor/issues/2326
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
@@ -39,7 +37,7 @@ const editorContainer = ref()
 let editor
 let monaco
 let unmountActions = []
-const lineHeight = 24
+const lineHeight = 24  // matching the css line-height for other code blocks
 const editorPaddingTop = 4
 const editorPaddingBottom = 4
 const editorHeight = ref(props.rows * lineHeight + editorPaddingTop + editorPaddingBottom + 0)

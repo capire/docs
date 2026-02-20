@@ -24,13 +24,11 @@ function injectLogger(sqlite) {
   }
 
   sql = sqlLog;
-  window.sql = sqlLog;
   return sqlLog;
 }
 
 
 async function initialize() {
-  // revisit: make this a static import with ssr handling
   const cds = (await import('@sap/cds')).default;
   const express = (await import('express')).default;
   const templates = (await import('virtual:templates')).default;
