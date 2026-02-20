@@ -88,20 +88,11 @@ This guide describes a way to manage development and deployment via *[monorepos]
 
 The project structure used here is as follows:
 
-::: code-group
-```txt [Node.js]
+```
 <PROJECT-ROOT>/
 ├─ bookstore/
 ├─ orders/
 ├─ reviews/
-├─ ...
-└─ package.json
-```
-```txt [Java]
-<PROJECT-ROOT>/
-├─ bookstore-java/
-├─ orders-java/
-├─ reviews-java/
 ├─ ...
 └─ package.json
 ```
@@ -113,8 +104,6 @@ The individual services (`bookstore`, `reviews`, `orders`) can be one of the fol
 Links between the projects are established using NPM dependencies.
 Since the root project defines workspaces, these dependencies are also found locally without the need for publishing or linking.
 When one of the projects is cloned in isolation, it's still possible to fetch dependencies to other modules via the NPM registry.
-
-:::
 
 ## Using a Shared Database
 
