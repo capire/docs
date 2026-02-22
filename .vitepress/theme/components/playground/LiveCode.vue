@@ -19,8 +19,15 @@
           @evaluate="evaluate"
         />
       </div>
-      <button class="icon-button" @click="evaluate" title="Evaluate">
-        <div v-html="play"></div>
+      <button class="icon-button" @click="evaluate" title="Evaluate" :disabled="evalStatus === 'evaluating'">
+        <div v-if="evalStatus === 'evaluating'" class="spinner" aria-hidden="true"></div>
+        <svg v-else-if="evalStatus === 'success'" class="status-icon success" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 13l4 4L19 7" />
+        </svg>
+        <svg v-else-if="evalStatus === 'error'" class="status-icon error" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+        <div v-else v-html="play"></div>
       </button>
     </div>
 
@@ -93,6 +100,7 @@ const selectedTab = ref(`${uid}-Result`)
 
 const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
+const evalStatus = ref(null)
 
 
 function format({ value, kind }, dark) {
@@ -147,7 +155,14 @@ async function copyCode(event) {
   timeoutIdMap.set(el, timeoutId)
 }
 
+let statusTimeoutId = null
 async function evaluate() {
+  if (evalStatus.value === 'evaluating') return
+  evalStatus.value = 'evaluating'
+  if (statusTimeoutId) {
+    clearTimeout(statusTimeoutId)
+    statusTimeoutId = null
+  }
   queryResult.value = null
   try {
     const exec = props.onEvaluate ?? runners[props.language]
@@ -156,6 +171,7 @@ async function evaluate() {
     tabs.value = formatTabs(result).filter(({ value }) => value)
 
     if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key
+    evalStatus.value = 'success'
   } catch (error) {
     const tmp = [
       { key: `${uid}-Error`, name: 'Error', value: error.message || String(error), error },
@@ -168,11 +184,16 @@ async function evaluate() {
 
     tabs.value = tmp
     selectedTab.value = `${uid}-Error`
+    evalStatus.value = 'error'
   }
   queryResult.value = Object.fromEntries(tabs.value.map(tab => [
     tab.key,
     tab.value === 'object' ? JSON.stringify(tab.value, null, 2) : tab.value
   ]))
+  statusTimeoutId = setTimeout(() => {
+    evalStatus.value = null
+    statusTimeoutId = null
+  }, 600)
 }
 </script>
 
@@ -271,6 +292,47 @@ async function evaluate() {
   }
 }
 
+.icon-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.spinner {
+  width: 1.25em;
+  height: 1.25em;
+  border: 2px solid var(--vp-button-brand-text);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.icon-button svg.success, .icon-button svg.error {
+  width: 1.5em;
+  height: 1.5em;
+  fill: none;
+  stroke: var(--vp-button-brand-text);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: center;
+  animation: pop 0.2s ease-out;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
 .icon-button:hover {
   background-color: var(--vp-button-brand-hover-bg);
   color: var(--vp-button-brand-hover-text);
@@ -281,14 +343,13 @@ async function evaluate() {
 }
 
 
-.error {
+.vp-code-group.error {
   border: 1px solid var(--vp-c-danger-2);
   border-radius: 4px;
-}
 
-
-.vp-code-group.error input:checked + label::after {
-  background-color: var(--vp-c-danger-2);
+  input:checked + label::after {
+    background-color: var(--vp-c-danger-2);
+  }
 }
 
 .hint {
