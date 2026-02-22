@@ -2,7 +2,6 @@
   <div
     ref="editorContainer"
     class="monaco-editor-container"
-    :style="{ height: `${editorHeight}px` }"
     @keydown.stop
     @keypress.stop
     @keyup.stop
@@ -31,7 +30,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'execute', 'loaded'])
+const emit = defineEmits(['update:modelValue', 'evaluate', 'loaded'])
 
 const editorContainer = ref()
 let editor
@@ -40,7 +39,6 @@ let unmountActions = []
 const lineHeight = 24  // matching the css line-height for other code blocks
 const editorPaddingTop = 4
 const editorPaddingBottom = 4
-const editorHeight = ref(props.rows * lineHeight + editorPaddingTop + editorPaddingBottom + 0)
 
 async function createEditor() {
   if (typeof window === 'undefined' || editor) return
@@ -81,7 +79,6 @@ async function createEditor() {
   const updateHeight = () => {
     if (!editor || !editorContainer.value) return
     const contentHeight = editor.getContentHeight()
-    editorHeight.value = contentHeight
     const width = editorContainer.value.clientWidth
     editor.layout({ width, height: contentHeight })
   }
@@ -89,15 +86,15 @@ async function createEditor() {
   const contentSizeDispose = editor.onDidContentSizeChange(() => updateHeight())
   updateHeight()
 
-  // Emit execute on Cmd/Ctrl+Enter
+  // Emit evaluate on Cmd/Ctrl+Enter
   editor.addAction({
-    id: 'run',
-    label: 'Run',
+    id: 'eval',
+    label: 'Evaluate',
     keybindings: [
       monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter
     ],
     run: () => {
-      emit('execute')
+      emit('evaluate')
     }
   })
 

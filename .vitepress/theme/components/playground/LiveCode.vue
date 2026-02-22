@@ -16,10 +16,10 @@
           :rows="props.rows"
           :language="props.language"
           @loaded="loaded = true"
-          @execute="runQuery"
+          @evaluate="evaluate"
         />
       </div>
-      <button class="icon-button" @click="runQuery" aria-label="Run Query">
+      <button class="icon-button" @click="evaluate" title="Evaluate">
         <div v-html="play"></div>
       </button>
     </div>
@@ -81,7 +81,7 @@ const props = defineProps({
     type: String,
     default: 'js'
   },
-  onExecute: {
+  onEvaluate: {
     type: Function
   }
 })
@@ -96,14 +96,12 @@ const queryResult = ref(null)
 
 
 function format({ value, kind }, dark) {
-  // const highlighter = (await import('./highlighter')).default
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
   }
   const html = highlighter.codeToHtml(
     typeof value === 'string' ? value : JSON.stringify(value, null, 2),
     { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
-  // debugger;
   return html
 }
 
@@ -149,10 +147,10 @@ async function copyCode(event) {
   timeoutIdMap.set(el, timeoutId)
 }
 
-async function runQuery() {
+async function evaluate() {
   queryResult.value = null
   try {
-    const exec = props.onExecute ?? runners[props.language]
+    const exec = props.onEvaluate ?? runners[props.language]
     if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
     const result = await exec(queryText.value)
     tabs.value = formatTabs(result).filter(({ value }) => value)
@@ -170,7 +168,6 @@ async function runQuery() {
 
     tabs.value = tmp
     selectedTab.value = `${uid}-Error`
-    window.tabs = tabs.value
   }
   queryResult.value = Object.fromEntries(tabs.value.map(tab => [
     tab.key,
