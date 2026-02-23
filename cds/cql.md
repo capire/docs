@@ -159,7 +159,11 @@ SELECT from Authors[name='Edgar Allen Poe']:books.genre { name }
 
 ::: tip the above is equivalent to:
 ```cds
-SELECT from Books { title } where exists author[name='Edgar Allen Poe']
+SELECT from Genres as G { name }
+where exists (
+  SELECT from Books
+  where exists author[name='Edgar Allen Poe'] and genre_ID = G.ID
+)
 ```
 :::
 
@@ -167,6 +171,24 @@ SELECT from Books { title } where exists author[name='Edgar Allen Poe']
 
 ![](./assets/cql/select-item.drawio.svg?raw)
 
+A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
+
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // reference ("ref")
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+### Using expand
+
+### Using nested inline
 
 ## Postfix Projections
 {#postfix-projections}
