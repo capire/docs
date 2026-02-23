@@ -171,7 +171,7 @@ where exists (
 
 ![](./assets/cql/select-item.drawio.svg?raw)
 
-### Using expressions
+### Using Expressions
 
 A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
 
@@ -218,7 +218,7 @@ SELECT from Books { *, title || ' (on sale)' as title }
 Queries like in our example, would result in duplicate element for `title` in SQL.
 In `CQL`, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
 
-### expand path expression
+### Expand Path Expression
 
 Using the `expand` syntax allows to expand results along associations and hence read deeply structured documents:
 
@@ -246,7 +246,7 @@ SELECT from Authors {
 
 For more samples and a detailed syntax diagram, refer to the [`expand` chapter](#nested-expands)
 
-### inline path expression
+### Inline Path Expression
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
@@ -292,7 +292,6 @@ SELECT from Authors { name, address.street }
 ```
 
 ### Nested Expands {nested-expands}
-{#nested-expands}
 
 
 ![](./assets/cql/nested-expand.drawio.svg?raw)
@@ -330,6 +329,30 @@ results = [
 ::: warning
 Nested Expands following _to-many_ associations are not supported.
 :::
+
+If the `*` selector is used following an association, it selects all elements of the association target.
+For example, the following queries are equivalent:
+
+```sql
+SELECT from Books { title, author { * } }
+```
+```sql
+SELECT from Books { title, author { ID, name, dateOfBirth, … } }
+```
+
+
+A `*` selector following a struct element selects all elements of the structure and thus is equivalent to selecting the struct element itself.
+The following queries are all equivalent:
+```sql
+SELECT from Authors { name, struc { * } }
+SELECT from Authors { name, struc { elem1, elem2 } }
+SELECT from Authors { name, struc }
+```
+
+The `excluding` clause can also be used for Nested Expands:
+```sql
+SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
+```
 
 
 
@@ -474,49 +497,6 @@ With that, queries on `Bar` and `Boo` would return different results:
 ```sql
 SELECT * from Bar --> { foo, car, boo }
 SELECT * from Boo --> { foo, car }
-```
-
-
-### In Nested Expands
-
-If the `*` selector is used following an association, it selects all elements of the association target.
-For example, the following queries are equivalent:
-
-```sql
-SELECT from Books { title, author { * } }
-```
-```sql
-SELECT from Books { title, author { ID, name, dateOfBirth, … } }
-```
-
-
-A `*` selector following a struct element selects all elements of the structure and thus is equivalent to selecting the struct element itself.
-The following queries are all equivalent:
-```sql
-SELECT from Authors { name, struc { * } }
-SELECT from Authors { name, struc { elem1, elem2 } }
-SELECT from Authors { name, struc }
-```
-
-The `excluding` clause can also be used for Nested Expands:
-```sql
-SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
-```
-
-
-
-### In Nested Inlines
-
-The expansion of `*` in Nested Inlines is analogous. The following queries are equivalent:
-
-```sql
-SELECT from Books { title, author.{ * } }
-SELECT from Books { title, author.{ ID, name, dateOfBirth, … } }
-```
-
-The `excluding` clause can also be used for Nested Inlines:
-```sql
-SELECT from Books { title, author.{ * } excluding { dateOfDeath, placeOfDeath } }
 ```
 
 
