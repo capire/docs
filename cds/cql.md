@@ -9,13 +9,278 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 # Query Language (CQL)
 
-CDS Query Language (CQL) is based on standard SQL, which it enhances by...
-
 [[toc]]
+
+## Preliminaries
+
+The CDS Query Language (CQL) is based on standard SQL and extends it with CDS-specific capabilities.
+
+### Trying it with `cds repl`
+
+> TODO: Change this once live CQL is available.
+
+To try the samples by yourself, create a simple CAP app:
+
+```sh
+cds init bookshop --nodejs --add sample && cd bookshop
+```
+
+We encourage you to play around with the snippets.
+Just create the sample app as described above and start a repl session within the newly created app by running:
+
+```sh
+cds repl --run .
+```
+
+:::info All of the example expressions follow the same pattern:
+1. A **`CXL`** is shown in the context of a query.
+2. The resulting **`SQL`** is shown.
+
+:::code-group
+```js [CQL]
+> await cds.ql`SELECT from Books { title }` // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+```sql [SQL]
+SELECT title FROM sap_capire_bookshop_Books as Books
+```
+:::
+
+## SELECT
+
+> TODO do we want to capitalize the `SELECT` (and other keywords) also in the samples?, if yes, we should do it in all the samples.
+
+The CQL `SELECT` clause extends the well-known SQL `SELECT` with CDS-specific capabilities like [postfix projections](#postfix-projections), structured results, and [path expressions](./cxl#path-expressions-ref). It supports expanded navigation across associations, inline projections for concise field lists, and smart `*` handling with `excluding`.
+
+![](./assets/cql/select.drawio.svg?raw)
+
+> Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
+
+For example we can select the _available_ `Books` while
+excluding the `stock` and some technical details from the result:
+
+```cds
+select from Books { * }
+excluding {
+  stock,
+  createdAt,  createdBy,
+  modifiedAt, modifiedBy
+} where stock > 0
+```
+
+Or we can calculate the average price of books per author:
+
+```cds
+select from Authors {
+  avg(books.price),
+  name as author
+} group by ID
+```
+
+Or we can select all `Authors` that have written a `Fantasy` book:
+
+```cds
+select from Authors where exists books[genre.name = 'Fantasy']
+```
+
+
+## Query Source
+
+The query source defines the data set a `SELECT` reads from. It can be a single entity or a path expression that navigates associations.
+
+![](./assets/cql/query-source.drawio.svg?raw)
+> Using: [Infix Filter](./cxl#infix-filters), [Path Expression](./cxl#path-expressions-ref)
+
+### Using Entity Names
+
+We can select from the `Books` entity by refering to it's fully qualified name (namespace + entity name):
+
+```cds
+select from sap.capire.bookshop.Books
+```
+
+runtimes alternatively allow to refer to the entity by its short name:
+
+> TODO: java way of doing this
+
+```cds
+select from Books
+```
+
+### Using Infix Filters
+
+We can apply infix filters to the query source to narrow down the set of entries read from the source. For example, the following query selects all books of the genre `Fantasy`:
+
+> TODO: enable this in db-service
+```cds
+select from Books[genre.name = 'Fantasy'] { title }
+```
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Books { title } where genre.name = 'Fantasy'
+```
+:::
+
+### Using Path Expressions
+
+By using a path expressions after the `:`, we can navigate from one entity to associated entities.
+The entity at the end of the path expression is the actual query source.
+
+We navigate from existing books to their authors:
+
+```cds
+SELECT from Books:author { name }
+```
+
+::: tip the above is equivalent to: 
+Selecting from `Authors` and checking for the existence of associated books:
+
+```cds
+SELECT from Authors { name } where exists books
+```
+:::
+
+In the following example, we start with a filtered set of `Authors`.
+By using a path expressions after the `:`, we navigate from the authors to _their_ `books` and further to the books' `genre`.
+
+For example with the following we can get a list of genres of books written by `Edgar Allen Poe`:
+
+```cds
+SELECT from Authors[name='Edgar Allen Poe']:books.genre { name }
+```
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Genres as G { name }
+where exists (
+  SELECT from Books
+  where exists author[name='Edgar Allen Poe'] and genre_ID = G.ID
+)
+```
+:::
+
+## Select Item
+
+![](./assets/cql/select-item.drawio.svg?raw)
+
+### Using Expressions
+
+A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
+
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // reference ("ref")
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+It is possible to assign an explicit alias, it is even sometimes required if the alias can't be inferred:
+
+```cds
+select from Books {
+  1 + 1 as calculated,  // alias must be provided
+  title                 // alias inferred as "title"
+}
+```
+
+In some situations you may want to assign or change the data type of a column:
+
+```cds
+select from Books {
+  $now as time      : Time,      // '2026-02-23T13:44:32.133Z''
+  $now as date      : Date       // '2026-02-23'
+}
+```
+> TODO: not the best example, also no real difference on sqlite for this particular sample
+
+### Smart `*` Selector
+
+Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses:
+
+```sql
+SELECT from Books { *, title || ' (on sale)' as title }
+```
+
+Queries like in our example, would result in duplicate element for `title` in SQL.
+In `CQL`, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
+
+### Expand Path Expression
+
+Using the `expand` syntax allows to expand results along associations and hence read deeply structured documents:
+
+```cds
+SELECT from Books {
+  title,
+  author {
+    name,
+    age
+  }
+}
+```
+
+Expanding related data is especially useful for to-many relations:
+
+```cds
+SELECT from Authors {
+  name,
+  books {
+    title,
+    price
+  }
+}
+```
+
+For more samples and a detailed syntax diagram, refer to the [`expand` chapter](#nested-expands)
+
+### Inline Path Expression
+
+Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
+
+```cds
+SELECT from Authors {
+  name,
+  address.{
+    street,
+    city.{ name, country }
+  }
+}
+```
+
+Inlining path expressions can help to improve the structure of a query, as the elements in the projection share the same target.
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Authors {
+  name,
+  address.street,
+  address.city.name,
+  address.city.country
+}
+```
+
+:::
+
+For more samples and a detailed syntax diagram, refer to the [`inline` chapter](#nested-inlines)
 
 
 ## Postfix Projections
 {#postfix-projections}
+
+![](./assets/cql/postfix-projection.drawio.svg?raw)
 
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
@@ -26,8 +291,11 @@ SELECT name, address.street from Authors
 SELECT from Authors { name, address.street }
 ```
 
-### Nested Expands <Beta />
-{#nested-expands}
+### Nested Expands {nested-expands}
+
+
+![](./assets/cql/nested-expand.drawio.svg?raw)
+
 
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
 This allows **expand** results along associations and hence read deeply structured documents:
@@ -61,6 +329,30 @@ results = [
 ::: warning
 Nested Expands following _to-many_ associations are not supported.
 :::
+
+If the `*` selector is used following an association, it selects all elements of the association target.
+For example, the following queries are equivalent:
+
+```sql
+SELECT from Books { title, author { * } }
+```
+```sql
+SELECT from Books { title, author { ID, name, dateOfBirth, … } }
+```
+
+
+A `*` selector following a struct element selects all elements of the structure and thus is equivalent to selecting the struct element itself.
+The following queries are all equivalent:
+```sql
+SELECT from Authors { name, struc { * } }
+SELECT from Authors { name, struc { elem1, elem2 } }
+SELECT from Authors { name, struc }
+```
+
+The `excluding` clause can also be used for Nested Expands:
+```sql
+SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
+```
 
 
 
@@ -123,7 +415,9 @@ results = [
 ]
 ```
 
-### Nested Inlines <Beta /> {#nested-inlines}
+### Nested Inlines {#nested-inlines}
+
+![](./assets/cql/nested-inline.drawio.svg?raw)
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
@@ -168,19 +462,6 @@ SELECT from Books {
 ```
 
 
-## Smart `*` Selector
-
-Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses.
-
-#### Example:
-
-```sql
-SELECT from Books { *, author.name as author }
-```
-
-Queries like in our example, would result in duplicate element effects for `author` in SQL. In CQL, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
-
-
 ### Excluding Clause
 
 Use the `excluding` clause in combination with `SELECT *` to select all elements except for the ones listed in the exclude list.
@@ -216,49 +497,6 @@ With that, queries on `Bar` and `Boo` would return different results:
 ```sql
 SELECT * from Bar --> { foo, car, boo }
 SELECT * from Boo --> { foo, car }
-```
-
-
-### In Nested Expands <Beta />
-
-If the `*` selector is used following an association, it selects all elements of the association target.
-For example, the following queries are equivalent:
-
-```sql
-SELECT from Books { title, author { * } }
-```
-```sql
-SELECT from Books { title, author { ID, name, dateOfBirth, … } }
-```
-
-
-A `*` selector following a struct element selects all elements of the structure and thus is equivalent to selecting the struct element itself.
-The following queries are all equivalent:
-```sql
-SELECT from Authors { name, struc { * } }
-SELECT from Authors { name, struc { elem1, elem2 } }
-SELECT from Authors { name, struc }
-```
-
-The `excluding` clause can also be used for Nested Expands:
-```sql
-SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
-```
-
-
-
-### In Nested Inlines <Beta />
-
-The expansion of `*` in Nested Inlines is analogous. The following queries are equivalent:
-
-```sql
-SELECT from Books { title, author.{ * } }
-SELECT from Books { title, author.{ ID, name, dateOfBirth, … } }
-```
-
-The `excluding` clause can also be used for Nested Inlines:
-```sql
-SELECT from Books { title, author.{ * } excluding { dateOfDeath, placeOfDeath } }
 ```
 
 
@@ -466,3 +704,8 @@ extend BookReviews with columns {
   book : Association to Books on book.ID = bookID
 };
 ```
+
+
+## Ordering Term {#ordering-term}
+
+![](./assets/cql/ordering-term.drawio.svg?raw)
