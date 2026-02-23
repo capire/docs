@@ -8,6 +8,7 @@ CAP supports the following service protocols:
 - **OData**: A widely used protocol for building and consuming RESTful APIs. CAP provides built-in support for OData v2 and v4, allowing you to easily expose your data models as OData services.
 - **OpenAPI**: A specification for building APIs that allows you to define your API endpoints, request/response formats, and authentication methods. CAP can generate OpenAPI specifications for your services, enabling easy integration with other systems.
 - **AsyncAPI**: A specification for defining asynchronous APIs, such as those using messaging protocols. CAP supports AsyncAPI for building event-driven applications and integrating with messaging systems.
+- **MCP**: Model Context Protocol (MCP) is an open protocol that enables seamless integration between LLM applications and external data sources and tools. <Alpha /> <Internal /> <!-- INTERNAL -->
 
 ## Using Protocols in CAP
 To use a specific protocol in your CAP application, you typically need to configure your service definitions and handlers accordingly. Here are some general steps to get started:
@@ -24,6 +25,7 @@ For more detailed information on each protocol and how to implement them in CAP,
 - [OData APIs](odata.md)
 - [OpenAPI](openapi.md)
 - [AsyncAPI](asyncapi.md)
+- [MCP](mcp.md) <Alpha /> <Internal /> <!-- INTERNAL -->
 
 These guides provide step-by-step instructions, examples, and best practices for working with each protocol in your CAP applications.
 
