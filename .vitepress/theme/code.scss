@@ -83,17 +83,24 @@ main .vp-doc {
     padding-top: 13px; // align with code line height
   }
 
-  /* Hide scrollbars by default, show on hover */
+  /* Show scrollbars when content overflows */
   [class*='language-'] pre,
   pre.log {
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
-  }
-
-  [class*='language-']:hover pre,
-  pre.log:hover {
     scrollbar-width: thin;
-    &::-webkit-scrollbar { display: block; }
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--vp-c-divider);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: var(--vp-c-text-3);
+    }
   }
 
 }
