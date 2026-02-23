@@ -83,4 +83,17 @@ main .vp-doc {
     padding-top: 13px; // align with code line height
   }
 
+  /* Hide scrollbars by default, show on hover */
+  [class*='language-'] pre,
+  pre.log {
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  [class*='language-']:hover pre,
+  pre.log:hover {
+    scrollbar-width: thin;
+    &::-webkit-scrollbar { display: block; }
+  }
+
 }

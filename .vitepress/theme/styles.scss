@@ -424,8 +424,6 @@ footer {
 
 /* expand width on big screens */
 @media screen and (min-width: 1600px) {
-  div[class*='language-']:hover,
-  div[class*='language-']:focus,
   pre.log:hover,
   pre.log:focus {
     min-width: fit-content;
@@ -438,9 +436,6 @@ footer {
   }
   tr {
     z-index: 1; position: relative;  // draw wide rows over outline
-  }
-  [class*='language-'] pre {
-    overflow: hidden !important;
   }
   // expand navbar to cover wide content (see java/development/properties)
   // -> effect: ugly jumping navbar between welcome page and docs pages
