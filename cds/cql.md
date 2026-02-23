@@ -171,6 +171,8 @@ where exists (
 
 ![](./assets/cql/select-item.drawio.svg?raw)
 
+### Using expressions
+
 A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
 
 ```cds
@@ -186,9 +188,39 @@ select from Books {
 }
 ```
 
+It is possible to assign an explicit alias, it is even sometimes required if the alias can't be inferred:
+
+```cds
+select from Books {
+  1 + 1 as calculated,  // alias must be provided
+  title                 // alias inferred as "title"
+}
+```
+
+In some situations you may want to assign or change the data type of a column:
+
+```cds
+select from Books {
+  $now as time      : Time,      // '2026-02-23T13:44:32.133Z''
+  $now as date      : Date       // '2026-02-23'
+}
+```
+
 ### Using expand
 
 ### Using nested inline
+
+### Smart `*` Selector
+
+Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses.
+
+#### Example:
+
+```sql
+SELECT from Books { *, author.name as author }
+```
+
+Queries like in our example, would result in duplicate element effects for `author` in SQL. In CQL, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
 
 ## Postfix Projections
 {#postfix-projections}
@@ -350,19 +382,6 @@ SELECT from Books {
    concat(author.address.town.name, '/', author.address.town.country) as author_town
 };
 ```
-
-
-## Smart `*` Selector
-
-Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses.
-
-#### Example:
-
-```sql
-SELECT from Books { *, author.name as author }
-```
-
-Queries like in our example, would result in duplicate element effects for `author` in SQL. In CQL, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
 
 
 ### Excluding Clause
