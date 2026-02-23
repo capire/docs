@@ -13,7 +13,6 @@
         <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
         <MonacoEditor
           v-model="queryText"
-          :rows="props.rows"
           :language="props.language"
           @loaded="loaded = true"
           @evaluate="evaluate"
@@ -79,10 +78,6 @@ const props = defineProps({
   readonly: {
     type: Boolean,
     default: false
-  },
-  rows: {
-    type: Number,
-    default: 3
   },
   language: {
     type: String,
