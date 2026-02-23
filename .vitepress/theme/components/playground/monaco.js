@@ -1,12 +1,9 @@
 import highlighter from './highlighter'
 import { shikiToMonaco } from '@shikijs/monaco'
 
-let monaco
-
+// no correct top-level await in Safari
 async function setupMonaco() {
-  if (typeof window === 'undefined' || monaco) return
-
-  const [monacoApi, editorWorker, tsWorker] = await Promise.all([
+  const [monaco, editorWorker, tsWorker] = await Promise.all([
     import('monaco-editor/esm/vs/editor/editor.api'),
     import('monaco-editor/esm/vs/editor/editor.worker?worker'),
     import('monaco-editor/esm/vs/language/typescript/ts.worker?worker'),
@@ -14,7 +11,6 @@ async function setupMonaco() {
     import('monaco-editor/esm/vs/language/typescript/monaco.contribution'),
     import('monaco-editor/esm/vs/language/json/monaco.contribution')
   ])
-  monaco = monacoApi
 
   monaco.languages.register({ id: 'javascript' })
   monaco.languages.register({ id: 'js' })
@@ -30,9 +26,7 @@ async function setupMonaco() {
   }
 
   shikiToMonaco(highlighter, monaco)
+  return monaco
 }
 
-await setupMonaco()
-
-export { monaco };
-export default monaco;
+export default setupMonaco();

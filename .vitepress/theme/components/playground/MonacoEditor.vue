@@ -40,9 +40,9 @@ const lineHeight = 24  // matching the css line-height for other code blocks
 const editorPaddingTop = 4
 const editorPaddingBottom = 4
 
-async function createEditor() {
+async function createEditor() { try {
   if (typeof window === 'undefined' || editor) return
-  monaco = (await import('./monaco')).default
+  const monaco = await (await import('./monaco')).default
   editor = monaco.editor.create(editorContainer.value, {
     value: props.modelValue,
     language: props.language || 'plaintext',
@@ -116,7 +116,10 @@ async function createEditor() {
     // eslint-disable-next-line no-console
     try { editor?.dispose?.() } catch (e) { console.warn(e) }
   })
-}
+} catch (e) {
+  // eslint-disable-next-line no-console
+  console.error('Failed to load Monaco Editor', e)
+}}
 
 
 onMounted(createEditor)
