@@ -40,21 +40,23 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 ::: code-group
 ```shell [macOS / Linux / WSL]
 brew install node   # Node.js LTS
-```
-```PowerShell [Windows]
-winget install --silent OpenJS.NodeJS.LTS
-# restart PowerShell to activate the new command
-```
-:::
-```shell
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
 ```
+```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
+winget install --silent OpenJS.NodeJS.LTS
+# restart PowerShell to activate the new command
+npm i -g @sap/cds-dk  # install CAP's cds-dk globally
+cds -v                # check cds version
+```
+:::
 
 ### SQLite (Windows) {.required}
 
 ::: code-group
 ```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent SQLite.SQLite
 # restart PowerShell to activate the new command
 sqlite3 -version
@@ -67,8 +69,10 @@ sqlite3 -version
 ```shell [macOS / Linux / WSL]
 brew install sapmachine-jdk
 brew install maven
+mvn -version  # display Maven and Java versions
 ```
 ```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent SAP.SapMachine.25.JDK
 
 # Apache Maven is not available using winget so download it directly
@@ -80,23 +84,24 @@ tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
 setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
 rm $mvnzip
 # restart PowerShell to activate the new commands
-```
-:::
-```shell
 mvn -version  # display Maven and Java versions
 ```
+:::
 
 ### Git and GitHub {.optional}
 
 ::: code-group
 ```shell [macOS / Linux / WSL]
-brew install git       # Git CLI (for completeness, already installed for Homebrew)
-brew install gh        # GitHub CLI
+brew install git  # Git CLI (for completeness, already installed for Homebrew)
+brew install gh   # GitHub CLI
+git -v # display Git cli version
 ```
 ```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent Git.Git
 winget install --silent GitHub.cli
 # restart PowerShell to activate the new commands
+git -v # display Git cli version
 ```
 :::
 ::: code-group
@@ -113,32 +118,31 @@ sudo apt install ./github-desktop.deb
 rm ./github-desktop.deb
 ```
 ```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent GitHub.GitHubDesktop
 # restart PowerShell to activate the new commands
 ```
 :::
-```shell
-git -v # display Git cli version
-```
 
 
 ### Visual Studio Code {.proposed}
 ::: code-group
 ```shell [macOS]
 brew install --cask visual-studio-code # VS Code itself
+code -v # display VS Code's version
 ```
 ```bash [Linux / WSL]
 # VS Code on Homebrew is only supported for macOS
 sudo snap install --classic code
-```
-```PowerShell [Windows]
-winget install --silent Microsoft.VisualStudioCode
-# restart PowerShell to activate the new command
-```
-:::
-```shell
 code -v # display VS Code's version
 ```
+```PowerShell [Windows]
+# pasting multiple lines PowerShell will bring a warning popup to accept
+winget install --silent Microsoft.VisualStudioCode
+# restart PowerShell to activate the new command
+code -v # display VS Code's version
+```
+:::
 
 #### Visual Studio Code proposed extensions {.proposed}
 ```shell
