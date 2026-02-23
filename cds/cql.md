@@ -205,22 +205,77 @@ select from Books {
   $now as date      : Date       // '2026-02-23'
 }
 ```
-
-### Using expand
-
-### Using nested inline
+> TODO: not the best example, also no real difference on sqlite for this particular sample
 
 ### Smart `*` Selector
 
-Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses.
-
-#### Example:
+Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses:
 
 ```sql
-SELECT from Books { *, author.name as author }
+SELECT from Books { *, title || ' (on sale)' as title }
 ```
 
-Queries like in our example, would result in duplicate element effects for `author` in SQL. In CQL, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
+Queries like in our example, would result in duplicate element for `title` in SQL.
+In `CQL`, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
+
+### expand path expression
+
+Using the `expand` syntax allows to expand results along associations and hence read deeply structured documents:
+
+```cds
+SELECT from Books {
+  title,
+  author {
+    name,
+    age
+  }
+}
+```
+
+Expanding related data is especially useful for to-many relations:
+
+```cds
+SELECT from Authors {
+  name,
+  books {
+    title,
+    price
+  }
+}
+```
+
+For more samples and a detailed syntax diagram, refer to the [`expand` chapter](#nested-expands)
+
+### inline path expression
+
+Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
+
+```cds
+SELECT from Authors {
+  name,
+  address.{
+    street,
+    city.{ name, country }
+  }
+}
+```
+
+Inlining path expressions can help to improve the structure of a query, as the elements in the projection share the same target.
+
+::: tip the above is equivalent to:
+```cds
+SELECT from Authors {
+  name,
+  address.street,
+  address.city.name,
+  address.city.country
+}
+```
+
+:::
+
+For more samples and a detailed syntax diagram, refer to the [`inline` chapter](#nested-inlines)
+
 
 ## Postfix Projections
 {#postfix-projections}
@@ -236,7 +291,7 @@ SELECT name, address.street from Authors
 SELECT from Authors { name, address.street }
 ```
 
-### Nested Expands <Beta />
+### Nested Expands {nested-expands}
 {#nested-expands}
 
 
@@ -337,7 +392,7 @@ results = [
 ]
 ```
 
-### Nested Inlines <Beta /> {#nested-inlines}
+### Nested Inlines {#nested-inlines}
 
 ![](./assets/cql/nested-inline.drawio.svg?raw)
 
@@ -422,7 +477,7 @@ SELECT * from Boo --> { foo, car }
 ```
 
 
-### In Nested Expands <Beta />
+### In Nested Expands
 
 If the `*` selector is used following an association, it selects all elements of the association target.
 For example, the following queries are equivalent:
@@ -450,7 +505,7 @@ SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } 
 
 
 
-### In Nested Inlines <Beta />
+### In Nested Inlines
 
 The expansion of `*` in Nested Inlines is analogous. The following queries are equivalent:
 
