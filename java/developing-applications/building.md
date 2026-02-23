@@ -374,6 +374,66 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 
 [Learn more about configuration and `cds.env`](../../node.js/cds-env){.learn-more}
 
+### Using profiles
+
+Using Maven profiles allows you to distinguish between builds for local development and production deployment. This flexibility is valuable in several scenarios:
+
+* Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
+* Creating database-specific artifacts for different target databases
+
+Adding a production profile in srv/pom.xml to override the cds build command.
+
+::: code-group
+```xml [srv/pom.xml]
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+....
+ <profiles>
+  <profile>
+   <id>production</id>
+   <build>
+    <plugins>
+     <plugin>
+      <groupId>com.sap.cds</groupId>
+      <artifactId>cds-maven-plugin</artifactId>
+      <executions>
+       <execution>
+        <id>cds.build</id>
+        <goals>
+         <goal>cds</goal>
+        </goals>
+        <configuration>
+         <commands>
+          <command>build --for java --production</command>
+         </commands>
+        </configuration>
+       </execution>
+      </executions>
+     </plugin>
+    </plugins>
+   </build>
+  </profile>
+ </profiles>
+</project>
+```
+:::
+
+Generally, the production build is triggered via mta.yaml. To activate the production profile, include the profile parameter (for example, -P production) as part of the build invocation.
+
+::: code-group
+```yaml [mta.yaml]
+  - name: bookstore-srv
+    type: java
+    path: bookstore/srv
+    ...
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode # [!code --]
+        - mvn clean package -DskipTests=true --batch-mode -P production # [!code ++]
+      build-result: target/*-exec.jar
+```
+:::
 
 ## Code Generation for Typed Access {#codegen-config}
 
