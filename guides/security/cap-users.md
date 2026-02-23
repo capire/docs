@@ -4,6 +4,7 @@ label: CAP Users
 synopsis: >
   This guide introduces CAP user abstraction and role assignments.
 status: released
+impl-variants: true
 ---
 
 <script setup>
@@ -19,7 +20,7 @@ status: released
 </style>
 
 
-# CAP-level Users { #cap-users }
+# CAP-level Users & Roles { #cap-users }
 
 <ImplVariantsHint />
 
@@ -257,7 +258,7 @@ Refrain from activating user tracing in productive systems.
 
 ## Role Assignment with AMS { #roles-assignment-ams }
 
-CAP applications that use the [Identity Authentication Service (IAS)](https://help.sap.com/docs/identity-authentication) for authentication can leverage the [Authorization Management Service (AMS)](https://help.sap.com/docs/cloud-identity-services/authorization-management-service) to provide comprehensive authorization. Similar to IAS, AMS is part of the [SAP Cloud Identity Services (SCI)](https://help.sap.com/docs/cloud-identity-services).
+CAP applications that use the [Identity Authentication Service (IAS)](https://help.sap.com/docs/identity-authentication) for authentication can leverage the [Authorization Management Service (AMS)](https://sap.github.io/cloud-identity-developer-guide/Authorization/GettingStarted.html) to provide comprehensive authorization. Similar to IAS, AMS is part of the [SAP Cloud Identity Services (SCI)](https://help.sap.com/docs/cloud-identity-services).
 
 Why is AMS required? Unlike tokens issued by XSUAA, IAS tokens only contain static user information and cannot directly provide CAP roles.
 AMS acts as a central service to define access policies that include CAP roles and additional filter criteria for instance-based authorizations in CAP applications.
@@ -1752,4 +1753,3 @@ Prefer using [Remote Services](#remote-services) built on Cloud SDK rather than 
 - **Don't choose entity attributes as AMS Attributes whose relevance is too small**.
   
   Such attributes should have a broad, domain-wide relevance and be applicable across multiple entities. Typically, only a limited number of attributes (less than 10) meet this criterion. Exposing entity-specific attributes as AMS attributes can lead to unnecessary complexity and reduced reusability.
-
