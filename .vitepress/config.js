@@ -81,6 +81,11 @@ const config = defineConfig({
 
   vite: {
     plugins: [...playground.plugins()],
+    esbuild: {
+      supported: {
+        'top-level-await': true //browsers can handle top-level-await features in special cases
+      },
+    },
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
