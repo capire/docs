@@ -5,6 +5,7 @@
 {
   impl: <em>'@cap-js/sqlite'</em>,
   credentials: { url: <em>':memory:'</em> },
+  data: [ <em>'db/data'</em>, <em>'db/csv'</em>, <em>'test/data'</em> ],
   pool: { max: <em>1</em> },
   kind: <em>'sqlite'</em>
 }

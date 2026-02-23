@@ -21,7 +21,6 @@ status: released
 
 # Outbound Authentication { #remote-authentication }
 
-<ImplVariantsHint />
 
 This guide explains how to authenticate remote services.
 
@@ -29,7 +28,7 @@ This guide explains how to authenticate remote services.
 
 ## Remote Service Abstraction { #remote-services }
 
-According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), the architecture of CAP's [Remote Services](../services/consuming-services#consuming-services) decouples protocol level (that is, exchanged content) from connection level (that is, established connection channel). 
+According to the key concept of [pluggable building blocks](./overview#key-concept-pluggable), CAP's [Remote Services](../services/consuming-services#consuming-services) architecture decouples the protocol level (exchanged content) from the connection level (established connection channel).
 While the business context of the application impacts the protocol, the connectivity of the service endpoints is independent of it and mainly depends on platform-level capabilities.
 The latter is frequently subject to change and therefore should not introduce application dependencies.
 
@@ -98,20 +97,26 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
+      http:
+        suffix: /hcql
       binding:
         name: xtravels-ias
+        onBehalfOf: systemUser
         options:
-          url: https://<xflights-srv-cert url>/hcql
-        onBehalfOf: systemUserProvider
+          url: https://<xflights-srv-cert url>
 ```
 :::
 
 The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
 The `model` property needs to match the fully qualified name of the CDS service from the imported model.
 You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
-The `binding.name` needs to point to the shared identity instance and `options.url` provides the required location of the remote service endpoint.
-Finally, `onBehalfOf: systemUserProvider` specifies that the remote call is invoked on behalf of the technical provider tenant.
+The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
+Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
 
+::: tip
+On behalf of `systemUser` works both in pure single tenant and in pure multitenant scenarios.
+If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
+:::
 
 Now you are ready to deploy the application with
 
@@ -233,7 +238,7 @@ The latter is issued by IAS only if the consumer is configured with a valid IAS 
 CAP offers a simplified App-2-App setup by leveraging remote services that require:
 - Identity instances for provider and consumer
 - Configured IAS dependency from consumer to provider
-- Destination with URL pointing to the provider
+- URL pointing to the provider
 - Principal propagation mode (optional)
 :::
 
@@ -259,27 +264,26 @@ resources:
       [...]
       config:
         display-name: xflights
-        provided-apis: [{  # [!code ++:5]
-          name: DataConsumer,
+        provided-apis: # [!code ++:5]
+        - name: data-consumer
           description: Grants technical access to data service API
-        }]
 ```
 :::
 
-The entry with name `DataConsumer` represents the consumption of service `sap.capire.flights.data` and is exposed as IAS API.
+The entry with name `data-consumer` represents the consumption of service `sap.capire.flights.data` and is exposed as IAS API.
 The description helps administrators to configure the consumer application with the proper provider API if done on UI level.
 
 [Detailed description about identity instance parameters for `provided-apis`](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-instance-parameters){.learn-more}
 
 How can proper authorization be configured for _technical clients without user propagation_?
-OAuth tokens presented by valid consumer requests from an App-2-App flow will have API claim `DataConsumer`, which is automatically mapped to a CAP role by the runtime.
-Therefore, you can protect the corresponding CDS service by CAP role `DataConsumer` to authorize requests thoroughly:
+OAuth tokens presented by valid consumer requests from an App-2-App flow will have API claim `data-consumer`, which is automatically mapped to a CAP role by the runtime.
+Therefore, you can protect the corresponding CDS service by CAP role `data-consumer` to authorize requests thoroughly:
 
 ::: code-group
 ```cds [/srv/authorization.cds]
 using { sap.capire.flights.data as data } from './data-service';
 
-annotate data with @(requires: 'DataConsumer');
+annotate data with @(requires: 'data-consumer');
 ```
 :::
 
@@ -305,51 +309,9 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 
 Like with xflights, clone [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
 
-First, you need to add a BTP destination that points to the provider service endpoint to be called (`URL`) and that contains the information about the IAS dependency to be called (`cloudsdk.ias-dependency-name`).  
+The remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
+You only need to add the information about the IAS dependency to be called (`ias-dependency-name`).
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
-The connectivity component requires the destination to prepare the HTTP call accordingly. Also note that the authentication type of the destination is `NoAuthentication`, as the destination itself does not contribute to the authentication process.
-
-
-::: code-group
-
-```yaml [mta.yaml (destination instance)]
-  - name: xtravels-destination
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: destination
-      service-plan: lite
-      config:
-        init_data:
-          instance:
-            existing_destinations_policy: update
-            destinations:
-              - Name: xtravels-data-consumer
-                Type: HTTP
-                URL: https://<xflights-srv-cert url>/hcql
-                cloudsdk.ias-dependency-name: "DataConsumer"
-                Authentication: NoAuthentication
-                ProxyType: Internet
-                Description: "Data consumer destination for xtravels"
-```
-
-```yaml [mta.yaml (destination binding)]
-modules:
-  - name: xtravels-srv
-    type: java
-    [...]
-    requires:
-      - name: xtravels-destination # [!code ++]
-```
-
-:::
-
-:::tip
-Alternatively, the destination can also be created manually in the [BTP destination editor](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/access-destinations-editor).
-:::
-
-
-Given the destination, the remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
-Currently, an additional Cloud SDK dependency `scp-cf` is required to support communication with the BTP destination service:
 
 ::: code-group
 
@@ -361,22 +323,17 @@ cds:
     xflights:
       type: hcql
       model: sap.capire.flights.data
-      destination:
-        name: xtravels-data-consumer
-        onBehalfOf: systemUserProvider
-```
-
-```xml [/srv/pom.xml]
-<dependency>
-  <groupId>com.sap.cloud.sdk.cloudplatform</groupId>
-  <artifactId>scp-cf</artifactId>
-  <scope>runtime</scope>
-</dependency>
+      http:
+        suffix: /hcql
+      binding:
+        name: xtravels-ias
+        onBehalfOf: systemUser
+        options:
+          url: https://<xflights-srv-cert url>
+          ias-dependency-name: data-consumer
 ```
 
 :::
-
-[Learn more about simplified Remote Service configuration with destinations](/java/cqn-services/remote-services#destination-based-scenarios) {.learn-more}
 
 Finally, deploy and start the application with
 
@@ -390,21 +347,21 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the remote service implementation will delegate the HTTP connection setup to the connectivity component that can recognize by the type of destination that it needs to initiate an App-2-App flow.
-It then takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
+Technically, the remote service implementation initiates an App-2-App flow.
+It takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
 Note that property `oauth2-configuration.token-policy.access-token-format: jwt` is set in the identity instance to ensure the exchanged token has JWT format.
 
 #### 3. Connect consumer with provider { #connect }
 
-Now let's create the missing IAS dependency to establish trust for the API service call targeting provided API with id `DataConsumer`.
+Now create the missing IAS dependency to establish trust for the API service call targeting the provided API with id `data-consumer`.
 
 Open the Administrative Console for the IAS tenant (see prerequisites [here](./authentication#ias-admin)):
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
-3. Type `DataConsumer` as dependency name (needs to match property value `cloudsdk.ias-dependency-name`) and pick provided API `DataConsumer` from the provider IAS application `xflights`.
+3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name`) and pick provided API `data-consumer` from the provider IAS application `xflights`.
 4. Confirm with **Save**
 
 ::: details Create IAS dependency in Administrative Console
@@ -438,10 +395,10 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 - **Don't write custom integration logic** for consumed services.
 Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
 
-- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens). 
+- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens).
 Instead, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
 
-- **Don't treat co-located services as external services**. 
+- **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
 
 

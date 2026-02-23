@@ -40,7 +40,7 @@ Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd vers
 node -v
 ```
 
-Should you see an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
+If you encounter an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
 For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#runtime), use the `engines` field in _package.json_.
 
 [Learn more about the release schedule of **Node.js**.](https://github.com/nodejs/release#release-schedule/){.learn-more}
@@ -165,6 +165,13 @@ Ensure that database transactions are either committed or rolled back. This can 
 2. For manual transactions (for example, by writing `const tx = cds.tx()`), you need to perform the commit/rollback yourself: `await tx.commit()`/`await tx.rollback()`.
 
 If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), verify that the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) is adjusted appropriately. This variable specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
+
+### Why are requests rejected with `431` and not logged?
+
+|              | Explanation                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, the Node.js HTTP server rejects the request during the initial parsing phase before it reaches CAP. Therefore, the request is not logged by the application.                                    |
+| _Solution_   | Inspect the request headers and check their size. If large headers are required and cannot be reduced, increase the maximum allowed HTTP header size in Node.js by setting the following environment variable `NODE_OPTIONS="--max-http-header-size=65536"` |
 
 
 ### Why are requests rejected with `502`?
@@ -625,6 +632,10 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
 
 4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
 
+### How do I get detailed SAP HANA deployment logs
+
+The deployment logs are part of the [application logs](#cflogs-recent). To avoid problems with the logging infrastructure, the default detail level of the deployment logs is limited to logs printed to `stderr`. To get more details, you need to increase the log level by setting the environment variable `DEBUG=deploy`.
+
 ### Why do I get 'Extensions exist, but extensibility is disabled'?
 
 This message indicates that extensions exist, but the application is not configured for extensibility. To avoid accidental data loss from removing existing extensions from the database, the upgrade is blocked.
@@ -638,6 +649,8 @@ This message indicates that extensions exist, but the application is not configu
 See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
+
+<div id="hana-tms-errors" />
 
 ## BTP
 

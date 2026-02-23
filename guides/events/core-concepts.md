@@ -101,7 +101,7 @@ Follow the instructions in [*cap/samples/readme*](https://github.com/capire/samp
 
 ### Declaring Events in CDS
 
-Package `@capire/reviews` provides a `ReviewsService` API, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-api.cds):
+Package `@capire/reviews` provides a `ReviewsService` API, [declared like that](https://github.com/capire/reviews/tree/main/srv/reviews-service.cds):
 
 ```cds
 service ReviewsService @(path:'reviews/api') {
