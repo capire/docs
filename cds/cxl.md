@@ -73,10 +73,10 @@ An expression can hold various elements, such as references, literals, function 
 ```cds
 select from Books {
   42                     as answer,         // literal
-  title,                                    // reference ("ref")
+  title,                                    // element reference
   price * quantity       as totalPrice,     // binary operator
   substring(title, 1, 3) as shortTitle,     // function call
-  author.name            as authorName,     // ref with path expression
+  author.name            as authorName,     // path expression
   chapters[number < 3]   as earlyChapters,  // ref with infix filter
   exists chapters        as hasChapters,    // exists
   count(chapters)        as chapterCount,   // aggregate function
@@ -85,7 +85,7 @@ select from Books {
 
 This syntax diagram describes the possible expressions:
 
-![](assets/cxl/expr.drawio.svg)
+![](assets/cxl/expr.drawio.svg?raw)
 
 > Using:
 > [Path Expressions](#ref),
@@ -262,7 +262,7 @@ A `ref` (short for reference) is used to refer to an element within the model.
 It can be used to navigate along path segments. Such a navigation is often
 referred to as a **path expression**.
 
-![](assets/cxl/ref.drawio.svg)
+![](assets/cxl/ref.drawio.svg?raw)
 
 > Using:
 > [Infix Filters](#infix-filters)
@@ -288,7 +288,7 @@ They typically manifest as columns in database tables.
 
 ### Simple Element Reference
 
-In its simplest form, a `ref` can be used to reference an element:
+The simplest form of a `ref` references a single element:
 
 :::code-group
 ```js [CQL] {1}
@@ -312,7 +312,7 @@ In this example, we select the `title` element from the `Books` entity.
 
 ### Path Navigation
 
-A path expression can be used to navigate to any element of the associations target:
+A path expression navigates to elements of an association's target:
 
 :::code-group
 ```js [CQL]
@@ -420,7 +420,7 @@ To achieve this, use the [exists](#in-exists-predicates) predicate.
 Path expressions can also be used after the `exists` keyword to check whether the set referenced by the path is empty.
 This is especially useful for to-many relations.
 
-E.g., to select all authors that have written **at least** one book:
+For example, to select all authors that have written **at least** one book:
 
 :::code-group
 ```js [CQL]
@@ -455,11 +455,11 @@ This allows you to specify conditions on subsets of associated entities, enablin
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
-If we apply this terminology to [path-expressions](#ref), an infix filter condition is an expression 
-that is applied to a path-segment of a [path-expression](#ref).
+If we apply this terminology to path expressions, an infix filter condition is an expression 
+that is applied to a path segment of a path expression.
 This allows you to filter the target of an association based on certain criteria.
 
-![](assets/cxl/infix-filter.drawio.svg)
+![](assets/cxl/infix-filter.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
@@ -470,8 +470,7 @@ This allows you to filter the target of an association based on certain criteria
 
 
 
-
-### Applied to `exists` predicate { #exists-infix-filter }
+### Applied to `exists` Predicate { #exists-infix-filter }
 
 In this example, we want to select all authors with books that have a certain stock amount.
 To achieve this, we can apply an infix filter to the path segment `books` in the exists predicate:
@@ -527,7 +526,7 @@ WHERE exists (
 :::
 
 
-### Applied to `from` clause
+### Applied to `from` Clause
 
 Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
 
@@ -620,7 +619,7 @@ In the `Authors` entity in the `Books.cds` file add a new element `cheapBooks`:
 ```
 
 Now we can use `cheapBooks` just like any other association.
-E.g. to select the set of authors which have no cheap books:
+For example, to select the set of authors which have no cheap books:
 
 :::code-group
 ```js [CQL]
@@ -778,7 +777,7 @@ navigates along the `author` association of the `Books` entity only if the autho
 
 As depicted in below excerpt of the syntax diagram for `expr`, CXL supports all the standard SQL operators as well as a few additional ones, such as the `?` operator to check for the existence of a path.
 
-![](assets/cxl/operators.drawio.svg)
+![](assets/cxl/operators.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
@@ -814,7 +813,7 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 ## Functions (`func`)
 ###### func
 
-![](assets/cxl/function.drawio.svg)
+![](assets/cxl/function.drawio.svg?raw)
 
 > Using:
 > [Expressions](#expr)
