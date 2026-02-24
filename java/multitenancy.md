@@ -2,11 +2,10 @@
 synopsis: >
   CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
   Optionally, subscriber tenants may also extend their CDS models being served.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
-# Multitenancy { #multitenancy}
+# Multitenancy 
 
 {{ $frontmatter.synopsis }}
 
@@ -136,7 +135,7 @@ The event must return a list of all of the dependent services' `xsappname` value
 
 CAP automatically adds dependencies of services to the list, for which it provides dedicated integrations.
 
-[Learn more about automatically added SaaS dependencies.](/guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
+[Learn more about automatically added SaaS dependencies.](../guides/multitenancy/?impl-variant=java#saas-dependencies){.learn-more}
 
 ::: tip
 The `xsappname` of an SAP reuse service that is bound to your application is part of the service binding. The structure of the service binding, and hence the exact location of the `xsappname` field, may vary between services.
@@ -298,11 +297,12 @@ runtime.requestContext().systemUserProvider().run(context -> {
 });
 ```
 
-[Learn more about how to switch to a technical tenant.](../java/event-handlers/request-contexts#switching-to-provider-tenant){.learn-more}
+[Learn more about how to switch to a technical tenant.](../guides/security/cap-users#switching-to-provider-tenant){.learn-more}
+
 
 #### Switching to Subscriber Tenants { #switching-subscriber-tenant }
 
-You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../java/event-handlers/request-contexts#switching-to-a-specific-technical-tenant) and demonstrated by the following example:
+You can set a particular tenant and access it by running your code in a nested `RequestContext` as explained [here](../guides/security/cap-users#switching-to-subscriber-tenant) and demonstrated by the following example:
 
 ```java
 runtime.requestContext().systemUser(tenant).run(context -> {
@@ -314,7 +314,7 @@ runtime.requestContext().systemUser(tenant).run(context -> {
 Note that switching the tenant in the context is a quite expensive operation as CDS model data might need to be fetched from MTX sidecar in case of tenant extensions.
 Hence, avoid setting the context for all subscribed tenants iteratively as this might overload the sidecar and also could flood the local CDS model cache.
 
-::: warning _❗ Warning_
+::: warning 
 If an application deviates from default behaviour and switches the tenant context internally, it needs to ensure data privacy and proper isolation!
 :::
 
@@ -331,7 +331,7 @@ TenantProviderService tenantProvider;
 List<TenantInfo> tenantInfo = tenantProvider.readTenants();
 ```
 
-::: warning _❗ Warning_
+::: warning 
 Retrieving the tenants is an expensive operation. It might be a good idea to cache the results if appropriate.
 :::
 
@@ -365,7 +365,7 @@ upon incoming requests.
 
 In order to activate the combined pool approach set the property `cds.multiTenancy.datasource.combinePools.enabled = true`.
 
-::: warning _❗ Warning_
+::: warning 
 Since the pool is shared among all tenants, one tenant could eat up all available connections, either intentionally or by accident. Applications using combined pools need to take adequate measures to mitigate this risk, for example by introducing rate-limiting.
 :::
 
@@ -397,7 +397,7 @@ See section [Multitenancy Configuration Properties](#mtx-properties) for more de
 ### Logging Support { #app-log-support}
 
 Logging service support gives you the capability to observe properly correlated requests between the different components of your CAP application in Kibana.
-This is especially useful for multi-tenant aware applications that use the `MTX sidecar`.
+This is especially useful for multitenant aware applications that use the `MTX sidecar`.
 Just enable either [`application-logs`](../java/operating-applications/observability#logging-service) service or [`cloud-logging`](../java/operating-applications/observability#open-telemetry) service for both, the Java service as well as for the `MTX sidecar`, to get correlated log messages from these components.
 
 The logs can be inspected in the corresponding front ends such as `Kibana`, `Cloud Logging Service` or `Dynatrace`.

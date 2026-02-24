@@ -46,7 +46,8 @@ async function cds.connect.to (
 
 Argument `name` is used to look up connect options from [configured services](#cds-env-requires), which are defined in the `cds.requires` section of your _package.json_ or _.cdsrc.json_ or _.yaml_ files.
 
-Argument `options` also allows to pass additional options such as `credentials` programmatically, and thus create services without configurations and [service bindings](#service-bindings), for example, you could connect to a local SQLite database in your tests like this:
+Argument `options` also allows to pass additional options programmatically. The available and supported properties of options depend on the selected `kind`.
+Each `kind` defines its own set of expected configuration properties (for example, `credentials`, `model`, `service`). This allows creating services without configurations and [service bindings](#service-bindings). For example, you could connect to a local SQLite database in your tests like this:
 
 ```js
 const db2 = await cds.connect.to ({
@@ -643,7 +644,7 @@ For example, you can enable it in the _package.json_ file for your production pr
 ```
 
 ::: warning
-This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](../releases/schedule#yearly-major-releases).
+This is a backward compatibility feature.<br> It might be removed in a next [major CAP version](/releases/schedule#yearly-major-releases).
 :::
 
 Each service that has credentials and a `vcap.label` property is put into the `VCAP_SERVICES` env variable. All properties from the service's `vcap` object will be taken over to the service binding.
@@ -741,7 +742,7 @@ The resulting `VCAP_SERVICES` env variable looks like this:
 
 ### Through _.cdsrc-private.json_ File for Hybrid Testing
 
-[Learn more about hybrid testing using _.cdsrc-private.json_.](../advanced/hybrid-testing#bind-to-cloud-services)
+[Learn more about hybrid testing using _.cdsrc-private.json_.](../tools/cds-bind#bind-to-cloud-services)
 
 ```json
 {
@@ -785,11 +786,3 @@ cds.requires.db.credentials.database = sqlite.db
 > Never check in or deploy such _.env_ files!
 
 <div id="endofconnect" />
-
-
-
-## Importing Service APIs
-
-
-
-## Mocking Required Services

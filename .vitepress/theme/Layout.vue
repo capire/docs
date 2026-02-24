@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import DefaultTheme from 'vitepress/theme'
 import { useData } from 'vitepress'
+import DefaultTheme from 'vitepress/theme'
 import ShortcutsList from './components/ShortcutsList.vue'
 import ImplVariants from './components/implvariants/ImplVariants.vue'
 import NavScreenMenuItem from './components/implvariants/NavScreenMenuItem.vue'
+import ScrollToTop from './components/ScrollToTop.vue'
 import Ribbon from './components/Ribbon.vue'
-import ScrollToTop from './components/ScrollToTopSimple.vue'
-import WasThisHelpful from './components/WasThisHelpful.vue'
-import { useRoute } from 'vitepress'
 
 const isPreview = !!import.meta.env.VITE_CAPIRE_PREVIEW
+const archiveVersion = import.meta.env.VITE_CAPIRE_VERSION
 
 const { Layout } = DefaultTheme
 const { frontmatter } = useData()
-
-const route = useRoute()
 
 </script>
 
@@ -22,14 +19,11 @@ const route = useRoute()
 
   <Layout>
     <template #layout-top>
-      <ScrollToTop />
       <slot name="layout-top" />
+      <ScrollToTop />
     </template>
     <template #doc-top>
       <slot name="doc-top" />
-    </template>
-    <template #doc-after>
-      <WasThisHelpful :key="route.path" />
     </template>
     <template #not-found>
       <slot name="not-found" />
@@ -52,7 +46,10 @@ const route = useRoute()
     </template>
   </Layout>
 
-  <Ribbon v-if="isPreview">
+  <Ribbon v-if="archiveVersion">
+    {{ archiveVersion }}<br>Archive
+  </Ribbon>
+  <Ribbon v-else-if="isPreview">
     DEV PREVIEW<br>
     See <a href="https://cap.cloud.sap" target="_blank" rel="noopener noreferrer">cap.cloud.sap</a>
   </Ribbon>
