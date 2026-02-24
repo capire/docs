@@ -23,7 +23,7 @@ On Windows PowerShell you can use the built-in `WinGet` command.
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
 ```shell [Linux / WSL]
-# silently install
+# install
 #   curl (required to get Homebrew)
 #   git (required by Homebrew)
 # just for completeness, this might already be installed on your machine
