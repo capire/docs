@@ -381,7 +381,7 @@ Using Maven profiles allows you to distinguish between builds for local developm
 * Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
 * Creating database-specific artifacts for different target databases
 
-Adding a production profile in srv/pom.xml to override the cds build command.
+Add a production profile in srv/pom.xml to override the cds build command:
 
 ::: code-group
 ```xml [srv/pom.xml]
@@ -418,7 +418,7 @@ Adding a production profile in srv/pom.xml to override the cds build command.
 ```
 :::
 
-Generally, the production build is triggered via mta.yaml. To activate the production profile, include the profile parameter (for example, -P production) as part of the build invocation.
+Generally, you trigger the production build via mta.yaml. To activate the production profile, include the profile parameter (for example, `-P production`) as part of the build invocation:
 
 ::: code-group
 ```yaml [mta.yaml]
