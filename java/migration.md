@@ -23,7 +23,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 [[toc]]
 
 
-## Automatic Java Migrations with OpenRewrite { #open-rewrite }
+## Automatic CAP Java Migrations with OpenRewrite { #open-rewrite }
 
 For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide a [OpenRewrite](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
 
@@ -42,13 +42,13 @@ mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -DskipMavenParsing=true
 ```
 
-Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` in the Maven artifact `com.sap.cds:cds-services-recipes:4.3.0` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code from version A to version B.
+Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` in the Maven artifact `com.sap.cds:cds-services-recipes:4.3.0` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
-|[com.sap.cds.services.migrations.MigrateStatements](/releases/aug25#typed-query-results)|Prepares applications by migrating CQN statements for typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.MigrateStatements](../releases/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
