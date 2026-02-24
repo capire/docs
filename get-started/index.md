@@ -19,7 +19,10 @@ On Windows PowerShell you can use the built-in `WinGet` command.
 
 
 ::: code-group
-```shell [macOS / Linux / WSL]
+```shell [macOS]
+bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
+```
+```shell [Linux / WSL]
 # silently install
 #   curl (required to get Homebrew)
 #   git (required by Homebrew)
@@ -126,6 +129,7 @@ winget install --silent GitHub.GitHubDesktop
 
 
 ### Visual Studio Code {.proposed}
+
 ::: code-group
 ```shell [macOS]
 brew install --cask visual-studio-code # VS Code itself
