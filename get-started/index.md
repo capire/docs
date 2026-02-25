@@ -15,7 +15,6 @@ A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@
 ### Preparation
 
 On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
-On Windows PowerShell you can use the built-in `WinGet` command.
 
 
 ::: code-group
@@ -30,6 +29,11 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 sudo apt install curl git  -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
+```PowerShell [Windows]
+# On Windows PowerShell you can use the built-in `WinGet` command.
+# Also you have to restart PowerShell after installing CLI commands
+# using `WinGet` to make them visible.
+```
 :::
 
 <style scoped>
@@ -42,14 +46,13 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 
 ::: code-group
 ```shell [macOS / Linux / WSL]
-brew install node   # Node.js LTS
+brew install node     # Node.js LTS
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
 ```
 ```PowerShell [Windows]
 # pasting multiple lines PowerShell will bring a warning popup to accept
-winget install --silent OpenJS.NodeJS.LTS
-# restart PowerShell to activate the new command
+winget install --silent OpenJS.NodeJS.LTS  # restart PowerShell to activate the new command
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
 ```
@@ -60,8 +63,7 @@ cds -v                # check cds version
 ::: code-group
 ```PowerShell [Windows]
 # pasting multiple lines PowerShell will bring a warning popup to accept
-winget install --silent SQLite.SQLite
-# restart PowerShell to activate the new command
+winget install --silent SQLite.SQLite # restart PowerShell to activate the new command
 sqlite3 -version
 ```
 :::
@@ -75,7 +77,6 @@ brew install maven
 mvn -version  # display Maven and Java versions
 ```
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent SAP.SapMachine.25.JDK
 
 # Apache Maven is not available using winget so download it directly
@@ -85,8 +86,7 @@ $mvnzip="$env:LOCALAPPDATA\maven.zip"; `
 curl $url -o $mvnzip; `
 tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
 setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
-rm $mvnzip
-# restart PowerShell to activate the new commands
+rm $mvnzip    # restart PowerShell to activate the new commands
 mvn -version  # display Maven and Java versions
 ```
 :::
