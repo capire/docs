@@ -380,15 +380,43 @@ Using Maven profiles allows you to distinguish between builds for local developm
 
 * Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
 * Creating database-specific artifacts for different target databases
+* Add Maven dependencies used only in production
 
 Production cds build build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
 
-Add a maven production profile in srv/pom.xml to override the *cds.build* command:
+Add a Maven production profile in srv/pom.xml to override cds.build’s default non‑production build and H2 SQL generation.
 
 ::: code-group
 ```xml [srv/pom.xml]
 <project>
-....
+......
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+......
+				<executions>
+......
+					<execution>
+						<id>cds.build</id>
+						<goals>
+							<goal>cds</goal>
+						</goals>
+						<configuration>
+							<commands>
+								<command>build --for java</command>
+								<command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
+							</commands>
+						</configuration>
+					</execution>
+......
+				</executions>
+			</plugin>
+		</plugins>
+	<build>
+......
  <profiles>
   <profile>
    <id>production</id>
@@ -405,7 +433,7 @@ Add a maven production profile in srv/pom.xml to override the *cds.build* comman
         </goals>
         <configuration>
          <commands>
-          <command>build --for java --production</command>
+          <command>build --for java --production</command> <!-- -->
          </commands>
         </configuration>
        </execution>
