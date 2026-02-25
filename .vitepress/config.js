@@ -4,7 +4,7 @@ const base =  process.env.GH_BASE || '/docs/'
 // Construct vitepress config object...
 import path from 'node:path'
 import { defineConfig } from 'vitepress'
-import playground from './lib/playground'
+import playground from './lib/cds-playground/index.js'
 import languages from './languages'
 import { Menu } from './menu.js'
 
@@ -201,7 +201,7 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
-import * as MdLiveCode from './lib/playground/md-live-code'
+import * as MdLiveCode from './lib/cds-playground/md-live-code'
 import * as MdDiagramSvg from './lib/md-diagram-svg'
 
 config.markdown.config = md => {

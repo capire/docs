@@ -30,7 +30,7 @@ export function install(md: MarkdownRenderer) {
     const [language, live, ...rest] = info.split(' ')
     if (live === 'live') {
       const mdDir = dirname(env.realPath ?? env.path)
-      const filePath = './' + relative(mdDir, join(__dirname, '../../theme/components/playground/LiveCode.vue'))
+      const filePath = './' + relative(mdDir, join(__dirname, '../../theme/components/cds-playground/LiveCode.vue'))
       const imp = `import LiveCode from "${filePath}";`
       insertScriptSetup(env, imp)
 
