@@ -1,7 +1,26 @@
 import { MarkdownRenderer, MarkdownEnv } from 'vitepress'
-import { dirname, join, relative, resolve } from 'path'
+import { dirname, join, relative } from 'path'
 import { enabled } from '.'
 
+/**
+ * Makes code blocks with "live" in the info string interactive by rendering a <LiveCode /> component.
+ *
+ * ```cds live
+ * select from Books { title }
+ * ```
+ * 
+ * ```js live
+ * await INSERT.into('Books').entries(
+ *   { ID: 2, author_ID: 150, title: 'Eldorado' }
+ * )
+ * ```
+ *
+ * Additional options:
+ * - as <lang>: specify the language to execute the code block as (defaults to the language specified before "live")
+ *   example: ```cds live as cql
+ * - readonly: make the code block readonly
+ *   example: ```cds live readonly
+ */
 export function install(md: MarkdownRenderer) {
   if (!enabled) return
   const fence = md.renderer.rules.fence
