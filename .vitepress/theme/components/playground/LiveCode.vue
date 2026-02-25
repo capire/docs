@@ -18,7 +18,7 @@
           @evaluate="evaluate"
         />
       </div>
-      <button class="icon-button" @click="evaluate" title="Evaluate" :disabled="evalStatus === 'evaluating'">
+      <button class="icon-button" @click="evaluate" :title="`Evaluate (${metaKey}+Enter)`" :disabled="evalStatus === 'evaluating'">
         <div v-if="evalStatus === 'evaluating'" class="spinner" aria-hidden="true"></div>
         <svg v-else-if="evalStatus === 'success'" class="status-icon success" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 13l4 4L19 7" />
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, useId } from 'vue'
+import { onMounted, ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
@@ -190,6 +190,10 @@ async function evaluate() {
     statusTimeoutId = null
   }, 600)
 }
+
+const metaKey = ref('Meta')
+onMounted(() => { metaKey.value = /(Mac|iPhone|iPad)/i.test(navigator?.userAgentData?.platform) ? `⌘` : `Ctrl` })
+
 </script>
 
 <style scoped>
