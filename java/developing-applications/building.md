@@ -381,12 +381,13 @@ Using Maven profiles allows you to distinguish between builds for local developm
 * Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
 * Creating database-specific artifacts for different target databases
 
-Add a production profile in srv/pom.xml to override the cds build command:
+Production cds build build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
+
+Add a maven production profile in srv/pom.xml to override the *cds.build* command:
 
 ::: code-group
 ```xml [srv/pom.xml]
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project>
 ....
  <profiles>
   <profile>
