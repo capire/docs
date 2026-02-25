@@ -390,32 +390,32 @@ Add a Maven production profile in srv/pom.xml to override cds.build’s default 
 ```xml [srv/pom.xml]
 <project>
 ......
-	<build>
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+ <build>
+  <finalName>${project.artifactId}</finalName>
+  <plugins>
+   <plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
 ......
-				<executions>
+    <executions>
 ......
-					<execution>
-						<id>cds.build</id>
-						<goals>
-							<goal>cds</goal>
-						</goals>
-						<configuration>
-							<commands>
-								<command>build --for java</command>
-								<command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
-							</commands>
-						</configuration>
-					</execution>
+     <execution>
+      <id>cds.build</id>
+      <goals>
+       <goal>cds</goal>
+      </goals>
+      <configuration>
+       <commands>
+        <command>build --for java</command>
+        <command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
+       </commands>
+      </configuration>
+     </execution>
 ......
-				</executions>
-			</plugin>
-		</plugins>
-	<build>
+   </executions>
+   </plugin>
+  </plugins>
+ </build>
 ......
  <profiles>
   <profile>
