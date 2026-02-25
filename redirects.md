@@ -1,5 +1,6 @@
 ## Getting Started Guides
 
+- [about](get-started/concepts)
 - [about/](get-started/concepts)
 - [about/best-practices](get-started/features#served-out-of-the-box)
 - [about/features](get-started/features)
@@ -38,6 +39,7 @@
 - [guides/services/consuming-services](guides/integration/calesi)
 - [guides/temporal-data](guides/domain/temporal-data)
 - [guides/using-services](guides/integration/calesi)
+- [guides/databases-hana](guides/databases/hana)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
