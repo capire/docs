@@ -48,7 +48,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` in the
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
-|[com.sap.cds.services.migrations.MigrateStatements](../releases/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
