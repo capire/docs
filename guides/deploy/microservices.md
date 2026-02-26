@@ -283,16 +283,6 @@ build-parameters:
 ```
 :::
 
-::: info `cds build --ws` with Node.js
-If the CDS models of every NPM workspace contained in the monorepo should be considered, then instead of creating this `shared-db` folder, you can also use:
-```shell
-cds build --for hana --production --ws
-```
-The `--ws` aggregates all models in the NPM workspaces.
-
-In this walkthrough, we only include a subset of the CDS models in the deployment.
-:::
-
 ::: details Node.js: Configure each app for cloud readiness
 
 The preceding steps only added configuration to the workspace root.
