@@ -105,6 +105,8 @@ Links between the projects are established using NPM dependencies.
 Since the root project defines workspaces, these dependencies are also found locally without the need for publishing or linking.
 When one of the projects is cloned in isolation, it's still possible to fetch dependencies to other modules via the NPM registry.
 
+:::
+
 ## Using a Shared Database
 
 You can deploy your model to a single database and then share it across applications, if you have one of the following scenarios:
