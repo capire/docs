@@ -34,9 +34,9 @@ For any Java related changes of the CAP Java APIs we try to make the transition 
 
 The CAP Java OpenRewrite recipe with our migrations can be found and used in the Moderne Platform.
 
-### Local Execution of OpenRewrite Recipes
+### Execution of OpenRewrite Recipes with Maven
 
-Alternatively, the application of these recipes is done via Maven as a one-shot operation on a developer's laptop, similar to calling Maven archetypes. Take this call as an example:
+Alternatively, the application of these recipes is done via Maven as a one-shot operation. Take this call as an example:
 
 ```bash
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
