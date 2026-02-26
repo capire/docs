@@ -1,5 +1,5 @@
 ---
-synopsis: 
+synopsis:
   This chapter contains comprehensive guides that help you to work through migrations such as from CAP Java 1.x to CAP Java 2.x.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -38,9 +38,9 @@ The CAP Java OpenRewrite recipe with our migrations can be found and used in the
 
 Alternatively, the application of these recipes is done via Maven as a one-shot operation. Take this call as an example:
 
-```bash
+```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
-  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:$the_latest_cap_java_version \
+  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
   -Drewrite.activeRecipes=com.sap.cds.services.migrations.MigrateStatements \
   -DskipMavenParsing=true
 ```
