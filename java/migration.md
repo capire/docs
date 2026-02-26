@@ -25,7 +25,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 ## Automatic CAP Java Migrations with OpenRewrite { #open-rewrite }
 
-For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide a [OpenRewrite](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
+For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
 
 ### Moderne Platform
 
@@ -42,7 +42,7 @@ mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -DskipMavenParsing=true
 ```
 
-Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` in the Maven artifact `com.sap.cds:cds-services-recipes:4.3.0` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
