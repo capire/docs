@@ -14,7 +14,7 @@ A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@
 
 ### Preparation
 
-On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
+On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up. We use multiline console commands to improve Windows PowerShell usability. PowerShell will ask for confirmation when you paste these commands, adding an extra safety step.
 
 
 ::: code-group
@@ -22,17 +22,9 @@ On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homeb
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
 ```shell [Linux / WSL]
-# install
-#   curl (required to get Homebrew)
-#   git (required by Homebrew)
-# just for completeness, this might already be installed on your machine
-sudo apt install curl git  -y
+# install curl (required to get Homebrew) and git (required to run Homebrew)
+sudo apt install curl git -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
-```
-```PowerShell [Windows]
-# On Windows PowerShell you can use the built-in `WinGet` command.
-# Also you have to restart PowerShell after installing CLI commands
-# using `WinGet` to make them visible.
 ```
 :::
 
@@ -51,10 +43,15 @@ npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
 ```
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
-winget install --silent OpenJS.NodeJS.LTS  # restart PowerShell to activate the new command
+winget install --silent OpenJS.NodeJS.LTS
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
+# done
 ```
 :::
 
@@ -62,9 +59,14 @@ cds -v                # check cds version
 
 ::: code-group
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
-winget install --silent SQLite.SQLite # restart PowerShell to activate the new command
+winget install --silent SQLite.SQLite
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
 sqlite3 -version
+# done
 ```
 :::
 
@@ -86,8 +88,14 @@ $mvnzip="$env:LOCALAPPDATA\maven.zip"; `
 curl $url -o $mvnzip; `
 tar -xf $mvnzip -C "$env:LOCALAPPDATA"; `
 setx PATH "$env:PATH;$env:LOCALAPPDATA\apache-maven-$v\bin"; `
-rm $mvnzip    # restart PowerShell to activate the new commands
+rm $mvnzip
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
 mvn -version  # display Maven and Java versions
+# done
 ```
 :::
 
@@ -100,11 +108,15 @@ brew install gh   # GitHub CLI
 git -v # display Git cli version
 ```
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent Git.Git
 winget install --silent GitHub.cli
-# restart PowerShell to activate the new commands
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
 git -v # display Git cli version
+# done
 ```
 :::
 ::: code-group
@@ -114,16 +126,16 @@ brew install github    # GitHub Desktop App
 ```shell [Linux / WSL]
 # Github-Desktop on Homebrew is only supported for macOS
 GHD_VERSION="3.3.12"
-curl -L \
-  https://github.com/shiftkey/desktop/releases/download/release-${GHD_VERSION}-linux1/GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb \
-  -o github-desktop.deb
+GHD_HOST="https://github.com/shiftkey/desktop/releases/download"
+
+curl -L ${GHD_HOST}/release-${GHD_VERSION}-linux1/
+GitHubDesktop-linux-amd64-${GHD_VERSION}-linux1.deb -o github-desktop.deb
+
 sudo apt install ./github-desktop.deb
 rm ./github-desktop.deb
 ```
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent GitHub.GitHubDesktop
-# restart PowerShell to activate the new commands
 ```
 :::
 
@@ -141,10 +153,14 @@ sudo snap install --classic code
 code -v # display VS Code's version
 ```
 ```PowerShell [Windows]
-# pasting multiple lines PowerShell will bring a warning popup to accept
 winget install --silent Microsoft.VisualStudioCode
-# restart PowerShell to activate the new command
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
 code -v # display VS Code's version
+# done
 ```
 :::
 
