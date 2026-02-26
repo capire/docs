@@ -4,6 +4,7 @@ const base =  process.env.GH_BASE || '/docs/'
 // Construct vitepress config object...
 import path from 'node:path'
 import { defineConfig } from 'vitepress'
+import playground from './lib/cds-playground/index.js'
 import languages from './languages'
 import { Menu } from './menu.js'
 
@@ -79,6 +80,12 @@ const config = defineConfig({
   ],
 
   vite: {
+    plugins: [...playground.plugins()],
+    esbuild: {
+      supported: {
+        'top-level-await': true //browsers can handle top-level-await features in special cases
+      },
+    },
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
@@ -194,11 +201,13 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
+import * as MdLiveCode from './lib/cds-playground/md-live-code'
 import * as MdDiagramSvg from './lib/md-diagram-svg'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
+  MdLiveCode.install(md)
   MdDiagramSvg.install(md)
   md.use(dl)
 }

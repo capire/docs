@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="-0.5 -0.5 108 108">
+    <defs/>
+    <g>
+        <g>
+            <ellipse cx="53.5" cy="54" rx="49.5" ry="49.5" fill="none" stroke-width="9" />
+        </g>
+        <g>
+            <path d="M 41 54 L 41 34 Q 41 29 45.19 31.73 L 75.14 51.27 Q 79.33 54 75.14 56.73 L 45.19 76.27 Q 41 79 41 74 Z" stroke-width="9" stroke-miterlimit="10" />
+        </g>
+    </g>
+</svg>
