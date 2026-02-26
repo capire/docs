@@ -14,7 +14,7 @@ A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@
 
 ### Preparation
 
-On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up. We use multiline console commands to improve Windows PowerShell usability. PowerShell will ask for confirmation when you paste these commands, adding an extra safety step.
+On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up. We use multiline console commands to improve usability in Windows PowerShell. PowerShell will ask for confirmation when you paste these commands, adding an extra safety step.
 
 
 ::: code-group
