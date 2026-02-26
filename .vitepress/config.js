@@ -124,7 +124,8 @@ if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
     java_services: '4.7.0',
-    java_cds4j: '4.7.0'
+    java_cds4j: '4.7.0',
+    cloud_sec_ams: '3.8.0'
   },
   gotoLinks: [],
   siteURL
