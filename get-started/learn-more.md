@@ -101,7 +101,7 @@ Here are the different types of alerts or callouts you may encounter:
 
 The _capire_ samples at https://github.com/capire are the official and curated collection of samples for the SAP Cloud Application Programming Model, maintained by the CAP team.
 
-[![](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
+[![Screenshot of the capire GitHub organization page with sample repositories](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
 
 
 
