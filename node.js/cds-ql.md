@@ -734,6 +734,7 @@ try {
 The `options` argument is optional; currently supported is:
 
 * `wait` — an integer specifying the timeout after which to fail with an error in case a lock couldn't be obtained. The time unit is database-specific. On SAP HANA, for example, the time unit is seconds. A default `wait` value that is used if `options.wait == null` can be specified via <Config keyOnly>cds.sql.lock_acquire_timeout: -1</Config>. A value of `-1` can be used to deactivate the default for the individual call. If the wait option isn't specified, the database-specific default behavior applies.
+* `ignoreLocked` — a Boolean value that specifies that all selected lines that cannot be locked immediately are skipped..
 
 All acquired locks are released when the current transaction is finished, that is, committed  or rolled back.
 
