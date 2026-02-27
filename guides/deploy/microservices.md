@@ -141,35 +141,21 @@ These are the (not so beneficial) side effects you when using a shared persisten
    cds init shared-db --nodejs --add hana
    ```
 
-   ::: code-group
-   ```sh [Node.js]
+   ```sh
    npm add --workspace shared-db @capire/bookstore
    npm add --workspace shared-db @capire/reviews
    npm add --workspace shared-db @capire/orders
    ```
-   ```sh [Java]
-   npm add --workspace shared-db @capire/bookstore-java
-   npm add --workspace shared-db @capire/reviews-java
-   npm add --workspace shared-db @capire/orders-java
-   ```
-   :::
 
    > Note how *NPM workspaces* allows us to use the package names of the projects, and nicely creates symlinks in *node_modules* accordingly.
 
 2. Add a `shared-db/db/schema.cds` file as a mashup to actually collect the models:
 
-  ::: code-group
-   ```cds [Node.js]
+   ```cds
    using from '@capire/bookstore';
    using from '@capire/reviews';
    using from '@capire/orders';
    ```
-   ```cds [Java]
-   using from '@capire/bookstore-java';
-   using from '@capire/reviews-java';
-   using from '@capire/orders-java';
-   ```
-   :::
 
    > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
@@ -220,8 +206,6 @@ The project structure used here is as follows:
 ```
 
 The `shared-db` module is simply another CAP project, with only database content. The dependencies are installed via NPM, so it's still possible to install via an NPM registry if used outside of the monorepo setup.
-
-The database model could also be collected on root level instead of creating a separate `shared-db` module. When collecting on root level, the `cds build --ws` option can be used to collect the models of all NPM workspaces.
 
 :::
 
@@ -441,7 +425,7 @@ modules:
 In Node.js, add build commands for each module to be prepared for deployment:
 
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 build-parameters:
   before-all:
     - builder: custom
