@@ -130,7 +130,6 @@ In the [CDS Query Language (CQL)](../../cds/cql) builder, the lambda expression 
 To target components of a structured document, we recommend using path expressions with infix filters.
 :::
 
-
 ### Filters {#target-entity-filters}
 
 Besides using infix filters in path expressions, the `Select`, `Update`, and `Delete` builders support filtering the [target entity set](#target-entity-sets) via the `where` method. Using `where` is equivalent to defining an infix filter on the last segment of a path expression in the statement's `from` / `entity` clause. For statements that have both, an infix filter on the last path segment and a `where` filter, the resulting target filter is the conjunction (`and`) of the infix filter and the `where` filter.
@@ -1414,24 +1413,117 @@ The Query Builder API supports using expressions in many places. Expressions con
 
 ### Entity References {#entity-refs}
 
-Entity references specify entity sets. They can be used to define the target entity set of a [CQL](../../cds/cql) statement. They can either be defined inline using lambda expressions in the Query Builder (see [Target Entity Sets](#target-entity-sets)) or via the `CQL.entity` method, which is available in an _untyped_ version as well as in a _typed_ version that uses the generated [model interfaces](../cqn-services/persistence-services#model-interfaces). The following example shows an entity reference describing the set of *authors* that have published books in the year 2020:
+Entity references specify entity sets. You can use them to define the target entity set of a [CQL](../../cds/cql) statement or serve as an argument for event handlers.
+
+A reference consists of _segments_ that define the path from the entity's root to a certain part of it. Each segment has the _identifier_ with the name of the entity or an element and an optional filter _predicate_. These predicates might include other references. The references are not bound to the particular model and are not checked against it while they are being built.
+
+References can be either _absolute_ or _relative_. Absolute references always have the fully qualified name of the type in their first segment.
+
+The simplest kind of absolute reference is a reference to the entity set, for example, to all books.
 
 ```java
-import com.sap.cds.ql.CQL;
+Books_ books = CQL.entity(Books_.class); // {"ref":["sap.capire.bookshop.Books"]}
 
-// bookshop.Books[year = 2020].author // [!code focus]
-Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code focus]
-
-// or as untyped entity ref
-StructuredType<?> authors =
-   CQL.entity("bookshop.Books").filter(b -> b.get("year").eq(2020)).to("author");
-
-// SELECT from bookshop.Books[year = 2020]:author { name } // [!code focus]
-Select.from(authors).columns("name"); // [!code focus]
+StructuredTypeRef ref = bookWithId.asRef(); // or CqnStructuredTypeRef which is a cleaner equivalent type
 ```
 
-You can also get [entity references](query-execution#entity-refs) from the result of a CDS QL statement to address an entity via its key values in other statements.
+The method `asRef()` seals the reference and makes it immutable.
 
+Relative references do not specify the type in the first segment and are [element references](#element-refs) most of the time.
+
+Construct new references with [model interfaces](../cqn-services/persistence-services#model-interfaces) or via the API to build [CQL statements](#concepts). Use model interfaces in the application code.
+
+References with multiple segments represent navigation within a structured entity or between different entities via its associations. For example, the following is a reference that represents the path from the book to its chapters.
+
+```java
+CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).chapters(c -> c.ID().eq("...")).pages(p -> p.ID().eq("...")).asRef();
+```
+
+An existing reference can be reused as an object or a variable, or a new reference can be built on top of it.
+
+For the upcoming examples, let's assume a simple reference pointing to the book created as follows:
+
+```java
+// {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]}]}
+CqnStructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).asRef(); // [!code focus]
+```
+
+You can use `CQL.entity(...)` to cast the reference to the required type and use its methods to extend it further.
+
+```java
+// {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]},"author"]}
+CqnStructuredTypeRef refToAuthor = CQL.entity(Books_.class, ref).author().asRef(); // [!code focus]
+```
+
+Use `CQL.to(...)` to produce the same dynamically.
+
+```java
+// {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]},"author"]}
+CqnStructuredTypeRef toAuthor = CQL.to(ref.segments()).to("author").asRef(); // [!code focus]
+```
+
+You can use this reference as the root for a new statement that targets the author.
+
+To navigate to the parent, you can strip a segment from the end of the reference.
+
+```java
+// {"ref":[{"id":"sap.capire.bookshop.Books","where":[{"ref":["ID"]},"=",{"val":"..."}]}]}
+CqnStructuredTypeRef toParent = CQL.to(
+    refToAuthor.segments().subList(0, refToAuthor.segments().size() - 1)).asRef(); // [!code focus]
+```
+
+The `rootSegment()` method can be used to construct the reference starting with the root of the existing reference when you need to navigate to different parts of the same structured type, for example, from the author of the book to its pages.
+
+```java
+CqnStructuredTypeRef toPagesOfTheBook = CQL.to(List.of(refToAuthor.rootSegment())).to("chapters").to("pages").asRef();
+```
+
+You can use the `CQL.entity(...)` to use the convenience of model interfaces for this with additional casts.
+
+```java
+CqnStructuredTypeRef toPagesOfTheBook = CQL.entity(Books_.class,
+    CQL.to(List.of(refToAuthor.rootSegment())).asRef()).chapters().pages().asRef();
+```
+
+References can be copied to produce new references with in-place modification of its segments as follows.
+
+```java
+StructuredTypeRef ref = CQL.entity(Books_.class).filter(b -> b.ID().eq("...")).chapters(c -> c.ID().eq("...")).pages(p -> p.ID().eq("...")).asRef();
+RefBuilder<StructuredTypeRef> builder = CQL.copy(ref);
+builder.segments().forEach(s -> {
+  // add new predicate to each segment
+  s.filter(CQL.and(CQL.get(Books.GENRE).eq("Fiction"), s.filter().orElse(null)));
+});
+
+StructuredTypeRef copy = builder.build(); // new reference is ready
+```
+
+Use the [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer) to bind the reference back to the CDS model and inspect annotations or filter values.
+
+Use [`CqnVisitor`](/java/working-with-cql/query-introspection#cqnvisitor) to introspect references. 
+
+:::warning Limitation
+The references are not comparable between each other. They cannot be used as map keys or set values.
+:::
+
+### Element References {#element-refs}
+
+An element reference points to a regular element of the entity. Such references are usually _relative_ and form select list for a CQL statement or an expand.
+
+```java
+CqnSelect statement = Select.from(Books_.class, b -> b.filter(f -> f.ID().eq("...")))
+    .columns(b -> b.author().placeOfBirth());
+
+CqnElementRef relativeRef = statement.items().getFirst().asRef(); // author/placeOfBirth
+```
+
+Element references can be extended with the same APIs as the [entity references](#entity-refs).
+
+```java
+CqnElementRef extendedRef = CQL.to(relativeRef.segments()).get("name"); // author/placeOfBirth/name
+```
+
+Element references share the same features and limitations as entity references. However, you cannot use them with [`CqnAnalyzer`](/java/working-with-cql/query-introspection#cqnanalyzer).
 
 ### Values
 
