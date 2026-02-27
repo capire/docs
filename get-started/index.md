@@ -136,10 +136,10 @@ Use `cds version` to check your installed versions of _cds-dk_ , as well as your
   cds version
   ```
   ```zsh
-  @sap/cds-dk:  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
-  npm root -l:           ~/cap/bookshop/node_modules
-  npm root -g:           /opt/homebrew/lib/node_modules
-  Node.js:      24.12.0  /opt/homebrew/bin/node
+  @sap/cds-dk  9.6.1    /opt/homebrew/lib/node_modules/@sap/cds/dk
+  npm root -l           ~/cap/bookshop/node_modules
+  npm root -g           /opt/homebrew/lib/node_modules
+  Node.js      24.12.0  /opt/homebrew/bin/node
   ```
 
 
