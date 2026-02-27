@@ -30,13 +30,9 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
 
-### Moderne Platform
+### Running OpenRewrite Recipes
 
-The CAP Java OpenRewrite recipe with our migrations can be found and used in the Moderne Platform.
-
-### Execution of OpenRewrite Recipes with Maven
-
-Alternatively, the application of these recipes is done via Maven as a one-shot operation. Take this call as an example:
+You can execute these recipes through Maven as a one-shot operation. Take this call as an example:
 
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
