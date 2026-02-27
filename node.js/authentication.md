@@ -464,9 +464,11 @@ require('@sap/xssec').Token.decodeCache = false
 [Learn more about caching CPU intensive operations in `@sap/xssec`](https://www.npmjs.com/package/@sap/xssec#caching-cpu-intensive-operations){.learn-more}
 
 
-## XSUAA in Hybrid Setup {#xsuaa-setup}
+## Authentication in Hybrid Setup {#hybrid-setup}
 
-### Prepare Local Environment
+### with XSUAA {#xsuaa-setup}
+
+#### Prepare Local Environment
 
 The following steps assume you've set up the [**Cloud Foundry Command Line Interface**](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/856119883b8c4c97b6a766cc6a09b48c.html).
 
@@ -517,7 +519,7 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
     This step is necessary for locally running apps and for apps deployed on Cloud Foundry.
     :::
 
-### Configure the Application
+#### Configure the Application
 
 1. Create a service key:
 
@@ -560,7 +562,7 @@ cds env list requires.auth --resolve-bindings --profile hybrid
 This prints the full `auth` configuration including the credentials.
 
 
-### Set Up the Roles for the Application { #auth-in-cockpit}
+#### Set Up the Roles for the Application { #auth-in-cockpit}
 
 By creating a service instance of the `xsuaa` service, all the roles from the _xs-security.json_ file are added to your subaccount. Next, you create a role collection that assigns these roles to your users.
 
@@ -579,7 +581,7 @@ By creating a service instance of the `xsuaa` service, all the roles from the _x
 7. Add the email addresses for your users to the *Users* list.
 8. Choose *Save*
 
-### Running App Router
+#### Running App Router
 
 The App Router component implements the necessary authentication flow with XSUAA to let the user log in interactively.
 The resulting JWT token is sent to the application where it's used to enforce authorization and check the user's roles.
@@ -670,3 +672,148 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```
 
 3. Retry
+
+
+### with IAS {#ias-setup}
+
+#### Configure the Application
+
+1. If there is no deployment descriptor yet, execute in the project root folder
+
+    ```sh
+    cds add mta
+    ```
+
+2. Enable IAS authentication for your application by adding and installing the `ams` plugin. For more information see [Adding AMS Support](../guides/security/cap-users#adding-ams-support-1) and [Adding IAS](../guides/security/authentication#adding-ias)
+
+    ```sh
+    cds add ams
+    npm install
+    ```
+  
+    This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
+
+
+3. Generate roles and policies with AMS.
+  To compile the cds annotations to dcl files execute:
+
+    ```sh
+    cds build --for ams
+    ```
+    For more information see [Prepare CDS Model](../guides/security/cap-users#prepare-cds-model)
+
+4. Add App Router for fetching the IAS token.
+
+    ```sh
+    cds add approuter
+    ```
+
+    ::: details This configures the local App Router callback URI for the `identity` service
+
+    In _mta.yaml_, this entry should now be present:
+
+    ```sh
+    - name: bookshop-ias
+        [...]
+        parameters:
+          service: identity
+          [...]
+          config:
+            display-name: bookshop
+            oauth2-configuration:
+              redirect-uris:
+                - http://localhost:5000/login/callback?authType=ias # [!code ++]
+              post-logout-redirect-uris:
+                - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html
+    ```
+
+    :::
+
+5. Install `npm` packages for App Router:
+
+    ```sh
+    npm install --prefix app/router
+    ```
+
+#### Deploy the Application
+  
+1. Log in to Cloud Foundry:
+    ```sh
+    cf l -a <api-endpoint>
+    ```
+    If you don't know the API endpoint, have a look at section [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
+ 
+2. Pack and deploy the application with
+
+    ```sh
+    cds up
+    ```
+
+#### Assign policies in the Administrative Console
+
+1. Log in to your IAS Tenant and go to `Applications & Resources`
+
+2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment)
+
+#### Start hybrid testing
+ 
+1. Bind local application to the Identity Service Instance
+
+    ```sh
+    cds bind -2 bookshop-ias
+    ```
+    ::: details This will generate .cdsrc-private.json
+    ```json .cdsrc-private.json
+    {
+      "requires": {
+        "[hybrid]": {
+          "auth": {
+            "binding": {
+              "type": "cf",
+              "apiEndpoint": "https://...",
+              "org": "cdx-nodejs",
+              "space": "dev",
+              "instance": "bookshop-ias",
+              "key": "bookshop-ias-key"
+            },
+            "kind": "ias-auth",
+            "vcap": {
+              "name": "auth"
+            }
+          }
+        }
+      }
+    }
+    ```
+    :::
+
+2. In your project folder run:
+
+    ::: code-group
+    ```sh [Mac/Linux]
+    cds bind --exec -- npm start --prefix app/router
+    ```
+    ```cmd [Windows]
+    cds bind --exec -- npm start --prefix app/router
+    ```
+    ```powershell [Powershell]
+    cds bind --exec '--' npm start --prefix app/router
+    ```
+    :::
+
+    [Learn more about `cds bind --exec`.](../tools/cds-bind#hybrid-testing){.learn-more}
+
+    This starts an [App Router](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/0117b71251314272bfe904a2600e89c0.html) instance on [http://localhost:5000](http://localhost:5000) with the credentials for the IAS service that you have bound using `cds bind`.
+
+    Since it only serves static files or delegates to the backend service, you can keep the server running. It doesn't need to be restarted after you have changed files.
+
+3. Make sure that your CAP application is running as well with the `hybrid` profile:
+
+    ```sh
+    cds watch --profile hybrid
+    ```
+
+4. After the App Router and CAP application are started, log in at [http://localhost:5000](http://localhost:5000) and verify that the routes are protected as expected.
+
+
+  
