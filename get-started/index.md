@@ -164,7 +164,7 @@ code -v # display VS Code's version
 ```
 :::
 
-#### Visual Studio Code proposed extensions {.proposed}
+#### Visual Studio Code Proposed Extensions {.proposed}
 ```shell
 code --install-extension sapse.vscode-cds         # for .cds models
 code --install-extension mechatroner.rainbow-csv  # for .csv files
