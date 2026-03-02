@@ -203,7 +203,7 @@ It produces a trace output like that:
 [cds] - launched at 5/25/2023, 4:53:46 PM, version: 7.0.0, in: 991.573ms
 ```
 
-As apparent from the output, both, the two bookshop services `CatalogService` and `AdminService` as well as our new `ReviewsService`, are served in the same process (mocked, as the `ReviewsService` is configured as required service in _bookstore/package.json_).
+As apparent from the output, both, the two bookshop services `CatalogService` and `AdminService` as well as our new `ReviewsService`, are served in the same process (mocked, as the `ReviewsService` is configured as required service in _[bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json#L30-L31)_).
 
 ### 2. Add Reviews 
 
