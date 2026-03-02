@@ -34,6 +34,10 @@ For any Java related changes of the CAP Java APIs we try to make the transition 
 
 You can execute these recipes through Maven as a one-shot operation. Take this call as an example:
 
+### Execution of OpenRewrite Recipes with Maven
+
+Alternatively, you can run these recipes through Maven. Take this call as an example:
+
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
