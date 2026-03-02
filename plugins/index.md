@@ -2,6 +2,11 @@
 status: released
 ---
 
+<script setup>
+import { useData } from 'vitepress'
+const { versions } = useData().theme.value.capire
+</script>
+
 # CAP Plugins & Enhancements
 
 Following is a curated list of plugins that are available for the SAP Cloud Application Programming Model (CAP) which provide integration with SAP BTP services and technologies, or other SAP products.
