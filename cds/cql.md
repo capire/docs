@@ -61,7 +61,7 @@ The CQL `SELECT` clause extends the well-known SQL `SELECT` with CDS-specific ca
 
 ![](./assets/cql/select.drawio.svg?raw)
 
-> Using: [Query Source](#query-source), [Select Item](#select-item), [Expressions](./cxl#expr), Ordering Term
+> Using: [Query Source](#query-source), [Postfix Projections](#postfix-projections), [Select Items](#select-item), [Excluding](#excluding-clause), [Expressions](./cxl#expr), Ordering Term
 
 For example we can select the _available_ `Books` while
 excluding the `stock` and some technical details from the result:
@@ -96,7 +96,10 @@ select from Authors where exists books[genre.name = 'Fantasy']
 The query source defines the data set a `SELECT` reads from. It can be a single entity or a path expression that navigates associations.
 
 ![](./assets/cql/query-source.drawio.svg?raw)
-> Using: [Infix Filter](./cxl#infix-filters), [Path Expression](./cxl#path-expressions-ref)
+
+> Using: [Infix Filter](./cxl#infix-filters), [Path Expressions](./cxl#path-expressions-ref)
+>
+> Used in: [Select](#select)
 
 ### Using Entity Names
 
@@ -170,6 +173,10 @@ where exists (
 ## Select Item
 
 ![](./assets/cql/select-item.drawio.svg?raw)
+
+> Using: [Expressions](./cxl#expr), [Path Expressions](./cxl#ref), [Type Casts](#type-casts), [Postfix Projections](#postfix-projections), [Smart `*` Selector](#smart-star-selector)
+>
+> Used in: [Select](#select), [Postfix Projections](#postfix-projections)
 
 ### Using Expressions
 
@@ -267,6 +274,8 @@ For more samples and a detailed syntax diagram, refer to the [`inline` chapter](
 
 ### Smart `*` Selector
 
+###### Smart Star Selector
+
 Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses:
 
 ```cds live
@@ -317,6 +326,10 @@ You don't need a CDL cast if you already use a SQL cast. The compiler will extra
 
 ![](./assets/cql/postfix-projection.drawio.svg?raw)
 
+> Using: [Select Items](#select-item), [Excluding](#excluding-clause)
+>
+> Used in: [Select](#select), [Expands](#nested-expands), [Inlines](#nested-inlines), [Select Items](#select-item)
+
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
 ```cds live
@@ -326,11 +339,14 @@ SELECT name, address.street from Authors
 SELECT from Authors { name, address.street }
 ```
 
-### Nested Expands {nested-expands}
+### Nested Expands
 
 
 ![](./assets/cql/nested-expand.drawio.svg?raw)
 
+> Using: [Path Expressions](./cxl#ref), [Postfix Projections](#postfix-projections)
+>
+> Used in: [Select Items](#select-item)
 
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
 This allows **expand** results along associations and hence read deeply structured documents:
@@ -354,7 +370,7 @@ SELECT from Authors {
 } where name = 'Edgar Allen Poe'
 ```
 
-Similar to the select clause, concepts like the [smart `*` selector](#smart--selector) and the [excluding clause](#excluding-clause) are also available in a nested expand:
+Similar to the select clause, concepts like the [smart `*` selector](#smart-star-selector) and the [excluding clause](#excluding-clause) are also available in a nested expand:
 ```cds live
 SELECT from Books {
   title,
@@ -395,9 +411,13 @@ SELECT from Authors {
 ```
 
 
-### Nested Inlines {#nested-inlines}
+### Nested Inlines
 
 ![](./assets/cql/nested-inline.drawio.svg?raw)
+
+> Using: [Path Expressions](./cxl#ref), [Postfix Projections](#postfix-projections)
+>
+> Used in: [Select Items](#select-item)
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
