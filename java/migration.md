@@ -26,7 +26,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 [[toc]]
 
 
-## Automatic CAP Java Migrations with OpenRewrite { #open-rewrite }
+## Automatic CAP Java Migrations with OpenRewrite
 
 For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
 
