@@ -601,10 +601,10 @@ Create a new file named event-mesh.json to store the configuration for enterpris
     },
     "queueRules": {
       "publishFilter": [
-        "*"
+        "${namespace}/*"
       ],
       "subscribeFilter": [
-        "*"
+        "${namespace}/*"
       ]
     }
   },
