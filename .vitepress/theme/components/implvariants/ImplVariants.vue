@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, watchEffect } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useData } from 'vitepress'
 import VPSwitch from '../VPSwitch.vue'
 import IconNode from './IconNode.vue'
@@ -14,23 +14,21 @@ const knownImplVariants = ['node', 'java']
 onMounted(() => {
   if (!supportsVariants.value) return
 
-  let check = currentCheckState()
-  // Persist value even intially. If query param was used, users expect to get this value from now on, even if not using the query anymore.
+  const check = currentCheckState()
+  // Persist value initially. If query param was used, users expect to get this value from now on.
   const variantNew = check ? 'java' : 'node'
   localStorage.setItem('impl-variant', variantNew)
 
-  setClass(check)
-
-  // Scroll hash element into view. Needed on first page load if variant is changed by query param.
-  scrollTo(window.location.hash?.slice(1))
+  // Sync Vue state with DOM state (already set by script.js in <head>)
+  syncState(check)
 })
 
-function scrollTo(id) {
-  const elem = document.getElementById(id)
-  if (elem) {
-    setTimeout(() => { elem?.scrollIntoView(true) }, 20)
+// Re-sync state when navigating between pages (frontmatter changes)
+watch(supportsVariants, (supports) => {
+  if (supports) {
+    syncState(currentCheckState())
   }
-}
+})
 
 function currentCheckState() {
   const url = new URL(window.location)
@@ -39,69 +37,40 @@ function currentCheckState() {
   return localStorage.getItem('impl-variant') === 'java'
 }
 
-function setClass(check) {
+// Sync Vue component state with DOM - no layout changes, just state alignment
+function syncState(check) {
   checked.value = check
 
-  for (let swtch of document.getElementsByClassName('SwitchImplVariant')) {
-    swtch.classList[check ? 'add' : 'remove']('checked')
+  for (const swtch of document.getElementsByClassName('SwitchImplVariant')) {
+    swtch.classList.toggle('checked', check)
   }
-  for (let container of document.getElementsByClassName('SwitchImplVariantContainer')) {
+  for (const container of document.getElementsByClassName('SwitchImplVariantContainer')) {
     container.title = check ? 'Java content. Toggle to see Node.js.' : 'Node.js content. Toggle to see Java.'
   }
 
   markOutlineItems()
-  toggleContent(check ? 'java' : 'node')
-
 }
 
 function useVariant() {
   function toggle() {
     let check = currentCheckState()
-    setClass((check = !check))
+    check = !check
+
     const variantNew = check ? 'java' : 'node'
     localStorage.setItem('impl-variant', variantNew)
+
+    // Update DOM class (this is the only place that changes visible content on toggle)
+    toggleContent(variantNew)
+    syncState(check)
 
     if (supportsVariants.value) {
       const url = new URL(window.location)
       url.searchParams.set('impl-variant', variantNew)
       window.history.replaceState({}, '', url)
     }
-
   }
   return toggle
 }
-
-function animationsOff(cb) {
-  let css
-  css = document.createElement('style')
-  css.appendChild(
-    document.createTextNode(
-    `:not(.VPSwitchAppearance):not(.VPSwitchAppearance *) {
--webkit-transition: none !important;
--moz-transition: none !important;
--o-transition: none !important;
--ms-transition: none !important;
-transition: none !important;
-}`
-  ))
-  document.head.appendChild(css)
-
-  cb()
-
-  // keep unused declaration, used to force the browser to redraw
-  // eslint-disable-next-line no-unused-vars
-  const _ = window.getComputedStyle(css).opacity
-  document.head.removeChild(css)
-}
-
-watchEffect(() => {
-  if (!supportsVariants.value) return
-  setTimeout(() => { // otherwise DOM is not ready
-    if (typeof document !== 'undefined') {
-      animationsOff(() => setClass(currentCheckState()) )
-    }
-  }, 20)
-})
 
 function toggleContent(variant) {
   const htmlClassList = document.documentElement.classList
