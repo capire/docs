@@ -490,7 +490,7 @@ SELECT from Cities { * } excluding { ID }
 SELECT from Cities { name, country}
 ```
 
-## Where
+## Where {#where}
 
 The `where` clause filters the result set to only include entries satisfying a given condition. Any [CXL expression](./cxl#expr) evaluating to a boolean can be used as the condition.
 
@@ -557,7 +557,7 @@ SELECT from Authors { name, dateOfDeath }
   where dateOfDeath is not null
 ```
 
-## Group by and having
+## Group by and having {#group-by}
 
 `group by` aggregates rows sharing the same values in the specified elements into summary rows. Aggregate functions like `count`, `sum`, `avg`, `min`, and `max` are then applied per group.
 
@@ -584,7 +584,7 @@ SELECT from Books {
 } group by author.name, genre.name
 ```
 
-### Filtering Groups with `having`
+### Filtering Groups with `having` {#having}
 
 The `having` clause filters groups after aggregation — analogous to `where` for individual rows.
 
@@ -608,7 +608,7 @@ SELECT from Books {
   having avg(price) > 15
 ```
 
-## Order by
+## Order by {#order-by}
 
 The `order by` clause sorts the result set by one or more [ordering terms](#ordering-term). The default order is ascending (`asc`); use `desc` to reverse it.
 
@@ -669,6 +669,34 @@ By default, the position of `null` values in the sort order is database-specific
 SELECT from Authors { name, dateOfDeath }
   order by dateOfDeath nulls last
 ```
+
+## Limit and Offset
+
+`limit` restricts the number of rows returned. `offset` skips a given number of rows before returning results. Together they enable pagination.
+
+### Limiting Results {#limit}
+
+For example, to return only the three cheapest books:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+  limit 2
+```
+
+### Paginating with Offset {#offset}
+
+Use `offset` together with `limit` to retrieve a specific page of results. For example, to skip the first three books and return the next three:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+  limit 1 offset 3
+```
+
+::: tip Always combine `limit`/`offset` with `order by`
+Without an explicit `order by`, the order of rows is undefined and pagination results will be unpredictable.
+:::
 
 ## Use enums
 
