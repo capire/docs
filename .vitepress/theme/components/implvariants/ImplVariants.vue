@@ -19,11 +19,9 @@ onMounted(() => {
   const variantNew = check ? 'java' : 'node'
   localStorage.setItem('impl-variant', variantNew)
 
-  // Sync Vue state with DOM state (already set by script.js in <head>)
   syncState(check)
 })
 
-// Re-sync state when navigating between pages (frontmatter changes)
 watch(supportsVariants, (supports) => {
   if (supports) {
     syncState(currentCheckState())
@@ -37,7 +35,6 @@ function currentCheckState() {
   return localStorage.getItem('impl-variant') === 'java'
 }
 
-// Sync Vue component state with DOM - no layout changes, just state alignment
 function syncState(check) {
   checked.value = check
 
@@ -59,7 +56,6 @@ function useVariant() {
     const variantNew = check ? 'java' : 'node'
     localStorage.setItem('impl-variant', variantNew)
 
-    // Update DOM class (this is the only place that changes visible content on toggle)
     toggleContent(variantNew)
     syncState(check)
 

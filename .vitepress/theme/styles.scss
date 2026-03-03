@@ -8,11 +8,8 @@
 
 
 html {
-  // Hide Java content by default (node is the default variant).
-  // This prevents layout shift during SSR/hydration since content
-  // is hidden before the client-side script sets the class.
-  &:not(.java) .java { display: none; }
   &.java .node { display: none; }
+  &.node .java { display: none; }
 }
 
 
