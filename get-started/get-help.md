@@ -449,6 +449,16 @@ On trial, your SAP HANA Cloud instance will be automatically stopped overnight, 
 | _Root Cause_ | An error like `Version incompatibility for the ... build plugin: "2.0.x" (installed) is incompatible with "2.0.y" (requested)` indicates that your project demands a higher version of SAP HANA than what is available in your org/space on SAP BTP, Cloud Foundry environment. The error might not occur on other landscapes for the same project. |
 | _Solution_   | Lower the version in file `db/src/.hdiconfig` to the one given in the error message. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.                                                                                                                                                                 |
 
+#### Deployment fails - _unable to get local issuer certificate_ {#root-cert-change}
++ _Could not connect to any host... - unable to get local issuer certificate_
++ MTX sidecar crashes with HTTP error _429 (Too Many Requests)_
+
+|              | Explanation                                                                                                                  |
+|--------------|--------------------------------|
+| _Root Cause_ | A change of SAP's root certificate from _DigiCert Global Root CA_ to _DigiCert TLS RSA4096 Root G5_ leads to deployment failures because older certificates get rejected by too old SAP HANA driver versions and/or older service bindings in SAP HANA Cloud. |
+| _Solution_   | For Node.js applications, update the `hdb` driver to the latest version. [See SAP note 3397584](https://me.sap.com/notes/3397584) for details.  See the [SAP HANA blog post](https://community.sap.com/t5/technology-blog-posts-by-sap/action-required-update-your-certificate-trust-stores-for-enhanced-sap-hana/ba-p/14332703) for the broader context. |
+
+
 #### Deployment fails — _Cannot create certificate store_ {#cannot-create-certificate-store}
 
 |              | Explanation                                                                                                                                                                                                                                                                                                                                                                    |
