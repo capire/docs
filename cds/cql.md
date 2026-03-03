@@ -490,27 +490,6 @@ SELECT from Cities { * } excluding { ID }
 SELECT from Cities { name, country}
 ```
 
-
-## Use enums
-
-In queries, you can use enum symbols instead of the respective literals in places
-where the corresponding type can be deduced:
-
-```cds
-type Status : String enum { open; closed; in_progress; };
-
-entity OpenOrder as projection on Order {
-  
-  case status when #open        then 0
-              when #in_progress then 1 end
-    as status_int : Integer,
-
-  (status = #in_progress ? 'is in progress' : 'is open')
-    as status_txt : String,  
-    
-} where status = #open or status = #in_progress;
-```
-
 ## Where
 
 The `where` clause filters the result set to only include entries satisfying a given condition. Any [CXL expression](./cxl#expr) evaluating to a boolean can be used as the condition.
@@ -689,6 +668,26 @@ By default, the position of `null` values in the sort order is database-specific
 ```cds live
 SELECT from Authors { name, dateOfDeath }
   order by dateOfDeath nulls last
+```
+
+## Use enums
+
+In queries, you can use enum symbols instead of the respective literals in places
+where the corresponding type can be deduced:
+
+```cds
+type Status : String enum { open; closed; in_progress; };
+
+entity OpenOrder as projection on Order {
+  
+  case status when #open        then 0
+              when #in_progress then 1 end
+    as status_int : Integer,
+
+  (status = #in_progress ? 'is in progress' : 'is open')
+    as status_txt : String,  
+    
+} where status = #open or status = #in_progress;
 ```
 
 
