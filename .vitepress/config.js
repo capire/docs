@@ -76,7 +76,8 @@ const config = defineConfig({
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
-    ['script', { src: base+'script.js' } ]
+    // Inline script to restore impl-variant selection immediately (before first paint)
+    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`]
   ],
 
   vite: {
