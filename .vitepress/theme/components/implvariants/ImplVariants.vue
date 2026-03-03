@@ -22,8 +22,6 @@ onMounted(() => {
   localStorage.setItem('impl-variant', variantNew)
 
   syncState(check)
-
-  // Watch for outline to be added/updated (it may render after this component mounts)
   observeOutline()
 })
 
@@ -87,21 +85,16 @@ function toggleContent(variant) {
   htmlClassList.add(variant)
 }
 
-// Observe the outline container for changes and mark items when they appear
 function observeOutline() {
-  if (outlineObserver) return // Already observing
+  if (outlineObserver) return
 
   const aside = document.querySelector('.VPDocAside')
   if (!aside) return
 
-  // Mark any existing items first
   markOutlineItems()
-
-  // Watch for new outline items being added
   outlineObserver = new MutationObserver(() => {
     markOutlineItems()
   })
-
   outlineObserver.observe(aside, {
     childList: true,
     subtree: true
