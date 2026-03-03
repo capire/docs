@@ -164,7 +164,7 @@ SELECT from Authors[name='Edgar Allen Poe']:books.genre { name }
 ```cds live
 SELECT from Genres as G { name }
 where exists (
-  SELECT from Books
+  SELECT from sap.capire.bookshop.Books
   where exists author[name='Edgar Allen Poe'] and genre_ID = G.ID
 )
 ```
@@ -289,7 +289,7 @@ In `CQL`, explicitly defined columns following an `*` replace equally named colu
 
 The `*` selector can not only be used in select lists, but also in expands and inlines.
 ```cds live
-SELECT from Books {
+SELECT from Books { title,
   author {
     *, name || ' (' || age || ')' as name
   } excluding { age }
@@ -300,25 +300,18 @@ SELECT from Books {
 
 ### Type Casts
 
-> TODO: type casting does not work as documented here
-
-There are two different constructs commonly called casts.
-SQL casts and CDL casts. The former produces SQL casts when rendered into SQL, whereas the latter does not:
+> TODO: sql style casts are broken
+> TODO: 
 
 ```cds live
 SELECT from Books {
-  stock+1 as bar : Decimal,  // CAP-style
-  cast (stock+1 as Decimal) as bar2  // SQL-style
+  stock+1 as bar : String,  // CAP-style
+  cast(stock+1 as String) as bar2,  // SQL-style
+  substring( cast (stock as String), -1 ) as bar3  // SQL-style nested
 };
 ```
 [Learn more about CDL type definitions](./cdl#types){.learn-more}
 
-Use SQL casts when you actually want a cast in SQL. CDL casts are useful for expressions such as `foo+1` as the compiler does not deduce types.
-For the OData backend, by specifying a type, the compiler will also assign the correct EDM type in the generated EDM(X) files.
-
-::: tip
-You don't need a CDL cast if you already use a SQL cast. The compiler will extract the type from the SQL cast.
-:::
 
 
 ## Postfix Projections
@@ -378,7 +371,7 @@ SELECT from Books {
 }
 ```
 
-Expands can contain expressions:
+The postfix projection following the expand contains [select-items](#select-item) and can therefore also contain any [expression](./cxl#expr):
 
 ```cds live
 SELECT from Books {
@@ -398,7 +391,7 @@ SELECT from Books {
 
 #### Alias
 
-Just as any other select items, the base of a nested expand and all of its elements can be aliased:
+Just as any other [select item](#select-item), the base of a nested expand and all of its elements can be aliased:
 
 ```cds live
 SELECT from Authors {
@@ -466,42 +459,36 @@ SELECT from Books {
 
 ### Excluding Clause
 
-Use the `excluding` clause in combination with `SELECT *` to select all elements except for the ones listed in the exclude list.
+Use the `excluding` clause in combination with `SELECT *` to select all elements except the ones listed in the exclude list.
 
-```sql
-SELECT from Books { * } excluding { author }
+```cds live
+SELECT from Cities { * } excluding { ID }
 ```
 
-The effect is about **late materialization** of signatures and staying open to late extensions.
-For example, assume the following definitions:
+The effect enables **late materialization** of signatures, keeping them open to late extensions.
+Without extensions, the above query would return the same result as:
+
+```cds live
+SELECT from Cities { name, country}
+```
+
+Now assume a consumer extends `Cities` with a new element:
 
 ```cds
-entity Foo { foo : String; bar : String; car : String; }
-entity Bar as select from Foo excluding { bar };
-entity Boo as select from Foo { foo, car };
+extend Cities with { population : Integer };
 ```
 
-A `SELECT * from Bar` would result into the same as a query of `Boo`:
-
-```sql
-SELECT * from Bar --> { foo, car }
-SELECT * from Boo --> { foo, car }
-```
-
-Now, assume a consumer of that package extends the definitions as follows:
+With that, the first query (with the `excluding` clause) would automatically include the new `population` element in its result, while the second query would not:
 
 ```cds
-extend Foo with { boo : String; }
+// yields { name, country, population }
+SELECT from Cities { * } excluding { ID }
 ```
 
-With that, queries on `Bar` and `Boo` would return different results:
-
-```sql
-SELECT * from Bar --> { foo, car, boo }
-SELECT * from Boo --> { foo, car }
+```cds
+// yields { name, country }
+SELECT from Cities { name, country}
 ```
-
-
 
 
 ## Use enums
@@ -522,6 +509,186 @@ entity OpenOrder as projection on Order {
     as status_txt : String,  
     
 } where status = #open or status = #in_progress;
+```
+
+## Where
+
+The `where` clause filters the result set to only include entries satisfying a given condition. Any [CXL expression](./cxl#expr) evaluating to a boolean can be used as the condition.
+
+### Simple Conditions
+
+For example, to select only books that are currently in stock:
+
+```cds live
+SELECT from Books { title, stock, price }
+  where stock > 0
+```
+
+Multiple conditions can be combined with `and` and `or`:
+
+```cds live
+SELECT from Books { title, stock, price }
+  where stock > 0 and price < 20
+```
+
+
+
+### Exists Predicate
+
+The `exists` predicate checks whether an associated set is non-empty. This is especially useful when filtering by to-many associations:
+
+```cds live
+SELECT from Authors { name }
+  where exists books
+```
+
+Combined with [infix filters](./cxl#infix-filters), you can further narrow down the associated entries:
+
+```cds live
+SELECT from Authors { name }
+  where exists books[genre.name = 'Fantasy']
+```
+
+[Learn more about path expressions and infix filters](./cxl#infix-filters){.learn-more}
+
+### Pattern Matching
+
+Use the `like` operator to match string patterns, where `%` matches any sequence of characters:
+
+```cds live
+SELECT from Authors { name }
+  where name like 'E%'
+```
+
+### Range Checks
+
+Use `between` to check whether a value falls within a range:
+
+```cds live
+SELECT from Books { title, price }
+  where price between 10 and 30
+```
+
+### Null Checks
+
+Use `is null` and `is not null` to filter for missing or present values:
+
+```cds live
+SELECT from Authors { name, dateOfDeath }
+  where dateOfDeath is not null
+```
+
+## Group by and having
+
+`group by` aggregates rows sharing the same values in the specified elements into summary rows. Aggregate functions like `count`, `sum`, `avg`, `min`, and `max` are then applied per group.
+
+### Grouping by a Single Element
+
+For example, to count how many books each author has written:
+
+```cds live
+SELECT from Books {
+  author.name as author,
+  count(*) as numberOfBooks
+} group by author.name
+```
+
+### Grouping by Multiple Elements
+
+You can group by more than one element. For example, to get the average price per author and genre:
+
+```cds live
+SELECT from Books {
+  author.name  as author,
+  genre.name   as genre,
+  avg(price)   as avgPrice
+} group by author.name, genre.name
+```
+
+### Filtering Groups with `having`
+
+The `having` clause filters groups after aggregation — analogous to `where` for individual rows.
+
+For example, to find authors with more than one book:
+
+```cds live
+SELECT from Books {
+  author.name  as author,
+  count(*)     as numberOfBooks
+} group by author.name
+  having count(*) > 1
+```
+
+Or to list genres whose average book price exceeds 15:
+
+```cds live
+SELECT from Books {
+  genre.name  as genre,
+  avg(price)  as avgPrice
+} group by genre.name
+  having avg(price) > 15
+```
+
+## Order by
+
+The `order by` clause sorts the result set by one or more [ordering terms](#ordering-term). The default order is ascending (`asc`); use `desc` to reverse it.
+
+### Ascending and Descending
+
+For example, to list books ordered by price from lowest to highest:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+```
+
+Or from highest to lowest:
+
+```cds live
+SELECT from Books { title, price }
+  order by price desc
+```
+
+### Ordering by Multiple Elements
+
+You can specify several ordering terms, separated by commas. The result is sorted by the first term, then by the second for ties, and so on:
+
+```cds live
+SELECT from Books { title, author.name as author, price }
+  order by author asc, price desc
+```
+
+### Name Resolution — Using Select List Aliases
+
+In `order by`, identifiers are resolved against the **select list first**, then against the query source. This means you can order by an alias defined in the projection:
+
+```cds live
+SELECT from Books {
+  title,
+  price * stock as totalValue
+} order by totalValue desc
+```
+
+::: tip
+This differs from `where` and `having`, where aliases from the select list are **not** in scope — those clauses only see the query source elements.
+:::
+
+### Ordering by Path Expressions
+
+You can also order by elements reached via path expressions:
+
+```cds live
+SELECT from Books { title, price }
+  order by author.name asc, title asc
+```
+
+### Null Handling
+
+By default, the position of `null` values in the sort order is database-specific. Use `nulls first` or `nulls last` to make this explicit:
+
+```cds live
+SELECT from Authors { name, dateOfDeath }
+  order by dateOfDeath nulls last
 ```
 
 
