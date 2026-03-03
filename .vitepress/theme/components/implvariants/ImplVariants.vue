@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, computed, ref, watch } from 'vue'
+import { onMounted, onUnmounted, computed, ref, watch } from 'vue'
 import { useData } from 'vitepress'
 import VPSwitch from '../VPSwitch.vue'
 import IconNode from './IconNode.vue'
@@ -11,6 +11,8 @@ const checked = ref(false)
 const toggle = typeof localStorage !== 'undefined' ? useVariant() : () => {}
 const knownImplVariants = ['node', 'java']
 
+let outlineObserver = null
+
 onMounted(() => {
   if (!supportsVariants.value) return
 
@@ -20,11 +22,22 @@ onMounted(() => {
   localStorage.setItem('impl-variant', variantNew)
 
   syncState(check)
+
+  // Watch for outline to be added/updated (it may render after this component mounts)
+  observeOutline()
+})
+
+onUnmounted(() => {
+  if (outlineObserver) {
+    outlineObserver.disconnect()
+    outlineObserver = null
+  }
 })
 
 watch(supportsVariants, (supports) => {
   if (supports) {
     syncState(currentCheckState())
+    observeOutline()
   }
 })
 
@@ -72,6 +85,27 @@ function toggleContent(variant) {
   const htmlClassList = document.documentElement.classList
   knownImplVariants.forEach(v => htmlClassList.remove(v))
   htmlClassList.add(variant)
+}
+
+// Observe the outline container for changes and mark items when they appear
+function observeOutline() {
+  if (outlineObserver) return // Already observing
+
+  const aside = document.querySelector('.VPDocAside')
+  if (!aside) return
+
+  // Mark any existing items first
+  markOutlineItems()
+
+  // Watch for new outline items being added
+  outlineObserver = new MutationObserver(() => {
+    markOutlineItems()
+  })
+
+  outlineObserver.observe(aside, {
+    childList: true,
+    subtree: true
+  })
 }
 
 // Only mark outline items here, as these are not part of the generated HTML,
