@@ -69,9 +69,9 @@ Writing the messages into explicitly modeled messages properties isn't yet suppo
 
 SAP Fiori uses these messages to display detailed information on the UI. The style how a message appears on the UI depends on the severity of the message.
 
-For [draft-enabled entities](../../guides/uis/fiori#validating-drafts), messages are **persistent by default** and stored in `DraftAdministrativeData.DraftMessages`. This allows messages to survive page refreshes and helps users see validation errors before activating the draft.
+For [draft-enabled entities](../../guides/uis/fiori#validating-drafts), messages are **persistent by default** and stored in `DraftAdministrativeData.DraftMessages`. Storing messages allows them to survive page refreshes and helps users see validation errors before activating the draft.
 
-To make specific messages *non-persistent* (e.g., action success messages that should not accumulate), use the `transition()` method:
+To make specific messages *non-persistent* (for example, action success messages that shouldn't accumulate), use the `transition()` method:
 
 ```java
 // Transient message - won't be persisted with drafts
