@@ -227,7 +227,6 @@ Features:
 - **Automated Malware Scanning for Uploaded Files**: Enhance security by automatically scanning all uploaded files for malware, ensuring the integrity and safety of your data.
 - **Automatic Fiori Annotations for Upload Controls**: Streamlined user interactions with automatic SAP Fiori annotations that enhance upload controls, providing a more intuitive and seamless user experience.
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
-- **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multitenancy support, allowing for efficient management of multiple tenants without additional configuration.
 - **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
