@@ -22,6 +22,21 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 [[toc]]
 
+## CAP Java 4.9 to CAP Java 5.0 { #four-to-five }
+
+### Spring Boot 4
+
+CAP Java 5 uses Spring Boot 4 as underlying framework. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0.
+
+### Minimum Versions
+
+CAP Java 4.0 increased some minimum required versions:
+
+| Dependency | Minimum Version |
+| --- | --- |
+| Spring Boot | 4.0 |
+| XSUAA | TBD |
+
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
 ### New License
