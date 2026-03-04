@@ -75,13 +75,10 @@ This guide describes a way to manage development and deployment via *[monorepos]
    ```
    ```sh [Java]
    npm install
-   cd bookstore && npm start
+   cd bookshop
+   mvn cds:watch
    ```
    :::
-
-   In Node.js, each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
-
-   [Learn more about Automatic Bindings by `cds watch`](../integration/reuse-and-compose#bindings-via-cds-watch){.learn-more}
 
 
 ::: details The project structure
