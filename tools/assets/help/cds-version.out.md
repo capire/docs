@@ -12,5 +12,5 @@
  <em> cds.root             </em><em>         </em><i> .../your-project                                                  </i>
  <em> npm root -l          </em><em>         </em><i> .../node_modules                                                     </i>
  <em> npm root -g          </em><em>         </em><i> .../node_modules             </i>
- <em> Node.js              </em><em> 24.13.0 </em><i> .../bin/node                     </i>
+ <em> Node.js              </em><em> 24.13.1 </em><i> .../bin/node                     </i>
 </pre>
