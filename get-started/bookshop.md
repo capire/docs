@@ -37,9 +37,11 @@ cap/bookshop/
 ::: code-group
 ```sh [Node.js]
 git clone https://github.com/capire/bookshop
+npm install
 ```
 ```sh [Java]
 git clone https://github.com/sap-samples/cloud-cap-samples-java bookshop
+mvn install
 ```
 :::
 

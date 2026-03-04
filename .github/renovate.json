@@ -54,5 +54,16 @@
       "depNameTemplate": "com.sap.cds:cds4j-api",
       "datasourceTemplate": "maven",
       "versioningTemplate": "maven"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [ ".vitepress/config.*" ],
+      "matchStrings": [
+        "cloud_sec_ams\\s*:\\s*'(?<currentValue>.*?)'"
+      ],
+      "depNameTemplate": "com.sap.cloud.security.ams.client:cap-ams-support",
+      "datasourceTemplate": "maven",
+      "versioningTemplate": "maven"
     }
+
   ]}

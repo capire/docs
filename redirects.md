@@ -24,6 +24,7 @@
 - [guides/deploy-to-cloud](guides/deploy/)
 - [guides/deployment/(.*)](guides/deploy/$1)
 - [guides/deployment/deploy-to-kyma](guides/deploy/to-kyma)
+- [guides/deployment/to-kyma](guides/deploy/to-kyma)
 - [guides/domain-models](guides/domain/)
 - [guides/domain-modeling](guides/domain/)
 - [guides/dps](guides/protocols/cdi)
@@ -40,11 +41,13 @@
 - [guides/temporal-data](guides/domain/temporal-data)
 - [guides/using-services](guides/integration/calesi)
 - [guides/databases-hana](guides/databases/hana)
+- [guides/databases-postgres](guides/databases/postgres)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
 - [security/data-protection-privacy](guides/security/data-protection)
 - [security/overview](guides/security/overview)
+- [guides/security/aspects](guides/security/overview)
 
 - [advanced/asyncapi](guides/protocols/asyncapi)
 - [advanced/deploy-to-cloud](guides/deploy/)
@@ -57,6 +60,8 @@
 - [advanced/performance-modeling](guides/databases/performance)
 - [advanced/publishing-apis/(.*)](guides/protocols/$1)
 - [advanced/troubleshooting](get-started/get-help)
+- [advanced/hybrid-testing](tools/cds-bind)
+- [advanced/odata](protocols/odata)
 
 ## CDS
 
