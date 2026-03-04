@@ -557,6 +557,9 @@ SELECT from Authors { name, dateOfDeath }
   where dateOfDeath is not null
 ```
 
+[Learn more about `null` handling](./cxl#operators-xpr){.learn-more}
+
+
 ## Group by and having {#group-by}
 
 `group by` aggregates rows sharing the same values in the specified elements into summary rows. Aggregate functions like `count`, `sum`, `avg`, `min`, and `max` are then applied per group.
@@ -612,7 +615,11 @@ SELECT from Books {
 
 The `order by` clause sorts the result set by one or more [ordering terms](#ordering-term). The default order is ascending (`asc`); use `desc` to reverse it.
 
-### Ascending and Descending
+### Ordering Term {#ordering-term}
+
+![](./assets/cql/ordering-term.drawio.svg?raw)
+
+
 
 For example, to list books ordered by price from lowest to highest:
 
@@ -628,14 +635,24 @@ SELECT from Books { title, price }
   order by price desc
 ```
 
-### Ordering by Multiple Elements
-
 You can specify several ordering terms, separated by commas. The result is sorted by the first term, then by the second for ties, and so on:
 
 ```cds live
 SELECT from Books { title, author.name as author, price }
   order by author asc, price desc
 ```
+
+:::info `null` handling
+
+By default, the position of `null` values in the sort order is database-specific. Use `nulls first` or `nulls last` to make this explicit:
+
+```cds live
+SELECT from Authors { name, dateOfDeath }
+  order by dateOfDeath nulls last
+```
+
+:::
+
 
 ### Name Resolution — Using Select List Aliases
 
@@ -659,15 +676,6 @@ You can also order by elements reached via path expressions:
 ```cds live
 SELECT from Books { title, price }
   order by author.name asc, title asc
-```
-
-### Null Handling
-
-By default, the position of `null` values in the sort order is database-specific. Use `nulls first` or `nulls last` to make this explicit:
-
-```cds live
-SELECT from Authors { name, dateOfDeath }
-  order by dateOfDeath nulls last
 ```
 
 ## Limit and Offset
@@ -756,8 +764,3 @@ extend BookReviews with columns {
   book : Association to Books on book.ID = bookID
 };
 ```
-
-
-## Ordering Term {#ordering-term}
-
-![](./assets/cql/ordering-term.drawio.svg?raw)
