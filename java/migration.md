@@ -25,7 +25,6 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 [[toc]]
 
-
 ## Automatic CAP Java Migrations with OpenRewrite
 
 For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
@@ -52,6 +51,21 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+
+## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
+
+### Spring Boot 4
+
+CAP Java 5 uses Spring Boot 4 as underlying framework. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0.
+
+### Minimum Versions
+
+CAP Java 4.0 increased some minimum required versions:
+
+| Dependency | Minimum Version |
+| --- | --- |
+| Spring Boot | 4.0 |
+| XSUAA | TBD |
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
