@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Legacy Applications using SAP BTP services with CAP Java
+# Spring Boot Applications Using SAP BTP Services With CAP Java
 
 <style scoped>
   h1:before {
@@ -43,7 +43,7 @@ Please also maintain a version property in your `<properties>` section:
 <cds.services.version>4.6.2</cds.services.version>
 ```
 
-Now, you can write client code that is actually producing and publishing audit log messages. Please read our [Auditlog documentation](./auditlog/) for more details.
+Now, you can write client code that is actually producing and publishing audit log messages. Please read our [Auditlog documentation](./auditlog) for more details.
 
 ## CAP Messaging
 
@@ -78,7 +78,7 @@ After setting up the dependencies you just need to activate the file-based messa
 cds.messaging.services.messaging.kind: file-based-messaging
 ```
 
-Once this is done, you can the CAP messaging feature in your application. Please read our documentation on [Messaging](./messaging/) for more details.
+Once this is done, you can the CAP messaging feature in your application. Please read our documentation on [Messaging](./messaging) for more details.
 
 <div id="alesi-cds-feature-ucl" />
 
