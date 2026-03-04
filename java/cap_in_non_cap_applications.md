@@ -14,7 +14,7 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins/) while keeping applications free of technical dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CDS service which also can be injected as a Spring Boot service. Take this together with the fact that the CAP runtime can run alongside a idiomatic Spring Boot application and you have robust and provden service integration (via CAP plugins) with a growing set of BTP platform services.
+One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins/) while keeping applications free of technical dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CAP service which also can be injected as a Spring Boot component. Take this together with the fact that the CAP runtime can run alongside a non-CAP Spring Boot application and you have robust and proven service integration (via CAP plugins) with a growing set of BTP platform services.
 
 In general, adding a CAP Java plugin to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html)). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP plugin to integrate a Spring Boot application with different SAP BTP services.
 
@@ -175,7 +175,7 @@ Credentials and service coordinates for connecting to a SAP Event Hub instance n
 
 
 ::: info
-Both, the Audit Log and the Messaging of CAP Java use the transactional outbox by default. The outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. This frees you the application developer from the task to implement compensation logic in case of failed transactions.
+Both, the Audit Log and the Messaging of CAP Java use the in-memory variant of the transactional outbox by default. The outbox is a component that allows binding of external service calls to the outcome of the current request's transaction. With that semantics you can be sure that e.g. the SAP Audit Log Service is only called when your business transaction was successful. However, please keep in mind that the default config of the outbox only runs in memory and does not protect you from crashes. The persistent version of the transactional outbox would do so but this needs additioanl configuration.
 :::
 
 
