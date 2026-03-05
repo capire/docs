@@ -24,7 +24,7 @@
 # [Multitenancy](multitenancy)
 # [Security](security)
 # [Spring Boot Integration](spring-boot-integration)
-## [CAP plugins in Spring Boot](cap_in_non_cap_applications)
+## [CAP plugins in plain Spring Boot](cap-plugins-in-spring-boot-apps)
 # [Developing Applications](developing-applications/)
   ## [Building](developing-applications/building)
   ## [Running](developing-applications/running)
