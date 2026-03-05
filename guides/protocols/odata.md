@@ -1454,3 +1454,18 @@ to customize the annotation as follows:
 If you set `contextAbsoluteUrl` to something truthy that doesn't match `http(s)://*`, the system constructs an absolute path based on the environment of the application on a best effort basis.
 
 We encourage you to stay with the default relative format, if possible, as it's proxy safe.
+
+### Parallel Processing of Atomicity Groups in Node.js Apps { #parallel-batch}
+
+By default, atomicity groups in an OData `$batch` request are processed sequentially.
+In some specific scenarios, such as custom overview pages with multiple data sources, this may result in high roundtrip times.
+
+Hence, for `$batch` requests that exclusively contain `GET` requests, you can enable parallel processing of atomicity groups to improve throughput.
+
+<Config>cds.odata.max_batch_parallelization</Config> specifies the maximum number of atomicity groups processed concurrently.
+The default is `1`, which means sequential processing.
+
+::: warning OData Specification Violation
+Parallel processing of atomicity groups is in conflict with the OData specification for `multipart/mixed`, which requires sequential processing.
+For example, the `continue-on-error` preference default can then no longer be adhered to.
+:::
