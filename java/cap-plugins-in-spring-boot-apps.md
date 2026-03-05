@@ -12,6 +12,12 @@ status: released
   }
 </style>
 
+<script setup>
+  import { useData } from 'vitepress'
+  const { theme } = useData()
+  const { versions } = theme.value.capire
+</script>
+
 {{ $frontmatter.synopsis }}
 
 One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins/) while keeping applications free of hard-coded dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CAP service which also can be injected as a Spring Boot component. Take this together with the fact that the CAP runtime can run alongside a Spring Boot application without any CDS model and you have robust and proven service integration (via CAP plugins) with a growing set of BTP platform services.
@@ -41,8 +47,8 @@ With that, the CAP Java runtime is bootstrapped during the start of the Spring B
 
 Please also maintain a version property in your `<properties>` section:
 
-```xml
-<cds.services.version>4.6.2</cds.services.version>
+```xml-vue
+<cds.services.version>{{ versions.java_services }}</cds.services.version>
 ```
 
 ## SAP Audit Log Service
