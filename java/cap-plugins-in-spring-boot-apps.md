@@ -46,7 +46,7 @@ Please also maintain a version property in your `<properties>` section:
 ```
 
 ## SAP Audit Log Service
-The CAP audit log support enables applicatons to write audit log messages for relevant operations. The audit log APIs and the local default implementation are already part of the basic dependencies you already included.
+The CAP audit log support enables applications to write audit log messages for relevant operations. The audit log APIs and the local default implementation are already part of the basic dependencies you already included.
 
 The implementation for the SAP Audit Log service on BTP integrates with the CAP Java audit log APIs and can be added as an additional plugin. Read more about that in the [plugin's documentation](https://github.com/cap-java/cds-feature-auditlog-ng).
 
