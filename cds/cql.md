@@ -9,427 +9,795 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 # Query Language (CQL)
 
-CDS Query Language (CQL) is based on standard SQL, which it enhances by...
-
 [[toc]]
+
+## Preliminaries
+
+The CDS Query Language (CQL) is based on standard SQL and extends it with CDS-specific capabilities.
+
+### Live Code
+
+The language syntax is described using [syntax diagrams](https://en.wikipedia.org/wiki/Syntax_diagram).
+Most of the accompanying samples are runnable directly in the browser.
+Press the play button to see the result and the corresponding sql:
+
+```cds live
+SELECT from Books { title }
+```
+
+You can also edit the query, making this your personal playground.
+
+:::info Application Context
+The cds model initialized on this page is a slightly modified version of the [capire/bookshop](https://github.com/capire/bookshop).
+
+All samples run on a single browser-local `cds` instance, you can access it via the dev tools
+or run statements in the following code block:
+
+```js live
+await INSERT.into('Books').entries(
+  { ID: 2, author_ID: 150, title: 'Eldorado' }
+)
+```
+:::
+
+
+### Trying it with `cds repl`
+
+To try the samples by yourself, create a simple CAP app:
+
+```sh
+cds init bookshop --nodejs --add sample && cd bookshop
+```
+
+We encourage you to play around with the snippets.
+Just create the sample app as described above and start a repl session within the newly created app by running:
+
+```sh
+cds repl --run .
+```
+
+Simply use `cds.ql` to run CXL as part of a CQL query:
+
+```js
+> await cds.ql`SELECT from Books { title }` // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+<Since version="9.8.0" package="@sap/cds-dk" /> There's also a CQL mode:
+
+```js
+> .ql // [!code focus]
+cql> select from Books { title } // [!code focus]
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+
+## SELECT
+
+> TODO do we want to capitalize the `SELECT` (and other keywords) also in the samples?, if yes, we should do it in all the samples.
+
+The CQL `SELECT` clause extends the well-known SQL `SELECT` with CDS-specific capabilities like [postfix projections](#postfix-projections), structured results, and [path expressions](./cxl#path-expressions-ref). It supports expanded navigation across associations, inline projections for concise field lists, and smart `*` handling with `excluding`.
+
+![](./assets/cql/select.drawio.svg?raw)
+
+> Using: [Query Source](#query-source), [Postfix Projections](#postfix-projections), [Select Items](#select-item), [Excluding](#excluding-clause), [Expressions](./cxl#expr), Ordering Term
+
+For example we can select the _available_ `Books` while
+excluding the `stock` and some technical details from the result:
+
+```cds live
+select from Books { * }
+excluding {
+  stock,
+  createdAt,  createdBy,
+  modifiedAt, modifiedBy
+} where stock > 0
+```
+
+Or we can calculate the average price of books per author:
+
+```cds live
+select from Authors {
+  avg(books.price),
+  name as author
+} group by ID
+```
+
+Or we can select all `Authors` that have written a `Fantasy` book:
+
+```cds live
+select from Authors where exists books[genre.name = 'Fantasy']
+```
+
+
+## Query Source
+
+The query source defines the data set a `SELECT` reads from. It can be a single entity or a path expression that navigates associations.
+
+![](./assets/cql/query-source.drawio.svg?raw)
+
+> Using: [Infix Filter](./cxl#infix-filters), [Path Expressions](./cxl#path-expressions-ref)
+>
+> Used in: [Select](#select)
+
+
+### Using Infix Filters
+
+We can apply infix filters to the query source to narrow down the set of entries read from the source. For example, the following query selects all books of the genre `Fantasy`:
+
+```cds live
+select from Books[genre.name = 'Fantasy'] { title }
+```
+
+::: tip the above is equivalent to:
+```cds live
+SELECT from Books { title } where genre.name = 'Fantasy'
+```
+:::
+
+### Using Path Expressions
+
+By using a path expressions after the `:`, we can navigate from one entity to associated entities.
+The entity at the end of the path expression is the actual query source.
+
+We navigate from existing books to their authors:
+
+```cds live
+SELECT from Books:author { name }
+```
+
+::: tip the above is equivalent to: 
+Selecting from `Authors` and checking for the existence of associated books:
+
+```cds live
+SELECT from Authors { name } where exists books
+```
+
+which is in turn equivalent to:
+
+```cds live
+SELECT from Authors as author { name }
+where exists (
+  SELECT from sap.capire.bookshop.Books
+  where author_ID = author.ID
+)
+```
+
+:::
+
+In the following example, we start with a filtered set of `Authors`.
+By using a path expressions after the `:`, we navigate from the authors to _their_ `books` and further to the books' `genre`.
+
+For example with the following we can get a list of genres of books written by `Edgar Allen Poe`:
+
+```cds live
+SELECT from Authors[name='Edgar Allen Poe']:books.genre { name }
+```
+
+::: tip the above is equivalent to:
+```cds live
+SELECT from Genres as G { name }
+where exists (
+  SELECT from sap.capire.bookshop.Books
+  where exists author[name='Edgar Allen Poe'] and genre_ID = G.ID
+)
+```
+:::
+
+## Select Item
+
+![](./assets/cql/select-item.drawio.svg?raw)
+
+> Using: [Expressions](./cxl#expr), [Path Expressions](./cxl#ref), [Type Casts](#type-casts), [Postfix Projections](#postfix-projections), [Smart `*` Selector](#smart-star-selector)
+>
+> Used in: [Select](#select), [Postfix Projections](#postfix-projections)
+
+### Using Expressions
+
+A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
+
+```cds
+select from Books {
+  42                     as answer,         // literal
+  title,                                    // reference ("ref")
+  price * quantity       as totalPrice,     // binary operator
+  substring(title, 1, 3) as shortTitle,     // function call
+  author.name            as authorName,     // ref with path expression
+  chapters[number < 3]   as earlyChapters,  // ref with infix filter
+  exists chapters        as hasChapters,    // exists
+  count(chapters)        as chapterCount,   // aggregate function
+}
+```
+
+It is possible to assign an explicit alias, it is even sometimes required if the alias can't be inferred:
+
+```cds live
+select from Books {
+  1 + 1 as calculated,  // alias must be provided
+  title                 // alias inferred as "title"
+}
+```
+
+In some situations you may want to assign or change the data type of a column:
+
+```cds live
+select from Books {
+  $now as time      : Time,      // '2026-02-23T13:44:32.133Z''
+  $now as date      : Date       // '2026-02-23'
+}
+```
+> TODO: not the best example, also no real difference on sqlite for this particular sample
+
+### Expand Path Expression
+
+Using the `expand` syntax allows to expand results along associations and hence read deeply structured documents:
+
+```cds live
+SELECT from Books {
+  title,
+  author {
+    name,
+    age
+  }
+}
+```
+
+Expanding related data is especially useful for to-many relations:
+
+```cds live
+SELECT from Authors {
+  name,
+  books {
+    title,
+    price
+  }
+}
+```
+
+For more samples and a detailed syntax diagram, refer to the [`expand` chapter](#nested-expands)
+
+### Inline Path Expression
+
+Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
+
+```cds live
+SELECT from Authors {
+  name,
+  address.{
+    street,
+    city.{ name, country }
+  }
+}
+```
+
+Inlining path expressions can help to improve the structure of a query, as the elements in the projection share the same target.
+
+::: tip the above is equivalent to:
+```cds live
+SELECT from Authors {
+  name,
+  address.street,
+  address.city.name,
+  address.city.country
+}
+```
+
+:::
+
+For more samples and a detailed syntax diagram, refer to the [`inline` chapter](#nested-inlines)
+
+### Smart `*` Selector
+
+###### Smart Star Selector
+
+Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses:
+
+```cds live
+SELECT from Books { *, title || ' (on sale)' as title }
+```
+
+Queries like in our example, would result in duplicate element for `title` in SQL.
+In `CQL`, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
+
+::: tip Smart `*` Selector in expands and inlines
+
+The `*` selector can not only be used in select lists, but also in expands and inlines.
+```cds live
+SELECT from Books { title,
+  author {
+    *, name || ' (' || age || ')' as name
+  } excluding { age }
+}
+```
+:::
+
+
+### Type Casts
+
+
+```cds live
+SELECT from Books {
+  stock+1 as bar : String,  // CAP-style
+  cast(stock+1 as String) as bar2,  // SQL-style
+  substring( cast (stock as String), -1 ) as bar3  // SQL-style nested
+};
+```
+[Learn more about CDL type definitions](./cdl#types){.learn-more}
+
 
 
 ## Postfix Projections
 {#postfix-projections}
 
+![](./assets/cql/postfix-projection.drawio.svg?raw)
+
+> Using: [Select Items](#select-item), [Excluding](#excluding-clause)
+>
+> Used in: [Select](#select), [Expands](#nested-expands), [Inlines](#nested-inlines), [Select Items](#select-item)
+
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
-```sql
+```cds live
 SELECT name, address.street from Authors
 ```
-```sql
+```cds live
 SELECT from Authors { name, address.street }
 ```
 
-### Nested Expands <Beta />
-{#nested-expands}
+### Nested Expands
+
+
+![](./assets/cql/nested-expand.drawio.svg?raw)
+
+> Using: [Path Expressions](./cxl#ref), [Postfix Projections](#postfix-projections)
+>
+> Used in: [Select Items](#select-item)
 
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
 This allows **expand** results along associations and hence read deeply structured documents:
 
-```sql
+```cds live
 SELECT from Authors {
-   name, address { street, town { name, country }}
+   name, address { street, city { name, country }}
 };
 ```
 
-This actually executes three correlated queries to authors, addresses, and towns and returns a structured result set like that:
+This returns a structured result set.
 
-```js
-results = [
-  {
-    name: 'Victor Hugo',
-    address: {
-      street: '6 Place des Vosges', town: {
-        name: 'Paris',
-        country: 'France'
-      }
-    }
-  }, {
-    name: 'Emily Brontë', …
-  }, …
-]
-```
-
-> This is rather a feature tailored to NoSQL databases and has no equivalent in standard SQL as it requires structured result sets. Some SQL vendors allow things like that with non-scalar subqueries in SELECT clauses.
-
-::: warning
-Nested Expands following _to-many_ associations are not supported.
-:::
-
-
-
-#### Alias
-
-As the name of the struct element or association preceding the postfix projection appears in the result set,
-an alias can be provided for it:
-
-```sql
-SELECT from Authors {
-   name, address as residence { street, town as city { name, country }}
-};
-```
-
-The result set now is:
-```js
-results = [
-  {
-    name: 'Victor Hugo',
-    residence: {
-      street: '6 Place des Vosges', city: {
-        name: 'Paris',
-        country: 'France'
-      }
-    }
-  }, …
-]
-```
-
-
-#### Expressions
-
-Nested Expands can contain expressions.
-In addition, it's possible to define new structures that aren't present in the data source. In this case
-an alias is mandatory and is placed *behind* the `{…}`:
-
-```sql
-SELECT from Books {
-   title,
-   author { name, dateOfDeath - dateOfBirth as age },
-   { stock as number, stock * price as value } as stock
-};
-```
-
-The result set contains two structured elements:
-
-```js
-results = [
-  {
-    title: 'Wuthering Heights',
-    author: {
-      name: 'Emily Brontë',
-      age: 30
-    },
-    stock: {
-      number: 12,
-      value: 133.32
-    }
-  }, …
-]
-```
-
-### Nested Inlines <Beta /> {#nested-inlines}
-
-Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
-
-```sql
-SELECT from Authors {
-   name, address.{ street, town.{ name, country }}
-};
-```
-
-… is equivalent to:
-
-```sql
+Expanding to-many associations results in an array being returned for the substructure:
+```cds live
 SELECT from Authors {
   name,
-  address.street,
-  address.town.name,
-  address.town.country
-};
+  books {
+    title,
+    genre { name }
+  }
+} where name = 'Edgar Allen Poe'
 ```
 
-Nested Inlines can contain expressions:
+Similar to the select clause, concepts like the [smart `*` selector](#smart-star-selector) and the [excluding clause](#excluding-clause) are also available in a nested expand:
+```cds live
+SELECT from Books {
+  title,
+  author { * } excluding { dateOfDeath, placeOfDeath }
+}
+```
 
-```sql
+The postfix projection following the expand contains [select-items](#select-item) and can therefore also contain any [expression](./cxl#expr):
+
+```cds live
 SELECT from Books {
    title,
-   author.{
-     name, dateOfDeath - dateOfBirth as author_age,
-     address.town.{ concat(name, '/', country) as author_town }
+   author {
+     name,
+     dateOfDeath - dateOfBirth as age,
+     address.city { concat(name, '/', country) as name }
    }
 };
 ```
 
-The previous example is equivalent to the following:
+[Learn more about expand execution in CAP Node.js](../guides/databases/new-dbs#optimized-expands) {.learn-more}
 
-```sql
-SELECT from Books {
-   title,
-   author.name,
-   author.dateOfDeath - author.dateOfBirth as author_age,
-   concat(author.address.town.name, '/', author.address.town.country) as author_town
+[Learn more about expand execution in CAP Java](../java/working-with-cql/query-api#expand-optimization) {.learn-more}
+
+
+#### Alias
+
+Just as any other [select item](#select-item), the base of a nested expand and all of its elements can be aliased:
+
+```cds live
+SELECT from Authors {
+   name,
+   address as residence {
+    street as road,
+    city as town { name, country }
+  }
 };
 ```
 
 
-## Smart `*` Selector
+### Nested Inlines
 
-Within postfix projections, the `*` operator queries are handled slightly different than in plain SQL select clauses.
+![](./assets/cql/nested-inline.drawio.svg?raw)
 
-#### Example:
+> Using: [Path Expressions](./cxl#ref), [Postfix Projections](#postfix-projections)
+>
+> Used in: [Select Items](#select-item)
 
-```sql
-SELECT from Books { *, author.name as author }
+Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
+
+```cds live
+SELECT from Authors {
+   name, address.{ street, city.{ name, country }}
+};
 ```
 
-Queries like in our example, would result in duplicate element effects for `author` in SQL. In CQL, explicitly defined columns following an `*` replace equally named columns that have been inferred before.
+::: tip the above is equivalent to:
 
+```cds live
+SELECT from Authors {
+  name,
+  address.street,
+  address.city.name,
+  address.city.country
+};
+```
+:::
+
+Nested Inlines can contain expressions:
+
+```cds live
+SELECT from Books {
+   title,
+   author.{
+     name,
+     dateOfDeath - dateOfBirth as author_age,
+     address.city.{ concat(name, '/', country) as author_city }
+   }
+};
+```
+
+::: tip the above is equivalent to:
+
+```cds live
+SELECT from Books {
+   title,
+   author.name,
+   author.dateOfDeath - author.dateOfBirth as author_age,
+   concat(author.address.city.name, '/', author.address.city.country) as author_city
+};
+```
+:::
 
 ### Excluding Clause
 
-Use the `excluding` clause in combination with `SELECT *` to select all elements except for the ones listed in the exclude list.
+Use the `excluding` clause in combination with `SELECT *` to select all elements except the ones listed in the exclude list.
 
-```sql
-SELECT from Books { * } excluding { author }
+```cds live
+SELECT from Cities { * } excluding { ID }
 ```
 
-The effect is about **late materialization** of signatures and staying open to late extensions.
-For example, assume the following definitions:
+The effect enables **late materialization** of signatures, keeping them open to late extensions.
+Without extensions, the above query would return the same result as:
+
+```cds live
+SELECT from Cities { name, country}
+```
+
+Now assume a consumer extends `Cities` with a new element:
 
 ```cds
-entity Foo { foo : String; bar : String; car : String; }
-entity Bar as select from Foo excluding { bar };
-entity Boo as select from Foo { foo, car };
+extend Cities with { population : Integer };
 ```
 
-A `SELECT * from Bar` would result into the same as a query of `Boo`:
-
-```sql
-SELECT * from Bar --> { foo, car }
-SELECT * from Boo --> { foo, car }
-```
-
-Now, assume a consumer of that package extends the definitions as follows:
+With that, the first query (with the `excluding` clause) would automatically include the new `population` element in its result, while the second query would not:
 
 ```cds
-extend Foo with { boo : String; }
+// yields { name, country, population }
+SELECT from Cities { * } excluding { ID }
 ```
 
-With that, queries on `Bar` and `Boo` would return different results:
-
-```sql
-SELECT * from Bar --> { foo, car, boo }
-SELECT * from Boo --> { foo, car }
+```cds
+// yields { name, country }
+SELECT from Cities { name, country}
 ```
 
+## Where {#where}
 
-### In Nested Expands <Beta />
+The `where` clause filters the result set to only include entries satisfying a given condition. Any [CXL expression](./cxl#expr) evaluating to a boolean can be used as the condition.
 
-If the `*` selector is used following an association, it selects all elements of the association target.
-For example, the following queries are equivalent:
+### Simple Conditions
 
-```sql
-SELECT from Books { title, author { * } }
-```
-```sql
-SELECT from Books { title, author { ID, name, dateOfBirth, … } }
-```
+For example, to select only books that are currently in stock:
 
-
-A `*` selector following a struct element selects all elements of the structure and thus is equivalent to selecting the struct element itself.
-The following queries are all equivalent:
-```sql
-SELECT from Authors { name, struc { * } }
-SELECT from Authors { name, struc { elem1, elem2 } }
-SELECT from Authors { name, struc }
+```cds live
+SELECT from Books { title, stock, price }
+  where stock > 0
 ```
 
-The `excluding` clause can also be used for Nested Expands:
-```sql
-SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
+Multiple conditions can be combined with `and` and `or`:
+
+```cds live
+SELECT from Books { title, stock, price }
+  where stock > 0 and price < 20
 ```
 
 
-
-### In Nested Inlines <Beta />
-
-The expansion of `*` in Nested Inlines is analogous. The following queries are equivalent:
-
-```sql
-SELECT from Books { title, author.{ * } }
-SELECT from Books { title, author.{ ID, name, dateOfBirth, … } }
-```
-
-The `excluding` clause can also be used for Nested Inlines:
-```sql
-SELECT from Books { title, author.{ * } excluding { dateOfDeath, placeOfDeath } }
-```
-
-
-## Path Expressions
-
-Use path expressions to navigate along associations and/or struct elements in any of the SQL clauses as follows:
-
-In `from` clauses:
-```sql
-SELECT from Authors[name='Emily Brontë'].books;
-SELECT from Books:authors.towns;
-```
-
-In `select` clauses:
-```sql
-SELECT title, author.name from Books;
-SELECT *, author.address.town.name from Books;
-```
-
-In `where` clauses:
-```sql
-SELECT from Books where author.name='Emily Brontë'
-```
-
-The same is valid for `group by`, `having`, and `order by`.
-
-
-### Path Expressions in `from` Clauses
-
-Path expressions in from clauses allow to fetch only those entries from a target entity, which are associated to a parent entity. They unfold to _SEMI JOINS_ in plain SQL queries. For example, the previous mentioned queries would unfold to the following plain SQL counterparts:
-
-```sql
-SELECT * from Books WHERE EXISTS (
-  SELECT 1 from Authors WHERE Authors.ID = Books.author_ID
-    AND Authors.name='Emily Brontë'
-);
-```
-```sql
-SELECT * from Towns WHERE EXISTS (
-  SELECT 1 from Authors WHERE Authors.town_ID = Towns.ID AND EXISTS (
-    SELECT 1 from Books WHERE Books.author_ID = Authors.ID
-  )
-);
-```
-
-### Path Expressions in All Other Clauses
-
-Path expressions in all other clauses are very much like standard SQL's column expressions with table aliases as single prefixes. CQL essentially extends the standard behavior to paths with multiple prefixes, each resolving to a table alias from a corresponding `LEFT OUTER JOIN`. For example, the path expressions in the previous mentioned queries would unfold to the following plain SQL queries:
-
-```sql
--- plain SQL
-SELECT Books.title, author.name from Books
-LEFT JOIN Authors author ON author.ID = Books.author_ID;
-```
-```sql
--- plain SQL
-SELECT Books.*, author_address_town.name from Books
-LEFT JOIN Authors author ON author.ID = Books.author_ID
-LEFT JOIN Addresses author_address ON author_address.ID = author.address_ID
-LEFT JOIN Towns author_address_town ON author_address_town.ID = author_address.town_ID;
-```
-```sql
--- plain SQL
-SELECT Books.* from Books
-LEFT JOIN Authors author ON author.ID = Books.author_ID
-WHERE author.name='Emily Brontë'
-```
-
-::: tip
-All column references get qualified &rarr; in contrast to plain SQL joins there's no risk of ambiguous or conflicting column names.
-:::
-
-### With Infix Filters
-
-Append infix filters to associations in path expressions to narrow the resulting joins. For example:
-
-```sql
-SELECT books[genre='Mystery'].title from Authors
- WHERE name='Agatha Christie'
-```
-
-... unfolds to:
-```sql
-SELECT books.title from Authors
-LEFT JOIN Books books ON ( books.author_ID = Authors.ID )
-  AND ( books.genre = 'Mystery' )  //--> from Infix Filter
-WHERE Authors.name='Agatha Christie';
-```
-
-If an infix filter effectively reduces the cardinality of a *to-many* association to *one*, make this explicit with:
-
-```sql
-SELECT name, books[1: favorite=true].title from Authors
-```
 
 ### Exists Predicate
 
-Use a filtered path expression to test if any element of the associated collection matches the given filter:
+The `exists` predicate checks whether an associated set is non-empty. This is especially useful when filtering by to-many associations:
 
-```sql
-SELECT FROM Authors {name} WHERE EXISTS books[year = 2000]
+```cds live
+SELECT from Authors { name }
+  where exists books
 ```
 
-...unfolds to:
-```sql
-SELECT name FROM Authors
-WHERE EXISTS (
-        SELECT 1 FROM Books
-        WHERE Books.author_id = Authors.id
-            AND Books.year = 2000
-    )
+Combined with [infix filters](./cxl#infix-filters), you can further narrow down the associated entries:
+
+```cds live
+SELECT from Authors { name }
+  where exists books[genre.name = 'Fantasy']
 ```
 
-Exists predicates can be nested:
-```sql
-SELECT FROM Authors { name }
-    WHERE EXISTS books[year = 2000 and EXISTS pages[wordcount > 1000]]
+[Learn more about path expressions and infix filters](./cxl#infix-filters){.learn-more}
+
+### Pattern Matching
+
+There a different ways to check whether a string matches a certain pattern. There is the `like` operator for SQL-style pattern matching with `%` as wildcard. Alternatively, there are functions like `startswith`, `endswith`, and `contains` for more intuitive checks:
+
+```cds live
+SELECT from Authors { name }
+  where endswith(name, 'Poe')
 ```
 
-A path with several associations is rewritten as nested exists predicates. The previous query is equivalent to the following query.
-```sql
-SELECT FROM Authors { name }
-    WHERE EXISTS books[year = 2000].pages[wordcount > 1000]
+[Learn more about CAPs portable functions](../guides/databases/cap-level-dbs#portable-functions){.learn-more}
+
+### Range Checks
+
+Use `between` to check whether a value falls within a range:
+
+```cds live
+SELECT from Books { title, price }
+  where price between 10 and 30
 ```
 
-::: warning
-Paths *inside* the filter are not yet supported.
+### Null Checks
+
+Use `is null` and `is not null` to filter for missing or present values:
+
+```cds live
+SELECT from Authors { name, dateOfDeath }
+  where dateOfDeath is not null
+```
+
+
+:::tip Bivalent `==` and `!=` Operators
+CAP also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent-and-operators) section of the databases documentation.
+:::
+
+## Group by and having {#group-by}
+
+`group by` aggregates rows sharing the same values in the specified elements into summary rows. Aggregate functions like `count`, `sum`, `avg`, `min`, and `max` are then applied per group.
+
+### Grouping by a Single Element
+
+For example, to count how many books each author has written:
+
+```cds live
+SELECT from Books {
+  author.name as author,
+  count(*) as numberOfBooks
+} group by author.name
+```
+
+### Grouping by Multiple Elements
+
+You can group by more than one element. For example, to get the average price per author and genre:
+
+```cds live
+SELECT from Books {
+  author.name  as author,
+  genre.name   as genre,
+  avg(price)   as avgPrice
+} group by author.name, genre.name
+```
+
+### Filtering Groups with `having` {#having}
+
+The `having` clause filters groups after aggregation — analogous to `where` for individual rows.
+
+For example, to find authors with more than one book:
+
+```cds live
+SELECT from Books {
+  author.name  as author,
+  count(*)     as numberOfBooks
+} group by author.name
+  having count(*) > 1
+```
+
+Or to list genres whose average book price exceeds 15:
+
+```cds live
+SELECT from Books {
+  genre.name  as genre,
+  avg(price)  as avgPrice
+} group by genre.name
+  having avg(price) > 15
+```
+
+## Order by {#order-by}
+
+The `order by` clause sorts the result set by one or more [ordering terms](#ordering-term). The default order is ascending (`asc`); use `desc` to reverse it.
+
+### Ordering Term {#ordering-term}
+
+![](./assets/cql/ordering-term.drawio.svg?raw)
+
+
+
+For example, to list books ordered by price from lowest to highest:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+```
+
+Or from highest to lowest:
+
+```cds live
+SELECT from Books { title, price }
+  order by price desc
+```
+
+You can specify several ordering terms, separated by commas. The result is sorted by the first term, then by the second for ties, and so on:
+
+```cds live
+SELECT from Books { title, author.name as author, price }
+  order by author asc, price desc
+```
+
+:::info `null` handling
+
+By default, the position of `null` values in the sort order is database-specific. Use `nulls first` or `nulls last` to make this explicit:
+
+```cds live
+SELECT from Authors { name, dateOfDeath }
+  order by dateOfDeath nulls last
+```
+
 :::
 
 
-## Casts in CDL
+### Name Resolution — Using Select List Aliases
 
-There are two different constructs commonly called casts.
-SQL casts and CDL casts. The former produces SQL casts when rendered into SQL, whereas the latter does not:
+In `order by`, identifiers are resolved against the **select list first**, then against the query source. This means you can order by an alias defined in the projection:
 
-```sql
-SELECT cast (foo+1 as Decimal) as bar from Foo;  -- standard SQL
-SELECT from Foo { foo+1 as bar : Decimal };      -- CDL-style
+```cds live
+SELECT from Books {
+  title,
+  price * stock as totalValue
+} order by totalValue desc
 ```
-[Learn more about CDL type definitions](./cdl#types){.learn-more}
-
-Use SQL casts when you actually want a cast in SQL. CDL casts are useful for expressions such as `foo+1` as the compiler does not deduce types.
-For the OData backend, by specifying a type, the compiler will also assign the correct EDM type in the generated EDM(X) files.
 
 ::: tip
-You don't need a CDL cast if you already use a SQL cast. The compiler will extract the type from the SQL cast.
+This differs from `where` and `having`, where aliases from the select list are **not** in scope — those clauses only see the query source elements.
 :::
 
+### Ordering by Path Expressions
 
-## Use enums
+You can also order by elements reached via path expressions:
 
-In queries, you can use enum symbols instead of the respective literals in places
-where the corresponding type can be deduced:
+```cds live
+SELECT from Books { title, price }
+  order by author.name asc, title asc
+```
+
+## Limit and Offset
+
+`limit` restricts the number of rows returned. `offset` skips a given number of rows before returning results. Together they enable pagination.
+
+### Limiting Results {#limit}
+
+For example, to return only the three cheapest books:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+  limit 2
+```
+
+### Paginating with Offset {#offset}
+
+Use `offset` together with `limit` to retrieve a specific page of results. For example, to skip the first three books and return the next three:
+
+```cds live
+SELECT from Books { title, price }
+  order by price asc
+  limit 1 offset 3
+```
+
+::: tip Always combine `limit`/`offset` with `order by`
+Without an explicit `order by`, the order of rows is undefined and pagination results will be unpredictable.
+:::
+
+## Use Enums {#enums}
+
+CQL lets you reference [enum symbols](./cdl#enums) by name using the `#symbol` syntax.
+Each symbol is replaced with its underlying value at query-compilation time.
+
+Given:
 
 ```cds
-type Status : String enum { open; closed; in_progress; };
+type Status   : String  enum { open = 'O'; closed = 'C'; }
+type Priority : Integer enum { low = 1; medium = 2; high = 3; critical = 4; }
 
-entity OpenOrder as projection on Order {
-  
-  case status when #open        then 0
-              when #in_progress then 1 end
-    as status_int : Integer,
-
-  (status = #in_progress ? 'is in progress' : 'is open')
-    as status_txt : String,  
-    
-} where status = #open or status = #in_progress;
+entity Orders { key id : Integer; status : Status; priority : Priority; }
 ```
+
+### In Conditions
+
+Use `#symbol` wherever a literal value is expected:
+
+```cds
+SELECT from Orders { id } where status   = #open      // → 'O'
+SELECT from Orders { id } where priority = #high      // → 3
+SELECT from Orders { id } where priority != #critical // → != 4
+```
+
+### In `in` Lists
+
+```cds
+SELECT from Orders { id } where priority in (#low, #medium, #high) // → (1, 2, 3)
+SELECT from Orders { id } where status   in (#open, #closed)       // → ('O', 'C')
+```
+
+### In `case` Expressions
+
+Enum symbols work both as `when` discriminants and inside `when` conditions:
+
+```cds
+SELECT from Orders {
+  id,
+  case priority
+    when #low    then 'Low'
+    when #medium then 'Medium'
+    else 'High'
+  end as label
+}
+```
+
+```cds
+SELECT from Orders {
+  id,
+  case when priority = #low  then 'Low'
+       when priority = #high then 'High'
+       else 'Other'
+  end as label
+}
+```
+
+[Learn more about enum type definitions in CDL](./cdl#enums){.learn-more}
 
 
 ## Association Definitions
+
+:::tip
+associations definitions are only available for CDL views and projections
+:::
 
 ### Query-Local Mixins
 
