@@ -86,8 +86,8 @@ async function cdsQL(query) {
   const { result, formatted } = await sql.trace(() => cds.db.run(cqn));
   return [
     { value: result, kind: 'json', name: 'Result' },
+    { value: formatted, kind: 'sql', name: 'SQL'},
     { value: cqn, kind: 'json', name: 'CQN' },
-    { value: formatted, kind: 'sql', name: 'SQL'}
   ];
 }
 
