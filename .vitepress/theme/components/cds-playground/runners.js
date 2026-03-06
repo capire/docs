@@ -81,10 +81,12 @@ async function evalJS(code) {
 
 async function cdsQL(query) {
   const cds = await initialized;
+  const cqn = cds.ql(query);
 
-  const { result, formatted } = await sql.trace(() => cds.ql(query));
+  const { result, formatted } = await sql.trace(() => cds.db.run(cqn));
   return [
     { value: result, kind: 'json', name: 'Result' },
+    { value: cqn, kind: 'json', name: 'CQN' },
     { value: formatted, kind: 'sql', name: 'SQL'}
   ];
 }
