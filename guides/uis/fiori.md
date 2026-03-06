@@ -491,6 +491,7 @@ You can add your validation logic before the operation handler for either CRUD o
 
 <div id="query-data-draft-enabled" />
 
+
 ### Query Drafts Programmatically
 
 To access drafts in code, you can use the [`.drafts` reflection](../../node.js/cds-reflect#drafts).
@@ -499,6 +500,42 @@ SELECT.from(Books.drafts) //returns all drafts of the Books entity
 ```
 
 [Learn how to query drafts in Java.](../../java/fiori-drafts#draftservices){.learn-more}
+
+
+### Direct CRUD <Beta />
+
+With <Config>cds.fiori.direct_crud:true</Config>, creating or modifying active instances directly is possible without creating drafts.
+This comes in handy when technical services without a UI interact with each other.
+
+That is, you can then create and modify active instances directly:
+
+```http
+POST /Books
+
+{
+  "ID": 123
+}
+```
+
+```http
+PUT /Books(ID=123)
+
+{
+  "title": "How to be more active"
+}
+```
+
+For this, the default draft creation behavior by SAP Fiori Elements is redirected to a collection-bound action via annotation `@Common.DraftRoot.NewAction`.
+The thereby freed `POST` request to draft roots without specifying `IsActiveEntity` leads to the creation of an active instance (as it would without draft enablement).
+
+The feature is required to enable [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), allowing users to change multiple objects with the
+same editable properties without creating drafts for each row.
+
+:::warning Additional entry point
+Note that this feature creates additional entry points to your application. Custom handlers are triggered with delta
+payloads rather than the complete business object.
+:::
+
 
 ## Use Roles to Toggle Visibility of UI elements
 
