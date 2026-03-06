@@ -1,10 +1,10 @@
 ---
 synopsis: >
-  This guide shows how Spring Boot applications running without a CDS model can integrate themselves with service offerings of SAP BTP using different CAP plugins without the need to completely migrate to CAP Java.
+  This guide shows how Spring Boot applications that run without a CDS model can integrate with service offerings on SAP BTP by using CAP plugins without a full migration to CAP Java.
 status: released
 ---
 
-# Use CAP Plugins in Spring Boot Apps without a CDS Model
+# Use CAP Plugins in Spring Boot Applications without a CDS Model
 
 <style scoped>
   h1:before {
@@ -20,11 +20,11 @@ status: released
 
 {{ $frontmatter.synopsis }}
 
-One of the strengths of CAP Java is that it offers a [variety of plugins integrating with SAP BTP services](../plugins/) while keeping applications free of hard-coded dependencies to such services. In the CAP ecosystem, we call this approach [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most of those Calesi plugins expose themselves as a CAP service which also can be injected as a Spring Boot component. Take this together with the fact that the CAP runtime can run alongside a Spring Boot application without any CDS model and you have robust and proven service integration (via CAP plugins) with a growing set of BTP platform services.
+CAP Java offers a [variety of plugins that integrate with SAP BTP services](../plugins/) and keep your application free of hard-coded service dependencies. In the CAP ecosystem, this approach is called [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most Calesi plugins expose a CAP service that you can inject as a Spring Boot component. As the CAP runtime can run alongside a Spring Boot application without a CDS model, this lets you use proven service integration through CAP plugins with a growing set of SAP BTP services.
 
-In general, adding a CAP Java plugin to your existing Spring Boot application is just adding one or more dependencies to the application's `pom.xml` as well as adding configuration to the application.yaml (or other mechanisms for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html)). In the following sections we will discuss several examples on how to use the core CAP Java runtime and CAP plugin to integrate a Spring Boot application with different SAP BTP services.
+In most cases, you add a CAP Java plugin by adding one or more dependencies to your application `pom.xml` and by adding configuration to `application.yaml` or another mechanism for [Spring Boot configuration](https://docs.spring.io/spring-boot/reference/features/external-config.html). The following sections show examples of how to use the core CAP Java runtime and CAP plugins to integrate a Spring Boot application with different SAP BTP services.
 
-The basic prerequisite for all CAP Java plugins to be used within a Spring Boot application is to include 2 Maven dependencies. The first one is the core CAP Java runtime together with it's integration into the Spring Boot framework:
+To use any CAP Java plugin in a Spring Boot application, include two Maven dependencies. The first dependency is the core CAP Java runtime with its Spring Boot integration:
 
 ```xml
 <dependency>
@@ -34,7 +34,7 @@ The basic prerequisite for all CAP Java plugins to be used within a Spring Boot 
     <scope>runtime</scope>
 </dependency>
 ```
-With that, the CAP Java runtime is bootstrapped during the start of the Spring Boot application. In order to interact with CAP and it's plugins you need an additional dependency to the API artifact of CAP Java:
+This boots the CAP Java runtime when your Spring Boot application starts. To interact with CAP and its plugins, add an additional dependency for the CAP Java application programming interface artifact:
 
 ```xml
 <dependency>
@@ -45,31 +45,30 @@ With that, the CAP Java runtime is bootstrapped during the start of the Spring B
 
 ```
 
-Please also maintain a version property in your `<properties>` section:
+Also add a version property in your `<properties>` section:
 
 ```xml-vue
 <cds.services.version>{{ versions.java_services }}</cds.services.version>
 ```
 
 ## SAP Audit Log Service
-The CAP audit log support enables applications to write audit log messages for relevant operations. The audit log APIs and the local default implementation are already part of the basic dependencies you already included.
 
-The implementation for the SAP Audit Log service on BTP integrates with the CAP Java audit log APIs and can be added as an additional plugin. Read more about that in the [plugin's documentation](https://github.com/cap-java/cds-feature-auditlog-ng).
+CAP audit log support lets your application write audit log messages for relevant operations. The audit log application programming interfaces and the local default implementation are already part of the basic dependencies.
 
-For more information on how to use the audit log APIs in your application's code lease read our [Auditlog documentation](./auditlog).
+The SAP Audit Log service implementation for SAP BTP integrates with the CAP Java audit log application programming interfaces and is available as an additional plugin. Learn more in the [plugin documentation](https://github.com/cap-java/cds-feature-auditlog-ng).
+
+For details on how to use the audit log application programming interfaces in your application code, refer to the [Auditlog documentation](./auditlog).
 
 ## CAP Messaging
 
-The CAP framework offers an abstraction layer for messaging services. CAP applications can emit events and messages to a `MessagingService` regardless of the target messaging infrastructure. The local default implementation for messaging is already part of the above mentioned basic dependencies and uses the filesystem as the communication layer. Thus, no dedicated message broker is needed for local development.
+The CAP framework offers an abstraction layer for messaging services. CAP applications can emit events and messages to a `MessagingService` regardless of the target messaging infrastructure. The local default implementation for messaging is part of the basic dependencies mentioned in the previous sections and uses the file system as the communication layer. This means you do not need a dedicated message broker for local development.
 
-With the 2 dependencies included you just need to activate the file-based messaging in the application's configuration:
+With the two basic dependencies included, activate file-based messaging in the application configuration:
 
 ```yaml
 cds.messaging.services.messaging.kind: file-based-messaging
 ```
 
-Once this is done, you can the CAP messaging feature in your application. Please read our documentation on [Messaging](./messaging) for more details.
+After that, you can use the CAP messaging feature in your application. For details, refer to the [Messaging documentation](./messaging).
 
 <div id="alesi-cds-feature-ucl" />
-
-##
