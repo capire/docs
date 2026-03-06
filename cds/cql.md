@@ -101,27 +101,11 @@ The query source defines the data set a `SELECT` reads from. It can be a single 
 >
 > Used in: [Select](#select)
 
-### Using Entity Names
-
-We can select from the `Books` entity by refering to it's fully qualified name (namespace + entity name):
-
-```cds
-select from sap.capire.bookshop.Books
-```
-
-runtimes alternatively allow to refer to the entity by its short name:
-
-> TODO: java way of doing this
-
-```cds
-select from Books
-```
 
 ### Using Infix Filters
 
 We can apply infix filters to the query source to narrow down the set of entries read from the source. For example, the following query selects all books of the genre `Fantasy`:
 
-> TODO: enable this in db-service
 ```cds live
 select from Books[genre.name = 'Fantasy'] { title }
 ```
@@ -149,6 +133,17 @@ Selecting from `Authors` and checking for the existence of associated books:
 ```cds live
 SELECT from Authors { name } where exists books
 ```
+
+which is in turn equivalent to:
+
+```cds live
+SELECT from Authors as author { name }
+where exists (
+  SELECT from sap.capire.bookshop.Books
+  where author_ID = author.ID
+)
+```
+
 :::
 
 In the following example, we start with a filtered set of `Authors`.
@@ -300,8 +295,6 @@ SELECT from Books { title,
 
 ### Type Casts
 
-> TODO: sql style casts are broken
-> TODO: 
 
 ```cds live
 SELECT from Books {
@@ -532,12 +525,14 @@ SELECT from Authors { name }
 
 ### Pattern Matching
 
-Use the `like` operator to match string patterns, where `%` matches any sequence of characters:
+There a different ways to check whether a string matches a certain pattern. There is the `like` operator for SQL-style pattern matching with `%` as wildcard. Alternatively, there are functions like `startswith`, `endswith`, and `contains` for more intuitive checks:
 
 ```cds live
 SELECT from Authors { name }
-  where name like 'E%'
+  where endswith(name, 'Poe')
 ```
+
+[Learn more about CAPs portable functions](../guides/databases/cap-level-dbs#portable-functions){.learn-more}
 
 ### Range Checks
 
@@ -557,8 +552,10 @@ SELECT from Authors { name, dateOfDeath }
   where dateOfDeath is not null
 ```
 
-[Learn more about `null` handling](./cxl#operators-xpr){.learn-more}
 
+:::tip Bivalent `==` and `!=` Operators
+CAP also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent-and-operators) section of the databases documentation.
+:::
 
 ## Group by and having {#group-by}
 
