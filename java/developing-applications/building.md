@@ -374,6 +374,95 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 
 [Learn more about configuration and `cds.env`](../../node.js/cds-env){.learn-more}
 
+### Using profiles
+
+Using Maven profiles allows you to distinguish between builds for local development and production deployment. This flexibility is valuable in several scenarios:
+
+* Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
+* Creating database-specific artifacts for different target databases
+* Add Maven dependencies used only in production
+
+Production cds build build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
+
+Add a Maven production profile in srv/pom.xml to override cds.build’s default non‑production build and H2 SQL generation.
+
+::: code-group
+```xml [srv/pom.xml]
+<project>
+......
+ <build>
+  <finalName>${project.artifactId}</finalName>
+  <plugins>
+   <plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+......
+    <executions>
+......
+     <execution>
+      <id>cds.build</id>
+      <goals>
+       <goal>cds</goal>
+      </goals>
+      <configuration>
+       <commands>
+        <command>build --for java</command>
+        <command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
+       </commands>
+      </configuration>
+     </execution>
+......
+   </executions>
+   </plugin>
+  </plugins>
+ </build>
+......
+ <profiles>
+  <profile>
+   <id>production</id>
+   <build>
+    <plugins>
+     <plugin>
+      <groupId>com.sap.cds</groupId>
+      <artifactId>cds-maven-plugin</artifactId>
+      <executions>
+       <execution>
+        <id>cds.build</id>
+        <goals>
+         <goal>cds</goal>
+        </goals>
+        <configuration>
+         <commands>
+          <command>build --for java --production</command> <!-- -->
+         </commands>
+        </configuration>
+       </execution>
+      </executions>
+     </plugin>
+    </plugins>
+   </build>
+  </profile>
+ </profiles>
+</project>
+```
+:::
+
+Generally, you trigger the production build via mta.yaml. To activate the production profile, include the profile parameter (for example, `-P production`) as part of the build invocation:
+
+::: code-group
+```yaml [mta.yaml]
+  - name: bookstore-srv
+    type: java
+    path: bookstore/srv
+    ...
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode # [!code --]
+        - mvn clean package -DskipTests=true --batch-mode -P production # [!code ++]
+      build-result: target/*-exec.jar
+```
+:::
 
 ## Code Generation for Typed Access {#codegen-config}
 
