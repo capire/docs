@@ -436,6 +436,71 @@ public class ChangeTrackingHandler implements EventHandler {
 
 You can query the change log entries via CQN statements, as usual.
 
+## Tips and Tricks
+
+### Advanced Identifiers for Associated Entities
+
+By default, the identifier is read from the association when the feature captures images of the data. 
+Additional joins might be expensive or impossible under some circumstances.
+
+:::warning Configuration change required! 
+Enable [optimization for path expressions](/releases/2025/aug25#optimized-path-expressions).
+:::
+
+Let's take the following model as an example:
+
+```cds
+entity User {
+  key ID : UUID;
+  ...
+}
+
+entity Entity {
+  key ID   : UUID;
+      user : Association to User;
+}
+```
+
+Let's assume that `User` is impossible to join with standard identifier or requires identifier depending on the context of the user who reads the change log.
+
+You model the association like this: 
+
+```cds
+entity Entity {
+  key ID   : UUID;
+      user : Association to User @changelog: [user.ID]; // [!code focus]
+}
+```
+
+The change log will contain one entry for the field `user` just like the other associations with [human-readable values](#human-readable-values-for-associations), but the identifier will be equivalent to the its primary key.
+
+You need a custom handler to fetch own custom identifier. 
+
+Below is the sketch for the handler to adapt the change log after read: 
+
+```java
+@Component
+@ServiceName(CatalogService_.CDS_NAME)
+class ChangeLogHandler implements EventHandler {
+
+  @After(event = CqnService.EVENT_READ)
+  //NB: Handler is executed before the standard conversion of changelog
+  @HandlerOrder(HandlerOrder.EARLY + HandlerOrder.EARLY)
+  void enhance(List<EntityChanges> result) {
+    result.stream().map(l -> l.getChange()).forEach(change -> {
+      if (change.getAttribute().equals(Entity.USER)) {
+        // Use either path or existing values to find out the primary key of the user
+        // and do your own conversion.
+        change.setValueChangedFrom("...");
+        change.setValueChangedTo("...");
+      }
+    });
+  }
+}
+```
+
+Always consider performance implications with cases like this. The sequential read always needs proper batching and caching, otherwise you loose the performance advantage.
+
 ## Things to Consider when Using Change Tracking
 
 - Consider the storage costs of the change log. The change log can grow very fast and can consume a lot of space
