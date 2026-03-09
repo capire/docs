@@ -1455,14 +1455,14 @@ If you set `contextAbsoluteUrl` to something truthy that doesn't match `http(s):
 
 We encourage you to stay with the default relative format, if possible, as it's proxy safe.
 
-### Parallel Processing of Atomicity Groups in Node.js Apps { #parallel-batch}
+### Parallel Processing of Atomicity Groups in Node.js Apps
 
 By default, atomicity groups in an OData `$batch` request are processed sequentially.
 In some specific scenarios, such as custom overview pages with multiple data sources, this may result in high roundtrip times.
 
 Hence, for `$batch` requests that exclusively contain `GET` requests, you can enable parallel processing of atomicity groups to improve throughput.
 
-<Config>cds.odata.max_batch_parallelization</Config> specifies the maximum number of atomicity groups processed concurrently.
+<Config keyOnly>cds.odata.max_batch_parallelization = 1</Config> specifies the maximum number of atomicity groups processed concurrently.
 The default is `1`, which means sequential processing.
 
 ::: warning OData Specification Violation
