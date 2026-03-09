@@ -1,5 +1,5 @@
 ---
-synopsis: >
+synopsis:
   This chapter contains comprehensive guides that help you to work through migrations such as from CAP Java 1.x to CAP Java 2.x.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -7,6 +7,9 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 <script setup>
   import Cds4j from './components/Cds4jLink.vue'
   import CdsSrv from './components/CdsServicesLink.vue'
+  import { useData } from 'vitepress'
+  const { theme } = useData()
+  const { versions } = theme.value.capire
 </script>
 
 
@@ -22,7 +25,31 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 [[toc]]
 
-## CAP Java 4.9 to CAP Java 5.0 { #four-to-five }
+## Automatic CAP Java Migrations with OpenRewrite
+
+For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
+
+### Running OpenRewrite Recipes
+
+As migration is a one-time operation, run the OpenRewrite `recipes` as a command through Maven. Take this call as an example:
+
+
+```bash-vue
+mvn org.openrewrite.maven:rewrite-maven-plugin:run \
+  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.MigrateStatements \
+  -DskipMavenParsing=true
+```
+
+Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+
+### Currently Released CAP Java Migrations
+
+|Name    |Description|Available since|
+|--------|-----------|---------------|
+|[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+
+## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
 ### Spring Boot 4
 
@@ -1426,3 +1453,4 @@ After rebuilding and restarting your application, your Application Services are 
 <!-- TODO: Move this to "Development" section -->
 
 <span id="afterenablingodata" />
+
