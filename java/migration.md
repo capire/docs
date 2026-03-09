@@ -31,11 +31,8 @@ For any Java related changes of the CAP Java APIs we try to make the transition 
 
 ### Running OpenRewrite Recipes
 
-You can execute these recipes through Maven as a one-shot operation. Take this call as an example:
+As migration is a one-time operation, run the OpenRewrite `recipes` as a command through Maven. Take this call as an example:
 
-### Execution of OpenRewrite Recipes with Maven
-
-Alternatively, you can run these recipes through Maven. Take this call as an example:
 
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
