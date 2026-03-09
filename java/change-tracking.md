@@ -461,7 +461,7 @@ entity Entity {
 }
 ```
 
-Let's assume that `User` is impossible to join with standard identifier or requires identifier depending on the context of the user who reads the change log.
+Let's assume that `User` is impossible to join with the standard identifier or requires an identifier depending on the context of the user who reads the change log.
 
 You model the association like this: 
 
@@ -472,11 +472,11 @@ entity Entity {
 }
 ```
 
-The change log will contain one entry for the field `user` just like the other associations with [human-readable values](#human-readable-values-for-associations), but the identifier will be equivalent to the its primary key.
+The change log will contain one entry for the field `user` just like the other associations with [human-readable values](#human-readable-values-for-associations), but the identifier will be its primary key.
 
-You need a custom handler to fetch own custom identifier. 
+You need a custom handler to fetch your own custom identifier. 
 
-Below is the sketch for the handler to adapt the change log after read: 
+Here's the sketch for the handler to adapt the change log after read: 
 
 ```java
 @Component
@@ -499,7 +499,7 @@ class ChangeLogHandler implements EventHandler {
 }
 ```
 
-Always consider performance implications with cases like this. The sequential read always needs proper batching and caching, otherwise you loose the performance advantage.
+Always consider performance implications with cases like this. The sequential read always needs proper batching and caching, otherwise you lose the performance advantage.
 
 ## Things to Consider when Using Change Tracking
 
