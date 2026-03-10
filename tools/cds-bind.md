@@ -508,7 +508,7 @@ Learn how to [connect to remote services locally](../guides/services/consuming-s
 
 ### Authentication and Authorization
 
-Learn how to do hybrid testing using the XSUAA or IAS service in the [CAP Node.js authentication documentation](../node.js/authentication#hybrid-setup).
+Learn how to do hybrid testing using the XSUAA or IAS + AMS service(s) in the [CAP Node.js authentication documentation](../node.js/authentication#hybrid-setup).
 
 ### Integration Tests
 
