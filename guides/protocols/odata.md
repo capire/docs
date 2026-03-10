@@ -1456,6 +1456,7 @@ If you set `contextAbsoluteUrl` to something truthy that doesn't match `http(s):
 We encourage you to stay with the default relative format, if possible, as it's proxy safe.
 
 ### Parallel Processing of Atomicity Groups in Node.js Apps
+###### Atomicity Groups
 
 By default, atomicity groups in an OData `$batch` request are processed sequentially.
 In some specific scenarios, such as custom overview pages with multiple data sources, this may result in high roundtrip times.
