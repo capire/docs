@@ -764,7 +764,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 
 #### Start Hybrid Testing
  
-1. Bind you local application to the Identity Service Instance:
+1. Bind your local application to the Identity Service Instance:
 
     ```sh
     cds bind -2 bookshop-ias
