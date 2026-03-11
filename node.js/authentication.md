@@ -284,7 +284,7 @@ npm add @sap/xssec
 ```
 :::
 
-[Learn more about testing JWT-based authentication in **XSUAA in Hybrid Setup**.](#xsuaa-setup){.learn-more}
+[Learn more about testing JWT-based authentication in **XSUAA in Hybrid Setup**.](#with-ias){.learn-more}
 
 
 ### XSUAA-based Authentication { #xsuaa }
@@ -308,7 +308,7 @@ npm add @sap/xssec
 ```
 :::
 
-[See **XSUAA in Hybrid Setup** below for additional information of how to test this](#xsuaa-setup){.learn-more}
+[See **XSUAA in Hybrid Setup** below for additional information of how to test this](#with-ias){.learn-more}
 
 
 ### IAS-based Authentication { #ias }
@@ -429,7 +429,7 @@ export default function custom_auth(req: Req, res: Response, next: NextFunction)
 }
 ```
 
-[If you want to customize the user ID, please also have a look at this example.](cds-serve#customization-of-cds-context-user){.learn-more}
+[Learn more about customizing the user ID in this example.](cds-serve#customization-of-cds-context-user){.learn-more}
 
 
 ## Authentication in Production
@@ -466,36 +466,38 @@ require('@sap/xssec').Token.decodeCache = false
 
 ## Authentication in Hybrid Setup {#hybrid-setup}
 
-### with XSUAA {#xsuaa-setup}
-
-#### Prepare Local Environment
+### with XSUAA
 
 The following steps assume you've set up the [**Cloud Foundry Command Line Interface**](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/856119883b8c4c97b6a766cc6a09b48c.html).
 
 1. Log in to Cloud Foundry:
-```sh
-cf l -a <api-endpoint>
-```
-If you don't know the API endpoint, have a look at section [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
+    ```sh
+    cf l -a <api-endpoint>
+    ```
+    If you don't know the API endpoint, refer to [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
 
 2. Go to the project you have created in [Getting started in a Nutshell](../get-started/bookshop).
+ 
+#### Configure the Application
 
-3. Configure your app for XSUAA-based authentication if not done yet:
+1. Configure your app for XSUAA-based authentication if not done yet:
+   
     ```sh
     cds add xsuaa --for hybrid
     ```
-  This command creates the XSUAA configuration file `xs-security.json` and adds the service and required dependencies to your `package.json` file.
+    This command creates the XSUAA configuration file `xs-security.json` and adds the service and required dependencies to your `package.json` file.
 
-4. Make sure `xsappname` is configured and `tenant-mode` is set to `dedicated` in `xs-security.json` file:
-```json
-{
-  "xsappname": "bookshop-hybrid",
-  "tenant-mode": "dedicated",
-  ...
-  }
-```
+2. Make sure `xsappname` is configured and `tenant-mode` is set to `dedicated` in `xs-security.json` file:
 
-5. Configure the redirect URI:
+    ```json
+    {
+      "xsappname": "bookshop-hybrid",
+      "tenant-mode": "dedicated",
+      ...
+      }
+    ```
+
+3. Configure the redirect URI:
 
     Add the following OAuth configuration to the `xs-security.json` file:
 
@@ -507,7 +509,7 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
     }
     ```
 
-6. Create an XSUAA service instance with this configuration:
+4. Create an XSUAA service instance with this configuration:
 
     ```sh
     cf create-service xsuaa application bookshop-uaa -c xs-security.json
@@ -519,7 +521,6 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
     This step is necessary for locally running apps and for apps deployed on Cloud Foundry.
     :::
 
-#### Configure the Application
 
 1. Create a service key:
 
@@ -530,7 +531,7 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
     This lets you gain access to the XSUAA credentials from your local application.
 
 
-2. Bind to the new service key:
+1. Bind to the new service key:
 
     ```sh
     cds bind -2 bookshop-uaa
@@ -555,11 +556,11 @@ If you don't know the API endpoint, have a look at section [Regions and API Endp
 
     >In that case you need to add the environment variable `cds_requires_auth_kind=xsuaa` to the run configuration.
 
-3. Check authentication configuration:
-```sh
-cds env list requires.auth --resolve-bindings --profile hybrid
-```
-This prints the full `auth` configuration including the credentials.
+1. Check authentication configuration:
+    ```sh
+    cds env list requires.auth --resolve-bindings --profile hybrid
+    ```
+    This prints the full `auth` configuration including the credentials.
 
 
 #### Set Up the Roles for the Application { #auth-in-cockpit}
@@ -627,8 +628,8 @@ The resulting JWT token is sent to the application where it's used to enforce au
     ```
 
     > If you are using BAS Run Configurations, you need to configure `cds watch` with profile `hybrid`:
-    > 1. Right click on your run configuration
-    > 2. Choose *Show in File*
+    > 1. Open the context menu for your run configuration.
+    > 2. Choose *Show in File*.
     > 3. Change the command `args`:
     > ```json
     > "args": [
@@ -674,17 +675,17 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 3. Retry
 
 
-### with IAS {#ias-setup}
+### with IAS
 
 #### Configure the Application
 
-1. If there is no deployment descriptor yet, execute in the project root folder
+1. Add a deployment descriptor, if there is none in the root of your project:
 
     ```sh
     cds add mta
     ```
 
-2. Enable IAS authentication for your application by adding and installing the `ams` plugin. For more information see [Adding AMS Support](../guides/security/cap-users#adding-ams-support-1) and [Adding IAS](../guides/security/authentication#adding-ias)
+2. Enable IAS authentication for your application by adding and installing the `ams` plugin:
 
     ```sh
     cds add ams
@@ -693,16 +694,20 @@ The login fails pointing to the correct OAuth configuration URL that is expected
   
     This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
 
+    Learn more about [**Adding AMS Support**](../guides/security/cap-users#adding-ams-support) and [**Adding IAS**](../guides/security/authentication#adding-ias).{.learn-more}
 
-3. Generate roles and policies with AMS.
-  To compile the cds annotations to dcl files execute:
+
+3. Generate roles and policies with AMS:
 
     ```sh
     cds build --for ams
     ```
-    For more information see [Prepare CDS Model](../guides/security/cap-users#prepare-cds-model)
 
-4. Add App Router for fetching the IAS token.
+    This compiles the CDS annotations into DCL files.
+
+    [Learn more about Prepare CDS Model](../guides/security/cap-users#prepare-cds-model).{.learn-more}
+
+4. Add App Router for fetching the IAS token:
 
     ```sh
     cds add approuter
@@ -712,7 +717,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 
     In _mta.yaml_, this entry should now be present:
 
-    ```sh
+    ```yaml
     - name: bookshop-ias
         [...]
         parameters:
@@ -741,28 +746,31 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```sh
     cf l -a <api-endpoint>
     ```
-    If you don't know the API endpoint, have a look at section [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
+    If you don't know the API endpoint, refer to [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
  
-2. Pack and deploy the application with
+2. Pack and deploy the application:
 
     ```sh
     cds up
     ```
 
-#### Assign policies in the Administrative Console
+#### Assign Policies in the Administrative Console
 
-1. Log in to your IAS Tenant and go to `Applications & Resources`
+1. Log in to your Administrative Console for IAS and go to `Applications & Resources`.
+   
+   [Learn more about the Administrative Console for IAS.](/@external/guides/security/authentication#ias-admin){.learn-more}
 
-2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment)
+2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment).
 
-#### Start hybrid testing
+#### Start Hybrid Testing
  
-1. Bind local application to the Identity Service Instance
+1. Bind you local application to the Identity Service Instance:
 
     ```sh
     cds bind -2 bookshop-ias
     ```
-    ::: details This will generate .cdsrc-private.json
+
+    ::: details This generates the _.cdsrc-private.json_
     ```json .cdsrc-private.json
     {
       "requires": {
@@ -814,6 +822,3 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```
 
 4. After the App Router and CAP application are started, log in at [http://localhost:5000](http://localhost:5000) and verify that the routes are protected as expected.
-
-
-  
