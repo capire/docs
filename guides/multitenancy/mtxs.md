@@ -1296,6 +1296,12 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 Requests are implicitly asynchronous when `status_callback` is set.
 :::
 
+##### Passing tenant-specific deployment parameters
+
+Using the `"_"` section of the payload, you can pass deployment parameters for an individual tenant. The syntax is identical with the [static deployment configuration of `cds.xt.DeploymentService`](#deployment-config).
+
+In most cases, the requests are received from a third party, so the deployment parameters need to be added in [a handler implementation](#adding-custom-lifecycle-event-handlers) for `cds.xt.SaasProvisioningService`.
+
 ##### Example Usage
 
 <br>
@@ -1436,7 +1442,12 @@ Content-Type: application/json
 {
   "subscribedTenantId": "t1",
   "subscribedSubdomain": "subdomain1",
-  "eventType": "CREATE"
+  "eventType": "CREATE",
+  "_": {
+    "hdi": {
+      ...
+    }
+  }
 }
 ```
 

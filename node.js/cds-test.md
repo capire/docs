@@ -21,7 +21,7 @@ npm add -D @cap-js/cds-test
 ```
 
 ::: tip Examples
-Find examples in [*capire/samples*](https://github.com/capire/samples/tree/main/tests) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
+Find examples in [*capire/samples*](https://github.com/capire/bookstore/tree/main/test) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
 :::
 
 
@@ -131,7 +131,7 @@ describe('my test suite', ()=>{
 
 You can use Mocha-style `before/after` or Jest-style `beforeAll/afterAll` in your tests, as well as the common `describe, test, it` methods. In addition, to be portable, you should use the [Chai Assertion Library's](#chai)  variant of `expect`.
 
-::: tip [All tests in *cap/samples*](https://github.com/capire/samples/tree/main/tests) are written in that portable way. <br>
+::: tip [All tests in *cap/samples*](https://github.com/capire/bookstore/tree/main/test) are written in that portable way. <br>
 Run them with `npm run jest` or with `npm run mocha`.
 :::
 

@@ -101,7 +101,7 @@ Here are the different types of alerts or callouts you may encounter:
 
 The _capire_ samples at https://github.com/capire are the official and curated collection of samples for the SAP Cloud Application Programming Model, maintained by the CAP team.
 
-[![](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
+[![Screenshot of the capire GitHub organization page with sample repositories](assets/learn-more/capire-samples.png){style="width: 90%;"}](https://github.com/capire)
 
 
 
@@ -143,12 +143,13 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 - [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
 - [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
+- [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5) (with Daniel Schlachter)
 - [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
 - [Good to know: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9)
-- [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5)
 - [How things work: CAP Node.js plugins](https://www.youtube.com/playlist?list=PL6RpkC85SLQDwzbi9eVuMStRlpVMBqidQ)
 - [Hands-on SAP Dev general live stream series](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0)
+- [Did you know?](https://qmacro.org/blog/posts/2026/02/06/series-of-did-you-know-videos/) featuring CAP topics
 
 ### Blog post series
 
@@ -159,10 +160,11 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 ### Selected individual articles
 
-- [A deep dive into OData and CDS annotations](https://qmacro.org/blog/posts/2023/03/10/a-deep-dive-into-odata-and-cds-annotations/)
+- [Shift left with CAP](https://qmacro.org/blog/posts/2026/02/09/shift-left-with-cap/)
 - [Five reasons to use CAP](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/)
 - [Flattening the hierarchy with mixins](https://qmacro.org/blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/)
 - [A reCAP intro to the cds REPL](https://qmacro.org/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)
+- [A deep dive into OData and CDS annotations](https://qmacro.org/blog/posts/2023/03/10/a-deep-dive-into-odata-and-cds-annotations/)
 - [Using @capire modules from GitHub Packages](https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/)
 - [Modelling contained-in relationships with compositions in CDS](https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/)
 - [A simple exploration of status transition flows in CAP](https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/)

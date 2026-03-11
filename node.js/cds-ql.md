@@ -938,6 +938,12 @@ INSERT.into (Books) .columns (
    [ 252, 'Eleonora', 150, 234 ]
 )
 ```
+
+::: tip In Essence:
+
+[Managed fields](../guides/domain/index#managed-data) and [UUIDs](../guides/domain/index#prefer-uuids-for-keys) are automatically filled with `INSERT.entries()`, but not when using `INSERT.columns().values()` or `INSERT.columns().rows()`.
+:::
+
 ### from() {.method #from}
 
 

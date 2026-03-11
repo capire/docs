@@ -56,7 +56,7 @@ npm install
 
 ## Mocked Out of the Box
 
-Within the context of application service integration and microservice architecture, we'd need to mock remote services in a consuming app to reach inner loop. CAP greatly does that for us, based on: 
+Within the context of application service integration and microservice architecture, we'd need to mock remote services in a consuming app to reach an inner loop. CAP handles this automatically for us, based on: 
 
 - A CDS service definition is all we need to serve a fully functional OData service
 - APIs imported via `cds export` and `cds import` are CDS service definition
@@ -138,11 +138,11 @@ We can also use `cds mock` to mock remote services in separate processes, which 
 
 > [!tip] Decoupled Development → Contracts First
 >
-> Local inner loops allow promote decoupled development of separate parts / applications / microservices in larger solution projects. Each team can focus on their local domain and functionality with the required remote services mocked for them based on imported APIs. These APIs are the contracts between the individual teams.
+> Local inner loops allow promoting decoupled development of separate parts / applications / microservices in larger solution projects. Each team can focus on their local domain and functionality with the required remote services mocked for them based on imported APIs. These APIs are the contracts between the individual teams.
 
 > [!tip] Fast-track Inner-Loop Development → Spawning Parallel Tracks
 >
-> The mocked-out-of-the-box capabilities of CAP, with remoted services mocked in-process and a shared in-memory database, allows us to greatly speed up development and time to market. For real remote operations there is additional investment required, of course. But the agnostic nature of CAP-level Service Integration also allows you to spawn two working tracks running in parallel: One team to focus on domain and functionality, and another one to work on the integration logic under the hood.
+> The mocked-out-of-the-box capabilities of CAP, with remote services mocked in-process and a shared in-memory database, allows us to greatly speed up development and time to market. For real remote operations there is additional investment required, of course. But the agnostic nature of CAP-level Service Integration also allows you to spawn two working tracks running in parallel: One team to focus on domain and functionality, and another one to work on the integration logic under the hood.
 
 
 
@@ -323,7 +323,7 @@ cds.User.default = cds.User.privileged
 
 ## Using `npm` Workspaces
 
-So far we assumed we mainly wirked within the *xtravels* project, and we consumed thte APIs from xflights via `npm publish` / `npm install` . There might be situations where we would want to shortcut this process. For example, we might want to consume a very latest version of the xflights API, which is not yet published to the *npm* registry. Or we might even want to work on both projects simultaneously, and test our latest changes to *xflights* in *xtravels* in close loops. 
+So far we assumed we mainly worked within the *xtravels* project, and we consumed the API from xflights via `npm publish` / `npm install`. There might be situations where we would want to shortcut this process. For example, we might want to consume a very latest version of the xflights API, which is not yet published to the *npm* registry. Or we might even want to work on both projects simultaneously, and test our latest changes to *xflights* in *xtravels* in close loops. 
 
 So, in essence, instead of exercising a workflow like that again and again:
 
@@ -338,7 +338,7 @@ git clone https://github.com/capire/xtravels
 echo '{"workspaces":["xflights","xtravels"]}' > package.json
 ```
 
-Add a link to the local `@capire/xflights-data` API package, enclosed with the cloned xflights sources:
+Add a link to the local `@capire/xflights-data` API package, included with the cloned xflights sources:
 
 ```shell
 npm add ./xflights/apis/data-service
@@ -397,7 +397,7 @@ The usage of *npm workspaces* technique as described above streamlined our workf
 - Before: ( *develop* → *export* → *publish* ) → *npmjs.com* → ( *update* → *consume* )
 - After: ( *develop* → *export* ) → ( *consume* )
 
-We can even more streamline that by eliminating the export step as follows...
+We can streamline that even more by eliminating the export step as follows...
 
 Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
 
@@ -416,7 +416,7 @@ Add a `package.json` file in there with that content:
 }
 ```
 
-And an `index.cds` file with that content:
+And an `index.cds` file with this content:
 
 ```cds
 using from '@capire/xflights/srv/data-service';
@@ -424,7 +424,7 @@ using from '@capire/xflights/srv/data-service';
 
 <details> <summary> Using the shell's "here document" technique </summary>
 
-  You can also create those two files from the command line as follows:
+  You can also create these two files from the command line as follows:
   ```shell
   cat > xflights-api-shortcut/package.json << EOF
   {
