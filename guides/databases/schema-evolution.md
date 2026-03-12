@@ -195,7 +195,7 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how you deploy database changes. 
 
 ::: tip Liquibase license change
-Please be aware that Liquibase [changed it's license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) since the 5.0 release. You need to check if this is compatible with your application.
+Please be aware that Liquibase [changed it's license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
 :::
 
 Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).
