@@ -942,6 +942,35 @@ import static com.sap.cds.ql.cqn.CqnLock.Mode.SHARED;
 Select.from("bookshop.Books").byId(1).lock(SHARED);
 ```
 
+#### Wait Strategies
+
+By default, if the selected rows are already locked by another transaction, the query waits until the database's predefined timeout expires and then throws a `CdsLockTimeoutException`. You can control this behavior using the `lock(mode, waitStrategy)` method with a `CqnLock.Wait` strategy:
+
+- `NOWAIT` — fail immediately if the rows are already locked:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.NOWAIT;
+
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, NOWAIT);
+  ```
+  If any target row is locked, a `CdsLockTimeoutException` is thrown without waiting.
+
+- `SKIP LOCKED` — skip locked rows and return only unlocked rows:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.SKIP_LOCKED;
+
+  Select.from("bookshop.Books")
+      .where(b -> b.get("stock").gt(0))
+      .lock(EXCLUSIVE, SKIP_LOCKED);
+  ```
+
+  Rows that are currently locked by other transactions are silently excluded from the result. This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
+  
+#### Restrictions
+
 Not every entity exposed via a CDS entity can be locked with the `lock()` clause. To use the `lock()` clause, databases require that the target of such statements is represented by one of the following:
 - a single table
 - a simple view, so that the database can unambiguously identify which rows to lock
