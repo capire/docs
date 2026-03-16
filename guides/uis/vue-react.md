@@ -38,7 +38,7 @@ npm create vite@latest catalog -- --template react
 Now add a proxy to `app/catalog/vite.config.js`:
 
 ::: code-group
-```js [Vue.js] {2,5}
+```js [Vue.js] {6-10}
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
@@ -52,7 +52,7 @@ export default defineConfig({
 })
 
 ```
-```js [React] {2,5}
+```js [React] {6-10}
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
