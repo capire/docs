@@ -13,7 +13,7 @@ CAP is easily integrated with Vue.js, React, Svelte, or any other popular UI lib
 The example here is built on a minimal CAP project:
 
 ```sh
-cds init bookshop --nodejs --add tiny-sample && cd bookshop
+cds init bookshop --nodejs --add tiny-sample && code bookshop
 ```
 
 You can already start the CAP backend to watch for changes:
