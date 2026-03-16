@@ -49,11 +49,14 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
-## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
+## CAP Java 4.10 to CAP Java 5.0 (TBA) { #four-to-five }
 
 ### Spring Boot 4
 
-CAP Java 5 uses Spring Boot 4 as underlying framework. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0.
+CAP Java 5 uses Spring Boot 4 as underlying framework. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. A CAP Java application is typically only affected by Spring Boot 4 incompatibilities if it uses native Spring APIs.
+
+### Spring Security
+CAP Java 4 is running with Spring Boot 3.5, which uses Spring Security 6.5. Spring Boot 4 uses Spring Security 7. In case you defined custom security configurations you need to follow the guides, which describe the migration from 6.5 to 7.0. It is also required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.
 
 ### Minimum Versions
 
@@ -62,7 +65,7 @@ CAP Java 4.0 increased some minimum required versions:
 | Dependency | Minimum Version |
 | --- | --- |
 | Spring Boot | 4.0 |
-| XSUAA | TBD |
+| XSUAA (BTP Security Library) | 4.0.0 |
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
