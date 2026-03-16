@@ -456,17 +456,17 @@ cds.on('compile.to.edmx', ...)
 
 ### compile.for.runtime {.event}
 
-A one-time event, emitted before the model is compiled for usage in Node.js or Java runtime.
+Emitted every time before the model is compiled for usage in Node.js or Java runtime.
 This is the right place to, for example, add custom elements required at runtime.
 
 
 ### compile.to.dbx {.event}
 
-A one-time event, emitted before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
+Emitted every time before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
 This is the right place to, for example, add custom elements required in your persistence.
 
 
 ### compile.to.edmx {.event}
 
-A one-time event, emitted immediately before the model is compiled to edmx.
+Emitted every time before the model is compiled to edmx.
 This is the right place to add custom transformations to the model, for example, to add custom Fiori annotations.

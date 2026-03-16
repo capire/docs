@@ -4,9 +4,12 @@ label: CAP Users
 synopsis: >
   This guide introduces CAP user abstraction and role assignments.
 status: released
+impl-variants: true
 ---
 
 <script setup>
+  import { useData } from 'vitepress'
+  const { versions } = useData().theme.value.capire
   import { h } from 'vue'
   const Y  =  () => h('span', { class: 'y',   title: 'Available' },      ['✓']   )
   const X  =  () => h('span', { class: 'x',   title: 'Available' },      ['✗']   )
@@ -257,7 +260,7 @@ Refrain from activating user tracing in productive systems.
 
 ## Role Assignment with AMS { #roles-assignment-ams }
 
-CAP applications that use the [Identity Authentication Service (IAS)](https://help.sap.com/docs/identity-authentication) for authentication can leverage the [Authorization Management Service (AMS)](https://help.sap.com/docs/cloud-identity-services/authorization-management-service) to provide comprehensive authorization. Similar to IAS, AMS is part of the [SAP Cloud Identity Services (SCI)](https://help.sap.com/docs/cloud-identity-services).
+CAP applications that use the [Identity Authentication Service (IAS)](https://help.sap.com/docs/identity-authentication) for authentication can leverage the [Authorization Management Service (AMS)](https://sap.github.io/cloud-identity-developer-guide/Authorization/GettingStarted.html) to provide comprehensive authorization. Similar to IAS, AMS is part of the [SAP Cloud Identity Services (SCI)](https://help.sap.com/docs/cloud-identity-services).
 
 Why is AMS required? Unlike tokens issued by XSUAA, IAS tokens only contain static user information and cannot directly provide CAP roles.
 AMS acts as a central service to define access policies that include CAP roles and additional filter criteria for instance-based authorizations in CAP applications.
@@ -295,9 +298,9 @@ If required, it also runs the new `cds add ias` command to configure the project
 ::: details See dependencies added
 
 ::: code-group
-```xml [pom.xml]
+```xml-vue [pom.xml]
 <properties>
-  <sap.cloud.security.ams.version>3.7.0</sap.cloud.security.ams.version> <!-- [!code ++] -->
+  <sap.cloud.security.ams.version>{{versions.cloud_sec_ams}}</sap.cloud.security.ams.version> <!-- [!code ++] -->
 </properties>
 ```
 

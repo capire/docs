@@ -31,8 +31,6 @@ To use `cds` from your command line, install package  `@sap/cds-dk` globally:
 npm i -g @sap/cds-dk
 ```
 
-<ImplVariantsHint />
-
 [[toc]]
 
 ## cds version
