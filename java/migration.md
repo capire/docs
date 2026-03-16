@@ -65,7 +65,7 @@ CAP Java 4.0 increased some minimum required versions:
 | Dependency | Minimum Version |
 | --- | --- |
 | Spring Boot | 4.0 |
-| XSUAA (BTP Security Library) | 4.0.0 |
+| XSUAA (BTP Security Library) | ^4 |
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
