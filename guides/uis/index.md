@@ -18,5 +18,8 @@ On top of that, there is out-of-the-box support for SAP Fiori elements, for exam
 [ SAP Fiori UIs ](fiori)
    :   This guide explains how to serve SAP Fiori UIs from CAP applications, including the usage of Fiori annotations and Fiori drafts.
 
+[ Vue.js + React.js ](vue-react)
+   :   This guide explains how to serve Vue.js or React UIs with a CAP backend.
+
 [ Analytics ](./analytics) <!-- UNRELEASED -->
    :   This guide explains how to serve analytical UIs from CAP applications using SAP Fiori elements for analytical applications. <!-- UNRELEASED -->
