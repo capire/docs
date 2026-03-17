@@ -6,7 +6,18 @@ status: released
 
 # Transactional Event Queues
 
+Persist events in the same database transaction as your business data. Process them asynchronously — with retries, ordering, and a dead letter queue.
+{.subtitle}
+
 {{ $frontmatter.synopsis }}
+{.abstract}
+
+> [!tip] Guiding Principles
+>
+> 1. **Transactional** — events are written to the database within the same transaction as your business data
+> 2. **Asynchronous** — a background runner dispatches events after commit, not during the request
+> 3. **Resilient** — failed events are retried with exponential backoff; unrecoverable ones land in a dead letter queue
+> 4. **Unified** — one mechanism covers four use cases: outbox, inbox, background tasks, and callbacks
 
 [[toc]]
 
@@ -15,10 +26,10 @@ status: released
 ## Motivation
 
 In distributed systems, things fail. A remote service may be temporarily unavailable, a network call may time out, or your process may crash right after committing a database transaction but before sending the follow-up message.
-These failures can leave your system in an inconsistent state — data is committed, but dependent side effects never happen.
+These failures leave your system in an inconsistent state — data is committed, but dependent side effects never happen.
 
 _Transactional Event Queues_ solve this by persisting events and tasks in a database table **within the same transaction** as your business data.
-After the transaction commits, a background process picks up the queued entries and executes them asynchronously — with retries, exactly-once guarantees, and a dead letter queue for unrecoverable failures.
+After the transaction commits, a background runner picks up the queued entries and executes them asynchronously — with retries, exactly-once guarantees, and a dead letter queue for unrecoverable failures.
 
 This pattern is widely known as the _Transactional Outbox_, but CAP's event queues go beyond outbound messages.
 They provide a unified mechanism for four use cases:
@@ -35,11 +46,35 @@ They provide a unified mechanism for four use cases:
 The core principle is straightforward:
 
 1. Instead of executing side effects directly, you write an event message into a database table — **within the current transaction**.
-2. Once the transaction commits, a task runner reads pending messages and dispatches them to the respective service.
+2. Once the transaction commits, a background runner reads pending messages and dispatches them to the respective service.
 3. If processing succeeds, the message is deleted. If it fails, the system retries with exponentially increasing delays.
 4. After a configurable maximum number of attempts, the message is moved to the dead letter queue for manual intervention.
 
-![This graphic is explained in the accompanying text.](../../releases/2025/assets/may25/TaskController.png){width=80%}
+```mermaid
+sequenceDiagram
+    participant H as Event Handler
+    participant DB as Database
+    participant R as Background Runner
+    participant S as Remote Service
+
+    H->>DB: Write business data
+    H->>DB: Write event to outbox table
+    Note over H,DB: Both writes in the same transaction
+    DB-->>H: COMMIT
+
+    loop Background processing
+        R->>DB: Poll for pending events
+        R->>S: Dispatch event
+        alt Success
+            R->>DB: Delete message
+        else Transient failure
+            R->>DB: Increment retry counter
+            Note over R: Retry with exponential backoff
+        else Max retries exceeded
+            R->>DB: Mark as dead letter
+        end
+    end
+```
 
 Because the event message and your business data share the same database transaction, you get two fundamental guarantees:
 
@@ -97,8 +132,12 @@ When a message arrives from a broker like SAP Event Mesh or Apache Kafka, the me
 
 This brings two advantages:
 
-- **Quick acknowledgment** — the message broker does not have to wait for your processing to complete. This is especially important with brokers like Kafka that expect fast consumer acknowledgments.
+- **Quick acknowledgment** — the message broker does not have to wait for your processing to complete. This reduces backpressure and prevents consumer group rebalancing under load.
 - **Flatten the curve** — if a burst of messages arrives, they're queued in your database and processed at a controlled pace, preventing overload.
+
+> [!note] Especially useful when brokers don't support redelivery
+> Some message brokers (for example, SAP Event Mesh) do not allow retriggering delivery or correcting message payloads.
+> With the inbox, failures are handled inside your app via the [dead letter queue](#dead-letter-queue), where you have full control over retry and correction.
 
 Enable the inbox in your configuration:
 
@@ -143,7 +182,11 @@ await srv.schedule('replicate', { entity: 'Products' }).every('10 minutes')
 ```
 :::
 
-The `schedule` method is a shortcut for `cds.queued(srv).send()` with additional timing options:
+> [!note] Node.js only
+> The `srv.schedule()` API is currently available in Node.js only.
+> In Java, use a `@Scheduled` annotation in combination with a queued outbox service to achieve equivalent behavior.
+
+The `schedule` method is a convenience shortcut that internally queues the call using `cds.queued(srv)` and adds timing options:
 
 ```js
 // Execute once, as soon as possible
@@ -216,7 +259,7 @@ await qsrv.run(SELECT.from('Products'))            // query (result discarded)
 Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
 :::
 
-In Java, use `OutboxService.outboxed(srv)` to wrap any CAP service:
+In Java, use `AsyncCqnService.of(srv, outbox)` to wrap any CAP service with an outbox:
 
 ::: code-group
 ```java [Java]
@@ -256,7 +299,7 @@ When working with event queues, you interact with the standard CAP service APIs:
 | `srv.emit(event, data)` | Emit a fire-and-forget event message |
 | `srv.send(event, data)` | Send a request (return value discarded for queued services) |
 | `srv.run(query)` | Run a CQL query (return value discarded for queued services) |
-| `srv.schedule(event, data)` | Shortcut for `cds.queued(srv).send()` with timing options |
+| `srv.schedule(event, data)` | Schedule a task with optional timing — Node.js only |
 
 The `schedule` method supports a fluent API:
 
@@ -315,10 +358,10 @@ This ensures that messaging and audit log events are always sent reliably and ne
 ### Exactly Once { #exactly-once }
 
 The persistent queue guarantees exactly-once processing for database-related operations.
-The system only commits database changes from event processing if the event is successfully processed, and vice versa.
+Database changes made during event processing are only committed if — and only if — the event is successfully processed.
 
-There is one active message processor per service, tenant, app instance, and message.
-This prevents duplicate processing, except in the highly unlikely case of an app crash right after successful processing but before the message could be deleted from the queue.
+To prevent duplicate processing across application instances, there is at most one active processor per service and tenant at any given time.
+In the unlikely event of a process crash immediately after successful processing but before the message could be deleted, the message may be processed a second time. Handlers should therefore be idempotent where possible.
 
 ### No Phantom Events { #no-phantom-events }
 
@@ -361,7 +404,7 @@ error.unrecoverable = true
 throw error
 ```
 
-In Java, you can suppress retries by catching the error and calling `context.setCompleted()`:
+In Java, suppress retries by catching the error and calling `context.setCompleted()`:
 
 ```java
 @On(service = "<OutboxServiceName>", event = "myEvent")
@@ -382,7 +425,7 @@ void process(OutboxMessageEventContext context) {
 
 ## Dead Letter Queue { #dead-letter-queue }
 
-Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table.
+Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
 These entries form the _dead letter queue_ and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
 
 ### The Data Model
@@ -524,14 +567,14 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 
 ## Deferred Principal Propagation { #principal-propagation }
 
-When an event is processed asynchronously, the original user context is no longer available.
+When an event is processed asynchronously, the original HTTP request context is no longer available.
 CAP handles this as follows:
 
 - The **user ID** is stored with the queued message and re-created when the message is processed.
-- **User roles and attributes** are _not_ stored. Asynchronous tasks are always processed in privileged mode.
+- **User roles and attributes** are _not_ stored. Asynchronous processing always runs in privileged mode.
 
 This means handlers for queued events must not rely on role-based authorization checks.
-If you need to perform authorization in queued processing, store the necessary information in the event payload.
+If you need to enforce authorization in queued processing, encode the necessary information in the event payload itself.
 
 
 
@@ -575,7 +618,7 @@ Configuration options for Node.js:
 |--------|---------|-------------|
 | `maxAttempts` | `20` | Maximum retries before moving to dead letter queue |
 | `storeLastError` | `true` | Store error information of the last failed attempt |
-| `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned |
+| `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
 
 Configuration options for Java:
 
@@ -604,7 +647,7 @@ For development and testing, you can use the in-memory queue. Messages are held 
 :::
 
 ::: warning No retry mechanism
-With the in-memory queue, messages are lost if processing fails. There is no retry mechanism.
+With the in-memory queue, messages are lost if processing fails. There is no retry mechanism and no dead letter queue.
 :::
 
 
@@ -640,12 +683,12 @@ Or disable queueing for a specific service:
 
 ## Manual Processing { #flush }
 
-If the app crashes, another emit for the respective tenant and service is necessary to restart processing.
-You can trigger it manually using the `flush` method:
+After an application restart or crash, pending events in the database are not automatically picked up until a new outbox write occurs for the same service and tenant.
+You can trigger reprocessing manually using the `flush` method, for example from a startup hook or admin endpoint:
 
 ::: code-group
 ```js [Node.js]
 const srv = await cds.connect.to('RemoteService')
-cds.queued(srv).flush()
+await cds.queued(srv).flush()
 ```
 :::
