@@ -42,7 +42,7 @@ const editorPaddingBottom = 4
 
 async function createEditor() { try {
   if (typeof window === 'undefined' || editor) return
-  const monaco = await (await import('./monaco')).default
+  monaco = await (await import('./monaco')).default
   editor = monaco.editor.create(editorContainer.value, {
     value: props.modelValue,
     language: props.language || 'plaintext',

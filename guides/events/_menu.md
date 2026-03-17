@@ -1,5 +1,5 @@
 
-# [CAP-level Messaging](core-concepts)
+# [Core Concepts](core-concepts)
 # [Event Queues](event-queues)
 # [Event Queues NEW](event-queues-new)
 # [Messaging](messaging)

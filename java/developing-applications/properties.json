@@ -684,6 +684,82 @@
     },
     {
       "header": true,
+      "name": "cds.mcp",
+      "doc": "Properties for the MCP protocol adapter."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.queryPerEntityTool",
+      "type": "boolean",
+      "default": "false",
+      "doc": "True, if the MCP server should offer a query tool per entity, instead of one generic query<br>tool."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.toonFormat",
+      "type": "boolean",
+      "default": "true",
+      "doc": "True, if the MCP server should use TOON format for tool output, otherwise JSON."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.endpoint",
+      "doc": "Properties of the MCP protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.path",
+      "type": "String",
+      "default": "/mcp",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.autoConfig",
+      "doc": "Properties for auto-configuration of local MCP clients."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoConfig.host",
+      "type": "String",
+      "default": "localhost",
+      "doc": "The MCP server host."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoConfig.port",
+      "type": "Integer",
+      "doc": "The MCP server port."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoConfig.user",
+      "type": "String",
+      "default": "privileged",
+      "doc": "The mock-user to use."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoConfig.password",
+      "type": "String",
+      "doc": "The mock-user's password."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoConfig.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
       "name": "cds.messaging",
       "doc": "Properties for messaging services."
     },
@@ -1479,6 +1555,13 @@
       "type": "boolean",
       "default": "false",
       "doc": "Determines, if @readonly, @Core.Computed and similar annotations are enforced on draft<br>instances already and therefore no longer during activation."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.postActive",
+      "type": "boolean",
+      "default": "false",
+      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined."
     },
     {
       "header": true,
