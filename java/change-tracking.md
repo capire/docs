@@ -360,7 +360,7 @@ order.setItems(CdsList.delta(item));
 Update.entity(Orders_.class).entry(order);
 ```
 
-If a direct update is unavoidable, Specify the order item that needs to be updated with a path expression:
+If a direct update is unavoidable, specify the order item that needs to be updated with a path expression:
 
 ```java
 OrderItems item = OrderItems.create("...");
@@ -385,7 +385,7 @@ The same path expression can be used in the `Insert` statement to directly add a
 Changes are correctly referenced to the root if the following conditions are true:
 - The path expression starts at the root of the document (`Orders`, in this case).
 - The path navigates only through the compositions within the same document tree.
-- All segments of the path, except the last one, must include keys.
+- All segments of the path, except the last one, include keys.
 
 :::warning Limitation
 Avoid Direct modifications of composition items, they aren't supported by change tracking.
