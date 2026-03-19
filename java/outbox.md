@@ -321,6 +321,45 @@ You must ensure that the handler is completing the context, after executing the 
 
 [Learn more about event handlers.](./event-handlers/){.learn-more}
 
+::: tip Preparing outbox entries with custom data types
+
+The outbox has no information regarding the structure and the data types that
+shall be serialized and deserialized to and from the outbox. To avoid
+serialization and deserialization errors, the corresponding data objects must
+be transformed using custom outbox handlers:
+
+```java
+@Component
+@ServiceName(value = "*", type = OutboxService.class)
+public class DwcOutboxHandler implements EventHandler {
+
+    @On
+    void publishedByOutbox(OutboxMessageEventContext context) {
+        // Restore DwC context only
+        if (Boolean.FALSE.equals(context.getIsInbound())) {
+            return;
+        }
+
+        // custom deserialization logic
+    }
+
+    @Before(event = "*")
+    void prepareOutboxMessage(OutboxMessageEventContext context) {
+        // prepare outbox message for storage only
+        if (Boolean.TRUE.equals(context.getIsInbound())) {
+            return;
+        }
+
+        // custom serialization logic
+    }
+}
+
+**Don't complete the context in any of those two handlers, otherwise other
+handlers aren't called.**
+```
+
+:::
+
 ## Handling Outbox Errors { #handling-outbox-errors }
 
 The outbox by default retries publishing a message, if an error occurs during processing, until the message has reached the maximum number of attempts.
