@@ -49,17 +49,17 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
-## CAP Java 4.10 to CAP Java 5.0 (TBA) { #four-to-five }
+## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
 ### Spring Boot 4
 
 CAP Java 5 uses Spring Boot 4 and Spring Security 7 as underlying framework. A CAP Java application is typically only affected by Spring Boot 4 incompatibilities if it uses native Spring APIs. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes between Spring Security 6.5 and 7 refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
 
-In any case, it is required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.
+In any case, it is required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.0.
 
 ### Minimum Versions
 
-CAP Java 4.0 increased some minimum required versions:
+CAP Java 5.0 increased some minimum required versions:
 
 | Dependency | Minimum Version |
 | --- | --- |
