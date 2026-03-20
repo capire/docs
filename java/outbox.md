@@ -331,16 +331,18 @@ be transformed using custom outbox handlers:
 ```java
 @Component
 @ServiceName(value = "*", type = OutboxService.class)
-public class DwcOutboxHandler implements EventHandler {
+public class CustomOutboxHandler implements EventHandler {
 
     @On
     void publishedByOutbox(OutboxMessageEventContext context) {
-        // Restore DwC context only
+        // Restore custom values from context only
         if (Boolean.FALSE.equals(context.getIsInbound())) {
             return;
         }
 
         // custom deserialization logic
+        Long date = (Long) context.getMessage().getParams().get("orderDate");
+        context.getMessage().getParams().put("orderDate", Instant.ofEpochSecond(date));
     }
 
     @Before(event = "*")
@@ -351,6 +353,8 @@ public class DwcOutboxHandler implements EventHandler {
         }
 
         // custom serialization logic
+        Instant date = (Instant) context.getMessage().getParams().get("orderDate");
+        context.getMessage().getParams().put("orderDate", new Long(date.getEpochSecond()));
     }
 }
 
