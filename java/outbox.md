@@ -321,7 +321,7 @@ You must ensure that the handler is completing the context, after executing the 
 
 [Learn more about event handlers.](./event-handlers/){.learn-more}
 
-::: tip Preparing outbox entries with custom data types
+::: tip Customizing Outbox Entries
 
 The outbox has no information regarding the structure and the data types that
 shall be serialized and deserialized to and from the outbox.
@@ -331,7 +331,9 @@ required. Only if there are custom data types used or additional context
 properties are required, special handling needs to be implemented to avoid
 serialization and deserialization errors in custom outbox handlers:
 
-```java
+::: code-group
+
+```java [srv/src/main/java/com/myapp/CustomOutboxHandler.java]
 @Component
 @ServiceName(value = "*", type = OutboxService.class)
 public class CustomOutboxHandler implements EventHandler {
@@ -360,10 +362,12 @@ public class CustomOutboxHandler implements EventHandler {
         context.getMessage().getParams().put("orderDate", new Long(date.getEpochSecond()));
     }
 }
+```
+
+:::
 
 **Don't complete the context in any of those two handlers, otherwise other
-handlers aren't called.**
-```
+handlers aren't called and functionality is broken.**
 
 :::
 
