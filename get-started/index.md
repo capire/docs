@@ -12,10 +12,7 @@ Jumpstart & Grow as You Go... {.subtitle}
 
 A most minimalistic setup needs [CAP's _cds-dk_](https://www.npmjs.com/package/@sap/cds-dk) installed, which in turn requires [Node.js](https://nodejs.org). Add optional setups for [Java](https://sapmachine.io), [GitHub](https://github.com), and [Visual Studio Code](https://code.visualstudio.com), as appropriate, and as outlined below.
 
-### Preparation
-
-On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up. We use multiline console commands to improve usability in Windows PowerShell. PowerShell will ask for confirmation when you paste these commands, adding an extra safety step.
-
+On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homebrew](https://brew.sh), and run the commands in the subsequent sections in your terminal to get everything set up.
 
 ::: code-group
 ```shell [macOS]
@@ -40,10 +37,13 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 ```shell [macOS / Linux / WSL]
 brew install node     # Node.js LTS
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
-cds -v                # check cds version
 ```
 ```PowerShell [Windows]
+# We use multiline console commands to improve usability in Windows PowerShell.
+# PowerShell will ask for confirmation when you paste these commands, adding an extra safety step.
+
 winget install --silent OpenJS.NodeJS.LTS
+winget install --silent SQLite.SQLite
 
 # Reload PATH from registry to access newly installed tools
 $env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
@@ -51,20 +51,6 @@ $env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
 
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 cds -v                # check cds version
-# done
-```
-:::
-
-### SQLite (Windows) {.required}
-
-::: code-group
-```PowerShell [Windows]
-winget install --silent SQLite.SQLite
-
-# Reload PATH from registry to access newly installed tools
-$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
-    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
-
 sqlite3 -version
 # done
 ```
@@ -76,7 +62,6 @@ sqlite3 -version
 ```shell [macOS / Linux / WSL]
 brew install sapmachine-jdk
 brew install maven
-mvn -version  # display Maven and Java versions
 ```
 ```PowerShell [Windows]
 winget install --silent SAP.SapMachine.25.JDK
@@ -102,28 +87,15 @@ mvn -version  # display Maven and Java versions
 ### Git and GitHub {.optional}
 
 ::: code-group
-```shell [macOS / Linux / WSL]
-brew install git  # Git CLI (for completeness, already installed for Homebrew)
-brew install gh   # GitHub CLI
-git -v # display Git cli version
-```
-```PowerShell [Windows]
-winget install --silent Git.Git
-winget install --silent GitHub.cli
-
-# Reload PATH from registry to access newly installed tools
-$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
-    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
-
-git -v # display Git cli version
-# done
-```
-:::
-::: code-group
 ```shell [macOS]
+brew install git       # Git CLI
+brew install gh        # GitHub CLI
 brew install github    # GitHub Desktop App
 ```
 ```shell [Linux / WSL]
+brew install git       # Git CLI
+brew install gh        # GitHub CLI
+
 # Github-Desktop on Homebrew is only supported for macOS
 GHD_VERSION="3.3.12"
 GHD_HOST="https://github.com/shiftkey/desktop/releases/download"
@@ -135,7 +107,16 @@ sudo apt install ./github-desktop.deb
 rm ./github-desktop.deb
 ```
 ```PowerShell [Windows]
+winget install --silent Git.Git
+winget install --silent GitHub.cli
 winget install --silent GitHub.GitHubDesktop
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+
+git -v # display Git cli version
+# done
 ```
 :::
 
@@ -144,8 +125,7 @@ winget install --silent GitHub.GitHubDesktop
 
 ::: code-group
 ```shell [macOS]
-brew install --cask visual-studio-code # VS Code itself
-code -v # display VS Code's version
+brew install --cask visual-studio-code            # VS Code itself
 ```
 ```bash [Linux / WSL]
 # VS Code on Homebrew is only supported for macOS
@@ -180,7 +160,7 @@ code --install-extension vscjava.vscode-maven     # for Maven
 
 > You can of course also use other IDEs or editors of your choice, such as [IntelliJ IDEA](https://www.jetbrains.com/idea/), for which we also provide [support](../tools/cds-editors#intellij). Yet we strongly recommend Visual Studio Code for the best experience with CAP.
 
-::: details Alternative setup ...
+::: details Alternative manual setup ...
 
   You can also manually download and install the required packages from their respective websites:
 
