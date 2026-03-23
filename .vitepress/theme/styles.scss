@@ -10,6 +10,16 @@
 html {
   &.java .node { display: none; }
   &.node .java { display: none; }
+
+  &:not(.transitions-ready) {
+    :not(.VPSwitchAppearance):not(.VPSwitchAppearance *) {
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+      -o-transition: none !important;
+      -ms-transition: none !important;
+      transition: none !important;
+    }
+  }
 }
 
 

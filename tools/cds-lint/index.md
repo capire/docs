@@ -77,69 +77,6 @@ The **CDS Lint** rules are a set of generic rules based on CAP best practices.
 [See our Rules Reference page to find out more](./rules/){ .learn-more}
 
 
-
-<!--
-### CDS Lint Customization  {#cds-lint-customization}
-
-#### Configuring CDS Lint Rules
-
-Individual package rules can also be [configured](https://eslint.org/docs/user-guide/configuring/rules#configuring-rules/) to be turned off or have a different severity. For example, if you want to turn off the recommended *environment* rule [min-node-version](../tools/cds-lint/rules/#min-node-version), just add the following lines to your [ESLint configuration file](https://eslint.org/docs/user-guide/configuring/), shown here for type `json`:
-
-```json
-{
-  "rules": {
-    "@sap/cds/min-node-version": 0
-  }
-}
-```
-
-### Configuring custom CDS Lint Rules
-
-To include your own custom rules, prepare your project configuration once with:
-
-```sh
-cds add lint
-```
-
-This configures your project to use the `@sap/eslint-plugin-cds` locally and create an extra _.eslint_ directory for your custom rules, tests, and documentation:
-
- - _rules_: Directory for your custom rules.
- - _tests_: Directory for your custom rules tests.
- - _docs_: Directory for auto-generated docs based on your custom rules and any valid/invalid test cases provided,
-
-Add a sample custom rule:
-
-```sh
-cds add lint:dev
-```
-
-The following sample rule is added to your configuration file:
-
-```json
-{
-  "rules": {
-    "no-entity-moo": 2
-  }
-}
-```
-
-To test the rule, just add a _.cds_ file, for example _moo.cds_, with the following content to your project:
-
-```cds
-entity Moo {}
-```
-
-Run the linter (`cds lint`) to see that an entity called `Moo` is not allowed.
-Ideally, if you are using an editor together with an ESLint extension, you will already be notified of this when you save the file.
-
-To quickly unit-test a custom rule, you can find a sample _no-entity-moo.test.js_ in _.eslint/tests_. To run the test:
-
-```sh
-mocha .eslint/tests/no-entity-moo
-```
-
--->
-
 ### ESLint CLI (optional) {#usage-eslint-cli}
 
 To have more control over the linting process, you can also access the CDS ESLint plugin natively via the [ESLint CLI](https://eslint.org/docs/user-guide/command-line-interface). To determine the proper command line options, it can help to refer to output of the equivalent call using the [CDS Lint CLI](#usage-lint-cli) with `DEBUG="lint"`, which shows all of the options and flags applied:

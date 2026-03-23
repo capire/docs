@@ -120,7 +120,7 @@ In contrast to the `hdbtable` plugin, the `hdbcds` plugin is able to handle remo
 
 ## Multiline Doc Comments
 
-This is only relevant if you have switched on [Doc Comments](../../cds/cdl#doc-comment)
+This is only relevant if you have switched on [Doc Comments](../../cds/cdl#doc-comments)
 and if you have enabled translation of doc comments to the `COMMENT` feature in the database.
 
 Doc comments can span across multiple lines:

@@ -331,6 +331,27 @@ It is **essential to regularly update dependencies** to consume latest bug fixes
 We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
 
 
+### Use MTA Extensions with `cds up`
+
+For Cloud Foundry deployments, you can pass an [MTA extension descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors) to `cds up` using `--overlay`:
+
+```sh
+cds up --overlay .deploy/eu10-prod.mtaext
+```
+
+This allows you to keep landscape-specific deployment settings outside your base _mta.yaml_, for example, scaling parameters:
+
+```yaml [eu10-prod.mtaext]
+_schema-version: 3.3.0
+ID: bookshop-eu10-prod
+extends: bookshop
+
+modules:
+  - name: bookshop-srv
+    parameters:
+      instances: 2
+```
+
 ## Upgrade Tenants {.java}
 
 The CAP Java SDK offers `main` methods for Subscribe/Unsubscribe in the classes `com.sap.cds.framework.spring.utils.Subscribe/Unsubscribe` that can be called from the command line. This way, you can run the tenant subscribe/unsubscribe for the specified tenant. This triggers your custom handlers, which is useful for local testing scenarios.

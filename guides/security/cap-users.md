@@ -8,6 +8,8 @@ impl-variants: true
 ---
 
 <script setup>
+  import { useData } from 'vitepress'
+  const { versions } = useData().theme.value.capire
   import { h } from 'vue'
   const Y  =  () => h('span', { class: 'y',   title: 'Available' },      ['✓']   )
   const X  =  () => h('span', { class: 'x',   title: 'Available' },      ['✗']   )
@@ -296,9 +298,9 @@ If required, it also runs the new `cds add ias` command to configure the project
 ::: details See dependencies added
 
 ::: code-group
-```xml [pom.xml]
+```xml-vue [pom.xml]
 <properties>
-  <sap.cloud.security.ams.version>3.7.0</sap.cloud.security.ams.version> <!-- [!code ++] -->
+  <sap.cloud.security.ams.version>{{versions.cloud_sec_ams}}</sap.cloud.security.ams.version> <!-- [!code ++] -->
 </properties>
 ```
 

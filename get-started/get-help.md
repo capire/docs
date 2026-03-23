@@ -425,7 +425,7 @@ In case you want a visual interface tool to work with SQLite, you can use [SQLit
 
 ### How to get an SAP HANA Cloud instance for SAP BTP? { #get-hana}
 
-To configure this service in the SAP BPT cockpit on trial, refer to the [SAP HANA Cloud Onboarding Guide](https://www.sap.com/documents/2021/09/7476f8c4-f77d-0010-bca6-c68f7e60039b.html). See [SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD) documentation or visit the [SAP HANA Cloud community](https://pages.community.sap.com/topics/hana/cloud) for more details.
+To configure this service in the SAP BTP cockpit on trial, refer to the [SAP HANA Cloud Onboarding Guide](https://www.sap.com/documents/2021/09/7476f8c4-f77d-0010-bca6-c68f7e60039b.html). See [SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD) documentation or visit the [SAP HANA Cloud community](https://pages.community.sap.com/topics/hana/cloud) for more details.
 
 ::: warning HANA needs to be restarted on trial accounts
 On trial, your SAP HANA Cloud instance will be automatically stopped overnight, according to the server region time zone. That means you need to restart your instance every day before you start working with your trial.
@@ -448,6 +448,16 @@ On trial, your SAP HANA Cloud instance will be automatically stopped overnight, 
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | _Root Cause_ | An error like `Version incompatibility for the ... build plugin: "2.0.x" (installed) is incompatible with "2.0.y" (requested)` indicates that your project demands a higher version of SAP HANA than what is available in your org/space on SAP BTP, Cloud Foundry environment. The error might not occur on other landscapes for the same project. |
 | _Solution_   | Lower the version in file `db/src/.hdiconfig` to the one given in the error message. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.                                                                                                                                                                 |
+
+#### Deployment fails - _unable to get local issuer certificate_ {#root-cert-change}
++ _Could not connect to any host... - unable to get local issuer certificate_
++ MTX sidecar crashes with HTTP error _429 (Too Many Requests)_
+
+|              | Explanation                                                                                                                  |
+|--------------|--------------------------------|
+| _Root Cause_ | A change of SAP's root certificate from _DigiCert Global Root CA_ to _DigiCert TLS RSA4096 Root G5_ leads to deployment failures because older certificates get rejected by too old SAP HANA driver versions and/or older service bindings in SAP HANA Cloud. |
+| _Solution_   | For Node.js applications, update the `hdb` driver to the latest version. [See SAP note 3397584](https://me.sap.com/notes/3397584) for details.  See the [SAP HANA blog post](https://community.sap.com/t5/technology-blog-posts-by-sap/action-required-update-your-certificate-trust-stores-for-enhanced-sap-hana/ba-p/14332703) for the broader context. |
+
 
 #### Deployment fails — _Cannot create certificate store_ {#cannot-create-certificate-store}
 
@@ -518,6 +528,35 @@ This error occurs if all of the following applies:
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.                                                                                                                                                                                                                                                                                                  |
 | _Solution_   | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause). |
+
+#### Deployment fails — _The include_filter definitions ... use key values that are not disjunct_
+
+|              | Explanation                             |
+|--------------|----------------------------|
+| _Root Cause_ | You have changed from data files like `xxx_texts.csv` to `xxx_texts_de.csv`. |
+| _Solution_   | Add entries in `undeploy.json`. |
+
+
+If you've already deployed your application using translation files _without_ language key like `xxx_texts.csv` and now want to use language-specific translation files like `xxx_texts_de.csv`, you have to **undeploy the existing translation files**.
+
+Add the corresponding file entries, for example
+```json
+[
+  ...
+  "src/gen/data/xxx_texts.hdbtabledata",
+  "src/gen/data/xxx_texts.csv"
+]
+```
+to your _undeploy.json_.
+
+Otherwise, you will get a deployment error similar to this one:
+
+```
+The include_filter definitions in the table import files .../xxx_texts.hdbtabledata
+and .../xxx_texts_de.hdbtabledata use key values that are not disjunct;
+.../xxx_texts.hdbtabledata defines no include_filters which prohibits other imports
+from importing into the same table.
+```
 
 
 ### Why is removed sample _.csv_ deployed and overwriting existing data? { #hana-csv}
