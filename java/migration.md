@@ -53,7 +53,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 
 ### Spring Boot 4
 
-CAP Java 5 uses Spring Boot 4 and Spring Security 7 as underlying framework. A CAP Java application is typically only affected by Spring Boot 4 incompatibilities if it uses native Spring APIs. Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes between Spring Security 6.5 and 7 refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
+CAP Java 5 uses Spring Boot 4 and Spring Security 7 as underlying framework. Unless a CAP Java application is not using native Spring APIs, Spring Boot 4 incompatibilities should only affect renaming of maven dependencies and smaller changes in test classes (e.g. changed package name of `AutoConfigureMockMvc`). Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes between Spring Security 6.5 and 7 refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
 
 In any case, it is required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.0.
 
