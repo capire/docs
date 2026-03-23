@@ -326,12 +326,7 @@ You must ensure that the handler is completing the context, after executing the 
 The outbox has no information regarding the structure and the data types that
 shall be serialized and deserialized to and from the outbox.
 
-As long as there are CDS modelled services used, no special handling is
-required. Only if there are custom data types used or additional context
-properties are required, special handling needs to be implemented to avoid
-serialization and deserialization errors in custom outbox handlers:
-
-::: code-group
+Special handling is needed to avoid serialization and deserialization errors in custom outbox handlers if custom data types are used, **or** if additional context properties are required. _Special handling isn't required for CDS model-based services._
 
 ```java [srv/src/main/java/com/myapp/CustomOutboxHandler.java]
 @Component
@@ -363,8 +358,6 @@ public class CustomOutboxHandler implements EventHandler {
     }
 }
 ```
-
-:::
 
 **Don't complete the context in any of those two handlers, otherwise other
 handlers aren't called and functionality is broken.**
