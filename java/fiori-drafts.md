@@ -147,7 +147,7 @@ It's possible to create and update data directly without creating intermediate d
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
 ::: tip
-With the 4.8.0 release CAP Java introduced a mode where POST without `IsActiveEnitity=true` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is only active when the CDS property `cds.draft.post-active` is set to `true` and an the entity is annotated with `@Common.DraftRoot.NewAction`. The value of entity should be the name of an unbound action in the same service of the entity. In case the entity has a key with the type `UUID` the action needs no further parameter. Otherwise the action needs the key value(s) of the entity as parameters.
+With the 4.8.0 release, CAP Java introduced a mode where POST without `IsActiveEnitity=true` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is only active when the CDS property `cds.draft.post-active` is set to `true` and the entity is annotated with `@Common.DraftRoot.NewAction`. The annotation value needs to be the name of an unbound action in the same service of the entity. If the entity has a key with the type `UUID`, the action needs no further parameter. Otherwise, the action needs the key values of the entity as parameters.
 :::
 
 ::: warning
