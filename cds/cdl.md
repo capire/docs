@@ -283,7 +283,7 @@ CDL supports line-end, block comments, and *doc* comments as in Java and JavaScr
 /** doc comment */
 ```
 
-#### Doc Comments {#doc-comment}
+#### Doc Comments 
 
 A multi-line comment of the form `/** … */` at an [annotation position](#annotation-targets) is considered a *doc comment*:
 
