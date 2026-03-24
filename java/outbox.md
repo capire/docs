@@ -321,6 +321,49 @@ You must ensure that the handler is completing the context, after executing the 
 
 [Learn more about event handlers.](./event-handlers/){.learn-more}
 
+::: tip Customizing Outbox Entries
+
+The outbox has no information regarding the structure and the data types that
+shall be serialized and deserialized to and from the outbox.
+
+Special handling is needed to avoid serialization and deserialization errors in custom outbox handlers if custom data types are used, **or** if additional context properties are required. _Special handling isn't required for CDS model-based services._
+
+```java [srv/src/main/java/com/myapp/CustomOutboxHandler.java]
+@Component
+@ServiceName(value = "*", type = OutboxService.class)
+public class CustomOutboxHandler implements EventHandler {
+
+    @On
+    void publishedByOutbox(OutboxMessageEventContext context) {
+        // Restore custom values from context only
+        if (Boolean.FALSE.equals(context.getIsInbound())) {
+            return;
+        }
+
+        // custom deserialization logic
+        Long date = (Long) context.getMessage().getParams().get("orderDate");
+        context.getMessage().getParams().put("orderDate", Instant.ofEpochSecond(date));
+    }
+
+    @Before(event = "*")
+    void prepareOutboxMessage(OutboxMessageEventContext context) {
+        // prepare outbox message for storage only
+        if (Boolean.TRUE.equals(context.getIsInbound())) {
+            return;
+        }
+
+        // custom serialization logic
+        Instant date = (Instant) context.getMessage().getParams().get("orderDate");
+        context.getMessage().getParams().put("orderDate", new Long(date.getEpochSecond()));
+    }
+}
+```
+
+**Don't complete the context in any of those two handlers, otherwise other
+handlers aren't called and functionality is broken.**
+
+:::
+
 ## Handling Outbox Errors { #handling-outbox-errors }
 
 The outbox by default retries publishing a message, if an error occurs during processing, until the message has reached the maximum number of attempts.
