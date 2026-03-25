@@ -2,8 +2,8 @@
 <pre class="log">
 > cds version
 
- <em> @sap/cds-dk (global) </em><em> 9.8.0   </em><i> .../node_modules/@sap/cds-dk </i>
- <em> @sap/cds             </em><em> 9.8.2   </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> @sap/cds-dk (global) </em><em> 9.8.1   </em><i> .../node_modules/@sap/cds-dk </i>
+ <em> @sap/cds             </em><em> 9.8.3   </em><i> .../node_modules/@sap/cds                                            </i>
  <em> @sap/cds-compiler    </em><em> 6.8.0   </em><i> .../node_modules/@sap/cds-compiler                                   </i>
  <em> @sap/cds-fiori       </em><em> 2.3.0   </em><i> .../node_modules/@sap/cds-fiori                                      </i>
  <em> @cap-js/db-service   </em><em> 2.9.0   </em><i> .../node_modules/@cap-js/db-service                                  </i>
