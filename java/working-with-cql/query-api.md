@@ -981,7 +981,12 @@ If the selected rows are already locked by another transaction, by default, the 
       .lock(EXCLUSIVE, SKIP_LOCKED);
   ```
 
-  Rows that are currently locked by other transactions are silently excluded from the result. This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
+  ::: warning
+  Rows that are currently locked by other transactions are silently excluded from the result.
+  :::
+  ::: tip
+  This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
+  :::
   
 #### Restrictions
 
