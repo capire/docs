@@ -944,9 +944,23 @@ Select.from("bookshop.Books").byId(1).lock(SHARED);
 
 #### Wait Strategies
 
-By default, if the selected rows are already locked by another transaction, the query waits until the database's predefined timeout expires and then throws a `CdsLockTimeoutException`. You can control this behavior using the `lock(mode, waitStrategy)` method with a `CqnLock.Wait` strategy:
+If the selected rows are already locked by another transaction, by default, the query waits until the lock is released. You can specify a [wait strategy](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnLock.Wait.Strategy.html) to control whether and how long the query execution shall wait.
 
-- `NOWAIT` — fail immediately if the rows are already locked:
+- `DEFAULT` - wait until the lock is released:
+
+  By default, if the selected rows are locked by another transaction, the query waits for the lock to be relased. If the lock is not released within the database's predefined timeout a `CdsLockTimeoutException` is thrown:
+  ```java
+  Select.from("bookshop.Books").byId(1).lock();
+  ```
+- `WAIT` - wait unless given timeout expires:
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+
+  // wait max 10s  
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, 10);
+  ```
+
+- `NOWAIT` — fail _immediately_ if the rows are already locked:
 
   ```java
   import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
