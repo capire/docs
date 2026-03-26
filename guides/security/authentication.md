@@ -114,10 +114,6 @@ As the mock user authentication is active, all (CAP) endpoints are [authenticate
 
 <div class="impl java">
 
-::: tip
-To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
-:::
-
 If you stay with the standard authentication mode, sending the OData request results in a `401` error response from the server, indicating that the anonymous user has been rejected due to missing authentication.
 
 ```sh
