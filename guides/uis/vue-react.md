@@ -97,8 +97,7 @@ npm create vite@latest catalog -- --template react
 
 Now add a proxy to `app/catalog/vite.config.js`:
 
-#### React
-```js [React] {6-10}
+```js {6-10}
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -114,8 +113,7 @@ export default defineConfig({
 
 Replace _src/App.jsx_ with a minimal example:
 
-#### App.jsx
-```jsx [App.jsx]
+```jsx
 import { useEffect, useState } from 'react'
 
 export default function App() {
