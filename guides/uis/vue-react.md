@@ -16,28 +16,33 @@ The example here is built on a minimal CAP project:
 cds init bookshop --nodejs --add tiny-sample && code bookshop
 ```
 
-You can already start the CAP backend to watch for changes:
-```sh
-cds watch
-```
+### Vue.js
 
-**In a new terminal**, create a new Vue.js or React app in _app/catalog_:
+Simply create a Vue.js or React app in `app/catalog`:
 
 ::: code-group
+
 ```sh [Vue.js]
+cds add vue --into catalog
+```
+
+```sh [React]
+cds add react --into catalog
+```
+
+:::
+
+::: details What this does in the background for Vue.js
+
+```sh
 cd app
 npm create vite@latest catalog -- --template vue
 ```
-```sh [React]
-cd app
-npm create vite@latest catalog -- --template react
-```
-:::
+
 > Confirm "Install with npm and start now?" if asked.
 
 Now add a proxy to `app/catalog/vite.config.js`:
 
-::: code-group
 ```js [Vue.js] {6-10}
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -52,25 +57,9 @@ export default defineConfig({
 })
 
 ```
-```js [React] {6-10}
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      '/odata': 'http://localhost:4004'
-    }
-  }
-})
-```
+Replace _src/App.vue_ with a minimal example:
 
-:::
-
-Replace _src/App.vue_ (Vue.js) or _src/App.jsx_ (React) with a minimal example:
-
-::: code-group
 ```vue [App.vue]
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -95,6 +84,37 @@ onMounted(async () => {
   </table>
 </template>
 ```
+:::
+
+::: details What this does in the background for React
+
+```sh
+cd app
+npm create vite@latest catalog -- --template react
+```
+
+> Confirm "Install with npm and start now?" if asked.
+
+Now add a proxy to `app/catalog/vite.config.js`:
+
+#### React
+```js [React] {6-10}
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/odata': 'http://localhost:4004'
+    }
+  }
+})
+```
+
+Replace _src/App.jsx_ with a minimal example:
+
+#### App.jsx
 ```jsx [App.jsx]
 import { useEffect, useState } from 'react'
 
@@ -128,15 +148,13 @@ export default function App() {
 ```
 :::
 
-Now simply open the running dev server on http://localhost:5173 to see the UI.
+Now simply start the dev server:
 
-::: details Dev server not accessible?
-
-The server might not be started yet, run this command:
 ```sh
-npm run dev
+cds watch
 ```
-:::
+
+Open http://localhost:4004 to see your running applications.
 
 ### Next Up
 
