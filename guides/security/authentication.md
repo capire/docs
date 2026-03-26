@@ -751,7 +751,7 @@ IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUA
  
 ::: tip
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
-::: 
+:::
 
 You can best configure and test XSUAA authentication in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
