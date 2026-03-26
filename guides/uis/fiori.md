@@ -448,6 +448,61 @@ Content-Type: application/json
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
+### Direct CRUD <Beta />
+
+By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), optimized for human users working with SAP Fiori UIs.
+Technical consumers such as remote-services or AI-agents typically need to create and update data directly instead.
+Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds, restoring standard CRUD operations on active entities while keeping the full draft feature set intact.
+
+To achieve this, SAP Fiori Elements' default draft creation is redirected to a collection-bound action via `@Common.DraftRoot.NewAction`.
+This frees `POST` requests to create active instances directly — the same behavior as without draft enablement.
+
+#### Create an active instance directly:
+
+```http
+POST /Books
+Content-Type: application/json
+
+{
+  "ID": 123
+}
+```
+
+#### Create a new draft instance by action:
+
+```http
+POST /Books/CatalogService.draftNew
+Content-Type: application/json
+
+{}
+```
+
+#### Update an active instance directly:
+
+```http
+PUT /Books(ID=123)
+Content-Type: application/json
+
+{
+  "title": "How to be more active"
+}
+```
+
+:::warning Draft locks still apply
+Directly updating an active entity does **not** bypass draft locks.
+If an existing draft locks the entity, any direct update is blocked to prevent losing draft changes upon activation.
+See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
+:::
+
+Direct CRUD is also a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which lets users change multiple objects with the same editable properties in one step — without creating individual drafts per row.
+
+:::warning Additional entry point
+Both Direct CRUD and Mass Edit create additional entry points to your application.
+Custom handlers are triggered with delta payloads rather than the complete business object.
+:::
+
+[Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
+
 ### Validating Drafts
 
 With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
@@ -491,6 +546,7 @@ You can add your validation logic before the operation handler for either CRUD o
 
 <div id="query-data-draft-enabled" />
 
+
 ### Query Drafts Programmatically
 
 To access drafts in code, you can use the [`.drafts` reflection](../../node.js/cds-reflect#drafts).
@@ -499,6 +555,7 @@ SELECT.from(Books.drafts) //returns all drafts of the Books entity
 ```
 
 [Learn how to query drafts in Java.](../../java/fiori-drafts#draftservices){.learn-more}
+
 
 ## Use Roles to Toggle Visibility of UI elements
 

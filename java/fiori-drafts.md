@@ -136,7 +136,8 @@ GET /v4/myservice/myentity?$filter=IsActiveEntity eq true
 
 ## Bypassing the SAP Fiori Draft Flow { #bypassing-draft-flow }
 
-It's possible to create and update data directly without creating intermediate drafts. For example, this is useful when prefilling draft-enabled entities with data or in general, when technical components deal with the API exposed by draft-enabled entities. To achieve this, use the following requests. You can register event handlers for the corresponding events to validate incoming data:
+With [Direct CRUD](../guides/uis/fiori#direct-crud) enabled, you can create and update active entities directly without intermediate drafts.
+The following table shows the HTTP requests and corresponding CAP Java events:
 
 | HTTP / OData request                            | Event constant name                                      | Default implementation                               |
 | ----------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
@@ -148,10 +149,6 @@ These events have the same semantics as described in section [Handling CRUD even
 
 ::: tip
 With the 4.8.0 release, CAP Java introduced a mode where POST without `IsActiveEnitity=true` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is only active when the CDS property `cds.draft.post-active` is set to `true` and the entity is annotated with `@Common.DraftRoot.NewAction`. The annotation value needs to be the name of an unbound action in the same service of the entity. If the entity has a key with the type `UUID`, the action needs no further parameter. Otherwise, the action needs the key values of the entity as parameters.
-:::
-
-::: warning
-Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
 :::
 
 ## Draft Lock { #draft-lock }
