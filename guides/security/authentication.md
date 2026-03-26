@@ -114,10 +114,6 @@ As the mock user authentication is active, all (CAP) endpoints are [authenticate
 
 <div class="impl java">
 
-::: tip
-To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
-:::
-
 If you stay with the standard authentication mode, sending the OData request results in a `401` error response from the server, indicating that the anonymous user has been rejected due to missing authentication.
 
 ```sh
@@ -280,7 +276,7 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 <div class="impl node">
 
-```
+```sh
 [basic] - authenticated: { user: 'viewer-user', tenant: 'CrazyCars', features: [ 'cruise', 'park' ] }
 ```
 
@@ -755,7 +751,7 @@ IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUA
  
 ::: tip
 In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
-::: 
+:::
 
 You can best configure and test XSUAA authentication in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
