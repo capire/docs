@@ -276,7 +276,7 @@ MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='vi
 
 <div class="impl node">
 
-```
+```sh
 [basic] - authenticated: { user: 'viewer-user', tenant: 'CrazyCars', features: [ 'cruise', 'park' ] }
 ```
 
