@@ -279,7 +279,7 @@ Here's a rough checklist what this guide should cover:
 - [How to start extension projects](#start-ext-project) from [provided templates](#templates)
 - [How to find deployed app urls](#pull-base) of test and prod tenants
 - [What can be extended?](#about-extension-models) → which services, entities, ...
-- [With enclosed documentation](../../cds/cdl#doc-comment) to the models for these services and entities.
+- [With enclosed documentation](../../cds/cdl#doc-comments) to the models for these services and entities.
 
 ### 5. Deploy Application
 

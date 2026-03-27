@@ -6,7 +6,7 @@ impl-variants: true
 
 <div class="impl node">
 
-This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite). This architecture brings significantly enhanced feature sets and feature parity, as documented in the [*Features* section of the SQLite guidsqlite#featuresatures).
+This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite).
 
 *Learn about migrating from the former `cds-pg` in the [Migration](#migration) chapter.*{.learn-more}
 
@@ -528,6 +528,10 @@ Add a Maven dependency to Liquibase in `srv/pom.xml`:
     <scope>runtime</scope>
 </dependency>
 ```
+
+::: tip Liquibase license change
+Please be aware that Liquibase [changed it's license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
+:::
 
 Once `liquibase-core` is on the classpath, [Spring runs database migrations](https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.data-initialization.migration-tool.liquibase) automatically on application startup and before your tests run.
 

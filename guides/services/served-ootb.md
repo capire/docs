@@ -309,7 +309,7 @@ To illustrate the above:
 - `@cds.search: { title: false }` on `Books` would only exclude properties, so `author.name` would still be searched.
 - `@cds.search: { title }` on `Books` defines an include list, so `author.name` is not searched. In this mode, `@cds.search` is expected to include all properties that should be searched. Hence, `author.name` would need to be added to `@cds.search` itself: `@cds.search: { title, author.name }`.
 
-### Fuzzy Search on SAP HANA Cloud <Beta /> {#fuzzy-search}
+### Fuzzy Search on SAP HANA Cloud {#fuzzy-search}
 
 > Prerequisite: For CAP Java, you need to run in [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
 
