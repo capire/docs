@@ -1,7 +1,8 @@
+using { sap.capire.bookshop.Addresses } from './address';
 using { Currency, cuid, managed, sap } from '@sap/cds/common';
 namespace sap.capire.bookshop;
 
-entity Books {
+entity Books : managed {
   key ID   : Integer;
   author   : Association to Authors @mandatory;
   title    : localized String @mandatory;
@@ -14,7 +15,7 @@ entity Books {
   total = price * stock;
 }
 
-entity Authors {
+entity Authors : managed {
   key ID       : Integer;
   name         : String @mandatory;
   dateOfBirth  : Date;
@@ -22,6 +23,7 @@ entity Authors {
   placeOfBirth : String;
   placeOfDeath : String;
   books        : Association to many Books on books.author = $self;
+  address      : Association to Addresses;
 
   cheapBooks   = books[price < 19.99]; // based on `books` association
   age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
