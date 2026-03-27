@@ -423,3 +423,9 @@ Available for:
 <div id="upcoming-plugins" />
 
 <div id="planned-plugins" />
+
+## SAP Build Process Automation
+
+The @cap-js/process plugin allows you to interact with the Workflow API of SAP Build Process Automation. It provides annotations to interact with processes as well as a programmatic API. It can be used to manage the lifecycle of processes (e.g., start, cancel, suspend, resume) and to retrieve information on running and finished processes.
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
