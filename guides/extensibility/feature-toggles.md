@@ -41,7 +41,7 @@ code .
 The following steps will extend the [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/capire/samples) before, and prepare to extend the *bookstore* app:
 
 ```sh
-git clone https://github.com/capire/samples samples
+git clone --recurse-submodules https://github.com/capire/samples samples
 cd samples
 npm install
 ```
