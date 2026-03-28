@@ -315,7 +315,7 @@ To illustrate the above:
 
 Fuzzy search is a fault-tolerant search feature of SAP HANA Cloud, which returns records even if the search term contains additional characters, is missing characters, or has typographical errors.
 
-You can configure the fuzziness in the range `[0.0, 1.0]`. The value 1.0 enforces exact search.
+You can configure the fuzziness in the range `[0.0, 1.0]`. The value `1.0` enforces the least fuzzy search, if not overwritten by annotations on elements.
 
 - Java: <Config java keyOnly>cds.sql.hana.search.fuzzinessThreshold = 0.8</Config>
 - Node.js:<Config keyOnly>cds.hana.fuzzy = 0.7</Config><sup>(1)</sup>
