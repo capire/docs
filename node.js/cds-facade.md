@@ -291,7 +291,8 @@ Provides access to common event context properties like `tenant`, `user`, `local
 The effective [CDS model](../cds/csn) loaded during bootstrapping, which contains all service and entity definitions, including required services. Many framework operations use that as a default where models are required. It is loaded in built-in `server.js` like so:
 
 ```js
-cds.model = await cds.load('*')
+const csn = await cds.load('*')
+cds.model = cds.compile.for.nodejs(csn)
 ```
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
