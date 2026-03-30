@@ -1529,6 +1529,16 @@ Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
 Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
 :::
 
+When creating a new RequestContext in a background thread (without propagating an existing request), you must manually inject the tenant-specific IAS host to use IAS-based Remote Services. Unlike inherited request contexts that automatically carry authentication details, a fresh asynchronous request lacks the IAS host information required for remote service calls. The host can be retrieved from a `TenantInfo` object provided for example by the `TenantProviderService`.
+
+```java
+TenantInto tenantInfo = ...;
+String tenantHost = tenantInfo.get("subscriber").get("tenantHost");
+runtime.requestContext().systemUser(tenantId).modifyUser(user->user.setAdditionalAttribute("iss", tenantHost)).run((reqContext) -> {
+…
+});
+```
+
 </div>
 
 <div class="impl node">
