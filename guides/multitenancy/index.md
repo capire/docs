@@ -112,10 +112,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
 
       ```jsonc
       {
-        "profiles": [
-          "with-mtx-sidecar",
-          "java"
-        ],
+        "profile": "with-mtx-sidecar",
         "requires": {
           "[production]": {
             "multitenancy": true
