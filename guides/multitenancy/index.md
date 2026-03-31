@@ -112,14 +112,15 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
 
       ```jsonc
       {
-        "profiles": [
-          "with-mtx-sidecar",
-          "java"
-        ],
+        "profile": "with-mtx-sidecar",
         "requires": {
           "[production]": {
             "multitenancy": true
+          },
+          "[with-mtx]": {
+            "multitenancy": true
           }
+          
         }
       }
       ```
@@ -132,18 +133,23 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
            <artifactId>cds-feature-mt</artifactId>
            <scope>runtime</scope>
        </dependency>
+       
+		   <dependency>
+		   	<groupId>org.xerial</groupId>
+		   	<artifactId>sqlite-jdbc</artifactId>
+		   	<scope>runtime</scope>
+		   </dependency>
        ```
 
-   3. Adds the following to your _srv/src/java/resources/application.yaml_:
+   3. Adds the following to your _srv/src/main/resources/application.yaml_:
 
        ```yml
        ---
        spring:
-         config.activate.on-profile: cloud
+         config.activate.on-profile: with-mtx
        cds:
          multi-tenancy:
-           mtxs.enabled: true
-
+           sidecar.url: http://localhost:4005/ # in production mode overwrite with the URL from mta.yaml
        ```
 
    4. Adds a sidecar subproject at `mtx/sidecar` with this _package.json_:
@@ -155,8 +161,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
           "@cap-js/hana": "^2",
           "@sap/cds": "^9",
           "@sap/cds-mtxs": "^3",
-          "@sap/xssec": "^4",
-          "express": "^4"
+          "@sap/xssec": "^4"
         },
         "devDependencies": {
           "@cap-js/sqlite": "^2"
