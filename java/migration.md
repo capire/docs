@@ -157,6 +157,38 @@ The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odat
 3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
 
 
+### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `abc` | false | true | Any description. |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `abd`
+
+The functionality provided by these properties is enabled by default and there is no reason to switch these off.
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `abc` | Any description about replacement |
+
+### Removed Java APIs
+
+- Removed deprecated classes:
+  - `com.sap.cds.A`, use `B` instead
+
+- Removed deprecated methods:
+  - `com.sap.cds.ql.cqn.A.search(String term)`, use `searchTerm(CqnSearchTermPredicate)` instead
+
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
 ### New License
