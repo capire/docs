@@ -84,6 +84,10 @@ git clone https://github.com/capire/xtravels
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
 ```
+```sh
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
+```
 
 [@capire/xtravels]: https://github.com/capire/xtravels
 [@capire/xflights]: https://github.com/capire/xflights
@@ -188,7 +192,19 @@ process.env.NODE_ENV || require ('./data-federation')
 ```
 :::
 
-Restart the Xtravels app, and see these lines in the log output:
+With that in place, we can start the xtravels app again, and see the data federation in action. Do so by running the following commands from within the `cap/samples` root folder in separate terminals, and in that order:
+
+```shell :line-numbers=1
+cds watch s4
+```
+```shell :line-numbers=2
+cds watch xflights
+```
+```shell :line-numbers=3
+cds watch xtravels
+```
+
+In the logs of the xtravels app server, you should now see the output of the replication handler, showing that entries from the remote services are replicated locally:
 
 ```zsh
 Replicated 49 entries { for: 'sap.capire.xflights.Supplements', via: 'hcql' }
