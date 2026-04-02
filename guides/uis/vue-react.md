@@ -16,9 +16,7 @@ The example here is built on a minimal CAP project:
 cds init bookshop --nodejs --add tiny-sample && code bookshop
 ```
 
-### Vue.js
-
-Simply create a Vue.js or React app in `app/catalog`:
+Now simply create a Vue.js or React app in `app/catalog`:
 
 ::: code-group
 
