@@ -44,7 +44,8 @@ In essence, the built-in bootstrapping logic works like that:
 
 ```js
 cds.app = require('express')()
-cds.model = await cds.load('*')
+const csn = await cds.load('*')
+cds.model = cds.compile.for.nodejs(csn)
 cds.services = await cds.serve('all').from(cds.model).in(cds.app)
 ```
 
