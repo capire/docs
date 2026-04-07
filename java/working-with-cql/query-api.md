@@ -948,7 +948,7 @@ If the selected rows are already locked by another transaction, by default, the 
 
 - `DEFAULT` - wait until the lock is released:
 
-  By default, if the selected rows are locked by another transaction, the query waits for the lock to be relased. If the lock is not released within the database's predefined timeout a `CdsLockTimeoutException` is thrown:
+  By default, if the selected rows are locked by another transaction, the query waits, and if the lock isn't released within the database's predefined timeout a `CdsLockTimeoutException` is thrown:
   ```java
   Select.from("bookshop.Books").byId(1).lock();
   ```
