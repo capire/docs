@@ -944,7 +944,7 @@ Select.from("bookshop.Books").byId(1).lock(SHARED);
 
 #### Wait Strategies
 
-If the selected rows are already locked by another transaction, by default, the query waits until the lock is released. You can specify a [wait strategy](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnLock.Wait.Strategy.html) to control whether and how long the query execution shall wait.
+If the selected rows are already locked by another transaction, by default, the query waits until the lock is released. You can specify a [wait strategy](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnLock.Wait.Strategy.html) to control whether and how long the query execution waits.
 
 - `DEFAULT` - wait until the lock is released:
 
