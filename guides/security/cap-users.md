@@ -1529,7 +1529,7 @@ Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
 Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
 :::
 
-To use IAS-based Remote Services in background executions, you must in addition manually inject the tenant-specific IAS host into the created Request Context. Unlike inherited request contexts that automatically carry authentication details, a fresh Request Context lacks the IAS host information required for remote service calls. The host can be retrieved from a `TenantInfo` object provided for example by the `TenantProviderService`.
+To use IAS-based Remote Services in background executions, you might in addition need to manually inject the tenant-specific IAS host into the created Request Context. If the background execution is initialized with a fresh Request Context, it will not carry inherited authentication details from a previous Request Context and thereby lacks the IAS host information required for remote service calls. The host can be retrieved from a `TenantInfo` object provided for example by the `TenantProviderService`.
 
 ```java
 TenantInto tenantInfo = ...;
