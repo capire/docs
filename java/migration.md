@@ -163,7 +163,12 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `abc` | false | true | Any description. |
+| `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
+| `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
+| `cds.multiTenancy.mock.enabled` | null | true | |
+| `cds.persistence.changeset.enforceTransational` | true | false | |
+| `cds.errors.preferServiceException` | false | true | |
+
 
 ### Deprecated Properties
 
@@ -179,7 +184,9 @@ The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement |
+| `cds.taskScheduler.enabled` | Use 'cds.outbox.persistent.scheduler.enabled'. |
+| `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
+| `cds.errors.combined` | Removed as the underlying feature is active by default now. |
 
 ### Removed Java APIs
 
