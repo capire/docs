@@ -61,7 +61,7 @@
 - [advanced/publishing-apis/(.*)](guides/protocols/$1)
 - [advanced/troubleshooting](get-started/get-help)
 - [advanced/hybrid-testing](tools/cds-bind)
-- [advanced/odata](protocols/odata)
+- [advanced/odata](guides/protocols/odata)
 
 ## CDS
 

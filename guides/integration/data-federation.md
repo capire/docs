@@ -77,22 +77,26 @@ Relying on live calls to remote services per row is clearly not an option. Inste
 
 We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
 
-```sh
+```sh :line-numbers
 mkdir -p cap/samples
 cd cap/samples
-git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xtravels 
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
-```
-```sh
-echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
-npm install
 ```
 
 [@capire/xtravels]: https://github.com/capire/xtravels
 [@capire/xflights]: https://github.com/capire/xflights
 [@capire/s4]: https://github.com/capire/s4
 
+```sh :line-numbers=6
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
+```
+
+> [!note]
+> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces` to optimize the `npm install` locally. 
+> We'll learn more about that in the [_Inner Loop Development guide_](inner-loops.md). 
 
 
 
@@ -184,10 +188,10 @@ Let's have a closer look at this code, which handles these main tasks:
 
 ## Test Drive Locally
 
-Let's see the outcome in action: to activate the above data federation code, edit `srv/server.js` file and uncomment the single line of code in there like this:
+Let's see the outcome in action: to activate the above data federation code, edit `xtravels/srv/server.js` file and uncomment the single line of code in there like this:
 
 ::: code-group
-```js :line-numbers [srv/server.js]
+```js [srv/server.js]
 process.env.NODE_ENV || require ('./data-federation')
 ```
 :::
