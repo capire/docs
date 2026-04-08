@@ -48,6 +48,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.recipes.UclMigration|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -96,7 +97,8 @@ The following table gives an overview about the removed properties:
   - `com.sap.cds.A`, use `B` instead
 
 - Removed deprecated methods:
-  - `com.sap.cds.ql.cqn.A.search(String term)`, use `searchTerm(CqnSearchTermPredicate)` instead
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`, use `setResult(SpiiResult)` instead.
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()`, use `getResult()` instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
