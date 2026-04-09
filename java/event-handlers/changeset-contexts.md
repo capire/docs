@@ -1,7 +1,6 @@
 ---
 synopsis: >
   ChangeSet Contexts are an abstraction around transactions. This chapter describes how ChangeSets are related to transactions and how to manage them with the CAP Java SDK.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -28,7 +27,7 @@ context.getChangeSetContext();
 
 ## Defining ChangeSet Contexts { #defining-changeset-contexts}
 
-When [events](../../about/best-practices#events) are processed on [services](../services) the CAP Java SDK ensures that a ChangeSet Context is opened.
+When [events](../../get-started/concepts#events) are processed on [services](../services) the CAP Java SDK ensures that a ChangeSet Context is opened.
 If no ChangeSet Context is active the processing of an event ensures to open a new ChangeSet Context. This has the effect, that by default a ChangeSet Context is opened around the outermost event that was triggered on any service.
 This ensures that every top-level event is executed with its own transactional boundaries.
 
@@ -181,4 +180,4 @@ A ChangeSet Context can always be marked as requiring a transaction, by calling 
 Some Select queries will still require a transaction:
 
 - Select queries with a lock: These are treated like a modifying statement and will start a transaction.
-- Select queries reading streamed media data: These are currently not automatically detected. The surrounding ChangeSet Context needs to be marked as transactional explicitly. If not done, `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.
+- Select queries reading streamed media data: For these a transaction is started to avoid that `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.

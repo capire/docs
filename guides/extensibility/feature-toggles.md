@@ -1,13 +1,6 @@
 ---
-# layout: cookbook
-label: Feature Toggles
 synopsis: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Feature Toggles
-status: released
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 
@@ -48,7 +41,7 @@ code .
 The following steps will extend the [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/capire/samples) before, and prepare to extend the *bookstore* app:
 
 ```sh
-git clone https://github.com/capire/samples samples
+git clone --recurse-submodules https://github.com/capire/samples
 cd samples
 npm install
 ```
@@ -83,7 +76,7 @@ Add a subfolder per feature to folder *fts* and put `.cds` files into it. The na
 
 ### Feature *fts/isbn*
 
-Create a file *fiori/fts/isbn/schema.cds* with this content:
+Create a file *fts/isbn/schema.cds* with this content:
 
 ```cds
 using { CatalogService, sap.capire.bookshop.Books }
@@ -108,7 +101,7 @@ Note that all features will be deployed to each tenant database in order to allo
 
 ### Feature *fts/reviews*
 
-Create a file *fiori/fts/reviews/schema.cds* with this content:
+Create a file *fts/reviews/schema.cds* with this content:
 
 ```cds
 using { CatalogService } from '../../app/browse/fiori-service';

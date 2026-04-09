@@ -1,5 +1,4 @@
 ---
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -187,7 +186,7 @@ for (let [edm,{file,suffix}] of all)
 
 Use [`cds.compile.to.hana`](#hana) instead.
 
-### .hana() <Since version="8.0.0" of="@sap/cds" /> {.method}
+### .hana() <Since version="8.0.0" package="@sap/cds" /> {.method}
 
 Generates `hdbtable/hdbview` output.
 
@@ -457,17 +456,17 @@ cds.on('compile.to.edmx', ...)
 
 ### compile.for.runtime {.event}
 
-A one-time event, emitted before the model is compiled for usage in Node.js or Java runtime.
+Emitted every time before the model is compiled for usage in Node.js or Java runtime.
 This is the right place to, for example, add custom elements required at runtime.
 
 
 ### compile.to.dbx {.event}
 
-A one-time event, emitted before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
+Emitted every time before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
 This is the right place to, for example, add custom elements required in your persistence.
 
 
 ### compile.to.edmx {.event}
 
-A one-time event, emitted immediately before the model is compiled to edmx.
+Emitted every time before the model is compiled to edmx.
 This is the right place to add custom transformations to the model, for example, to add custom Fiori annotations.

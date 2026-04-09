@@ -41,7 +41,7 @@ It features both [CAP service handlers](https://github.com/SAP-samples/cap-sflig
 
 ## Developing TypeScript Projects
 
-### Using `cds watch` <Since version="8.6.0" of="@sap/cds-dk" /> { #cds-watch}
+### Using `cds watch` <Since version="8.6.0" package="@sap/cds-dk" /> { #cds-watch}
 
 Preferably use `cds watch` in a TypeScript project as if it was a JavaScript project.
 It detects TypeScript mode based on a `tsconfig.json` and run [`cds-tsx`](#cds-tsx) under the hood.
@@ -58,7 +58,7 @@ Detected tsconfig.json. Running with tsx.
 The same applies to `cds serve`.
 
 
-### Using `cds-tsx` <Since version="8.2.0" of="@sap/cds-dk" /> { #cds-tsx}
+### Using `cds-tsx` <Since version="8.2.0" package="@sap/cds-dk" /> { #cds-tsx}
 
 Alternatively, you can use the `cds-tsx` CLI command instead of `cds` for automatic TypeScript transpilation:
 
@@ -157,9 +157,9 @@ cds build     # to create the js files
 cd gen/srv && npm start
 ```
 
-[Learn more on running a project from build results.](../guides/deployment/custom-builds#test-run){.learn-more}
+[Learn more on running a project from build results.](../guides/deploy/build.md){.learn-more}
 
-## TypeScript APIs in `@sap/cds` <Since version="8.0.0" of="@sap/cds" />
+## TypeScript APIs in `@sap/cds` <Since version="8.0.0" package="@sap/cds" />
 
 The package `@cap-js/cds-types` contains all TypeScript declarations for `@sap/cds` APIs. These declarations are used automatically when you write TypeScript files, but also enable IntelliSense and type checking for standard JavaScript development in Visual Studio Code. Just add the `@cap-js/cds-types` package to your project as follows:
 

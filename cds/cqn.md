@@ -243,7 +243,7 @@ let q = {INSERT:{ into: { ref: ['Books'] }, entries: [
 ```
 ```js
 let q = {INSERT:{ into: { ref: ['Authors'] }, entries: [
-  { ID:150, name:'Edgar Allen Poe', books: [
+  { ID:150, name:'Edgar Allan Poe', books: [
     { ID:251, title:'The Raven' },
     { ID:252, title:'Eleonora' }
   ]}

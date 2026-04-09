@@ -729,7 +729,7 @@ The example configuration makes Spring exposing only the health endpoint with he
 For multitenancy scenarios, CAP Java replaces the default `db` indicator with an implementation that includes the status of all tenant databases.
 :::
 
-In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](/java/reflection-api#the-model-provider-service).
+In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](../reflection-api#the-model-provider-service).
 
 ```yaml
 management:

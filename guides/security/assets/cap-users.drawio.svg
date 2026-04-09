@@ -1,0 +1,179 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" style="background: transparent; background-color: transparent;" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="788px" height="143px" viewBox="-0.5 -0.5 788 143" content="&lt;mxfile&gt;&lt;diagram id=&quot;__QaNmah6qcJjaVukKD4&quot; name=&quot;Page-1&quot;&gt;7VjbUtswEP2aPDbjO85jcIA+lCkzmQ70UdjCVpEtV5aJw9d3FUu+JiUtgWRo82Lv0a4ue45WsSZ2kFZXHOXJNYswnVhGVE3sxcSybNMy4SGRdY2YljQlEnMSKawFluQZK9BQaEkiXPQcBWNUkLwPhizLcCh6GOKcrfpuD4z2R81RjEfAMkR0jN6SSCQ16rtGi3/GJE70yKahWlKknRVQJChiqw5kX0zsgDMm6re0CjCV2dN5qeMud7Q2E+M4E/sENBN5QrRUq1MzE2u9XAiBzIJxvkqIwMschbJlBewCloiUgmXCKyryOt0PpMIwwjlnZRbJt03zC9GF4OyxSagDyAOh9FYnUgIJCpOS4ysZuvBbYJ7Fm8k6rooKGGV8M3v7En5BIPt/xCJMeoP13HzDN8b5Uyl9wlzgqgOpfF5hlmLB1+BS6ZTO6hClbluTv2qlcqagpKMSjSElzrjpueUPXhSFu+g0t9DpUSHTwmBJXV69nyXTDZ+KzSabg4Pp57CS87Zd7pCasxYLWEpCaFiirIDH9bLr7sXquRn3XgPB/AZcvxWY6yZYzv3QHbB6phoeiBFYEAPVURJn8B4CZ9C3fS65IrBb56ohJVFEd8m3lajRDPc6/m2nz785m7ojBXhbFGAfRAHO6SoAniiVSadjK+cM6iYSuIH7IUORfDzhuI47tdy+dmbj2vF2ynH/HwWHPQpcxxgx+q6ngXe6teAfOQ1c52wkAes9N7V/MhKYlyJhnDwjQVi2L8GvKBvmwcvGAfRgW/70ZTmY20qCaR1EELOTEgRkEjbnMRXxhmRb3nG5trd93PW4fk0pL3KU/aVc6o6+luJektmcDfxFZdRj/tkZ8dFKiOfYR5bVto/M4R/FKMZLZWYsk+ct41D/Y5Yh+oWxXGX3BxZirW54UCnYgA19PSINyBhf36mjeWN8l8bU1eai6jYu1tqqiLjTfcB7JwqsNkgaOmYnTQUrudoybS0ViMdYDE5cmYHf0tkhS//b5JiC4p/610zbuFK93TCy2cZaN/5IGWfNx6fupl6BiuxeDQ06s7w9OqtXPupszjlad9xy6VCMRNYkY0/dWcfR3dvp53hScc0DSmVLRfKNdxMKmO2Fae3e3jvbF78A&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <g>
+            <ellipse cx="238" cy="37" rx="35" ry="35" fill="none" stroke="none" pointer-events="all"/>
+            <path d="M 214.31 64.2 C 214.31 64.2 214.31 64.2 214.31 64.2 M 214.31 64.2 C 214.31 64.2 214.31 64.2 214.31 64.2 M 233.4 71.98 C 226.68 64.56 220 57.31 202.29 40.86 M 233.4 71.98 C 221.23 60.15 207.87 48.15 202.29 40.86 M 244.01 71.27 C 236.01 61.32 224.07 52.26 203.7 30.96 M 244.01 71.27 C 230.44 58.34 216.76 43.72 203.7 30.96 M 253.91 69.85 C 233.87 49.79 218.78 31.3 205.12 21.06 M 253.91 69.85 C 240.01 57.82 227.76 43.96 205.12 21.06 M 259.56 64.2 C 248.89 53.04 235.99 42.91 210.77 15.41 M 259.56 64.2 C 242.57 46.52 225.1 29.83 210.77 15.41 M 265.22 58.54 C 253.7 46.68 245.31 36.9 216.43 9.75 M 265.22 58.54 C 253.48 48.33 243 36.89 216.43 9.75 M 270.17 52.18 C 250.92 33.28 233.62 16.5 222.79 4.8 M 270.17 52.18 C 260.36 42.45 249.38 30.94 222.79 4.8 M 271.58 42.28 C 258.81 28.36 247.59 17.11 231.99 2.68 M 271.58 42.28 C 263.29 33.33 256.2 26.01 231.99 2.68 M 273 32.38 C 267.11 27.8 258.41 18.74 241.18 0.56 M 273 32.38 C 261.77 19.6 248.82 7.77 241.18 0.56 M 265.93 13.99 C 264.32 12.22 262.85 11.25 260.27 8.34 M 265.93 13.99 C 264.19 11.97 262.26 10.07 260.27 8.34" fill="none" stroke="#ffffcc" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all" style="stroke: light-dark(rgb(255, 255, 204), rgb(24, 24, 0));"/>
+            <path d="M 221.22 5.62 C 227.12 1.8 236.7 -0.39 243.78 0.34 C 250.86 1.08 258.91 4.87 263.7 10.03 C 268.49 15.19 271.49 24.2 272.51 31.29 C 273.53 38.38 272.84 46.12 269.83 52.57 C 266.81 59.03 260.67 66.66 254.41 70.01 C 248.16 73.36 239.03 73.7 232.29 72.67 C 225.55 71.65 219.04 68.69 213.97 63.86 C 208.89 59.02 203.38 50.88 201.84 43.65 C 200.3 36.42 200.59 27.48 204.75 20.48 C 208.9 13.48 222.16 4.69 226.78 1.66 C 231.39 -1.37 232.28 1.67 232.45 2.32 M 235.1 1.37 C 241.74 0.11 253.06 1.55 258.94 5.26 C 264.81 8.97 268.07 16.78 270.34 23.64 C 272.61 30.49 274.44 39.47 272.57 46.39 C 270.7 53.32 264.66 60.5 259.13 65.18 C 253.59 69.86 246.11 74.06 239.37 74.46 C 232.62 74.86 224.75 71.54 218.66 67.57 C 212.58 63.6 205.29 57.57 202.84 50.66 C 200.39 43.76 201.81 33.1 203.97 26.15 C 206.14 19.19 210.22 13.05 215.84 8.93 C 221.45 4.81 234.48 2.68 237.67 1.45 C 240.87 0.21 235.36 1.15 235.01 1.5" fill="none" stroke="#ff8080" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all" style="stroke: light-dark(rgb(255, 128, 128), rgb(190, 81, 81));"/>
+        </g>
+        <g>
+            <rect x="208" y="21.5" width="60" height="30" fill="none" stroke="none" pointer-events="all"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 37px; margin-left: 209px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS" style="font-size: 18px;">
+                                        <b>
+                                            CAP User
+                                        </b>
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="238" y="40" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        CAP User
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g>
+            <rect x="519.25" y="92" width="60" height="30" fill="none" stroke="none" pointer-events="all"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 107px; margin-left: 520px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS" style="font-size: 18px;">
+                                        <b>
+                                            &lt;&lt;propagate&gt;&gt;
+                                        </b>
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="549" y="111" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        &lt;&lt;propagat...
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g>
+            <ellipse cx="549.25" cy="37" rx="35" ry="35" fill="none" stroke="none" pointer-events="all"/>
+            <path d="M 521.69 59.46 C 521.69 59.46 521.69 59.46 521.69 59.46 M 521.69 59.46 C 521.69 59.46 521.69 59.46 521.69 59.46 M 543.61 70.06 C 536.64 62.1 527.61 53.92 513.21 39.66 M 543.61 70.06 C 532.57 58.33 522.16 48.29 513.21 39.66 M 554.22 69.36 C 539.38 55.67 525.65 38.5 515.33 30.46 M 554.22 69.36 C 541.43 56.19 527.64 44.34 515.33 30.46 M 564.82 68.65 C 553.1 57.78 543.44 46.42 518.16 21.98 M 564.82 68.65 C 548.83 52.09 534.33 38.49 518.16 21.98 M 570.48 62.99 C 552.31 45.87 537.97 26.52 523.11 15.61 M 570.48 62.99 C 551.69 43.34 532.61 25.6 523.11 15.61 M 576.85 58.04 C 561.44 41.07 543.16 23.83 529.47 10.67 M 576.85 58.04 C 558.69 40.27 539.2 21.49 529.47 10.67 M 581.09 50.97 C 562.49 33.35 544.71 15.96 535.13 5.01 M 581.09 50.97 C 570.62 41.74 562.22 33.02 535.13 5.01 M 583.21 41.78 C 573.07 33.49 562.15 21.02 545.03 3.59 M 583.21 41.78 C 575.69 33.62 566.7 24.79 545.03 3.59 M 585.33 32.59 C 575.35 20.27 561.74 12.8 555.63 2.89 M 585.33 32.59 C 574.24 21.49 563.61 12.19 555.63 2.89" fill="none" stroke="#ffffcc" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all" style="stroke: light-dark(rgb(255, 255, 204), rgb(24, 24, 0));"/>
+            <path d="M 556.69 2.81 C 563.36 3.54 571.27 8.52 575.97 13.5 C 580.66 18.47 584.1 25.8 584.87 32.68 C 585.63 39.56 584.12 48.64 580.56 54.75 C 576.99 60.86 569.89 66.64 563.49 69.33 C 557.08 72.03 549.06 72.55 542.12 70.92 C 535.17 69.3 526.67 64.76 521.84 59.6 C 517.01 54.44 513.75 46.53 513.13 39.94 C 512.52 33.36 514.54 25.82 518.15 20.09 C 521.75 14.35 527.99 8.35 534.75 5.54 C 541.52 2.73 554.23 3.38 558.74 3.25 C 563.24 3.11 561.82 3.97 561.77 4.72 M 536.86 3.79 C 542.91 0.95 551.12 1.54 558.06 3.8 C 565.01 6.07 573.76 11.81 578.52 17.37 C 583.28 22.93 586.61 30.58 586.63 37.15 C 586.65 43.72 582.95 51.32 578.64 56.8 C 574.33 62.27 567.18 67.89 560.75 69.99 C 554.32 72.1 546.85 71.64 540.05 69.44 C 533.25 67.24 524.48 61.9 519.92 56.82 C 515.36 51.73 512.7 45.23 512.71 38.92 C 512.72 32.61 515.7 24.67 519.98 18.97 C 524.27 13.27 535.65 6.92 538.43 4.72 C 541.21 2.52 536.66 5.29 536.67 5.76" fill="none" stroke="#ff8080" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all" style="stroke: light-dark(rgb(255, 128, 128), rgb(190, 81, 81));"/>
+        </g>
+        <g>
+            <rect x="521.25" y="22" width="60" height="30" fill="none" stroke="none" pointer-events="all"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 58px; height: 1px; padding-top: 37px; margin-left: 522px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS" style="font-size: 18px;">
+                                        <b>
+                                            CAP User
+                                        </b>
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="551" y="41" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        CAP User
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g>
+            <rect x="302.5" y="22" width="170" height="120" rx="18" ry="18" fill="#ffffcc" stroke="#000000" pointer-events="all" style="fill: light-dark(rgb(255, 255, 204), rgb(24, 24, 0)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 168px; height: 1px; padding-top: 82px; margin-left: 304px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS" style="font-size: 18px;">
+                                        Authorization
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="388" y="86" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        Authorization
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g>
+            <rect x="0.5" y="22" width="170" height="120" rx="18" ry="18" fill="#ffffcc" stroke="#000000" pointer-events="all" style="fill: light-dark(rgb(255, 255, 204), rgb(24, 24, 0)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 168px; height: 1px; padding-top: 82px; margin-left: 2px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS" style="font-size: 18px;">
+                                        Authentication
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="86" y="86" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        Authentication
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g>
+            <rect x="617.5" y="22" width="170" height="120" rx="18" ry="18" fill="#ffffcc" stroke="#000000" pointer-events="all" style="fill: light-dark(rgb(255, 255, 204), rgb(24, 24, 0)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g transform="translate(-0.5 -0.5)">
+                <switch>
+                    <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 168px; height: 1px; padding-top: 82px; margin-left: 619px;">
+                            <div style="box-sizing: border-box; font-size: 0; text-align: center; color: #000000; ">
+                                <div style="display: inline-block; font-size: 12px; font-family: &quot;Helvetica&quot;; color: light-dark(#000000, #ffffff); line-height: 1.2; pointer-events: all; white-space: normal; word-wrap: normal; ">
+                                    <font face="Comic Sans MS">
+                                        <span style="font-size: 18px;">
+                                            Outbound
+                                            <br/>
+                                            Authentication
+                                        </span>
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                    </foreignObject>
+                    <text x="703" y="86" fill="light-dark(#000000, #ffffff)" font-family="&quot;Helvetica&quot;" font-size="12px" text-anchor="middle">
+                        Outbound...
+                    </text>
+                </switch>
+            </g>
+        </g>
+        <g style="filter: drop-shadow(light-dark(rgba(0, 0, 0, 0.25), rgba(237, 237, 237, 0.25)) 2px 3px 2px);">
+            <path d="M 170.5 82 L 296.13 82" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 301.38 82 L 294.38 85.5 L 296.13 82 L 294.38 78.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g style="filter: drop-shadow(light-dark(rgba(0, 0, 0, 0.25), rgba(237, 237, 237, 0.25)) 2px 3px 2px);">
+            <path d="M 472.5 82 L 611.13 82" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 616.38 82 L 609.38 85.5 L 611.13 82 L 609.38 78.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+    </g>
+    <switch>
+        <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+        <a transform="translate(0,-5)" xlink:href="https://www.drawio.com/doc/faq/svg-export-text-problems" target="_blank">
+            <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Text is not SVG - cannot display
+            </text>
+        </a>
+    </switch>
+</svg>

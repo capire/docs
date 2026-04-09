@@ -2,8 +2,7 @@
 synopsis: >
   CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
   This section explains how to configure multitenancy for the CAP Java.
-# status: released
-uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
+# uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # Multitenancy (Classic) { #multitenancy-classic}
@@ -285,7 +284,7 @@ In this example, the `grant-as-authority-to-apps` section is used to grant the `
 
 It isn't necessary to have the security configuration in a separate file. It can also be added to the *mta.yaml* file directly.
 
-::: warning *❗ Warning*
+::: warning 
 The `mtcallback` and `mtdeployment` scopes **must not be exposed** to any business user, for example, using a role template. Else a malicious user could update or even delete the artifacts of arbitrary tenants. In addition, if you implement a service broker in order to expose your service API for (technical) users of SaaS tenants, you must ensure that both scopes **cannot be consumed as authorities** in cloned service instances created by clients. To achieve that, set  `authorities-inheritance: false`. It is **strongly recommended** to explicitly enumerate all authorities that should be exposed in the the broker configuration (allow-list).
 :::
 
@@ -412,7 +411,7 @@ The first *.cdsrc.json* file goes into the root folder of your project and speci
 You only need to change this configuration if you named your project folders, `app`, `db`, `srv`, and `mtx-sidecar` differently.
 :::
 
-A detailed description of this configuration file can be found in section [Build Configuration](../guides/deployment/custom-builds#build-config). In the following, you find a short summary of this example:
+A detailed description of this configuration file can be found in section [Build Configuration](../guides/deploy/build.md). In the following, you find a short summary of this example:
 
 The `build` section defines the build `tasks` that should be executed. Three build tasks are defined in this example:
 
@@ -465,7 +464,7 @@ You only need to change this configuration if you named your project folders, `a
 :::
 
 ::: warning
-If you have configured a location for your i18n files as described in the [Localization Section](../guides/i18n#where-to-place-text-bundles), please make sure to add the same CDS configuration in both, the *.cdsrc.json* of the SaaS application and in the *.cdsrc.json* of the `mtx-sidecar`.
+If you have configured a location for your i18n files as described in the [Localization Section](../guides/uis/i18n#where-to-place-text-bundles), please make sure to add the same CDS configuration in both, the *.cdsrc.json* of the SaaS application and in the *.cdsrc.json* of the `mtx-sidecar`.
 :::
 
 In this file, the `requires` section configures the service instances that should be used by the *mtx-sidecar*. In this case, it's an instance of the UAA Service, to enable authentication and authorization, as well as the Service Manager, that enables multitenancy.
@@ -682,7 +681,7 @@ The following sections describe how to trigger the database schema upgrade for t
 
 When multitenancy is configured, the CAP Java SDK exposes a REST endpoint to update database schemata.
 
-::: warning *❗ Warning*
+::: warning 
 You must use the scope `mtdeployment` for the following requests!
 :::
 
@@ -855,7 +854,7 @@ The configuration of mock users is described in section [Security](./security). 
 
 If you want to authenticate using the XSUAA, just copy the XSUAA service binding into the *default-env.json*. You then need to have a valid token for the tenant to authenticate. This can be obtained through client-credential-flow, for example, using Postman.
 
-::: warning *❗ Warning*
+::: warning 
 Requests without user information fail!
 :::
 
@@ -883,7 +882,7 @@ tenants.forEach(tenant -> {
 });
 ```
 
-::: warning *❗ Warning*
+::: warning 
 If an application overrides the default behavior of the CAP Java SDK this way, it's responsible of ensuring data privacy and isolation!
 :::
 
@@ -914,7 +913,7 @@ upon incoming requests.
 
 In order to activate the combined pool approach set the property `cds.multiTenancy.datasource.combinePools.enabled = true`.
 
-::: warning *❗ Warning*
+::: warning 
 Since the pool is shared among all tenants, one tenant could eat up all available connections, either intentionally or by accident. Applications using combined pools need to take adequate measures to mitigate this risk, for example by introducing rate-limiting.
 :::
 

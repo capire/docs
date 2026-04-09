@@ -305,7 +305,7 @@ type CodeList : {
 
 :::
 
-### Adding / Adapting Fields {.best-practice}
+### Adding / Adapting Fields
 
 Now also assumed, you'd want all code lists to have an additional field for long descriptions, and you also want currency symbols, and the `locale` field for languages needs to support values with up to 15 characters. With aspects, you could simply adapt the reuse types and entities accordingly as follows:
 
@@ -320,7 +320,7 @@ extend Languages:locale with (length:15);
 
 :::
 
-### Adding Relationships {.best-practice}
+### Adding Relationships
 
 You can even add [Associations](cdl#associations) and [Compositions](cdl#compositions) to definitions you obtained from somewhere else. For example, the following would extend the common reuse type `managed` obtained from `@sap/cds/common` to not only capture latest modifications, but a history of commented changes, with all entities inheriting from that aspect, own or reused ones, receiving this enhancement automatically:
 
@@ -339,7 +339,7 @@ extend managed with {
 
 
 
-### Adding Reuse Aspects {.best-practice}
+### Adding Reuse Aspects
 
 And as the `:` notation to *inherit* an aspect is essentially just [syntactical sugar](cdl#includes) for extending a given definition with a [*named* aspect](cdl#named-aspects), you can also adapt a reused definition to *inherit* from a common reuse aspect from 'the outside' like so:
 
@@ -359,7 +359,7 @@ The same approach and techniques are used by SaaS customers when customizing a S
 
 
 
-### Adding Custom Fields {.best-practice}
+### Adding Custom Fields
 
 For example, SaaS customers would quite frequently add extension fields like that:
 
@@ -375,7 +375,7 @@ extend ShipmentOrders with {
 
 
 
-### Overriding Annotations {.best-practice}
+### Overriding Annotations
 
 Sometimes they'd need to override existing annotations, such as for UI labels:
 
@@ -386,7 +386,7 @@ annotate Customers with @title:'Patients'; // e.g. for health care
 
 
 
-### Verticalization {.best-practice}
+### Verticalization
 
 Verticalization means to adapt a given application for different regions or industries, which can be accomplished by providing respective predefined extension packages and switch them on per customer using [feature toggles](../guides/extensibility/feature-toggles).
 

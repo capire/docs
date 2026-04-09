@@ -3,7 +3,6 @@
 shorty: Schema Notation
 synopsis: >
   Specification of CSN, CDS' canonical format for representing CDS models as plain JavaScript objects, similar to <a href="https://json-schema.org" target="_blank" rel="noopener noreferrer">JSON Schema</a>.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 <!-- Migrated: @external/cds/12-CSN.md -> @external/cds/csn.md -->
@@ -15,7 +14,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 CSN (pronounced as "_Season_") is a notation for compact representations of CDS models — tailored to serve as an optimized format to share and interpret models with minimal footprint and dependencies.
 
-It's similar to [JSON Schema] but goes beyond JSON's abilities, in order to capture full-blown _Entity-Relationship Models_ and [Extensions](#aspects). This makes CSN models a perfect source to generate target models, such as [OData/EDM](../advanced/odata) or [OpenAPI] interfaces, as well as persistence models for SQL or NoSQL databases.
+It's similar to [JSON Schema] but goes beyond JSON's abilities, in order to capture full-blown _Entity-Relationship Models_ and [Extensions](#aspects). This makes CSN models a perfect source to generate target models, such as [OData/EDM](../guides/protocols/odata) or [OpenAPI] interfaces, as well as persistence models for SQL or NoSQL databases.
 
 [[toc]]
 
@@ -56,11 +55,10 @@ definitions:
     elements:
       foo: {type: cds.Integer}
       bar: {type: cds.String}
-extensions: [
+extensions:
   - extend: Foo
     elements:
       bar: {type: cds.String}
-]
 ```
 
 The same model as a **plain JavaScript** object:

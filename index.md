@@ -1,71 +1,72 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
-status: released
 title: Home
 
 hero:
   name: "SAP Cloud Application Programming Model"
-  image: /cap-logo.svg
+  image: /logos/cap.svg
 
   tagline:
-    Build cloud-native applications
-    with maximized productivity
-    at minimized costs,
-    and proven best practices
+    Build enterprise-grade cloud applications
+    with maximized productivity, 
+    fueled by proven best practices, 
     served out of the box.
 
   actions:
 
-    - theme: alt
-      text: Get Started
+    - text: Get Started
       link: /get-started/
+      theme: alt
+      
+    - text: Develop
+      link: /guides/
+      theme: alt
 
-    - theme: alt
-      text: Learn More
-      link: /about/
+    - text: Deploy
+      link: /guides/deploy/
+      theme: alt
 
-    - theme: brand
-      text: What's New?
+    - text: What's New?
       link: /releases
 
 features:
 
-- title: Focus on Domain
+- title: Rapid Development
   icon: ⭕️
   details:
-    •&nbsp; Capture intent ⇒ What, not how! <br/>
-    •&nbsp; Minimized boilerplate coding <br/>
-    •&nbsp; Minimized technical debt <br/>
-  link: about/
-  linkText: Read the Primer
+    •&nbsp; Jumpstart & Grow as you go... <br/>
+    •&nbsp; Inner loop fast tracks <br/>
+    •&nbsp; Decoupled dev teams <br/>
+  link: get-started/
+  linkText: Getting Started
 
-- title: Rapid Development
-  icon: 🌀
+- title: Focus on Domain!
+  icon: 🍀
   details:
-    •&nbsp; Jumpstart with minimal setup <br/>
-    •&nbsp; Fast inner loop dev & tests <br/>
-    •&nbsp; Grow as you go... <br/>
-  link: get-started/in-a-nutshell
-  linkText: Get Started in a Nutshell
+    •&nbsp; Capture intent → What, not how! <br/>
+    •&nbsp; Separation of concerns <br/>
+    •&nbsp; Minimized technical debt <br/>
+  link: get-started/features
+  linkText: Features Overview
 
 - title: Proven Best Practices
-  icon: 🧩
+  icon: 🏆
   details:
     •&nbsp; Enterprise-grade solutions <br/>
-    •&nbsp; Proven in SAP products <br/>
+    •&nbsp; Battle-tested in real products <br/>
     •&nbsp; Served out of the box <br/>
-  link: about/best-practices
-  linkText: Key Concepts & Rationales
+  link: get-started/concepts
+  linkText: Core Concepts
 
-- title: Cloud Native
+- title: Cloud Native by Design
   icon: 💯
   details:
-    •&nbsp; Multitenancy, Extensibility, ... <br/>
-    •&nbsp; Resilience, Scalability, ... <br/>
-    •&nbsp; Intrinsically taken care of <br/>
-  link: about/#cloud-native-by-design
-  linkText: Intrinsic & by Design
+    •&nbsp; Multitenancy, Scalability, ... <br/>
+    •&nbsp; Intrinsic Extensibility <br/>
+    •&nbsp; Evolution w/o disruption <br/>
+  link: get-started/features#cloud-native-by-design
+  linkText: Intrinsic Cloud Qualities
 
 ---
 

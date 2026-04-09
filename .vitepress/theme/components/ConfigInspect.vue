@@ -36,12 +36,13 @@
   import FloatingVue from 'floating-vue'
   import yaml from 'yaml'
 
-  const { java, keyOnly, filesOnly, showPrivate, label:labelProp } = defineProps<{
+  const { java, keyOnly, filesOnly, showPrivate, label:labelProp, keyDelim } = defineProps<{
     java?: boolean,
     keyOnly?: boolean,
     filesOnly?: boolean,
     showPrivate?: boolean,
-    label?: string
+    label?: string,
+    keyDelim?: string
   }>()
 
   // sub component that renders code blocks similar to the markdown `::: code-block` syntax
@@ -85,6 +86,7 @@
 
   const [key, val] = slotVal.split(/\s*[:=]\s*(.*)/) // split on first `:` or `=`
   const label = labelProp || `${keyOnly ? key: slotVal}`
+  const keyDel = keyDelim ?? '.'
 
   const cfgKey = ref()
   const popperVisible = ref(false)
@@ -114,25 +116,25 @@
 
     let jsonVal
     if (typeof value === 'string' && value.trim().match(/^[[{].*[\]}]$/)) { try { jsonVal = JSON.parse(value) } catch {/*ignore*/ } }
-    const pkg = toJson(key, jsonVal ?? value)
+    const pkg = toJson(key, jsonVal ?? value, keyDel)
 
     pkgStr.value = JSON.stringify(pkg, null, 2)
     rcJsonStr.value = JSON.stringify(pkg.cds??{}, null, 2)
     rcJsStr.value = 'module.exports = ' + rcJsonStr.value.replace(/"(\w*?)":/g, '$1:')
     rcYmlStr.value = yaml.stringify(pkg.cds)
-    propStr.value = `${key}=${jsonVal ? JSON.stringify(jsonVal) : value}`
 
-    let envKey = key.replaceAll('_', '__').replaceAll('.', '_')
+    let envKey = key.replaceAll('_', '__').replaceAll(keyDel, '_')
     if (/^[a-z_]+$/.test(envKey)) envKey = envKey.toUpperCase() // only uppercase if not camelCase
     envStr.value = `${envKey}=${jsonVal ? JSON.stringify(jsonVal) : value}`
+    propStr.value = `${envKey}=${jsonVal ? JSON.stringify(jsonVal) : value}`
 
     javaAppyml.value = yaml.stringify(pkg)
     javaEnvStr.value = `-D${propStr.value}`
   })
 
-function toJson(key:string, value:string): Record<string, any> {
+function toJson(key:string, value:string, delim:string): Record<string, any> {
   let res  = {}
-  const parts = key.split('.')
+  const parts = key.split(delim)
   parts.reduce((r:Record<string,any>, a, i) => {
     r[a] = r[a] || (i < parts.length-1 ? {} : value)
     return r[a];

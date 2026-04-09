@@ -21,7 +21,7 @@ npm add -D @cap-js/cds-test
 ```
 
 ::: tip Examples
-Find examples in [*capire/samples*](https://github.com/capire/samples/tree/main/tests) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
+Find examples in [*capire/samples*](https://github.com/capire/bookstore/tree/main/test) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
 :::
 
 
@@ -121,7 +121,7 @@ describe('my test suite', ()=>{
     const { data } = await GET ('/browse/Books')
     expect(data.value).to.eql([ // chai style expect
       { ID: 201, title: 'Wuthering Heights', author: 'Emily Brontë' },
-      { ID: 252, title: 'Eleonora', author: 'Edgar Allen Poe' },
+      { ID: 252, title: 'Eleonora', author: 'Edgar Allan Poe' },
       //...
     ])
   })
@@ -131,7 +131,7 @@ describe('my test suite', ()=>{
 
 You can use Mocha-style `before/after` or Jest-style `beforeAll/afterAll` in your tests, as well as the common `describe, test, it` methods. In addition, to be portable, you should use the [Chai Assertion Library's](#chai)  variant of `expect`.
 
-::: tip [All tests in *cap/samples*](https://github.com/capire/samples/tree/main/tests) are written in that portable way. <br>
+::: tip [All tests in *cap/samples*](https://github.com/capire/bookstore/tree/main/test) are written in that portable way. <br>
 Run them with `npm run jest` or with `npm run mocha`.
 :::
 
@@ -580,7 +580,7 @@ describe(() => { cds.test(...) })
 ```
 :::
 
-[Learn how to setup integration tests with `cds bind`.](../advanced/hybrid-testing#integration-tests){.learn-more}
+[Learn how to setup integration tests with `cds bind`.](../tools/cds-bind#integration-tests){.learn-more}
 
 
 ## Using `cds.test` in REPL
@@ -634,8 +634,8 @@ Welcome to cds repl v7.1
 [
   { title: 'Wuthering Heights', author: 'Emily Brontë' },
   { title: 'Jane Eyre', author: 'Charlotte Brontë' },
-  { title: 'The Raven', author: 'Edgar Allen Poe' },
-  { title: 'Eleonora', author: 'Edgar Allen Poe' },
+  { title: 'The Raven', author: 'Edgar Allan Poe' },
+  { title: 'Eleonora', author: 'Edgar Allan Poe' },
   { title: 'Catweazle', author: 'Richard Carpenter' }
 ]
 ```

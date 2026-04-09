@@ -1,0 +1,7 @@
+<template>
+  <StatusBadge
+    type="tip"
+    text="Gamma"
+    title="Gamma features are finalized and ready to use, stable, and supported long term. Yet, as they have a broad scope and range, you should ensure to test them thoroughly."
+  />
+</template>

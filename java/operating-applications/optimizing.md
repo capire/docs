@@ -2,7 +2,6 @@
 synopsis: >
   This section describes how to optimize resource consumption of productive CAP Java applications.
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -140,4 +139,3 @@ If you want to try out CAP's Native Image support you can use the [SFlight sampl
 Note, that SFlight's native executable is built and configured to use SAP HANA and XSUAA by default. You therefore need to run it with the `cloud` profile and supply an SAP HANA and XSUAA service binding.
 Alternatively you can make corresponding adaptations in `native-build-env.json` and `srv/pom.xml` to build the native executable for a different set of service bindings and profile.
 :::
-

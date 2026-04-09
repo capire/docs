@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes which events occur in combination with SAP Fiori Drafts.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -17,7 +16,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Overview { #draftevents}
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 ## Reading Drafts
 
@@ -59,6 +58,9 @@ public Result delegateToS4(ActiveReadEventContext context) {
 ::: warning
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
+
+### Aggregation Queries
+Aggregating over active and inactive draft entities isn't supported. Queries with aggregation functions implicitly add `IsActiveEntity` as a part of the group-by clause, resulting in disjunct `active` and `inactive` rows being returned instead of aggregated rows.
 
 ## Editing Drafts
 
@@ -144,6 +146,14 @@ It's possible to create and update data directly without creating intermediate d
 
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
+::: tip
+With the 4.8.0 release, CAP Java introduced a mode where POST without `IsActiveEnitity=true` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is only active when the CDS property `cds.draft.post-active` is set to `true` and the entity is annotated with `@Common.DraftRoot.NewAction`. The annotation value needs to be the name of an unbound action in the same service of the entity. If the entity has a key with the type `UUID`, the action needs no further parameter. Otherwise, the action needs the key values of the entity as parameters.
+:::
+
+::: warning
+Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
+:::
+
 ## Draft Lock { #draft-lock }
 
 An entity with a draft is locked from being edited by other users until either the draft is saved or a timeout is hit (15 minutes by default). You can configure this timeout by the following application configuration property:
@@ -155,7 +165,7 @@ cds.drafts.cancellationTimeout: 1h
 You can turn off this feature completely by means of the application configuration property:
 
 ```yaml
-cds.security.draftProtection.enabled: false
+cds.security.authorization.draftProtection.enabled: false
 ```
 
 ## Draft Garbage Collection { #draft-gc }
