@@ -494,7 +494,7 @@ If an existing draft locks the entity, any direct update is blocked to prevent l
 See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
 :::
 
-Direct CRUD is also a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which lets users change multiple objects with the same editable properties in one step — without creating individual drafts per row.
+Direct CRUD is also a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which lets users change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows might be locked and therefore failing.
 
 :::warning Additional entry point
 Both Direct CRUD and Mass Edit create additional entry points to your application.
