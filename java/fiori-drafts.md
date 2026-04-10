@@ -136,10 +136,7 @@ GET /v4/myservice/myentity?$filter=IsActiveEntity eq true
 
 ## Bypassing the SAP Fiori Draft Flow { #bypassing-draft-flow }
 
-With [Direct CRUD](../guides/uis/fiori#direct-crud) enabled, you can create and update active entities directly without intermediate drafts, provided they are not locked by another user.
-This is particularly useful when prefilling draft-enabled entities with data or when technical components interact with the API exposed by draft-enabled entities.
-
-The following table shows the HTTP requests and corresponding CAP Java events:
+It's possible to create and update data directly without creating intermediate drafts. For example, this is useful when prefilling draft-enabled entities with data or in general, when technical components deal with the API exposed by draft-enabled entities. To achieve this, use the following requests. You can register event handlers for the corresponding events to validate incoming data:
 
 | HTTP / OData request                            | Event constant name                                      | Default implementation                               |
 | ----------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
