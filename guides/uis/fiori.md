@@ -459,8 +459,6 @@ This frees up `POST` requests to create active instances directly — the same b
 
 #### Creating Active Instances Directly
 
-You can create an active entity directly using a standard `POST` request:
-
 ```http
 POST /odata/v4/CatalogService/Books
 Content-Type: application/json
