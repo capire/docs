@@ -450,41 +450,44 @@ For more details, see the [official UI5 documentation](https://ui5.sap.com/#/top
 
 ### Direct CRUD <Beta />
 
-By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), optimized for human users working with SAP Fiori UIs.
-Technical consumers such as remote-services or AI-agents typically need to create and update data directly instead.
-Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds, restoring standard CRUD operations on active entities while keeping the full draft feature set intact.
+By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), which is optimized for human users working with SAP Fiori UIs.
+However, technical consumers such as remote services or AI agents typically need to create and update data directly without the overhead of draft management.
+Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds, restoring standard CRUD operations on active entities while keeping the full draft feature set intact for SAP Fiori UIs.
 
-To achieve this, SAP Fiori Elements' default draft creation is redirected to a collection-bound action via `@Common.DraftRoot.NewAction`.
-This frees `POST` requests to create active instances directly — the same behavior as without draft enablement.
+To achieve this, SAP Fiori Elements' default draft creation behavior is redirected to a collection-bound action via the `@Common.DraftRoot.NewAction` annotation.
+This frees up `POST` requests to create active instances directly — the same behavior as without draft enablement.
 
-#### Create an active instance directly:
+#### Creating Active Instances Directly
+
+You can create an active entity directly using a standard `POST` request:
 
 ```http
-POST /Books
+POST /odata/v4/CatalogService/Books
 Content-Type: application/json
 
 {
-  "ID": 123
+  "ID": 123,
+  "title": "How to be more active"
 }
 ```
 
-#### Create a new draft instance by action:
+#### Creating Draft Instances via Action
 
 ```http
-POST /Books/CatalogService.draftNew
+POST /odata/v4/CatalogService/Books/CatalogService.draftNew
 Content-Type: application/json
 
 {}
 ```
 
-#### Update an active instance directly:
+#### Updating Active Instances Directly
 
 ```http
-PUT /Books(ID=123)
+PUT /odata/v4/CatalogService/Books(ID=123)
 Content-Type: application/json
 
 {
-  "title": "How to be more active"
+  "title": "Updated title"
 }
 ```
 
@@ -494,9 +497,10 @@ If an existing draft locks the entity, any direct update is blocked to prevent l
 See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
 :::
 
-Direct CRUD is also a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which lets users change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows might be locked and therefore failing.
 
-:::warning Additional entry point
+Direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
+
+:::warning Additional entry points
 Both Direct CRUD and Mass Edit create additional entry points to your application.
 Custom handlers are triggered with delta payloads rather than the complete business object.
 :::
