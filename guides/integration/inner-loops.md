@@ -32,7 +32,7 @@ Here's a very rough comparison from a real world example:
 
 ### The XTravels Sample
 
-We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
+We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as described in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
 
 ```sh :line-numbers
 mkdir -p cap/samples
@@ -41,18 +41,29 @@ git clone https://github.com/capire/xtravels
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
 ```
-```sh
-echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
-npm install
-```
 
 [@capire/xtravels]: https://github.com/capire/xtravels
 [@capire/xflights]: https://github.com/capire/xflights
 [@capire/s4]: https://github.com/capire/s4
 
+```sh :line-numbers=6
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
+```
+
 > [!note]
 >
 > Line 6 above turns the `cap/samples` folder into a root for `npm workspaces`. For the time being this simply optimizes the `npm install`. We'll revisit that in chapter [*Using `npm` Workspaces*](#using-npm-workspaces) below. 
+
+#### Activate Generic Data Federation
+
+In addition, activate generic data federation as described in the [_CAP-level Data Federation_](data-federation.md) guide, by editing `xtravels/srv/server.js` file and uncommenting the single line of code in there like this:
+
+::: code-group
+```js [xtravels/srv/server.js]
+process.env.NODE_ENV || require ('./data-federation')
+```
+:::
 
 
 

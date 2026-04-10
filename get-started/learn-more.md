@@ -142,7 +142,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Videos
 
 - [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
-- [Under the hood: CDS Expressions in CAP](https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/) (with Patrice Bender)
+- [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
 - [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5) (with Daniel Schlachter)
 - [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
@@ -154,6 +154,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Blog post series
 
 - [The Art and Science of CAP](https://qmacro.org/blog/posts/2024/12/06/the-art-and-science-of-cap/)
+- [Under the hood: CDS Expressions in CAP](https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/)
 - [Modules, modularity & reuse in CDS models](https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/)
 - [CAP Node.js Plugins](https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/)
 - [All posts tagged with 'cap'](https://qmacro.org/tags/cap/)

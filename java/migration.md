@@ -54,6 +54,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |[com.sap.cds.services.recipes.GetMessageTargetWithTypedPath](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(String, Class, Function)` with `MessageTarget#create(String, Class, Function)`.|5.0.0|
 |[com.sap.cds.services.recipes.GetMessageTargetWithElement](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(Path, CdsElement)` with `MessageTarget#create(Path, CdsElement)`.|5.0.0|
 |[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#saas-registry-dependency-removals)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
+|com.sap.cds.services.recipes.UclMigration|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -116,6 +117,8 @@ The following deprecated methods on [`SaasRegistryDependency`](https://www.javad
   - `setAppId(String appId)` → `setXsappname(appId)`
   - `getAppName()` → `getXsappname()`
   - `setAppName(String appName)` → `setXsappname(appName)`
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`, use `setResult(SpiiResult)` instead.
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()`, use `getResult()` instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
