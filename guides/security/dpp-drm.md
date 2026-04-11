@@ -131,6 +131,16 @@ annotate Incidents with @(
 );
 ```
 
+#### Customize ILM Object name
+
+By default the ILM Object name is the name of the entity. You can customize that name with the `@ILM.ObjectName` annotation.
+
+```cds
+annotate Incidents with @(
+    ILM.ObjectName : 'CustomIncidents'
+);
+```
+
 
 ### Organizational attributes
 
