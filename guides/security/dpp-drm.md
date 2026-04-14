@@ -474,8 +474,6 @@ resources:
 
 :::
 
-:::
-
 ::: warning More configuration is being added to the mta.yaml file during `cds build`
 
 Retention Management has three important objects: 1. Data Subjects, 2. ILM Objects, 3. Organization attributes.
@@ -528,44 +526,43 @@ Open the SAP DPI NG service from the _Instances and Subscriptions_ page in the S
 
 ![The DPI launchpad with its applications for Retention Management.](./assets/data-privacy/dpi_ng_retention_group.png){width="500"}
 
+For the full end-user guide of SAP DPI NG checkout [What is Data Privacy Integration NextGen](https://help.sap.com/docs/data-privacy-integration/end-user-information/retention-management-data-privacy-integration-nextgen?locale=en-US).  {.learn-more}
+
 For the blocking and destruction flow of personal data in DPI NG a subscriber must:
 1. Configure one or many data controllers. In the data controller configuration your app must be selected and then the relevant Organizational Attribute which represents the data controller in your apps data.
 
 ![Configuring a data controller in the Manage Data Controller app.](./assets/data-privacy/dpi_ng_retention_group.png){width="500"}
-After pressing create a new organizational attribute can be created for which the CAP application, the configured organizational attribute and a value can be selected. {.learn-more}
+After pressing create a new organizational attribute can be created for which the CAP application, the configured organizational attribute and a value can be selected.
 
 ![Overview of all active data controllers.](./assets/data-privacy/dpi_ng_retention_group.png){width="500"}
-After saving your data controller keep in mind to activate it. {.learn-more}
+After saving your data controller keep in mind to activate it.
 
 2. Configure a business purpose as part of which the relevant ILM objects from your app can be selected. If your ILM objects have conditions its possible at this stage to specify that an ILM object is only included under specific conditions in this business purpose.
 
 ![Creating a new business purpose.](./assets/data-privacy/dpi_ng_ConfigureBusinessPurpose.png){width="500"}
-A business purpose can span multiple apps. Create a new app record where the part for your CAP app can be configured. {.learn-more}
+A business purpose can span multiple apps. Create a new app record where the part for your CAP app can be configured.
 
 ![Configure the application of a business purpose.](./assets/data-privacy/dpi_ng_ConfigureBusinessPurposeApp.png){width="500"}
-After saving your data controller keep in mind to activate it. {.learn-more}
+After saving your data controller keep in mind to activate it.
 
 ![Configure a business purpose ILM Object.](./assets/data-privacy/dpi_ng_ConfigureBPILMObject.png){width="500"}
-If your ILM Object has conditions these can be added here. {.learn-more}
+If your ILM Object has conditions these can be added here.
 
 ![Check that the business purpose is activated.](./assets/data-privacy/dpi_ng_ActiveBusinessPurpose.png){width="500"}
-After saving your business purpose keep in mind to activate it. {.learn-more}
+After saving your business purpose keep in mind to activate it.
 
 3. Configure the retention rules for a particular business purpose, detailing for each ILM Object after what time it must be blocked and deleted.
 
 ![Creating a new deletion rule.](./assets/data-privacy/dpi_ng_ConfigureRule.png){width="500"}
-A deletion rule can contain multiple business purposes. Add the previously created purpose. {.learn-more}
+A deletion rule can contain multiple business purposes. Add the previously created purpose.
 
 ![Configure the purpose for the rule.](./assets/data-privacy/dpi_ng_ConfigureRulePurpose.png){width="500"}
-Add all relevant ILM Objects of the purpose and configure the residence and retention period for each of them. {.learn-more}
+Add all relevant ILM Objects of the purpose and configure the residence and retention period for each of them.
 
 ![Check that the deletion rule is activated.](./assets/data-privacy/dpi_ng_ActiveRule.png){width="500"}
-After saving your deletion rule keep in mind to activate it. {.learn-more}
+After saving your deletion rule keep in mind to activate it.
 
 4. In the "Manage Data Subject Deletion" app you can schedule data blocking & deletion for a particular data subject role, which then sends requests to the CAP apps to block and destruct ILM objects and data subjects once the conditions are met.
 
 ![Create a schedule for deletion data subject data.](./assets/data-privacy/dpi_ng_ManageDSDeletion.png){width="500"}
-Create a schedule so SAP DPI automatically triggers the blocking and deletion orchestration for the particular app and data subject. This will only work if all ILM Objects for the data subject are referenced in an active deletion rule. {.learn-more}
-
-
-For the full end-user guide of SAP DPI NG checkout [What is Data Privacy Integration NextGen](https://help.sap.com/docs/data-privacy-integration/end-user-information/retention-management-data-privacy-integration-nextgen?locale=en-US).
+Create a schedule so SAP DPI automatically triggers the blocking and deletion orchestration for the particular app and data subject. This will only work if all ILM Objects for the data subject are referenced in an active deletion rule.
