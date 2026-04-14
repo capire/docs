@@ -43,7 +43,7 @@ Thus a composed entity of a data subject is not allowed to be marked with `@Pers
 ```cds
 annotate Customers with @(
     // Shown in the Retention Manager UI
-    description: 'Customers of the company'
+    description: 'Customers of the company',
     // Mark the entity as a data subject
     PersonalData: {
       EntitySemantics : 'DataSubject',
@@ -71,7 +71,7 @@ annotate Customers with @(
     }
 ) {
     ID @PersonalData.FieldSemantics : 'DataSubjectID';
-}
+};
 ```
 
 You must annotate one property as the data subject ID. This is crucial as the data subject ID is used to link ILM Objects to the data subject.
@@ -88,7 +88,7 @@ Within CDS you would indicate an ILM Object, by annotating it with `@PersonalDat
 
 ```cds
 annotate Incidents with @(
-    description: 'A raised incident by a customer' // Shown in the Retention Manager UI
+    description: 'A raised incident by a customer', // Shown in the Retention Manager UI
     PersonalData: {
         EntitySemantics : 'Other',
         DataSubjectRole: 'Customer'
@@ -219,9 +219,9 @@ In some scenarios an ILM Object or a data subject might have a dynamic data subj
 }
 entity BusinessPartners : cuid {
     type : String enum {
-        Customer = 'Customer',
-        Employee = 'Employee',
-        Debtor = 'Debtor'
+        Customer;
+        Employee;
+        Debtor;
     }
 }
 ```
@@ -360,7 +360,7 @@ using {sap.capire.bookshop as db} from '../db/schema';
 extend service RetentionService with {
     entity Orders as projection on db.Orders {
         ID,
-        legalEntity.company @PersonalData.FieldSemantics : 'DataControllerID',
+        legalEntity.company @(PersonalData.FieldSemantics : 'DataControllerID'),
         endOfWarrantyDate as aliasEndOfBusiness,
         Customer,
         Items
