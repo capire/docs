@@ -459,7 +459,7 @@ This allows constructing [CQN](../cds/cqn) query objects using [CQL](../cds/cql)
 
 
 ### .one {.property}
-###### SELECT_one
+###### SELECT_one {#SELECT_one}
 
 
 Start constructing a query with `SELECT.one` to indicate we're interested in only the first row. At runtime, a single entry, if any, is returned instead of an array:
@@ -518,7 +518,7 @@ SELECT.distinct.from (Authors)
 
 
 ### columns() {.method}
-###### SELECT_columns
+###### SELECT_columns {#SELECT_columns}
 
 ```tsx
 function SELECT.columns ( projection : function )
@@ -582,7 +582,7 @@ Projection functions use these mechanisms:
 
 
 ### from() {.method #select-from}
-###### SELECT_from
+###### SELECT_from {#SELECT_from}
 
 ```tsx
 function SELECT.from (
@@ -638,7 +638,7 @@ SELECT.from ('Authors').alias('a').where({
 
 
 ### where(){.method alt="The following documentation on having also applies to where"}
-###### SELECT_where
+###### SELECT_where {#SELECT_where}
 
 ### having() {.method}
 ###### SELECT_having
@@ -865,7 +865,7 @@ INSERT.into (Books, [
 
 
 ### entries() {.method #insert-entries}
-###### INSERT_entries
+###### INSERT_entries {#INSERT_entries}
 
 ```tsx
 function INSERT.entries (records : object[] | Query | Readable)
@@ -1018,7 +1018,7 @@ UPSERT.into (Books, [
 
 
 ### entries() {.method}
-###### UPSERT_entries
+###### UPSERT_entries {#UPSERT_entries}
 
 Allows upserting multiple rows with one statement where each row
 is a record with named values, for example, as could be read from a JSON
