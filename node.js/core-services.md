@@ -397,6 +397,7 @@ var srv.options : { //> from cds.requires config
 
 
 ### . entities {.property alt="The following documentation on actions also applies to entities. "}
+###### entities
 
 ### . events {.property alt="The following documentation on actions also applies to events. "}
 
@@ -428,6 +429,7 @@ for (let d of this.entities) //... d is a CSN definition
 
 
 ### srv. init() {.method}
+###### srv-init
 
 ```tsx
 async function srv.init()
@@ -454,6 +456,7 @@ Ensure to call `super.init()` to allow subclasses to register their handlers. Do
 
 
 ### srv. prepend() {.method}
+###### srv-prepend
 
 ```tsx
 function srv.prepend(()=>{...})
@@ -475,6 +478,7 @@ cds.on('served',()=>{
 
 
 ### srv. on, before, after() {.method}
+###### srv-on-before-after
 
 ```tsx
 function srv.on/before/after (
@@ -547,6 +551,7 @@ Your services are mostly constructed by [`cds.serve()`](cds-serve) based on serv
 
 
 ### srv. before (request) {.method}
+###### srv-before-request
 
 ```tsx
 function srv.before (event, entity?, handler: (
@@ -590,6 +595,7 @@ The input validation handlers above collect input errors with [`req.error()`](./
 
 
 ### srv. after (request) {.method}
+###### srv-after-request
 
 ```tsx
 function srv.after (event, entity?, handler: (
@@ -631,6 +637,7 @@ this.after ('each', Books, book => {
 
 
 ### srv. on (request) {.method}
+###### srv-on-request
 
 ```tsx
 function srv.on (event, entity?, handler: (
@@ -704,6 +711,7 @@ this.on ('READ',[Books,Authors], req => req.target.data)
 
 
 ### srv. on (event) {.method}
+###### srv-on-event
 
 ```tsx
 function srv.on (event, handler: (
@@ -758,9 +766,10 @@ All these registered handlers would get executed concurrently, and independently
 
 [Learn more about how requests are processed by `srv.handle(event)`](#srv-handle-event) {.learn-more}
 
-
+  
 
 ### srv. on (error) {.method}
+###### srv-on-error
 
 ```ts
 function srv.on ('error', handler: (
@@ -786,6 +795,7 @@ Error handlers are invoked whenever an error occurs during event processing of *
 
 
 ### srv. send (request) {.method}
+###### srv-send-request
 
 ```ts
 async function srv.send (
@@ -841,6 +851,7 @@ await srv.send({ query: SELECT.from('Books'), headers: { some: 'header' } })
 
 
 ### srv. emit (event) {.method}
+###### srv-emit-event
 
 ```ts
 async function srv.emit (
@@ -892,8 +903,8 @@ Although emitters do not handle any return values from consumers, it is necessar
 
 
 
-
 ### srv. run (query) {.method}
+###### srv-run-query
 
 ```ts
 async function srv.run (
@@ -935,6 +946,7 @@ return this.dispatch(req)
 
 
 ### srv. run ( fn ) {.method}
+###### srv-run-fn
 
 ```tsx
 function srv.run ( fn? : tx<srv> => {...} ) => Promise
@@ -967,6 +979,7 @@ This method is also used by [`srv.dispatch()`](#srv-dispatch-event) to ensure si
 
 
 ### srv. dispatch (event) {.method}
+###### srv-dispatch-event
 
 ```ts
 async function srv.dispatch (
@@ -1004,6 +1017,7 @@ When looking for overriding central event processing, rather choose  [`srv.handl
 
 
 ### srv. handle (event) {.method}
+###### srv-handle-event
 
 ```ts
 async function srv.handle (
@@ -1059,6 +1073,7 @@ In effect, for asynchronous event messages, that is, instances of `cds.Event`, s
 
 
 ### srv. foreach (entity) {.method}
+###### srv-foreach-entity
 
 ```ts
 function foreach(
