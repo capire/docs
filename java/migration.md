@@ -48,9 +48,9 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
-|[com.sap.cds.services.migrations.ServiceExceptionUtils](#service-exception-utils-removals)|Replaces deprecated methods in `ServiceExceptionUtils` (#service-exception-utils-removals).|5.0.0|
-|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#saas-registry-dependency-removals)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
-|com.sap.cds.services.recipes.UclMigration|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils` (#service-exception-utils-removals).|5.0.0|
+|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
+|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -93,26 +93,18 @@ The following table gives an overview about the removed properties:
 | --- | --- |
 | `abc` | Any description about replacement |
 
-### Removed Java APIs { #service-exception-utils-removals }
-
-The following deprecated methods on [`ServiceExceptionUtils`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceExceptionUtils.html) have been removed (they were marked `forRemoval` in previous releases). Use the `MessageTarget` factories or the four-argument `getLocalizedMessage` overload instead.
+### Removed Java APIs { #removed-java-apis-4-to-5 }
 
 - Removed deprecated methods:
-  - `getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
-  - `getMessageTarget(String target)` → `MessageTarget.create(target)`
-  - `getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
-  - `getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
-  - `getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
-
-### Removed Java APIs { #saas-registry-dependency-removals }
-
-The following deprecated methods on [`SaasRegistryDependency`](https://www.javadoc.io/doc/com.sap.cds/cds-feature-mt/latest/com/sap/cds/services/mt/SaasRegistryDependency.html) have been removed. Use `getXsappname()` / `setXsappname(String)` instead.
-
-- Removed deprecated methods:
-  - `getAppId()` → `getXsappname()`
-  - `setAppId(String appId)` → `setXsappname(appId)`
-  - `getAppName()` → `getXsappname()`
-  - `setAppName(String appName)` → `setXsappname(appName)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppId()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppId(String appId)` → `setXsappname(appId)`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppName()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppName(String appName)` → `setXsappname(appName)`
   - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`, use `setResult(SpiiResult)` instead.
   - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()`, use `getResult()` instead.
 
