@@ -48,11 +48,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
-|[com.sap.cds.services.recipes.GetLocalizedMessage](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getLocalizedMessage(String, Object[], Locale)` with the overload that passes `true` as `errorStatusFallback`.|5.0.0|
-|[com.sap.cds.services.recipes.GetMessageTarget](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(String)` with `MessageTarget#create(String)`.|5.0.0|
-|[com.sap.cds.services.recipes.GetMessageTargetWithPath](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(String, Function)` with `MessageTarget#create(String, Function)`.|5.0.0|
-|[com.sap.cds.services.recipes.GetMessageTargetWithTypedPath](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(String, Class, Function)` with `MessageTarget#create(String, Class, Function)`.|5.0.0|
-|[com.sap.cds.services.recipes.GetMessageTargetWithElement](#service-exception-utils-removals)|Replaces `ServiceExceptionUtils#getMessageTarget(Path, CdsElement)` with `MessageTarget#create(Path, CdsElement)`.|5.0.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#service-exception-utils-removals)|Replaces deprecated methods in `ServiceExceptionUtils` (#service-exception-utils-removals).|5.0.0|
 |[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#saas-registry-dependency-removals)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
 |com.sap.cds.services.recipes.UclMigration|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
