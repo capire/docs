@@ -48,7 +48,7 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
-|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils` (#service-exception-utils-removals).|5.0.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|5.0.0|
 |[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
 |[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
