@@ -448,13 +448,14 @@ Content-Type: application/json
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
+
 ### Direct CRUD
 
 By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), which is optimized for human users working with SAP Fiori UIs.
-However, technical consumers such as remote services or AI agents typically need to create and update data directly without the overhead of draft management.
-Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds, restoring standard CRUD operations on active entities while keeping the full draft feature set intact for SAP Fiori UIs.
+However, technical consumers — such as remote services or AI agents — typically need to create and update data directly, without the overhead of draft management.
+Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds: standard CRUD operations on active entities are restored, while the full draft feature set stays intact for SAP Fiori UIs.
 
-To achieve this, SAP Fiori Elements' default draft creation behavior is redirected to a collection-bound action via the `@Common.DraftRoot.NewAction` annotation.
+To achieve this, SAP Fiori Elements' default draft-creation behavior is redirected to a collection-bound action via the `@Common.DraftRoot.NewAction` annotation.
 This frees up `POST` requests to create active instances directly — the same behavior as without draft enablement.
 
 #### Creating Active Instances Directly
@@ -468,6 +469,8 @@ Content-Type: application/json
   "title": "How to be more active"
 }
 ```
+
+In such direct requests, the additional key `IsActiveEntity` defaults to `true` in the body, which means you can omit it during a `CREATE`.
 
 #### Creating Draft Instances via Action
 
@@ -489,20 +492,18 @@ Content-Type: application/json
 }
 ```
 
-:::warning Draft locks still apply
+In CAP Node.js, the defaulting of `IsActiveEntity` described above extends to the URL as well.
+That is, you can omit the key predicate `IsActiveEntity=true` from it.
+In CAP Java, however, the additional key predicate `IsActiveEntity=true` must still be provided.
+That is, in the example above, the `PUT` request would need to target `/odata/v4/CatalogService/Books(ID=123,IsActiveEntity=true)`.
+
+:::tip Draft locks still apply
 Directly updating an active entity does **not** bypass draft locks.
-If an existing draft locks the entity, any direct update is blocked to prevent losing draft changes upon activation.
+If an existing draft locks the entity, direct updates are blocked to prevent losing draft changes upon activation.
 See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
 :::
 
-In such direct requests, the additional key `IsActiveEntity` defaults to `true` in the body, which means you can omit it during `CREATE`.
-In CAP Node.js, this defaulting extends to the URL as well.
-That is, you can additionally omit key predicate `IsActiveEntity=true` in it.
-
-In CAP Java, however, the additional key predicate `IsActiveEntity=true` must still be provided.
-That is, in the example above, the `PUT` would need to be directed at `/odata/v4/CatalogService/Books(ID=123,IsActiveEntity=true)`.
-
-In CAP Node.js, on the other hand, direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
+In CAP Node.js, Direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step — without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
 
 :::warning Additional entry points
 Both Direct CRUD and Mass Edit create additional entry points to your application.
@@ -510,6 +511,9 @@ Custom handlers are triggered with delta payloads rather than the complete busin
 :::
 
 [Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
+
+[Learn more about draft-specific events in **Node.js**.](../../node.js/fiori#draft-specific-events){.learn-more}
+
 
 ### Validating Drafts
 
