@@ -344,11 +344,16 @@ So, in essence, instead of exercising a workflow like that again and again:
 
 ... we can use *npm workspaces* technique to work locally and speed up things as follows (we did that already above, shown here again for local completeness):
 
-```shell 
-mkdir -p cap/samples; cd cap/samples
+```sh :line-numbers
+mkdir -p cap/samples
+cd cap/samples
+git clone https://github.com/capire/xtravels 
 git clone https://github.com/capire/xflights
-git clone https://github.com/capire/xtravels
-echo '{"workspaces":["xflights","xtravels"]}' > package.json
+git clone https://github.com/capire/s4
+```
+```sh :line-numbers=6
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
 ```
 
 Add a link to the local `@capire/xflights-data` API package, included with the cloned xflights sources:
@@ -364,7 +369,7 @@ npm ls @capire/xflights-data
 ```
 
 ```zsh
-works@ ~/cap/works
+samples@ ~/cap/samples
 ├── @capire/xflights-data@0.1.11 -> ./xflights/apis/data-service
 └─┬ @capire/xtravels@1.0.0 -> ./xtravels
   └── @capire/xflights-data@0.1.11 deduped -> ./xflights/apis/data-service
@@ -412,15 +417,13 @@ The usage of *npm workspaces* technique as described above streamlined our workf
 
 We can streamline that even more by eliminating the export step as follows...
 
-Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
+Create a new subfolder `xflights-api-shortcut`  in which we add a _package.json_ and an _index.cds_ file as follows:
 
 ```shell
 mkdir xflights-api-shortcut
 ```
-
-Add a `package.json` file in there with that content:
-
-```json
+::: code-group
+```json [package.json]
 {
   "name": "@capire/xflights-data",
   "dependencies": {
@@ -428,12 +431,13 @@ Add a `package.json` file in there with that content:
   }
 }
 ```
+:::
+::: code-group
 
-And an `index.cds` file with this content:
-
-```cds
+```cds [index.cds]
 using from '@capire/xflights/srv/data-service';
 ```
+:::
 
 <details> <summary> Using the shell's "here document" technique </summary>
 
@@ -470,7 +474,7 @@ npm ls @capire/xflights-data
 ```
 
 ```zsh
-works@ ~/cap/works
+samples@ ~/cap/samples
 ├── @capire/xflights-data@ -> ./xflights-api-shortcut
 └─┬ @capire/xtravels@1.0.0 -> ./xtravels
   └── @capire/xflights-data@ deduped -> ./xflights-api-shortcut≤
