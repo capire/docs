@@ -357,11 +357,12 @@ CdsVector embedding = service.run(Select.from(INCIDENTS).byId(101)
 
 CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
 
-To automatically generate vector embeddings on write in the database, you can use the `vector_embedding` function as calculated element [on-write](../../cds/cdl#on-write):
+To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
 
 ```cds
 extend Incidents with {
-   embedding : cds.Vector(768) = vector_embedding(summary, 'DOCUMENT', 'SAP_GXY.20250407') stored;
+  embedding : cds.Vector(768) = vector_embedding(
+       summary, 'DOCUMENT', 'SAP_GXY.20250407') stored;
 }
 ```
 
