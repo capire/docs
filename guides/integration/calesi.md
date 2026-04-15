@@ -297,28 +297,31 @@ In addition to the generated `services.csn` file, an `index.cds` file was added,
 
 ### Packaged APIs
 
-The third generated file is `package.json`:
+The third generated file is a `package.json`:
 
 ::: code-group
-
 ```json [apis/data-service/package.json]
 {
   "name": "@capire/xflights-data-service",
   "version": "0.1.3"
 }
 ```
+:::
 
-```json [=> modified]
+
+#### Adjusting _package.json_
+
+You can modify the content of this file as appropriate. Your changes won't be overwritten on subsequent runs of `cds export`. In our xflights/xtravels sample, we changed the package name to `@capire/xflights-data` as follows:
+
+::: code-group
+```json [apis/data-service/package.json (-> modified)]
 {
   "name": "@capire/xflights-data-service", // [!code --]
   "name": "@capire/xflights-data", // [!code ++]
   "version": "0.1.3"
 }
 ```
-
 :::
-
-You can modify this file. `cds export` won't overwrite your changes. In our xflights/xtravels sample, we changed the package name to `@capire/xflights-data`.
 
 > [!tip] Yet Another CAP Package (YACAP)
 > The generated output is a complete CAP package. You can add additional files to the *./apis* subfolder: models in *.cds* files, data in *.csv* files, I18n bundles, or even *.js* or *.java* files with custom logic for consumers.
@@ -466,7 +469,7 @@ This allows us to update imported APIs later on using standard commands like `np
 
 
 
-### OData APIs
+### OData EDMX
 
 You can also `cds import` APIs from other sources, such as OData APIs for customer data from SAP S/4 HANA systems:
 
@@ -525,7 +528,7 @@ For the _XTravels_ sample, we created the [`@capire/s4`](https://github.com/capi
    code s4
    ```
 
- 2. We imported the [OData API](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) as [outlined above](#odata-apis).
+ 2. We imported the [OData API](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) as [outlined above](#odata-edmx).
 
     ```shell
     cds import ~/Downloads/API_BUSINESS_PARTNER.edmx
@@ -594,7 +597,7 @@ npm add @capire/s4
 
 
 
-## Integrating Models
+## Consuming APIs
 
 With imported APIs, you can now use them in your own models. For example, the XTravels application combines customer data from SAP S/4HANA with travels and flight bookings from xflights. With the integrated models, you can already run the application, as CAP [mocks integrations automatically](#mocked-out-of-the-box). For real integration, you'll need [custom code](#integration-logic), which we'll cover later.
 
@@ -613,7 +616,7 @@ Create two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`:
 using { sap.capire.flights.data as x } from '@capire/xflights-data';
 namespace sap.capire.xflights;
 
-@federated entity Flights as projection on x.Flights {
+entity Flights as projection on x.Flights {
   ID, date, departure, arrival, modifiedAt,
   airline.icon     as icon,
   airline.name     as airline,
@@ -621,7 +624,7 @@ namespace sap.capire.xflights;
   destination.name as destination,
 }
 
-@federated entity Supplements as projection on x.Supplements {
+entity Supplements as projection on x.Supplements {
   ID, type, descr, price, currency, modifiedAt,
 }
 ```
@@ -631,7 +634,7 @@ namespace sap.capire.xflights;
 using { API_BUSINESS_PARTNER as S4 } from '@capire/s4';
 namespace sap.capire.s4;
 
-@federated entity Customers as projection on S4.A_BusinessPartner {
+entity Customers as projection on S4.A_BusinessPartner {
   BusinessPartner as ID,
   PersonFullName  as Name,
   LastChangeDate  as modifiedAt,
@@ -647,16 +650,15 @@ The noteworthy aspects here are:
 
 - The namespaces `sap.capire.s4` and `sap.capire.xflights` reflect the source systems but differ from the original namespaces to avoid name clashes.
 
-- We add `@federated` annotations, which we'll use later on to automate [data federation](#data-federation).
-
 
 > [!tip] Always use Consumption Views
 >
-> Even though they are optional, it's a good practice to always define consumption views on top of imported APIs.  They declare what you need, enabling automated data federation. They also map imported definitions to your domain by renaming, flattening, or restructuring.
+> Even though they are optional, it's a good practice to always define consumption views on top of imported APIs.  They declare what you need, allowing the framework to optimize and automate integrations, up to generic data federation. They also map imported definitions to your domain by renaming, flattening, or restructuring.
 
 > [!warning] Protocol-specific Limitations
 >
 > Depending on the service provider and protocols, limitations apply to consumption views. In particular, OData doesn't support denormalization like we used for the `Flights` view. This works here because xflights also serves the HCQL protocol (see the `@hcql` annotation in its [definition](#defining-service-apis)), which is CAP's native protocol.
+
 
 
 
@@ -777,9 +779,13 @@ annotate TravelService.Bookings with @UI: { ...
 There are similar references to `Flights` entity from xflights in other parts of the Fiori annotations, which we omit here for brevity.
 
 
-### Mocked Out of the Box
+## Mocked Out of the Box
 
-With mashed up models in place, we can run applications in _'airplane mode'_ without upstream services running. CAP mocks imported services automatically _in-process_ with mock data in the same _in-memory_ database as our own data.
+With mashed up models in place, we can run applications in _'airplane mode'_ without any connection to required services deployed to and running in the cloud.
+
+### Mocked by `cds watch`
+
+By default `cds watch` mocks all imported services automatically _in-process_ with mock data in the same _in-memory_ database as our own data.
 
 1. Start the xtravels application locally using `cds watch` as usual, and note the output about the integrated services being mocked automatically:
 
@@ -812,7 +818,7 @@ Learn more about mocking and inner loop development in the [*Inner Loop Developm
 
 
 
-#### Integration Logic Required
+### Mocking with `cds mock`
 
 While everything just works nicely when mocked in-process and with a shared in-memory database, let's move closer to the target setup and use `cds mock` to run the services to be integrated in separate processes.
 
@@ -847,6 +853,7 @@ While everything just works nicely when mocked in-process and with a shared in-m
 
 ![XTravels Fiori details view showing a travel requests, with the flights data missing](assets/xtravels-bookings-.png)
 
+So, we obviously need to implement the required integration logic to get real data from the connected services instead of mocked data. The next chapter walks you through the typical use cases and solution patterns that you should be aware of when implementing required integration logic.
 
 
 
@@ -1098,64 +1105,13 @@ On a side note: We leverage key principles of [_first-class objects_](https://go
 > As always, great power comes with great responsibility: Ensure to [`cds.ql.clone`](../../node.js/cds-ql#cds-ql-clone) CQNs before modifying them, as they are shared across the entire request processing pipeline. Failing to do so may lead to unexpected side effects and hard-to-debug issues. And CAP runtimes can only optimize for _immutable_ CQNs.
 
 
-### Data Federation
-
-There are many scenarios where data from remote services needs to be in close access locally. For example, in the xtravels app we want to display lists of flight details alongside bookings in Fiori UIs. This requires joining data from the local `Bookings` entity with data from the remote `Flights` entity.
-
-Relying on live calls to remote services per row is clearly not an option. Instead, we'd rather ensure that data required in close access is really available locally, so it can be joined with own data using SQL JOINs. This is what _data federation_ is all about.
-
-
-#### Basic Implementation
-
-Following would be a basic implementation for replicating flights data from the remote xflights service into local database tables of the xtravels app:
-
-1. Annotate your consumption _views_ with `@cds.persistence.table` to turn them into _tables_ to persist replicated data locally:
-
-::: code-group
-```cds [db/schema.cds]
-// turn into table to persist replicated data
-annotate x.Flights with @cds.persistence.table;
-```
-:::
-
-2. Implement logic to replicate updated data, for example like that:
-
-```js [srv/data-replication.js]
-const xflight = await cds.connect.to ('sap.capire.flights.data')
-const {Flights} = cds.entities ('sap.capire.xflights')
-let {latest} = await SELECT.one`max(modifiedAt) as latest`.from (Flights)
-let touched = await xflight.read (Flights).where`modifiedAt > ${latest||0}`
-if (touched.length) await UPSERT (touched).into (Flights)
-```
-
-#### Generic Implementation
-
-While the above is a valid implementation for data replication, it is specific to the `Flights` entity, which means we would need to write similar code for each entity we want to replicate. Therefore, we actually implemented a more generic solution for data federation in xtravels, which automatically kicks in on any entity tagged with the `@federated` annotated, which we already used in our [consumption views](#consumption-views):
-
-::: code-group
-```cds [apis/capire/xflights.cds]
-@federated entity Flights as projection on x.Flights { ... }
-@federated entity Supplements as projection on x.Supplements { ... }
-```
-```cds [apis/capire/s4.cds]
-@federated entity Customers as projection on S4.A_BusinessPartner { ... }
-```
-:::
-
-Besides the advantages of reusability and maintainability, this also allows us to easily add new entities for data federation just by annotating them with `@federated`, without the need to write any custom code at all. The projections defined in such _`@federated` consumption views_ also declare exactly what data needs to be in close access, and what not, thereby avoiding overfetching.
-
-Learn more about that generic solution in the [_CAP-level Data Federation_](data-federation) guide.
-
-> [!tip] When to Use Data Federation
-> Data federation is essential when remote data is needed in close access for joins with local data, filtering, or sorting operations. It drastically improves read performance and reduces latency, as well as overall load. It also increases resilience and high availability by reducing dependencies on other services.
-
-
 
 ### Delegation
 
-Even with [data federation](#data-federation) in place, there are still several scenarios where we need to reach out to remote services on demand. Value helps are a prime example for that; for example, to select `Customers` from a drop-down list when creating new travels. Although we could serve that from replicated data as well, this would require replicating **_all_** relevant customer data locally, which is often overkill.
+One use case for sending queries is delegation, which means forwarding incoming queries to remote services for execution, instead of executing them locally.
+Value helps are a prime example for that; for example, to select `Customers` from a drop-down list when creating new travels. 
 
-The code below shows how we simply delegate value help requests for `Customers` in xtravels to the connected S/4 service:
+The code below shows how we simply delegate such value help requests for `Customers` in the `TravelsService` to the connected `s4` service:
 
 ::: code-group
 ```js [srv/travel-service.js]
@@ -1163,9 +1119,11 @@ this.on ('READ', Customers, req => s4.run (req.query))
 ```
 :::
 
-The event handler intercepts all direct `READ` requests to the `Customers` entity, and just forwards the query as-is to the connected S/4 service.
+The event handler intercepts all direct `READ` requests to the `Customers` entity, and just forwards the query as-is to the connected `s4` service.
 
 ::: details Try this in `cds repl` ...
+
+Run this from the root of the _xtravels_ project in a terminal:
 
 ```shell :line-numbers=1
 cds mock apis/capire/s4.cds
@@ -1207,60 +1165,93 @@ Note that for the handler above, incoming requests always refer to:
 
 - the [`TravelService.Customers`](#serving-uis) entity – which is a view on:
   - the [`sap.capire.s4.Customers`](#consumption-views) entity – which in turn is a view on:
-    - the [`A_BusinessPartner`](#odata-apis) remote entity.
+    - the [`A_BusinessPartner`](#odata-edmx) remote entity.
 
 In effect, we are delegating a query to the S/4 service, which refers to an entity actually not known to that remote service. How could that work at all?
 
 It works because we fuelled the CAP runtime with CDS models, so the generic handlers detect such situations, and automatically translate delegated queries into valid queries targeted to underlying remote entities – i.e. `A_BusinessPartner` in our example. When doing so, all column references in select clauses, where clauses, etc., are translated and delegated as well, and the results' structure transformed back to that of the original target – i.e., `TravelService.Customers` above.
 
+> [!important] 
+> Automatic translation of delegated queries, as shown here, reaches its limits when [navigations](#navigation) or [expands](#expands) are involved, which span across local and remote entities. -> We'll cover that in the next sections, and show how to implement such scenarios manually.
 
 
 ### Navigation
 
-Automatic translation of delegated queries, [as shown above](#automatic-query-translation), has limitations when navigations and expands are involved.
-Let's explore those limitations and how to deal with them on the example of the _Bookings -> Flights_ association.
-
-Try running the following query in `cds repl`, with the xflights service mocked in a separate process, as before:
+Whenever a query involves navigation across associations from local to remote entities, or vice versa, automatic translation of queries reaches its limits.
+For example, try running the following query in `cds repl`, with the xflights service mocked in a separate process, [as before](#testing-with-cds-repl):
 
 ```js
+const xflights = await cds.connect.to ('sap.capire.flights.data')
 const { Bookings } = cds.entities ('sap.capire.travels')
 ```
 ```js
 await SELECT.from (Bookings) .where`Flight.origin like '%Ken%'`
 ```
 
-- With data federation in place, this would work (if all flight data had been replicated).
-- Without data federation, though, this would fail with a runtime error.
+You get an error like this:
 
-For that to really work cross-service – that is, without data federation, or bypassing it – we'd have to split the query, manually dispatch the parts to involved services, and correlate results back, for example, like this:
+```zsh
+Uncaught SqliteError: no such table: sap_capire_xflights_Flights in:
+```
+```sql
+SELECT ... 
+FROM sap_capire_travels_Bookings
+JOIN sap_capire_xflights_Flights ...
+```
 
+We see that the CAP runtime tried to execute a query, that translated the path expression `Flight.origin` into a SQL JOIN from `Bookings` to `Flights` – which fails because there is no local table for the remote `Flights` entity.
+
+For that to really work cross-service we would have to split the query, manually dispatch the parts to involved services, and correlate results back, for example, like this:
+
+```js
+const flights = await xflights.read`ID`.from`Flights`.where`origin.name like '%Ken%'`
+await SELECT.from (Bookings) .where`Flight.ID in ${flights.map (f => f.ID)}`
+```
+
+::: details
+The above could also be written like that, mimicking a nested remote sub query:
 ```js
 await SELECT.from (Bookings) .where`Flight.ID in ${(
   await xflights.read`ID`.from`Flights`.where`origin.name like '%Ken%'`
 ).map (f => f.ID)}`
 ```
-::: details
-The above can also be written like that, of course:
-```js
-const flights = await xflights.read`ID`.from`Flights`.where`origin.name like '%Ken%'`
-const flightIDs = flights.map (f => f.ID)
-await SELECT.from (Bookings) .where`Flight.ID in ${flightIDs}`
-```
 :::
 
 > [!tip] What is 'Navigation'?
-> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
+> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `Flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
 
 
 ### Expands
 
-Similar to navigations, expands across associations also require special handling when we cannot serve them from federated data. Try running the following query in `cds repl`, with the xflights service mocked in a separate process, as before:
+Similar to navigations, expands across associations to remote entities also require special handling. Try running the following query in `cds repl`, with the xflights service mocked in a separate process, as before:
 
 ```js
 await SELECT.from (Bookings) .columns`{
   Flight { ID, date, destination }
 }` .where`exists Flight` .limit(3)
 ```
+
+Again we get an error as shown below, as the CAP runtime tries to execute a query with a JOIN to the remote `Flights` entity, which doesn't exist locally:
+
+```zsh
+Uncaught SqliteError: no such table: sap_capire_xflights_Flights in:
+```
+```sql
+SELECT ... 
+FROM sap_capire_travels_Bookings
+JOIN sap_capire_xflights_Flights ...
+```
+To make this work, we would have to manually fetch the required data from the remote service, and fill it into the results of the outer query, for example like that:
+
+```js
+await SELECT.from(Bookings).columns`Flight_ID, Flight_date`.limit(3) .then (
+  bookings => Promise.all (bookings.map (async b => ({
+    Flight: await xflights.read`ID, date, destination.name as destination`
+      .from`Flights`.where`ID = ${b.Flight_ID} and date = ${b.Flight_date}`
+  })))
+)
+```
+
 ::: details See results output ...
 ```zsh
 => [
@@ -1271,25 +1262,16 @@ await SELECT.from (Bookings) .columns`{
 ```
 :::
 
-To achieve the same without data federation, we'd have to manually fetch nested data from the remote service for each row, and fill it into the outer results, for example like this:
-
-```js
-await SELECT.from(Bookings).columns`Flight_ID, Flight_date`.limit(3)
-.then (all => Promise.all (all.map (async b => ({
-  Flight: await xflights.read`ID, date, destination.name as destination`
-    .from`Flights`.where`ID = ${b.Flight_ID} and date = ${b.Flight_date}`
-}))))
-```
-
 We can do similar things for expands across associations from remote data to local ones, for example like that:
 
 ```js
 const { Customers } = cds.entities ('sap.capire.s4')
 const { Travels } = cds.entities ('sap.capire.travels')
-await s4.read(Customers).columns`{ ID, Name }`
-.then (all => Promise.all (all.map (async c => Object.assign (c, {
-  Travels: await SELECT`ID`.from(Travels).where`Customer.ID = ${c.ID}`
-}))))
+await s4.read(Customers).columns`{ ID, Name }`.then (
+  customers => Promise.all (customers.map (async c => Object.assign (c, {
+    Travels: await SELECT`ID`.from(Travels).where`Customer.ID = ${c.ID}`
+  })))
+)
 ```
 
 
@@ -1315,6 +1297,64 @@ this.after ('SAVE', Travels, ({ Bookings=[] }) => {
 
 This creates ultimate resilience, as the events are stored in a local outbox table within the same transaction as the `SAVE` operation on `Travels`. A separate process then takes care of reliably forwarding those events to the xflights service, retrying in case of failures, etc.
 
+
+## Data Federation
+
+There are many scenarios where data from remote services needs to be in close access locally. For example, in the xtravels app we want to display lists of flight details alongside bookings in Fiori UIs. This requires joining data from the local `Bookings` entity with data from the remote `Flights` entity.
+
+Relying on live calls to remote services per row is clearly not an option. Instead, we'd rather ensure that data required in close access is really available locally, so it can be joined with own data using SQL JOINs. This is what _data federation_ is all about.
+
+
+### Basic Implementation
+
+Following would be a basic implementation for replicating flights data from the remote xflights service into local database tables of the xtravels app:
+
+1. Annotate your consumption _views_ with `@cds.persistence.table` to turn them into _tables_ to persist replicated data locally:
+
+::: code-group
+```cds [db/schema.cds]
+// turn into table to persist replicated data
+annotate x.Flights with @cds.persistence.table;
+```
+:::
+
+2. Implement logic to replicate updated data, for example like that:
+
+```js [srv/data-replication.js]
+const xflight = await cds.connect.to ('sap.capire.flights.data')
+const {Flights} = cds.entities ('sap.capire.xflights')
+let {latest} = await SELECT.one`max(modifiedAt) as latest`.from (Flights)
+let touched = await xflight.read (Flights).where`modifiedAt > ${latest||0}`
+if (touched.length) await UPSERT (touched).into (Flights)
+```
+
+### Generic Implementation
+
+While the above is a valid implementation for data replication, it is specific to the `Flights` entity, which means we would need to write similar code for each entity we want to replicate. Therefore, we actually implemented a more generic solution for data federation in xtravels, which automatically kicks in on any entity tagged with the `@federated` annotation, which we already used in our [consumption views](#consumption-views):
+
+::: code-group
+```cds [apis/capire/xflights.cds]
+@federated entity Flights as projection on x.Flights { ... }
+@federated entity Supplements as projection on x.Supplements { ... }
+```
+```cds [apis/capire/s4.cds]
+@federated entity Customers as projection on S4.A_BusinessPartner { ... }
+```
+:::
+
+Besides the advantages of reusability and maintainability, this also allows us to easily add new entities for data federation just by annotating them with `@federated`, without the need to write any custom code at all. The projections defined in such _`@federated` consumption views_ also declare exactly what data needs to be in close access, and what not, thereby avoiding overfetching.
+
+Learn more about that generic solution in the [_CAP-level Data Federation_](data-federation) guide.
+
+> [!tip] When to Use Data Federation
+> Data federation is essential when remote data is needed in close access for joins with local data, filtering, or sorting operations. It drastically improves read performance and reduces latency, as well as overall load. It also increases resilience and high availability by reducing dependencies on other services.
+
+### Mixed Scenarios
+
+Even with [data federation](#data-federation) in place, there are still several scenarios where we need to reach out to remote services on demand. 
+Although we could serve that from replicated data as well, this would require replicating **_all_** relevant customer data locally, which is often overkill.
+
+TODO...
 
 
 ## Learn More
