@@ -448,7 +448,7 @@ Content-Type: application/json
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
-### Direct CRUD <Beta />
+### Direct CRUD
 
 By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), which is optimized for human users working with SAP Fiori UIs.
 However, technical consumers such as remote services or AI agents typically need to create and update data directly without the overhead of draft management.
@@ -495,8 +495,14 @@ If an existing draft locks the entity, any direct update is blocked to prevent l
 See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
 :::
 
+In such direct requests, the additional key `IsActiveEntity` defaults to `true` in the body, which means you can omit it during `CREATE`.
+In CAP Node.js, this defaulting extends to the URL as well.
+That is, you can additionally omit key predicate `IsActiveEntity=true` in it.
 
-Direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
+In CAP Java, however, the additional key predicate `IsActiveEntity=true` must still be provided.
+That is, in the example above, the `PUT` would need to be directed at `/odata/v4/CatalogService/Books(ID=123,IsActiveEntity=true)`.
+
+In CAP Node.js, on the other hand, direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step - without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
 
 :::warning Additional entry points
 Both Direct CRUD and Mass Edit create additional entry points to your application.
