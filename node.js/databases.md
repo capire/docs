@@ -27,7 +27,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 
 ## cds.DatabaseService — Consumption {#databaseservice-consumption }
-[databaseservice consumption]: #databaseservice-consumption
+###### databaseservice-consumption
 
 
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->
@@ -47,7 +47,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 
 ## cds.DatabaseService — Configuration {#databaseservice-configuration }
-[databaseservice configuration]: #databaseservice-configuration
+###### databaseservice-configuration
 
 ### Pool
 
@@ -103,7 +103,7 @@ Even though we provide a default pool configuration, we expect that each applica
 
 
 ## cds.DatabaseService — UPSERT {#databaseservice-upsert }
-[databaseservice upsert]: #databaseservice-upsert
+###### databaseservice-upsert
 
 
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->
