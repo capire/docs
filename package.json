@@ -38,7 +38,7 @@
     "markdownlint-rule-search-replace": "^1.1.1",
     "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
-    "vite": "^8",
+    "vite": "^7",
     "vite-plugin-cds": "^0.2.0",
     "vitepress": "^1"
   }
