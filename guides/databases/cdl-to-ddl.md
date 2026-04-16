@@ -613,6 +613,35 @@ CREATE TABLE Books ( ...
 > [!tip] Consider using <code>@assert.target</code> instead
 > Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages taylored for end users.
 
+#### `ON DELETE CASCADE`
+
+From the example above it becomes clear that a book can still exist, even if its author is deleted. However, think of an existential relationship between a book and its pages: a page cannot exist without its book. In such cases, you would want the pages to be automatically deleted when the book (parent) is deleted.
+
+Typically such existential relationships are modeled in CDS using [compositions](../../cds/cdl#compositions).
+That is why for managed **backlink** associations — those used in a composition's on-condition via `$self = <comp>.<backlink>` 
+the foreign key constraints are generated with `ON DELETE CASCADE` by default, instead of `ON DELETE RESTRICT`: 
+
+```cds
+entity Books {
+  pages: Composition of many Pages on pages.book = $self;
+}
+entity Pages {
+  key number: Integer;
+  key book: Association to Books;            // → ON DELETE CASCADE (backlink)
+}
+```
+
+```sql
+…
+ALTER TABLE Pages ADD CONSTRAINT c__Pages_book
+  FOREIGN KEY(book_ID) REFERENCES Books(ID)
+  ON UPDATE RESTRICT
+  ON DELETE CASCADE
+  VALIDATED
+  ENFORCED
+  INITIALLY DEFERRED;
+```
+
 #### Skipping with `@assert.integrity:false`
 
 You can skip foreign key constraint generation for specific associations by annotating them with `@assert.integrity:false`, for example:
