@@ -73,7 +73,7 @@ Simply use `cds.ql` to run CXL as part of a CQL query:
 
 ```js
 > .ql // [!code focus]
-cql> select from Books { title } // [!code focus]
+cql> SELECT from Books { title } // [!code focus]
 [
   { title: 'Wuthering Heights' },
   { title: 'Jane Eyre' },
@@ -86,8 +86,6 @@ cql> select from Books { title } // [!code focus]
 
 ## SELECT
 
-> TODO do we want to capitalize the `SELECT` (and other keywords) also in the samples?, if yes, we should do it in all the samples.
-
 The CQL `SELECT` clause extends the well-known SQL `SELECT` with CDS-specific capabilities like [postfix projections](#postfix-projections), structured results, and [path expressions](./cxl#path-expressions-ref). It supports expanded navigation across associations, inline projections for concise field lists, and smart `*` handling with `excluding`.
 
 ![](./assets/cql/select.drawio.svg?raw)
@@ -98,7 +96,7 @@ For example we can select the _available_ `Books` while
 excluding the `stock` and some technical details from the result:
 
 ```cds live
-select from Books { * }
+SELECT from Books { * }
 excluding {
   stock,
   createdAt,  createdBy,
@@ -109,7 +107,7 @@ excluding {
 Or we can calculate the average price of books per author:
 
 ```cds live
-select from Authors {
+SELECT from Authors {
   avg(books.price),
   name as author
 } group by ID
@@ -118,7 +116,7 @@ select from Authors {
 Or we can select all `Authors` that have written a `Fantasy` book:
 
 ```cds live
-select from Authors where exists books[genre.name = 'Fantasy']
+SELECT from Authors where exists books[genre.name = 'Fantasy']
 ```
 
 
@@ -138,7 +136,7 @@ The query source defines the data set a `SELECT` reads from. It can be a single 
 We can apply infix filters to the query source to narrow down the set of entries read from the source. For example, the following query selects all books of the genre `Fantasy`:
 
 ```cds live
-select from Books[genre.name = 'Fantasy'] { title }
+SELECT from Books[genre.name = 'Fantasy'] { title }
 ```
 
 ::: tip the above is equivalent to:
@@ -209,7 +207,7 @@ where exists (
 A select item can hold all kinds of [expressions](cxl.md#expr), including path expressions, and can be aliased with `as`. For example:
 
 ```cds
-select from Books {
+SELECT from Books {
   42                     as answer,         // literal
   title,                                    // reference ("ref")
   price * quantity       as totalPrice,     // binary operator
@@ -224,7 +222,7 @@ select from Books {
 It is possible to assign an explicit alias, it is even sometimes required if the alias can't be inferred:
 
 ```cds live
-select from Books {
+SELECT from Books {
   1 + 1 as calculated,  // alias must be provided
   title                 // alias inferred as "title"
 }
@@ -233,12 +231,11 @@ select from Books {
 In some situations you may want to assign or change the data type of a column:
 
 ```cds live
-select from Books {
+SELECT from Books {
   $now as time      : Time,      // '2026-02-23T13:44:32.133Z''
   $now as date      : Date       // '2026-02-23'
 }
 ```
-> TODO: not the best example, also no real difference on sqlite for this particular sample
 
 ### Expand Path Expression
 
@@ -817,7 +814,7 @@ Define an unmanaged association directly in the select list of the query to add 
 In contrast to mixins, these association definitions are also possible in projections.
 
 ```cds
-entity BookReviews as select from Reviews {
+entity BookReviews as SELECT from Reviews {
   ...,
   subject as bookID,
   book : Association to Books on book.ID = bookID
