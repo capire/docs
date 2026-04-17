@@ -187,24 +187,18 @@ resources:
                     serviceEndPoint: /dpp/information # [!code ++]
                     appPaginationEnabled: true # [!code ++]
                     cacheControl: no-cache # [!code ++]
-  ...
-  - name: incidents-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      config:
-        xsappname: incidents-${org}-${space}
-        tenant-mode: dedicated
-        scopes:
-          - name: $XSAPPNAME.PersonalDataManagerUser # [!code ++]
-            description: Technical scope to restrict access to information endpoint # [!code ++]
-            grant-as-authority-to-apps: # [!code ++]
-              - $XSSERVICENAME(incidents-information) # [!code ++]
-
 ```
-
-:::
+```json [xs-security.json]
+{
+  "scopes": [
+    { // [!code ++]
+      "name": "$XSAPPNAME.PersonalDataManagerUser", // [!code ++]
+      "description": "Technical scope to restrict access to information endpoint", // [!code ++]
+      "grant-as-authority-to-apps": ["$XSSERVICENAME(incidents-information)"] // [!code ++]
+    } // [!code ++]
+  ]
+}
+```
 
 :::
 

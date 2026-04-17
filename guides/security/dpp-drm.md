@@ -461,21 +461,18 @@ resources:
             applicationConfiguration: # [!code ++]
               applicationType: TransactionMaster # [!code ++]
               iLMObjectDiscoveryEndPoint: /dpp/retention/iLMObjects # [!code ++]
-  ...
-  - name: incidents-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      config:
-        xsappname: incidents-${org}-${space}
-        tenant-mode: dedicated
-        scopes:
-          - name: $XSAPPNAME.DataRetentionManagerUser # [!code ++]
-            description: Technical scope to restrict access to retention endpoint # [!code ++]
-            grant-as-authority-to-apps: # [!code ++]
-              - $XSSERVICENAME(incidents-retention) # [!code ++]
+```
 
+```json [xs-security.json]
+{
+  "scopes": [
+    { // [!code ++]
+      "name": "$XSAPPNAME.DataRetentionManagerUser", // [!code ++]
+      "description": "Technical scope to restrict access to retention endpoint", // [!code ++]
+      "grant-as-authority-to-apps": ["$XSSERVICENAME(incidents-retention)"] // [!code ++]
+    } // [!code ++]
+  ]
+}
 ```
 
 :::
