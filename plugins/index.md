@@ -429,3 +429,12 @@ Available for:
 The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Build Process Automation. It provides annotations and a programmatic API for working with processes. Use it to manage the lifecycle of processes — for example, to start, cancel, suspend, or resume them — and to retrieve information about running and finished processes.
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
+
+## SAP Data Privacy Integration <Beta />
+
+The `@cap-js/data-privacy` plugin automatically provides the endpoints needed for SAP Data Privacy Integration to inspect personal data and trigger blocking and destruction requests based on retention rules configured in SAP DPI based on your annotated domain-model.
+
+For handling personal data learn more about the plugin in the [Information Reporting guide](../guides/security/dpp-pdm.md).
+For blocking and destructing personal data follow the [Retention Management guide](../guides/security/dpp-drm.md).
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy)
