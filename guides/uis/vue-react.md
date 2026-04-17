@@ -80,3 +80,9 @@ Add the API exposed by your bookshop application to the Application Frontend Ser
 ![IAS Admin console](./ias-admin.png)
 
 :::
+
+You can use the [`@sap/appfront-cli`](https://www.npmjs.com/package/@sap/appfront-cli) package to see the links of your deployed application:
+
+```sh
+acftl list
+```
