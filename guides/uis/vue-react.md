@@ -50,6 +50,20 @@ cds add app-frontend
 
 > When deploying your first Application Frontend service in that subaccount also make sure to subscribe to "Application Frontend Service" with plan "build-default".
 
+Also make sure to choose an authentication mode:
+
+```sh
+cds add ias
+```
+or...
+```sh
+cds add xsuaa
+```
+For the deployment, we add HANA as the production database:
+```sh
+cds add hana
+```
+
 Afterwards, deploy your project:
 
 ```sh
@@ -58,3 +72,11 @@ cds up
 
 [Learn more about Cloud Foundry deployment](../deploy/to-cf#add-ui){.learn-more}
 [Learn more about Kyma deployment](../deploy/to-kyma.md){.learn-more}
+
+::: warning When using IAS, set up the Application Frontend dependency...
+
+Add the API exposed by your bookshop application to the Application Frontend Service in your IAS admin console:
+
+![IAS Admin console](./ias-admin.png)
+
+:::
