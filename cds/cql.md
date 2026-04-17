@@ -739,51 +739,44 @@ Each symbol is replaced with its underlying value at query-compilation time.
 Given:
 
 ```cds
-type Status   : String  enum { open = 'O'; closed = 'C'; }
-type Priority : Integer enum { low = 1; medium = 2; high = 3; critical = 4; }
+extend Books with {
+   status : Status;
+}
 
-entity Orders { key id : Integer; status : Status; priority : Priority; }
+type Status: String enum {
+  presale     = 'PS';
+  published    = 'P';
+  discontinued = 'D';
+}
 ```
 
 ### In Conditions
 
 Use `#symbol` wherever a literal value is expected:
 
-```cds
-SELECT from Orders { id } where status   = #open      // → 'O'
-SELECT from Orders { id } where priority = #high      // → 3
-SELECT from Orders { id } where priority != #critical // → != 4
+```cds live
+SELECT from Books { title } where status = #published
 ```
 
 ### In `in` Lists
 
-```cds
-SELECT from Orders { id } where priority in (#low, #medium, #high) // → (1, 2, 3)
-SELECT from Orders { id } where status   in (#open, #closed)       // → ('O', 'C')
+```cds live
+SELECT from Books { title } where status in (#presale, #published)
 ```
 
 ### In `case` Expressions
 
 Enum symbols work both as `when` discriminants and inside `when` conditions:
 
-```cds
-SELECT from Orders {
-  id,
-  case priority
-    when #low    then 'Low'
-    when #medium then 'Medium'
-    else 'High'
-  end as label
-}
-```
-
-```cds
-SELECT from Orders {
-  id,
-  case when priority = #low  then 'Low'
-       when priority = #high then 'High'
-       else 'Other'
-  end as label
+```cds live
+SELECT from Books {
+  title,
+  case status
+    when #presale     then 'Coming Soon'
+    when #published    then 'Available'
+    when #discontinued then 'No Longer Available'
+    else 'Unknown'
+  end as availability
 }
 ```
 
@@ -793,7 +786,7 @@ SELECT from Orders {
 ## Association Definitions
 
 :::tip
-associations definitions are only available for CDL views and projections
+Association definitions are only available for CDL [views and projections](./cdl#views).
 :::
 
 ### Query-Local Mixins
