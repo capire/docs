@@ -1,0 +1,461 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" style="background: transparent; background-color: transparent;" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="532px" height="631px" viewBox="-0.5 -0.5 532 631" content="&lt;mxfile&gt;&lt;diagram id=&quot;d8KyvotcCJOt8hqBYvmJ&quot; name=&quot;Page-1&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <a xlink:href="#postfix-projections">
+            <g>
+                <rect x="65.53" y="58" width="368.47" height="207" fill="none" stroke="#e6e6e6" stroke-width="2" pointer-events="all" style="stroke: light-dark(rgb(230, 230, 230), rgb(39, 39, 39));"/>
+            </g>
+            <g>
+                <g fill="#808080" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="end" font-size="12px" style="fill: light-dark(rgb(128, 128, 128), rgb(127, 127, 127));">
+                    <text x="411.5" y="75.5">
+                        postfix projection
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="#SELECT">
+            <g>
+                <rect x="55.8" y="1" width="64" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="87.3" y="20">
+                        SELECT
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="#query-source">
+            <g>
+                <rect x="151.3" y="1" width="54" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="177.8" y="20">
+                        FROM
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="#query-source">
+            <g>
+                <rect x="243.8" y="1" width="105" height="30" fill="#f8cecc" stroke="#b85450" stroke-width="2" pointer-events="all" style="fill: light-dark(rgb(248, 206, 204), rgb(81, 45, 43)); stroke: light-dark(rgb(184, 84, 80), rgb(215, 129, 126));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="295.8" y="21.5">
+                        query source
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="85.8" y="111" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="100.3" y="131.5">
+                    {
+                </text>
+            </g>
+        </g>
+        <g>
+            <path d="M 119.8 126 L 136.43 126" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 141.68 126 L 134.68 129.5 L 136.43 126 L 134.68 122.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 231.8 126 L 237.03 126 Q 242.27 126 242.27 116 L 242.27 96 Q 242.27 86 232.27 86 L 209.17 86" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 203.92 86 L 210.92 82.5 L 209.17 86 L 210.92 89.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 164.8 86 L 134.27 86 Q 124.27 86 124.27 96 L 124.27 116 Q 124.27 126 130.35 126 L 136.43 126" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 141.68 126 L 134.68 129.5 L 136.43 126 L 134.68 122.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <rect x="259.8" y="111" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="274.3" y="131.5">
+                    }
+                </text>
+            </g>
+        </g>
+        <a xlink:href="#select-item">
+            <g>
+                <rect x="146.8" y="111" width="81" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="186.8" y="131.5">
+                        select item
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="168.8" y="71" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="183.3" y="91.5">
+                    ,
+                </text>
+            </g>
+        </g>
+        <g>
+            <path d="M 231.8 126 L 249.43 126" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 254.68 126 L 247.68 129.5 L 249.43 126 L 247.68 122.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#excluding-clause">
+            <g>
+                <rect x="85.8" y="209" width="91" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="130.8" y="228">
+                        EXCLUDING
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="368.03" y="209" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="382.53" y="229.5">
+                    }
+                </text>
+            </g>
+        </g>
+        <g>
+            <rect x="198.56" y="209" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="213.06" y="229.5">
+                    {
+                </text>
+            </g>
+        </g>
+        <a xlink:href="#excluding-clause">
+            <g>
+                <rect x="260.56" y="209" width="75" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="297.56" y="229.5">
+                        identifier
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="283.06" y="169" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="297.56" y="189.5">
+                    ,
+                </text>
+            </g>
+        </g>
+        <g>
+            <path d="M 339.56 224 L 345.3 224 Q 351.03 224 351.03 214 L 351.03 194 Q 351.03 184 341.03 184 L 323.43 184" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 318.18 184 L 325.18 180.5 L 323.43 184 L 325.18 187.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 279.06 184 L 247.03 184 Q 237.03 184 237.03 194 L 237.03 214 Q 237.03 224 243.61 224 L 250.19 224" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 255.44 224 L 248.44 227.5 L 250.19 224 L 248.44 220.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 293.8 126 L 305 126 Q 315 126 315 136 L 315 144 Q 315 152 305 152 L 64 152 Q 54 152 54 162 L 54 214 Q 54 224 64 224 L 75.43 224" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 224 L 73.68 227.5 L 75.43 224 L 73.68 220.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 180.8 224 L 188.19 224" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 193.44 224 L 186.44 227.5 L 188.19 224 L 186.44 220.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 232.56 224 L 250.19 224" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 255.44 224 L 248.44 227.5 L 250.19 224 L 248.44 220.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 339.56 224 L 357.66 224" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 362.91 224 L 355.91 227.5 L 357.66 224 L 355.91 220.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 123.8 16 L 140.93 16" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 146.18 16 L 139.18 19.5 L 140.93 16 L 139.18 12.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 209.3 16 L 233.43 16" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 238.68 16 L 231.68 19.5 L 233.43 16 L 231.68 12.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 352.8 16 L 363 16 Q 373 16 373 26 L 373 35 Q 373 44 363 44 L 64 44 Q 54 44 54 54 L 54 116 Q 54 126 64 126 L 75.43 126" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 126 L 73.68 129.5 L 75.43 126 L 73.68 122.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <ellipse cx="5.53" cy="16" rx="5" ry="5" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 14.53 16 L 45.43 16" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 50.68 16 L 43.68 19.5 L 45.43 16 L 43.68 12.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#where">
+            <g>
+                <rect x="85.8" y="318" width="80" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="125.3" y="337">
+                        WHERE
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="175" y="278" width="110" height="70" fill="none" stroke="none"/>
+        </g>
+        <a xlink:href="./cxl#expr">
+            <g>
+                <rect x="200" y="318" width="60" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="229.5" y="338.5">
+                        expr
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <path d="M 169.8 333 L 189.63 333" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 194.88 333 L 187.88 336.5 L 189.63 333 L 187.88 329.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 402.03 224 L 412.01 224 Q 422 224 422 234 L 422 242.5 Q 422 251 412 251 L 64 251 Q 54 251 54 261 L 54 323 Q 54 333 64 333 L 75.43 333" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 333 L 73.68 336.5 L 75.43 333 L 73.68 329.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#group-by">
+            <g>
+                <rect x="85.8" y="416" width="80" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="125.3" y="435">
+                        GROUP BY
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="175" y="376" width="110" height="70" fill="none" stroke="none"/>
+        </g>
+        <a xlink:href="./cxl#expr">
+            <g>
+                <rect x="200" y="416" width="60" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="229.5" y="436.5">
+                        expr
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="215" y="376" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="229.5" y="396.5">
+                    ,
+                </text>
+            </g>
+        </g>
+        <g>
+            <path d="M 264 431 L 275 431 Q 285 431 285 421 L 285 401 Q 285 391 275 391 L 255.37 391" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 250.12 391 L 257.12 387.5 L 255.37 391 L 257.12 394.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 211 391 L 185 391 Q 175 391 175 401 L 175 421 Q 175 431 182.32 431 L 189.63 431" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 194.88 431 L 187.88 434.5 L 189.63 431 L 187.88 427.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 169.8 431 L 189.63 431" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 194.88 431 L 187.88 434.5 L 189.63 431 L 187.88 427.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#having">
+            <g>
+                <rect x="301" y="416" width="66" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="333.5" y="435">
+                        HAVING
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="376" y="376" width="110" height="70" fill="none" stroke="none"/>
+        </g>
+        <a xlink:href="./cxl#expr">
+            <g>
+                <rect x="401" y="416" width="60" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="430.5" y="436.5">
+                        expr
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <path d="M 371 431 L 390.63 431" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 395.88 431 L 388.88 434.5 L 390.63 431 L 388.88 427.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 264 431 L 290.63 431" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 295.88 431 L 288.88 434.5 L 290.63 431 L 288.88 427.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 264 333 L 275 333 Q 285 333 285 343 L 285 351.5 Q 285 360 275 360 L 64 360 Q 54 360 54 370 L 54 421 Q 54 431 64 431 L 75.43 431" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 431 L 73.68 434.5 L 75.43 431 L 73.68 427.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#order-by">
+            <g>
+                <rect x="85.8" y="515" width="80" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="125.3" y="534">
+                        ORDER BY
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <rect x="175.2" y="475" width="133" height="70" fill="none" stroke="none"/>
+        </g>
+        <g>
+            <rect x="200.2" y="515" width="108" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="253.7" y="535.5">
+                    ordering term
+                </text>
+            </g>
+        </g>
+        <g>
+            <rect x="239.2" y="475" width="30" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                <text x="253.7" y="495.5">
+                    ,
+                </text>
+            </g>
+        </g>
+        <g>
+            <path d="M 312.2 530 L 323.2 530 Q 333.2 530 333.2 520 L 333.2 500 Q 333.2 490 323.2 490 L 279.57 490" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 274.32 490 L 281.32 486.5 L 279.57 490 L 281.32 493.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 235.2 490 L 185.2 490 Q 175.2 490 175.2 500 L 175.2 520 Q 175.2 530 182.52 530 L 189.83 530" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 195.08 530 L 188.08 533.5 L 189.83 530 L 188.08 526.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 169.8 530 L 189.83 530" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 195.08 530 L 188.08 533.5 L 189.83 530 L 188.08 526.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 465 431 L 476 431 Q 486 431 486 441 L 486 450 Q 486 459 476 459 L 64 459 Q 54 459 54 469 L 54 520 Q 54 530 64 530 L 75.43 530" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 530 L 73.68 533.5 L 75.43 530 L 73.68 526.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <a xlink:href="#limit">
+            <g>
+                <rect x="85.8" y="583" width="80" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="125.3" y="602">
+                        LIMIT
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="./cxl#expr">
+            <g>
+                <rect x="198.8" y="583" width="60" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="228.3" y="603.5">
+                        expr
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="#offset">
+            <g>
+                <rect x="292" y="583" width="80" height="30" rx="15" ry="15" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" font-weight="bold" text-anchor="middle" font-size="11px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="331.5" y="602">
+                        OFFSET
+                    </text>
+                </g>
+            </g>
+        </a>
+        <a xlink:href="./cxl#expr">
+            <g>
+                <rect x="407" y="583" width="60" height="30" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            </g>
+            <g>
+                <g fill="#000000" font-family="&quot;Helvetica&quot;" text-anchor="middle" font-size="14px" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));">
+                    <text x="436.5" y="603.5">
+                        expr
+                    </text>
+                </g>
+            </g>
+        </a>
+        <g>
+            <path d="M 169.8 598 L 188.43 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 193.68 598 L 186.68 601.5 L 188.43 598 L 186.68 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 262.8 598 L 281.63 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 286.88 598 L 279.88 601.5 L 281.63 598 L 279.88 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 376 598 L 396.63 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 401.88 598 L 394.88 601.5 L 396.63 598 L 394.88 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <ellipse cx="525" cy="598" rx="5" ry="5" fill="#ffffff" stroke="#000000" stroke-width="2" pointer-events="all" style="fill: light-dark(#ffffff, var(--ge-dark-color, #121212)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 471 598 L 509.63 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 514.88 598 L 507.88 601.5 L 509.63 598 L 507.88 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 312.2 530 L 323 530 Q 333 530 333 540 L 333 549 Q 333 558 323 558 L 64 558 Q 54 558 54 568 L 54 588 Q 54 598 64 598 L 75.43 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 80.68 598 L 73.68 601.5 L 75.43 598 L 73.68 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 352.8 16 L 363 16 Q 373 16 373 26 L 373 35 Q 373 44 363 44 L 64 44 Q 54 44 54 54 L 54 612 Q 54 622 64 622 L 481 622 Q 491 622 491 612 L 491 605 Q 491 598 500.32 598 L 509.63 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 514.88 598 L 507.88 601.5 L 509.63 598 L 507.88 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+        <g>
+            <path d="M 262.8 598 L 269.4 598 Q 276 598 276 608 L 276 615 Q 276 622 286 622 L 481 622 Q 491 622 491 612 L 491 605 Q 491 598 500.32 598 L 509.63 598" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="stroke" style="stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+            <path d="M 514.88 598 L 507.88 601.5 L 509.63 598 L 507.88 594.5 Z" fill="#000000" stroke="#000000" stroke-miterlimit="10" pointer-events="all" style="fill: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); stroke: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));"/>
+        </g>
+    </g>
+</svg>
