@@ -188,7 +188,7 @@ Annotate an element with `@assert: (<constraints>)` to specify checks to be appl
 annotate TravelService.Travels with {
 
   Description @assert: (case                                          // [!code focus]
-    when Description then 'Description must be specified'             // [!code focus]
+    when Description is null then 'Description must be specified'     // [!code focus]
     when trim(Description) = '' then 'Description must not be empty'  // [!code focus]
     when length(Description) < 3 then 'Description too short'         // [!code focus]
   end);                                                               // [!code focus]
@@ -406,7 +406,7 @@ For `@assert: (<constraints>)` annotations you always specify custom error messa
 annotate TravelService.Travels with {
 
   Description @assert: (case                                          // [!code focus]
-    when Description then 'Description must be specified'             // [!code focus]
+    when Description is null then 'Description must be specified'     // [!code focus]
     when trim(Description) = '' then 'Description must not be empty'  // [!code focus]
     when length(Description) < 3 then 'Description too short'         // [!code focus]
   end);                                                               // [!code focus]
