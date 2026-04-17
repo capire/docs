@@ -353,7 +353,7 @@ CdsVector embedding = service.run(Select.from(INCIDENTS).byId(101)
   .columns(b -> b.embedding())).single(Incident.class).getEmbedding();
 ```
 
-### Computing Vector Embeddings in SAP HANA (beta)
+### Computing Vector Embeddings in SAP HANA <Beta />
 
 CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
 
@@ -373,7 +373,7 @@ On H2 and SQLite the `vectorEmbedding` function is emulated using local [ONNX](h
 <dependency>
    <groupId>dev.langchain4j</groupId>
    <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
-   <scope>test</scope>
+   <scope>runtime</scope>
 </dependency>
 ```
 
