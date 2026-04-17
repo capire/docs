@@ -16,14 +16,14 @@
       <div class="vp-code-group vp-doc" v-else>
         <CodeGroup :groups="[
           { id: 'pkg-rc',   label: 'package.json',   lang: 'json',       group, code: pkgStr },
-          { id: 'pkg-priv', label: '~/.cdsrc.json',  lang: 'json',       group, code: rcJsonStr, private: true },
-          { id: 'pkg',      label: '.cdsrc.json',    lang: 'json',       group, code: rcJsonStr },
+          // { id: 'pkg-priv', label: '~/.cdsrc.json',  lang: 'json',       group, code: rcJsonStr, private: true },
+          // { id: 'pkg',      label: '.cdsrc.json',    lang: 'json',       group, code: rcJsonStr },
           { id: 'js',  label: '.cdsrc.js',           lang: 'js',         group, code: rcJsStr },
           { id: 'yml', label: '.cdsrc.yaml',         lang: 'yml',        group, code: rcYmlStr },
           { id: 'env', label: '.env file',           lang: 'properties', group, code: propStr },
-          { id: 'shl', label: 'Linux/macOS Shells',  lang: 'sh',         group, code: 'export '+envStr, transient: true },
-          { id: 'shp', label: 'Powershell',          lang: 'powershell', group, code: '$Env:'+envStr, transient: true },
-          { id: 'shw', label: 'Cmd Shell',           lang: 'cmd',        group, code: 'set '+envStr, transient: true }
+          // { id: 'shl', label: 'Linux/macOS Shells',  lang: 'sh',         group, code: 'export '+envStr, transient: true },
+          // { id: 'shp', label: 'Powershell',          lang: 'powershell', group, code: '$Env:'+envStr, transient: true },
+          // { id: 'shw', label: 'Cmd Shell',           lang: 'cmd',        group, code: 'set '+envStr, transient: true }
         ]" />
       </div>
     </template>
@@ -36,12 +36,13 @@
   import FloatingVue from 'floating-vue'
   import yaml from 'yaml'
 
-  const { java, keyOnly, filesOnly, showPrivate, label:labelProp, keyDelim } = defineProps<{
+  const { value, java, keyOnly, filesOnly, showPrivate, label:labelProp, keyDelim } = defineProps<{
     java?: boolean,
     keyOnly?: boolean,
     filesOnly?: boolean,
     showPrivate?: boolean,
     label?: string,
+    value?: string,
     keyDelim?: string
   }>()
 
@@ -84,7 +85,7 @@
   const slots = useSlots()
   const slotVal = slots.default?.().at(0)?.children?.toString().trim() ?? 'error: provide <Config>your_key:value</Config>'
 
-  const [key, val] = slotVal.split(/\s*[:=]\s*(.*)/) // split on first `:` or `=`
+  const [key, val = value] = slotVal.split(/\s*[:=]\s*(.*)/) // split on first `:` or `=`
   const label = labelProp || `${keyOnly ? key: slotVal}`
   const keyDel = keyDelim ?? '.'
 
@@ -104,13 +105,11 @@
     popperVisible.value = true
 
     cfgKey.value = key
-    let value:any = val
-    if (val === 'true')  value = true
-    else if (val === 'false')  value = false
-    else if (val === 'null')  value = null
-    else if (parseInt(val).toString() === val)  value = parseInt(val)
-    else if (parseFloat(val).toString() === val)  value = parseFloat(val)
-    else if (!val)  value = '…'
+    let value:any = !val ? '...' 
+    : val === 'true' ? true 
+    : val === 'false' ? false 
+    : val === 'null' ? null 
+    : Number(val) || val
 
     group.value = 'group-'+key
 
@@ -148,17 +147,17 @@ function toJson(key:string, value:string, delim:string): Record<string, any> {
   .v-popper--theme-cfgPopper .v-popper__inner {
     background-color: var(--vp-code-block-bg) !important;
   }
-  code.cfg::after {
-    content: " ⛭";
-  }
 </style>
 
 <style scoped>
   .v-popper {
     display: inline;
   }
+  a.cfg::after {
+    content: " ⛭";
+  }
   a.cfg {
-    color: var(--vp-c-text-1);
+    color: var(--vp-c-brand-1);
     text-decoration:none;
   }
   a.cfg:hover {
