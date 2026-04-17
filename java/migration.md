@@ -48,6 +48,9 @@ Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from C
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|5.0.0|
+|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|5.0.0|
+|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|5.0.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -65,6 +68,45 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
+
+### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `abc` | false | true | Any description. |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `abd`
+
+The functionality provided by these properties is enabled by default and there is no reason to switch these off.
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `abc` | Any description about replacement |
+
+### Removed Java APIs { #removed-java-apis-4-to-5 }
+
+- Removed deprecated methods:
+  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppId()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppId(String appId)` → `setXsappname(appId)`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppName()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppName(String appName)` → `setXsappname(appName)`
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`, use `setResult(SpiiResult)` instead.
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()`, use `getResult()` instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
