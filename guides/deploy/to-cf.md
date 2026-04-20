@@ -115,7 +115,7 @@ npm i @sap/cds        #> if necessary
    cf install-plugin -f html5-plugin
    ```
 
-## Prepare for Production {#prepare-for-production}
+## Prepare for Production
 
 If you followed CAP's grow-as-you-go approach, you've developed your application with an in-memory database and basic (mocked) authentication. In the cloud, you typically use production-grade services like SAP HANA and authentication providers.
 
