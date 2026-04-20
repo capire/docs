@@ -84,7 +84,7 @@ The following properties have been deprecated and might be removed in a future m
 
 - `abd`
 
-The functionality provided by these properties is enabled by default and there is no reason to switch these off.
+The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases. 
 
 ### Removed Properties
 
