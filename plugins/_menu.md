@@ -13,3 +13,4 @@
 # [CAP Operator for K8s](index#cap-operator-plugin)
 # [SAP Cloud Appl. Event Hub](index#event-hub)
 # [Advanced Event Mesh](index#advanced-event-mesh)
+# [Process Automation](index#sap-build-process-automation)

@@ -272,7 +272,7 @@ To run the command manually or automated, you can for example use [Cloud Foundry
 To trigger it as part of a Cloud Foundry Task, login to the Cloud Foundry landscape using the Cloud Foundry command line client and execute:
 
 ```sh
-cf run-task <application_name> "<command>"
+cf run-task <application_name> --command "<command>"
 ```
 
 `<application_name>` needs to be replaced with the name of a Cloud Foundry application, typically the <i>srv</i> module of your CAP project. You can find the name for example in the section `modules` in your `mta.yaml`. `<command>` represents the adapted start command. The output of the command will be logged to the application logs of the application you have specified in `<application_name>`.
