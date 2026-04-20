@@ -73,8 +73,8 @@ Some property defaults have been adjusted:
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
 | `cds.errors.preferServiceException` | false | true | |
-| `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
 | `cds.multiTenancy.mock.enabled` | null | true | |
+| `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
 | `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
 | `cds.persistence.changeset.enforceTransational` | true | false | |
 
