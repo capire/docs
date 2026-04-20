@@ -70,16 +70,19 @@ When users edit a draft-enabled entity in the frontend, the following requests a
 Draft-enabled entities have an extra key `IsActiveEntity` by which you can access either the active entity or the draft (inactive entity).
 :::
 
-| HTTP / OData request                   | Event constant name                | Default implementation                                                                                                      |
-| -------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| POST                                   | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
-| PATCH with key `IsActiveEntity=false`  | `DraftService.EVENT_DRAFT_PATCH`   | Updates an existing draft                                                                                                   |
-| DELETE with key `IsActiveEntity=false` | `DraftService.EVENT_DRAFT_CANCEL`  | Deletes an existing draft                                                                                                   |
-| DELETE with key `IsActiveEntity=true`  | `CqnService.EVENT_DELETE`          | Deletes an active entity *and* the corresponding draft                                                                      |
-| POST with action `draftPrepare`        | `DraftService.EVENT_DRAFT_PREPARE` | Empty implementation                                                                                                        |
-| POST with action `draftEdit`           | `DraftService.EVENT_DRAFT_EDIT`    | Creates a new draft from an active entity. Internally triggers `DRAFT_CREATE`.                                              |
-| POST with action `draftActivate`       | `DraftService.EVENT_DRAFT_SAVE`    | Activates a draft and updates the active entity. Triggers an `CREATE` or `UPDATE` event on the affected entity.             |
-| n/a                                    | `DraftService.EVENT_DRAFT_CREATE`  | Stores a new draft in the database.                                                                                         |
+| HTTP / OData request                                                   | Event constant name                | Default implementation                                                                                                      |
+| ---------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| POST with `IsActiveEntity=false` in payload                            | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| POST (no `IsActiveEntity`) on entity *without* a `draftNew` action    | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| POST (no `IsActiveEntity`) on entity *with* a `draftNew` action       | `CqnService.EVENT_CREATE`          | Creates a new active entity.                                                                                                |
+| POST with action `draftNew`                                            | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| PATCH with key `IsActiveEntity=false`                                  | `DraftService.EVENT_DRAFT_PATCH`   | Updates an existing draft                                                                                                   |
+| DELETE with key `IsActiveEntity=false`                                 | `DraftService.EVENT_DRAFT_CANCEL`  | Deletes an existing draft                                                                                                   |
+| DELETE with key `IsActiveEntity=true`                                  | `CqnService.EVENT_DELETE`          | Deletes an active entity *and* the corresponding draft                                                                      |
+| POST with action `draftPrepare`                                        | `DraftService.EVENT_DRAFT_PREPARE` | Empty implementation                                                                                                        |
+| POST with action `draftEdit`                                           | `DraftService.EVENT_DRAFT_EDIT`    | Creates a new draft from an active entity. Internally triggers `DRAFT_CREATE`.                                              |
+| POST with action `draftActivate`                                       | `DraftService.EVENT_DRAFT_SAVE`    | Activates a draft and updates the active entity. Triggers an `CREATE` or `UPDATE` event on the affected entity.             |
+| n/a                                                                    | `DraftService.EVENT_DRAFT_CREATE`  | Stores a new draft in the database.                                                                                         |
 
 You can use these events to add custom logic to the SAP Fiori draft flow, for example to interact with drafts or to validate user data.
 
@@ -140,7 +143,7 @@ It's possible to create and update data directly without creating intermediate d
 
 | HTTP / OData request                            | Event constant name                                      | Default implementation                               |
 | ----------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
-| POST with `IsActiveEntity: true` in payload     | `CqnService.EVENT_CREATE`                                | Creates the active entity                            |
+| POST with `IsActiveEntity: true` in URI         | `CqnService.EVENT_CREATE`                                | Creates the active entity                            |
 | PUT with key `IsActiveEntity=true` in URI       | `CqnService.EVENT_CREATE` <br> `CqnService.EVENT_UPDATE` | Creates or updates the active entity (full update)   |
 | PATCH with key `IsActiveEntity=true` in URI     | `CqnService.EVENT_UPDATE`                                | Creates or updates the active entity (sparse update) |
 
@@ -148,7 +151,7 @@ These events have the same semantics as described in section [Handling CRUD even
 
 
 ::: tip POST Behavior with Direct CRUD
-With the 4.8.0 release, CAP Java introduced a mode where `POST` without `IsActiveEntity=true` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is only active when the CDS property `cds.draft.post-active` is set to `true` and the entity is annotated with `@Common.DraftRoot.NewAction`. The annotation value needs to be the name of an unbound action in the same service of the entity. If the entity has a key with the type `UUID`, the action needs no further parameter. Otherwise, the action needs the key values of the entity as parameters.
+With the 4.9.0 release, CAP Java introduced a mode where `POST` without explicit `IsActiveEntity` results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is automatically active when the entity is annotated with `@Common.DraftRoot.NewAction`, which is generated by the CDS compiler when the `cds_fiori_direct__crud` flag is set. It can also be added via explicit modeling. The annotation value needs to be the name of a bound action in the same service. If the entity has a key of type `UUID`, the action needs no further parameters. Otherwise, the action needs the key values of the entity as parameters. The behavior can be overridden via the `cds.drafts.post-active` property set to `false`.
 :::
 
 ::: warning Draft locks still apply
