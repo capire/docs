@@ -611,15 +611,14 @@ CREATE TABLE Books ( ...
 :::
 
 > [!tip] Consider using <code>@assert.target</code> instead
-> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages taylored for end users.
+> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages tailored for end users.
 
 #### `ON DELETE CASCADE`
 
-Think of the example above: a book can still exist, even if its author is deleted. However, this may be different for existential relationships like the one between a book and its pages: a page cannot exist without a corresponding book. In such cases, you would want the pages to be automatically deleted when the book (parent) is deleted.
+Think of the example above: a book can still exist, even if its author is deleted. However, this differs for existential relationships like the one between a book and its pages: a page cannot exist without a corresponding book. In such cases, you want the pages to be automatically deleted when the book (parent) is deleted.
 
 Typically such existential relationships are modeled in CDS using [compositions](../../cds/cdl#compositions).
-That is why for managed **backlink** associations — those used in a composition's on-condition via `$self = <comp>.<backlink>` -
-the foreign key constraints are generated with `ON DELETE CASCADE` by default, instead of `ON DELETE RESTRICT`: 
+That is why for managed **backlink** associations (those used in a composition's on-condition via `$self = <comp>.<backlink>`), the foreign key constraints are generated with `ON DELETE CASCADE` by default, instead of `ON DELETE RESTRICT`:
 
 ::: code-group
 ```cds [CDS Source]
