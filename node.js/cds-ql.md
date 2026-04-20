@@ -459,7 +459,7 @@ This allows constructing [CQN](../cds/cqn) query objects using [CQL](../cds/cql)
 
 
 ### .one {.property}
-###### SELECT_one
+###### select-one
 
 
 Start constructing a query with `SELECT.one` to indicate we're interested in only the first row. At runtime, a single entry, if any, is returned instead of an array:
@@ -477,7 +477,7 @@ const [one] = await SELECT.from (Authors)
 
 
 ### .elements {.property}
-###### SELECT_elements
+###### select-elements
 
 
 The CSN outline of the selected elements as an object. Key is the selected element or alias, value is the CSN definition:
@@ -507,7 +507,7 @@ This is useful for custom implementations that act on the selection of specific 
 
 
 ### .distinct {.property}
-###### SELECT_distinct
+###### select-distinct
 
 Start the query with `SELECT.distinct` to skip duplicates as in SQL:
 
@@ -518,7 +518,7 @@ SELECT.distinct.from (Authors)
 
 
 ### columns() {.method}
-###### SELECT_columns
+###### select-columns
 
 ```tsx
 function SELECT.columns ( projection : function )
@@ -582,7 +582,7 @@ Projection functions use these mechanisms:
 
 
 ### from() {.method #select-from}
-###### SELECT_from
+###### select-from
 
 ```tsx
 function SELECT.from (
@@ -609,11 +609,11 @@ SELECT.one.from (Books) .where ({ID:201})
 .columns (b => { b.ID, b.title })
 ```
 
-> NOTE: Specifying a `key` argument automatically [enables `SELECT.one`](#SELECT_one).
+> NOTE: Specifying a `key` argument automatically [enables `SELECT.one`](#select-one).
 
 
 
-Argument `key` can be a single string or number value, or a [query-by-example](#SELECT_where) object:
+Argument `key` can be a single string or number value, or a [query-by-example](#select-where) object:
 
 ```js
 SELECT.from (Books,201) //> shortcut for {ID:201}
@@ -621,7 +621,7 @@ SELECT.from (Books, {ID:201})
 SELECT.from (Books.texts, {ID:201, locale:'de'})
 ```
 
-Argument `cols` is a projection [as accepted by `.columns (cols)`](#SELECT_columns)
+Argument `cols` is a projection [as accepted by `.columns (cols)`](#select-columns)
 
 
 
@@ -638,10 +638,10 @@ SELECT.from ('Authors').alias('a').where({
 
 
 ### where(){.method alt="The following documentation on having also applies to where"}
-###### SELECT_where
+###### select-where
 
 ### having() {.method}
-###### SELECT_having
+###### select-having
 
 These two methods fill in corresponding  [CQL](../cds/cql) clauses with predicate  expressions.
 
@@ -690,7 +690,7 @@ The provided expression is consistently accounted for by wrapping the existing w
 
 
 ### groupBy() {.method}
-###### SELECT_groupBy
+###### select-group-by
 
 Fills in SQL `group by` clauses. Arguments are a single tagged template string, or column expression strings or [CXN](../cds/cxn.md) objects, like that:
 
@@ -703,7 +703,7 @@ SELECT ... .groupBy ({ref:['a','name']}, {ref:['b']})
 
 
 ### orderBy() {.method}
-###### SELECT_orderBy
+###### select-order-by
 
 Fills in SQL `order by` clauses. Arguments are a single tagged template string, or column expression strings, optionally followed by `asc` or `desc`, or [CXN](../cds/cxn.md) objects, like that:
 
@@ -716,7 +716,7 @@ SELECT ... .orderBy ({ref:['a','name']}, {ref:['b'],sort:'desc'})
 
 
 ### limit() {.method}
-###### SELECT_limit
+###### select-limit
 
 Equivalent of the standard SQL `limit` and `offset` clauses.
 Arguments can be standard numbers or [CXN](../cds/cxn.md) expression objects.
@@ -729,7 +729,7 @@ SELECT ... .limit (25,100)  //> fifth page
 
 
 ### forUpdate() {.method}
-###### SELECT_forUpdate
+###### select-for-update
 
 Exclusively locks the selected rows for subsequent updates in the current transaction, thereby preventing concurrent updates by other parallel transactions.
 
@@ -832,7 +832,7 @@ INSERT (books) .into (Books)
 
 
 ### into() {.method}
-###### INSERT_into
+###### insert-into
 
 ```tsx
 function INSERT.into (
@@ -852,7 +852,7 @@ INSERT.into ('Books') .entries (...)
 INSERT.into `Books` .entries (...)
 ```
 
-You can optionally pass records of data [as  accepted by `.entries`](#INSERT_entries) as a shortcut to which:
+You can optionally pass records of data [as  accepted by `.entries`](#insert-entries) as a shortcut to which:
 
 ```js
 INSERT.into (Books, [
@@ -865,7 +865,7 @@ INSERT.into (Books, [
 
 
 ### entries() {.method #insert-entries}
-###### INSERT_entries
+###### insert-entries
 
 ```tsx
 function INSERT.entries (records : object[] | Query | Readable)
@@ -1006,7 +1006,7 @@ UPSERT.into ('Books') .entries (...)
 UPSERT.into `Books` .entries (...)
 ```
 
-You can optionally pass records of data [as  accepted by `.entries`](#UPSERT_entries) as a shortcut to which:
+You can optionally pass records of data [as  accepted by `.entries`](#upsert-entries) as a shortcut to which:
 
 ```js
 UPSERT.into (Books, [
@@ -1018,7 +1018,7 @@ UPSERT.into (Books, [
 
 
 ### entries() {.method}
-###### UPSERT_entries
+###### upsert-entries
 
 Allows upserting multiple rows with one statement where each row
 is a record with named values, for example, as could be read from a JSON
@@ -1068,7 +1068,7 @@ UPDATE (Books,201)...
 UPDATE (Books) .where ({ID:201}) ...
 ```
 
-Argument `key` can be a single string or number value, or a [query-by-example](#SELECT_where) object:
+Argument `key` can be a single string or number value, or a [query-by-example](#select-where) object:
 
 ```js
 UPDATE (Books,201) ... //> shortcut for {ID:201}
@@ -1091,7 +1091,7 @@ let [ ID, quantity ] = [ 201, 1 ]
 UPDATE `Books` .set `stock = stock - ${quantity}` .where `ID=${ID}`
 ```
 
-2. As an object with keys being element names of the target entity and values being simple values, [query-by-example](#SELECT_where) expressions,  or [CQN](../cds/cqn.md) expressions:
+2. As an object with keys being element names of the target entity and values being simple values, [query-by-example](#select-where) expressions,  or [CQN](../cds/cqn.md) expressions:
 ```js
 let [ ID, quantity ] = [ 201, 1 ]
 UPDATE (Books,ID) .with ({
@@ -1107,7 +1107,7 @@ UPDATE (Books,ID) .with ({
 
 ### where() {.method}
 
-[As in SELECT.where](#SELECT_where) {.learn-more}
+[As in SELECT.where](#select-where) {.learn-more}
 
 
 
@@ -1133,13 +1133,13 @@ function DELETE.from (
 )
 ```
 
-[As in SELECT.from](#SELECT_from) {.learn-more}
+[As in SELECT.from](#select-from) {.learn-more}
 
 
 
 ### where() {.method}
 
-[As in SELECT.where](#SELECT_where) {.learn-more}
+[As in SELECT.where](#select-where) {.learn-more}
 
 
 

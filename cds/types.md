@@ -30,7 +30,7 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 | `Timestamp`         | _µs_ precision, with up to 7 fractional digits                         | _TIMESTAMP_    |
 | `String` (`length`) | Default *length*: 255; on HANA: 5000                                   | _NVARCHAR_     |
 | `Binary` (`length`) | Default *length*: 255; on HANA: 5000                                   | _VARBINARY_    |
-| `Vector` (`length`) | SAP HANA Cloud QRC 1/2024, or later only                               | _REAL_VECTOR_  |
+| `Vector` (`length`) | for Vector Embeddings [-> see notes below](#vector-embeddings)                                                  | ( _DB-specific_ )  |
 | `LargeBinary`       | Unlimited binary data, usually streamed at runtime                     | _BLOB_         |
 | `LargeString`       | Unlimited textual data, usually streamed at runtime                    | _NCLOB_        |
 | `Map`               | Mapped to *NCLOB* for HANA.                                            | *JSON* type    |
@@ -39,6 +39,10 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 > Lengths can be omitted, in which case default lengths are used. While this is usual in initial phases of a project, productive apps should always use explicitly defined length. The respective default lengths are configurable through the config options
 > <Config> cds.cdsc.defaultStringLength = 255 </Config> and <br/>
 > <Config> cds.cdsc.defaultBinaryLength = 255 </Config>.
+
+###### Vector Embeddings
+> [!info] Vector Embeddings
+> The `Vector` type is used for vector embeddings, which are a way to represent data (like text, images, etc.) as high-dimensional vectors. Requires SAP HANA Cloud QRC 1/2024, or later, [`@sap/cds` v9.9+](/releases/2026/apr26), and [CAP Java v4.9+](/releases/2026/apr26) to use with H2 or SQLite.
 
 > [!tip] Use Attachments instead of LargeBinary
 > Consider using _Attachments_, as provided through [the CAP Attachments plugins](../plugins/index#attachments), instead of `LargeBinary` types for user-generated content like documents, images, etc.
