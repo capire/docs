@@ -115,7 +115,7 @@ npm i @sap/cds        #> if necessary
    cf install-plugin -f html5-plugin
    ```
 
-## Prepare for Production {#prepare-for-production}
+## Prepare for Production
 
 If you followed CAP's grow-as-you-go approach, you've developed your application with an in-memory database and basic (mocked) authentication. In the cloud, you typically use production-grade services like SAP HANA and authentication providers.
 
@@ -155,7 +155,20 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
-### 3. MTA-Based Deployment { #add-mta-yaml}
+### 3. SAP Cloud SDK {#add-cloud-sdk}
+
+If you intend to consume remote services in production, for example, via [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/destination-service), add the requisite SAP Cloud SDK packages, like that for Node.js:
+
+```shell
+npm add @sap-cloud-sdk/connectivity
+npm add @sap-cloud-sdk/http-client
+npm add @sap-cloud-sdk/resilience
+```
+
+[Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
+
+
+### 4. MTA-Based Deployment {#add-mta-yaml}
 
 You use the [Cloud MTA Build Tool](https://sap.github.io/cloud-mta-build-tool/) to execute the deployment. The modules and services are configured in an _mta.yaml_ deployment descriptor:
 
@@ -165,7 +178,7 @@ cds add mta
 
 [Learn more about MTA-based deployment.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d04fc0e2ad894545aebfd7126384307c.html?locale=en-US){.learn-more}
 
-### 4. User Interfaces { #add-ui }
+### 5. User Interfaces {#add-ui}
 
 #### Option A: SAP Cloud Portal
 
@@ -214,7 +227,7 @@ The [samples _modulith_](https://github.com/capire/samples) project uses this se
 [Find the symlink directory in the App Router's _resources_ folder](https://github.com/capire/samples/tree/main/.deploy/app-router/resources){.learn-more}
 :::
 
-### 5. Optional: Multitenancy { #add-multitenancy }
+### 6. Optional: Multitenancy { #add-multitenancy }
 
 To enable multitenancy for production, run the following command:
 

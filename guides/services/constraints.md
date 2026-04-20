@@ -4,7 +4,7 @@ status: released
 
 # Declarative Constraints
 
-Declarative constraints allow you to express data validity conditions using [CDS Expression Language (CXL)](../../cds/cxl.md) that are enforced automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation. 
+Declarative constraints allow you to express data validity conditions using [CDS Expression Language (CXL)](../../cds/cxl.md) that are enforced automatically whenever data is written. This greatly reduces the need for extensive custom code for input validation.
 {.abstract}
 
 [[toc]]
@@ -20,7 +20,7 @@ Use annotations like `@assert` and `@mandatory` to declaratively add constraints
 
 ### Constraints Annotations
 
-Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample: 
+Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample:
 
 ::: code-group
 
@@ -28,27 +28,27 @@ Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/x
 using { TravelService } from './travel-service';
 annotate TravelService.Travels with {
 
-  Description @assert: (case 
-    when length(Description) < 3 then 'Description too short' 
+  Description @assert: (case
+    when length(Description) < 3 then 'Description too short'
   end);
 
-  Agency @mandatory @assert: (case 
-    when not exists Agency then 'Agency does not exist' 
+  Agency @mandatory @assert: (case
+    when not exists Agency then 'Agency does not exist'
   end);
 
-  Customer @assert: (case 
-    when Customer is null then 'Customer must be specified' 
-    when not exists Customer then 'Customer does not exist' 
+  Customer @assert: (case
+    when Customer is null then 'Customer must be specified'
+    when not exists Customer then 'Customer does not exist'
   end);
 
-  BeginDate @mandatory @assert: (case 
-    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' 
-    when exists Bookings [Flight.date < Travel.BeginDate] 
+  BeginDate @mandatory @assert: (case
+    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE'
+    when exists Bookings [Flight.date < Travel.BeginDate]
       then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
   end);
 
-  BookingFee @assert: (case 
-    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' 
+  BookingFee @assert: (case
+    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE'
   end);
 
 }
@@ -56,12 +56,12 @@ annotate TravelService.Travels with {
 
 :::
 
-> [!tip] 
+> [!tip]
 > **BEST PRACTICES** applied here
 >
 > **Separation of Concerns** – always put secondary concerns, such as  constraints in this case, into separate files as in the example, instead of polluting your core service definitions.
 >
-> **Concise and comprehensible** – in contrast to imperative coding, constraints expressed in expression languages as shown here are easy to read and understand. 
+> **Concise and comprehensible** – in contrast to imperative coding, constraints expressed in expression languages as shown here are easy to read and understand.
 >
 > **Fueling AI** – Not the least, this also fuels AI-based approaches: AIs can easily generate such constraints, and you as a developer using such AIs can easily validate what was generated.
 
@@ -71,7 +71,7 @@ annotate TravelService.Travels with {
 
 
 
-The constraints are enforced automatically by the CAP runtimes on any input, and if failures occur, the request is ultimately rejected and the transaction rolled back. 
+The constraints are enforced automatically by the CAP runtimes on any input, and if failures occur, the request is ultimately rejected and the transaction rolled back.
 
 Some of the checks, e.g. the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
 
@@ -79,32 +79,32 @@ Some of the checks, e.g. the static `@mandatory` checks, are validated directly 
 
 ::: details Behind the scenes...
 
-The automatically compiled and executed validation query would look like that (in [CQL](../../cds/cql)) for the constraints from the sample above: 
+The automatically compiled and executed validation query would look like that (in [CQL](../../cds/cql)) for the constraints from the sample above:
 
 ```sql
 SELECT from TravelService.Travels {
 
-  (case 
-    when length(Description) < 3 then 'Description too short' 
+  (case
+    when length(Description) < 3 then 'Description too short'
   end) as Description,
 
-  (case 
-    when not exists Agency then 'Agency does not exist' 
+  (case
+    when not exists Agency then 'Agency does not exist'
   end) as Agency,
 
-  (case 
-    when Customer is null then 'Customer must be specified' 
-    when not exists Customer then 'Customer does not exist' 
+  (case
+    when Customer is null then 'Customer must be specified'
+    when not exists Customer then 'Customer does not exist'
   end) as Customer,
 
-  (case 
-    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' 
-    when exists Bookings [Flight.date < Travel.BeginDate] 
+  (case
+    when BeginDate > EndDate then 'ASSERT_BEGINDATE_BEFORE_ENDDATE'
+    when exists Bookings [Flight.date < Travel.BeginDate]
       then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD'
   end) as BeginDate,
 
-  (case 
-    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' 
+  (case
+    when BookingFee < 0 then 'ASSERT_BOOKING_FEE_NON_NEGATIVE'
   end) as BookingFee,
 
 }
@@ -114,12 +114,12 @@ SELECT from TravelService.Travels {
 
 
 
-> [!tip] 
+> [!tip]
 > **BEST PRACTICES** applied here
 >
-> **Push down to the database** is a general principle applied in CAP. Applied to input validation with declarative constraints it means that instead of reading a lot of related data into the service layer to do the checks there, we push down the respective checks to where the data is (in the database). 
+> **Push down to the database** is a general principle applied in CAP. Applied to input validation with declarative constraints it means that instead of reading a lot of related data into the service layer to do the checks there, we push down the respective checks to where the data is (in the database).
 >
-> **What, not how!** – This in turn boils down to the even more general principle that we share with functional programming: tell us *what* to do (= *intentional*), not how (= *imperative*), because then generic runtimes can apply advanced optimized ways to execute things, which is impossible with imperative code. 
+> **What, not how!** – This in turn boils down to the even more general principle that we share with functional programming: tell us *what* to do (= *intentional*), not how (= *imperative*), because then generic runtimes can apply advanced optimized ways to execute things, which is impossible with imperative code.
 
 
 
@@ -180,7 +180,7 @@ Use annotations like `@assert` and `@mandatory` to declaratively add constraints
 
 
 
-### `@assert:` *(constraint)* <Gamma/>
+### `@assert:` *(constraint)*
 
 Annotate an element with `@assert: (<constraints>)` to specify checks to be applied on respective input and errors to be raised if they fail. The `<constraints>` are standard SQL `case` expressions with one or more `when` branches, as shown in this example:
 
@@ -207,11 +207,11 @@ annotate TravelService.Travels with {
   BeginDate @assert: (case                                               // [!code focus]
     when BeginDate > EndDate then 'Begin date must be before end date'   // [!code focus]
   end);                                                                  // [!code focus]
-  
+
 }
 ```
 
-We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association: 
+We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association:
 
 ```cds
 annotate TravelService.Bookings with {
@@ -233,7 +233,7 @@ annotate TravelService.Travels with {
     when exists Bookings [Flight.date < Travel.BeginDate]               // [!code focus]
       then 'All bookings must be within travel period'                  // [!code focus]
   end);                                                                 // [!code focus]
-  
+
 }
 ```
 
@@ -402,7 +402,7 @@ Do not use the `@readonly` annotation on keys in all variants.
 
 For `@assert: (<constraints>)` annotations you always specify custom error messages, specific to the individual checks:
 
-```cds 
+```cds
 annotate TravelService.Travels with {
 
   Description @assert: (case                                          // [!code focus]
@@ -464,25 +464,25 @@ Actually, we saw this already in the [sample in the introduction](#introduction)
 using { TravelService } from './travel-service';
 annotate TravelService.Travels with {
 
-  Description @assert: (case 
-    when length(Description) < 3 
+  Description @assert: (case
+    when length(Description) < 3
       then 'Description too short' // [!code focus]
   end);
 
-  Agency @mandatory @assert: (case 
-    when not exists Agency 
+  Agency @mandatory @assert: (case
+    when not exists Agency
       then 'Agency does not exist' // [!code focus]
   end);
 
-  BeginDate @mandatory @assert: (case 
-    when BeginDate > EndDate 
+  BeginDate @mandatory @assert: (case
+    when BeginDate > EndDate
       then 'ASSERT_BEGINDATE_BEFORE_ENDDATE' // [!code focus]
-    when exists Bookings [Flight.date < Travel.BeginDate] 
+    when exists Bookings [Flight.date < Travel.BeginDate]
       then 'ASSERT_BOOKINGS_IN_TRAVEL_PERIOD' // [!code focus]
   end);
 
-  BookingFee @assert: (case 
-    when BookingFee < 0 
+  BookingFee @assert: (case
+    when BookingFee < 0
       then 'ASSERT_BOOKING_FEE_NON_NEGATIVE' // [!code focus]
   end);
 
@@ -541,9 +541,9 @@ Use the `@UI.Hidden` annotation to hide fields in Fiori UIs. You can also use it
 
 
 
-Annotations in general are propagated from underlying entities to views on top. This also applies to the annotations like `@assert` and `@mandatory` introduced in here, which can be used to declare invariant constraints on base entities, which are then inherited to and hence enforced on all interface views on top. 
+Annotations in general are propagated from underlying entities to views on top. This also applies to the annotations like `@assert` and `@mandatory` introduced in here, which can be used to declare invariant constraints on base entities, which are then inherited to and hence enforced on all interface views on top.
 
-Picking up the [sample from the introduction](#introduction) again, we could extract some of the constraints and add them to the `sap.capire.travels.Travels` entity from the domain model, with is the underlying entity of  `TravelService.Travels`: 
+Picking up the [sample from the introduction](#introduction) again, we could extract some of the constraints and add them to the `sap.capire.travels.Travels` entity from the domain model, with is the underlying entity of  `TravelService.Travels`:
 
 ::: code-group
 
@@ -551,13 +551,13 @@ Picking up the [sample from the introduction](#introduction) again, we could ext
 using { sap.capire.travels.Travels } from '../db/schema';
 annotate Travels with {
 
-  Description @assert: (case 
-    when length(Description) < 3 then 'Description too short' 
+  Description @assert: (case
+    when length(Description) < 3 then 'Description too short'
   end);
 
-  Customer @assert: (case 
-    when Customer is null then 'Customer must be specified' 
-    when not exists Customer then 'Customer does not exist' 
+  Customer @assert: (case
+    when Customer is null then 'Customer must be specified'
+    when not exists Customer then 'Customer does not exist'
   end);
 
 }
@@ -565,7 +565,7 @@ annotate Travels with {
 
 :::
 
-And this works fine for these constraints in this example. However, it may be dangerous if you do that for constraints which refer to other fields, as views on top might not expose these fields. This would immediately lead to compiler errors. Note also, that even though you might think you know all your views, and ensure all related fields are included in all views, somebody that you never meet, builds a new view on top of one of your entity. Hence always **adhere to this strict rule**:  
+And this works fine for these constraints in this example. However, it may be dangerous if you do that for constraints which refer to other fields, as views on top might not expose these fields. This would immediately lead to compiler errors. Note also, that even though you might think you know all your views, and ensure all related fields are included in all views, somebody that you never meet, builds a new view on top of one of your entity. Hence always **adhere to this strict rule**:
 
 > [!danger]
 >
