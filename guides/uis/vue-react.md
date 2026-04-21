@@ -1,7 +1,3 @@
----
-
----
-
 # Serving Vue.js or React
 <Since version="9.9.0" package="@sap/cds-dk" />
 
