@@ -511,7 +511,7 @@ cds:
 ```
 :::
 
-To use such a configuration, you need to use the composite messaging service for message handling. In the route defitions, you can use glob patterns to match topics:
+To use such a configuration, you need to use the composite messaging service for message handling. In the route definitions, you can use glob patterns to match topics:
 
 - **`**`** for any number of any character
 - **`*`** for any number of any character except `/`
