@@ -97,17 +97,17 @@ The following table gives an overview about the removed properties:
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
 - Removed deprecated methods:
-  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)` → `setResult(SpiiResult)`
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()` → `getResult()`
   - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppId()` → `getXsappname()`
   - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppId(String appId)` → `setXsappname(appId)`
   - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppName()` → `getXsappname()`
   - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppName(String appName)` → `setXsappname(appName)`
-  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`, use `setResult(SpiiResult)` instead.
-  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()`, use `getResult()` instead.
+  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
