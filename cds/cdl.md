@@ -1236,7 +1236,7 @@ entity Foo @(
 entity Foo { /* elements */ }
 ```
 
-For an `@inner` annotation, only the syntax `@(...)` is available.
+For annotations at the `@inner` position, only the syntax `@(...)` is available.
 
 
 #### Using `annotate` Directives
