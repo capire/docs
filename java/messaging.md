@@ -116,7 +116,7 @@ As you can see in the example, the event context not only provides access to the
 For messaging services, the `@On` handlers don't need to be completed by the `context.setCompleted()` method. The reason for that is because CAP wants to support the parallel handling of the messaging events and completes the context automatically. There could be numerous use cases where different components of the CAP application want to be notified by messaging events. Even more, you should not complete the context in the handler manually. Otherwise, not all registered handlers can be notified.
 :::
 
-::: warning 
+::: warning
 If any exceptions occur in the handler, the messaging service will not acknowledge the message as successfully processed to the broker. In consequence, the broker will deliver this message again.
 :::
 
@@ -511,7 +511,13 @@ cds:
 ```
 :::
 
-To use such a configuration, you need to use the composite messaging service for message handling. You can get hold of an instance of such a service in your code, by using the qualifier `MessagingService.COMPOSITE_NAME` when autowiring the messaging service – as shown in the following example:
+To use such a configuration, you need to use the composite messaging service for message handling. In the route defitions, you can use glob patterns to match topics:
+
+- **`**`** for any number of any character
+- **`*`** for any number of any character except `/`
+- **`.`**, **`?`** for a single character.
+
+You can get hold of an instance of such a service in your code, by using the qualifier `MessagingService.COMPOSITE_NAME` when autowiring the messaging service – as shown in the following example:
 
 ```java
 @Autowired
@@ -760,7 +766,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-::: warning 
+::: warning
 The way how unsuccessfully delivered messages are treated, fully depends on the messaging broker. Please check in section [Acknowledgement Support](#acknowledgement-support)  whether the messaging broker you are using is suitable for your error handler implementation.
 :::
 
