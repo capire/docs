@@ -382,7 +382,7 @@ Using Maven profiles allows you to distinguish between builds for local developm
 * Creating database-specific artifacts for different target databases
 * Add Maven dependencies used only in production
 
-Production cds build build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
+Production cds build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
 
 Add a Maven production profile in srv/pom.xml to override cds.build’s default non‑production build and H2 SQL generation.
 
@@ -433,7 +433,7 @@ Add a Maven production profile in srv/pom.xml to override cds.build’s default 
         </goals>
         <configuration>
          <commands>
-          <command>build --for java --production</command> <!-- -->
+          <command>build --for java --production</command>
          </commands>
         </configuration>
        </execution>
