@@ -517,7 +517,7 @@ To use such a configuration, you need to use the composite messaging service for
 - **`*`** for any number of any character except `/`
 - **`.`**, **`?`** for a single character.
 
-You can get hold of an instance of such a service in your code, by using the qualifier `MessagingService.COMPOSITE_NAME` when autowiring the messaging service – as shown in the following example:
+When autowiring the messaging service, you can use the qualifier `MessagingService.COMPOSITE_NAME` to get an instance of the service:
 
 ```java
 @Autowired
