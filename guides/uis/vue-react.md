@@ -3,10 +3,13 @@
 ---
 
 # Serving Vue.js or React
+<Since version="9.9.0" package="@sap/cds-dk" />
 
-CAP is easily integrated with Vue.js, React, Svelte, or any other popular UI library. This guide explains how to set up a minimal project with a UI.
+CAP is easily integrated with [Vue.js](https://vuejs.org/) or [React](https://react.dev/).
+This guide explains how to set up a minimal project with a UI.
 
-<!-- [[toc]] -->
+> [!note] What about other UI frameworks?
+> Other popular UI libraries like [Svelte](https://svelte.dev/) could follow the same pattern but don't have `cds add` support for now.
 
 ## Example project
 
@@ -38,11 +41,11 @@ cds watch
 
 Open http://localhost:4004 to see your running applications.
 
-### Next Up
+## Next Up
 
-You can deploy this project to Cloud Foundry or Kyma using the SAP BTP Application Frontend service or a custom App Router setup.
+You can deploy this project to Cloud Foundry or Kyma using the _SAP BTP Application Frontend_ service or a _custom App Router_ setup.
 
-Simply add it like so:
+Simply add _Application Frontend_ like so:
 
 ```sh
 cds add app-frontend
@@ -73,13 +76,11 @@ cds up
 [Learn more about Cloud Foundry deployment](../deploy/to-cf#add-ui){.learn-more}
 [Learn more about Kyma deployment](../deploy/to-kyma.md){.learn-more}
 
-::: warning When using IAS, set up the Application Frontend dependency...
-
-Add the API exposed by your bookshop application to the Application Frontend Service in your IAS admin console:
-
-![IAS Admin console](./ias-admin.png)
-
-:::
+> [!tip] When using IAS, set up the Application Frontend dependency.
+>
+> Add the API exposed by your bookshop application to the Application Frontend Service in your IAS admin console:
+>
+> ![IAS Admin console](./ias-admin.png)
 
 You can use the [`@sap/appfront-cli`](https://www.npmjs.com/package/@sap/appfront-cli) package to see the links of your deployed application:
 
