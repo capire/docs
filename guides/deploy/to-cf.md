@@ -155,7 +155,11 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
-### 3. SAP Cloud SDK {#add-cloud-sdk}
+### 3. Remote Service Consumption {#remote-services}
+
+CAP supports two HTTP clients for remote service calls.
+
+#### SAP Cloud SDK {#add-cloud-sdk}
 
 If you intend to consume remote services in production, for example, via [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/destination-service), add the requisite SAP Cloud SDK packages, like that for Node.js:
 
@@ -166,6 +170,18 @@ npm add @sap-cloud-sdk/resilience
 ```
 
 [Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
+
+#### Native Fetch Client <Beta /> {#native-fetch}
+
+As an alternative to SAP Cloud SDK, CAP can use Node.js's built-in `fetch` API for remote service calls. Native fetch is selected per request based on the following rules, in that order:
+
+1. If the destination requires features only available in CloudSDK (e.g., BTP Destination Service resolution or non-basic authentication), CloudSDK is always used.
+2. If <Config>cds.remote.native_fetch</Config> is explicitly set to `true` or `false`, that setting is used.
+3. Otherwise, native fetch is used when `@sap-cloud-sdk/http-client` is not installed.
+
+::: warning Current limitations
+The native fetch client does not yet support named destinations via BTP Destination Service, only [application defined destinations](../services/consuming-services#use-application-defined-destinations). Authentication is limited to `NoAuthentication` and `BasicAuthentication`. CSRF token handling is not yet fully on par with SAP Cloud SDK.
+:::
 
 
 ### 4. MTA-Based Deployment {#add-mta-yaml}
