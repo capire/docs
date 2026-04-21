@@ -37,17 +37,21 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.migrations.MigrateStatements \
-  -DskipMavenParsing=true
+  -Drewrite.activeRecipes=com.sap.cds.services.recipes.Cap_4.9
 ```
 
-Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.recipes.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
+
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.recipes.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
+|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
+|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -65,6 +69,45 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
+
+### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `abc` | false | true | Any description. |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `abd`
+
+The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases. 
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `abc` | Any description about replacement |
+
+### Removed Java APIs { #removed-java-apis-4-to-5 }
+
+- Removed deprecated methods:
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)` → `setResult(SpiiResult)`
+  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()` → `getResult()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppId()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppId(String appId)` → `setXsappname(appId)`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppName()` → `getXsappname()`
+  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppName(String appName)` → `setXsappname(appName)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
+  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
