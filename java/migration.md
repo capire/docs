@@ -112,7 +112,7 @@ The following table gives an overview about the removed properties:
 
 ### Changes in the `cds-maven-plugin`
 
-There are some incompatibilities in the [`cds-maven-plugin`](../assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
 
 #### Minimum Maven Version
 
