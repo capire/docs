@@ -120,7 +120,7 @@ For security reasons, the minimum required Maven version has been increased to *
 
 #### Removed deprecated goal `install-cdsdk`
 
-The goal `install-cdsdk` is deprecated since version 3.8.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
+The goal `install-cdsdk` is deprecated since version 3.6.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
 Further details can be found [here](developing-applications/building#migration-install-cdsdk).
 
 #### Changes in goal `generate`
