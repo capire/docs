@@ -112,6 +112,8 @@ The following table gives an overview about the removed properties:
 
 ### Changes in the `cds-maven-plugin`
 
+There are some incompatibilities in the [`cds-maven-plugin`](../assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+
 #### Minimum Maven Version
 
 For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
