@@ -110,7 +110,14 @@ The following table gives an overview about the removed properties:
   - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
   - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
 
-### Changes in goal `generate` of the `cds-maven-plugin`
+### Changes in the `cds-maven-plugin`
+
+#### Removed deprecated gaol `install-cdsdk`
+
+The goal `install-cdsdk` was deprecated since version 3.8.0 of the `cds-maven-plugin`. With version 5.0.0 is removed and no longer available. As an alternative the goal `npm` can be used to install a local `@sap/cds-dk` if required.
+Further details can be found here:
+
+#### Changes in goal `generate`
 
 1. Removed already deprecated properties:
 - eventContext
