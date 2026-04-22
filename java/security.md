@@ -91,11 +91,11 @@ The property `cds.security.authentication.mode` controls the strategy used for a
 | :---------------------------------------------------- | :----------------------------------------------------- |
 | `never` | No endpoint requires authentication. All protocol-adapter endpoints are considered public.
 | `model-relaxed` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is considered public.
-| `model-strict` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is authenticated. An explicit `@requires: 'any'` makes the endpoint public (Default).
+| `model-strict` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is authenticated. An explicit `@requires: 'any'` makes the endpoint public.
 | `always` | All endpoints require authentication.
 
-By default the authentication mode is set to `model-strict` to comply with secure-by-default.
-In that case you can use the annotation `@requires: 'any'` on service-level to make the service and its entities public again.
+When the auth mode is explicitly configured, it takes precedence. When it is not configured, the mode is derived automatically i.e. `model-relaxed` if mock users are enabled (local development), `model-strict` otherwise (production).
+But, one can use the annotation `@requires: 'any'` on service-level to make the service and its entities public again.
 You can only make an endpoint public if the full endpoint path is also considered public.
 For example you can only make an entity public, if the service that contains it is also considered public.
 
