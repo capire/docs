@@ -126,8 +126,8 @@ Further details can be found [here](developing-applications/building#migration-i
 #### Changes in goal `generate`
 
 1. Removed already deprecated properties:
-- eventContext: Event context interfaces will be always inherited from `EventContext`.
-- cqnService: Typed application service interfaces are always generated.
+- eventContext: Interfaces for actions and functions now always extend `EventContext`.
+- cqnService: Typed interfaces are now always generated for application service.
 
 2. Deprecated properties and marked for removal:
 None
