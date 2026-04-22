@@ -124,13 +124,14 @@ Further details can be found [here](developing-applications/building#migration-i
 #### Changes in goal `generate`
 
 1. Removed already deprecated properties:
-- eventContext
-- cqnService
+- eventContext: Event context interfaces will be always inherited from `EventContext`.
+- cqnService: Typed application service interfaces are always generated.
 
 2. Deprecated properties and marked for removal:
+None
 
 3. Changed default value of properties:
-
+None
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
