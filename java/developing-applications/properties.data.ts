@@ -12,16 +12,21 @@ export default defineLoader({
 })
 
 function massageProperties(properties: JavaSdkProperties[]): OurProperties[] {
-  return properties.map(({ name, header, type, default:defaultValue, doc }) => ({
-    // @ts-ignore
-    name: name.replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>'),  // decorate special <key> and <index> names
-    type,
-    description: md2Html(doc),
-    defaultValue: defaultValue ? `<code class="no-bg">${defaultValue}</code>` : '',
-    header,
-    // @ts-ignore
-    anchor: name.replaceAll('.', '-')
-  }))
+  return properties.map(({ name, header, type, default:defaultValue, doc }) => {
+    if (defaultValue && type?.startsWith('List')) { // split list default values into multiple lines for better readability
+      defaultValue = defaultValue.replace(/, ?/g, ',<br>')
+    }
+    return {
+      name: name.replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>'),  // decorate special <key> and <index> names
+      type: type?.replaceAll(/<(.*)>/g, ''), // remove generics for display
+      typeFull: type,
+      description: md2Html(doc),
+      defaultValue: defaultValue ? `<code class="no-bg">${defaultValue}</code>` : '',
+      header,
+      // @ts-ignore
+      anchor: name.replaceAll('.', '-')
+    }
+  })
 }
 
 function md2Html(string:string) {
@@ -45,5 +50,6 @@ type OurProperties = {
   type: string,
   description: string,
   defaultValue: string,
+  typeFull: string,
   anchor: string
 }
