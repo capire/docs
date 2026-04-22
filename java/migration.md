@@ -69,6 +69,7 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
+| Maven | 3.9.10 |
 
 ### Adjusted Property Defaults
 
@@ -108,6 +109,17 @@ The following table gives an overview about the removed properties:
   - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
   - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
   - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
+
+### Changes in goal `generate` of the `cds-maven-plugin`
+
+1. Removed already deprecated properties:
+- eventContext
+- cqnService
+
+2. Deprecated properties and marked for removal:
+
+3. Changed default value of properties:
+
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
