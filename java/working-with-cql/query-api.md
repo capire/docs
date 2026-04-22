@@ -1650,7 +1650,7 @@ You can use date/time functions to extract components from date/time values and 
 | --- | --- | --- | --- |
 | year | Int32 | Integer | `date.year()` | 
 | month | Int32 | Integer | `CQL.year(date)` |
-| day | Int32 | Integer | `date.year()` |
+| day | Int32 | Integer | `date.day()` |
 | hour | Int32 | Integer | `CQL.hour(time)` |
 | minute | Int32 | Integer | `time.minute()` |
 | second | Int32 | Integer | `time.second()` |
