@@ -44,6 +44,7 @@ html {
   --vp-c-brand-soft: rgba(16, 179, 185, 0.16);
 
   &.dark {
+    --vp-c-text-1: #eed;
     --vp-c-brand-1: var(--vp-c-yellow-2);
     --vp-c-brand-2: var(--vp-c-yellow-2);
     --vp-c-brand-3: var(--vp-c-yellow-3);
