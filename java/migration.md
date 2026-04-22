@@ -72,17 +72,23 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
+| `cds.changeSet.enforceTransactional` | true | false | |
 | `cds.errors.preferServiceException` | false | true | |
 | `cds.multiTenancy.mock.enabled` | null | true | |
 | `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
 | `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
+| `cds.odatav2.searchMode` | "odata-lenient" | "pass-through" | |
+| `cds.odatav4.searchMode` | "odata-lenient" | "pass-through" | |
+| `cds.outbox.services.<key>.ordered` | true | false | 
 | `cds.persistence.changeset.enforceTransational` | true | false | |
+| `cds.sql.toOnePath.mode` | "always-join" | "optimize" | |
 
 ### Deprecated Properties
 
 The following properties have been deprecated and might be removed in a future major version:
 
-- `abd`
+- `cds.outbox.inMemory.enabled`
+- `cds.outbox.inMemory.emitDuringChangeSetContext`
 
 The functionality provided by these properties is enabled by default and there is no reason to switch these off.
 
