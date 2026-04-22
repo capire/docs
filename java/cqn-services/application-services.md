@@ -424,9 +424,9 @@ service InternalService {
 }
 ```
 
-```tip
-Use the property `cds.protocols.defaults: []` to prevent that a protocol is accidently served by default.
-```
+:::tip
+Use the property <Config java>cds.protocols.defaults: []</Config> to prevent that a protocol is served accidently.
+:::
 
 [Learn more about all `cds.application.services.<key>.serve` configuration possibilities.](../developing-applications/properties#cds-application-services-<key>-serve){.learn-more}
 
