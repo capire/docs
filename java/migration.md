@@ -114,7 +114,7 @@ The following table gives an overview about the removed properties:
 
 #### Minimum Maven Version
 
-For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly.
+For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
 
 #### Removed deprecated goal `install-cdsdk`
 
