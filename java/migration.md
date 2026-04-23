@@ -70,7 +70,7 @@ CAP Java 5.0 increased some minimum required versions:
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
 
-### Adjusted Property Defaults
+<!-- ### Adjusted Property Defaults
 
 Some property defaults have been adjusted:
 
@@ -92,7 +92,7 @@ The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement |
+| `abc` | Any description about replacement | -->
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
