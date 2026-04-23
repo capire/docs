@@ -809,14 +809,13 @@ cds watch --profile dev
 
 ###### sap-hana-tenant-management-service-v2 <!-- referenced from help portal -->
 
-### SAP HANA TMS v2 <beta/>
+### SAP HANA TMS v2
 
 The SAP HANA Tenant Management Service (TMS) v2 service provides direct support for managing SAP HANA tenants.
 
 > [!important] Be aware of the current limitations:
-> - **Not suitable for existing applications** as there is **no migration from Service Manager** available yet. This will be provided by the HANA team later.<br>
+> - **Not suitable for existing applications** as there is **no migration from Service Manager** available yet. This will be provided as HANA tool later.<br>
 > There **won't be support for both Service Manager and TMS v2** together in one application.
-> - Some features are not yet on par with the SAP BTP Service Manager. For example, there is currently **no batch API for retrieving tenant credentials** to enable efficient caching.
 
 [For more information, see the SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy-guide-internal/introducing-sap-hana-cloud-multitenancy){.learn-more}
 [Find the TMS v2 API on the SAP Business Accelerator Hub](https://api.sap.com/api/TenantAPI/overview){.learn-more}
