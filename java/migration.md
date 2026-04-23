@@ -71,7 +71,7 @@ CAP Java 5.0 increased some minimum required versions:
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.10 |
 
-### Adjusted Property Defaults
+<!-- ### Adjusted Property Defaults
 
 Some property defaults have been adjusted:
 
@@ -85,7 +85,7 @@ The following properties have been deprecated and might be removed in a future m
 
 - `abd`
 
-The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases. 
+The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
 
 ### Removed Properties
 
@@ -93,22 +93,25 @@ The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement |
+| `abc` | Any description about replacement | -->
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
-- Removed deprecated methods:
-  - `com.sap.cds.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)` → `setResult(SpiiResult)`
-  - `com.sap.cds.feature.ucl.services.AssignEventContext.getUclResult()` → `getResult()`
-  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppId()` → `getXsappname()`
-  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppId(String appId)` → `setXsappname(appId)`
-  - `com.sap.cds.services.mt.SaaSRegistryDependency.getAppName()` → `getXsappname()`
-  - `com.sap.cds.services.mt.SaaSRegistryDependency.setAppName(String appName)` → `setXsappname(appName)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getLocalizedMessage(String code, Object[] args, Locale locale)` → `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior)
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)` → `MessageTarget.create(path, element)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String target)` → `MessageTarget.create(target)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class<E> type, Function<E, Object> path)` → `MessageTarget.create(parameter, type, path)`
-  - `com.sap.cds.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function<StructuredType<?>, Object> path)` → `MessageTarget.create(parameter, path)`
+Removed deprecated methods:
+
+| Removed method                                                                                         | Replacement / Explanation                                                                                             |
+|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
+| `c.s.c.services.ServiceExceptionUtils.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
 
 ### Changes in the `cds-maven-plugin`
 
