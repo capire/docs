@@ -882,7 +882,7 @@ Specify a <Config label="hana_tenant_prefix" keyDelim="/">cds/requires/cds.xt.De
 The resulting SAP HANA tenant name is constructed from `prefix`+`subscriber tenant`. The SAP HANA tenant ID
 is generated as a hashed UUID from the SAP HANA tenant name, and the original name is added as a label.
 
-![Shows the relations of a HANA Tenant](/@external/../guides/multitenancy/assets/hana_tenants.drawio.svg)
+![Shows the relations of a HANA Tenant](./assets/hana_tenants.drawio.svg)
 
 To help ensure that the generated SAP HANA tenant UUID is unique within a region, you could build the
 `hana_tenant_prefix` in your deployment descriptor using various variables, for example,
@@ -931,7 +931,7 @@ If you want to control the ID of the SAP HANA tenant ID on your own, you can pas
 The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
 except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
 
-![One HANA tenant for many applications](/@external/../guides/multitenancy/assets/hana_tenants_for_many.drawio.svg)
+![One HANA tenant for many applications](./assets/hana_tenants_for_many.drawio.svg)
 
 **... in CAP Java**
 ###### CAP Java
