@@ -219,7 +219,7 @@ onMounted(() => { metaKey.value = /(Mac|iPhone|iPad)/i.test(navigator?.userAgent
 
 .editor-row .editor {
   flex: 1;
-  min-width: 0;
+  min-width: 0 !important;
 }
 
 .editor {

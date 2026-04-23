@@ -33,7 +33,7 @@ In property files `<index>` should be replaced with a number and `<key>` with an
   <tr v-for="p in properties" :key="p.name" :id="p.anchor">
     <td class="anchor"><a :href="'#'+p.anchor" class="header-anchor"></a></td>
     <td class="prop"      v-html="p.name" :class="{ group: p.header }"></td>
-    <td class="java-type" v-html="p.type"></td>
+    <td class="java-type" v-html="p.type" :title="p.typeFull"></td>
     <td class="default" v-html="p.defaultValue"></td>
     <td class="descr"   v-html="p.description"></td>
   </tr>
@@ -45,7 +45,14 @@ In property files `<index>` should be replaced with a number and `<key>` with an
     content: "Java"; display: block; font-size: 60%; margin: 0 0 .2em;
   }
 
-  tr:hover .header-anchor, tr .header-anchor:focus { opacity: 1; margin-top: -11px; }
+  tr:hover .header-anchor, tr .header-anchor:focus { opacity: 1; }
+  td.anchor { position: relative; }
+  td.anchor .header-anchor {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%);
+  }
+
   td.group { font-weight:600; }
   th.anchor, td.anchor { border-right:none; }
   th.prop,   td.prop { border-left:none; padding-left:0px;}
