@@ -664,7 +664,7 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 	```xml
 		<properties>
 			<!-- Delete from here ...  -->
-			<cds.install-cdsdk.version>8.4.2</cds.install-cdsdk.version>
+			<cds.install-cdsdk.version>x.x.x</cds.install-cdsdk.version>
 			<!-- ... to here -->
 		</properties>
 	```
@@ -673,7 +673,7 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 	```json
 	{
 		"devDependencies" : {
-			"@sap/cds-dk" : "^8.5.0"
+			"@sap/cds-dk" : "^9"
 		}
 	}
 	```
@@ -682,9 +682,9 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 
 6. Finally, do a `mvn clean install` and verify that the installation of `@sap/cds-dk` is done with the new approach.
 
-#### Maintaining cds-dk in _package.json_ (prefered)
+#### Maintaining cds-dk in _package.json_ (preferred)
 
-Newly created CAP Java projects maintain the `@sap/cds-dk` with a specific version as a `devDependency` in the _package.json_. So, when you update the cds-dk version in the package.json, run npm install from the command line to update the `package-lock.json`. `npm ci` will then install the updated version of `@sap/cds-dk`.
+Newly created CAP Java projects maintain the `@sap/cds-dk` with a specific version as a `devDependency` in the _package.json_. So, when you update the cds-dk version in _package.json_, run `npm install` from the command line to update the _package-lock.json_. `npm ci` will then install the updated version of `@sap/cds-dk`.
 
 #### Maintaining cds-dk in _pom.xml_ (outdated)
 
