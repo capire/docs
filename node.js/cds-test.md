@@ -164,7 +164,7 @@ cds test
 The last one, `cds test` is a thin wrapper around [Node's built-in test runner](https://nodejs.org/api/test.html), which makes it easier to fetch tests and provides a cleaner output.
 
 ::: tip Writing runner-agnostic tests
-To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`, in particular via [`cds.test.expect`](#expect) and [`cds.test.defaults`](#defaults), which are designed to work across different runners. This way, you can easily switch between different test runners as shown above without having to change your test code.
+To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`, in particular via [`cds.test.expect`](#expect), which are designed to work across different runners. This way, you can easily switch between different test runners as shown above without having to change your test code. -> Learn more in section [Runner-Agnostic Tests](#runner-agnostic-tests) below.
 :::
 
 
@@ -174,14 +174,14 @@ To keep your tests portable across different test runners, it's recommended to a
 To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cds-test) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds-test-env-check)
 :::
 
-::: warning Avoid Jest's bells and whistles
-Certain Jest helpers might cause conflicts with generic features of `@sap/cds`. For example, `jest.resetModules()` might leave the server in an inconsistent state, and `jest.useFakeTimers()` can interfere with the server shutdown, leading to test timeouts.
+::: warning Keep it simple, stupid!
+To keep things simple, and [_runner-agnostic_](#runner-agnostic-tests), avoid excessive use of your test runner's mocking features or alike. _The more you mock, the less you test the real thing!_
 
-To ensure smooth testing, it's best to steer clear of such features, also to keep things simple, and portable.
+Using these bells and whistles might also cause conflicts with generic features of `@sap/cds`. For example, `jest.resetModules()` might leave the server in an inconsistent state, and `jest.useFakeTimers()` can interfere with the server shutdown, leading to test timeouts.
 :::
 
 ::: tip  Avoid `process.chdir()` -> prefer `cds.test.in()`
-Using `process.chdir()` in tests may leave test containers in failed state, leading to failing subsequent tests. -> Use [`cds.test.in()`](#test-in-folder) instead.
+CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cds-test), or use [`cds.test.in()`](#test-in-folder) instead.
 :::
 
 
@@ -191,7 +191,8 @@ Using `process.chdir()` in tests may leave test containers in failed state, lead
 Instances of this class are returned by [`cds.test()`](#cds-test), for example:
 
 ```js
-const test = cds.test(_dirname)
+const test = cds.test()
+//> test is an instance of class cds.test.Test
 ```
 
 You can also use this class and create instances yourself, for example, like that:
@@ -262,7 +263,7 @@ it('uses jest.expect', ()=>{
 ```
 
 > [!warning]
-As `chai` is an ESM library since version 5, and Jest is still struggling to support ESM, the `expect` function returned by `cds.test` is a simple emulation of the original Chai `expect` function. It supports the most commonly used Chai APIs, but not all of them.
+As `chai` is an ESM library since version 5, and [Jest is still struggling to support ESM](https://jenchan.biz/blog/dissecting-the-hell-jest-setup-esm-typescript-setup/), the `expect` function returned by `cds.test` is a simple emulation of the original Chai `expect` function. It supports the most commonly used Chai APIs, but not all of them. => We recommend to [migrate to Vitest](https://vitest.dev/guide/migration.html#jest), or use Jest's `expect` instead, if you need to stick to Jest.
 
 
 
@@ -508,6 +509,14 @@ We recommended to switch on `CDS_TEST_ENV_CHECK` in all your tests to detect suc
 ## Deprecated APIs
 
 
+### .expect in Jest {.property}
+
+The [`expect`](#expect) function provided by `cds.test` always was the `chai.expect` function preconfigured with the `chai-subset` and `chai-as-promised` plugins, which is still the case when using Vitest, Mocha, or Node's built-in test runner, and recommended to be used across all runners for [portable tests](#runner-agnostic-tests).
+
+However, with the move to latest Chai version 6, which is an ESM library, and the fact that [Jest is still struggling to support ESM](https://jenchan.biz/blog/dissecting-the-hell-jest-setup-esm-typescript-setup/), it's no longer possible to provide the original `chai.expect` function in Jest. Instead, when called within jest runs, `cds.test.expect` provides a simple emulation of the original Chai `expect` function, which supports the most commonly used Chai APIs, **but not all of them!**
+
+> [!tip]
+We recommend to either [migrate to Vitest](https://vitest.dev/guide/migration.html#jest), or use Jest's `expect` instead, if you need to stick to Jest, or simply use the original chai v4 `expect` function by adding `chai@4` as a dependency to your project and importing it directly in your test file like via `const { expect } = requires('chai')` instead of using `cds.test.expect`.
 
 
 ### .axios {.property}
@@ -561,112 +570,143 @@ Used to provide access to the [`chai.should()`](https://www.chaijs.com/guide/sty
 
 ## Best Practices
 
-### Check Status Codes Last
-
-Avoid checking for single status codes. Instead, simply check the response data:
-
-```js
-const { data, status } = await GET `/catalog/Books`
-expect(status).to.equal(200)   //> DON'T do that upfront // [!code --]
-expect(data).to.equal(...)     //> do this to see what's wrong
-expect(status).to.equal(200)   //> Do it at the end, if at all // [!code ++]
-```
-
-This makes a difference if there are errors: with the status code check, your test aborts with a useless _Expected: 200, received: xxx_ error, while without it, it fails with a richer error that includes a status text.
-
-Note that by default, errors are thrown for status codes `< 200` and `>= 300`. This can be [configured](#defaults), though.
-
-
 
 ### Minimal Assumptions
 
-When checking expected errors messages, only check for significant keywords. Don't hardwire the exact error text, as this might change over time, breaking your test unnecessarily.
+In your assertions, only check what's really relevant for the functionality you're testing. Make minimal assumptions about irrelevant details. This way, your tests are more robust against changes in underlying implementations.
 
-**DON'T**{.bad} hardwire on overly specific error messages:
+For example, avoid hardwiring on specific error messages, as these might change without actually breaking the functionality, which would lead to unnecessarily broken tests. Check for guaranteed stable error codes instead, for example:
 
-```js
-await expect(POST(`/catalog/Books`,...)).to.be.rejectedWith(
-  'Entity "CatalogService.Books" is readonly'
-)
-```
-
-**DO**{.good} check for the essential information only:
+**Don't**{.bad} do that:
 
 ```js
-await expect(POST(`/catalog/Books`,...)).to.be.rejectedWith(
-  /readonly/i
-)
+expect (error.message) .to.equal ('Entity "CatalogService.Books" is readonly')
+```
+**Do that**{.good} instead:
+
+```js
+expect (error.code) .to.equal ('READONLY_ENTITY')
 ```
 
-### Keep Test Code Environment Agnostic
 
-Environment setup shouldn't be part of the test code itself. That should be handled by setup scripts like CI/CD pipelines.
-This way, your tests remain isolated and reproducible across different setups.
+### Don't Test Snapshots
 
-::: code-group
-```js [my.test.js]
-// NO service bindings, env. variables, profiles, etc. here
-// Do this outside in setup scripts etc.
-describe(() => { cds.test(...) })
+Same applies to using equal with whole response objects, which might contain additional properties like timestamps, ids, etc., that are not relevant for the test and might change without actually breaking the functionality. Instead, check for essential information only, for example with `containSubset`:
+
+**Don't**{.bad} do that:
+
+```js
+expect (response) .to.deep.equal ({
+  status: 403,
+  data: {
+    error: {
+      code: 'READONLY_ENTITY',
+      message: 'Entity "CatalogService.Books" is readonly',
+      details: { ... }
+    }
+  }
+})
 ```
+
+**Do that**{.good} instead:
+
+```js
+expect (response.data) .to.containSubset ({
+  error: {
+    code: 'READONLY_ENTITY'
+  }
+})
+```
+
+
+### Don't Obscure Errors
+
+A common mistake is to check for HTTP status codes upfront, which frequently obscures the actual error if the status code is different than expected. Instead, check the error response data first, which will give you a richer information in case of failing tests including the error messages and stack traces, and only then check for the status code if at all:
+
+**Don't**{.bad} do that:
+
+```js
+const { data, status } = await GET `/catalog/Books`
+expect(status).to.equal(200)       //> DON'T do that upfront, ... // [!code --]
+expect(data).to.deep.equal({...})  //> as we'd never reach this line
+```
+
+**Do that**{.good} instead:
+
+```js
+const { data, status } = await GET `/catalog/Books`
+expect(data).to.deep.equal({...})  //> Gives rich error information if it fails
+expect(status).to.equal(200)       //> Do that at the end, if at all // [!code ++]
+```
+
+
+Note that by default, Axios throws errors for status codes `< 200` and `>= 300`. This can be [configured](https://github.com/axios/axios#handling-errors), though.
+
+
+### Runner-Agnostic Tests
+
+To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by by `cds.test`.
+
+Whenever you the `@cap-js/cds-test` module is loaded through `cds.test` the following common test functions and hooks are made available in test scope, and guaranteed to work in the same way, regardless of the test runner you're using:
+
+- The [`describe`](https://vitest.dev/api/describe) function for grouping tests
+- The [`test`/`it`](https://vitest.dev/api/test) function for defining test cases
+- The [`beforeAll`](https://vitest.dev/api/hooks#beforeall), [`afterAll`](https://vitest.dev/api/hooks#afterall), [`beforeEach`](https://vitest.dev/api/hooks#beforeeach), [`afterEach`](https://vitest.dev/api/hooks#aftereach) hook functions
+- The [`expect`](#expect) function from `cds.test`, which works across different runners.
+
+::: warning [Ensure to also take note of _Deprecated APIs_](#deprecated-apis)
 :::
 
-[Learn how to setup integration tests with `cds bind`.](../tools/cds-bind#integration-tests){.learn-more}
+If you stick to these common and stable APIs, and avoid using any runner-specific features beyond these, you can easily switch between different test runners without having to change your test code.
+
 
 
 ## Using `cds.test` in REPL
 
-You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/capire/samples):
+You can use `cds.test` in REPL, for example, by running this from your command line in the root of your CAP project:
 
 ```sh
 [cap/samples] cds repl
-Welcome to cds repl v7.1
+Welcome to cds repl v10.1
 ```
 
 ```js
-> var test = await cds.test('bookshop')
+var { GET, expect } = cds.test()
 ```
+::: code-group
+```log [=> async output...]
+[cds] - model loaded from 5 file(s):
 
-```log
-[cds] - model loaded from 6 file(s):
+  srv/cat-service.cds
+  srv/admin-constraints.cds
+  srv/admin-service.cds
+  db/schema.cds
+  node_modules/@sap/cds/common.cds
 
-  ./bookshop/db/schema.cds
-  ./bookshop/srv/admin-service.cds
-  ./bookshop/srv/cat-service.cds
-  ./bookshop/app/services.cds
-  ./../../cds/common.cds
-  ./common/index.cds
-
-[cds] - connect to db > sqlite { database: ':memory:' }
- > filling sap.capire.bookshop.Authors from ./bookshop/db/data/sap.capire.bookshop-Authors.csv
- > filling sap.capire.bookshop.Books from ./bookshop/db/data/sap.capire.bookshop-Books.csv
- > filling sap.capire.bookshop.Books.texts from ./bookshop/db/data/sap.capire.bookshop-Books_texts.csv
- > filling sap.capire.bookshop.Genres from ./bookshop/db/data/sap.capire.bookshop-Genres.csv
- > filling sap.common.Currencies from ./common/data/sap.common-Currencies.csv
- > filling sap.common.Currencies.texts from ./common/data/sap.common-Currencies_texts.csv
+[cds] - connect to db > sqlite { url: ':memory:' }
+  > init from db/data/sap.capire.bookshop-Genres.csv
+  > init from db/data/sap.capire.bookshop-Books.texts.csv
+  > init from db/data/sap.capire.bookshop-Books.csv
+  > init from db/data/sap.capire.bookshop-Authors.csv
 /> successfully deployed to sqlite in-memory db
 
-[cds] - serving AdminService { at: '/admin', impl: './bookshop/srv/admin-service.js' }
-[cds] - serving CatalogService { at: '/browse', impl: './bookshop/srv/cat-service.js' }
+[cds] - serving AdminService { ... }
+[cds] - serving CatalogService {... }
 
 [cds] - server listening on { url: 'http://localhost:64914' }
 [cds] - launched at 9/8/2021, 5:36:20 PM, in: 767.042ms
 [ terminate with ^C ]
 ```
+:::
 
 ```js
-> await SELECT `title` .from `Books` .where `exists author[name like '%Poe%']`
-[ { title: 'The Raven' }, { title: 'Eleonora' } ]
+var response = await GET `/odata/v4/browse/Books/201`
 ```
 
 ```js
-> var { CatalogService } = cds.services
-> await CatalogService.read `title, author` .from `ListOfBooks`
-[
-  { title: 'Wuthering Heights', author: 'Emily Brontë' },
-  { title: 'Jane Eyre', author: 'Charlotte Brontë' },
-  { title: 'The Raven', author: 'Edgar Allan Poe' },
-  { title: 'Eleonora', author: 'Edgar Allan Poe' },
-  { title: 'Catweazle', author: 'Richard Carpenter' }
-]
+expect (response.status) .to.equal (200)
+```
+
+```js
+expect (response.data) .to.contain ({ title: 'Wuthering Heights' })
 ```
