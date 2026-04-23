@@ -30,20 +30,20 @@ This guide explains how to authenticate CAP services to resolve CAP users.
 
 ## Pluggable Authentication
 
-In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership. 
+In essence, authentication verifies the user's identity and validates the presented claims, such as granted roles and tenant membership.
 Briefly, **authentication ensures _who_ is going to use the service** which is technically reflected in a resulting [user](./cap-users).
-In contrast, [authorization](../security/authorization#authorization) determines _how_ the user can interact with the application's resources according to the defined access rules. 
+In contrast, [authorization](../security/authorization#authorization) determines _how_ the user can interact with the application's resources according to the defined access rules.
 As access control relies on verified claims, authentication is a mandatory prerequisite for authorization.
 
 ![Authentication with CAP](./assets/authentication.drawio.svg){width="550px" }
 
-According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely. 
+According to key concept [Pluggable Building Blocks](./overview#key-concept-pluggable), the authentication method can be configured freely.
 CAP [leverages platform services](overview#key-concept-platform-services) to provide proper authentication strategies to cover all relevant scenarios:
 
 - For _local development_ and _unit testing_, [Mock User Authentication](#mock-user-authentication) is an appropriate built-in authentication feature.
 
-- For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services out of the box:  
-  - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications. 
+- For _cloud deployments_, in particular deployments for production, CAP provides integration of several identity services out of the box:
+  - [Identity Authentication Service (IAS)](#ias-auth) provides a full-fledged [OpenId Connect](https://openid.net/connect/) compliant, cross-landscape identity management as first choice for applications.
   - [XS User Authentication and Authorization Service (XSUAA)](https://help.sap.com/docs/CP_AUTHORIZ_TRUST_MNG) is an [OAuth 2.0](https://oauth.net/2/)-based authorization server to support existing applications and services in the scope of individual BTP landscapes.
   - CAP applications can run IAS and XSUAA in [hybrid mode](#hybrid-auth) to support a smooth migration from XSUAA to IAS.
 
@@ -63,7 +63,7 @@ mvn spring-boot:run
 ```
 
 ::: tip
-CAP Java requires certain [Maven dependencies](../../java/security#maven-dependencies) to enable authentication middleware support. 
+CAP Java requires certain [Maven dependencies](../../java/security#maven-dependencies) to enable authentication middleware support.
 Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
 :::
 
@@ -110,7 +110,7 @@ MockUsersSecurityConfig  :  Added mock user {"name":"admin","password":"admin", 
 </div>
 
 **You should not manually configure authentication for endpoints.**
-As the mock user authentication is active, all (CAP) endpoints are [authenticated automatically](#model-auth). 
+As the mock user authentication is active, all (CAP) endpoints are [authenticated automatically](#model-auth).
 
 <div class="impl java">
 
@@ -181,14 +181,14 @@ Mock users are deactivated in production profile by default ❗
 ### Preconfigured Mock Users { #preconfigured-mock-users }
 
 For convenience, the runtime creates default mock users to cover typical test scenarios, such as privileged users passing all security checks or users that pass authentication but don't have additional claims.
-The runtime adds the predefined users to [custom mock users](#custom-mock-users) you define in the application. 
+The runtime adds the predefined users to [custom mock users](#custom-mock-users) you define in the application.
 
 You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
 
 
 <div class="impl java">
 
-[Learn more about predefined mock users.](../../java/security#preconfigured-mock-users){.learn-more} 
+[Learn more about predefined mock users.](../../java/security#preconfigured-mock-users){.learn-more}
 
 </div>
 
@@ -335,7 +335,7 @@ Integration tests running in production profile should verify that unauthenticat
 
 <div class="impl node">
 
-[Learn more about testing with authenticated endpoints.](../../node.js/cds-test#authenticated-endpoints){.learn-more}
+[Learn more about testing with authenticated endpoints.](../../node.js/cds-test#authentication){.learn-more}
 [Learn more about testing.](../../node.js/cds-test#testing-with-cds-test){.learn-more}
 
 </div>
@@ -347,8 +347,8 @@ Integration tests running in production profile should verify that unauthenticat
 
 ## IAS Authentication { #ias-auth }
 
-::: tip 
-**Start new projects with IAS** to take advantage of the best integration options. 
+::: tip
+**Start new projects with IAS** to take advantage of the best integration options.
 IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
 :::
 
@@ -370,7 +370,7 @@ Before working with IAS on CF, you need to do all of the following:
 - [Establish trust](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
 towards your IAS tenant to use it as identity provider for applications in your subaccount.
 
-- Ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) on CF, 
+- Ensure your development environment is [prepared for deploying](../deploy/to-cf#prerequisites) on CF,
 in particular you require a `cf` CLI session targeting a CF space in the test subaccount (test with `cf target`).
 
 You can continue with the sample [already created](#mock-user-authentication). In the project root folder, execute the following command to make your application ready for deployment to CF.
@@ -438,7 +438,7 @@ The [binding](../../java/security#bindings) to service instance of type `identit
 </div>
 
 The binding provides access to the identity services on behalf of a concrete client.
-**CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS instance. 
+**CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS instance.
 
 Service instance and binding offer the following crucial configuration properties:
 
@@ -476,7 +476,7 @@ The startup log should confirm the activated IAS authentication:
 <div class="node">
 
 ```sh
-[cds] - using auth strategy { 
+[cds] - using auth strategy {
     kind: 'ias',
     impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/ias-auth.js'
 }
@@ -501,7 +501,7 @@ modules:
 ```
 
 ::: info
-Platform-level TLS termination is provided on CF out of the box via `cert.*`-domains. 
+Platform-level TLS termination is provided on CF out of the box via `cert.*`-domains.
 By default, the validated certificate is forwarded via HTTP header `X-Forwarded-Client-Cert` to the CAP endpoint.
 :::
 
@@ -512,10 +512,10 @@ On SAP BTP Kyma Runtime, you might need to adapt configuration parameter <Config
 
 #### Administrative Console for IAS { #ias-admin }
 
-In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud) 
+In the [Administrative Console for Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/accessing-administration-console?version=Cloud)
 you can see and manage the deployed IAS application. You need a user with administrative privileges in the IAS tenant to access the services at `<ias-tenant>.accounts400.ondemand.com/admin`.
 
-In the Console you can manage the IAS tenant and IAS applications, for example: 
+In the Console you can manage the IAS tenant and IAS applications, for example:
 - Create (test) users in `Users & Authorizations` -> `User Management`.
 - Deactivate users.
 - Configure the authentication strategy (password policies, multifactor authentication, and similar) in `Applications & Resources` -> `Applications` (IAS instances listed with their display-name).
@@ -550,7 +550,7 @@ curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
 
 </div>
 
-This is expected. Now let's fetch a token as basis for a fully authenticated test request. 
+This is expected. Now let's fetch a token as basis for a fully authenticated test request.
 For doing so, you need to interact with IAS service which requires an authenticated client itself.
 
 The overall setup with CLI client and the Cloud services is sketched in the diagram:
@@ -595,7 +595,7 @@ cf service-key bookshop-ias bookshop-ias-key
 ❗ **Never share service keys or tokens** ❗
 :::
 
-From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request. 
+From the credentials, you can prepare local files containing the certificate used to initiate the HTTP request.
 
 ::: details How to prepare client X.509 certificate files
 
@@ -673,8 +673,8 @@ cf delete-service-key bookshop-ias bookshop-ias-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly. 
-It fetches the required IAS tokens when forwarding requests to the backend service. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly.
+It fetches the required IAS tokens when forwarding requests to the backend service.
 
 Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
@@ -725,7 +725,7 @@ The same is true for the logout flow.
           redirect-uris:
             - ~{app-api/app-protocol}://~{app-api/app-uri}/login/callback
           post-logout-redirect-uris:
-            - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html            
+            - ~{app-api/app-protocol}://~{app-api/app-uri}/*/logout.html
 ```
 :::
 
@@ -744,7 +744,7 @@ The Application Router should redirect to a login flow where you can enter the c
 ## XSUAA Authentication { #xsuaa-auth }
 
 ::: warning
-**Start new projects with IAS** to take advantage of the best integration options. 
+**Start new projects with IAS** to take advantage of the best integration options.
 IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
 :::
 
@@ -752,10 +752,10 @@ IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUA
  - authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - create and assign access roles
- 
+
 ::: tip
-In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box. 
-::: 
+In contrast to [IAS](#ias-auth), XSUAA does not allow cross-landscape user propagation out of the box.
+:::
 
 You can best configure and test XSUAA authentication in the Cloud, so let's enhance the sample with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
@@ -843,7 +843,7 @@ Command `cds add xsuaa` enhances the project with [required binding](../../java/
 
 </div>
 
-**CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance. 
+**CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance.
 
 <div class="impl java">
 
@@ -872,14 +872,14 @@ Start with plan `broker` if you want to provide technical APIs in future.
 #### Security Descriptor { #xsuaa-security-descriptor }
 
 The security descriptor in the `xs-security.json` file contains [XSUAA authorization artifacts](https://help.sap.com/docs/btp/sap-business-technology-platform/authorization-entities).
-In general, XSUAA artifacts have a hierarchical relationship with role collections as root elements. 
+In general, XSUAA artifacts have a hierarchical relationship with role collections as root elements.
 Role collections can be assigned to end users.
 
 For convenience, when adding the XSUAA facet, these artifacts are initially derived from the CDS model:
 
 - **XSUAA scopes**: For every [CAP role](./cap-users#roles) in the CDS model, a dedicated scope is generated with the exact name of the CDS role.
 - **XSUAA attributes**:  For every [CAP attribute](./authorization#user-attrs) in the CDS model, one attribute is generated.
-- **XSUAA role templates**: For every scope, a dedicated role template with the exact name is generated. The role templates are building blocks for concrete role collections that finally can be assigned to users. 
+- **XSUAA role templates**: For every scope, a dedicated role template with the exact name is generated. The role templates are building blocks for concrete role collections that finally can be assigned to users.
 
 ```json
 {
@@ -908,14 +908,14 @@ For convenience, when adding the XSUAA facet, these artifacts are initially deri
 
 At runtime, after successful authentication, the scope prefix `$XSAPPNAME`is removed by the CAP integration to match the corresponding CAP role.
 
-In the [deployment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections. 
+In the [deployment descriptor](#adding-xsuaa), the optional property `role-collections` contains a list of preconfigured role collections.
 In general, user administrators [create role collections manually](./cap-users#xsuaa-assign) at runtime.
 However, if the underlying role template has no reference to an attribute, you can prepare a corresponding role collection for convenience.
 
 In the example, role collection `admin (bookshop <org>-<space>)` containing the role template `admin` is defined and can be directly assigned to users.
 
 
-::: tip 
+::: tip
 You can re-generate the file on model changes via
 ```sh
 cds compile srv --to xsuaa > xs-security.json
@@ -949,7 +949,7 @@ cds up
 
 </div>
 
-and wait until the application is up and running. 
+and wait until the application is up and running.
 You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
 Run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
@@ -1016,7 +1016,7 @@ You can inspect the service key credentials as follows:
 cf service-key bookshop-auth bookshop-auth-key
 ```
 
-This command prints the information to the console: 
+This command prints the information to the console:
 
 ```json
 {
@@ -1037,7 +1037,7 @@ This command prints the information to the console:
 As second step, assign the generated role collection with name `admin (bookshop <org>-<space>)` to your **test user**.
 Follow the instructions from step 4 onwards of [Assign Roles in SAP BTP Cockpit Step](./cap-users#xsuaa-assign).
 
-With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint: 
+With the credentials, you can send an HTTP request to fetch the token from XSUAA `/oauth/token` endpoint:
 
 ::: code-group
 
@@ -1132,8 +1132,8 @@ cf delete-service-key bookshop-auth bookshop-auth-key
 
 ### UI Level Testing
 
-In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly. 
-It fetches the required XSUAA tokens when forwarding requests to the backend service. 
+In the UI scenario, adding an Application Router as an ingress proxy to the deployment simplifies testing significantly.
+It fetches the required XSUAA tokens when forwarding requests to the backend service.
 
 Enhancing the project with [SAP Cloud Portal](../deploy/to-cf#option-a-sap-cloud-portal) configuration adds an Application Router component as well as HTML5 Application Repository:
 
@@ -1187,7 +1187,7 @@ The same is true for the logout flow.
           redirect-uris:
             - https://*~{app-api/app-uri}/**
     requires:
-      - name: app-api      
+      - name: app-api
 ```
 :::
 
@@ -1251,7 +1251,7 @@ However, your application's specific requirements may make it necessary to custo
 For these scenarios, the CAP Node.js runtime allows to specify an implementation of a custom authentication middleware in <Config>cds.requires.auth.impl</Config>, by providing a path relative to the project root.
 
 :::warning
-Be **very** careful when creating your own `auth` implementation. 
+Be **very** careful when creating your own `auth` implementation.
 This should be a last resort for when every other possible solution (e.g. through [modelling](./authorization.md#restrictions) or by [configuration](#pluggable-authentication)) has been investigated and dismissed.
 :::
 
@@ -1260,9 +1260,9 @@ Additionally, a custom auth middleware in CAP needs to set `cds.context.user` an
 
 ```js
 module.exports = function custom_auth (req, res, next) {
-  
+
   // do your custom authentication
-  
+
   cds.context.user = new cds.User({
     id: '<user-id>',
     roles: ['<role-a>', '<role-b>'],
@@ -1275,7 +1275,7 @@ module.exports = function custom_auth (req, res, next) {
 }
 ```
 
-<!-- TODO: Auth Factory Public?  
+<!-- TODO: Auth Factory Public?
 You might, for example want to expose an unauthenticated technical endpoint:
 
 ```js
@@ -1299,7 +1299,7 @@ In case you want to customize the `cds.context.user`, check out [this example](.
 ### Automatic Authentication { #model-auth }
 
 As the auto-configuration authenticates all service endpoints found in the CDS model by default,
-you don't need to explicitly activate authentication for these endpoints. 
+you don't need to explicitly activate authentication for these endpoints.
 
 Endpoints that should be public can be explicitly annotated with [pseudo-role](cap-users#pseudo-roles) `any`:
 
@@ -1361,7 +1361,7 @@ public class CustomSecurityConfig {
 ```
 Due to the custom configuration, all URLs matching `/public/**` are opened for public access in this example.
 
-Ensure your custom configuration has higher priority than CAP's default security configuration by decorating the bean with a low order. 
+Ensure your custom configuration has higher priority than CAP's default security configuration by decorating the bean with a low order.
 
 ::: warning
 Be cautious with the configuration of the `HttpSecurity` instance in your custom configuration. Make sure that only the intended endpoints are affected.
@@ -1401,16 +1401,16 @@ TODO
 
 ## Pitfalls
 - **Don't miss to configure security middleware.**
-  Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network. 
-  Without security middleware configured, CDS services are exposed to the public. 
+  Endpoints of (CAP) applications deployed on SAP BTP are, by default, accessible from the public network.
+  Without security middleware configured, CDS services are exposed to the public.
 
 - **Don't rely on Application Router authentication**. Application Router as a frontend proxy does not shield the backend from incoming traffic. Therefore, you must secure the backend independently.
 
-- **Don't deviate from security defaults**. Only when absolutely necessary should experts make the decision to add modifications or replace parts of the standard authentication mechanisms. 
-  
+- **Don't deviate from security defaults**. Only when absolutely necessary should experts make the decision to add modifications or replace parts of the standard authentication mechanisms.
+
 - **Don't forget to add authentication tests** to ensure properly configured security in your deployed application that rejects unauthenticated requests.
 
 ::: warning
-Without security middleware configured, CDS services are exposed to public. 
+Without security middleware configured, CDS services are exposed to public.
 Basic configuration of an authentication strategy is mandatory to protect your CAP application.
 :::
