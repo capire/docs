@@ -101,34 +101,39 @@ for (let each of m.services) console.log (each.name)
 
 ### . entities {.property}
 
-These are convenient shortcuts to access all *[entity](../cds/cdl#entities)* definitions in a model. The returned value is a function that allows to specify a namespace to fetch all matching entity definitions, with initial properties for all entity definitions in the model.
+Convenient shortcut to access all *[entity](../cds/cdl#entities)* definitions in a model. The returned value is a function that allows to specify a namespace to fetch all matching entity definitions, with initial properties for all entity definitions in the model.
 
-Example:
+For example, given the following model:
 
 ```js
 let m = cds.linked`
   namespace my.bookshop;
   entity Books {}
   entity Authors {}
-  service CatalogService { 
+  service CatalogService {
     entity Books as projection on my.bookshop.Books;
     entity Authors as projection on my.bookshop.Authors;
   }
 `
+```
 
-// Function nature
-let { Books, Authors } = m.entities ('my.bookshop')
+We can use it **as a getter** with object destructuring, to retrieve named entities from the whole model, by their fully qualified names like that:
 
-// Object nature
-let { 
-  'my.bookshop.Books': Books, 
-  'my.bookshop.Authors': Authors 
-} = m.entities
+```js
+const { 'my.bookshop.Books':Books, 'my.bookshop.Authors':Authors } = m.entities
+```
 
-// Array nature
+We can also call it **as a function** to specify a namespace once, and retrieve all entities within that namespace, with object destructuring as well:
+
+```js
+const { Books, Authors } = m.entities ('my.bookshop')
+```
+
+In both cases, the returned is an instance of [`LinkedDefinitions`](#iterable), which also allows iterating over entity definitions like that:
+
+```js
 for (let each of m.entities) console.log (each.name)
-//> my.bookshop.Books
-//> my.bookshop.Authors
+for (let each of m.entities('my.bookshop')) console.log (each.name)
 ```
 
 

@@ -183,7 +183,27 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 ### cds. entities {.property}
 
-Is a shortcut to `cds.model.entities`. Used as a function, you can [specify a namespace](cds-reflect#entities).
+Returns an iterable dictionary of entity definitions in the model.
+You can use it as like that:
+
+Access named entities directly:
+```js
+const { Books, Authors } = cds.entities
+//> Books and Authors are linked CSN definitions of the entities with those names
+```
+
+Used as a property it loops through _all_ or entities in the model:
+```js
+for (let each of cds.entities)
+//> each is a linked CSN definition of an entity
+```
+Used as a function, you can loop through entities in a given namespace:
+```js
+for (let each of cds.entities ('sap.capire.bookshop'))
+//> each is a linked CSN definition of an entity
+```
+
+This property in the `cds` facade is actually a convenience shortcut to `cds.model.entities`, which is implemented in [`LinkedCSN:entities`](cds-reflect#entities).
 
 ### cds. env {.property}
 
@@ -351,8 +371,6 @@ cds.db = await cds.connect.to('db')
 
 
 ## Methods
-
-
 
 ### cds. error() {.method}
 
