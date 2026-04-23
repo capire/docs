@@ -234,7 +234,7 @@ To stay portable across different HTTP clients, it's recommended to only use the
 - `baseURL` as defined in [Axios](https://axios-http.com/docs/req_config#baseurl)
 - `auth` as defined in [Axios](https://axios-http.com/docs/req_config)
 - `headers` as defined in [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers) and [Axios](https://axios-http.com/docs/req_config#headers)
-- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors),
+- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status < 200 && status >= 300`)
 
 In addition, you can use all of the config options understood by the underlying HTTP client, that is, for Fetch API, its [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request) options, and for Axios, its [request config options](https://axios-http.com/docs/req_config) options.
 
@@ -574,7 +574,7 @@ expect(status).to.equal(200)   //> Do it at the end, if at all // [!code ++]
 
 This makes a difference if there are errors: with the status code check, your test aborts with a useless _Expected: 200, received: xxx_ error, while without it, it fails with a richer error that includes a status text.
 
-Note that by default, Axios throws errors for status codes `< 200` and `>= 300`. This can be [configured](https://github.com/axios/axios#handling-errors), though.
+Note that by default, errors are thrown for status codes `< 200` and `>= 300`. This can be [configured](#defaults-property), though.
 
 
 
