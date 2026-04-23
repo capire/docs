@@ -143,7 +143,7 @@ It's possible to create and update data directly without creating intermediate d
 
 | HTTP / OData request                            | Event constant name                                      | Default implementation                               |
 | ----------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
-| POST with `IsActiveEntity: true` in URI         | `CqnService.EVENT_CREATE`                                | Creates the active entity                            |
+| POST with `IsActiveEntity: true` in payload         | `CqnService.EVENT_CREATE`                                | Creates the active entity                            |
 | PUT with key `IsActiveEntity=true` in URI       | `CqnService.EVENT_CREATE` <br> `CqnService.EVENT_UPDATE` | Creates or updates the active entity (full update)   |
 | PATCH with key `IsActiveEntity=true` in URI     | `CqnService.EVENT_UPDATE`                                | Creates or updates the active entity (sparse update) |
 
