@@ -120,7 +120,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
           "[with-mtx]": {
             "multitenancy": true
           }
-          
+
         }
       }
       ```
@@ -133,7 +133,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
            <artifactId>cds-feature-mt</artifactId>
            <scope>runtime</scope>
        </dependency>
-       
+
 		   <dependency>
 		   	<groupId>org.xerial</groupId>
 		   	<artifactId>sqlite-jdbc</artifactId>
@@ -805,10 +805,163 @@ Use a dedicated profile for each deployment landscape if you are using several, 
 cds bind -2 bookshop-db --profile dev
 cds watch --profile dev
 ```
-
 :::
 
-<div id="hana-tms" />
+###### sap-hana-tenant-management-service-v2 <!-- referenced from help portal -->
+
+### SAP HANA TMS v2 <beta/>
+
+The SAP HANA Tenant Management Service (TMS) v2 service provides direct support for managing SAP HANA tenants.
+
+> [!important] Be aware of the current limitations:
+> - **Not suitable for existing applications** as there is **no migration from Service Manager** available yet. This will be provided by the HANA team later.<br>
+> There **won't be support for both Service Manager and TMS v2** together in one application.
+> - Some features are not yet on par with the SAP BTP Service Manager. For example, there is currently **no batch API for retrieving tenant credentials** to enable efficient caching.
+
+[For more information, see the SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy-guide-internal/introducing-sap-hana-cloud-multitenancy){.learn-more}
+[Find the TMS v2 API on the SAP Business Accelerator Hub](https://api.sap.com/api/TenantAPI/overview){.learn-more}
+
+#### Configure MTXS for Tenant Management Service
+
+This documentation uses the bookshop sample to showcase necessary configuration.
+
+If you start with a multitenant application that's configured to use to SAP HANA, you need to change the configuration of the database in your _mta.yaml_ file:
+```yaml
+- name: bookshop-db
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: hana-cloud
+    service-plan: hana-multitenancy
+```
+For SAP HANA TMS v2, you also need to specify the database ID of the database that you plan to use for your tenant containers. You can specify this using the [`cds.xt.DeploymentService` configuration](/@external/guides/multitenancy/mtxs#deployment-config).
+
+To keep the application configuration agnostic, we recommend adding the <Config label="database_id" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config> configuration as an environment variable to the MTX service in _mta.yaml_:
+```yaml{6-17}
+- name: bookshop-mtx
+  type: nodejs
+  path: gen/mtx/sidecar
+  ...
+  properties:
+    CDS_CONFIG: |
+      {
+        "requires": {
+          "cds.xt.DeploymentService": {
+            "hdi": {
+              "create": {
+                "database_id": "4baa4d82-a474-4281-90af-67261c893590"
+              }
+            }
+          }
+        }
+      }
+```
+
+To further separate deployment configuration, you can also use a separate [Deployment Extension Descriptor](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/mta-deployment-extension-descriptor) on Cloud Foundry.
+
+You can also pass the configuration for each individual subscription as a payload extension in the request to the [SaasProvisioningService](/@external/guides/multitenancy/mtxs#subscription).
+
+#### Handle SAP HANA Tenants
+
+By default, MTXS creates a separate SAP HANA tenant for each subscriber tenant (BTP tenant).
+In some scenarios, you might also want to use the same SAP HANA tenant for several applications or microservices.
+
+The SAP HANA tenant ID must be unique across all SAP HANA database instances within a region. If
+you intend to deploy your application multiple times in a region, ensure this uniqueness across deployments.
+
+##### Mandatory: specify a unique prefix for the SAP HANA tenant name
+Specify a <Config label="hana_tenant_prefix" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> value that is unique for each **deployed application instance**:
+```jsonc
+"cds.xt.DeploymentService": {
+  "hdi": {
+    "create": {
+      ...
+      "hana_tenant_prefix": "<prefix>"
+    }
+  }
+}
+```
+The resulting SAP HANA tenant name is constructed from `prefix`+`subscriber tenant`. The SAP HANA tenant ID
+is generated as a hashed UUID from the SAP HANA tenant name, and the original name is added as a label.
+
+![Shows the relations of a HANA Tenant](/@external/../guides/multitenancy/assets/hana_tenants.drawio.svg)
+
+To help ensure that the generated SAP HANA tenant UUID is unique within a region, you could build the
+`hana_tenant_prefix` in your deployment descriptor using various variables, for example,
+like `prefix-${org}-${space}` in Cloud Foundry.
+
+:::warning Prefix is mandatory
+The <Config label="hana_tenant_prefix" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant `t0` is created with its own SAP HANA tenant.
+:::
+
+:::warning Length restriction
+The prefix and subscriber tenant name are each limited to 63 characters maximum.
+:::
+
+
+##### Mandatory for CAP Java Applications
+For **CAP Java** applications you need to set the same prefix in the <Config java>cds.multitenancy.hanaMtService.hanaTenantPrefix</Config> property. We recommend doing this using the environment variable in the _mta.yaml_:
+```yaml
+- name: srv
+  type: java
+  path: srv
+  ...
+  properties:
+    CDS_MULTITENANCY_HANAMTSERVICE_HANATENANTPREFIX: "some-prefix"
+```
+
+##### Pass the SAP HANA Tenant ID with a Subscription
+
+**... in CAP Node.js**
+###### CAP Node.js
+If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](/@external/guides/multitenancy/mtxs#put-tenant):
+```jsonc
+{
+  "subscribedTenantId": "t1",
+  "subscribedSubdomain": "subdomain1",
+  "eventType": "CREATE"
+  ...
+  "_": {
+	  "hdi": {
+	    "create": {
+	      "hana_tenant_id": "5b3c0699-1c65-4ec1-9a8e-b7cfc3cc15bc"
+	    }
+	  }
+  }
+}
+```
+The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
+except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
+
+![One HANA tenant for many applications](/@external/../guides/multitenancy/assets/hana_tenants_for_many.drawio.svg)
+
+**... in CAP Java**
+###### CAP Java
+To specify the ID of the SAP HANA tenant in **CAP Java** applications you can register a custom handler for the `before` phase of the `SUBSCRIBE` event that sets the `hana_tenant_id` within the provisioning parameters:
+
+```java
+@Before
+public void beforeSubscription(SubscribeEventContext context) {
+    context.getOptions().put("provisioningParameters",
+        Collections.singletonMap("hana_tenant_id", "<ID>"));
+}
+```
+
+This will affect every new [tenant subscription](/@external/java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
+
+
+##### Delete SAP HANA tenants
+
+When you unsubscribe and the tenant container is deleted, the corresponding SAP HANA tenant isn't deleted as it could potentially still be in use for other applications.
+
+#### Limitations
+
+There are still some limitations with the current client implementation.
+
+- **Database ID is Mandatory**
+  As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](/@external/guides/multitenancy/mtxs#deployment-config).
+- [`clusterSize` configuration](/@external/guides/multitenancy/mtxs#saas-provisioning-config) needs to be set to `1` (default is `3`). HANA TMS v2 does not provide a performant way to determine all database IDs,
+so clustering the upgrade by database does not work properly.
+
 
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
