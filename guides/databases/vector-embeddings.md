@@ -57,6 +57,12 @@ book.setEmbedding(CdsVector.of(response.getEmbeddingVectors().get(0)));
 ```
 :::
 
+:::tip Use SAP Cloud SDK for AI
+Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access to embedding models and large language models (LLMs) from [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core).
+:::
+
+Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
+
 ## Query for Similarity
 At runtime, use vector functions to search for similar items. For example, find incidents that are relevant to a user question:
 
@@ -96,10 +102,5 @@ let similarIncidents = await SELECT.from('Incidents')
 Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
 :::
 
-:::tip Use SAP Cloud SDK for AI
-Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access to embedding models and large language models (LLMs) from [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core).
-:::
-
-Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
