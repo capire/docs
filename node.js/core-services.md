@@ -406,7 +406,7 @@ var srv.entities/events/actions : Iterable <{
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#linked-definitions) which are iterable dictionaries of CSN definitions, which you can use in all of these ways:
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#linked-definitions) which you can use in all of these ways:
 
 ```js
 // Assumed `this` is an instance of cds.Service
