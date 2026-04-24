@@ -661,7 +661,7 @@ public interface Books extends CdsData {
 
 #### Javadoc comments
 
-The static model and accessor interfaces can be extended with [Javadoc comments](../../cds/cdl#doc-comment).
+The static model and accessor interfaces can be extended with [Javadoc comments](../../cds/cdl#doc-comments).
 
 Currently, the generator supports Javadoc comments using the interface and getter/setter methods. The following example shows Javadoc comments defined in the CDS model and how they appear in the generated interfaces.
 
