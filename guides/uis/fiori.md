@@ -1,5 +1,5 @@
 ---
-impl-variants: true
+
 ---
 
 # Serving SAP Fiori UIs
@@ -12,29 +12,16 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 [[toc]]
 
 
+
 ## SAP Fiori Preview
 
 For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
 ::: details Be aware that this is **not meant for production**.
 
-<div class="impl node">
-
 The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is only active locally where the [development profile](../../node.js/cds-env#profiles) is enabled.
 
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
-
-</div>
-
-<div class="impl java">
-
-The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is active by default, but disabled automatically in case the [production profile](../../java/developing-applications/configuring#production-profile) is enabled.
-
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
-
-</div>
+It's active by default, but disabled automatically in production.  To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config> for Node.js apps, or <Config java>cds.index-page.enabled:true</Config> for Java.
 
 :::
 
@@ -65,7 +52,7 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 
 ### Using [`cds add`](../../tools/cds-cli#sample)
 
-Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --nodejs --add sample`.
+Use `cds add sample` to add Fiori sample code to an existing project, or create a new Node.js project with `cds init <project> --nodejs --add sample`. To create a Java project use `cds init <project> --java --add sample`.
 
 
 ### From [Capire Samples](https://github.com/capire)
@@ -461,6 +448,73 @@ Content-Type: application/json
 
 For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
+
+### Direct CRUD
+
+By default, all modifications to draft-enabled entities go through the [draft choreography](#draft-choreography-how-draft-editing-works), which is optimized for human users working with SAP Fiori UIs.
+However, technical consumers — such as remote services or AI agents — typically need to create and update data directly, without the overhead of draft management.
+Activating Direct CRUD with <Config>cds.fiori.direct_crud:true</Config> enables the best of both worlds: standard CRUD operations on active entities are restored, while the full draft feature set stays intact for SAP Fiori UIs.
+
+To achieve this, SAP Fiori Elements' default draft-creation behavior is redirected to a collection-bound action via the `@Common.DraftRoot.NewAction` annotation.
+This frees up `POST` requests to create active instances directly — the same behavior as without draft enablement.
+
+#### Creating Active Instances Directly
+
+```http
+POST /odata/v4/CatalogService/Books
+Content-Type: application/json
+
+{
+  "ID": 123,
+  "title": "How to be more active"
+}
+```
+
+In such direct requests, the additional key `IsActiveEntity` defaults to `true` in the body, which means you can omit it during a `CREATE`.
+
+#### Creating Draft Instances via Action
+
+```http
+POST /odata/v4/CatalogService/Books/CatalogService.draftNew
+Content-Type: application/json
+
+{}
+```
+
+#### Updating Active Instances Directly
+
+```http
+PUT /odata/v4/CatalogService/Books(ID=123)
+Content-Type: application/json
+
+{
+  "title": "Updated title"
+}
+```
+
+In CAP Node.js, the defaulting of `IsActiveEntity` described above extends to the URL as well.
+That is, you can omit the key predicate `IsActiveEntity=true` from it.
+In CAP Java, however, the additional key predicate `IsActiveEntity=true` must still be provided.
+That is, in the example above, the `PUT` request would need to target `/odata/v4/CatalogService/Books(ID=123,IsActiveEntity=true)`.
+
+:::tip Draft locks still apply
+Directly updating an active entity does **not** bypass draft locks.
+If an existing draft locks the entity, direct updates are blocked to prevent losing draft changes upon activation.
+See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
+:::
+
+In CAP Node.js, Direct CRUD is a prerequisite for [SAP Fiori Elements Mass Edit](https://sapui5.hana.ondemand.com/sdk/#/topic/965ef5b2895641bc9b6cd44f1bd0eb4d.html), which allows users to change multiple objects with the same editable properties in one step — without creating individual drafts per row. All unlocked rows are updated even if some rows are locked and therefore fail.
+
+:::warning Additional entry points
+Both Direct CRUD and Mass Edit create additional entry points to your application.
+Custom handlers are triggered with delta payloads rather than the complete business object.
+:::
+
+[Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
+
+[Learn more about draft-specific events in **Node.js**.](../../node.js/fiori#draft-specific-events){.learn-more}
+
+
 ### Validating Drafts
 
 With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
@@ -504,6 +558,7 @@ You can add your validation logic before the operation handler for either CRUD o
 
 <div id="query-data-draft-enabled" />
 
+
 ### Query Drafts Programmatically
 
 To access drafts in code, you can use the [`.drafts` reflection](../../node.js/cds-reflect#drafts).
@@ -512,6 +567,7 @@ SELECT.from(Books.drafts) //returns all drafts of the Books entity
 ```
 
 [Learn how to query drafts in Java.](../../java/fiori-drafts#draftservices){.learn-more}
+
 
 ## Use Roles to Toggle Visibility of UI elements
 
@@ -812,7 +868,7 @@ You can now start the server with `cds watch` and see the hierarchical tree view
 ![Fiori UI with hierarchical tree view.](hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The compiler automatically expands the shortcut annotation `@hierarchy` to the
-following `annotate` and `extend` statements. 
+following `annotate` and `extend` statements.
 
 ### Manual Approach
 

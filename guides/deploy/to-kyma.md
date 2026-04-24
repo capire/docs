@@ -7,6 +7,7 @@ breadcrumbs:
   - Deployment
   - Deploy to Kyma
 status: released
+impl-variants: true
 # uacp: Used as link target from Help Portal at https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/29c25e504fdb4752b0383d3c407f52a6.html and https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/e4a7559baf9f4e4394302442745edcd9.html
 ---
 

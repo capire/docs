@@ -22,6 +22,11 @@
       if you specify <i>xl</i> it makes the <i>cds.xl</i> module's methods available.
       It's the same as doing <i>{ref,val,xpr,...} = cds.xl</i> within the repl.
 
+    <em>--ql</em>
+
+      Starts the repl in cql evaluation mode.
+      It's the same as using the <i>.ql</i> command within the repl.
+
 <strong>EXAMPLES</strong>
     <em>cds repl</em> --run bookshop
     <em>cds repl</em> --run .

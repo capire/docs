@@ -2,6 +2,11 @@
 status: released
 ---
 
+<script setup>
+import { useData } from 'vitepress'
+const { versions } = useData().theme.value.capire
+</script>
+
 # CAP Plugins & Enhancements
 
 Following is a curated list of plugins that are available for the SAP Cloud Application Programming Model (CAP) which provide integration with SAP BTP services and technologies, or other SAP products.
@@ -222,7 +227,6 @@ Features:
 - **Automated Malware Scanning for Uploaded Files**: Enhance security by automatically scanning all uploaded files for malware, ensuring the integrity and safety of your data.
 - **Automatic Fiori Annotations for Upload Controls**: Streamlined user interactions with automatic SAP Fiori annotations that enhance upload controls, providing a more intuitive and seamless user experience.
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
-- **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multitenancy support, allowing for efficient management of multiple tenants without additional configuration.
 - **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
@@ -419,3 +423,9 @@ Available for:
 <div id="upcoming-plugins" />
 
 <div id="planned-plugins" />
+
+## SAP Build Process Automation <Beta />
+
+The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Build Process Automation. It provides annotations and a programmatic API for working with processes. Use it to manage the lifecycle of processes — for example, to start, cancel, suspend, or resume them — and to retrieve information about running and finished processes.
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
