@@ -138,6 +138,17 @@ None
 3. Changed default value of properties:
 None
 
+### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
+
+The internal `mvn` modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed and not released anymore. If the project directly referenced those modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatability of the code base.
+
+1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib` and  rewrite code using CAP Java native APIs
+
+2. Self-repackage and reuse the Olingo modules with `maven-dependency-plugin`
+
+3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
+
+
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
 ### New License
