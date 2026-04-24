@@ -37,17 +37,21 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.migrations.MigrateStatements \
-  -DskipMavenParsing=true
+  -Drewrite.activeRecipes=com.sap.cds.services.recipes.Cap_4.9
 ```
 
-Here, the *migration* `com.sap.cds.services.migrations.MigrateStatements` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *migration* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.recipes.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
+
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.recipes.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
+|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
+|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -65,6 +69,74 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
+| Maven | 3.9.10 |
+
+<!-- ### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `abc` | false | true | Any description. |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `abd`
+
+The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `abc` | Any description about replacement | -->
+
+### Removed Java APIs { #removed-java-apis-4-to-5 }
+
+Removed deprecated methods:
+
+| Removed method                                                                                         | Replacement / Explanation                                                                                             |
+|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
+| `c.s.c.services.ServiceExceptionUtils.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
+
+### Changes in the `cds-maven-plugin`
+
+There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+
+#### Minimum Maven Version
+
+For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+
+#### Removed deprecated goal `install-cdsdk`
+
+The goal `install-cdsdk` is deprecated since version 3.6.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
+Further details can be found [here](developing-applications/building#migration-install-cdsdk).
+
+#### Changes in goal `generate`
+
+1. Removed already deprecated properties:
+- eventContext: Interfaces for actions and functions now always extend `EventContext`.
+- cqnService: Typed interfaces are now always generated for application service.
+
+2. Deprecated properties and marked for removal:
+None
+
+3. Changed default value of properties:
+None
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
