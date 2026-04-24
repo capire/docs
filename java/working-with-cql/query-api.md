@@ -1688,7 +1688,7 @@ You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidea
 CqnVector vec = CQL.vector(embedding);
 
 var similarIncidents = db.run(Select.from(INCIDENTS).where(i ->
-  CQL.cosineSimilarity(i.embedding(), vec).gt(0.75f))
+  CQL.cosineSimilarity(i.embedding(), vec).gt(0.75))
 );
 ```
 
@@ -1700,7 +1700,7 @@ var similarity = CQL.cosineSimilarity(
 
 var query = Select.from(INCIDENTS)
   .columns(i -> i.title(), i -> similarity.times(100).as("similarity"))
-  .where(i -> similarity.gt(0.75f))
+  .where(i -> similarity.gt(0.75))
   .orderBy(i -> i.get("similarity").desc());
 
 Result similarIncidents = db.run(query, CdsVector.of(embedding));
