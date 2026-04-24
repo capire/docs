@@ -524,24 +524,23 @@ class BooksService extends cds.ApplicationService {
 
 **Argument `event`** can be one of:
 
-- `'CREATE'`, `'READ'`, `'UPDATE'`, `'UPSERT'`,`'DELETE'`
-- `'INSERT'`,`'SELECT'` → as aliases for: `'CREATE'`,`'READ'`
-- `'POST'`,`'GET'`,`'PUT'`,`'PATCH'` → as aliases for: `'CREATE'`,`'READ'`,`'UPDATE'`
-- `'each'` → shorthand for `.after` `'READ'` handler ran for _each_ result entry
-- Any other string name of a custom action or function – for example, `'submitOrder'`
-- An `array` of the above to register the given handler for multiple events
-- The string `'*'` to register the given handler for *all* potential events
-- The string `'error'` to register an error handler for *all* potential events
+- String `CREATE`, `READ`, `UPDATE`, `UPSERT`, `DELETE`
+- String `SELECT`, `INSERT` → aliases for: `READ` and `CREATE`
+- String `GET`, `PUT`, `POST`, `PATCH` → aliases for: `READ`, `CREATE`, `UPDATE`
+- String `each` → shorthand for `.after` `READ` handler ran for _each_ result entry
+- String `error` to register an error handler for *all* potential events
+- A name of a custom action or function – for example, `submitOrder`
 
 **Argument `entity`** can be one of:
 
 - A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
 - A `string` corresponding to the _name_ of an entity served by this service
-- A `path`  navigating from a served entity to associated ones → e.g., `'Books/author'`
-- An `array` of the above to register a handler for multiple entities / paths
-- The string `'*'` to register a handler for *all* potential entities / paths
+- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
 
+**Multiple `events` or `entities`** – for both parameters, you can also specify:
 
+- An `array` of the above to register a handler for _multiple_ events or entities
+- String `*` to register a handler for _all_ potential events or entities.
 
 ::: tip Best Practices
 
