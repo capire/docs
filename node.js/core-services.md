@@ -518,28 +518,28 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers actually fulfill requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, frequently for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, frequently to enrich outbound data
+- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
+- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
+- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
 
 **Argument `event`** can be one of:
 
 - `'CREATE'`, `'READ'`, `'UPDATE'`, `'UPSERT'`,`'DELETE'`
 - `'INSERT'`,`'SELECT'` → as aliases for: `'CREATE'`,`'READ'`
 - `'POST'`,`'GET'`,`'PUT'`,`'PATCH'` → as aliases for: `'CREATE'`,`'READ'`,`'UPDATE'`
-- `'each'` → convenience feature to register `.after` `'READ'` handler that runs for each individual result entry
-- Any other string name of a custom action or function – for example,, `'submitOrder'`
+- `'each'` → shorthand for `.after` `'READ'` handler ran for _each_ result entry
+- Any other string name of a custom action or function – for example, `'submitOrder'`
 - An `array` of the above to register the given handler for multiple events
 - The string `'*'` to register the given handler for *all* potential events
 - The string `'error'` to register an error handler for *all* potential events
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → as obtained from [`this.entities`](#entities)
-- A `string` matching the name of an entity served by this service → see [draft support](./fiori#draft-support)
-- A `path`  navigating from a served entity to associated ones → for example, `'Books/author'`
-- An `array` of the above to register the given handler for multiple entities / paths
-- The string `'*'` to register the given handler for *all* potential entities / paths
+- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `string` corresponding to the _name_ of an entity served by this service
+- A `path`  navigating from a served entity to associated ones → e.g., `'Books/author'`
+- An `array` of the above to register a handler for multiple entities / paths
+- The string `'*'` to register a handler for *all* potential entities / paths
 
 
 
