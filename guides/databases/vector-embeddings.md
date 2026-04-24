@@ -38,6 +38,8 @@ extend Incidents with {
 The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
 :::
 
+### Generate Embeddings Programmatically
+
 Alternatively, you can compute vector embeddings in your application layer using the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) to call SAP AI Core services for generating embeddings.
 
 :::details Example using SAP Cloud SDK for AI
