@@ -379,7 +379,7 @@ cds:
 
 With the annotation `@path`, you can configure the relative path of a service under which it's served by protocol adapters. The path is appended to the protocol adapter's base path.
 
-With the annotations `@protocol` or `@protocols`, you can configure a list of protocol adapters a service should be served by. By default, a service is served by all installed protocol adapters. If you explicitly define a protocol, the service is only served by that protocol adapter.
+With the annotations `@protocol` or `@protocols`, you can configure a list of protocol adapters a service should be served by. By default, a service is served by the protocols `odata-v4` and [odata-v2](../../java/migration#v2adapter). If you explicitly specify a protocol, the service is only served by that protocol adapter.
 
 In the following example, the service `CatalogService` is available on the combined paths `/odata/v4/browse` with OData V4 and `/odata/v2/browse` with OData V2:
 
@@ -401,21 +401,32 @@ cds.application.services.CatalogService.serve:
     - 'odata-v2'
 ```
 
-Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations like `@odata` (OData V4):
+Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations like `@odata` (OData V4), `@odata-v4`, `@odata-v2`, `@mcp`, ...:
 
 ```cds
-@odata service CatalogService { ... }
+@odata 
+service CatalogService { ... }
+```
+
+You can also specify the path directly in the protocol annotation:
+
+```cds
+@mcp: 'catalog' 
+service CatalogService { ... }
 ```
 
 You can also disable serving a service if needed:
 
 ```cds
-@path : 'browse'
 @protocol: 'none'
 service InternalService {
     ...
 }
 ```
+
+:::tip
+Use the property <Config java>cds.protocols.defaults: []</Config> to prevent that a protocol is served accidently.
+:::
 
 [Learn more about all `cds.application.services.<key>.serve` configuration possibilities.](../developing-applications/properties#cds-application-services-<key>-serve){.learn-more}
 
