@@ -29,13 +29,19 @@ To generate vector embeddings on write in SAP HANA, you can use the [vector_embe
 
 ```cds
 extend Incidents with {
-  embedding : cds.Vector(768) = vector_embedding(
-       summary, 'DOCUMENT', 'SAP_GXY.20250407') stored;
+  @cds.api.ignore
+  embedding : Vector(768) = vector_embedding( 
+    'Title: ' || title || ', Summary: ' || summary, 
+    'DOCUMENT', 'SAP_GXY.20250407'
+  ) stored; 
 }
 ```
 
-:::info beta
-The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
+> [!warning] Java only and <Beta/>
+> The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
+
+::: info Local Testing with H2 and SQLite
+On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing.
 :::
 
 ### Generate Embeddings Programmatically
