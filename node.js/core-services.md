@@ -399,6 +399,7 @@ var srv.options : { //> from cds.requires config
 ### . entities {.property alt="The following documentation on actions also applies to entities. "}
 ### . events {.property alt="The following documentation on actions also applies to events. "}
 ### . actions {.property}
+###### srv-entities
 
 ```tsx
 var srv.entities/events/actions : Iterable <{
