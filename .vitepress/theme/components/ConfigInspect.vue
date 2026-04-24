@@ -126,7 +126,7 @@
     let envKey = fqn.replaceAll('_', '__').replaceAll(keyDel, '_')
     if (/^[a-z_]+$/.test(envKey)) envKey = envKey.toUpperCase() // only uppercase if not camelCase
     envStr.value = `${envKey}=${jsonVal ? JSON.stringify(jsonVal) : value}`
-    propStr.value = `${envKey}=${jsonVal ? JSON.stringify(jsonVal) : value}`
+    propStr.value = `${fqn} = ${jsonVal ? JSON.stringify(jsonVal) : value}`
 
     javaAppyml.value = yaml.stringify(pkg)
     javaEnvStr.value = `-D${propStr.value}`
