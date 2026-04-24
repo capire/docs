@@ -1685,22 +1685,23 @@ On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use lo
 You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
-CqnVector v = CQL.vector(embedding);
+CqnVector vec = CQL.vector(embedding);
 
-CdsResult<Incidents> similarIncidents = db.run(Select.from(INCIDENTS).where(b ->
-  CQL.cosineSimilarity(b.embedding(), v).gt(0.7))
+var similarIncidents = db.run(Select.from(INCIDENTS).where(i ->
+  CQL.cosineSimilarity(i.embedding(), vec).gt(0.75f))
 );
 ```
 
 You can also use parameters for vectors in queries:
 
 ```Java
-var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
+var similarity = CQL.cosineSimilarity(
+     CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
 
 CqnSelect query = Select.from(INCIDENTS)
-  .columns(b -> b.title(), b -> similarity.as("similarity"))
-  .where(b -> b.ID().ne(incidentId).and(similarity.gt(0.7)))
-  .orderBy(b -> b.get("similarity").desc());
+  .columns(i -> i.title(), i -> similarity.times(100).as("similarity"))
+  .where(i -> similarity.gt(0.75f))
+  .orderBy(i -> i.get("similarity").desc());
 
 Result similarIncidents = db.run(query, CdsVector.of(embedding));
 ```
