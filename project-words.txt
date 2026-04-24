@@ -21,3 +21,5 @@ undiscloses
 unlocalized
 Woltmann
 asprof
+slugified
+slugification
