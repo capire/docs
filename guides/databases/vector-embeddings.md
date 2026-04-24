@@ -3,7 +3,7 @@ label: Vector Embeddings
 ---
 # Vector Embeddings
 
-Vector embeddings convert unstructured content (text, images, etc.) into numeric vectors that encode semantic meaning. Comparing these vectors enables semantic search, recommendations, and enhanced generative AI features in your CAP application, for example retrieving related records, ranking results by relevance, or augmenting prompts for LLMs.
+Vector embeddings convert unstructured content (text, images, etc.) into numeric vectors that encode semantics (meaning). Comparing these vectors enables semantic search, recommendations, and enhanced generative AI features in your CAP application, for example retrieving related records, ranking results by relevance, or augmenting prompts for LLMs.
 
 ## Choose an Embedding Model
 
@@ -12,7 +12,7 @@ Choose an embedding model that fits your use case and data (for example english 
 Use the [SAP Generative AI Hub](https://www.sap.com/products/artificial-intelligence/generative-ai-hub.html) for unified consumption of embedding models and LLMs across different vendors and open source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
 
 ## Add Embeddings to Your CDS Model
-Use the `cds.Vector` type in your CDS model to store embeddings on SAP HANA Cloud. Set the dimension to match your embedding model (for example, 768 embedding dimensions for *SAP_GXY.20250407*).
+Use the built-in CDL [Vector](../cds/types) type in your CDS model to store embeddings. Set the vector dimensions to match the embedding model (for example, 768 for *SAP_GXY.20250407*).
 
 ```cds
 extend Incidents with {
@@ -23,6 +23,8 @@ extend Incidents with {
 ## Generate Embeddings
 Use an embedding model to convert your data (for example, incident summaries) into vectors.
 
+### Generate Embeddings on the Database
+
 To generate vector embeddings on write in SAP HANA, you can use the [vector_embedding](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function as calculated element [on-write](../../cds/cdl#on-write) with embedding models from [SAP HANA NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide/creating-text-embeddings-with-nlp-51eb170d038d4099a9bbb85c08fda888) or a configured remote source from SAP AI Core:
 
 ```cds
@@ -31,6 +33,10 @@ extend Incidents with {
        summary, 'DOCUMENT', 'SAP_GXY.20250407') stored;
 }
 ```
+
+:::info beta
+The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
+:::
 
 Alternatively, you can compute vector embeddings in your application layer using the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) to call SAP AI Core services for generating embeddings.
 
@@ -44,14 +50,14 @@ book.setEmbedding(CdsVector.of(response.getEmbeddingVectors().get(0)));
 :::
 
 ## Query for Similarity
-At runtime, use SAP HANA's built-in vector functions to search for similar items. For example, find incidents that are relevant to a user question:
+At runtime, use vector functions to search for similar items. For example, find incidents that are relevant to a user question:
 
 ::: code-group
 ```Java [Java]
 // Compute embedding for user question
 var query = CQL.val(
   "Any incidents with solar inverters this month? How were they resolved?");
-var embedding = CQL.vectorEmbedding(query, QUERY, "SAP_GXY.20250407");
+var embedding = CQL.vectorEmbedding(query, TextType.QUERY, "SAP_GXY.20250407");
 
 // Compute similarity between user question and incident embeddings
 var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
@@ -60,7 +66,7 @@ var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
 Select.from(INCIDENTS)
    .columns(i -> similarity.times(100).as("relevance"), 
             i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
-   .where(i -> similarity.gt(minSimilarity))
+   .where(i -> similarity.gt(0.75f))
    .orderBy(i -> i.get("relevance").desc());
 ```
 ```
@@ -74,7 +80,7 @@ const response = await new AzureOpenAiEmbeddingClient(
 
 const questionEmbedding = response.getEmbedding();
 let similarIncidents = await SELECT.from('Incidents')
-  .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.9`;
+  .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.75`;
 ```
 :::
 
