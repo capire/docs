@@ -21,7 +21,11 @@ extend Incidents with {
 ```
 
 ## Generate Embeddings
-Use an embedding model to convert your data (for example, incident summaries) into vectors.
+Use an embedding model to convert your data (for example, incident titles and summaries) into vectors.
+
+:::tip Evolve embeddings with your model
+Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
+:::
 
 ### Generate Embeddings on the Database
 
@@ -98,9 +102,6 @@ let similarIncidents = await SELECT.from('Incidents')
 ```
 :::
 
-:::tip Evolve embeddings with your model
-Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
-:::
 
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
