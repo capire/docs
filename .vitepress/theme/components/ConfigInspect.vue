@@ -15,12 +15,12 @@
       </div>
       <div class="vp-code-group vp-doc" v-else>
         <CodeGroup :groups="[
+          { id: 'env', label: '.env file',           lang: 'properties', group, code: propStr },
+          { id: 'yml', label: '.cdsrc.yaml',         lang: 'yml',        group, code: rcYmlStr },
+          { id: 'js',  label: '.cdsrc.js',           lang: 'js',         group, code: rcJsStr },
           { id: 'pkg-rc',   label: 'package.json',   lang: 'json',       group, code: pkgStr },
           // { id: 'pkg-priv', label: '~/.cdsrc.json',  lang: 'json',       group, code: rcJsonStr, private: true },
           // { id: 'pkg',      label: '.cdsrc.json',    lang: 'json',       group, code: rcJsonStr },
-          { id: 'js',  label: '.cdsrc.js',           lang: 'js',         group, code: rcJsStr },
-          { id: 'yml', label: '.cdsrc.yaml',         lang: 'yml',        group, code: rcYmlStr },
-          { id: 'env', label: '.env file',           lang: 'properties', group, code: propStr },
           // { id: 'shl', label: 'Linux/macOS Shells',  lang: 'sh',         group, code: 'export '+envStr, transient: true },
           // { id: 'shp', label: 'Powershell',          lang: 'powershell', group, code: '$Env:'+envStr, transient: true },
           // { id: 'shw', label: 'Cmd Shell',           lang: 'cmd',        group, code: 'set '+envStr, transient: true }
@@ -120,7 +120,7 @@
 
     pkgStr.value = JSON.stringify(pkg, null, 2)
     rcJsonStr.value = JSON.stringify(pkg.cds??{}, null, 2)
-    rcJsStr.value = 'module.exports = ' + rcJsonStr.value.replace(/"(\w*?)":/g, '$1:')
+    rcJsStr.value = 'exports.' + Object.keys(pkg.cds??{})[0] + ' = ' + JSON.stringify(Object.values(pkg.cds??{})[0], null, 2).replaceAll('"', '')
     rcYmlStr.value = yaml.stringify(pkg.cds)
 
     let envKey = fqn.replaceAll('_', '__').replaceAll(keyDel, '_')
