@@ -397,14 +397,7 @@ var srv.options : { //> from cds.requires config
 
 
 ### . entities {.property alt="The following documentation on actions also applies to entities. "}
-###### entities
-
 ### . events {.property alt="The following documentation on actions also applies to events. "}
-
-### . operations {.property .deprecated alt="The following documentation on actions also applies to operations. "}
-
-Use [`.actions`](#actions) instead.
-
 ### . actions {.property}
 
 ```tsx
@@ -413,19 +406,33 @@ var srv.entities/events/actions : Iterable <{
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service.
-
-They are *iterable* objects, which means you can use them in all of these ways:
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#linked-definitions) which are iterable dictionaries of CSN definitions, which you can use in all of these ways:
 
 ```js
 // Assumed `this` is an instance of cds.Service
-let { Books, Authors } = this.entities
-let all_entities = [ ... this.entities ]
+const { Books, Authors } = this.entities
+const all_entities = [ ... this.entities ]
 for (let k in this.entities) //... k is a CSN definition's name
 for (let d of this.entities) //... d is a CSN definition
 ```
 
+#### Similarity _and_ difference to `cds.entities`
 
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a shortcut to `cds.model.entities()` to `cds.model.entities`, which in turn is implemented in [`cds.linked.entities`](cds-reflect#entities). However, note this difference:
+
+Both of these work with `cds.entities`:
+```js
+const { 'some.namespace.Books':Books, ... } = cds.entities  //> works
+const { Books, Authors } = cds.entities ('some.namespace')  //> works
+```
+
+Only the first one works with `srv.entities`:
+```js
+const { Books, Authors } = srv.entities                     //> works
+const { Books, Authors } = srv.entities ('some.namespace')  //> FAILS! [!code --]
+```
+
+ While [`cds.entities`](cds-facade#cds-entities) is sort of a chimera, which can be used both **as a getter** returning all definitions, and **as a function** which accepts a namespace to fetch definitions for, the latter doesn't make sense in the context of a service, as the namespace is already implied by the service's name.
 
 
 ### srv. init() {.method}
@@ -766,7 +773,7 @@ All these registered handlers would get executed concurrently, and independently
 
 [Learn more about how requests are processed by `srv.handle(event)`](#srv-handle-event) {.learn-more}
 
-  
+
 
 ### srv. on (error) {.method}
 ###### srv-on-error
