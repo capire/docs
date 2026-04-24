@@ -60,6 +60,7 @@
 # [Security](authentication)
 # [Plugins](cds-plugins)
 # [Testing](cds-test)
+# [Streaming](streaming)
 # [TypeScript](typescript)
 # [Best Practices](best-practices)
 # [Integrate with UCL](../../node.js/ucl) <!-- INTERNAL -->
