@@ -74,7 +74,7 @@ Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access
 Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
 ## Query for Similarity
-At runtime, use vector functions to search for similar items. For example, find incidents that are relevant to a user question:
+At runtime, use vector functions to search for similar items. In a Retrieval-Augmented Generation (RAG) scenario, for example to enhance the context of a user query for the LLM to answer the query, compute the vector embedding of the user query and use `CQL.cosineSimilarity` to find incidents that are relevant to a user question and can be given to the LLM to answer the question.
 
 ::: code-group
 ```Java [Java]
