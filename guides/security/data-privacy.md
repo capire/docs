@@ -39,8 +39,8 @@ The most essential requests you have to answer are those in the following table.
 
 | Question / Request                          | Obligation                                      | Solution                            |
 | ------------------------------------------- | ----------------------------------------------- | ----------------------------------- |
-| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Personal Data Mgmt](dpp-pdm.md)  |
-| *Delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Data Retention Mgmt](dpp-drm.md) |
+| *What data about me do you have stored?*    | [Right of access](#right-of-access)             | [Information reporting](dpp-pdm.md)  |
+| *Delete all personal data about me!* | [Right to be forgotten](#right-to-be-forgotten) | [Retention management](dpp-drm.md) |
 | *When was personal data stored/changed?*    | [Transparency](#transparency)                   | [Audit Logging](dpp-audit-logging.md)   |
 
 
@@ -75,7 +75,7 @@ The [**Right of Access** to personal data](https://en.wikipedia.org/wiki/Right_o
 
 The [SAP Personal Data Manager](https://help.sap.com/docs/personal-data-manager) allows you to inform individuals about the data you have stored regarding them.
 
-[Learn more in the *Personal Data Management* guide](dpp-pdm) {.learn-more}
+[Learn more in the *Information reporting* guide](dpp-pdm) {.learn-more}
 
 
 
