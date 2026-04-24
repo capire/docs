@@ -23,7 +23,7 @@ extend Incidents with {
 ## Generate Embeddings
 Use an embedding model to convert your data (for example, incident titles and summaries) into vectors.
 
-:::tip Evolve embeddings with your model
+:::warning Evolve embeddings with your model
 Store embeddings when you create or update your data. Regenerate embeddings if you change your embedding model.
 :::
 
@@ -40,6 +40,10 @@ extend Incidents with {
   ) stored; 
 }
 ```
+
+:::tip Prefer calculated elements for vector embeddings
+If the database calculates vector embeddings on write it automatically regenerates the embedding if the input data changes.
+:::
 
 > [!warning] Java only and <Beta/>
 > The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
@@ -86,7 +90,6 @@ Select.from(INCIDENTS)
             i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
    .where(i -> similarity.gt(0.75f))
    .orderBy(i -> i.get("relevance").desc());
-```
 ```
 
 ```js [Node.js]
