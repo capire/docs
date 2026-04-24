@@ -90,7 +90,7 @@ var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
 Select.from(INCIDENTS)
    .columns(i -> similarity.times(100).as("relevance"), 
             i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
-   .where(i -> similarity.gt(0.75f))
+   .where(i -> similarity.gt(0.75))
    .orderBy(i -> i.get("relevance").desc());
 ```
 
