@@ -817,7 +817,7 @@ The SAP HANA Tenant Management Service (TMS) v2 service provides direct support 
 > - **Not suitable for existing applications** as there is **no migration from Service Manager** available yet. This will be provided as HANA tool later.<br>
 > There **won't be support for both Service Manager and TMS v2** together in one application.
 
-[For more information, see the SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy-guide-internal/introducing-sap-hana-cloud-multitenancy){.learn-more}
+[For more information, see the SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/introducing-sap-hana-cloud-multitenancy){.learn-more}
 [Find the TMS v2 API on the SAP Business Accelerator Hub](https://api.sap.com/api/TenantAPI/overview){.learn-more}
 
 #### Configure MTXS for Tenant Management Service
@@ -965,7 +965,7 @@ so clustering the upgrade by database does not work properly.
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
 
-CAP Java as well as `@sap/cds-mtxs`, each offer an easy way to integrate these dependencies. They support some services out of the box and also provide a simple API for applications. Most notably, you need such dependencies for the following SAP BTP services: [Audit Log](https://discovery-center.cloud.sap/serviceCatalog/audit-log-service), [Event Mesh](https://discovery-center.cloud.sap/serviceCatalog/event-mesh), [Destination](https://discovery-center.cloud.sap/serviceCatalog/destination), [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service), and [Cloud Portal](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service).
+CAP Java as well as `@sap/cds-mtxs`, each offer an easy way to integrate these dependencies. They support some services out of the box and also provide a simple API for applications. Most notably, you need such dependencies for the following SAP BTP services: [Audit Log](https://discovery-center.cloud.sap/serviceCatalog/audit-log-service), [Event Mesh](https://discovery-center.cloud.sap/serviceCatalog/event-mesh), [Destination](https://discovery-center.cloud.sap/serviceCatalog/destination-service), [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service), and [Cloud Portal](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service).
 
 For CAP Java, all these services are supported natively and SaaS dependencies are automatically created if such a service instance is bound to the CAP Java application, that is, the `srv` module.
 
