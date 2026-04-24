@@ -417,26 +417,22 @@ for (let d of this.entities) //... d is a CSN definition
 ```
 
 #### Similarity _and_ difference to `cds.entities`
-These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a shortcut to `cds.model.entities()` to `cds.model.entities`, which in turn is implemented in [`LinkedCSN:entities`](cds-reflect#entities). However, note this difference:
+
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a shortcut to `cds.model.entities()` to `cds.model.entities`, which in turn is implemented in [`cds.linked.entities`](cds-reflect#entities). However, note this difference:
 
 Both of these work with `cds.entities`:
 ```js
-const { 'some.namespace.Books':Books, ... } = cds.entities // works [!code ++]
-const { Books, Authors } = cds.entities('some.namespace') // works [!code ++]
+const { 'some.namespace.Books':Books, ... } = cds.entities  //> works
+const { Books, Authors } = cds.entities ('some.namespace')  //> works
 ```
 
 Only the first one works with `srv.entities`:
 ```js
-const { Books, Authors } = srv.entities // works [!code ++]
-const { Books, Authors } = srv.entities('some.namespace') // FAILS! [!code --]
+const { Books, Authors } = srv.entities                     //> works
+const { Books, Authors } = srv.entities ('some.namespace')  //> FAILS! [!code --]
 ```
 
- This is because `cds.entities` is sort of a chimera, which can be used both **as a getter** returning all definitions, and **as a function** which takes a namespace to fetch definitions for. In contrast to that, `srv.entities`, `srv.events` and `srv.actions` are **getter only** properties. Reason is that the namespace is already implied by the service's name.
-
- > [!info] Compatibility to former versions
- > In the past the function usage `srv.entities(...)` was also supported accidentially. In case you still use that your code, this still works with <Config>cds.features.compat_srv_getters: true</Config>, but it is **strongly recommended** to switch to the new syntax without the namespace argument as shown above, which is more intuitive and less error-prone.
->
- > **We will remove support for the old syntax in the next major release.**
+ While [`cds.entities`](cds-facade#cds-entities) is sort of a chimera, which can be used both **as a getter** returning all definitions, and **as a function** which accepts a namespace to fetch definitions for, the latter doesn't make sense in the context of a service, as the namespace is already implied by the service's name.
 
 
 ### srv. init() {.method}

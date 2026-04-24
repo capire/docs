@@ -136,6 +136,9 @@ for (let each of m.entities) console.log (each.name)
 for (let each of m.entities('my.bookshop')) console.log (each.name)
 ```
 
+> [!info]
+> Note: In the dictionaries returned by `.entities` there are no entries for [`.texts`](#texts) entities, as these are generated, and hence living in a shadow world. They did show up in former releases, which caused a lot of confusion, and was fixed since cds 9.6.
+> They are always accessible via the main entity's [`.texts`](#texts) property, e.g. `Books.texts`.
 
 
 ### each() {#each .method }
@@ -387,7 +390,7 @@ Their values are [`LinkedDefinitions`].
 
 ### . texts {.property}
 
-If the entity has *[localized](../guides/uis/localized-data)* elements, this property is a reference to the respective `.texts` entity. If not, this property is undefined
+If the entity has *[localized](../guides/uis/localized-data)* elements, this property is a reference to the respective generated `.texts` entity. If not, this property is undefined.
 {.indent}
 
 ### . drafts {.property}
