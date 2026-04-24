@@ -330,16 +330,16 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings { #vector-embeddings }
 
-In CDS, [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector(length)`.
+In CDS, [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type [`Vector`](/@external/cds/types).
 
 CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 
 In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
 
 ```Java
-// Vector embedding of text, for example, from SAP GenAI Hub via SAP Cloud SDK for AI
+// Vector embedding of text via SAP Cloud SDK for AI
 float[] embedding = embeddingModel.embedding(
-        new OpenAiEmbeddingRequest(List.of(text))).getEmbeddingVectors().get(0);
+  new OpenAiEmbeddingRequest(List.of(text))).getEmbeddingVectors().get(0);
 
 CdsVector v1 = CdsVector.of(embedding); // float[] format
 ```
