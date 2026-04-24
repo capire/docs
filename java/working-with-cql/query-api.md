@@ -1640,6 +1640,71 @@ Scalar functions are values that are calculated from other values. This calculat
 
   See [`Concat`](#string-expressions) String Expression
 
+
+#### Vector Functions
+
+Vector functions allow you to compute similarity and distance of vectors, as well as [vector embeddings](../../guides/databases/hana.md#vector-embeddings) of text data directly in the database.
+
+##### Computing Vector Embeddings in SAP HANA <Beta />
+
+CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
+
+To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
+
+```cds
+extend Incidents with {
+  @cds.api.ignore
+  embedding : cds.Vector(768) = vector_embedding(
+       'title: ' || title || ', summary: ' || summary,
+       'DOCUMENT', 'SAP_GXY.20250407') stored;
+}
+```
+
+In Java queries use the `CQL.vectorEmbedding` function to compute vector embeddings:
+
+```java
+var userQuery = CQL.val("""
+        Have we seen incidents with solar inverters this month,
+        and how were they resolved?
+        """);
+var embedding = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
+```
+
+On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
+
+```xml
+<dependency>
+   <groupId>dev.langchain4j</groupId>
+   <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
+   <scope>runtime</scope>
+</dependency>
+```
+
+##### Computing Vector Similarity and Distance
+
+You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. To use vector embeddings in functions, wrap them using `CQL.vector`:
+
+```Java
+CqnVector v = CQL.vector(embedding);
+
+CdsResult<Incidents> similarIncidents = db.run(Select.from(INCIDENTS).where(b ->
+  CQL.cosineSimilarity(b.embedding(), v).gt(0.7))
+);
+```
+
+You can also use parameters for vectors in queries:
+
+```Java
+var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
+
+CqnSelect query = Select.from(INCIDENTS)
+  .columns(b -> b.title(), b -> similarity.as("similarity"))
+  .where(b -> b.ID().ne(incidentId).and(similarity.gt(0.7)))
+  .orderBy(b -> b.get("similarity").desc());
+
+Result similarIncidents = db.run(query, CdsVector.of(embedding));
+```
+
 #### Case-When-Then Expressions
 
 Use a case expression to compute a value based on the evaluation of conditions. The following query converts the stock of Books into a textual representation as 'stockLevel':

@@ -330,8 +330,6 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings { #vector-embeddings }
 
-### Vector Type
-
 In CDS, [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector(length)`.
 
 CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
@@ -346,76 +344,11 @@ float[] embedding = embeddingModel.embedding(
 CdsVector v1 = CdsVector.of(embedding); // float[] format
 ```
 
-In CDS QL queries, elements of type `cds.Vector` are not included in select _all_ queries. They must be explicitly added to the select list:
+::: info
+In CDS QL queries, elements of type `Vector` are excluded from the select list by default.
+:::
 
-```Java
-CdsVector embedding = service.run(Select.from(INCIDENTS).byId(101)
-  .columns(b -> b.embedding())).single(Incident.class).getEmbedding();
-```
-
-### Computing Vector Embeddings in SAP HANA <Beta />
-
-CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
-
-To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
-
-```cds
-extend Incidents with {
-  embedding : cds.Vector(768) = vector_embedding(
-       'title: "' || title || '", summary: ' || summary,
-       'DOCUMENT', 'SAP_GXY.20250407') stored @cds.api.ignore;
-}
-```
-
-On H2 and SQLite the `vectorEmbedding` function is emulated using local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
-
-```xml
-<dependency>
-   <groupId>dev.langchain4j</groupId>
-   <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
-   <scope>runtime</scope>
-</dependency>
-```
-
-### Computing Vector Similarity and Distance
-
-You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. To use vector embeddings in functions, wrap them using `CQL.vector`:
-
-```Java
-CqnVector v = CQL.vector(embedding);
-
-CdsResult<Incidents> similarIncidents = service.run(Select.from(INCIDENTS).where(b ->
-  CQL.cosineSimilarity(b.embedding(), v).gt(0.7))
-);
-```
-
-You can also use parameters for vectors in queries:
-
-```Java
-var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
-
-CqnSelect query = Select.from(INCIDENTS)
-  .columns(b -> b.title(), b -> similarity.as("similarity"))
-  .where(b -> b.ID().ne(incidentId).and(similarity.gt(0.7)))
-  .orderBy(b -> b.get("similarity").desc());
-
-Result similarIncidents = db.run(query, CdsVector.of(embedding));
-```
-
-### Retrieval-Augmented Generation (RAG)
-
-In a RAG scenario, for example to enhance the context of a user query for the LLM to answer the query, compute the vector embedding of the user query and use `CQL.cosineSimilarity` to find similar incidents based on their embeddings and add them to the request to the LLM:
-
-```Java
-var userQuery = CQL.val("Have we seen incidents with solar inverters this month, and how were they resolved?");
-var embedding = CQL.vectorEmbedding(userQuery, QUERY, "SAP_GXY.20250407");
-var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
-Select.from(INCIDENTS)
-   .columns(i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date(), i -> similarity.times(100).as("relevance"))
-   .where(i -> similarity.gt(minSimilarity))
-   .orderBy(i -> i.get("relevance").desc());
-```
-
+CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Data in CDS Query Language (CQL)
 
