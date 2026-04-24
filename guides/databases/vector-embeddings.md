@@ -16,7 +16,7 @@ Use the built-in CDL [Vector](../cds/types) type in your CDS model to store embe
 
 ```cds
 extend Incidents with {
-  embedding : cds.Vector(768);
+  embedding : Vector(768);
 }
 ```
 
