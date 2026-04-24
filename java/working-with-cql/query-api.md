@@ -1643,7 +1643,7 @@ Scalar functions are values that are calculated from other values. This calculat
 
 #### Vector Functions
 
-Vector functions allow you to compute similarity and distance of vectors, as well as [vector embeddings](../../guides/databases/hana.md#vector-embeddings) of text data directly in the database.
+Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/hana.md#vector-embeddings) of text data directly in the database.
 
 ##### Computing Vector Embeddings in SAP HANA <Beta />
 
@@ -1667,7 +1667,7 @@ var userQuery = CQL.val("""
         Have we seen incidents with solar inverters this month,
         and how were they resolved?
         """);
-var embedding = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
+var v = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
 ```
 
 On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
@@ -1682,7 +1682,7 @@ On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use lo
 
 ##### Computing Vector Similarity and Distance
 
-You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. To use vector embeddings in functions, wrap them using `CQL.vector`:
+You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. This is useful for use cases such as finding similar items based on [vector embeddings](../../guides/databases/hana.md#vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
 CqnVector vec = CQL.vector(embedding);
@@ -1698,7 +1698,7 @@ You can also use parameters for vectors in queries:
 var similarity = CQL.cosineSimilarity(
      CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
 
-CqnSelect query = Select.from(INCIDENTS)
+var query = Select.from(INCIDENTS)
   .columns(i -> i.title(), i -> similarity.times(100).as("similarity"))
   .where(i -> similarity.gt(0.75f))
   .orderBy(i -> i.get("similarity").desc());
