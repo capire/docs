@@ -1039,7 +1039,7 @@ In case something unexpected happens, set the variable `DEBUG=cli` in your shell
 
 ::: code-group
 
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 export DEBUG="cli"
 ```
 

@@ -155,10 +155,6 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 - `days_between(x,y)` -> number
 - `seconds_between(x,y)` -> number
 
-> [!note] CAP Java support coming soon...
-> The above date / time functions are currently only supported by CAP Node.js. \
-> Support for CAP Java is planned for a future release.
-
 
 ### Aggregate Functions
 

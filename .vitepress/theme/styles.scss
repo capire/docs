@@ -44,6 +44,7 @@ html {
   --vp-c-brand-soft: rgba(16, 179, 185, 0.16);
 
   &.dark {
+    --vp-c-text-1: #eed;
     --vp-c-brand-1: var(--vp-c-yellow-2);
     --vp-c-brand-2: var(--vp-c-yellow-2);
     --vp-c-brand-3: var(--vp-c-yellow-3);
@@ -388,7 +389,7 @@ img, video.bright {
         }
       }
 
-      // reposition indicators to keep within padding 
+      // reposition indicators to keep within padding
       .item > .indicator { left: -14px;  }
       // also enable indicators for level-1 items
       &.level-1.is-active > .item > .indicator {
@@ -434,22 +435,22 @@ footer {
 
 /* expand width on big screens */
 @media screen and (min-width: 1600px) {
-  div[class*='language-']:hover,
-  div[class*='language-']:focus,
-  pre.log:hover,
-  pre.log:focus {
+  :not(.no-wide) > div[class*='language-']:hover,
+  :not(.no-wide) > div[class*='language-']:focus,
+  :not(.no-wide) > pre.log:hover,
+  :not(.no-wide) > pre.log:focus {
     min-width: fit-content;
     padding-right: 40px;
     z-index: 1; position: relative; // draw over outline
   }
-  table:hover,
-  table:focus {
+  :not(.no-wide) > table:hover,
+  :not(.no-wide) > table:focus {
     min-width: fit-content;
   }
-  tr {
+  :not(.no-wide) > tr {
     z-index: 1; position: relative;  // draw wide rows over outline
   }
-  [class*='language-'] pre {
+  :not(.no-wide) > [class*='language-'] pre {
     overflow: hidden !important;
   }
   // expand navbar to cover wide content (see java/development/properties)
