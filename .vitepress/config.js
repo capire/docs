@@ -3,10 +3,14 @@ const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
 import path from 'node:path'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import playground from './lib/cds-playground/index.js'
 import languages from './languages'
 import { Menu } from './menu.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const config = defineConfig({
 
@@ -77,7 +81,9 @@ const config = defineConfig({
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
     // Inline script to restore impl-variant selection immediately (before first paint)
-    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`]
+    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`],
+    // Inline script to restore code group tab preferences (before Vue hydration)
+    ['script', {}, readFileSync(path.resolve(__dirname, './lib/restoreCodeGroupPreferences.js'), 'utf-8')]
   ],
 
   vite: {

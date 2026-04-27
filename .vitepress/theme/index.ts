@@ -12,6 +12,7 @@ import Since from './components/Since.vue';
 import UnderConstruction from './components/UnderConstruction.vue';
 import CfgInspect from './components/ConfigInspect.vue';
 import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
+import { setupCodeGroupSync, onRouteChange } from '../lib/useCodeGroupSync'
 
 import '@shikijs/vitepress-twoslash/style.css'
 import './styles.scss'
@@ -36,5 +37,11 @@ export default {
     ctx.app.component('Since', Since)
     ctx.app.component('UnderConstruction', UnderConstruction)
     ctx.app.use(TwoslashFloatingVue)
+
+    // Setup code group tab synchronization
+    setupCodeGroupSync()
+
+    // Reinitialize on route changes (SPA navigation)
+    ctx.router.onAfterRouteChange = () => onRouteChange()
   }
 }
