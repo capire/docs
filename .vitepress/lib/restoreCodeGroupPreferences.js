@@ -154,13 +154,63 @@
     })
   }
 
+  // Function to calculate scroll offset (matches VitePress's getScrollOffset)
+  const getScrollOffset = () => {
+    // Check for nav element (VitePress's default header)
+    const nav = document.querySelector('.VPNav')
+    if (nav) {
+      return nav.offsetHeight + 24 // nav height + padding
+    }
+    // Fallback to checking for any fixed header
+    const header = document.querySelector('header')
+    if (header && window.getComputedStyle(header).position === 'fixed') {
+      return header.offsetHeight + 24
+    }
+    return 90 // Default offset if no header found
+  }
+
+  // Function to scroll to hash (matches VitePress's scrollTo logic)
+  const scrollToHash = (hash) => {
+    const target = document.querySelector(hash)
+    if (target) {
+      const targetPadding = parseInt(window.getComputedStyle(target).paddingTop, 10)
+      const targetTop = window.scrollY +
+        target.getBoundingClientRect().top -
+        getScrollOffset() +
+        targetPadding
+
+      window.scrollTo(0, targetTop)
+    }
+  }
+
   const applyToAllCodeGroups = () => {
     const codeGroups = document.querySelectorAll('.vp-code-group')
     codeGroups.forEach(applyToCodeGroup)
   }
 
+  // Track if we need to restore hash scroll
+  const initialHash = window.location.hash
+  let hashScrollPending = false
+
+  if (initialHash) {
+    // Clear hash to prevent browser's auto-scroll
+    history.replaceState(null, '', window.location.pathname + window.location.search)
+    hashScrollPending = true
+  }
+
   // Apply immediately to any existing code groups (runs synchronously)
   applyToAllCodeGroups()
+
+  // If we have code groups and a hash, restore scroll now
+  if (hashScrollPending && document.querySelectorAll('.vp-code-group').length > 0) {
+    // Restore hash and scroll immediately
+    history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+    // Scroll on next frame to let layout settle
+    requestAnimationFrame(() => {
+      scrollToHash(initialHash)
+      hashScrollPending = false
+    })
+  }
 
   // Watch for code groups being added dynamically (SPA navigation, HMR in dev mode)
   const observer = new MutationObserver((mutations) => {
@@ -169,9 +219,27 @@
         if (node instanceof HTMLElement) {
           if (node.classList?.contains('vp-code-group')) {
             applyToCodeGroup(node)
+
+            // If we have a pending hash scroll and this might be the last code group, try to scroll
+            if (hashScrollPending) {
+              history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+              requestAnimationFrame(() => {
+                scrollToHash(initialHash)
+                hashScrollPending = false
+              })
+            }
           } else if (node.querySelector) {
             const codeGroups = node.querySelectorAll('.vp-code-group')
             codeGroups.forEach(applyToCodeGroup)
+
+            // If we have a pending hash scroll, try to scroll after processing all code groups
+            if (hashScrollPending && codeGroups.length > 0) {
+              history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+              requestAnimationFrame(() => {
+                scrollToHash(initialHash)
+                hashScrollPending = false
+              })
+            }
           }
         }
       }
@@ -188,6 +256,17 @@
 
   // Apply again on DOMContentLoaded as safety net
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyToAllCodeGroups)
+    document.addEventListener('DOMContentLoaded', () => {
+      applyToAllCodeGroups()
+
+      // Final attempt to restore hash scroll if still pending
+      if (hashScrollPending && initialHash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+        requestAnimationFrame(() => {
+          scrollToHash(initialHash)
+          hashScrollPending = false
+        })
+      }
+    })
   }
 })()

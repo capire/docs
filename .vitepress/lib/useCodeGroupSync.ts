@@ -179,11 +179,41 @@ function findCodeGroups(): CodeGroupInfo[] {
 function applyPreference(codeGroup: CodeGroupInfo): void {
   const { element, tabs } = codeGroup
   const selectedTab = getBestTab(tabs)
+  const selectedIndex = tabs.indexOf(selectedTab)
+
+  if (selectedIndex === -1) return
 
   // Find and check the corresponding radio button and activate content
   const labels = element.querySelectorAll('.tabs label')
   const blocks = element.querySelectorAll('div[class*="language-"], .vp-block')
 
+  // Check if ALL tabs and blocks are already in the correct state
+  // This prevents any DOM changes that could affect scroll position
+  let alreadyCorrect = true
+
+  labels.forEach((label, index) => {
+    const input = element.querySelector(`.tabs input:nth-of-type(${index + 1})`) as HTMLInputElement
+    const block = blocks[index] as HTMLElement
+
+    if (index === selectedIndex) {
+      // This tab should be active
+      if (!input?.checked || !block?.classList.contains('active')) {
+        alreadyCorrect = false
+      }
+    } else {
+      // This tab should be inactive
+      if (input?.checked || block?.classList.contains('active')) {
+        alreadyCorrect = false
+      }
+    }
+  })
+
+  // If everything is already correct, don't touch the DOM at all
+  if (alreadyCorrect) {
+    return
+  }
+
+  // Apply the preference
   labels.forEach((label, index) => {
     const tabLabel = (label.textContent || '').trim()
     const input = element.querySelector(`.tabs input:nth-of-type(${index + 1})`) as HTMLInputElement
@@ -267,8 +297,25 @@ function setupEventListeners(): void {
     const tabLabel = (label.textContent || '').trim()
     if (!tabLabel) return
 
+    // Capture the scroll position of the clicked tab before syncing
+    const clickedRect = label.getBoundingClientRect()
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
     // Sync all code groups with fuzzy matching
     syncTabs(tabLabel)
+
+    // Restore scroll position to keep the clicked tab in view
+    requestAnimationFrame(() => {
+      const newRect = label.getBoundingClientRect()
+      const scrollDelta = newRect.top - clickedRect.top
+
+      if (scrollDelta !== 0) {
+        window.scrollTo({
+          top: scrollTop + scrollDelta,
+          behavior: 'instant'
+        })
+      }
+    })
   })
 }
 
