@@ -111,7 +111,7 @@ The following table gives an overview about the removed properties:
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
-The internal `mvn` modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed and not released anymore. If the project directly referenced those modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatability of the code base.
+The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed from the delivery. If the project directly references these modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatibility of the code base:
 
 1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib` and  rewrite code using CAP Java native APIs
 
