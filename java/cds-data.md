@@ -328,58 +328,27 @@ On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1
 
 Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
 
-## Vector Embeddings <Beta /> { #vector-embeddings }
+## Vector Embeddings { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS, [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type [`Vector`](/@external/cds/types).
 
-```cds
-entity Books : cuid { // [!code focus]
-  title         : String(111);
-  description   : LargeString;  // [!code focus]
-  embedding     : Vector(1536); // vector space w/ 1536 dimensions // [!code focus]
-} // [!code focus]
-```
+CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 
-In CAP Java, vector embeddings are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
+In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
 
 ```Java
-// Vector embedding of text, for example, from SAP GenAI Hub or via LangChain4j
-float[] embedding = embeddingModel.embed(bookDescription).content().vector();
+// Vector embedding of text via SAP Cloud SDK for AI
+float[] embedding = embeddingModel.embedding(
+  new OpenAiEmbeddingRequest(List.of(text))).getEmbeddingVectors().get(0);
 
 CdsVector v1 = CdsVector.of(embedding); // float[] format
-CdsVector v2 = CdsVector.of("[0.42, 0.73, 0.28, ...]"); // String format
 ```
 
-You can use the functions, `CQL.cosineSimilarity` or `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity or distance of embeddings in the vector space. To use vector embeddings in functions, wrap them using `CQL.vector`:
+::: info
+In CDS QL queries, elements of type `Vector` are excluded from the select list by default.
+:::
 
-```Java
-CqnVector v = CQL.vector(embedding);
-
-CdsResult<Books> similarBooks = service.run(Select.from(BOOKS).where(b ->
-  CQL.cosineSimilarity(b.embedding(), v).gt(0.9))
-);
-```
-
-You can also use parameters for vectors in queries:
-
-```Java
-var similarity = CQL.cosineSimilarity(CQL.get(Books.EMBEDDING), CQL.param(0).type(VECTOR));
-
-CqnSelect query = Select.from(BOOKS)
-  .columns(b -> b.title(), b -> similarity.as("similarity"))
-  .where(b -> b.ID().ne(bookId).and(similarity.gt(0.9)))
-  .orderBy(b -> b.get("similarity").desc());
-
-Result similarBooks = db.run(query, CdsVector.of(embedding));
-```
-
-In CDS QL queries, elements of type `cds.Vector` are not included in select _all_ queries. They must be explicitly added to the select list:
-
-```Java
-CdsVector embedding = service.run(Select.from(BOOKS).byId(101)
-  .columns(b -> b.embedding())).single(Books.class).getEmbedding();
-```
-
+CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Data in CDS Query Language (CQL)
 
