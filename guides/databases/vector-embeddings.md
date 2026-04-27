@@ -3,13 +3,13 @@ label: Vector Embeddings
 ---
 # Vector Embeddings
 
-Vector embeddings convert unstructured content (text, images, etc.) into numeric vectors that encode semantics (meaning). Comparing these vectors enables semantic search, recommendations, and enhanced generative AI features in your CAP application, for example retrieving related records, ranking results by relevance, or augmenting prompts for LLMs.
+Vector embeddings convert unstructured content (text, images, and so on) into numeric vectors that encode semantics (meaning). Comparing these vectors enables semantic search, recommendations, and enhanced generative AI features in your CAP application. For example retrieving related records, ranking results by relevance, or augmenting prompts for LLMs.
 
 ## Choose an Embedding Model
 
-Choose an embedding model that fits your use case and data (for example english or multilingual text). The model determines the number of dimensions of the resulting output vector. Check the documentation of the respective embedding model for details.
+Choose an embedding model that fits your use case and data (for example English or multilingual text). The model determines the number of dimensions of the resulting output vector. Check the documentation of the respective embedding model for details.
 
-Use the [SAP Generative AI Hub](https://www.sap.com/products/artificial-intelligence/generative-ai-hub.html) for unified consumption of embedding models and LLMs across different vendors and open source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
+Use the [SAP Generative AI Hub](https://www.sap.com/products/artificial-intelligence/generative-ai-hub.html) for unified consumption of embedding models and LLMs across different vendors and open-source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
 
 ## Add Embeddings to Your CDS Model
 Use the built-in CDL [Vector](../cds/types) type in your CDS model to store embeddings. Set the vector dimensions to match the embedding model (for example, 768 for *SAP_GXY.20250407*).
@@ -74,7 +74,7 @@ Use the [SAP Cloud SDK for AI](https://sap.github.io/ai-sdk/) for unified access
 Learn more about the [SAP Cloud SDK for AI (Java)](https://sap.github.io/ai-sdk/docs/java/getting-started) or the [SAP Cloud SDK for AI (JavaScript)](https://sap.github.io/ai-sdk/docs/js/getting-started) {.learn-more}
 
 ## Query for Similarity
-At runtime, use vector functions to search for similar items. In a Retrieval-Augmented Generation (RAG) scenario, for example to enhance the context of a user query for the LLM to answer the query, compute the vector embedding of the user query and use `CQL.cosineSimilarity` to find incidents that are relevant to a user question and can be given to the LLM to answer the question.
+At runtime, use vector functions to search for similar items. In an example Retrieval-Augmented Generation (RAG) scenario, use `CQL.cosineSimilarity` to enhance the context of a user query for the LLM. First, compute the vector embedding of the user query and use it to find related incidents.
 
 ::: code-group
 ```Java [Java]
