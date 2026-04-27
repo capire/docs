@@ -1660,7 +1660,7 @@ extend Incidents with {
 }
 ```
 
-In Java queries use the `CQL.vectorEmbedding` function to compute vector embeddings:
+In Java queries, use the `CQL.vectorEmbedding` function to compute vector embeddings:
 
 ```java
 var userQuery = CQL.val("""
@@ -1670,7 +1670,7 @@ var userQuery = CQL.val("""
 var v = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
 ```
 
-On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
+On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
 
 ```xml
 <dependency>
@@ -1682,7 +1682,7 @@ On H2 and SQLite the `vectorEmbedding` function is emulated. You can also use lo
 
 ##### Computing Vector Similarity and Distance
 
-You can use the functions, `CQL.cosineSimilarity` and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. This is useful for use cases such as finding similar items based on [vector embeddings](../../guides/databases/hana.md#vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/hana.md#vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
 CqnVector vec = CQL.vector(embedding);
