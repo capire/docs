@@ -242,12 +242,17 @@ The plugin implements it by automatically injecting two aspects into every ILM O
 
 ```cds
 aspect destruction {
-  ilmEarliestDestructionDate : Date  @UI.HiddenFilter  @PersonalData.FieldSemantics: 'EndOfRetentionDate';
-  ilmLatestDestructionDate : Date  @UI.HiddenFilter;
+  @UI.HiddenFilter
+  @PersonalData.FieldSemantics: 'EndOfRetentionDate'
+  ilmEarliestDestructionDate : Date;
+  @UI.HiddenFilter
+  ilmLatestDestructionDate : Date;
 }
 
 aspect blocking {
-  dppBlockingDate            : Date  @UI.HiddenFilter  @PersonalData.FieldSemantics: 'BlockingDate';
+  @UI.HiddenFilter
+  @PersonalData.FieldSemantics: 'BlockingDate'
+  dppBlockingDate            : Date;
 }
 ```
 
