@@ -1643,7 +1643,7 @@ Scalar functions are values that are calculated from other values. This calculat
 
 #### Vector Functions
 
-Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/hana.md#vector-embeddings) of text data directly in the database.
+Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
 
 ##### Computing Vector Embeddings in SAP HANA <Beta />
 
@@ -1682,7 +1682,7 @@ On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use l
 
 ##### Computing Vector Similarity and Distance
 
-You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/hana.md#vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
 CqnVector vec = CQL.vector(embedding);
