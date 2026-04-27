@@ -359,10 +359,6 @@ The first sample sets a custom auditor role for just the 'Customers' entity. The
 
 The retention service leverages CAPs inbuilt audit logging capabilities to ensure all queries done by the Retention Manager DPI module against the database are properly logged.
 
-### Troubleshooting
-
-The logger component is `data-privacy` and extensive debug logs are written to allow you to understand what is happening behind the scenes of the plugin.
-
 ### Extending the Retention service (optional)
 
 You can extend the `sap.ilm.RetentionService` yourself and manually expose entities if you want to rename files or adjust annotations for the exposed entity.
@@ -384,9 +380,37 @@ extend service RetentionService with {
 }
 ```
 
+### Troubleshooting
+
+#### Logger
+The logger component is `data-privacy` and extensive debug logs are written to allow you to understand what is happening behind the scenes of the plugin.
+
+#### Deployment fails with: Organizational attributes are missing
+
+When the creation of the DPI instance fails with the log:
+```log
+"Organization Attributes must be present if archiveOnly flag is false"
+```
+
+the problem is related to the plugin not being able to adjust the `mta.yaml` configuration during `cds build`. The configuration of the retention service includes the data subjects and organizational attributes, which cannot be dynamically provided to SAP DPI, thus must be part of the instance configuration and are based on the CDS model and thus cannot be added during `cds add`.
+If your `mta.yaml` is not next to your `package.json`, adjust the `deploymentDescriptor` to point to your `mta.yaml` file. The path starts at the root of the CAP project.
+
+
+```json [package.json]
+{
+  "cds": {
+    "requires": {
+      "sap.ilm.RetentionService": {
+        "deploymentDescriptor": "mta.yaml"
+      }
+    }
+  }
+}
+```
+
 ## Archiving
 
-The archiving capabilities of the Retention Management application are currently not supported by the plugin but are planned to be added throughout 2026 by leveraging HANA Cloud Native Storage Extensions and HANA Cloud Data Lake as the archive's persistence.
+The archiving capabilities of the Retention Management application are currently not supported by the plugin. They are planned to be added throughout 2026 by leveraging HANA Cloud Native Storage Extensions and HANA Cloud Data Lake as the archive's persistence.
 
 ## Connecting SAP Data Privacy Integration
 
