@@ -24,7 +24,7 @@
 # [Multitenancy](multitenancy)
 # [Security](security)
 # [Spring Boot Integration](spring-boot-integration)
-## [CAP plugins w/o CDS Model](cap-plugins-in-spring-boot-apps)
+# [CAP Java plugins in Brownfields Apps](cap-plugins-in-spring-boot-apps)
 # [Developing Applications](developing-applications/)
   ## [Building](developing-applications/building)
   ## [Running](developing-applications/running)
