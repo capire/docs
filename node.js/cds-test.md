@@ -10,59 +10,109 @@ status: released
 
 
 
-## Overview
+## Getting Started
 
-The `cds.test` library provides best practice utils for writing tests for CAP Node.js applications.
+### Project Setup
 
-Install it with:
+Add `@cap-js/cds-test` as a dev dependency to your project:
 
 ```sh
 npm add -D @cap-js/cds-test
 ```
 
-::: tip Examples
-Find examples in [*capire/samples*](https://github.com/capire/bookstore/tree/main/test) and in the [*SFlight sample*](https://github.com/capire/xtravels/tree/main/test).
-:::
+Check whether it works as expected with your [globally installed `@sap/cds-dk`](../get-started/index), which should show some help output as below:
 
-
-### Running a CAP Server
-
-Use function [`cds.test()`](#cds-test) to easily launch and test a CAP server. For example, given your CAP application has a `./test` subfolder containing tests as follows:
-
-```zsh
-project/    # your project's root folder
-├─ srv/
-├─ db/
-├─ test/    # your .test.js files go in here
-└─ package.json
+```sh
+cds test -?
 ```
+```zsh
+Usage:
 
-Start your app's server in your `.test.js` files like that:
+  cds test [ options ] [ patterns ]
 
-```js{3}
-const cds = require('@sap/cds')
-describe(()=>{
-  const test = cds.test(__dirname+'/..')
+Options:
+
+  -l, --list     List found test files
+  -s, --silent   Suppress output via console.log
+  -q, --quiet    Suppress all output to stdout
+  ...
+  ```
+
+### Writing Tests
+
+A typical usage in your tests looks like this:
+
+::: code-group
+```js:line-numbers {2-4,9,10} [./test/odata.test.js]
+const cds = require ('@sap/cds')
+const { GET, expect, defaults } = cds.test ('@capire/bookshop')
+defaults.auth = { username: 'alice' }
+defaults.path = '/odata/v4/browse'
+
+describe ('browse books', ()=>{
+
+  it ('should allow fetching lists of books', async () => {
+    const { data } = await GET `Books? $select=ID,title`
+    expect (data.value) .to.deep.equal ([
+      { ID: 201, title: 'Wuthering Heights' },
+      { ID: 207, title: 'Jane Eyre' },
+      { ID: 251, title: 'The Raven' },
+      { ID: 252, title: 'Eleonora' },
+      { ID: 271, title: 'Catweazle' },
+    ])
+  })
+  //...
 })
 ```
-This launches a server from the specified target folder in a `beforeAll()` hook, with controlled shutdown when all tests have finished in an `afterAll()` hook.
-
-::: warning  Don't use `process.chdir()`!
-Doing so in Jest tests may leave test containers in failed state, leading to failing subsequent tests. Use [`cds.test.in()`](#test-in-folder) instead.
 :::
 
-::: danger Don't load [`cds.env`](cds-env) before [`cds.test()`](#cds-test)!
-To ensure `cds.env`, and hence all plugins, are loaded from the test's target folder, the call to `cds.test()` is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → [Learn more in `CDS_TEST_ENV_CHECK`.](#cds-test-env-check)
-:::
+[This is an excerpt from *capire/bookstore/test/odata.test.js*](https://github.com/capire/bookstore/blob/main/test/odata.test.js){.learn-more}
+
+
+Let's analyze the highlighted the code above line by line:
+
+
+```js :line-numbers=2
+const ... cds.test... // > loads the cds-test module
+```
+- By accessing [`cds.test`](#class-cds-test-test) the `cds-test` module is loaded, which ensures that...
+- Functions like [`describe`](https://vitest.dev/api/describe.html), [`test`](https://vitest.dev/api/test.html), [`it`](https://vitest.dev/api/test.html), etc. are made available in test scope.
+
+```js :line-numbers=2
+const { GET, ... } = cds.test ('@capire/bookshop')
+```
+- Calling the [`cds.test()`](#cds-test) function launches a CAP server for the given CAP project.
+
+```js :line-numbers=3
+defaults.auth = { username: 'alice' }
+defaults.path = '/odata/v4/browse'
+```
+- Sets some [`defaults`](#defaults) used for subsequent HTTP requests.
+
+```js :line-numbers=9
+const { data } = await GET `Books? $select=ID,title`
+```
+- Uses the [`GET`](#http-bound) function obtained in line 2 to send an HTTP request.
+
+```js :line-numbers=10
+expect (data.value) .to.deep.equal ([ ... ])
+```
+- Uses the [`expect`](#expect) function obtained in line 2 to assert expected results.
 
 
 
+### Testing Services
 
-### Testing Service APIs
+To test HTTP APIs, we can use the provided [HTTP shorthand](#http-bound) functions like so:
 
+```js
+const { GET, POST } = cds.test(...)
+const { data } = await GET ('/browse/Books')
+await POST (`/browse/submitOrder`, { book: 201, quantity: 5 })
+```
 
-As `cds.test()` launches the server in the current process, you can access all services programmatically using the respective [Node.js Service APIs](core-services). Here's an example for that:
-
+Instead of sending HTTP requests, we can also use the CAP runtime's [Service APIs](core-services) to access services programmatically, which is especially useful for testing service implementations, excluding the protocols layer.
+Here's an example for that:
 
 ```js
 it('Allows testing programmatic APIs', async () => {
@@ -75,104 +125,64 @@ it('Allows testing programmatic APIs', async () => {
 ```
 
 
-### Testing HTTP APIs
 
-To test HTTP APIs, we can use bound functions like so:
+### Running Tests
 
-```js
-const { GET, POST } = cds.test(...)
-const { data } = await GET ('/browse/Books')
-await POST (`/browse/submitOrder`, { book: 201, quantity: 5 })
-```
+You can run tests with the test runner of your choice, such as:
 
-[Learn more in GET/PUT/POST.](#http-bound) {.learn-more}
+- [Node's built-in test runner](https://nodejs.org/api/test.html)
+- [Vitest](https://vitest.dev/)
+- [Jest](https://jestjs.io/)
+- [Mocha](https://mochajs.org/)
 
+For example, you can use either of the following commands to run tests:
 
-#### Authenticated Endpoints
-`cds.test()` uses the standard authentication strategy in development mode, which is the [mocked authentication](./authentication#mocked). This also includes the usage of [pre-definded mock users](./authentication#mock-users)
-
-You can set the user for an authenticated request like this:
-
-```js
-await GET('/admin/Books', { auth: { username: 'alice', password: '' } })
-```
-
-This is the same as setting the HTTP `Authorization` header with values for basic authentication:
-
-::: code-group
-```http [test.http]
-GET http://localhost:4004/admin/Books
-Authorization: Basic alice:
+::: details Try it with [_@capire/samples_](http://github.com/capire/samples)...
+```sh
+git clone --recursive http://github.com/capire/samples
+cd samples
+npm install
 ```
 :::
-
-[Learn how to explicitly configure mock users in your _package.json_ file.](./authentication#mocked){.learn-more}
-
-### Using Jest or Mocha
-
-[*Mocha*](https://mochajs.org) and [*Jest*](https://jestjs.io) are the most used test runners at the moment, with each having its user base.
-
-The `cds.test` library is designed to allow you to write tests that can run with both. Here's an example:
-
-```js
-describe('my test suite', ()=>{
-  const { GET, expect } = cds.test(...)
-  it ('should test', ()=>{   // Jest & Mocha
-    const { data } = await GET ('/browse/Books')
-    expect(data.value).to.eql([ // chai style expect
-      { ID: 201, title: 'Wuthering Heights', author: 'Emily Brontë' },
-      { ID: 252, title: 'Eleonora', author: 'Edgar Allan Poe' },
-      //...
-    ])
-  })
-})
-```
-> To ensure that your tests run with both `jest` and `mocha`, start a test server with `cds.test(...)` inside a `describe` block of the test.
-
-You can use Mocha-style `before/after` or Jest-style `beforeAll/afterAll` in your tests, as well as the common `describe, test, it` methods. In addition, to be portable, you should use the [Chai Assertion Library's](#chai)  variant of `expect`.
-
-::: tip [All tests in *cap/samples*](https://github.com/capire/bookstore/tree/main/test) are written in that portable way. <br>
-Run them with `npm run jest` or with `npm run mocha`.
-:::
-
-::: warning Helpers can cause conflicts
-_jest_ helpers might cause conflicts with the generic implementation of `@sap/cds`.
-
-To avoid such conflicts, do not use the following helpers:
-- _jest.resetModules_ as it leaves the server in an inconsistent state.
-- _jest.useFakeTimers_ as it intercepts the server shutdown causing test timeouts.
-:::
-
-### Using Test Watchers
-
-You can also start the tests in watch mode, for example:
 
 ```sh
-jest --watchAll
+node --test
+```
+```sh
+npx vitest --silent
+```
+```sh
+npx jest --silent
+```
+```sh
+npx mocha --parallel bookstore/test
+```
+```sh
+cds test
 ```
 
-This should give you green tests, when running in *cap/samples* root:
+The last one, `cds test` is a thin wrapper around [Node's built-in test runner](https://nodejs.org/api/test.html), which makes it easier to fetch tests and provides a cleaner output.
 
-<pre class="log">
-<em>PASS</em>  <i>test/</i>cds.ql.test.js
-<em>PASS</em>  <i>test/</i>hierarchical-data.test.js
-<em>PASS</em>  <i>test/</i>hello-world.test.js
-<em>PASS</em>  <i>test/</i>messaging.test.js
-<em>PASS</em>  <i>test/</i>consuming-services.test.js
-<em>PASS</em>  <i>test/</i>custom-handlers.test.js
-<em>PASS</em>  <i>test/</i>odata.test.js
-<em>PASS</em>  <i>test/</i>localized-data.test.js
-
-Test Suites: <em>8 passed</em>, 8 total
-Tests:       <em>65 passed</em>, 65 total
-Snapshots:   0 total
-Time:        3.611 s, estimated 4 s
-<i>Ran all test suites.</i>
-</pre>
-
-Similarly, you can use other test watchers like `mocha -w`.
+::: tip Writing runner-agnostic tests
+To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`, in particular via [`cds.test.expect`](#expect), which are designed to work across different runners. This way, you can easily switch between different test runners as shown above without having to change your test code. -> Learn more in section [Runner-Agnostic Tests](#runner-agnostic-tests) below.
+:::
 
 
+### Dos and Don'ts
+
+::: danger Don't load `cds.env` before `cds.test()`
+To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cds-test) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds-test-env-check)
+:::
+
+::: warning Keep it simple, stupid!
+To keep things simple, and [_runner-agnostic_](#runner-agnostic-tests), avoid excessive use of your test runner's mocking features or alike. _The more you mock, the less you test the real thing!_
+
+Using these bells and whistles might also cause conflicts with generic features of `@sap/cds`. For example, `jest.resetModules()` might leave the server in an inconsistent state, and `jest.useFakeTimers()` can interfere with the server shutdown, leading to test timeouts.
+:::
+
+::: tip  Avoid `process.chdir()` -> prefer `cds.test.in()`
+CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cds-test), or use [`cds.test.in()`](#test-in-folder) instead.
+:::
 
 
 
@@ -181,7 +191,8 @@ Similarly, you can use other test watchers like `mocha -w`.
 Instances of this class are returned by [`cds.test()`](#cds-test), for example:
 
 ```js
-const test = cds.test(_dirname)
+const test = cds.test()
+//> test is an instance of class cds.test.Test
 ```
 
 You can also use this class and create instances yourself, for example, like that:
@@ -209,99 +220,50 @@ cds.test = (...args) => (new Test).run(...args)
 :::
 
 
+### .defaults {.property}
 
-### .chai, ... {.property}
-
-To write tests that run in [*Mocha*](https://mochajs.org) as well as in [*Jest*](https://jestjs.io), you should use the [*Chai Assertion Library*](https://www.chaijs.com/) through the following convenient methods.
-
-:::warning Using `chai` requires these dependencies added to your project:
-
-```sh
-npm add -D chai@4 chai-as-promised@7 chai-subset jest
-```
-
-:::
-
-
-
-#### .expect { .property}
-
-Shortcut to the [`chai.expect()`](https://www.chaijs.com/guide/styles/#expect) function, used like that:
+This property provides default values for HTTP requests, which can be set like this:
 
 ```js
-const { expect } = cds.test(), foobar = {foo:'bar'}
-it('should support chai.except style', ()=>{
-  expect(foobar).to.have.property('foo')
-  expect(foobar.foo).to.equal('bar')
+const { defaults } = cds.test
+defaults.auth = { username: 'alice', password: '...' }
+defaults.validateStatus = status => status >= 500
+```
+
+To stay portable across different HTTP clients, it's recommended to only use these options, which cds.test supports across all clients:
+
+- `baseURL` as defined in [Axios](https://axios-http.com/docs/req_config#baseurl)
+- `auth` as defined in [Axios](https://axios-http.com/docs/req_config)
+- `headers` as defined in [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers) and [Axios](https://axios-http.com/docs/req_config#headers)
+- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status < 200 && status >= 300`)
+
+In addition, you can use all of the config options understood by the underlying HTTP client, that is, for Fetch API, its [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request) options, and for Axios, its [request config options](https://axios-http.com/docs/req_config) options.
+
+
+### .expect { .property}
+
+Returns the [`expect()`](https://www.chaijs.com/guide/styles/#expect) function as known from the [*Chai Assertion Library*](https://www.chaijs.com/), preconfigured with the [chai-subset](https://www.chaijs.com/plugins/chai-subset/) and [chai-as-promised](https://www.chaijs.com/plugins/chai-as-promised/) plugins, which contribute the `containSubset` and `eventually` APIs, respectively.
+
+```js
+const { GET, expect } = cds.test()
+it ('uses chai.expect', ()=>{
+  expect({foo:'bar'}).to.have.property('foo','bar')
+  expect({foo:'bar'}.foo).to.equal('bar')
 })
 ```
 
 If you prefer Jest's `expect()` functions, you can just use the respective global:
 
 ```js
-cds.test()
-it('should use jest.expect', ()=>{
-  expect({foo:'bar'}).toHaveProperty('foo')
+const { GET } = cds.test() // excluding expect, as we want to use Jest's
+it('uses jest.expect', ()=>{
+  expect({foo:'bar'}).toHaveProperty('foo','bar')
+  expect({foo:'bar'}.foo).toBe('bar')
 })
 ```
 
-
-
-#### .assert { .property}
-
-Shortcut to the [`chai.assert()`](https://www.chaijs.com/guide/styles/#assert) function, used like that:
-
-```js
-const { assert } = cds.test(), foobar = {foo:'bar'}
-it('should use chai.assert style', ()=>{
-  assert.property(foobar,'foo')
-  assert.equal(foobar.foo,'bar')
-})
-```
-
-
-
-#### .should { .property}
-
-Shortcut to the [`chai.should()`](https://www.chaijs.com/guide/styles/#should) function, used like that:
-
-```js
-const { should } = cds.test(), foobar = {foo:'bar'}
-it('should support chai.should style', ()=>{
-  foobar.should.have.property('foo')
-  foobar.foo.should.equal('bar')
-  should.equal(foobar.foo,'bar')
-})
-```
-
-
-
-#### .chai {.property}
-
-This getter provides access to the [*chai*](https://www.chaijs.com) library, preconfigured with the [chai-subset](https://www.chaijs.com/plugins/chai-subset/) and [chai-as-promised](https://www.chaijs.com/plugins/chai-as-promised/) plugins. These plugins contribute the `containSubset` and `eventually` APIs, respectively. The getter is implemented like this:
-
-```js
-get chai() {
-  return require('chai')
-  .use (require('chai-subset'))
-  .use (require('chai-as-promised'))
-}
-```
-
-
-
-### .axios {.property}
-
-Provides access to the [Axios](https://github.com/axios/axios) instance used as HTTP client.
-It comes preconfigured with the base URL of the running server, that is, `http://localhost:<port>`.  This way, you only need to specify host-relative URLs in tests, like `/catalog/Books`. {.indent}
-
-:::warning Using `axios` requires adding this dependency:
-
-```sh
-npm add -D axios
-```
-
-:::
+> [!warning]
+As `chai` is an ESM library since version 5, and [Jest is still struggling to support ESM](https://jenchan.biz/blog/dissecting-the-hell-jest-setup-esm-typescript-setup/), the `expect` function returned by `cds.test` is a simple emulation of the original Chai `expect` function. It supports the most commonly used Chai APIs, but not all of them. => We recommend to [migrate to Vitest](https://vitest.dev/guide/migration.html#jest), or use Jest's `expect` instead, if you need to stick to Jest.
 
 
 
@@ -318,8 +280,6 @@ await POST('/browse/submitOrder',
 )
 ```
 
-[Learn more about Axios.](https://axios-http.com) {.learn-more}
-
 For single URL arguments, the functions can be used in tagged template string style, which allows omitting the parentheses from function calls:
 
 ```js
@@ -327,6 +287,21 @@ let { data } = await GET('/browse/Books')
 let { data } = await GET `/browse/Books`
 ```
 
+#### Authentication
+
+You can set the _Authentication_ header for individual requests like this:
+
+```js
+await GET('/admin/Books', { auth: { username: 'alice', password: '...' } })
+```
+
+Alternatively, you can set a [`default`](#defaults) user for all requests like this:
+
+```js
+defaults.auth = { username: 'alice', password: '...' }
+```
+
+[Learn how to explicitly configure mock users in your _package.json_ file.](./authentication#mocked){.learn-more}
 
 
 
@@ -344,7 +319,11 @@ await test.post('/browse/submitOrder',
 )
 ```
 
-[Learn more about Axios.](https://axios-http.com) {.learn-more}
+> [!tip] Using Fetch API under the hood
+> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/FetchAPI), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
+
+> [!info] Using Axios instead of Fetch API
+> Former versions of `cds.test` used [Axios](https://axios-http.com/) as the HTTP client. With the move to Fetch API, Axios is no longer included as a dependency in `@cap-js/cds-test`. However, you can still use Axios in your tests if you prefer it over Fetch API. Simply add Axios as a dependency to your project, and it will be used automatically by `cds.test` instead of Fetch API.
 
 
 
@@ -353,15 +332,15 @@ await test.post('/browse/submitOrder',
 This is a bound method, which can be used in a `beforeEach` handler to automatically reset and redeploy the database for each test like so:
 
 ```js
-const { test } = cds.test()
-beforeEach (test.data.reset)
+const { data } = cds.test()
+beforeEach (data.reset)
 ```
 
 Instead of using the bound variant, you can also call this method the standard way:
 
 ```js
 beforeEach (async()=>{
-  await test.data.reset() // [!code focus]
+  await data.reset() // [!code focus]
   //...
 })
 ```
@@ -527,115 +506,207 @@ We recommended to switch on `CDS_TEST_ENV_CHECK` in all your tests to detect suc
 :::
 
 
+## Deprecated APIs
+
+
+### .expect in Jest {.property}
+
+The [`expect`](#expect) function provided by `cds.test` always was the `chai.expect` function preconfigured with the `chai-subset` and `chai-as-promised` plugins, which is still the case when using Vitest, Mocha, or Node's built-in test runner, and recommended to be used across all runners for [portable tests](#runner-agnostic-tests).
+
+However, with the move to latest Chai version 6, which is an ESM library, and the fact that [Jest is still struggling to support ESM](https://jenchan.biz/blog/dissecting-the-hell-jest-setup-esm-typescript-setup/), it's no longer possible to provide the original `chai.expect` function in Jest. Instead, when called within jest runs, `cds.test.expect` provides a simple emulation of the original Chai `expect` function, which supports the most commonly used Chai APIs, **but not all of them!**
+
+> [!tip]
+We recommend to either [migrate to Vitest](https://vitest.dev/guide/migration.html#jest), or use Jest's `expect` instead, if you need to stick to Jest, or simply use the original chai v4 `expect` function by adding `chai@4` as a dependency to your project and importing it directly in your test file like via `const { expect } = requires('chai')` instead of using `cds.test.expect`.
+
+
+### .axios {.property}
+
+Used to provide access to the [Axios](https://github.com/axios/axios) instance used as HTTP client.
+With the move from Axios to Fetch API as the default HTTP client, this property is no longer available. If you want to use Axios in your tests, add it as a dependency to your project, and import it directly in your test file like this:
+
+::: code-group
+```js [ESM]
+import axios from 'axios'
+```
+```js [CommonJS]
+const axios = require('axios')
+```
+:::
+
+
+### .chai {.property}
+
+Used to provide direct access to the Chai library, which cannot be provided any longer with Jest as test runner, as Jest is still struggling to support ESM, and Chai is an ESM library since version 5.
+
+Use [`expect`](#expect) from `cds.test`, if you only need that.
+If you need access to more from the original Chai library, add it as a dependency to your project, and import it directly in your test file like this:
+
+::: code-group
+```js [ESM]
+import chai from 'chai'
+```
+```js [CommonJS]
+const chai = require('chai')
+```
+:::
+
+
+
+### .assert { .property}
+
+Used to provide access to the [`chai.assert()`](https://www.chaijs.com/guide/styles/#assert) function.
+
+  => Use it directly from the Chai library, which you can import [as described above](#chai).
+
+
+
+### .should { .property}
+
+Used to provide access to the [`chai.should()`](https://www.chaijs.com/guide/styles/#should) function.
+
+  => Use it directly from the Chai library, which you can import [as described above](#chai).
+
+
 
 ## Best Practices
-
-### Check Status Codes Last
-
-Avoid checking for single status codes. Instead, simply check the response data:
-
-```js
-const { data, status } = await GET `/catalog/Books`
-expect(status).to.equal(200)   //> DON'T do that upfront // [!code --]
-expect(data).to.equal(...)     //> do this to see what's wrong
-expect(status).to.equal(200)   //> Do it at the end, if at all // [!code ++]
-```
-
-This makes a difference if there are errors: with the status code check, your test aborts with a useless _Expected: 200, received: xxx_ error, while without it, it fails with a richer error that includes a status text.
-
-Note that by default, Axios throws errors for status codes `< 200` and `>= 300`. This can be [configured](https://github.com/axios/axios#handling-errors), though.
-
 
 
 ### Minimal Assumptions
 
-When checking expected errors messages, only check for significant keywords. Don't hardwire the exact error text, as this might change over time, breaking your test unnecessarily.
+In your assertions, only check what's really relevant for the functionality you're testing. Make minimal assumptions about irrelevant details. This way, your tests are more robust against changes in underlying implementations.
 
-**DON'T**{.bad} hardwire on overly specific error messages:
+For example, avoid hardwiring on specific error messages, as these might change without actually breaking the functionality, which would lead to unnecessarily broken tests. Check for guaranteed stable error codes instead, for example:
 
-```js
-await expect(POST(`/catalog/Books`,...)).to.be.rejectedWith(
-  'Entity "CatalogService.Books" is readonly'
-)
-```
-
-**DO**{.good} check for the essential information only:
+**Don't**{.bad} do that:
 
 ```js
-await expect(POST(`/catalog/Books`,...)).to.be.rejectedWith(
-  /readonly/i
-)
+expect (error.message) .to.equal ('Entity "CatalogService.Books" is readonly')
+```
+**Do that**{.good} instead:
+
+```js
+expect (error.code) .to.equal ('READONLY_ENTITY')
 ```
 
-### Keep Test Code Environment Agnostic
 
-Environment setup shouldn't be part of the test code itself. That should be handled by setup scripts like CI/CD pipelines.
-This way, your tests remain isolated and reproducible across different setups.
+### Don't Test Snapshots
 
-::: code-group
-```js [my.test.js]
-// NO service bindings, env. variables, profiles, etc. here
-// Do this outside in setup scripts etc.
-describe(() => { cds.test(...) })
+Same applies to using equal with whole response objects, which might contain additional properties like timestamps, ids, etc., that are not relevant for the test and might change without actually breaking the functionality. Instead, check for essential information only, for example with `containSubset`:
+
+**Don't**{.bad} do that:
+
+```js
+expect (response) .to.deep.equal ({
+  status: 403,
+  data: {
+    error: {
+      code: 'READONLY_ENTITY',
+      message: 'Entity "CatalogService.Books" is readonly',
+      details: { ... }
+    }
+  }
+})
 ```
+
+**Do that**{.good} instead:
+
+```js
+expect (response.data) .to.containSubset ({
+  error: {
+    code: 'READONLY_ENTITY'
+  }
+})
+```
+
+
+### Don't Obscure Errors
+
+A common mistake is to check for HTTP status codes upfront, which frequently obscures the actual error if the status code is different than expected. Instead, check the error response data first, which will give you a richer information in case of failing tests including the error messages and stack traces, and only then check for the status code if at all:
+
+**Don't**{.bad} do that:
+
+```js
+const { data, status } = await GET `/catalog/Books`
+expect(status).to.equal(200)       //> DON'T do that upfront, ... // [!code --]
+expect(data).to.deep.equal({...})  //> as we'd never reach this line
+```
+
+**Do that**{.good} instead:
+
+```js
+const { data, status } = await GET `/catalog/Books`
+expect(data).to.deep.equal({...})  //> Gives rich error information if it fails
+expect(status).to.equal(200)       //> Do that at the end, if at all // [!code ++]
+```
+
+
+Note that by default, Axios throws errors for status codes `< 200` and `>= 300`. This can be [configured](https://github.com/axios/axios#handling-errors), though.
+
+
+### Runner-Agnostic Tests
+
+To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by by `cds.test`.
+
+Whenever you the `@cap-js/cds-test` module is loaded through `cds.test` the following common test functions and hooks are made available in test scope, and guaranteed to work in the same way, regardless of the test runner you're using:
+
+- The [`describe`](https://vitest.dev/api/describe) function for grouping tests
+- The [`test`/`it`](https://vitest.dev/api/test) function for defining test cases
+- The [`beforeAll`](https://vitest.dev/api/hooks#beforeall), [`afterAll`](https://vitest.dev/api/hooks#afterall), [`beforeEach`](https://vitest.dev/api/hooks#beforeeach), [`afterEach`](https://vitest.dev/api/hooks#aftereach) hook functions
+- The [`expect`](#expect) function from `cds.test`, which works across different runners.
+
+::: warning [Ensure to also take note of _Deprecated APIs_](#deprecated-apis)
 :::
 
-[Learn how to setup integration tests with `cds bind`.](../tools/cds-bind#integration-tests){.learn-more}
+If you stick to these common and stable APIs, and avoid using any runner-specific features beyond these, you can easily switch between different test runners without having to change your test code.
+
 
 
 ## Using `cds.test` in REPL
 
-You can use `cds.test` in REPL, for example, by running this from your command line in [*cap/samples*](https://github.com/capire/samples):
+You can use `cds.test` in REPL, for example, by running this from your command line in the root of your CAP project:
 
 ```sh
 [cap/samples] cds repl
-Welcome to cds repl v7.1
+Welcome to cds repl v10.1
 ```
 
 ```js
-> var test = await cds.test('bookshop')
+var { GET, expect } = cds.test()
 ```
+::: code-group
+```log [=> async output...]
+[cds] - model loaded from 5 file(s):
 
-```log
-[cds] - model loaded from 6 file(s):
+  srv/cat-service.cds
+  srv/admin-constraints.cds
+  srv/admin-service.cds
+  db/schema.cds
+  node_modules/@sap/cds/common.cds
 
-  ./bookshop/db/schema.cds
-  ./bookshop/srv/admin-service.cds
-  ./bookshop/srv/cat-service.cds
-  ./bookshop/app/services.cds
-  ./../../cds/common.cds
-  ./common/index.cds
-
-[cds] - connect to db > sqlite { database: ':memory:' }
- > filling sap.capire.bookshop.Authors from ./bookshop/db/data/sap.capire.bookshop-Authors.csv
- > filling sap.capire.bookshop.Books from ./bookshop/db/data/sap.capire.bookshop-Books.csv
- > filling sap.capire.bookshop.Books.texts from ./bookshop/db/data/sap.capire.bookshop-Books_texts.csv
- > filling sap.capire.bookshop.Genres from ./bookshop/db/data/sap.capire.bookshop-Genres.csv
- > filling sap.common.Currencies from ./common/data/sap.common-Currencies.csv
- > filling sap.common.Currencies.texts from ./common/data/sap.common-Currencies_texts.csv
+[cds] - connect to db > sqlite { url: ':memory:' }
+  > init from db/data/sap.capire.bookshop-Genres.csv
+  > init from db/data/sap.capire.bookshop-Books.texts.csv
+  > init from db/data/sap.capire.bookshop-Books.csv
+  > init from db/data/sap.capire.bookshop-Authors.csv
 /> successfully deployed to sqlite in-memory db
 
-[cds] - serving AdminService { at: '/admin', impl: './bookshop/srv/admin-service.js' }
-[cds] - serving CatalogService { at: '/browse', impl: './bookshop/srv/cat-service.js' }
+[cds] - serving AdminService { ... }
+[cds] - serving CatalogService {... }
 
 [cds] - server listening on { url: 'http://localhost:64914' }
 [cds] - launched at 9/8/2021, 5:36:20 PM, in: 767.042ms
 [ terminate with ^C ]
 ```
+:::
 
 ```js
-> await SELECT `title` .from `Books` .where `exists author[name like '%Poe%']`
-[ { title: 'The Raven' }, { title: 'Eleonora' } ]
+var response = await GET `/odata/v4/browse/Books/201`
 ```
 
 ```js
-> var { CatalogService } = cds.services
-> await CatalogService.read `title, author` .from `ListOfBooks`
-[
-  { title: 'Wuthering Heights', author: 'Emily Brontë' },
-  { title: 'Jane Eyre', author: 'Charlotte Brontë' },
-  { title: 'The Raven', author: 'Edgar Allan Poe' },
-  { title: 'Eleonora', author: 'Edgar Allan Poe' },
-  { title: 'Catweazle', author: 'Richard Carpenter' }
-]
+expect (response.status) .to.equal (200)
+```
+
+```js
+expect (response.data) .to.contain ({ title: 'Wuthering Heights' })
 ```
