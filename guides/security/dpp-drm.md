@@ -251,6 +251,11 @@ aspect blocking {
 }
 ```
 
+::: info Current limitations
+1. `ilmLatestDestructionDate` is currently not yet used by the SAP DPI service but will be in the future to support more complex scenarios where the date from when on the data can be deleted and the date till when the data must be deleted differ.
+2. SAP DPI can not yet recalculate blocking dates, meaning if a user configures retention periods for data in SAP DPI, and after a year adjusts the configuration, the blocking date of previously blocked records won't be recalculated.
+:::
+
 This means ILM Objects and Data Subjects will have three additional columns on the database. To support brownfield approaches, you can mark existing fields with the following annotations and the plugin will skip adding the respective fields to the entity.
 
 ```cds
