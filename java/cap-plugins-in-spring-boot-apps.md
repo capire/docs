@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# CAP Java plugins in Brownfields Apps
+# Using BTP Services in Brownfield Apps
 
 <style scoped>
   h1:before {
