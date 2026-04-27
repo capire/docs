@@ -115,7 +115,7 @@ The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odat
 
 1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib` and  rewrite code using CAP Java native APIs
 
-2. Self-repackage and reuse the Olingo modules with `maven-dependency-plugin`
+2. Use the Maven Dependency Plugin `maven-dependency-plugin` for unpacking (extracting contents of dependency) Olingo sources into your code base during the project build 
 
 3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
 
