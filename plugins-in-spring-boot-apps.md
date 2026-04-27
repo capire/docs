@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Using BTP Services in Brownfield Apps
+# Integrate non-CAP Applications
 
 <style scoped>
   h1:before {

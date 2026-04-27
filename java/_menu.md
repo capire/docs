@@ -24,7 +24,6 @@
 # [Multitenancy](multitenancy)
 # [Security](security)
 # [Spring Boot Integration](spring-boot-integration)
-# [BTP services in Brownfield Apps](cap-plugins-in-spring-boot-apps)
 # [Developing Applications](developing-applications/)
   ## [Building](developing-applications/building)
   ## [Running](developing-applications/running)
@@ -38,4 +37,6 @@
 # [Integrating Applications](../../java/integrating-applications/) <!-- INTERNAL -->
   ## [Unified Customer Landscape](../../java/integrating-applications/ucl) <!-- INTERNAL -->
 # [Building Plugins](building-plugins)
+# [Integrating CAP apps](plugins-in-cap-apps)
+# [Integrating non-CAP apps](plugins-in-spring-boot-apps)
 # [Migration Guides](migration)
