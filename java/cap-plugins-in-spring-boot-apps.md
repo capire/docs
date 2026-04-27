@@ -4,7 +4,7 @@ synopsis: >
 status: released
 ---
 
-# Use CAP Plugins in Spring Boot Applications without a CDS Model
+# CAP Java plugins in Brownfields Apps
 
 <style scoped>
   h1:before {
