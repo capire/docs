@@ -309,7 +309,7 @@ An example of a CAP application with OData V4 on Cloud Foundry environment:
 Use the following command line to create a project from scratch with the CDS Maven archetype:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 mvn archetype:generate -DarchetypeArtifactId=cds-services-archetype -DarchetypeGroupId=com.sap.cds -DarchetypeVersion=RELEASE
 ```
 
