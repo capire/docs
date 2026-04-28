@@ -634,7 +634,7 @@ entity Pages {
 :::
 
 ::: code-group
-```sql [=> &nbsp; Generated DDL]
+```sql [=>  Generated DDL]
 …
 ALTER TABLE Pages ADD CONSTRAINT c__Pages_book
   FOREIGN KEY(book_ID) REFERENCES Books(ID)
