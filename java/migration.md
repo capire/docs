@@ -69,6 +69,7 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
+| Maven | 3.9.10 |
 
 <!-- ### Adjusted Property Defaults
 
@@ -111,6 +112,31 @@ Removed deprecated methods:
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
+
+### Changes in the `cds-maven-plugin`
+
+There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+
+#### Minimum Maven Version
+
+For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+
+#### Removed deprecated goal `install-cdsdk`
+
+The goal `install-cdsdk` is deprecated since version 3.6.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
+Further details can be found [here](developing-applications/building#migration-install-cdsdk).
+
+#### Changes in goal `generate`
+
+1. Removed already deprecated properties:
+- eventContext: Interfaces for actions and functions now always extend `EventContext`.
+- cqnService: Typed interfaces are now always generated for application service.
+
+2. Deprecated properties and marked for removal:
+None
+
+3. Changed default value of properties:
+None
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 

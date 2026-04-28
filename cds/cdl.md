@@ -861,7 +861,7 @@ To add or update CDS views without redeploying the database schema, annotate the
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 
-In CAP Java, runtime views are enabled by default, in Node.js enable them via <Config>cds.features.runtime_views: true</Config>.
+In CAP Java, runtime views are enabled by default. Node.js does not support it yet.
 
 [Learn more about runtime views in CAP Java.](../java/working-with-cql/query-execution#runtimeviews) {.learn-more}
 

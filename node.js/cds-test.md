@@ -235,7 +235,7 @@ To stay portable across different HTTP clients, it's recommended to only use the
 - `baseURL` as defined in [Axios](https://axios-http.com/docs/req_config#baseurl)
 - `auth` as defined in [Axios](https://axios-http.com/docs/req_config)
 - `headers` as defined in [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers) and [Axios](https://axios-http.com/docs/req_config#headers)
-- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status < 200 && status >= 300`)
+- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status >= 200 && status < 300`)
 
 In addition, you can use all of the config options understood by the underlying HTTP client, that is, for Fetch API, its [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request) options, and for Axios, its [request config options](https://axios-http.com/docs/req_config) options.
 
