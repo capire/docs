@@ -289,6 +289,10 @@ UPDATE entity OrderView2
     Path expressions navigating *associations* (*header.customer.name*) are [not writable](#cascading-over-associations) by default. To avoid issues on write, annotate them with [@readonly](../../guides/services/constraints#readonly).
     :::
 
+    ::: warning Avoid multi-exposing Elements via Aliases
+  Expose an element only once: either remove the original from the projection or annotate the alias with [@readonly](../../guides/services/constraints#readonly) to avoid write conflicts.
+    :::
+
 ### Delete through Views { #delete-via-view }
 
 The CAP Java runtime attempts to resolve [deletes](./query-api#delete) on CDS views to the underlying persistence entity definitions and the [write through views](#updatable-views) restrictions apply accordingly.
