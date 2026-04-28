@@ -18,7 +18,7 @@ On macOS, Linux and WSL (Windows Subsystem for Linux), we recommend using [Homeb
 ```shell [macOS]
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
 ```
-```shell [Linux / WSL]
+```shell [Linux]
 # install curl (required to get Homebrew) and git (required to run Homebrew)
 sudo apt install curl git -y
 bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install.sh )"
@@ -34,7 +34,7 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 ### Node.js and _cds-dk_ {.required}
 
 ::: code-group
-```shell [macOS / Linux / WSL]
+```shell [macOS/Linux]
 brew install node     # Node.js LTS
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 ```
@@ -59,7 +59,7 @@ sqlite3 -version
 ### Java and Maven {.optional}
 
 ::: code-group
-```shell [macOS / Linux / WSL]
+```shell [macOS/Linux]
 brew install sapmachine-jdk
 brew install maven
 ```
@@ -92,7 +92,7 @@ brew install git       # Git CLI
 brew install gh        # GitHub CLI
 brew install github    # GitHub Desktop App
 ```
-```shell [Linux / WSL]
+```shell [Linux]
 brew install git       # Git CLI
 brew install gh        # GitHub CLI
 
@@ -127,7 +127,7 @@ git -v # display Git cli version
 ```shell [macOS]
 brew install --cask visual-studio-code            # VS Code itself
 ```
-```bash [Linux / WSL]
+```bash [Linux]
 # VS Code on Homebrew is only supported for macOS
 sudo snap install --classic code
 code -v # display VS Code's version
