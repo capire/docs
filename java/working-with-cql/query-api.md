@@ -1638,7 +1638,7 @@ Select.from("bookshop.Authors")
 
 ##### `concat`
 
-See [`Concat`](#concat) String Expression.
+See [`Concat Expression`](#concat-expression).
 
 #### Date/Time functions
 
@@ -1753,7 +1753,7 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
-#### Concat
+#### Concat Expression
 
 The function `concat` creates a string expression to concatenate a specified value to this value.
 
