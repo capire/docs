@@ -1638,7 +1638,7 @@ Select.from("bookshop.Authors")
 
 ##### `concat`
 
-See [`Concat`](#string-expressions) String Expression.
+See [`Concat`](#concat) String Expression.
 
 #### Date/Time functions
 
