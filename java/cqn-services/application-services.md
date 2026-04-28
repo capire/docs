@@ -401,7 +401,7 @@ cds.application.services.CatalogService.serve:
     - 'odata-v2'
 ```
 
-Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations like `@odata` (OData V4), `@odata-v4`, `@odata-v2`, `@mcp`, ...:
+Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations. For example, `@odata` (OData V4), `@odata-v4`, `@odata-v2`, and `@mcp`:
 
 ```cds
 @odata 
@@ -425,7 +425,7 @@ service InternalService {
 ```
 
 :::tip
-Use the property <Config java>cds.protocols.defaults: []</Config> to prevent that a protocol is served accidently.
+Use the property <Config java>cds.protocols.defaults: []</Config> to prevent that a protocol is served accidentally.
 :::
 
 [Learn more about all `cds.application.services.<key>.serve` configuration possibilities.](../developing-applications/properties#cds-application-services-<key>-serve){.learn-more}
