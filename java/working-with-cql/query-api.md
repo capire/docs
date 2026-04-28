@@ -1578,7 +1578,7 @@ Scalar functions are values that are calculated from other values. This calculat
 
 ##### Generic Scalar Function
 
-The method `func`, creates a scalar function call that is executed by the underlying data store. The first argument, being the native query language function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the native query language `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
+The method `func` creates a scalar function call that is executed by the underlying data store. The first argument being the native query language's (CQN) function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the CQN `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
 
 ```java
 import static com.sap.cds.ql.CQL.func;
@@ -1623,7 +1623,7 @@ Select.from(EMPLOYEE).columns(e -> e.name())
 
 ##### `substring`
 
-The `substring` method creates an expression for substring extraction from a string value. Extract a substring from a specified starting position of either a given length or to the end of the string. The first position is zero!
+The `substring` method creates an expression for substring extraction from a string value. Specify the starting position and optionally the length of the substring. Specifying only the starting position gets you all the characters to the end of the string. Note, the first character's position is zero!
 
 ```java
 Select.from("bookshop.Authors")
@@ -1638,7 +1638,7 @@ Select.from("bookshop.Authors")
 
 ##### `concat`
 
-See [`Concat`](#string-expressions) String Expression
+See [`Concat`](#string-expressions) String Expression.
 
 #### Date/Time functions
 
@@ -1665,7 +1665,7 @@ date.extract(ChronoField.DAY_OF_MONTH)
 
 ##### Difference Computation Functions
 
-These methods allow to compute the difference between timestamps:
+These methods allow you to compute the difference between timestamps:
 
 | method | return CDS | return Java | example |
 | --- | --- | --- | --- |
@@ -2052,7 +2052,7 @@ ENDS WITH
 </tbody>
 </table>
 
-##### Regular Exressions (`matchesPattern`) {#matches-pattern}
+##### Regular Expressions (`matchesPattern`) {#matches-pattern}
 
 The `matchesPattern` predicate is applied to a String value and tests if it matches a given regular expression.
 
