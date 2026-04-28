@@ -154,33 +154,25 @@
     })
   }
 
-  // Function to calculate scroll offset (matches VitePress's getScrollOffset)
-  const getScrollOffset = () => {
-    // Check for nav element (VitePress's default header)
-    const nav = document.querySelector('.VPNav')
-    if (nav) {
-      return nav.offsetHeight + 24 // nav height + padding
-    }
-    // Fallback to checking for any fixed header
-    const header = document.querySelector('header')
-    if (header && window.getComputedStyle(header).position === 'fixed') {
-      return header.offsetHeight + 24
-    }
-    return 90 // Default offset if no header found
-  }
+  // VitePress's default scrollOffset (134) accounts for the fixed header
+  // and padding. This must match VitePress's getScrollOffset() to ensure
+  // consistent scroll positions between hash-link clicks and page reloads.
+  const getScrollOffset = () => 134
 
   // Function to scroll to hash (matches VitePress's scrollTo logic)
   const scrollToHash = (hash) => {
-    const target = document.querySelector(hash)
-    if (target) {
-      const targetPadding = parseInt(window.getComputedStyle(target).paddingTop, 10)
-      const targetTop = window.scrollY +
-        target.getBoundingClientRect().top -
-        getScrollOffset() +
-        targetPadding
+    try {
+      const target = document.getElementById(decodeURIComponent(hash).slice(1))
+      if (target) {
+        const targetPadding = parseInt(window.getComputedStyle(target).paddingTop, 10)
+        const targetTop = window.scrollY +
+          target.getBoundingClientRect().top -
+          getScrollOffset() +
+          targetPadding
 
-      window.scrollTo(0, targetTop)
-    }
+        window.scrollTo(0, targetTop)
+      }
+    } catch (e) { /* ignore invalid hash */ }
   }
 
   const applyToAllCodeGroups = () => {
