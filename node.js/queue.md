@@ -114,7 +114,7 @@ The optional parameters are:
 - `maxAttempts` (default `20`): The number of unsuccessful emits until the message is considered unprocessable. The message will remain in the database table!
 - `storeLastError` (default `true`): Specifies whether error information of the last failed emit is stored in the tasks table.
 - `legacyLocking` (default `true`): If set to `false`, database locks are only used to set the status of the message to `processing` to prevent long-kept database locks. Although this is the recommended approach, it is incompatible with task runners still on `@sap/cds^8`.
-- `timeout` (default `"1h"`): The time after which a message with `status === "processing"` is considered to be abandoned and eligable to be processed again. Only for `legacyLocking === false`.
+- `timeout` (default `"1h"`): The time after which a message with `status === "processing"` is considered to be abandoned and eligible to be processed again. Only for `legacyLocking === false`.
 
 :::
 
@@ -126,7 +126,8 @@ therefore also acts as a dead letter queue.
 See [Managing the Dead Letter Queue](#managing-the-dead-letter-queue), to learn about how to handle such messages.
 
 There is only one active message processor per service, tenant, app instance, and message.
-This ensures that no duplicate emits happen, except in the highly unlikely case of an app crash right after successful processing but  before the message could be deleted.
+In a single-instance deployment this ensures that no duplicate emits happen, except in the highly unlikely case of an app crash right after successful processing but before the message could be deleted.
+In multi-instance deployments, database-level locking (enabled via `legacyLocking: false`) is recommended to prevent two instances from picking up the same message concurrently.
 
 ::: tip Unrecoverable errors
 Some errors during the emit are identified as unrecoverable, for example in [SAP Event Mesh](../guides/events/event-mesh) if the used topic is forbidden.
@@ -226,7 +227,7 @@ To manually trigger the message processing, for example if your server is restar
 
 ```js
 const srv = await cds.connect.to('yourService')
-cds.queued(srv).flush()
+await cds.queued(srv).flush()
 ```
 
 #### Task Callbacks
@@ -310,6 +311,9 @@ entity:
 
 ```js
 const db = await cds.connect.to('db')
+// Delete only entries that have exceeded max attempts (dead letters)
+await DELETE.from('cds.outbox.Messages').where({ status: 'failed' })
+// Or delete everything (use with caution in a running system)
 await DELETE.from('cds.outbox.Messages')
 ```
 
