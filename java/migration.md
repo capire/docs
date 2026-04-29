@@ -172,6 +172,7 @@ Some property defaults have been adjusted:
 | `cds.odatav4.searchMode` | "odata-lenient" | "pass-through" | |
 | `cds.outbox.services.<key>.ordered` | true | false | 
 | `cds.persistence.changeset.enforceTransational` | true | false | |
+| `cds.query.restrictions.enabled` | false | true | |
 | `cds.sql.toOnePath.mode` | "always-join" | "optimize" | |
 
 ### Deprecated Properties
