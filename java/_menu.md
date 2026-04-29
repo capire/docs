@@ -37,6 +37,6 @@
 # [Integrating Applications](../../java/integrating-applications/) <!-- INTERNAL -->
   ## [Unified Customer Landscape](../../java/integrating-applications/ucl) <!-- INTERNAL -->
 # [Building Plugins](building-plugins)
-# [Integrating CAP apps](plugins-in-cap-apps)
-# [Integrating non-CAP apps](plugins-in-non-cap-apps)
+# [BTP Services in CAP apps](btp-services-in-cap-apps)
+# [BTP Services in non-CAP apps](btp-services-in-non-cap-apps)
 # [Migration Guides](migration)
