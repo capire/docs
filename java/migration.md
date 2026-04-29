@@ -144,7 +144,7 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 #### Default JDK version
 
-The initial JDK version in a new CAP Java projects has been changed to JDK 25. The minimum required JDK is still 17, this is not changed.
+The default JDK version in a new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is still 17, this has not been changed.
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
