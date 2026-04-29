@@ -1627,7 +1627,7 @@ The `substring` method creates an expression for substring extraction from a str
 
 ```java
 Select.from("bookshop.Authors")
-  .columns(a -> a.get("name").substring(0,2).as("shortname"))
+  .columns(a -> a.get("name").substring(0,2).as("shortname"));
 ```
 In the following example, the `substring` function is applied as part of a predicate to test whether a subset of characters matches a given string.
 
@@ -1754,6 +1754,7 @@ Select.from(BOOKS).columns(
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
 #### Concat Expression
+###### String Expressions
 
 The function `concat` creates a string expression to concatenate a specified value to this value.
 
