@@ -148,8 +148,7 @@ To verify the proper discount application in our example, we can run a `Select` 
 public class CatalogServiceTest {
 
     @Autowired
-    @Qualifier(CatalogService_.CDS_NAME)
-    private CqnService catalogService;
+    private CatalogService catalogService;
 
     @Test
     public void discountApplied() {
@@ -172,8 +171,7 @@ Looking at the `onSubmitOrder` method from our example above we see that it uses
 public class CatalogServiceTest {
 
     @Autowired
-    @Qualifier(CatalogService_.CDS_NAME)
-    private CqnService catalogService;
+    private CatalogService catalogService;
 
     @Test
     public void submitOrder() {
@@ -196,8 +194,7 @@ In the same way you can verify that the `ServiceException` is being thrown when 
 public class CatalogServiceTest {
 
     @Autowired
-    @Qualifier(CatalogService_.CDS_NAME)
-    private CqnService catalogService;
+    private CatalogService catalogService;
 
     @Test
     public void submitOrderExceedingStock() {
@@ -206,7 +203,6 @@ public class CatalogServiceTest {
         // ID of a book known to have a stock quantity of 22
         context.setBook("4a519e61-3c3a-4bd9-ab12-d7e0c5329933");
         context.setQuantity(30);
-        catalogService.emit(context);
 
         assertThrows(ServiceException.class, () -> catalogService.emit(context), context.getQuantity() + " exceeds stock for book");
     }

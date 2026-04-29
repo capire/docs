@@ -48,17 +48,6 @@ With CAP, Service integration is greatly simplified. Consumption of remote servi
      }
    }`
    ```
-
-::: details Requires Cloud SDK libs ...
-
-In case you get respective error messages ensure you've installed the following Cloud SDK packages in your project:
-
-```shell
-npm add @sap-cloud-sdk/connectivity
-npm add @sap-cloud-sdk/http-client
-npm add @sap-cloud-sdk/resilience
-```
-
 :::
 
 The graphic below illustrates what happened here:
@@ -84,7 +73,7 @@ While the above teaser nicely demonstrates the simplicity of CAP-level service i
 ](assets/calesi-overview.drawio.svg)
 
 
-#### 
+####
 
 
 ### The XTravels Sample

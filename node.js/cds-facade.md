@@ -183,7 +183,26 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 ### cds. entities {.property}
 
-Is a shortcut to `cds.model.entities`. Used as a function, you can [specify a namespace](cds-reflect#entities).
+Convenience shortcut to [`cds.model.entities`](cds-reflect#entities).
+Returns an iterable dictionary of entity definitions in the model, which can be used like this:
+
+- Accessing named entities directly:
+```js
+const { Books, Authors } = cds.entities
+//> `Books` and `Authors` are linked CSN definitions of entities
+```
+
+- Iterating _all_ entities in the model:
+```js
+for (let each of cds.entities)
+//> `each` is a linked CSN definition of an entity
+```
+- Iterating entities in a given namespace:
+```js
+for (let each of cds.entities ('sap.capire.bookshop'))
+//> `each` is a linked CSN definition of an entity
+```
+
 
 ### cds. env {.property}
 
@@ -291,7 +310,8 @@ Provides access to common event context properties like `tenant`, `user`, `local
 The effective [CDS model](../cds/csn) loaded during bootstrapping, which contains all service and entity definitions, including required services. Many framework operations use that as a default where models are required. It is loaded in built-in `server.js` like so:
 
 ```js
-cds.model = await cds.load('*')
+const csn = await cds.load('*')
+cds.model = cds.compile.for.nodejs(csn)
 ```
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
@@ -350,8 +370,6 @@ cds.db = await cds.connect.to('db')
 
 
 ## Methods
-
-
 
 ### cds. error() {.method}
 

@@ -12,6 +12,7 @@ moduliths
 nolink
 overlayed
 Reenskaug
+Schlachter
 SusaaS
 SWAPI
 Trygve

@@ -116,7 +116,7 @@ For processing at runtime CDS models are compiled into a *machine-readable* plai
 
 ![cdl-csn.drawio](./assets/concepts/cdl-csn.drawio.svg)
 
-See also *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
+Refer to *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
 
 
 
@@ -441,7 +441,7 @@ All data processed and served by CAP services is *passive*, and represented by *
 
 ### Extensible Data
 
-Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
+Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. With CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
 
 For example, an extension like that can automatically be served by CAP:
 
@@ -756,7 +756,7 @@ The *DatabaseService* subclasses provide implementations for the different datab
 
 
 
-SaaS customers of CAP applications use the very same techniques than any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
+SaaS customers of CAP applications use the very same techniques as any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
 
 ### Extending Models
 

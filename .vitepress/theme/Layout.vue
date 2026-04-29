@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { onMounted } from 'vue'
 import { useData } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import ShortcutsList from './components/ShortcutsList.vue'
@@ -13,6 +14,12 @@ const archiveVersion = import.meta.env.VITE_CAPIRE_VERSION
 const { Layout } = DefaultTheme
 const { frontmatter } = useData()
 
+onMounted(() => {
+  // Enable transitions after hydration to prevent flickering during initial load
+  requestAnimationFrame(() => {
+    document.documentElement.classList.add('transitions-ready')
+  })
+})
 </script>
 
 <template>

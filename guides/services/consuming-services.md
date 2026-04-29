@@ -19,6 +19,8 @@ If you want to use data from other services or you want to split your applicatio
 
 [[toc]]
 
+<ImplVariantsHint />
+
 ## Introduction
 
 If you want to use data from other services or you want to split your application into multiple microservices, you need a connection between those services. We call them **remote services**. As everything in CAP is a service, remote services are modeled the same way as internal services — using CDS.
@@ -101,7 +103,7 @@ The export-import cycle is the way to go for now. It is under investigation to i
 
 ::: code-group
 
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 cds compile srv -s OrdersService -2 edmx > OrdersService.edmx
 ```
 
@@ -748,7 +750,7 @@ service RiskService {
 }
 ```
 
-#### Extend a Remote by a Local Service 
+#### Extend a Remote by a Local Service
 
 You can augment a projection with a new association, if the required fields for the on condition are present in the remote service. The use of managed associations isn't possible, because this requires to create new fields in the remote service.
 <!--Does it matter if it's managed or unmanaged? In other section we say, that you shouldn't make it a managed assoc b/c that would lead to runtime errors. -->
@@ -862,7 +864,7 @@ Otherwise, you need to select the source item using that `where` block and take 
 [See an example how to handle navigations in Java.](https://github.com/SAP-samples/cloud-cap-risk-management/blob/ext-service-s4hc-suppliers-ui-java/srv/src/main/java/com/sap/cap/riskmanagement/handler/RiskServiceHandler.java){.learn-more .java}
 
 ### Limitations and Feature Matrix
-#### Required Implementations for Mashups 
+#### Required Implementations for Mashups
 
 You need additional logic, if remote entities are in the game. The following table shows what is required. "Local" is a database entity or a projection on a database entity.
 
@@ -1025,7 +1027,7 @@ cds:
 :::
 [Learn more about configuring destinations for Java.](../../java/cqn-services/remote-services){.learn-more}
 
-#### Use Application Defined Destinations 
+#### Use Application Defined Destinations
 
 If you don't want to use SAP BTP destinations, you can also define destinations, which means the URL, authentication type, and additional configuration properties, in your application configuration or code.
 
@@ -1062,9 +1064,9 @@ This is an example of a destination using basic authentication:
 }
 ```
 
-[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more} 
+[Learn more about providing project configuration values.](./../../node.js/cds-env#project-specific-configurations){.learn-more}
 
-[See all the supported destination properties.](#destination-properties){.learn-more}  
+[See all the supported destination properties.](#destination-properties){.learn-more}
 
 ::: warning Warning: You should not put any sensitive information here!
 
@@ -1131,7 +1133,7 @@ For the _configuration path_, you **must** use the underscore ("`_`") character 
 
 There is no API to create a destination in Node.js programmatically. However, you can change the properties of a remote service before connecting to it, as shown in the previous example.
 
-##### Configure Application Defined Destinations in Java 
+##### Configure Application Defined Destinations in Java
 
 Destinations are configured in Spring Boot's _application.yaml_ file.
 
@@ -1237,7 +1239,7 @@ cds watch --profile hybrid
 If you are developing in the Business Application Studio and want to connect to an on-premise system, you will need to do so via Business Application Studio's built-in proxy, for which you need to add configuration in an `.env` file. See [Connecting to External Systems From the Business Application Studio](https://sap.github.io/cloud-sdk/docs/js/guides/bas) for more details.
 :::
 
-#### Run a Java Application with a Destination 
+#### Run a Java Application with a Destination
 
 Add a new profile `hybrid` to your _application.yaml_ file that configures the destination for the remote service.
 ::: code-group
@@ -1404,13 +1406,13 @@ cds add xsuaa,destination,connectivity
         service: xsuaa
         service-plan: application
         path: ./xs-security.json
-    
+
     - name: cpapp-destination
       type: org.cloudfoundry.managed-service
       parameters:
         service: destination
         service-plan: lite
-    
+
     # Required for on-premise connectivity only
     - name: cpapp-connectivity
       type: org.cloudfoundry.managed-service
@@ -1650,7 +1652,7 @@ The Node.js runtime supports `odata` as an alias for `odata-v4` as well.
 
 The following properties and authentication types are supported for *[application defined destinations](#use-application-defined-destinations)*:
 
-#### Destination Properties 
+#### Destination Properties
 
 These destination properties are fully supported by both, the Java and the Node.js runtime.
 ::: tip
