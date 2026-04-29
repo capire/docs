@@ -163,14 +163,13 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `cds.changeSet.enforceTransactional` | true | false | |
 | `cds.errors.preferServiceException` | false | true | |
 | `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
 | `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
 | `cds.odatav2.searchMode` | "odata-lenient" | "pass-through" | |
 | `cds.odatav4.searchMode` | "odata-lenient" | "pass-through" | |
 | `cds.outbox.services.<key>.ordered` | true | false | 
-| `cds.persistence.changeset.enforceTransational` | true | false | |
+| `cds.persistence.changeSet.enforceTransational` | true | false | |
 | `cds.query.restrictions.enabled` | false | true | |
 | `cds.sql.toOnePath.mode` | "always-join" | "optimize" | |
 
