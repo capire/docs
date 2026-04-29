@@ -38,5 +38,5 @@
   ## [Unified Customer Landscape](../../java/integrating-applications/ucl) <!-- INTERNAL -->
 # [Building Plugins](building-plugins)
 # [Integrating CAP apps](plugins-in-cap-apps)
-# [Integrating non-CAP apps](plugins-in-spring-boot-apps)
+# [Integrating non-CAP apps](plugins-in-non-cap-apps)
 # [Migration Guides](migration)
