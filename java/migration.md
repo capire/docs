@@ -165,7 +165,6 @@ Some property defaults have been adjusted:
 | --- | --- | --- | --- |
 | `cds.changeSet.enforceTransactional` | true | false | |
 | `cds.errors.preferServiceException` | false | true | |
-| `cds.multiTenancy.mock.enabled` | null | true | |
 | `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
 | `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
 | `cds.odatav2.searchMode` | "odata-lenient" | "pass-through" | |
