@@ -187,23 +187,6 @@ function applyPreference(codeGroup: CodeGroupInfo): void {
   const labels = element.querySelectorAll('.tabs label')
   const blocks = element.querySelectorAll('div[class*="language-"], .vp-block')
 
-  const alreadyCorrect = labels.keys().some(index => {
-    const input = element.querySelector(`.tabs input:nth-of-type(${index + 1})`) as HTMLInputElement
-    const block = blocks[index] as HTMLElement
-
-    if (index === selectedIndex) { // tab active
-      return input?.checked && block?.classList.contains('active')
-    }
-    else { // tab inactive
-      return !input?.checked && !block?.classList.contains('active')
-    }
-  })
-
-  // If everything is already correct, don't touch the DOM at all
-  if (alreadyCorrect) {
-    return
-  }
-
   // Apply the preference
   labels.forEach((label, index) => {
     const tabLabel = (label.textContent || '').trim()
