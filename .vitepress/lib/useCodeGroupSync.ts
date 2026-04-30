@@ -297,9 +297,8 @@ function setupEventListeners(): void {
     const tabLabel = (label.textContent || '').trim()
     if (!tabLabel) return
 
-    // Capture the scroll position of the clicked tab before syncing
+    // Capture the viewport position of the clicked tab before syncing
     const clickedRect = label.getBoundingClientRect()
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
 
     // Sync all code groups with fuzzy matching
     syncTabs(tabLabel)
@@ -311,7 +310,7 @@ function setupEventListeners(): void {
 
       if (scrollDelta !== 0) {
         window.scrollTo({
-          top: scrollTop + scrollDelta,
+          top: (window.pageYOffset || document.documentElement.scrollTop) + scrollDelta,
           behavior: 'instant'
         })
       }
