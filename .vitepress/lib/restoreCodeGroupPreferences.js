@@ -190,19 +190,23 @@
     hashScrollPending = true
   }
 
+  const restoreHashScroll = () => {
+    if (hashScrollPending) {
+      // Restore hash and scroll immediately
+      history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+      // Scroll on next frame to let layout settle
+      requestAnimationFrame(() => {
+        scrollToHash(initialHash)
+        hashScrollPending = false
+      })
+    }
+  }
+
   // Apply immediately to any existing code groups (runs synchronously)
   applyToAllCodeGroups()
 
   // If we have code groups and a hash, restore scroll now
-  if (hashScrollPending && document.querySelectorAll('.vp-code-group').length > 0) {
-    // Restore hash and scroll immediately
-    history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
-    // Scroll on next frame to let layout settle
-    requestAnimationFrame(() => {
-      scrollToHash(initialHash)
-      hashScrollPending = false
-    })
-  }
+  if (document.querySelectorAll('.vp-code-group').length > 0) restoreHashScroll()
 
   // Watch for code groups being added dynamically (SPA navigation, HMR in dev mode)
   const observer = new MutationObserver((mutations) => {
@@ -212,25 +216,15 @@
           if (node.classList?.contains('vp-code-group')) {
             applyToCodeGroup(node)
 
-            // If we have a pending hash scroll and this might be the last code group, try to scroll
-            if (hashScrollPending) {
-              history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
-              requestAnimationFrame(() => {
-                scrollToHash(initialHash)
-                hashScrollPending = false
-              })
-            }
+            // This might be the last code group, try to scroll
+            restoreHashScroll()
           } else if (node.querySelector) {
             const codeGroups = node.querySelectorAll('.vp-code-group')
             codeGroups.forEach(applyToCodeGroup)
 
-            // If we have a pending hash scroll, try to scroll after processing all code groups
-            if (hashScrollPending && codeGroups.length > 0) {
-              history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
-              requestAnimationFrame(() => {
-                scrollToHash(initialHash)
-                hashScrollPending = false
-              })
+            // Try to scroll after processing all code groups
+            if (codeGroups.length > 0) {
+              restoreHashScroll()
             }
           }
         }
@@ -252,13 +246,7 @@
       applyToAllCodeGroups()
 
       // Final attempt to restore hash scroll if still pending
-      if (hashScrollPending && initialHash) {
-        history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
-        requestAnimationFrame(() => {
-          scrollToHash(initialHash)
-          hashScrollPending = false
-        })
-      }
+      restoreHashScroll()
     })
   }
 })()
