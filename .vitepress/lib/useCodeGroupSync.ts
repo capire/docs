@@ -179,15 +179,11 @@ function findCodeGroups(): CodeGroupInfo[] {
 function applyPreference(codeGroup: CodeGroupInfo): void {
   const { element, tabs } = codeGroup
   const selectedTab = getBestTab(tabs)
-  const selectedIndex = tabs.indexOf(selectedTab)
-
-  if (selectedIndex === -1) return
 
   // Find and check the corresponding radio button and activate content
   const labels = element.querySelectorAll('.tabs label')
   const blocks = element.querySelectorAll('div[class*="language-"], .vp-block')
 
-  // Apply the preference
   labels.forEach((label, index) => {
     const tabLabel = (label.textContent || '').trim()
     const input = element.querySelector(`.tabs input:nth-of-type(${index + 1})`) as HTMLInputElement
