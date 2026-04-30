@@ -187,24 +187,15 @@ function applyPreference(codeGroup: CodeGroupInfo): void {
   const labels = element.querySelectorAll('.tabs label')
   const blocks = element.querySelectorAll('div[class*="language-"], .vp-block')
 
-  // Check if ALL tabs and blocks are already in the correct state
-  // This prevents any DOM changes that could affect scroll position
-  let alreadyCorrect = true
-
-  labels.forEach((label, index) => {
+  const alreadyCorrect = labels.keys().some(index => {
     const input = element.querySelector(`.tabs input:nth-of-type(${index + 1})`) as HTMLInputElement
     const block = blocks[index] as HTMLElement
 
-    if (index === selectedIndex) {
-      // This tab should be active
-      if (!input?.checked || !block?.classList.contains('active')) {
-        alreadyCorrect = false
-      }
-    } else {
-      // This tab should be inactive
-      if (input?.checked || block?.classList.contains('active')) {
-        alreadyCorrect = false
-      }
+    if (index === selectedIndex) { // tab active
+      return input?.checked && block?.classList.contains('active')
+    }
+    else { // tab inactive
+      return !input?.checked && !block?.classList.contains('active')
     }
   })
 
