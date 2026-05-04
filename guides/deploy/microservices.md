@@ -156,38 +156,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 
    > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
-::: details Try it out
-
-With that we're basically done with the setup of the collector project. In sum, it's just another CAP project with some cds models in it, which we can handle as usual. We can test whether it all works as expected, for example, we can test-compile and test-deploy it to sqlite and hana, build it, and deploy it to the cloud as usual:
-
-```sh
-cd shared-db
-```
-
-```sh
-cds compile db -2 sql
-```
-```sh
-cds compile db -2 hana
-```
-
-```sh
-cds deploy -2 sqlite
-```
-```sh
-cds build --for hana
-```
-
-```sh
-cd ..
-```
-
-> Note: As we can see in the output for `cds deploy` and `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files.
-:::
-
-::: details Other project structures
-
-The project structure used here is as follows:
+:::tip Project Structure
 
 ```txt
 <PROJECT-ROOT>/
@@ -206,15 +175,27 @@ The `shared-db` module is simply another CAP project, with only database content
 
 :::
 
+::: details Try it out
+
+Run a build like in any other CAP project:
+
+```sh
+cd shared-db
+cds build --for hana
+cd ..
+```
+
+> Note: As we can see in the output for `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files.
+:::
+
+
 ## All-in-one Deployment
 
 This section is about how to deploy all 3+1 projects at once with a common _mta.yaml_.
 
 ![component diagram with synchronous and event communication for orders](./assets/microservices/bookstore.excalidraw.svg)
 
-For Node.js, [@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
-
-For CAP Java, [@capire/samples-java](https://github.com/capire/samples-java#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+The repositories [@capire/samples](https://github.com/capire/samples#readme) for CAP Node.js and [@capire/samples-java](https://github.com/capire/samples-java#readme) for CAP Java already have an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
 ### Deployment Descriptor
 
@@ -268,7 +249,7 @@ build-parameters:
 
 The preceding steps only added configuration to the workspace root.
 
-Additionally add database configuration to each module that we want to deploy - bookstore, orders, and reviews:
+Additionally [add database configuration](../databases/hana#setup-configuration) to each module that we want to deploy - bookstore, orders, and reviews:
 
 ```shell
 npm i @cap-js/hana --workspace bookstore
@@ -278,9 +259,9 @@ npm i @cap-js/hana --workspace reviews
 
 :::
 
-::: details CAP Java: Configure each app for cloud readiness
+::: details Java: Configure each app for cloud readiness
 
-For each project add the **cds-starter-cloudfoundry** [starter bundle](https://cap.cloud.sap/docs/java/developing-applications/building#starter-bundles).
+For each project [add the cds-feature-hana dependency](../databases/hana#setup-configuration) or the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
 
 :::
 
@@ -479,6 +460,11 @@ npm i @sap/xssec --workspace bookstore
 npm i @sap/xssec --workspace orders
 npm i @sap/xssec --workspace reviews
 ```
+:::
+
+::: details Java: Configure each app for cloud readiness
+
+For each project, add the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
 :::
 
 ### Messaging
@@ -689,6 +675,8 @@ modules:
       cds_requires_OrdersService_credentials: {"destination": "orders-dest","path": "/odata/v4/orders"} # [!code ++]
 ```
 ```yaml [Java (bookstore/srv/src/main/resources/application.yaml)]
+spring:
+  config.activate.on-profile: cloud
 cds:
   odataV4.endpoint.path: /
   messaging.services:
@@ -804,10 +792,10 @@ modules:
     type: approuter.nodejs
     ....
     requires:
-      - name: service-api # [!code --]
+      - name: srv-api # [!code --]
         group: destinations  # [!code --]
         properties:  # [!code --]
-          name: service-api  # [!code --]
+          name: srv-api  # [!code --]
           url: ~{srv-url}  # [!code --]
           forwardAuthToken: true  # [!code --]
       - name: orders-api # [!code ++]
