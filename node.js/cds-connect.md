@@ -70,7 +70,8 @@ const { ReviewsService } = cds.services
 
 
 
-## Configuring Required Services {#cds-env-requires }
+## Configuring Required Services 
+###### cds-env-requires
 
 To configure required remote services in Node.js, simply add respective entries to the `cds.requires` sections in your _package.json_ or in _.cdsrc.json_ or _.yaml_. These configurations are constructed as follows:
 

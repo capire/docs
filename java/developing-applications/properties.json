@@ -504,6 +504,18 @@
     },
     {
       "header": true,
+      "name": "cds.protocols",
+      "doc": "Properties for all protocols."
+    },
+    {
+      "header": false,
+      "name": "cds.protocols.defaults",
+      "type": "List<String>",
+      "default": "odata-v2, odata-v4, odata-x4",
+      "doc": "The default protocols each ApplicationService serves, if protocols are not explicitly<br>configured otherwise. The default protocols are \"odata-v2\", \"odata-v4\" and \"odata-x4\". If the<br>defaults are overwritten with an empty list, all ApplicationServices are served by all<br>available protocol adapters."
+    },
+    {
+      "header": true,
       "name": "cds.odataV4",
       "doc": "Properties for the OData V4 protocol adapter."
     },
@@ -680,6 +692,89 @@
       "name": "cds.hcql.endpoint.enabled",
       "type": "boolean",
       "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp",
+      "doc": "Properties for the MCP protocol adapter."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.callPerActionTool",
+      "type": "boolean",
+      "default": "false",
+      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call_action tool."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.toonFormat",
+      "type": "boolean",
+      "default": "true",
+      "doc": "True, if the MCP server should use TOON format for tool output, otherwise JSON."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.maxInputChars",
+      "type": "int",
+      "default": "2000",
+      "doc": "Maximum allowed size of MCP tool input arguments in characters."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.endpoint",
+      "doc": "Properties of the MCP protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.path",
+      "type": "String",
+      "default": "/mcp",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.autoWired",
+      "doc": "Properties for auto-wiring of local MCP clients."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.host",
+      "type": "String",
+      "default": "localhost",
+      "doc": "The MCP server host."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.port",
+      "type": "Integer",
+      "doc": "The MCP server port."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.user",
+      "type": "String",
+      "default": "privileged",
+      "doc": "The mock-user to use."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.password",
+      "type": "String",
+      "doc": "The mock-user's password."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.enabled",
+      "type": "boolean",
+      "default": "false",
       "doc": "Determines, if it is enabled."
     },
     {
@@ -1048,6 +1143,13 @@
       "type": "Duration",
       "default": "PT10S",
       "doc": "The time a health check result is cached and no further health checks are performed."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.healthCheck.timeout",
+      "type": "Duration",
+      "default": "PT1S",
+      "doc": "The timeout for health check requests to the MTX sidecar."
     },
     {
       "header": false,
@@ -1481,6 +1583,12 @@
       "doc": "Determines, if @readonly, @Core.Computed and similar annotations are enforced on draft<br>instances already and therefore no longer during activation."
     },
     {
+      "header": false,
+      "name": "cds.drafts.postActive",
+      "type": "boolean",
+      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined. If not set, defaults to {@code true} when the<br>entity has a draft-new action and to {@code false} otherwise."
+    },
+    {
       "header": true,
       "name": "cds.drafts.gc",
       "doc": "Properties to configure the automatic draft garbage collection."
@@ -1865,6 +1973,31 @@
     {
       "header": false,
       "name": "cds.outbox.persistent.scheduler.allTenantsTask.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask",
+      "doc": "Properties to configure hot tenant management to avoid all tenants iterations."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.sharedOutbox",
+      "type": "String",
+      "doc": "The name of the outbox to be used for hot tenants events."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.maxTaskDelay",
+      "type": "Duration",
+      "default": "PT2H",
+      "doc": "The time to wait after tenant event to check the tenant outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.enabled",
       "type": "boolean",
       "default": "false",
       "doc": "Determines, if it is enabled."

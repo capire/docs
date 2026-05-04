@@ -18,10 +18,10 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 ## General Purpose
 
-| Annotation     | Description | Alternatives       |
-|----------------|-------------|--------------------|
-| `@title`       |             | `Common.Label`     |
-| `@description` |             | `Core.Description` |
+| Annotation     | Description | Alternatives        |
+|----------------|-------------|---------------------|
+| `@title`       |             | `@Common.Label`     |
+| `@description` |             | `@Core.Description` |
 
 
 ## Access Control

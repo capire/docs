@@ -283,7 +283,7 @@ CDL supports line-end, block comments, and *doc* comments as in Java and JavaScr
 /** doc comment */
 ```
 
-#### Doc Comments {#doc-comment}
+#### Doc Comments 
 
 A multi-line comment of the form `/** … */` at an [annotation position](#annotation-targets) is considered a *doc comment*:
 
@@ -861,7 +861,7 @@ To add or update CDS views without redeploying the database schema, annotate the
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 
-In CAP Java, runtime views are enabled by default, in Node.js enable them via <Config>cds.features.runtime_views: true</Config>.
+In CAP Java, runtime views are enabled by default. Node.js does not support it yet.
 
 [Learn more about runtime views in CAP Java.](../java/working-with-cql/query-execution#runtimeviews) {.learn-more}
 
@@ -1236,7 +1236,7 @@ entity Foo @(
 entity Foo { /* elements */ }
 ```
 
-For an `@inner` annotation, only the syntax `@(...)` is available.
+For annotations at the `@inner` position, only the syntax `@(...)` is available.
 
 
 #### Using `annotate` Directives

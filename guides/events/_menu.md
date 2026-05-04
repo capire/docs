@@ -1,5 +1,5 @@
 
-# [CAP-level Messaging](core-concepts)
+# [Core Concepts](core-concepts)
 # [Event Queues](event-queues)
 # [Messaging](messaging)
 # [Apache Kafka](../../../guides/events/apache-kafka) <!-- INTERNAL -->

@@ -38,6 +38,7 @@ function merge (o:any,...xs:any) {
 }
 
 function link(name: Props['name'] = "", kind: Props['kind'], rules?: Props['rules'], files?: Props['files'], packages?: Props['packages'] ): string {
+  // eslint-disable-next-line no-useless-assignment
   let json = {};
   const sources = {} as Record<string, string>;
   if (rules) {
