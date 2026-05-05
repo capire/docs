@@ -60,7 +60,7 @@
         }
         return typeof parsed === 'object' ? parsed : {}
       }
-    } catch (e) {
+    } catch {
       // localStorage might not be available or JSON parse failed
     }
     return {}
@@ -77,7 +77,7 @@
         }
       }
       keysToRemove.forEach(key => localStorage.removeItem(key))
-    } catch (e) {
+    } catch {
       // localStorage might not be available
     }
   }
@@ -154,13 +154,59 @@
     })
   }
 
+  // VitePress's default scrollOffset (134) accounts for the fixed header
+  // and padding. This must match VitePress's getScrollOffset() to ensure
+  // consistent scroll positions between hash-link clicks and page reloads.
+  const getScrollOffset = () => 134
+
+  // Function to scroll to hash (matches VitePress's scrollTo logic)
+  const scrollToHash = (hash) => {
+    try {
+      const target = document.getElementById(decodeURIComponent(hash).slice(1))
+      if (target) {
+        const targetPadding = parseInt(window.getComputedStyle(target).paddingTop, 10)
+        const targetTop = window.scrollY +
+          target.getBoundingClientRect().top -
+          getScrollOffset() +
+          targetPadding
+
+        window.scrollTo(0, targetTop)
+      }
+    } catch { /* ignore invalid hash */ }
+  }
+
   const applyToAllCodeGroups = () => {
     const codeGroups = document.querySelectorAll('.vp-code-group')
     codeGroups.forEach(applyToCodeGroup)
   }
 
+  // Track if we need to restore hash scroll
+  const initialHash = window.location.hash
+  let hashScrollPending = false
+
+  if (initialHash) {
+    // Clear hash to prevent browser's auto-scroll
+    history.replaceState(null, '', window.location.pathname + window.location.search)
+    hashScrollPending = true
+  }
+
+  const restoreHashScroll = () => {
+    if (hashScrollPending) {
+      // Restore hash and scroll immediately
+      history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+      // Scroll on next frame to let layout settle
+      requestAnimationFrame(() => {
+        scrollToHash(initialHash)
+        hashScrollPending = false
+      })
+    }
+  }
+
   // Apply immediately to any existing code groups (runs synchronously)
   applyToAllCodeGroups()
+
+  // If we have code groups and a hash, restore scroll now
+  if (document.querySelectorAll('.vp-code-group').length > 0) restoreHashScroll()
 
   // Watch for code groups being added dynamically (SPA navigation, HMR in dev mode)
   const observer = new MutationObserver((mutations) => {
@@ -169,9 +215,17 @@
         if (node instanceof HTMLElement) {
           if (node.classList?.contains('vp-code-group')) {
             applyToCodeGroup(node)
+
+            // This might be the last code group, try to scroll
+            restoreHashScroll()
           } else if (node.querySelector) {
             const codeGroups = node.querySelectorAll('.vp-code-group')
             codeGroups.forEach(applyToCodeGroup)
+
+            // Try to scroll after processing all code groups
+            if (codeGroups.length > 0) {
+              restoreHashScroll()
+            }
           }
         }
       }
@@ -188,6 +242,11 @@
 
   // Apply again on DOMContentLoaded as safety net
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyToAllCodeGroups)
+    document.addEventListener('DOMContentLoaded', () => {
+      applyToAllCodeGroups()
+
+      // Final attempt to restore hash scroll if still pending
+      restoreHashScroll()
+    })
   }
 })()

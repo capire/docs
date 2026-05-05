@@ -267,8 +267,24 @@ function setupEventListeners(): void {
     const tabLabel = (label.textContent || '').trim()
     if (!tabLabel) return
 
+    // Capture the viewport position of the clicked tab before syncing
+    const clickedRect = label.getBoundingClientRect()
+
     // Sync all code groups with fuzzy matching
     syncTabs(tabLabel)
+
+    // Restore scroll position to keep the clicked tab in view
+    requestAnimationFrame(() => {
+      const newRect = label.getBoundingClientRect()
+      const scrollDelta = newRect.top - clickedRect.top
+
+      if (scrollDelta !== 0) {
+        window.scrollTo({
+          top: (window.pageYOffset || document.documentElement.scrollTop) + scrollDelta,
+          behavior: 'instant'
+        })
+      }
+    })
   })
 }
 
