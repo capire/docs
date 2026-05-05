@@ -81,6 +81,7 @@ for (const dir of baseDirs) {
     const variations = [
       { content: snippet.content, error: null },
       { content: snippetAsMethod(snippet.content), error: null },
+      { content: snippetAsExpression(snippet.content), error: null },
       { content: snippetAsCode(snippet.content), error: null },
     ];
 
@@ -203,6 +204,17 @@ class SnippetCheckerClass {
 ${ indentLines(content.trim(), 4) }
   }
 }
+`;
+}
+
+/**
+ * @param {string} content
+ */
+function snippetAsExpression(content) {
+  return `// Snippet Checker
+Object o =
+${ indentLines(content.trim(), 4) }
+;
 `;
 }
 
