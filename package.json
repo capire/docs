@@ -39,7 +39,7 @@
     "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
     "vite": "^7",
-    "vite-plugin-cds": "^0.3.0",
+    "vite-plugin-cds": "^0.3.1",
     "vitepress": "^1"
   }
 }
