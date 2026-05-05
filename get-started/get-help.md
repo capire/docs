@@ -283,7 +283,7 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
-### Why are tenant HDI containers empty after building app on Windows?
+### How to fix "SqlError: invalid table name: Could not find table/view ..." while building app on Windows
 
 On Windows, cds build --production may silently fail to create resources.tgz in the MTX sidecar build output. 
 The build log will incorrectly report the file as written. 
