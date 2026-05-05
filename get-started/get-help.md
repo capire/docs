@@ -287,13 +287,20 @@ On macOS and Linux, the built-in implementation continues to be used.
 
 On Windows, cds build --production may silently fail to create resources.tgz in the MTX sidecar build output. 
 The build log will incorrectly report the file as written. 
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written. 
+:::
+
+To fix this on Windows, install the tar library:
 
 Install the tar library to fix this:
 
 ```sh
 npm add -D tar
 ```
-On macOS and Linux, the built-in implementation continues to be used.
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
 
 
 
