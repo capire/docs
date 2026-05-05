@@ -60,7 +60,7 @@
         }
         return typeof parsed === 'object' ? parsed : {}
       }
-    } catch (e) {
+    } catch {
       // localStorage might not be available or JSON parse failed
     }
     return {}
@@ -77,7 +77,7 @@
         }
       }
       keysToRemove.forEach(key => localStorage.removeItem(key))
-    } catch (e) {
+    } catch {
       // localStorage might not be available
     }
   }
@@ -172,7 +172,7 @@
 
         window.scrollTo(0, targetTop)
       }
-    } catch (e) { /* ignore invalid hash */ }
+    } catch { /* ignore invalid hash */ }
   }
 
   const applyToAllCodeGroups = () => {
