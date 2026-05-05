@@ -1645,7 +1645,7 @@ Scalar functions are values that are calculated from other values. This calculat
 
 Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
 
-> [!warning] Local MTXS with SQLite
+> [!warning] Not supported with local MTXS on SQLite
 > Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite is not supported.
 
 ##### Computing Vector Embeddings in SAP HANA <Beta />
