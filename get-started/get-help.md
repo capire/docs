@@ -294,8 +294,6 @@ After deployment and subscription, you can then notice the mentioned SqlError or
 
 To fix this on Windows, install the tar library:
 
-Install the tar library to fix this:
-
 ```sh
 npm add -D tar
 ```
