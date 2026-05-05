@@ -18,7 +18,8 @@
   // Note: Combinations like "macOS/Linux" are handled automatically by fuzzy matching
   const TAB_DIMENSIONS = {
     'runtime': ['Node.js', 'Java'],
-    'os': ['macOS', 'Windows', 'Linux']
+    'os': ['macOS', 'Windows', 'Linux'],
+    'cloud-runtime': ['Cloud Foundry', 'Kyma']
   }
 
   // Determine which dimension a tab belongs to (including fuzzy matches)
