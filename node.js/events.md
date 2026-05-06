@@ -348,7 +348,10 @@ For bound custom operations, `req.query` contains the query to the entity on whi
 ### . subject {.property}
 
 Acts as a pointer to the instances targeted by the request.
-For example for the equivalents of inbound requests addressing _single rows_ like these:
+The _target_ of a request is equivalent to the [`source` of a query](../cds/cqn#from).
+That is, additional query options, such as CQL's `.where()` or OData's `$filter`, are not considered.
+
+For example, for the equivalents of inbound requests, addressing _single rows_ like these:
 
 ```js
 AdminService.read(Books,201)
@@ -376,8 +379,16 @@ DELETE.from(req.subject)   //> deletes the single target row
 
 > [!warning] 
 > You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
-> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple row_**.
+> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple rows_**.
 
+The following example further illustrates the difference between request target and additional query options:
+
+```js
+// GET Books/201
+req.subject = { ref: [{ id: 'AdminService.Books', where: [{ ref: ['ID']}, '=', { val: 201 }] }] }
+// GET Books?$filter=ID eq 201
+req.subject = { ref: [{ id: 'AdminService.Books' }] }
+```
 
 
 
