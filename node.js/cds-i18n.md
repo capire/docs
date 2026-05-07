@@ -657,7 +657,7 @@ cds.env.i18n = {
 
 ::: danger
 
-Changing these configurations does not only affect your usage of your i18n bundles, but also all bundles provided by reuse packages you might use, including the ones provided by the CAP framework itself, such as the labels for the `@sap/cds/common` types, or the default messages used by the Node.js runtime.
+Changing these configurations does not only affect your usage of your i18n bundles, but also all bundles provided by reuse packages you might use, including the ones provided by the CAP framework itself, such as the labels for the `@sap/cds/common` types, or the default messages used by the Node.js runtime. It is therefore highly recommended to leave this setting as is and adhere to the default name `_i18n` for your i18n directory.
 
 :::
 
