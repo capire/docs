@@ -652,6 +652,6 @@ When you have a SaaS application, upgrade all your tenants using the [deployer a
 
 ::: warning
 
-[Multitenancy](../multitenancy//index.md) and [extensibility](../extensibility/index.md) aren't yet supported on PostgreSQL.
+[Multitenancy](../multitenancy/index.md) and [extensibility](../extensibility/index.md) aren't yet supported on PostgreSQL.
 
 :::

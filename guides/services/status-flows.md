@@ -2,7 +2,7 @@
 status: released
 ---
 
-# Status-Transition Flows 
+# Status-Transition Flows
 
 
 Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding. – _Status: <Gamma/>_
@@ -49,8 +49,8 @@ annotate TravelService.Travels with @flow.status: Status actions {
 
 In essence we model status flows using three annotations:
 
-- `@flow.status` designates the **status** element for an entity to be flow-controlled. 
-- `@from` and `@to` define valid entry states and target states for **transitions**, 
+- `@flow.status` designates the **status** element for an entity to be flow-controlled.
+- `@from` and `@to` define valid entry states and target states for **transitions**,
   which are implemented by **bound** actions.
 
 
@@ -58,7 +58,7 @@ In essence we model status flows using three annotations:
 
 ### @flow.status: element
 
-Annotation `@flow.status` is an entity-level annotation that identifies the status element for which to establish a status-transition flow. 
+Annotation `@flow.status` is an entity-level annotation that identifies the status element for which to establish a status-transition flow.
 
 This designated status element is expected to be an `enum`, with enum symbols representing the various states of the entity. For example:
 
@@ -91,14 +91,14 @@ entity TravelStatus {
 
 > [!tip] Combine with @readonly and default
 >
-> Consider making the status element `@readonly` to prevent clients from setting or modifying them in unmanaged ways. In addition, a `default` value can be specified for new entries. 
+> Consider making the status element `@readonly` to prevent clients from setting or modifying them in unmanaged ways. In addition, a `default` value can be specified for new entries.
 
 
 
 
 ### @from: entry state
 
-In an entity with a designated `@flow.status` element, add the `@from` annotation to a bound action of that entity to define the valid entry states for that action, either as a single value or an array of values: 
+In an entity with a designated `@flow.status` element, add the `@from` annotation to a bound action of that entity to define the valid entry states for that action, either as a single value or an array of values:
 
 ```cds
 @from: [#Open] action acceptTravel();
@@ -147,7 +147,7 @@ annotate TravelService.Travels with @flow.status: Status actions {
   unblockTravel   @from: #Blocked            @to: $flow.previous;  // [!code highlight]
 }
 ```
-::: 
+:::
 
 [See sample in _@capire/xtravels_.](https://github.com/capire/xtravels/tree/main/xmpls/flow) {.learn-more}
 
@@ -171,7 +171,7 @@ If validation fails, the request returns a `409 Conflict` HTTP status code with 
 
 ### To Fiori UIs
 
-When using SAP Fiori elements, status-transition flows are automatically recognized and supported in the generated UIs. 
+When using SAP Fiori elements, status-transition flows are automatically recognized and supported in the generated UIs.
 
 UI annotations to enable/disable respective buttons and to refresh displayed data are automatically generated for UI5 as shown below:
 

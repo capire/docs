@@ -289,7 +289,7 @@ With `cds bind` you avoid storing credentials on your hard disk. If you need to 
 For example, you can run the App Router from an `approuter` child directory:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 cds bind --exec -- npm start --prefix approuter
 ```
 ```cmd [Windows]
@@ -303,7 +303,7 @@ cds bind --exec '--' npm start --prefix approuter
 This works by constructing a `VCAP_SERVICES` environment variable. You can output the content of this variable as follows:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 cds bind --exec -- node -e 'console.log(process.env.VCAP_SERVICES)'
 ```
 ```cmd [Windows]
