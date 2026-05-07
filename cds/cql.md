@@ -501,11 +501,13 @@ extend Cities with { population : Integer };
 
 With that, the first query (with the `excluding` clause) would automatically include the new `population` element in its result, while the second query would not:
 
+<!-- cds-mode: cql -->
 ```cds
 // yields { name, country, population }
 SELECT from Cities { * } excluding { ID }
 ```
 
+<!-- cds-mode: cql -->
 ```cds
 // yields { name, country }
 SELECT from Cities { name, country}
