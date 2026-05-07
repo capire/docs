@@ -655,7 +655,7 @@ cds.env.i18n = {
 | `cds.i18n.folders`          | An array of (relative) folder names that will be appended to the source directories in a cross-product fashion of the default `cds.model`  when fetching for existing i18n [`folders`](#folders). <br />*Default:* `["_i18n","i18n"]` |
 | `cds.i18n.default_language` | The locale used for [default translations](#defaults). <br />*Default:* `"en"` |
 
-::: danger
+::: danger Do not switch defaults without proper evaluation
 
 Changing these configurations does not only affect your usage of your i18n bundles, but also all bundles provided by reuse packages you might use, including the ones provided by the CAP framework itself, such as the labels for the `@sap/cds/common` types, or the default messages used by the Node.js runtime. It is therefore highly recommended to leave this setting as is and adhere to the default name `_i18n` for your i18n directory.
 
