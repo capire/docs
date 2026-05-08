@@ -8,8 +8,8 @@
  |<em> @sap/cds             </em>|<em> 9.9.1   </em>|<i> .../node_modules/@sap/cds                                            </i>|
  |<em> @sap/cds-compiler    </em>|<em> 6.9.0   </em>|<i> .../node_modules/@sap/cds-compiler                                   </i>|
  |<em> @sap/cds-fiori       </em>|<em> 2.3.0   </em>|<i> .../node_modules/@sap/cds-fiori                                      </i>|
- |<em> @cap-js/db-service   </em>|<em> 2.10.0  </em>|<i> .../node_modules/@cap-js/db-service                                  </i>|
- |<em> @cap-js/sqlite       </em>|<em> 2.2.1   </em>|<i> .../node_modules/@cap-js/sqlite                                      </i>|
+ |<em> @cap-js/db-service   </em>|<em> 2.11.0  </em>|<i> .../node_modules/@cap-js/db-service                                  </i>|
+ |<em> @cap-js/sqlite       </em>|<em> 2.4.0   </em>|<i> .../node_modules/@cap-js/sqlite                                      </i>|
  |<em> cds.home             </em>|<em>         </em>|<i> .../node_modules/@sap/cds                                            </i>|
  |<em> cds.root             </em>|<em>         </em>|<i> .../your-project                                                  </i>|
  |<em> npm root -l          </em>|<em>         </em>|<i> .../node_modules                                                     </i>|
