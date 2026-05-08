@@ -60,10 +60,14 @@ Alternatively, you can compute vector embeddings in your application layer using
 
 :::details Example using SAP Cloud SDK for AI
 ```Java
-var aiClient = OpenAiClient.forModel(OpenAiModel.TEXT_EMBEDDING_3_SMALL);
-var response = aiClient.embedding(
-   new OpenAiEmbeddingRequest(List.of(book.getDescription())));
-book.setEmbedding(CdsVector.of(response.getEmbeddingVectors().get(0)));
+String question = "Are there patterns with overheating solar inverters?";
+var request = OrchestrationEmbeddingRequest
+                .forModel(TEXT_EMBEDDING_3_SMALL)
+                .forInputs(question).asQuery();
+OrchestrationEmbeddingResponse response = client.embed(request);
+float[] embedding = response.getEmbeddingVectors().get(0);
+
+CdsVector vector = CdsVector.of(embedding);
 ```
 :::
 
