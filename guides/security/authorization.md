@@ -589,7 +589,7 @@ Be aware that deep paths might introduce a performance bottleneck. Access Contro
 
 ### Association Paths { #association-paths}
 
-The `where`-condition in a restriction can also contain [CQL path expressions](../../cds/cql#path-expressions) that navigate to elements of associated entities:
+The `where`-condition in a restriction can also contain [CQL path expressions](../../cds/cxl#path-expressions-ref) that navigate to elements of associated entities:
 
 ```cds
 service SalesOrderService @(requires: 'authenticated-user') {

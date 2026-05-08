@@ -241,7 +241,7 @@ For simple [projections](../../cds/cdl#as-projection-on), the generation of SQL 
 Apply the *Interface Segregation Principle*: design multiple simple views, each for a specific use case ([Use Case-Oriented Services](../../guides/services/providing-services#use-case-oriented-services)), rather than one complex view for many scenarios.
 :::
 ::: warning Avoid selecting paths over to-many Associations
-Do not use [path expressions](../../cds/cql#path-expressions-in-all-other-clauses) over [*to-many associations*](../../cds/cdl#to-many-associations) in the select clause of CDS views. This blocks write operations and may cause performance issues due to record duplication on read.
+Do not use [path expressions](../../cds/cxl#path-expressions-ref) over [*to-many associations*](../../cds/cdl#to-many-associations) in the select clause of CDS views. This blocks write operations and may cause performance issues due to record duplication on read.
 :::
 ::: warning Avoid composition definitions in views
 Avoid [defining](../../cds/cql#association-definitions) new *compositions* in CDS views and prefer *associations* instead, as [deep write](#updatable-views) and [cascading delete](#delete-via-view) are only supported for compositions in persistence entities.
@@ -255,7 +255,7 @@ CDS views must fulfill the following requirements to be resolvable:
 
 - The view is a simple [projection](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union*, or *where*.
 - The projection includes all *not null* elements (incl. keys), unless they have a default or generated value.
-- The projection does not include [path expressions](../../cds/cql#path-expressions) using *to-many* associations.
+- The projection does not include [path expressions](../../cds/cxl#path-expressions-ref) using *to-many* associations.
 
 If the runtime cannot resolve a view, the write operation is executed directly on the database view and the execution depends on the [database](../cqn-services/persistence-services#database-support) support.
 
@@ -279,7 +279,7 @@ UPDATE entity OrderView2
 ```
 - Data for elements corresponding to *expressions* and *functions* (*country*) is ignored.
 - [Deep write](./query-execution#deep-insert-upsert) via (aliased) compositions (*lineItems*) is supported if there are corresponding compositions (*items*) in the underlying entity definition. Deep write via compositions that are only defined in the view (for example via [mixins](../../cds/cql#association-definitions)) is not supported and the data is ignored.
-- [Path expressions](../../cds/cql#path-expressions) over compositions *of one* (*header.status*) are writable. For [inserts](./query-api#insert), the view must expose all *not null* elements of the target entity and the data must include values for all of them. In the example above, the order header must have a generated key to support inserting new orders with a value for *headerStatus*.
+- [Path expressions](../../cds/cxl#path-expressions-ref) over compositions *of one* (*header.status*) are writable. For [inserts](./query-api#insert), the view must expose all *not null* elements of the target entity and the data must include values for all of them. In the example above, the order header must have a generated key to support inserting new orders with a value for *headerStatus*.
 
     ::: warning Handling Compositions and Aliased Paths in Projections
     For projections that include *to-one* compositions (*header*) and aliased paths over these compositions (*headerStatus*), write structured data using the composition and make the aliased path [@readonly](../../guides/services/constraints#readonly). Do not use data for the aliased path along with structured data for the composition in the same statement.

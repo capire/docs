@@ -1238,7 +1238,7 @@ await SELECT.from (Bookings) .where`Flight.ID in ${flightIDs}`
 :::
 
 > [!tip] What is 'Navigation'?
-> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
+> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cxl#path-expressions-ref) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
 
 
 ### Expands
