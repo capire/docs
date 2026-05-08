@@ -39,6 +39,15 @@
   const tabsMatch = (tab1, tab2) => {
     if (tab1 === tab2) return true
 
+    // Relaxed matching for labels with additional context,
+    // for example: "mta.yaml (Cloud Foundry)" <-> "Cloud Foundry"
+    const normalized1 = tab1.trim().toLowerCase()
+    const normalized2 = tab2.trim().toLowerCase()
+
+    if (normalized1 && normalized2 && (normalized1.includes(normalized2) || normalized2.includes(normalized1))) {
+      return true
+    }
+
     // Split by "/" to get components
     const components1 = tab1.split('/').map(s => s.trim())
     const components2 = tab2.split('/').map(s => s.trim())
