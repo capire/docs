@@ -1645,6 +1645,10 @@ Scalar functions are values that are calculated from other values. This calculat
 
 Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
 
+::: warning Not supported with local MTXS on SQLite
+Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite isn't supported.
+:::
+
 ##### Computing Vector Embeddings in SAP HANA <Beta />
 
 CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.

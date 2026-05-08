@@ -138,6 +138,25 @@ None
 3. Changed default value of properties:
 None
 
+### Changes in the `cds-services-archetype`
+
+The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CAP Java projects.
+
+#### Default JDK Version
+
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
+
+### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
+
+The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed from the delivery. If the project directly references these modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatibility of the code base:
+
+1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib`, and  rewrite code using CAP Java native APIs.
+
+2. Use `maven-dependency-plugin` to unpack (extract contents of dependency) Olingo sources into your code base during the project build.
+
+3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
+
+
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
 ### New License
