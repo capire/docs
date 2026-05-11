@@ -205,7 +205,7 @@ The following values are supported:
 
 - The `to` property lists all [user roles](cap-users#roles) or [pseudo roles](cap-users#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
-- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
+- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based access control](#instance-based-auth).
 
 A privilege is met, if and only if **all properties are fulfilled** for the current request. In the following example, orders can only be read by an `Auditor` who meets `AuditBy` element of the instance:
 
