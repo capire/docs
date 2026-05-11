@@ -12,6 +12,7 @@
   // - Storage format: { "runtime": "Java", "os": "macOS" }
   // - First entry in each dimension array is the default
 
+  // eslint-disable-next-line no-undef
   __CODE_GROUP_SHARED__
 
   // Clean up old localStorage entries from previous implementation
@@ -32,7 +33,7 @@
 
   cleanupOldEntries()
 
-  const activeTabs = getActiveTabsByDimension()
+  const activeTabs = getActiveTabsByDimension() // eslint-disable-line no-undef
   window.__CODE_GROUP_ACTIVE_TABS__ = activeTabs
 
   const applyToCodeGroup = (element) => {
@@ -43,12 +44,12 @@
 
     if (tabs.length === 0) return
 
-    const selectedTab = getBestTab(tabs, activeTabs)
+    const selectedTab = getBestTab(tabs, activeTabs) // eslint-disable-line no-undef
     const selectedIndex = tabs.indexOf(selectedTab)
 
     if (selectedIndex === -1) return
 
-    setActiveTab(element, selectedIndex)
+    setActiveTab(element, selectedIndex) // eslint-disable-line no-undef
   }
 
   const getScrollOffset = () => 134
