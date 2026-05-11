@@ -11,6 +11,17 @@ import languages from './languages'
 import { Menu } from './menu.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const codeGroupSharedScript = readFileSync(
+  path.resolve(__dirname, './lib/code-groups/shared.js'),
+  'utf-8'
+).replace(/^export\s+/gm, '')
+const codeGroupRestoreScript = readFileSync(
+  path.resolve(__dirname, './lib/code-groups/restoreCodeGroupPreferences.js'),
+  'utf-8'
+).replace(
+  '__CODE_GROUP_SHARED__',
+  codeGroupSharedScript
+)
 
 const config = defineConfig({
 
@@ -83,7 +94,7 @@ const config = defineConfig({
     // Inline script to restore impl-variant selection immediately (before first paint)
     ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`],
     // Inline script to restore code group tab preferences (before Vue hydration)
-    ['script', {}, readFileSync(path.resolve(__dirname, './lib/restoreCodeGroupPreferences.js'), 'utf-8')]
+    ['script', {}, codeGroupRestoreScript]
   ],
 
   vite: {

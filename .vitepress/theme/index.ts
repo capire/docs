@@ -12,7 +12,7 @@ import Since from './components/Since.vue';
 import UnderConstruction from './components/UnderConstruction.vue';
 import CfgInspect from './components/ConfigInspect.vue';
 import TwoslashFloatingVue from '@shikijs/vitepress-twoslash/client'
-import { setupCodeGroupSync, onRouteChange } from '../lib/useCodeGroupSync'
+import { setupCodeGroupSync, onRouteChange } from '../lib/code-groups/useCodeGroupSync'
 
 import '@shikijs/vitepress-twoslash/style.css'
 import './styles.scss'
