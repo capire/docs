@@ -245,7 +245,7 @@ entity Orders @(restrict: [
   ]) {/*...*/}
 ```
 
-Here an `Auditor` user can read all orders with matching `country` or that they have created.
+Here, users can read and write orders they've created, and `Auditor` users can read all orders with matching `country`.
 
 > Annotations such as @requires or @readonly are just convenience shortcuts for @restrict, for example:
    - `@requires: 'Viewer'` is equivalent to `@restrict: [{grant:'*', to: 'Viewer'}]`
