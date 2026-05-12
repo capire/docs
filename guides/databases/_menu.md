@@ -10,3 +10,4 @@
  ## [ PostgreSQL ](postgres.md)
 # [ Schema Evolution ](schema-evolution.md) 
 # [ Performance Guide ](performance.md)
+# [ Vector Embeddings ](vector-embeddings.md)
