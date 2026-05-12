@@ -1,0 +1,267 @@
+name: Hotfix
+
+# ─── Trigger 1: a PR is merged into cap.cloud.sap ───────────────────────────
+# Creates a hotfix branch, bumps the patch version, and opens a draft PR.
+
+# ─── Trigger 2: the "cherry-pick-to-hotfix" label is applied to any PR ──────
+# Cherry-picks the squash-merge commit of that PR into the hotfix branch
+# (only if the PR has already been merged).
+
+on:
+  pull_request:
+    types: [closed, labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 1 – Create hotfix branch + draft PR
+  # Runs when a PR targeting cap.cloud.sap is merged.
+  # ────────────────────────────────────────────────────────────────────────────
+  create-hotfix-branch:
+    name: Create hotfix branch
+    if: >
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'cap.cloud.sap'
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      hotfix_branch: ${{ steps.branch.outputs.hotfix_branch }}
+      new_version:   ${{ steps.version.outputs.new_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cap.cloud.sap
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # ── Determine the new version (YYYY.MM.patch + 1) ────────────────────
+      - name: Compute version and branch name
+        id: version
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          # Split into parts and increment patch
+          IFS='.' read -r YEAR MONTH PATCH <<< "$CURRENT"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${YEAR}.${MONTH}.${NEW_PATCH}"
+          echo "current_version=$CURRENT" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Derive hotfix branch name
+        id: branch
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          BRANCH="hotfix/${VERSION}"
+          echo "hotfix_branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      # ── Create the branch from cap.cloud.sap HEAD ────────────────────────
+      - name: Create hotfix branch
+        run: |
+          git checkout -b "${{ steps.branch.outputs.hotfix_branch }}"
+
+      # ── Bump version in package.json and package-lock.json ───────────────
+      - name: Bump version in package.json
+        run: |
+          NEW="${{ steps.version.outputs.new_version }}"
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${NEW}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+      - name: Bump version in package-lock.json
+        run: |
+          NEW="${{ steps.version.outputs.new_version }}"
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+            lock.version = '${NEW}';
+            if (lock.packages && lock.packages['']) {
+              lock.packages[''].version = '${NEW}';
+            }
+            fs.writeFileSync('package-lock.json', JSON.stringify(lock, null, 2) + '\n');
+          "
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }} for hotfix"
+
+      - name: Push hotfix branch
+        run: git push origin "${{ steps.branch.outputs.hotfix_branch }}"
+
+      # ── Open a draft PR ───────────────────────────────────────────────────
+      - name: Create draft PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branch       = '${{ steps.branch.outputs.hotfix_branch }}';
+            const version      = '${{ steps.version.outputs.new_version }}';
+            const triggerPR    = context.payload.pull_request.number;
+            const triggerTitle = context.payload.pull_request.title;
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `Hotfix ${version}`,
+              head:  branch,
+              base:  'cap.cloud.sap',
+              draft: true,
+              body: [
+                `## Hotfix ${version}`,
+                '',
+                `This hotfix branch was automatically created after PR #${triggerPR} ("${triggerTitle}") was merged into \`cap.cloud.sap\`.`,
+                '',
+                '### Included changes',
+                '- [ ] Verify cherry-picked commits below',
+                '',
+                '### Checklist',
+                '- [ ] All cherry-picks applied cleanly',
+                '- [ ] Version bump is correct',
+                '- [ ] Ready for release',
+              ].join('\n'),
+            });
+
+            core.info(`Draft PR created: ${pr.html_url}`);
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # JOB 2 – Cherry-pick a squash commit into the hotfix branch
+  # Runs when the "cherry-pick-to-hotfix" label is applied to a *merged* PR.
+  # ────────────────────────────────────────────────────────────────────────────
+  cherry-pick-to-hotfix:
+    name: Cherry-pick to hotfix
+    if: >
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'cherry-pick-to-hotfix' &&
+      github.event.pull_request.merged == true
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # ── Find the latest hotfix/* branch ──────────────────────────────────
+      - name: Resolve hotfix branch
+        id: resolve
+        run: |
+          # Find the most recently created hotfix/* branch
+          HOTFIX_BRANCH=$(git branch -r --sort=-creatordate \
+            | grep 'origin/hotfix/' \
+            | head -n1 \
+            | sed 's|origin/||' \
+            | xargs)
+          if [ -z "$HOTFIX_BRANCH" ]; then
+            echo "::error::No hotfix/* branch found. Create a hotfix branch first."
+            exit 1
+          fi
+          echo "hotfix_branch=$HOTFIX_BRANCH" >> $GITHUB_OUTPUT
+          echo "Targeting branch: $HOTFIX_BRANCH"
+
+      # ── Get the squash-merge commit SHA ──────────────────────────────────
+      # When a PR is squash-merged, GitHub records the merge_commit_sha on the PR.
+      - name: Get squash commit SHA
+        id: sha
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner:       context.repo.owner,
+              repo:        context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+
+            if (!pr.merged_at) {
+              core.setFailed('PR is not yet merged. Cherry-pick cannot proceed.');
+              return;
+            }
+
+            const sha = pr.merge_commit_sha;
+            core.info(`Squash commit SHA: ${sha}`);
+            core.setOutput('sha', sha);
+
+      # ── Cherry-pick ───────────────────────────────────────────────────────
+      - name: Cherry-pick onto hotfix branch
+        id: cherrypick
+        run: |
+          BRANCH="${{ steps.resolve.outputs.hotfix_branch }}"
+          SHA="${{ steps.sha.outputs.sha }}"
+
+          git fetch origin
+          git checkout "$BRANCH"
+
+          if git cherry-pick -x "$SHA"; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            # Abort and report so a human can handle it manually
+            git cherry-pick --abort || true
+            echo "status=conflict" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push cherry-pick
+        if: steps.cherrypick.outputs.status == 'success'
+        run: git push origin "${{ steps.resolve.outputs.hotfix_branch }}"
+
+      # ── Post a comment back on the original PR ────────────────────────────
+      - name: Comment on PR (success)
+        if: steps.cherrypick.outputs.status == 'success'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `✅ Commit \`${{ steps.sha.outputs.sha }}\` was successfully cherry-picked onto \`${{ steps.resolve.outputs.hotfix_branch }}\`.`,
+            });
+
+      - name: Comment on PR (conflict)
+        if: steps.cherrypick.outputs.status == 'conflict'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: [
+                '⚠️ **Cherry-pick conflict detected.**',
+                '',
+                `Could not automatically cherry-pick commit \`${{ steps.sha.outputs.sha }}\` onto \`${{ steps.resolve.outputs.hotfix_branch }}\`.`,
+                '',
+                'Please resolve the conflict manually:',
+                '```bash',
+                'git fetch origin',
+                `git checkout ${{ steps.resolve.outputs.hotfix_branch }}`,
+                `git cherry-pick -x ${{ steps.sha.outputs.sha }}`,
+                '# … resolve conflicts …',
+                'git cherry-pick --continue',
+                `git push origin ${{ steps.resolve.outputs.hotfix_branch }}`,
+                '```',
+              ].join('\n'),
+            });
+
+      - name: Fail job on conflict
+        if: steps.cherrypick.outputs.status == 'conflict'
+        run: exit 1
