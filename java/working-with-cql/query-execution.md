@@ -17,12 +17,12 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 [CDS Query Language (CQL)](./query-api) statements can be executed using the `run` method of any [service that accepts CQN queries](../cqn-services/#cdsservices):
 
 ```java
-CqnService service = ...
+PersistenceService service = ...
 
-CqnSelect query = Select.from("bookshop.Books")
-    .columns("title", "price");
+var query = Select.from(Books_.class)
+    .columns(b -> b.title(), b -> b.price());
 
-Result result = service.run(query);
+CdsResult<Books> result = service.run(query);
 ```
 
 
@@ -699,6 +699,10 @@ var select = Select.from(BOOKS).byId(4711); // use var or Select<Books_>
 CdsResult<Books> result = service.run(select);
 Books book = result.single();
 ```
+
+::: warning
+`CdsResult<T>` (returned by typed queries like `Select.from(BOOKS)`) and `Result` (returned by untyped queries like `Select.from("my.Books")`) are not interchangeable types. Do not assign a typed query result to a `Result` variable — it will not compile.
+:::
 
 ::: tip
 Avoid using `CqnSelect` or `CqnUpdate` for typed query declarations, but prefer `var` to allow the Java compiler to retain the entity query type, linking to the data accessor interface: `var result = service.run(select);`

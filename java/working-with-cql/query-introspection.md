@@ -83,6 +83,15 @@ CdsModel cdsModel = context.getModel();
 CqnAnalyzer cqnAnalyzer = CqnAnalyzer.create(cdsModel);
 ```
 
+::: tip Extracting keys from references
+`CqnReference.Segment` only provides `id()` and `filter()` — it has no `keys()` method. To extract key values (e.g. from a bound action context), always use `CqnAnalyzer`:
+
+```java
+AnalysisResult result = cqnAnalyzer.analyze(context.getCqn());
+String id = (String) result.targetKeys().get("ID");
+```
+:::
+
 Furthermore, the static `isCountQuery(cqn)` method can be used to check if a [CQL](../../cds/cql) query only returns a single count:
 
 ```java

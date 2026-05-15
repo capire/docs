@@ -210,7 +210,7 @@ import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.ServiceName;
 
 @Component
-@ServiceName("AdminService")
+@ServiceName(AdminService_.CDS_NAME)
 public class AdminServiceHandler implements EventHandler {
   // ...
 }
@@ -230,7 +230,7 @@ It is possible to specify multiple service names. Event handlers are registered 
 
 <!-- java-mode: ignore, no annotation target -->
 ```java
-@ServiceName({"AdminService", "CatalogService"})
+@ServiceName({AdminService_.CDS_NAME, CatalogService_.CDS_NAME})
 ```
 
 The `type` attribute of the `@ServiceName` annotation can be used to register event handlers on all services of a certain type:
@@ -257,19 +257,19 @@ Each of these annotations can define the following attributes:
   It's optional, if the entity can be inferred through a [POJO-based argument](#pojoarguments) in the handler signature. If no value is specified or can be inferred, it defaults to `*`.
 
 ::: tip
-The interfaces of different service types provide String constants for the events they support (see for example the [CqnService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/CqnService.html)).
+Use [`CqnService`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/cds/CqnService.html) for event constants (`CqnService.EVENT_READ`, `CqnService.EVENT_CREATE`, etc.). Different service types provide String constants for the events they support ([`DraftService`](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/draft/DraftService.html)).
 The CAP Java SDK Maven Plugin generates interfaces for entities in the CDS model, which provide String constants with their fully qualified name.
 It is recommended to use these constants with the `event` or `entity` attributes of the annotations.
 :::
 
 <!-- java-mode: ignore, no annotation target -->
 ```java
-// registers on multiple events
-@Before(event = { "CREATE", "UPDATE" }, entity = "AdminService.Books")
+// registers on multiple events (for example "CREATE", "UPDATE")
+@Before(event = { CqnService.EVENT_CREATE, CqnService.EVENT_UPDATE }, entity = Books_.class)
 
 // overrides the default service on class-level
 // registers on any entity
-@On(service = "CatalogService", event = "READ")
+@On(service = CatalogService_.class, event = CqnService.EVENT_READ)
 
 // usage of String constants is recommended
 @After(event = CqnService.EVENT_READ, entity = Books_.CDS_NAME)

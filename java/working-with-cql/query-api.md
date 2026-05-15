@@ -1221,11 +1221,11 @@ If key values are not contained in the data and no filter (`where`, `byId`, `mat
 The [data](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/Update.html#data(java.util.Map)), [entry](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/Update.html#entry(java.util.Map)), and  [entries](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/Update.html#entries(java.lang.Iterable)) methods allow to specify the new values as plain Java values. In addition/alternatively you can use the `set` method to specify the new [value](#values) as a [CqnValue](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnValue.html), which can even be an [arithmetic expression](#arithmetic-expressions). This allows, for example, to decrease the stock of Book 101 by 1:
 
 ```java
-// dynamic
-Update.entity(BOOKS).byId(101).set("stock", CQL.get("stock").minus(1));
+// typed
+Update.entity(Books_.class).byId(101).set(b -> b.stock(), s -> s.minus(1));
 
-// static
-Update.entity(BOOKS).byId(101).set(b -> b.stock(), s -> s.minus(1));
+// untyped
+Update.entity(BOOKS).byId(101).set("stock", CQL.get("stock").minus(1));
 ```
 
 You can also combine update data with expressions:
@@ -1235,6 +1235,22 @@ Update.entity(BOOKS).where(b -> b.stock().eq(0))
    .data("available", true)
    .set(b -> b.stock(), s -> s.plus(CQL.param("addStock")));
 ```
+
+::: warning Avoid Read-Modify-Write
+Never read a value, compute a new value in Java, then write it back — concurrent requests can read the same stale value and lose updates. Use `.set()` with expressions to push arithmetic to the database as a single atomic SQL statement:
+
+```java
+// WRONG — race condition: concurrent requests both read stock=10, both write 9
+CdsResult<Books> books = db.run(Select.from(BOOKS).byId(bookId));
+int newStock = books.single().getStock() - quantity;
+db.run(Update.entity(BOOKS).byId(bookId).data("stock", newStock));
+
+// CORRECT — atomic decrement as single SQL: SET stock = stock - ?
+db.run(Update.entity(BOOKS).byId(bookId).set(b -> b.stock(), s -> s.minus(quantity)));
+```
+
+This pattern applies to any read-modify-write cycle: counters, stock levels, balances, sequence numbers.
+:::
 
 ### Deep Update { #deep-update}
 
