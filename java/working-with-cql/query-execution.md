@@ -111,7 +111,9 @@ To query `BooksView` in Java, run a select statement and provide values for all 
 
 ```java
 CqnSelect query = Select.from("BooksView");
-var params = Map.of("minStock", 100);
+
+Map<String, Object> paramValues = new HashMap<>();
+paramValues.put("minStock", 100);
 
 Result result = service.run(query, params);
 ```
