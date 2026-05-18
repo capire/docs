@@ -34,7 +34,6 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npm test
       - run: npm run lint
       - run: npm run docs:build
         env:
@@ -44,6 +43,7 @@ jobs:
           VITE_CAPIRE_EXTRA_ASSETS: true
           MAVEN_HOST: https://common.repositories.cloud.sap/artifactory/build.releases
           MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+      - run: npm test
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
