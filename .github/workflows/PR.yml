@@ -33,6 +33,6 @@ jobs:
           npm install
           npm run check
       - run: npm ci
-      - run: npm test
       - run: npm run docs:build
+      - run: npm test
       - run: npm run lint
