@@ -321,7 +321,7 @@ Share the generic App-Router URL with SaaS consumers for logging in as extension
 :::
 
 ::: tip No index page and SAP Fiori preview in the cloud
-The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
+The default index page and [SAP Fiori preview](../uis/fiori#fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
 :::
 
 ### Inspect Apps in BTP Cockpit

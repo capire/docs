@@ -13,6 +13,7 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 ## Getting Started
 
 ### Using Fiori Previews
+###### Fiori Preview
 
 For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
@@ -240,6 +241,7 @@ With that, all UIs on all services exposing `Books` will automatically receive V
 
 
 ## Fiori Draft Support
+###### Draft Support
 
 SAP Fiori uses Drafts to enable users to save their progress while editing data and continue later on without losing changes. Drafts are stored on the server and can be accessed from different devices and locations, providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
@@ -409,6 +411,7 @@ this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
 
 
 ### Draft Input Validation
+###### Validating Drafts
 
 During draft phase, i.e., on `PATCH` requests to draft data, all [`@assert`s](../services/constraints) are validated, and respective error messages are returned to the client. Yet, in contrast to active entities, the draft is still created/updated, even with invalid data, so that users can correct it later on without losing their progress.
 
