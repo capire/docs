@@ -38,8 +38,6 @@ jobs:
           cache-dependency-path: docs/package-lock.json
       - run: npm ci
         working-directory: docs
-      - run: npm test
-        working-directory: docs
       - run: npm run lint
         working-directory: docs
       - run: npm run docs:build
@@ -50,9 +48,5 @@ jobs:
           VITE_CAPIRE_EXTRA_ASSETS: true
           MAVEN_HOST: https://common.repositories.cloud.sap/artifactory/build.releases
           MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
-      - name: Find broken anchor links
+      - run: npm test
         working-directory: docs
-        run: |
-          npm run docs:preview -- --port 5555 &
-          sleep 2
-          .github/etc/blc.js http://localhost:5555/docs/

@@ -134,7 +134,7 @@ config.themeConfig.capire = {
   versions: {
     java_services: '4.9.0',
     java_cds4j: '4.9.0',
-    cloud_sec_ams: '3.8.0'
+    cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
   siteURL
