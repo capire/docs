@@ -217,9 +217,15 @@ The [delete](./query-api) operation is cascaded along the entity's compositions.
 The following example deletes the order with ID *1000* including all its items:
 
 ```java
-CqnDelete delete = Delete.from("bookshop.Orders").matching(singletonMap("OrderNo", 1000));
-long deleteCount = service.run(delete).rowCount();
+long deleteCount = service.run(Delete.from("bookshop.Orders").byId(1000)).rowCount();
 ```
+
+::: tip
+To disable cascade delete for a specific Delete statement, add a hint(#hana-hints):
+```Java
+Delete.from("bookshop.Orders").byId(1000).hint("cascade.delete", false);
+```
+:::
 
 ## Views and Projections { #views }
 
