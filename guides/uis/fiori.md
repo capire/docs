@@ -46,7 +46,7 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 
 ### OData Annotations Plugin
 
-The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds) includes a plugin. It helps you adding and editing OData annotations in CDS syntax in VS Code by providing the following features:
+The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds) includes a plugin that helps you adding and editing OData annotations in CDS syntax in VS Code. It provides the following features:
 
 -   Code completion
 -   Validation against the OData vocabularies and project metadata
@@ -264,7 +264,7 @@ entity TravelService.Travels.drafts : TravelService.Travels { ... }
 ```
 :::
 
-We can access the definition of this entity from the model at runtime to, for example, add custom handlers to draft events, or to access draft data in our code. For example, from within a service implementation in CAP Node.js, we can use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
+We can access the definition of this entity from the model at runtime, for example, to add custom handlers to draft events, or to access draft data in our code. For example, from within a service implementation in CAP Node.js, we can use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
 
 ```js
 const { Travels } = this.entities
@@ -281,11 +281,11 @@ With [`@odata.draft.enabled`](#draft-enabled-entities) entities in place, CAP au
 
 In essence, the draft choreography defines the following flows:
 
-- creating drafts for **new** active entities, or for **editing** existing ones
-- filling in draft data through a series of _PATCH_ events
-- **saving** the draft back to the active entity, or **discarding** it
+- Creating drafts for **new** active entities, or for **editing** existing ones.
+- Filling in draft data through a series of _PATCH_ events.
+- **Saving** the draft back to the active entity, or **discarding** it.
 
-Drafts are isolated from any active data until they are saved/activated, when discarded, they are removed, as if they never existed – with draft locks as the only exception, to prevent conflicting changes.
+Drafts are isolated from any active data until they are saved/activated. When drafts are discarded, they are removed as if they never existed – with draft locks as the only exception to prevent conflicting changes.
 
 
 ### Draft Locks
@@ -304,7 +304,7 @@ Draft locks are not applied when creating drafts for new entities, as there is n
 
 The HTTP requests sent from Fiori clients that deal with drafts are as follows:
 
-```php:line-numbers [Requests to <i>draft</i> data]
+```http+:line-numbers [Requests to <i>draft</i> data]
 POST   /Foo/draftNew                                //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
@@ -343,9 +343,9 @@ Content-Type: application/json
 
 ### Requests to Active Data
 
-Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts, for example:
+Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts (draft locks still apply), for example:
 
-```php:line-numbers [Requests to <i>active</i> data]
+```http+:line-numbers [Requests to <i>active</i> data]
 POST   /Books { IsActiveEntity:true, ... }       //> CREATE
 PATCH  /Books(ID=201,IsActiveEntity=true) {...}  //> UPDATE
 DELETE /Books(ID=201,IsActiveEntity=true)        //> DELETE
@@ -356,11 +356,15 @@ GET    /Books(ID=201,IsActiveEntity=true)        //> READ
 While this was always possible in CAP Java before, it's available for CAP Node.js in the same way by default since v10. Can be disabled with <Config>cds.fiori.bypass_draft: false</Config>, which prevents bypassing the draft flow for _CREATE_ and _UPDATE_ operations entirely.
 :::
 
+> [!tip] Draft locks still apply
+> Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
+> If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
+
 #### Draft-agnostic Requests
 
 Going one step further, we assume `IsActiveEntity=true` by default, so that clients which don't know anything about drafts, or don't want to deal with them, can simply ignore any draft-specific requests and parameters:
 
-```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
+```http+:line-numbers [Draft-agnostic requests to <i>active</i> data]
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
@@ -374,9 +378,6 @@ Doing so was possible in CAP Node.js, but not in CAP Java, as we are (still) bou
 [Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
 :::
 
-> [!tip] Draft locks still apply
-> Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
-> If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
 
 
 ### Programmatic Access
@@ -400,7 +401,7 @@ SELECT.from (Foo, 201)          // reads active data only
 SELECT.from (Foo.drafts, 201)  // reads draft data, if exists
 ```
 
-Or even better, prefer using [`req.subject`](../../node.js/events#subject) which automatically resolves to the correct entity instance, active or draft, based on the current request context. For example, in a custom action handlers, that should be triggered for both active and draft data:
+Or even better, prefer using [`req.subject`](../../node.js/events#subject) which automatically resolves to the correct entity instance, active or draft, based on the current request context. For example, in a custom action handlers that should be triggered for both active and draft data:
 
 ```js
 this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
@@ -410,7 +411,7 @@ this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
 
 ### Draft Input Validation
 
-During draft phase, i.e., on `PATCH` requests to draft data, all [`@assert`s](../services/constraints) are validated, and respective error messages are returned to the client. Yet, in contrast to active entities, the draft is still created/updated, even with invalid data, so that users can correct it later on without losing their progress.
+During draft phase, that is on `PATCH` requests to draft data, all [`@assert`s](../services/constraints) are validated, and respective error messages are returned to the client. Yet, in contrast to active entities, the draft is still created/updated, even with invalid data, so that users can correct it later on without losing their progress.
 
 #### Custom Handlers for Draft Events
 
@@ -476,7 +477,7 @@ annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
 ```
 
 :::info Background
-SAP Fiori drafts required single keys of type `UUID`, which isn't the case case for [`.texts`](./localized-data#behind-the-scenes) entities, generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
+SAP Fiori drafts require single keys of type `UUID`, which isn't the case case for [`.texts`](./localized-data#behind-the-scenes) entities, that are generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
 :::
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
@@ -613,7 +614,7 @@ The `max-age` is the elapsed time since the response was generated on the origin
 Cache Control feature is currently supported on the Java runtime only.
 :::
 
-
+<!-- Do we have an example for that in our samples? -->
 
 ## Role-based Visibility
 
