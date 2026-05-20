@@ -529,6 +529,10 @@ Add a Maven dependency to Liquibase in `srv/pom.xml`:
 </dependency>
 ```
 
+::: tip Liquibase license change
+Please be aware that Liquibase [changed it's license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
+:::
+
 Once `liquibase-core` is on the classpath, [Spring runs database migrations](https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.data-initialization.migration-tool.liquibase) automatically on application startup and before your tests run.
 
 ### ① Initial Schema Version
@@ -648,6 +652,6 @@ When you have a SaaS application, upgrade all your tenants using the [deployer a
 
 ::: warning
 
-[Multitenancy](../multitenancy//index.md) and [extensibility](../extensibility/index.md) aren't yet supported on PostgreSQL.
+[Multitenancy](../multitenancy/index.md) and [extensibility](../extensibility/index.md) aren't yet supported on PostgreSQL.
 
 :::

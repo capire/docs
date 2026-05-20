@@ -32,7 +32,7 @@ Here's a very rough comparison from a real world example:
 
 ### The XTravels Sample
 
-We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
+We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as described in the [_CAP-level Service Integration_](calesi.md) guide. If you haven't done so already, clone the required repositories to follow along:
 
 ```sh :line-numbers
 mkdir -p cap/samples
@@ -40,17 +40,30 @@ cd cap/samples
 git clone https://github.com/capire/xtravels 
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
-echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
-npm install
 ```
 
 [@capire/xtravels]: https://github.com/capire/xtravels
 [@capire/xflights]: https://github.com/capire/xflights
 [@capire/s4]: https://github.com/capire/s4
 
+```sh :line-numbers=6
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
+```
+
 > [!note]
 >
 > Line 6 above turns the `cap/samples` folder into a root for `npm workspaces`. For the time being this simply optimizes the `npm install`. We'll revisit that in chapter [*Using `npm` Workspaces*](#using-npm-workspaces) below. 
+
+#### Activate Generic Data Federation
+
+In addition, activate generic data federation as described in the [_CAP-level Data Federation_](data-federation.md) guide, by editing `xtravels/srv/server.js` file and uncommenting the single line of code in there like this:
+
+::: code-group
+```js [xtravels/srv/server.js]
+process.env.NODE_ENV || require ('./data-federation')
+```
+:::
 
 
 
@@ -166,12 +179,12 @@ For Java, make sure to add the `--with-mocks` option to the `cds deploy` command
 
 ## Run with Real Services 
 
-Instead of mocking required services by the imported APIs [using `cds mock` as shown above](#cds-mock), we can also run the real *xflights* service from its respective home folder which we [cloned already in the beginning](#the-xtravels-sample). We can combine that with `s4` still mocked from the imported API, as above.
+Instead of mocking required services by the imported APIs [using `cds mock` as shown above](#cds-mock), we can also run the real *xflights* and *s4* services from their respective home folders which we [cloned already in the beginning](#the-xtravels-sample). 
 
 Do so by running the following commands from within the `cap/samples` root folder in separate terminals, and in that order:
 
 ```shell :line-numbers=1
-cd xtravels; cds mock apis/capire/s4.cds
+cds watch s4
 ```
 ```shell :line-numbers=2
 cds watch xflights
@@ -200,10 +213,10 @@ In the log output of the xtravels server we should see that it _connects_ to the
 
 We can use `cds repl` to experiment the options to send requests and queries to remote services interactively. Do so as follows...
 
-From within the xtravels project's root folder `cap/samples/xtravels`, start by mocking the remote services in separate terminals, then start xtravels server within `cds repl` (instead of `cds watch`) in a third terminal:
+From within the xtravels project's root folder `cap/samples/xtravels`, start by again running the remote services in separate terminals, then start xtravels server again in a third terminal, this time within `cds repl` instead of `cds watch`:
 
 ```shell :line-numbers=1
-cd xtravels; cds mock apis/capire/s4.cds
+cds watch s4
 ```
 
 ```shell :line-numbers=2
@@ -331,11 +344,16 @@ So, in essence, instead of exercising a workflow like that again and again:
 
 ... we can use *npm workspaces* technique to work locally and speed up things as follows (we did that already above, shown here again for local completeness):
 
-```shell 
-mkdir -p cap/samples; cd cap/samples
+```sh :line-numbers
+mkdir -p cap/samples
+cd cap/samples
+git clone https://github.com/capire/xtravels 
 git clone https://github.com/capire/xflights
-git clone https://github.com/capire/xtravels
-echo '{"workspaces":["xflights","xtravels"]}' > package.json
+git clone https://github.com/capire/s4
+```
+```sh :line-numbers=6
+echo '{"workspaces":["xflights","xtravels","s4"]}' > package.json
+npm install
 ```
 
 Add a link to the local `@capire/xflights-data` API package, included with the cloned xflights sources:
@@ -351,7 +369,7 @@ npm ls @capire/xflights-data
 ```
 
 ```zsh
-works@ ~/cap/works
+samples@ ~/cap/samples
 ├── @capire/xflights-data@0.1.11 -> ./xflights/apis/data-service
 └─┬ @capire/xtravels@1.0.0 -> ./xtravels
   └── @capire/xflights-data@0.1.11 deduped -> ./xflights/apis/data-service
@@ -399,15 +417,13 @@ The usage of *npm workspaces* technique as described above streamlined our workf
 
 We can streamline that even more by eliminating the export step as follows...
 
-Create a new subfolder `xflights-api-shortcut`  in which we add two files as follows:
+Create a new subfolder `xflights-api-shortcut`  in which we add a _package.json_ and an _index.cds_ file as follows:
 
 ```shell
 mkdir xflights-api-shortcut
 ```
-
-Add a `package.json` file in there with that content:
-
-```json
+::: code-group
+```json [package.json]
 {
   "name": "@capire/xflights-data",
   "dependencies": {
@@ -415,12 +431,13 @@ Add a `package.json` file in there with that content:
   }
 }
 ```
+:::
+::: code-group
 
-And an `index.cds` file with this content:
-
-```cds
+```cds [index.cds]
 using from '@capire/xflights/srv/data-service';
 ```
+:::
 
 <details> <summary> Using the shell's "here document" technique </summary>
 
@@ -457,7 +474,7 @@ npm ls @capire/xflights-data
 ```
 
 ```zsh
-works@ ~/cap/works
+samples@ ~/cap/samples
 ├── @capire/xflights-data@ -> ./xflights-api-shortcut
 └─┬ @capire/xtravels@1.0.0 -> ./xtravels
   └── @capire/xflights-data@ deduped -> ./xflights-api-shortcut≤

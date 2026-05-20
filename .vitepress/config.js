@@ -2,11 +2,17 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
-import path from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import playground from './lib/cds-playground/index.js'
 import languages from './languages'
 import { Menu } from './menu.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const codeGrSharedScript = readFileSync(resolve(__dirname, './lib/code-groups/shared.js'),'utf-8').replace(/^export\s+/gm, '')
+const codeGrRestoreScript = readFileSync(resolve(__dirname, './lib/code-groups/restoreCodeGroupPreferences.js'),'utf-8').replace('__CODE_GROUP_SHARED__', codeGrSharedScript)
 
 const config = defineConfig({
 
@@ -77,7 +83,9 @@ const config = defineConfig({
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
     // Inline script to restore impl-variant selection immediately (before first paint)
-    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`]
+    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`],
+    // Inline script to restore code group tab preferences (before Vue hydration)
+    ['script', {}, codeGrRestoreScript]
   ],
 
   vite: {
@@ -113,7 +121,7 @@ import rewrites from './rewrites'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
-if (process.cwd() === path.dirname(__dirname)) {
+if (process.cwd() === dirname(__dirname)) {
   const menu = await Menu.from ('./menu.md', rewrites)
   config.themeConfig.sidebar = menu.items
   config.themeConfig.nav = menu.navbar
@@ -124,9 +132,9 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.8.0',
-    java_cds4j: '4.8.0',
-    cloud_sec_ams: '3.8.0'
+    java_services: '4.9.0',
+    java_cds4j: '4.9.0',
+    cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
   siteURL
@@ -140,8 +148,8 @@ if (process.env.VITE_CAPIRE_PREVIEW) {
 // Add link to survey
 if (process.env.NODE_ENV !== 'production') {
   // open in VS Code
-  const home = path.resolve(__dirname, '..')
-  let href = 'vscode://' + path.join('file', home, encodeURIComponent('${filePath}')).replaceAll(/\\/g, '/').replace('@external/', '')
+  const home = resolve(__dirname, '..')
+  let href = 'vscode://' + join('file', home, encodeURIComponent('${filePath}')).replaceAll(/\\/g, '/').replace('@external/', '')
   config.themeConfig.capire.gotoLinks.push({ href, key: 'o', name: 'VS Code' })
 }
 
@@ -219,13 +227,13 @@ import { promises as fs } from 'node:fs'
 import * as cdsMavenSite from './lib/cds-maven-site'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
-  sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')
+  sitemapURL.pathname = join(sitemapURL.pathname, 'sitemap.xml')
   console.debug('✓ writing robots.txt with sitemap URL', sitemapURL.href) // eslint-disable-line no-console
-  const robots = (await fs.readFile(path.resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
-  await fs.writeFile(path.join(outDir, 'robots.txt'), robots)
+  const robots = (await fs.readFile(resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
+  await fs.writeFile(join(outDir, 'robots.txt'), robots)
 
   // disabled by default to avoid online fetches during local build
   if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-    await cdsMavenSite.copySiteAssets(path.join(outDir, 'java/assets/cds-maven-plugin-site'), site)
+    await cdsMavenSite.copySiteAssets(join(outDir, 'java/assets/cds-maven-plugin-site'), site)
   }
 }

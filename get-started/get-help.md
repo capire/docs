@@ -283,6 +283,22 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
+### How to fix "SqlError: invalid table name: Could not find table/view ..."?
+
+On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written. 
+:::
+
+To fix this on Windows, install the tar library:
+
+```sh
+npm add -D tar
+```
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
+
 
 
 ## Java
@@ -529,6 +545,35 @@ This error occurs if all of the following applies:
 | _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.                                                                                                                                                                                                                                                                                                  |
 | _Solution_   | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause). |
 
+#### Deployment fails — _The include_filter definitions ... use key values that are not disjunct_
+
+|              | Explanation                             |
+|--------------|----------------------------|
+| _Root Cause_ | You have changed from data files like `xxx_texts.csv` to `xxx_texts_de.csv`. |
+| _Solution_   | Add entries in `undeploy.json`. |
+
+
+If you've already deployed your application using translation files _without_ language key like `xxx_texts.csv` and now want to use language-specific translation files like `xxx_texts_de.csv`, you have to **undeploy the existing translation files**.
+
+Add the corresponding file entries, for example
+```json
+[
+  ...
+  "src/gen/data/xxx_texts.hdbtabledata",
+  "src/gen/data/xxx_texts.csv"
+]
+```
+to your _undeploy.json_.
+
+Otherwise, you will get a deployment error similar to this one:
+
+```
+The include_filter definitions in the table import files .../xxx_texts.hdbtabledata
+and .../xxx_texts_de.hdbtabledata use key values that are not disjunct;
+.../xxx_texts.hdbtabledata defines no include_filters which prohibits other imports
+from importing into the same table.
+```
+
 
 ### Why is removed sample _.csv_ deployed and overwriting existing data? { #hana-csv}
 
@@ -660,7 +705,14 @@ See [How to configure your App Router](../guides/extensibility/customization#app
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
 
-<div id="hana-tms-errors" />
+### Why does my subscription fail with "Subaccount verification failed"
+
+When using HANA TMS v2, the message "Subaccount verification failed" indicates that you are trying to create a tenant container for a HANA tenant that was created in a different subaccount.
+
+Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as another application that has been deployed in another subaccount.
+
+See how to [handle HANA tenants with HANA TMS v2](/@external/guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
+
 
 ## BTP
 
