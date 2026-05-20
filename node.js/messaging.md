@@ -123,7 +123,8 @@ module.exports = async srv => {
 In _srv/own.js_ (CAP Messaging Services):
 ```js
 module.exports = async srv => {
-  const externalService = await cds.connect.to('messaging')
+  // Connect directly to the messaging service; use fully qualified event names
+  const messaging = await cds.connect.to('messaging')
   messaging.on('ExternalService.ExternalEvent', async msg => {
     await srv.emit('OwnService.OwnEvent', msg.data)
   })
@@ -243,10 +244,11 @@ const messaging = await cds.connect.to('messaging')
 
 this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
   const { ID } = req.data
+  // average rating across all reviews for this book
   const { rating } = await cds.run(
     SELECT.one(['round(avg(rating),2) as rating'])
     .from(Reviews)
-    .where({ ID }))
+    .where({ book_ID: ID }))
 
   // send to a topic
   await messaging.emit('my/custom/topic',
@@ -345,7 +347,7 @@ If you register at least one handler, a queue will automatically be created if n
 You have the following configuration options:
 
 - `queue`: An object containing the `name` property as the name of your queue, additional properties are described [in the SAP Business Accelerator Hub](https://hub.sap.com/api/SAPEventMeshDefaultManagementAPIs/path/putQueue).
-- `amqp`: AQMP client options as described in the [`@sap/xb-msg-amqp-v100` documentation](https://www.npmjs.com/package/@sap/xb-msg-amqp-v100?activeTab=readme)
+- `amqp`: AMQP client options as described in the [`@sap/xb-msg-amqp-v100` documentation](https://www.npmjs.com/package/@sap/xb-msg-amqp-v100?activeTab=readme)
 
 If the queue name isn't specified, it's derived from `application_name` and the first four characters of `application_id` of your `VCAP_APPLICATION` environmental variable, as well as the `namespace` property of your SAP Event Mesh binding in `VCAP_SERVICES`: `{namespace}/{application_name}/{truncated_application_id}`.
 This makes sure that every application has its own queue.
@@ -555,7 +557,13 @@ You can use local messaging to communicate inside one Node.js process. It's espe
 
 `kind`: `composite-messaging`
 
-If you have several messaging services and don't want to mention them explicitly in your code, you can create a `composite-messaging` service where you can define routes for incoming and outgoing messages. In those routes, you can use glob patterns to match topics (`**` for any number of any character, `*` for any number of any character except `/` and `.`, `?` for a single character).
+If you have several messaging services and don't want to mention them explicitly in your code, you can create a `composite-messaging` service where you can define routes for incoming and outgoing messages. In those routes, you can use glob patterns to match topics:
+
+| Pattern | Matches |
+|---------|---------|
+| `?`     | Any single character |
+| `*`     | Any sequence of characters, but does **not** cross `/` or `.` separators |
+| `**`    | Any sequence of characters, including `/` and `.` separators |
 
 Example:
 
