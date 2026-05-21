@@ -53,7 +53,18 @@ cds init
 cds add terraform
 ```
 
-You'll be prompted for `globalAccountId`, `region`, and `idp_origin_key`. Three files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`.
+You'll be prompted for:
+
+| Prompt                  | Used for                                                |
+|-------------------------|---------------------------------------------------------|
+| `globalAccountId`       | Subdomain of your global account                        |
+| `region`                | Region label for all subaccounts                        |
+| `idp_origin_key`        | IAS origin key (defaults to `sap.custom`)               |
+| BTP username + password | BTP Terraform provider auth                             |
+| CF username + password  | Cloud Foundry Terraform provider auth                   |
+| HANA SYSTEM password    | Initial HANA Cloud SYSTEM user password                 |
+
+Four files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`, and a `terraform.tfvars` (mode `0600`) holding the values you just entered. The whole `.terraform/` directory is already gitignored.
 
 The result:
 
@@ -92,15 +103,7 @@ IAS trust is configured per subaccount, and admins listed in `sandbox_admin_emai
 
 ### Apply
 
-Authenticate via env vars and provision:
-
 ```sh
- export BTP_USERNAME='you@example.com'
- export BTP_PASSWORD='********'
- export CF_USER='you@example.com'
- export CF_PASSWORD='********'
- export TF_VAR_hana_system_password='********'
-
 cd .terraform
 terraform init
 terraform plan
