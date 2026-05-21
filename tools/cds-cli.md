@@ -659,7 +659,7 @@ Restore it afterwards:
 cf set-health-check <app-name> http
 ```
 
-`cds debug` detects this situation and prompts you to confirm before continuing. Note that the setting is overwritten on the next `cf push` unless persisted in `manifest.yml` / `mta.yaml`.
+`cds debug` detects this situation and prompts you to confirm before continuing. Note that the setting is overwritten on the next `cds up` unless persisted in `mta.yaml`.
 :::
 
 ### Node.js Applications
