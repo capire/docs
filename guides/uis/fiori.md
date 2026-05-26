@@ -304,7 +304,7 @@ Draft locks are not applied when creating drafts for new entities, as there is n
 
 Fiori clients send the following HTTP requests for draft operations:
 
-```http+:line-numbers [Requests to <i>draft</i> data]
+```httpc:line-numbers [Requests to <i>draft</i> data]
 POST   /Foo/draftNew                                //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
@@ -345,7 +345,7 @@ Content-Type: application/json
 
 Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts (draft locks still apply), for example:
 
-```http+:line-numbers [Requests to <i>active</i> data]
+```httpc:line-numbers [Requests to <i>active</i> data]
 POST   /Books { IsActiveEntity:true, ... }       //> CREATE
 PATCH  /Books(ID=201,IsActiveEntity=true) {...}  //> UPDATE
 DELETE /Books(ID=201,IsActiveEntity=true)        //> DELETE
@@ -364,7 +364,7 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 
 Taking this further, `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
-```http+:line-numbers [Draft-agnostic requests to <i>active</i> data]
+```httpc:line-numbers [Draft-agnostic requests to <i>active</i> data]
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
