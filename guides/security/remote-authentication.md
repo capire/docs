@@ -61,9 +61,12 @@ Technically, **they share the same identity instance, which allows direct token 
 [Learn more about how to configure co-located services in CAP Java](/java/cqn-services/remote-services#binding-to-a-service-with-shared-identity) {.learn-more}
 [Learn more about how to configure remote services in CAP Node.js](/node.js/remote-services) {.learn-more}
 
-You can test CAP's built-in support for co-located services in practice by modifying the [`xflights-java`](https://github.com/capire/xflights-java/tree/main) and [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) sample applications.
-`xflights-java` acts as a master data provider exposing basic flight data in service [`sap.capire.flights.data`](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24) via different protocols.
-On the client side, `xtravels-java` imports this service as a CAP remote service and fetches data in a [custom handler for data federation](https://github.com/capire/xtravels-java/blob/53a5fa33caf4c9068f2e66fab25bda26f3f450ca/srv/src/main/java/sap/capire/xtravels/handler/FederationHandler.java#L63).
+You can test CAP's built-in support for co-located services in practice by modifying the sample applications:
+- **Java**: [`xflights-java`](https://github.com/capire/xflights-java/tree/main) and [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main)
+- **Node.js**: [`xflights`](https://github.com/capire/xflights/tree/main) and [`xtravels`](https://github.com/capire/xtravels/tree/main)
+
+`xflights` acts as a master data provider exposing basic flight data in service `sap.capire.flights.data` via different protocols.
+On the client side, `xtravels` imports this service as a CAP remote service and fetches data for federation.
 
 ::: tip
 CAP offers a simplified co-located service setup by leveraging remote services that require:
@@ -185,11 +188,12 @@ For different [user propagation](./cap-users#remote-services) modes the remote s
 The provider service authorization needs to align with the configured user propagation.
 :::
 
-Additionally, to establish the co-located setup, the microservice needs to share the same identity instance:
+Additionally, to establish the co-located setup, the microservice needs to share the same identity instance.
+This is configured in the MTA deployment descriptor and applies to both Java and Node.js:
 
 ::: code-group
 
-```yaml [/srv/srv/main/resources/application.yaml]
+```yaml [mta.yaml]
 resources:
   - name: xflights-ias
     type: org.cloudfoundry.managed-service # [!code --]
@@ -290,7 +294,7 @@ CAP offers a simplified App-2-App setup by leveraging remote services that requi
 
 #### 1. Prepare and deploy the provider application
 
-Assuming the same local CF environment setup as [here](#prepare), clone [`xflights-java`](https://github.com/capire/xflights-java/tree/main) or, if already cloned and modified locally, reset to the remote branch.
+Assuming the same local CF environment setup as [here](#prepare), clone the sample application ([`xflights-java`](https://github.com/capire/xflights-java/tree/main) or [`xflights`](https://github.com/capire/xflights/tree/main) for Node.js), or if already cloned and modified locally, reset to the remote branch.
 
 Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
 The difference is that the consumers are not known a priori and are not part of the same application deployment.
@@ -331,10 +335,17 @@ annotate data with @(requires: 'data-consumer');
 
 Finally, deploy and start the application with
 
-```sh
+::: code-group
+```sh [Java]
 cd ./xflights_java
 cds up
 ```
+
+```sh [Node.js]
+cd ./xflights
+cds up
+```
+:::
 
 
 ::: tip API as CAP role
@@ -349,11 +360,16 @@ Instead of using the same role, expose dedicated CDS services to technical clien
 
 #### 2. Prepare and deploy the consumer application { #consumer }
 
-Like with xflights, clone [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or, if already cloned and modified locally, reset to remote branch.
+Like with xflights, clone the sample application ([`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or [`xtravels`](https://github.com/capire/xtravels/tree/main) for Node.js), or if already cloned and modified locally, reset to remote branch.
 
 The remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
 You only need to add the information about the IAS dependency to be called.
-In Java, this is configured via `ias-dependency-name`. In Node.js, the IAS dependency is resolved through a BTP destination configured with IAS authentication, where the SAP Cloud SDK handles the token exchange.
+
+::: tip Java vs Node.js configuration
+**Java** provides a convenient shortcut via `ias-dependency-name` that configures the IAS App-2-App flow directly in `application.yaml`.
+
+**Node.js** uses the standard BTP destination approach for all outbound authentication. Configure a BTP destination with IAS authentication in BTP Cockpit, then reference it by name.
+:::
 
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
 
@@ -398,17 +414,12 @@ cds:
 
 :::
 
-In Node.js, the `destination` property refers to a BTP destination that must be configured with IAS authentication.
-The SAP Cloud SDK automatically handles the IAS App-2-App token exchange when the destination is configured appropriately.
-
-::: tip Node.js: BTP Destination for IAS App-2-App
-Create a BTP destination `xflights-api` with:
+::: tip Node.js: BTP Destination configuration
+Create a BTP destination `xflights-api` in BTP Cockpit with:
 - **URL**: `https://<xflights-srv-cert url>`
-- **Authentication**: `OAuth2UserTokenExchange` or `OAuth2JWTBearer`
+- **Authentication**: `OAuth2JWTBearer`
 - **Token Service URL**: Your IAS tenant token endpoint
-- Configure the IAS dependency name in the destination's additional properties
-
-The SAP Cloud SDK resolves the IAS dependency and performs the token exchange transparently.
+- **Additional Properties**: Configure the IAS dependency name
 :::
 
 [Learn more about SAP Cloud SDK IAS authentication](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service){.learn-more}
@@ -432,8 +443,7 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the remote service implementation initiates an App-2-App flow.
-It takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect) according to the user propagation strategy (technical communication here).
+Technically, the remote service implementation initiates an App-2-App flow, taking the token from the request and triggering an IAS token exchange for the target [IAS dependency](#connect).
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
 Note that property `oauth2-configuration.token-policy.access-token-format: jwt` is set in the identity instance to ensure the exchanged token has JWT format.
@@ -477,7 +487,7 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## Node.js: SAP Cloud SDK Requirement { #nodejs-cloud-sdk }
 
-For IAS-based authentication scenarios (App-2-App, BTP Reuse Services), CAP Node.js relies on the [SAP Cloud SDK](https://sap.github.io/cloud-sdk/) to handle token exchange and destination resolution.
+For BTP destination-based authentication scenarios, CAP Node.js relies on the [SAP Cloud SDK](https://sap.github.io/cloud-sdk/) to handle destination resolution and token exchange.
 
 ::: tip Install SAP Cloud SDK
 Add the SAP Cloud SDK packages to your project:
@@ -487,12 +497,12 @@ npm add @sap-cloud-sdk/http-client @sap-cloud-sdk/connectivity @sap-cloud-sdk/re
 :::
 
 The Cloud SDK provides:
-- **IAS token exchange** for App-2-App flows
-- **BTP Destination resolution** with various authentication types
+- **BTP Destination resolution** with various authentication types, including IAS
+- **Token exchange** when configured via BTP destinations
 - **Resilience features** like timeout, retry, and circuit breaker
 
 For simple scenarios (local development, basic authentication, direct token forwarding), CAP Node.js can use native `fetch` as a fallback when Cloud SDK is not installed.
-However, for production deployments with IAS authentication, the Cloud SDK is required.
+However, for production deployments with BTP destinations, the Cloud SDK is required.
 
 [Learn more about SAP Cloud SDK connectivity features](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations){.learn-more}
 
