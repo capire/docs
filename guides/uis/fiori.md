@@ -241,7 +241,7 @@ With that, all UIs on all services exposing `Books` will automatically receive V
 
 
 ## Fiori Draft Support
-###### Draft Support
+<div id="draft-support" />
 
 SAP Fiori uses drafts to let users save their progress while editing data and continue later without losing changes. Drafts are stored on the server and can be accessed from different devices and locations providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
@@ -306,7 +306,7 @@ Draft locks are not applied when creating drafts for new entities, as there is n
 
 Fiori clients send the following HTTP requests for draft operations:
 
-```httpc:line-numbers [Requests to <i>draft</i> data]
+```php:line-numbers [Requests to <i>draft</i> data]
 POST   /Foo/draftNew                                //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
@@ -347,7 +347,7 @@ Content-Type: application/json
 
 Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts (draft locks still apply), for example:
 
-```httpc:line-numbers [Requests to <i>active</i> data]
+```php:line-numbers [Requests to <i>active</i> data]
 POST   /Books { IsActiveEntity:true, ... }       //> CREATE
 PATCH  /Books(ID=201,IsActiveEntity=true) {...}  //> UPDATE
 DELETE /Books(ID=201,IsActiveEntity=true)        //> DELETE
@@ -366,7 +366,7 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 
 Taking this further, `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
-```httpc:line-numbers [Draft-agnostic requests to <i>active</i> data]
+```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
