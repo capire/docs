@@ -643,10 +643,10 @@ If you scale out to more instances, only some of your requests will hit the inst
 However, it's possible to [route a request to a specific instance](https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#surgical-routing), which is useful if you can't reduce the number of app instances.
 :::
 
-::: warning HTTP health checks kill paused containers
-While paused at a breakpoint, the Node.js event loop is frozen and the app cannot respond to Cloud Foundry's `http` health probe. CF will mark the container unhealthy and destroy it within seconds.
+::: warning Cloud Foundry's HTTP health checks kill paused containers
+While paused at a breakpoint, the Node.js event loop is frozen and the app cannot respond to Cloud Foundry's `http` health probe. As a consequence, Cloud Foundry marks the container unhealthy and destroys it within seconds.
 
-Switch the health check to `process` for the duration of the debug session:
+Instead, switch the health check to `process` for the duration of the debug session:
 
 ```sh
 cf set-health-check <app-name> process
