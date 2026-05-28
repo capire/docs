@@ -241,7 +241,7 @@ With that, all UIs on all services exposing `Books` will automatically receive V
 
 
 ## Fiori Draft Support
-###### Draft Support
+<div id="draft-support" />
 
 SAP Fiori uses Drafts to enable users to save their progress while editing data and continue later on without losing changes. Drafts are stored on the server and can be accessed from different devices and locations, providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
