@@ -235,7 +235,7 @@ To stay portable across different HTTP clients, it's recommended to only use the
 - `baseURL` as defined in [Axios](https://axios-http.com/docs/req_config#baseurl)
 - `auth` as defined in [Axios](https://axios-http.com/docs/req_config)
 - `headers` as defined in [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers) and [Axios](https://axios-http.com/docs/req_config#headers)
-- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status < 200 && status >= 300`)
+- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status >= 200 && status < 300`)
 
 In addition, you can use all of the config options understood by the underlying HTTP client, that is, for Fetch API, its [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request) options, and for Axios, its [request config options](https://axios-http.com/docs/req_config) options.
 
@@ -320,7 +320,7 @@ await test.post('/browse/submitOrder',
 ```
 
 > [!tip] Using Fetch API under the hood
-> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/FetchAPI), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
+> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/Fetch_API), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
 
 > [!info] Using Axios instead of Fetch API
 > Former versions of `cds.test` used [Axios](https://axios-http.com/) as the HTTP client. With the move to Fetch API, Axios is no longer included as a dependency in `@cap-js/cds-test`. However, you can still use Axios in your tests if you prefer it over Fetch API. Simply add Axios as a dependency to your project, and it will be used automatically by `cds.test` instead of Fetch API.

@@ -832,6 +832,10 @@ If you start with a multitenant application that's configured to use to SAP HANA
     service: hana-cloud
     service-plan: hana-multitenancy
 ```
+
+> [!danger] Only use the `hana-multitenancy` plan
+> As the tenant containers are filtered by the SAP HANA Cloud service instance, applications will potentially access data of other applications when using a different plan.
+
 For SAP HANA TMS v2, you also need to specify the database ID of the database that you plan to use for your tenant containers. You can specify this using the [`cds.xt.DeploymentService` configuration](/@external/guides/multitenancy/mtxs#deployment-config).
 
 To keep the application configuration agnostic, we recommend adding the <Config label="database_id" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config> configuration as an environment variable to the MTX service in _mta.yaml_:

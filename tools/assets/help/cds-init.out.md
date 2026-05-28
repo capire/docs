@@ -61,6 +61,8 @@
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
       <em>ui5</em>                          - SAP UI5 integration
+      <em>vue</em>                          - user interface for Vue.js
+      <em>react</em>                        - user interface for React
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
