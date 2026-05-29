@@ -39,7 +39,7 @@ At the connectivity layer, the following basic tasks can be addressed genericall
 - Destination (_how to find the target service_)
 - User propagation (_how to transport user information_)
 
-CAP's connectivity component handles authentication (IAS, XSUAA, X.509, ZTID, ...), destination (local destination, BTP Destination, BTP Service Binding), and user propagation (technical provider, technical subscriber, named user) transparently through configuration.
+CAP's connectivity component handles authentication (IAS, XSUAA, X.509, ZTID, ...), destination (local destination, BTP Destination, BTP Service Binding), and user propagation (technical provider, technical subscriber, named user) transparently through configuration (although the configuration approach may differ between Java and Node.js).
 All three service scenarios can be addressed through configuration variants of the same remote service concept, as shown in the following sections.
 
 CAP supports out-of-the-box consumption of various types of [remote services]( #remote-services):
@@ -114,12 +114,11 @@ cds:
 {
   "cds": {
     "requires": {
-      "xflights": {
+      "sap.capire.flights.data": {
         "kind": "hcql",
-        "model": "sap.capire.flights.data",
         "[production]": {
           "credentials": {
-            "url": "https://<xflights-srv-cert url>/hcql",
+            "url": "https://<xflights-srv-cert url>/hcql/data",
             "forwardAuthToken": true
           }
         }
@@ -130,23 +129,28 @@ cds:
 ```
 :::
 
-The `type` (Java) or `kind` (Node.js) property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
+::: details Java configuration explained
+
+The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
 The `model` property needs to match the fully qualified name of the CDS service from the imported model.
 You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
+The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
+Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
 
-In Java, the `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
-In Node.js, `credentials.url` provides the full endpoint URL, and `forwardAuthToken: true` enables direct forwarding of the incoming JWT token to the provider service.
-
-Finally, `onBehalfOf: systemUser` (Java) specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
-
-::: tip
-On behalf of `systemUser` works both in pure single tenant and in pure multitenant scenarios.
-If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
 :::
 
-::: tip Node.js token forwarding
-In Node.js, `forwardAuthToken: true` forwards the incoming request's JWT token directly to the provider.
-This is suitable for co-located services that share the same identity instance, as the token is already valid for the provider.
+::: details Node.js configuration explained
+
+The `kind` property activates the protocol for exchanging business data (same as `type` in Java).
+The key in `cds.requires` must match the fully qualified CDS service name (e.g., `sap.capire.flights.data`), which is the same name used in `cds.connect.to()`.
+The `credentials.url` provides the full endpoint URL including the service path `/hcql/data`.
+The `forwardAuthToken: true` enables direct forwarding of the incoming JWT token to the provider service - this is suitable for co-located services that share the same identity instance, as the token is already valid for the provider.
+
+:::
+
+::: tip
+On behalf of `systemUser` (Java) works both in pure single tenant and in pure multitenant scenarios.
+If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
 :::
 
 Now you are ready to deploy the application with
@@ -189,7 +193,7 @@ The provider service authorization needs to align with the configured user propa
 :::
 
 Additionally, to establish the co-located setup, the microservice needs to share the same identity instance.
-This is configured in the MTA deployment descriptor and applies to both Java and Node.js:
+This is configured in the MTA deployment descriptor (applies to both Java and Node.js):
 
 ::: code-group
 
@@ -397,12 +401,11 @@ cds:
 {
   "cds": {
     "requires": {
-      "xflights": {
+      "sap.capire.flights.data": {
         "kind": "hcql",
-        "model": "sap.capire.flights.data",
         "[production]": {
           "credentials": {
-            "path": "/hcql",
+            "path": "/hcql/data",
             "destination": "xflights-api"
           }
         }
@@ -487,10 +490,20 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## Node.js: SAP Cloud SDK Requirement { #nodejs-cloud-sdk }
 
-For BTP destination-based authentication scenarios, CAP Node.js relies on the [SAP Cloud SDK](https://sap.github.io/cloud-sdk/) to handle destination resolution and token exchange.
+CAP Node.js can handle remote service calls in two ways:
+
+**Without Cloud SDK** (native fetch):
+- Direct URL with `forwardAuthToken: true` (co-located services)
+- Direct URL with `BasicAuthentication`
+- Local development scenarios
+
+**With Cloud SDK** (required):
+- BTP destination-based authentication (including IAS App-2-App)
+- OAuth2 token exchange scenarios
+- On-premise connectivity via Cloud Connector
 
 ::: tip Install SAP Cloud SDK
-Add the SAP Cloud SDK packages to your project:
+When using BTP destinations, add the SAP Cloud SDK packages to your project:
 ```sh
 npm add @sap-cloud-sdk/http-client @sap-cloud-sdk/connectivity @sap-cloud-sdk/resilience
 ```
@@ -500,9 +513,6 @@ The Cloud SDK provides:
 - **BTP Destination resolution** with various authentication types, including IAS
 - **Token exchange** when configured via BTP destinations
 - **Resilience features** like timeout, retry, and circuit breaker
-
-For simple scenarios (local development, basic authentication, direct token forwarding), CAP Node.js can use native `fetch` as a fallback when Cloud SDK is not installed.
-However, for production deployments with BTP destinations, the Cloud SDK is required.
 
 [Learn more about SAP Cloud SDK connectivity features](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations){.learn-more}
 
