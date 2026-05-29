@@ -270,7 +270,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-Alternatively, remote services can be configured on top of [BTP HTTP Destinations](../services/consuming-services#using-destinations) that offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints.
+[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Note that CAP Node.js uses BTP Destinations also for IAS App-2-App flows, while CAP Java handles IAS token exchange natively.
 
 
 ### IAS App-2-App { #app-to-app }
@@ -311,12 +311,34 @@ resources:
   - name: xflights-ias
     type: org.cloudfoundry.managed-service
     parameters:
-      [...]
+      service: identity
+      service-plan: application
       config:
         display-name: xflights
-        provided-apis: # [!code ++:5]
+        oauth2-configuration:
+          token-policy:
+            access-token-format: jwt
+        provided-apis:
         - name: data-consumer
           description: Grants technical access to data service API
+```
+:::
+
+For Node.js, additionally configure the authentication strategy in `package.json`:
+
+::: code-group
+```json [Node.js: package.json]
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "[production]": {
+          "kind": "ias"
+        }
+      }
+    }
+  }
+}
 ```
 :::
 
@@ -368,13 +390,6 @@ Like with xflights, clone the sample application ([`xtravels-java`](https://gith
 
 The remote service can be configured in a very similar way as with [co-located services](#co-located-consumer).
 You only need to add the information about the IAS dependency to be called.
-
-::: tip Java vs Node.js configuration
-**Java** provides a convenient shortcut via `ias-dependency-name` that configures the IAS App-2-App flow directly in `application.yaml`.
-
-**Node.js** uses the standard BTP destination approach for all outbound authentication. Configure a BTP destination with IAS authentication in BTP Cockpit, then reference it by name.
-:::
-
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
 
 ::: code-group
@@ -401,6 +416,11 @@ cds:
 {
   "cds": {
     "requires": {
+      "auth": {
+        "[production]": {
+          "kind": "ias"
+        }
+      },
       "sap.capire.flights.data": {
         "kind": "hcql",
         "[production]": {
@@ -417,15 +437,71 @@ cds:
 
 :::
 
-::: tip Node.js: BTP Destination configuration
-Create a BTP destination `xflights-api` in BTP Cockpit with:
-- **URL**: `https://<xflights-srv-cert url>`
-- **Authentication**: `OAuth2JWTBearer`
-- **Token Service URL**: Your IAS tenant token endpoint
-- **Additional Properties**: Configure the IAS dependency name
+::: details Java configuration explained
+
+The `ias-dependency-name` property configures the IAS App-2-App flow directly in `application.yaml`. This is all that's needed for Java - the CAP Java runtime handles the token exchange automatically.
+
 :::
 
-[Learn more about SAP Cloud SDK IAS authentication](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service){.learn-more}
+::: details Node.js configuration explained
+
+Node.js uses BTP destinations for outbound authentication, which requires additional setup:
+
+**1. MTA descriptor** - bind both IAS and destination services:
+
+```yaml
+modules:
+  - name: xtravels-srv
+    [...]
+    requires:
+      - name: xtravels-ias
+      - name: xtravels-destination
+
+resources:
+  - name: xtravels-ias
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: identity
+      service-plan: application
+      config:
+        display-name: xtravels
+        oauth2-configuration:
+          token-policy:
+            access-token-format: jwt
+
+  - name: xtravels-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+```
+
+**2. SAP Cloud SDK dependencies** - required for destination-based authentication:
+
+```sh
+npm add @sap-cloud-sdk/http-client @sap-cloud-sdk/connectivity @sap-cloud-sdk/resilience
+```
+
+See [Node.js: SAP Cloud SDK Requirement](#nodejs-cloud-sdk) for more details.
+
+**3. BTP Destination** - create `xflights-api` in BTP Cockpit (Connectivity → Destinations):
+
+- **Name**: `xflights-api`
+- **Type**: HTTP
+- **URL**: `https://<xflights-srv url>`
+- **ProxyType**: Internet
+- **Authentication**: `OAuth2JWTBearer`
+- **Client ID**: from `xtravels-ias` service key
+- **Client Secret**: from `xtravels-ias` service key
+- **Token Service URL**: `https://<your-ias-tenant>.accounts.ondemand.com/oauth2/token`
+
+To get the Client ID and Secret, create a service key:
+```sh
+cf create-service-key xtravels-ias xtravels-ias-key
+cf service-key xtravels-ias xtravels-ias-key
+```
+
+:::
 
 Finally, deploy and start the application with
 
