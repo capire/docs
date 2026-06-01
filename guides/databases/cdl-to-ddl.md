@@ -60,6 +60,11 @@ code --diff _out/c/sqlite.sql _out/c/h2.sql
 > [!tip] CDS models are database-agnostic
 > CDS models are designed to be database-agnostic, allowing you to switch between different databases with minimal changes. The `--dialect` option helps you see how your models translate to different database-specific DDLs. \
 
+Note that expressions in CDS models are _not_ treated in a database-agnostic way. In other words, they are not rewritten
+into database-specific equivalents; instead, they are carried over one-to-one into the DDL.
+You therefore need to ensure that any expression you write in your CDS model works across all databases you use.
+See also [Database-Specific Models](#database-specific-models).
+
 
 ### Dialects by `cds env` Profiles
 
