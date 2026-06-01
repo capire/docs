@@ -758,9 +758,8 @@ Their [`elements`](./csn#structured-types) signature is **inferred** from the pr
 Each element inherits all properties from the respective base element, except the `key` property.
 The `key` property is only inherited if all of the following applies:
 - No explicit `key` is set in the query.
-- All key elements of the primary base entity are selected (for example, by using `*`).
-- No path expression with a to-many association is used.
-- No `union`, `join` or similar query construct is used.
+- All key elements of the primary base entity and all key elements of
+  explicitly joined entities are selected.
 
 For example, the following definition:
 
