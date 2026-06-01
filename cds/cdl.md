@@ -1495,23 +1495,20 @@ actions {
 
 #### CSN Representation
 
-In CSN, the expression is represented as a record with two properties:
-* A string representation of the expression is stored in property `=`.
-* A tokenized representation of the expression is stored in one of the properties
-  `xpr`, `ref`, `val`, `func`, etc. (like if the expression was written in a query).
+In CSN, the expression is represented as a record with
+one of the properties `xpr`, `ref`, `val`, `func`, etc.,
+that contains the tokenized representation of the expression
+(like if the expression was written in a query).
 
 ```json
 {
   "@anExpression": {
-    "=": "foo.bar * 11",
     "xpr": [ {"ref": ["foo", "bar"]}, "*", {"value": 11} ]
   },
   "@aRefExpr": {
-    "=": "foo.bar",
     "ref": ["foo", "bar"]
   },
   "@aValueExpr": {
-    "=": "11",
     "val": 11
   }
 }
@@ -1520,13 +1517,17 @@ In CSN, the expression is represented as a record with two properties:
 Note the different CSN representations for a [plain value](#annotation-values) `"@anInteger": 11`
 and a value written as expression `@aValueExpr: ( 11 )`, respectively.
 
+For expressions that are simple references, the record currently contains an additional
+property `=` with the string representation of the expression. Do not rely on this property,
+but use the tokenized representation. Property `=` may vanish in a future release.
+
+
 #### Propagation
 
 [Annotations are propagated](#annotation-propagation) in views/projections, via includes, and along type references.
 If the annotation value is an expression, it is sometimes necessary to adapt references inside the expression
 during propagation, for example, when a referenced element is renamed in a projection.
-The compiler automatically takes care of the necessary rewriting. When a reference in an annotation expression
-is rewritten, the `=` property is adapted accordingly if the expression is a single reference, otherwise it is set to `true`.
+The compiler automatically takes care of the necessary rewriting.
 
 Example:
 ```cds
@@ -1552,8 +1553,7 @@ rewritten to `@Common.Text: (descr)`.
       "elements": {  // ...
         "code": {
           // original annotation
-          "@Common.Text": { "=": "text",
-                            "ref": ["text"] },
+          "@Common.Text": { "ref": ["text"] },
           "type": "cds.Integer"
         },
         "text": {"type": "cds.String"}
@@ -1563,8 +1563,7 @@ rewritten to `@Common.Text: (descr)`.
       "elements": {  // ...
         "code": {
           // propagated annotation, reference adapted
-          "@Common.Text": { "=": true,
-                            "ref": ["descr"] },
+          "@Common.Text": { "ref": ["descr"] },
           "type": "cds.Integer"
         },
         "descr": {"type": "cds.String"}
@@ -1585,8 +1584,11 @@ In these cases you can overwrite the annotation with the correct expression in t
 
 Using an expression as annotation value only makes sense if the evaluator of the annotation is
 prepared to deal with the new CSN representation.
-Currently, the CAP runtimes only support expressions in the `where` property of the `@restrict` annotation.
+Currently, the CAP runtimes support expressions
+*  in the `where` property of annotation [`@restrict`](../guides/security/authorization#restrict-annotation)
+*  in annotation [`@assert`](../guides/services/constraints#assert-constraint)
 
+Example:
 ```cds
 entity Orders @(restrict: [
     { grant: 'READ', to: 'Auditor', where: (AuditBy = $user.id) }
