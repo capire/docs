@@ -78,14 +78,15 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 Shortcuts:
 
-| Annotation          | Description                                                  |
-|---------------------|--------------------------------------------------------------|
-| `@ValueList.entity` | see [Domain Modeling](../guides/domain/index)                |
-| `@odata.Type`       | see [OData](../guides/protocols/odata#override-type-mapping) |
-| `@odata.MaxLength`  | see [OData](../guides/protocols/odata#override-type-mapping) |
-| `@odata.Precision`  | see [OData](../guides/protocols/odata#override-type-mapping) |
-| `@odata.Scale`      | see [OData](../guides/protocols/odata#override-type-mapping) |
-| `@odata.singleton`  | see [OData](../guides/protocols/odata#singletons)            |
+| Annotation             | Description                                                  |
+|------------------------|--------------------------------------------------------------|
+| `@cds.odata.valuelist` | see [Value Helps](../guides/uis/fiori#convenience-option-cds-odata-valuelist) |
+| `@odata.Type`          | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.MaxLength`     | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.Precision`     | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.Scale`         | see [OData](../guides/protocols/odata#override-type-mapping) |
+| `@odata.singleton`     | see [OData](../guides/protocols/odata#singletons)            |
+
 Intrinsically supported OData Annotations:
 
 | Annotation          | Description                                                       |
