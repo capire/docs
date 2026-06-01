@@ -241,7 +241,7 @@ With that, all UIs on all services exposing `Books` will automatically receive V
 
 
 ## Fiori Draft Support
-###### Draft Support
+<div id="draft-support" />
 
 SAP Fiori uses Drafts to enable users to save their progress while editing data and continue later on without losing changes. Drafts are stored on the server and can be accessed from different devices and locations, providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
@@ -306,7 +306,7 @@ Draft locks are not applied when creating drafts for new entities, as there is n
 
 The HTTP requests sent from Fiori clients that deal with drafts are as follows:
 
-```php:line-numbers [Requests to <i>draft</i> data]
+```httpc:line-numbers [Requests to <i>draft</i> data]
 POST   /Foo/draftNew                                //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
@@ -347,7 +347,7 @@ Content-Type: application/json
 
 Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts, for example:
 
-```php:line-numbers [Requests to <i>active</i> data]
+```httpc:line-numbers [Requests to <i>active</i> data]
 POST   /Books { IsActiveEntity:true, ... }       //> CREATE
 PATCH  /Books(ID=201,IsActiveEntity=true) {...}  //> UPDATE
 DELETE /Books(ID=201,IsActiveEntity=true)        //> DELETE
@@ -362,7 +362,7 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 
 Going one step further, we assume `IsActiveEntity=true` by default, so that clients which don't know anything about drafts, or don't want to deal with them, can simply ignore any draft-specific requests and parameters:
 
-```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
+```httpc:line-numbers [Draft-agnostic requests to <i>active</i> data]
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
