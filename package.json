@@ -10,7 +10,7 @@
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview .",
     "lint": "eslint .",
-    "test": "echo 'No tests'"
+    "test": "echo 'No tests'; node .github/setup.js"
   },
   "author": "SAP SE (https://www.sap.com)",
   "license": "SEE LICENSE IN LICENSE",
