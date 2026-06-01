@@ -1423,10 +1423,6 @@ The rules are:
 
 3. An explicit **cast** in the select clause cuts off the inheritance, for example, as for `genre` in our previous example.
 
-::: tip
-Propagation of annotations can be stopped via value `null`, for example, `@anno: null`.
-:::
-
 
 ### Expressions as Annotation Values
 
