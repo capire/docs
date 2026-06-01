@@ -285,11 +285,13 @@ Technically, the connectivity component uses [IAS App-2-App flows](https://help.
 The latter is issued by IAS only if the consumer is configured with a valid IAS dependency pointing to the provider accordingly.
 
 :::tip
-CAP offers a simplified App-2-App setup by leveraging remote services that require:
+CAP offers App-2-App setup by leveraging remote services that require:
 - Identity instances for provider and consumer
 - Configured IAS dependency from consumer to provider
 - URL pointing to the provider
 - Principal propagation mode (optional)
+
+**Note:** CAP Java handles IAS App-2-App natively. CAP Node.js requires a custom handler using SAP Cloud SDK v4.
 :::
 
 [Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
@@ -601,7 +603,7 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the remote service implementation initiates an App-2-App flow, taking the token from the request and triggering an IAS token exchange for the target [IAS dependency](#connect).
+Technically, the App-2-App flow takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect). In Java, CAP's remote service handles this automatically. In Node.js, the custom handler initiates this flow using Cloud SDK's `createDestinationFromIasService`.
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
 Note that property `oauth2-configuration.token-policy.access-token-format: jwt` is set in the identity instance to ensure the exchanged token has JWT format.
@@ -708,11 +710,11 @@ The custom handler detects the token type automatically:
 
 ## Pitfalls
 
-- **Don't write custom integration logic** for consumed services.
-Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
+- **Don't write custom integration logic** for consumed services unless necessary.
+Leverage CAP's remote service architecture when possible to ensure a seamless integration experience. For Node.js IAS App-2-App, a custom handler is currently required until CAP adds native support.
 
-- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens).
-Instead, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
+- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens) unless necessary.
+For Java, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests. For Node.js IAS App-2-App, use SAP Cloud SDK v4's `createDestinationFromIasService` API as shown in [Custom Handler for IAS App-2-App](#nodejs-ias-handler).
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
