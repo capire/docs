@@ -424,10 +424,13 @@ entity Messages {
 
 ## How to Use
 
-### Queueing a Service
+To get a side effect dispatched **after** your transaction commits — with the guarantees described above — you write to an event queue rather than calling the service directly. There are two ways to make a service write to an event queue: programmatically, by wrapping a service in `cds.queued()`, or declaratively, by enabling outboxing in configuration. Either way, the trigger from your code is the same — a normal `srv.send()` or `srv.schedule()` call.
 
-Use `cds.queued(srv)` in Node.js to obtain a queued proxy of any service.
-All subsequent dispatches on this proxy are persisted to the event queue and processed asynchronously.
+### Programmatically
+
+#### Triggering a Queued Event
+
+Wrap a service in `cds.queued()` and dispatch normally. The call is persisted to the event queue inside your current transaction and processed asynchronously after commit.
 
 ::: code-group
 ```js [Node.js]
@@ -436,31 +439,85 @@ const qd_xflights = cds.queued(xflights)
 
 await qd_xflights.send('bookFlight', { travelId: 'T-42' })  // request (result discarded)
 ```
-:::
-
-::: tip `await` is still needed
-Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
-:::
-
-In Java, use `AsyncCqnService.of(srv, outbox)` to wrap any CAP service with an outbox:
-
-::: code-group
 ```java [Java]
 OutboxService outbox = runtime.getServiceCatalog()
     .getService(OutboxService.class, "XFlightsOutbox");
 CqnService xflights = runtime.getServiceCatalog()
     .getService(CqnService.class, "xflights");
 
-// Wrap with outbox handling
 AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
 queued.emit("bookFlight", Map.of("travelId", "T-42"));
 ```
 :::
 
-### Queueing by Configuration
+::: tip `await` is still needed
+Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
+:::
 
-You can queue any *outbound* service through configuration without changing code.
-That is useful when you want to switch a remote integration to durable asynchronous processing centrally.
+To unwrap a queued service back to its synchronous original:
+
+::: code-group
+```js [Node.js]
+const xflights = cds.unqueued(qd_xflights)
+```
+```java [Java]
+CqnService xflights = outbox.unboxed(outboxedXFlights);
+```
+:::
+
+##### Scheduling a Task
+
+For delayed or recurring work, use the `schedule()` shortcut — equivalent to `cds.queued(srv).send(event, data)` plus optional timing. See [Background Tasks](#background-tasks).
+
+| API | Description |
+|-----|-------------|
+| `srv.send(event, data)` | Trigger a queued event; for queued services the direct return value is discarded |
+| `srv.schedule(event, data)` | Schedule a task with optional timing — Node.js only |
+| `srv.schedule.task(event, data)` | Schedule a *singleton* task identified by name — Node.js only |
+| `srv.unschedule.task(name)` | Remove a previously scheduled singleton task — Node.js only |
+
+#### Acting on the Outcome
+
+Because queued calls return after the *message is stored* — not after the remote operation completes — you can't use the return value of `send()` or `run()` to react to success or failure. Register a callback handler on `#succeeded` or `#failed` instead.
+
+[Learn more about callbacks.](#callbacks-saga-patterns){.learn-more}
+
+#### Manual Processing
+
+In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
+
+To trigger processing manually — for example, from a startup hook or admin endpoint:
+
+::: code-group
+```js [Node.js]
+// Flush a specific queue
+const xflights = await cds.connect.to('xflights')
+await cds.flush(xflights.name)
+
+// Flush all queues
+await cds.flush()
+```
+:::
+
+### By Configuration
+
+#### Auto-Outboxed Services
+
+The following services are outboxed by default — you don't need to wrap or configure them:
+
+| Service | Description |
+|---------|-------------|
+| `cds.MessagingService` | All messaging services |
+| `cds.AuditLogService` | Audit log events |
+
+This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks.
+
+[Learn more about auto-outboxed services in Node.js.](../../node.js/queue#per-configuration){.learn-more}
+[Learn more about the outbox in Java.](../../java/outbox#persistent){.learn-more}
+
+#### Outboxing a Remote Service
+
+You can outbox any *outbound* service through configuration without changing code. That is useful when you want to switch a remote integration to durable asynchronous processing centrally — every call from your handlers is then queued automatically.
 
 ::: code-group
 ```json [Node.js — package.json]
@@ -484,59 +541,9 @@ cds:
 ```
 :::
 
-### Auto-Outboxed Services
+#### Configuring the Queue
 
-The following services are outboxed by default — you don't need any additional configuration:
-
-| Service | Description |
-|---------|-------------|
-| `cds.MessagingService` | All messaging services |
-| `cds.AuditLogService` | Audit log events |
-
-This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks.
-
-[Learn more about auto-outboxed services in Node.js.](../../node.js/queue#per-configuration){.learn-more}
-[Learn more about the outbox in Java.](../../java/outbox#persistent){.learn-more}
-
-### Service API
-
-When working with event queues, you interact with the standard CAP service APIs:
-
-| API | Description |
-|-----|-------------|
-| `srv.send(event, data)` | Send a request; for queued services the direct return value is discarded |
-| `srv.schedule(event, data)` | Schedule a task with optional timing — Node.js only |
-| `srv.schedule.task(event, data)` | Schedule a *singleton* task identified by name — Node.js only |
-| `srv.unschedule.task(name)` | Remove a previously scheduled singleton task — Node.js only |
-
-The `schedule()` method supports a fluent API:
-
-```js
-await srv.schedule('task', data)               // execute asap
-await srv.schedule('task', data).after('1h')   // execute after one hour
-await srv.schedule('task', data).every('1h')   // repeat every hour
-await srv.schedule('task', data).every('*/5 * * * *')  // every 5 minutes via cron
-```
-
-[Learn more about singleton tasks.](#singleton-tasks){.learn-more}
-
-### Unqueueing a Service
-
-If a service is queued by configuration, you can get back the original synchronous service:
-
-::: code-group
-```js [Node.js]
-const xflights = cds.unqueued(qd_xflights)
-```
-```java [Java]
-CqnService xflights = outbox.unboxed(outboxedXFlights);
-```
-:::
-
-### Configuration
-
-The persistent queue is enabled by default.
-Messages are stored in a database table within the current transaction.
+The persistent queue is enabled by default. Messages are stored in a database table within the current transaction.
 
 ::: code-group
 ```json [Node.js — package.json]
@@ -621,24 +628,6 @@ Or disable queueing for a specific service:
   }
 }
 ```
-
-### Manual Processing
-
-In single-tenancy, the background runner starts on application startup and processes pending messages automatically.
-In multitenancy, the central runner periodically checks markers and triggers processing.
-
-You can also trigger processing manually:
-
-::: code-group
-```js [Node.js]
-// Flush a specific queue
-const xflights = await cds.connect.to('xflights')
-await cds.flush(xflights.name)
-
-// Flush all queues
-await cds.flush()
-```
-:::
 
 
 ## Working with Event Queues
@@ -820,3 +809,18 @@ CAP handles this as follows:
 
 This means queued handlers must not rely on request-time role checks.
 If you need authorization in queued processing, encode the required information in the event payload itself or derive it from persisted business data.
+
+
+## Next Steps
+
+For stack-specific APIs, configuration keys, and troubleshooting:
+
+- [Event Queues in Node.js](../../node.js/queue) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule`, queue and scheduling configuration.
+- [Transactional Outbox in Java](../../java/outbox) — `OutboxService`, `AsyncCqnService`, custom outboxes, observability via OpenTelemetry.
+
+Most real-world event-queue use comes through messaging or remote services. From here you'll likely want to look at:
+
+- [Messaging](messaging) — emitting and consuming events between CAP applications and via brokers; messaging services are auto-outboxed.
+- [CAP-Level Service Integration](../integration/calesi) — consuming remote services as if they were local; outboxing them centrally with `outboxed: true`.
+- [CAP-Level Data Federation](../integration/data-federation) — using `srv.schedule().every()` for polling-based replication from remote services.
+
