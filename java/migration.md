@@ -37,21 +37,21 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.recipes.Cap_4.9
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
 ```
 
-Here, the *recipe* `com.sap.cds.services.recipes.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
-The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.recipes.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 |[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
 |[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
-|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -136,6 +136,14 @@ None
 
 3. Changed default value of properties:
 None
+
+### Changes in the `cds-services-archetype`
+
+The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CAP Java projects.
+
+#### Default JDK Version
+
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 

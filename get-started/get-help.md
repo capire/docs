@@ -283,6 +283,22 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
+### How to fix "SqlError: invalid table name: Could not find table/view ..."?
+
+On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written. 
+:::
+
+To fix this on Windows, install the tar library:
+
+```sh
+npm add -D tar
+```
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
+
 
 
 ## Java
