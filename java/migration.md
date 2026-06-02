@@ -71,21 +71,19 @@ CAP Java 5.0 increased some minimum required versions:
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.10 |
 
-<!-- ### Adjusted Property Defaults
+### Adjusted Property Defaults
 
 Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `abc` | false | true | Any description. |
-
-### Deprecated Properties
-
-The following properties have been deprecated and might be removed in a future major version:
-
-- `abd`
-
-The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
+| `cds.security.authentication.mode` | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
+| `cds.odataV2.batch.maxRequests` | `-1` (unlimited) | `10` | OData V2 batch requests are now limited to 10 by default to protect against overload. |
+| `cds.sql.toOnePath.mode` | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
+| `cds.errors.preferServiceException` | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
+| `cds.outbox.services.<key>.ordered` | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| `cds.multitenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
+| `cds.persistence.changeSet.enforceTransactional` | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 
 ### Removed Properties
 
@@ -93,7 +91,7 @@ The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement | -->
+| `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
