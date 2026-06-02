@@ -321,6 +321,107 @@ A queued call changes _when_ work happens and _what the caller can expect back_:
 > Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks) on `#succeeded` or `#failed`.
 
 
+## How It Works { #concept }
+
+The core principle is straightforward:
+
+1. Instead of executing side effects directly, you write a message into a database table — **within the current transaction**.
+2. Once the transaction commits, a background runner reads pending messages and dispatches them to the respective service.
+3. If processing succeeds, the message is deleted.
+4. If processing fails, the system retries with exponentially increasing delays.
+5. After a configurable maximum number of attempts, the message is moved to the dead letter queue for manual intervention.
+
+```mermaid
+sequenceDiagram
+    participant H as Handler
+    participant DB as Database
+    participant R as Runner
+    participant S as Service
+
+    H->>DB: business data + queued message
+    Note over H,DB: same transaction
+    DB-->>H: COMMIT
+    R->>DB: poll & lock
+    R->>S: dispatch
+    alt success
+        R->>DB: delete
+    else transient failure
+        R->>DB: retry later
+    else max retries
+        R->>DB: dead letter
+    end
+```
+
+Because the queued message and your business data share the same database transaction, you get two core guarantees:
+
+- **No phantom events** — if the transaction rolls back, no message is sent.
+- **No lost events** — if the transaction commits, the queued work is persisted and processed eventually.
+
+### Single-Tenancy vs Multi-Tenancy { #tenancy }
+
+Event queues work in both single-tenant and multi-tenant deployments. In both cases, processing is triggered immediately after commit; markers are an optimization plus an extra layer of resilience.
+
+[Learn more about multitenancy.](../multitenancy/){.learn-more}
+
+#### Single-Tenancy
+
+Messages are stored in a queue table that resides in the application database. A background runner starts when your application starts and processes messages continuously.
+
+#### Multi-Tenancy
+
+Each tenant has its own database. To avoid having a central runner periodically scan every tenant, the system writes a lightweight *marker* to a central (provider) database whenever messages are queued. On startup the central runner only triggers processing for tenants that actually have pending work, and rechecks periodically as a recovery layer in case a runner crashed before processing completed.
+
+CAP spreads marker timestamps across tenants so that processing doesn't synchronize into bursts — you don't need to configure that.
+
+::: details Architecture: scheduling, processing, recovery
+Behind the scenes, event queues run three independent loops:
+
+1. **Scheduling** — calling `srv.send()`, `srv.emit()`, or `srv.schedule()` on a queued service writes the message to the tenant's queue table within the current transaction. In multitenancy, a *marker* is also written to the provider database, recording that this tenant has pending work.
+2. **Processing** — a tenant-local task runner reads a chunk of messages, dispatches each event in its own transaction, and deletes successful messages. Failed messages are rescheduled with exponentially increasing delay; after `maxAttempts` they become dead letters.
+3. **Recovery** — a central runner periodically polls the provider markers and triggers processing for any tenant with pending work. This recovers from application restarts and tenants that became "cold" without losing messages.
+
+*Markers* contain no business data — only the information that some queue of some tenant needs to be flushed at some point in time.
+:::
+
+### Locking and Migration { #locking }
+
+CAP uses **application-level locking** to coordinate processors across application instances. When a runner picks up a message, it sets the message's `status` to `processing`; other runners skip messages in that state. After processing, the row lock is released; the message is deleted (on success) or rescheduled (on failure) in the processing transaction.
+
+::: warning Migrating across `@sap/cds` major versions
+This guide describes the implementation in `@sap/cds` 10+. Older versions select messages differently:
+
+- **`@sap/cds` 8** does **not** check the `status` column at all.
+- **`@sap/cds` 9** checks `status` but holds a row-level lock for the duration of processing (`legacyLocking: true` is the default in cds 9).
+- **`@sap/cds` 10** uses application-level locking via `status` and releases the row lock after selection.
+
+A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
+:::
+
+### The Data Model { #data-model }
+
+The persistent queue stores its messages in this entity, automatically added to your database model:
+
+::: details `cds.outbox.Messages`
+```cds
+namespace cds.outbox;
+
+entity Messages {
+  key ID                   : UUID;           // Unique message identifier
+      timestamp            : Timestamp;      // When the message was queued
+      target               : String;         // Target service/queue name
+      msg                  : LargeString;    // Serialized event payload
+      attempts             : Integer default 0;  // Number of processing attempts
+      partition            : Integer default 0;
+      lastError            : LargeString;    // Error from last failed attempt
+      lastAttemptTimestamp : Timestamp;      // When last attempt occurred
+      status               : String(23);     // Current processing status
+      task                 : String(255);    // Task name for named/singleton tasks
+      appid                : String(255);    // Application ID for shared HDI containers
+}
+```
+:::
+
+
 ## How to Use { #how-to-use }
 
 ### Queueing a Service { #cds-queued }
@@ -540,108 +641,9 @@ await cds.flush()
 :::
 
 
-## How It Works { #concept }
+## Working with Event Queues
 
-The core principle is straightforward:
-
-1. Instead of executing side effects directly, you write a message into a database table — **within the current transaction**.
-2. Once the transaction commits, a background runner reads pending messages and dispatches them to the respective service.
-3. If processing succeeds, the message is deleted.
-4. If processing fails, the system retries with exponentially increasing delays.
-5. After a configurable maximum number of attempts, the message is moved to the dead letter queue for manual intervention.
-
-```mermaid
-sequenceDiagram
-    participant H as Handler
-    participant DB as Database
-    participant R as Runner
-    participant S as Service
-
-    H->>DB: business data + queued message
-    Note over H,DB: same transaction
-    DB-->>H: COMMIT
-    R->>DB: poll & lock
-    R->>S: dispatch
-    alt success
-        R->>DB: delete
-    else transient failure
-        R->>DB: retry later
-    else max retries
-        R->>DB: dead letter
-    end
-```
-
-Because the queued message and your business data share the same database transaction, you get two core guarantees:
-
-- **No phantom events** — if the transaction rolls back, no message is sent.
-- **No lost events** — if the transaction commits, the queued work is persisted and processed eventually.
-
-### Single-Tenancy vs Multi-Tenancy { #tenancy }
-
-Event queues work in both single-tenant and multi-tenant deployments. In both cases, processing is triggered immediately after commit; markers are an optimization plus an extra layer of resilience.
-
-[Learn more about multitenancy.](../multitenancy/){.learn-more}
-
-#### Single-Tenancy
-
-Messages are stored in a queue table that resides in the application database. A background runner starts when your application starts and processes messages continuously.
-
-#### Multi-Tenancy
-
-Each tenant has its own database. To avoid having a central runner periodically scan every tenant, the system writes a lightweight *marker* to a central (provider) database whenever messages are queued. On startup the central runner only triggers processing for tenants that actually have pending work, and rechecks periodically as a recovery layer in case a runner crashed before processing completed.
-
-CAP spreads marker timestamps across tenants so that processing doesn't synchronize into bursts — you don't need to configure that.
-
-::: details Architecture: scheduling, processing, recovery
-Behind the scenes, event queues run three independent loops:
-
-1. **Scheduling** — calling `srv.send()`, `srv.emit()`, or `srv.schedule()` on a queued service writes the message to the tenant's queue table within the current transaction. In multitenancy, a *marker* is also written to the provider database, recording that this tenant has pending work.
-2. **Processing** — a tenant-local task runner reads a chunk of messages, dispatches each event in its own transaction, and deletes successful messages. Failed messages are rescheduled with exponentially increasing delay; after `maxAttempts` they become dead letters.
-3. **Recovery** — a central runner periodically polls the provider markers and triggers processing for any tenant with pending work. This recovers from application restarts and tenants that became "cold" without losing messages.
-
-*Markers* contain no business data — only the information that some queue of some tenant needs to be flushed at some point in time.
-:::
-
-### Locking and Migration { #locking }
-
-CAP uses **application-level locking** to coordinate processors across application instances. When a runner picks up a message, it sets the message's `status` to `processing`; other runners skip messages in that state. After processing, the row lock is released; the message is deleted (on success) or rescheduled (on failure) in the processing transaction.
-
-::: warning Migrating across `@sap/cds` major versions
-This guide describes the implementation in `@sap/cds` 10+. Older versions select messages differently:
-
-- **`@sap/cds` 8** does **not** check the `status` column at all.
-- **`@sap/cds` 9** checks `status` but holds a row-level lock for the duration of processing (`legacyLocking: true` is the default in cds 9).
-- **`@sap/cds` 10** uses application-level locking via `status` and releases the row lock after selection.
-
-A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
-:::
-
-### The Data Model { #data-model }
-
-The persistent queue stores its messages in this entity, automatically added to your database model:
-
-::: details `cds.outbox.Messages`
-```cds
-namespace cds.outbox;
-
-entity Messages {
-  key ID                   : UUID;           // Unique message identifier
-      timestamp            : Timestamp;      // When the message was queued
-      target               : String;         // Target service/queue name
-      msg                  : LargeString;    // Serialized event payload
-      attempts             : Integer default 0;  // Number of processing attempts
-      partition            : Integer default 0;
-      lastError            : LargeString;    // Error from last failed attempt
-      lastAttemptTimestamp : Timestamp;      // When last attempt occurred
-      status               : String(23);     // Current processing status
-      task                 : String(255);    // Task name for named/singleton tasks
-      appid                : String(255);    // Application ID for shared HDI containers
-}
-```
-:::
-
-
-## Operational Behavior
+This section covers what you need to know to operate an event queue in production: how errors are retried, how to manage stuck messages, and how authorization carries over from the original request.
 
 ### Error Handling { #errors }
 
@@ -686,8 +688,7 @@ void process(OutboxMessageEventContext context) {
 }
 ```
 
-
-## Dead Letter Queue { #dead-letter-queue }
+### Dead Letter Queue { #dead-letter-queue }
 
 Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
 These entries form the _dead letter queue_ and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
@@ -695,11 +696,11 @@ These entries form the _dead letter queue_ and require manual intervention — e
 For troubleshooting, inspect `cds.outbox.Messages` and pay special attention to `status`, `attempts`, `lastError`, and `lastAttemptTimestamp`.
 See [*The Data Model*](#data-model) for the entity structure.
 
-### Managing Dead Letters
+#### Managing Dead Letters
 
 You can expose a CDS service to manage the dead letter queue with actions to revive or delete entries.
 
-#### 1. Define the Service
+##### 1. Define the Service
 
 ::: code-group
 ```cds [srv/outbox-dead-letter-queue-service.cds]
@@ -724,7 +725,7 @@ The dead letter queue contains sensitive data.
 Ensure the service is accessible only to internal users.
 :::
 
-#### 2. Filter for Dead Entries
+##### 2. Filter for Dead Entries
 
 As `maxAttempts` is configurable, its value cannot be added as a static filter to the projection, but must be applied programmatically.
 
@@ -771,7 +772,7 @@ public class DeadOutboxMessagesHandler implements EventHandler {
 ```
 :::
 
-#### 3. Implement Bound Actions
+##### 3. Implement Bound Actions
 
 Entries in the dead letter queue can be _revived_ by resetting the retry counter to zero, or _deleted_ permanently.
 
@@ -809,8 +810,7 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 [Learn more about the dead letter queue in Node.js.](../../node.js/queue#managing-the-dead-letter-queue){.learn-more}
 [Learn more about the dead letter queue in Java.](../../java/outbox#outbox-dead-letter-queue){.learn-more}
 
-
-## Deferred Principal Propagation { #principal-propagation }
+### Deferred Principal Propagation { #principal-propagation }
 
 When an event is processed asynchronously, the original HTTP request context is no longer available.
 CAP handles this as follows:
