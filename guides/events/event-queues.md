@@ -63,7 +63,7 @@ CAP dispatches it later in the background. If the transaction rolls back, no boo
 
 ## Use Cases
 
-### Outbox { #outbox }
+### Outbox
 
 The outbox defers outbound calls to remote services until the main transaction succeeds.
 This prevents sending requests to external systems when your transaction might still roll back.
@@ -114,7 +114,7 @@ You don't need to call `cds.queued()` or configure anything extra for these — 
 [Learn more about the outbox in Java.](../../java/outbox){.learn-more}
 
 
-### Inbox { #inbox }
+### Inbox
 
 The inbox mirrors the outbox pattern for inbound messages.
 When a message arrives from a broker, the messaging service immediately persists it to the database, acknowledges it to the broker, and schedules its processing.
@@ -158,7 +158,7 @@ If later processing fails, recovery no longer happens in the broker; it happens 
 :::
 
 
-### Background Tasks { #background-tasks }
+### Background Tasks
 
 Event queues are not limited to messaging.
 You can schedule arbitrary background tasks such as data replication, cache refresh, or garbage collection.
@@ -193,7 +193,7 @@ await xflights.schedule('replicate', { entity: 'Airports' }).every('*/10 * * * *
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`.
 `.every()` accepts the same plus a five-field cron expression.
 
-#### Singleton Tasks { #singleton-tasks }
+#### Singleton Tasks
 
 Use `srv.schedule.task()` to schedule a *singleton task* — a task identified by name that exists only once:
 
@@ -212,7 +212,7 @@ The [data federation guide](../integration/data-federation) uses `srv.schedule()
 :::
 
 
-### Callbacks (SAGA Patterns) <Beta /> { #callbacks }
+### Callbacks (SAGA Patterns) <Beta />
 
 In distributed transactions, you often need to react when an asynchronous step completes or fails.
 Event queues support this with `#succeeded` and `#failed` callback events, enabling compensation logic similar to SAGA patterns.
@@ -249,12 +249,12 @@ The `*` wildcard handler is not called for these events.
 
 ## Guarantees
 
-### Transactional Persistence { #no-phantom-events }
+### Transactional Persistence
 
 Because the queued message is written in the same database transaction as your business data, a rollback also removes the queued message.
 No event is ever dispatched for a transaction that didn't commit.
 
-### Eventual Processing { #exactly-once }
+### Eventual Processing
 
 The persistent queue guarantees transactional persistence and eventual processing.
 For database-backed processing, CAP avoids duplicate execution under normal operation, but handlers should still be idempotent to tolerate rare crash windows or external side effects.
@@ -318,10 +318,10 @@ A queued call changes _when_ work happens and _what the caller can expect back_:
 
 > [!warning] Queued calls discard the direct return value
 > A queued service persists the request and returns after the message is stored, not after the remote operation finishes.
-> Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks) on `#succeeded` or `#failed`.
+> Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks-saga-patterns) on `#succeeded` or `#failed`.
 
 
-## How It Works { #concept }
+## How It Works
 
 The core principle is straightforward:
 
@@ -357,7 +357,7 @@ Because the queued message and your business data share the same database transa
 - **No phantom events** — if the transaction rolls back, no message is sent.
 - **No lost events** — if the transaction commits, the queued work is persisted and processed eventually.
 
-### Single-Tenancy vs Multi-Tenancy { #tenancy }
+### Single-Tenancy vs Multi-Tenancy
 
 Event queues work in both single-tenant and multi-tenant deployments. In both cases, processing is triggered immediately after commit; markers are an optimization plus an extra layer of resilience.
 
@@ -383,7 +383,7 @@ Behind the scenes, event queues run three independent loops:
 *Markers* contain no business data — only the information that some queue of some tenant needs to be flushed at some point in time.
 :::
 
-### Locking and Migration { #locking }
+### Locking and Migration
 
 CAP uses **application-level locking** to coordinate processors across application instances. When a runner picks up a message, it sets the message's `status` to `processing`; other runners skip messages in that state. After processing, the row lock is released; the message is deleted (on success) or rescheduled (on failure) in the processing transaction.
 
@@ -397,7 +397,7 @@ This guide describes the implementation in `@sap/cds` 10+. Older versions select
 A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
 :::
 
-### The Data Model { #data-model }
+### The Data Model
 
 The persistent queue stores its messages in this entity, automatically added to your database model:
 
@@ -422,9 +422,9 @@ entity Messages {
 :::
 
 
-## How to Use { #how-to-use }
+## How to Use
 
-### Queueing a Service { #cds-queued }
+### Queueing a Service
 
 Use `cds.queued(srv)` in Node.js to obtain a queued proxy of any service.
 All subsequent dispatches on this proxy are persisted to the event queue and processed asynchronously.
@@ -457,7 +457,7 @@ queued.emit("bookFlight", Map.of("travelId", "T-42"));
 ```
 :::
 
-### Queueing by Configuration { #by-configuration }
+### Queueing by Configuration
 
 You can queue any *outbound* service through configuration without changing code.
 That is useful when you want to switch a remote integration to durable asynchronous processing centrally.
@@ -484,7 +484,7 @@ cds:
 ```
 :::
 
-### Auto-Outboxed Services { #auto-outboxed }
+### Auto-Outboxed Services
 
 The following services are outboxed by default — you don't need any additional configuration:
 
@@ -498,7 +498,7 @@ This ensures that messaging and audit log events are sent reliably and never los
 [Learn more about auto-outboxed services in Node.js.](../../node.js/queue#per-configuration){.learn-more}
 [Learn more about the outbox in Java.](../../java/outbox#persistent){.learn-more}
 
-### Service API { #service-api }
+### Service API
 
 When working with event queues, you interact with the standard CAP service APIs:
 
@@ -622,7 +622,7 @@ Or disable queueing for a specific service:
 }
 ```
 
-### Manual Processing { #flush }
+### Manual Processing
 
 In single-tenancy, the background runner starts on application startup and processes pending messages automatically.
 In multitenancy, the central runner periodically checks markers and triggers processing.
@@ -645,7 +645,7 @@ await cds.flush()
 
 This section covers what you need to know to operate an event queue in production: how errors are retried, how to manage stuck messages, and how authorization carries over from the original request.
 
-### Error Handling { #errors }
+### Error Handling
 
 When processing fails, the system retries the message with exponentially increasing delays.
 After a configurable maximum number of attempts, the message is moved to the dead letter queue.
@@ -688,13 +688,13 @@ void process(OutboxMessageEventContext context) {
 }
 ```
 
-### Dead Letter Queue { #dead-letter-queue }
+### Dead Letter Queue
 
 Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
 These entries form the _dead letter queue_ and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
 
 For troubleshooting, inspect `cds.outbox.Messages` and pay special attention to `status`, `attempts`, `lastError`, and `lastAttemptTimestamp`.
-See [*The Data Model*](#data-model) for the entity structure.
+See [*The Data Model*](#the-data-model) for the entity structure.
 
 #### Managing Dead Letters
 
@@ -810,7 +810,7 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 [Learn more about the dead letter queue in Node.js.](../../node.js/queue#managing-the-dead-letter-queue){.learn-more}
 [Learn more about the dead letter queue in Java.](../../java/outbox#outbox-dead-letter-queue){.learn-more}
 
-### Deferred Principal Propagation { #principal-propagation }
+### Deferred Principal Propagation
 
 When an event is processed asynchronously, the original HTTP request context is no longer available.
 CAP handles this as follows:
