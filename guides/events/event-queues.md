@@ -26,15 +26,7 @@ An application may commit local data, but a follow-up remote call can still fail
 _Transactional Event Queues_ solve this by storing the follow-up work in the database as part of the **same transaction** as your business data.
 After commit, a background runner executes that work asynchronously and retries failures until they succeed or become dead letters.
 
-```mermaid
-flowchart LR
-    A[Request handler] -- in tx --> B[(Business data)]
-    A -- in tx --> C[(Queued message)]
-    B & C --> D{COMMIT}
-    D -. async .-> E[Background runner]
-    E --> F[Remote service]
-    E --> G[Background task]
-```
+![Diagram showing the request handler writing both business data and a queued message into the database within the same transaction, marked by a dashed transaction box. After the COMMIT diamond, an asynchronous arrow leads to a background runner, which in turn dispatches to either a remote service or a background task.](assets/event-queues-motivation.drawio.svg)
 
 This pattern is widely known as the _Transactional Outbox_, but CAP's event queues go beyond outbound messages. They cover four use cases:
 
@@ -331,26 +323,7 @@ The core principle is straightforward:
 4. If processing fails, the system retries with exponentially increasing delays.
 5. After a configurable maximum number of attempts, the message is moved to the dead letter queue for manual intervention.
 
-```mermaid
-sequenceDiagram
-    participant H as Handler
-    participant DB as Database
-    participant R as Runner
-    participant S as Service
-
-    H->>DB: business data + queued message
-    Note over H,DB: same transaction
-    DB-->>H: COMMIT
-    R->>DB: poll & lock
-    R->>S: dispatch
-    alt success
-        R->>DB: delete
-    else transient failure
-        R->>DB: retry later
-    else max retries
-        R->>DB: dead letter
-    end
-```
+![Sequence diagram with four lifelines: Handler, Database, Background runner, and Remote service. Within the 'same transaction' bracket, the handler sends business data and the queued message to the database, which returns COMMIT. In the asynchronous phase, the background runner polls and locks the database, then dispatches to the remote service. The bottom 'result' bracket shows three alternative outcomes: success leads to a delete arrow back to the database, transient failure leads to a retry-later arrow, and max retries leads to a dead-letter arrow.](assets/event-queues-how-it-works.drawio.svg)
 
 Because the queued message and your business data share the same database transaction, you get two core guarantees:
 

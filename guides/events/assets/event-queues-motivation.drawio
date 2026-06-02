@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="29.6.1">
+  <diagram id="event-queues-motivation" name="Page-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Request handler -->
+        <mxCell id="handler" value="Request handler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="320" y="40" width="180" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Transaction box (dashed group around the two stores) -->
+        <mxCell id="txbox" value="same transaction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#6c8ebf;dashed=1;dashPattern=6 4;fontSize=11;fontColor=#6c8ebf;verticalAlign=top;arcSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="180" y="120" width="460" height="120" as="geometry"/>
+        </mxCell>
+
+        <!-- Business data (cylinder) -->
+        <mxCell id="data" value="Business&#xa;data" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="240" y="150" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Queued message (cylinder) -->
+        <mxCell id="queue" value="Queued&#xa;message" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="460" y="150" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges: handler -> data, handler -> queue -->
+        <mxCell id="e1" style="endArrow=classic;html=1;rounded=0;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;strokeWidth=2;" edge="1" parent="1" source="handler" target="data">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="endArrow=classic;html=1;rounded=0;exitX=0.65;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;strokeWidth=2;" edge="1" parent="1" source="handler" target="queue">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- COMMIT diamond -->
+        <mxCell id="commit" value="COMMIT" style="rhombus;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="280" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges: data -> commit, queue -> commit -->
+        <mxCell id="e3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;strokeWidth=2;" edge="1" parent="1" source="data" target="commit">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;strokeColor=#6c8ebf;strokeWidth=2;" edge="1" parent="1" source="queue" target="commit">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Background runner (dashed = async) -->
+        <mxCell id="runner" value="Background runner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="320" y="400" width="180" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- COMMIT -> runner (dashed, labelled "async") -->
+        <mxCell id="e5" value="async" style="endArrow=classic;html=1;rounded=0;dashed=1;dashPattern=6 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#666666;strokeWidth=2;fontSize=11;fontStyle=2;" edge="1" parent="1" source="commit" target="runner">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Remote service -->
+        <mxCell id="remote" value="Remote service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="160" y="500" width="180" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Background task -->
+        <mxCell id="task" value="Background task" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="480" y="500" width="180" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- runner -> remote, runner -> task -->
+        <mxCell id="e6" style="endArrow=classic;html=1;rounded=0;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1" source="runner" target="remote">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="endArrow=classic;html=1;rounded=0;exitX=0.65;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#666666;strokeWidth=2;" edge="1" parent="1" source="runner" target="task">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
