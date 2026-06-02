@@ -21,9 +21,9 @@ const cds = require('@sap/cds-dk')
 cds.import(...)
 ```
 
-> [!important] Do not load cds-dk code at runtime
-> Note that the `@sap/cds-dk` is a designtime dependency that runs locally or in CI pipelines.
-> Avoid loading code like above at application runtime in deployed applications.
+> [!important] Don't load cds-dk code at runtime
+> Note that `@sap/cds-dk` is a design-time dependency that runs locally or in continuous integration (CI) pipelines. 
+> Avoid loading the previously shown code at application runtime in deployed applications.
 
 <script setup>
 import { data as pages } from './index.data.ts'
