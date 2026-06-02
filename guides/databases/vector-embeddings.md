@@ -12,11 +12,11 @@ Choose an embedding model that fits your use case and data (for example English 
 Use the [SAP Generative AI Hub](https://www.sap.com/products/artificial-intelligence/generative-ai-hub.html) for unified consumption of embedding models and LLMs across different vendors and open-source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
 
 ## Add Embeddings to Your CDS Model
-Use the built-in CDL [Vector type](../../cds/types) in your CDS model to store embeddings. Set the vector dimensions to match the embedding model (for example, 768 for *SAP_GXY.20250407*).
+Use the built-in CDL [Vector type](../../cds/types) to store embeddings. Use `Vector` without specifying a dimension to simplify changing the embedding model. If you specify a vector dimension, make sure it matches the embedding model (for example, 768 for *SAP_GXY.20250407*).
 
 ```cds
 extend Incidents with {
-  embedding : Vector(768);
+  embedding : Vector;
 }
 ```
 
@@ -34,7 +34,7 @@ To generate vector embeddings on write in SAP HANA, you can use the [vector_embe
 ```cds
 extend Incidents with {
   @cds.api.ignore
-  embedding : Vector(768) = vector_embedding( 
+  embedding : Vector = vector_embedding( 
     'Title: ' || title || ', Summary: ' || summary, 
     'DOCUMENT', 'SAP_GXY.20250407'
   ) stored; 
