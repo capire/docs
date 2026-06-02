@@ -84,6 +84,7 @@ Some property defaults have been adjusted:
 | `cds.outbox.services.<key>.ordered` | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
 | `cds.multitenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
 | `cds.persistence.changeSet.enforceTransactional` | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
+| `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
 
 ### Removed Properties
 
