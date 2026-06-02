@@ -71,21 +71,32 @@ CAP Java 5.0 increased some minimum required versions:
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.10 |
 
-<!-- ### Adjusted Property Defaults
+### Adjusted Property Defaults
 
 Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `abc` | false | true | Any description. |
+| `cds.security.authentication.mode` | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
+| `cds.errors.preferServiceException` | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
+| `cds.multitenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
+| `cds.odataV2.batch.maxRequests` | `-1` (unlimited) | `10` | OData V2 batch requests are now limited to 10 by default to protect against overload. |
+| `cds.odatav2.searchMode` | `odata-lenient` | `pass-through` | |
+| `cds.odatav4.searchMode` | `odata-lenient` | `pass-through` | |
+| `cds.outbox.services.<key>.ordered` | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| `cds.persistence.changeSet.enforceTransactional` | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
+| `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
+| `cds.query.restrictions.enabled` | `false` | `true` | |
+| `cds.sql.toOnePath.mode` | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 ### Deprecated Properties
 
 The following properties have been deprecated and might be removed in a future major version:
 
-- `abd`
+- `cds.outbox.inMemory.enabled`
+- `cds.outbox.inMemory.emitDuringChangeSetContext`
 
-The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
+The functionality provided by these properties is enabled by default and there is no reason to switch these off.
 
 ### Removed Properties
 
@@ -93,7 +104,9 @@ The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement | -->
+| `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
+| `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
+| `cds.taskScheduler.enabled` | Use `cds.outbox.persistent.scheduler.enabled`. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
@@ -155,50 +168,6 @@ The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odat
 2. Use `maven-dependency-plugin` to unpack (extract contents of dependency) Olingo sources into your code base during the project build.
 
 3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
-
-
-### Adjusted Property Defaults
-
-Some property defaults have been adjusted:
-
-| Property | Old Value | New Value | Explanation |
-| --- | --- | --- | --- |
-| `cds.errors.preferServiceException` | false | true | |
-| `cds.multiTenancy.serviceManager.cacheRefreshInterval` | 20 | 60 | |
-| `cds.odatav2.batch.maxRequests` | -1 | 10 | Changed due to security constraints. |
-| `cds.odatav2.searchMode` | "odata-lenient" | "pass-through" | |
-| `cds.odatav4.searchMode` | "odata-lenient" | "pass-through" | |
-| `cds.outbox.services.<key>.ordered` | true | false | 
-| `cds.persistence.changeSet.enforceTransational` | true | false | |
-| `cds.query.restrictions.enabled` | false | true | |
-| `cds.sql.toOnePath.mode` | "always-join" | "optimize" | |
-
-### Deprecated Properties
-
-The following properties have been deprecated and might be removed in a future major version:
-
-- `cds.outbox.inMemory.enabled`
-- `cds.outbox.inMemory.emitDuringChangeSetContext`
-
-The functionality provided by these properties is enabled by default and there is no reason to switch these off.
-
-### Removed Properties
-
-The following table gives an overview about the removed properties:
-
-| Removed Property | Replacement / Explanation |
-| --- | --- |
-| `cds.errors.combined` | Removed as the underlying feature is active by default now. |
-| `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
-| `cds.taskScheduler.enabled` | Use 'cds.outbox.persistent.scheduler.enabled'. |
-
-### Removed Java APIs
-
-- Removed deprecated classes:
-  - `com.sap.cds.A`, use `B` instead
-
-- Removed deprecated methods:
-  - `com.sap.cds.ql.cqn.A.search(String term)`, use `searchTerm(CqnSearchTermPredicate)` instead
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
