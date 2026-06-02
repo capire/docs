@@ -246,13 +246,13 @@ Instead of a plain message string in the `then` branch, you can use the **`error
 ```cds
 annotate BookshopService.Books with {
 
-  price @assert: (case                                                    // [!code focus]
-    when price < minPrice                                                 // [!code focus]
+  price @assert: (case
+    when price < minPrice
       then error(                                                         // [!code focus]
         'Price ({}) must not be lower than minimum price ({})',           // [!code focus]
         (price, minPrice)                                                 // [!code focus]
       )                                                                   // [!code focus]
-  end);                                                                   // [!code focus]
+  end);
 
 }
 ```
@@ -260,13 +260,13 @@ annotate BookshopService.Books with {
 The `error()` function accepts up to three arguments:
 
 ```cds
-error( message, parameters?, targets? )
+error( message, parameters, targets? )
 ```
 
 | Argument     | Required | Description |
 |--------------|----------|-------------|
 | `message`    | yes      | A plain text string or an [i18n key](#localized-messages). Use `{}` as placeholders for parameter values. |
-| `parameters` | no       | A single expression or a parenthesized list of expressions `(expr1, expr2, ...)` whose values are inserted into `{}` placeholders in the message. |
+| `parameters` | yes       | A single expression or a parenthesized list of expressions `(expr1, expr2, ...)` whose values are inserted into `{}` placeholders in the message. |
 | `targets`    | no       | A single element reference or a parenthesized list of element references `(elem1, elem2, ...)` that the error should be attached to. The first target becomes the primary target; additional targets are reported as `@Common.additionalTargets`. |
 
 When `targets` is omitted, the error is attached to the annotated element.
