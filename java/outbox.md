@@ -415,6 +415,128 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 [Learn more about `EventContext.proceed()`.](./event-handlers/#proceed-on){.learn-more}
 
+
+## Shared Outbox { #shared-outbox}
+
+A shared outbox is a custom outbox configured with a dedicated persistence service. In this case, the outbox uses the assigned persistence service for all submits and lookups, independent from the current tenant context. This is useful in scenarios where outbox entries need to be stored and processed in a tenant-independent manner.
+
+To configure a shared outbox, first create an additional persistence service for the dedicated database. Then, assign it to a custom outbox using the `persistenceService` parameter.
+
+#### 1. Create an Additional Persistence Service
+
+Define a persistence service that points to your shared database binding:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  persistence.services:
+    my-shared-ps:
+      binding: "my-shared-hdi"
+```
+:::
+
+[Learn more about additional Persistence Services.](./cqn-services/persistence-services#additional-persistence-services){.learn-more}
+
+#### 2. Configure the Shared Outbox
+
+Create a custom outbox and assign the persistence service using the `persistenceService` parameter:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    services:
+      MySharedOutbox:
+        persistenceService: "my-shared-ps"
+```
+:::
+
+With this configuration, the outbox `MySharedOutbox` uses the persistence service `my-shared-ps` for all submit and lookup operations. Since this persistence service points to a dedicated database, the outbox operates independently from the tenant context — outbox entries are stored and retrieved from the shared database regardless of which tenant triggers the processing.
+
+
+## Outbox Collector Strategies { #outbox-collector-strategies}
+
+In a multitenant environment, outbox entries reside in tenant-specific persistences. The outbox collector is triggered when events are submitted to the outbox. However, if an application instance crashes, unprocessed outbox entries for a tenant are only retried when that tenant next produces a new outbox event. If after a crash, a tenant becomes inactive or has a long period until its next outbox submission, the remaining entries stay unprocessed until the tenant triggers a new event.
+
+To address this, CAP Java provides two scheduler-based strategies that periodically check tenant outboxes for unprocessed entries. Both strategies are disabled by default and must be explicitly enabled.
+
+::: tip Prerequisite
+The outbox scheduler must be enabled for both strategies. Set `cds.outbox.persistent.scheduler.enabled` to `true`.
+:::
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    persistent:
+      scheduler:
+        enabled: true
+```
+:::
+
+### All-Tenants Task { #all-tenants-task}
+
+The all-tenants task periodically iterates over **all** tenant outboxes and triggers the collector for each tenant. It acts as a safety net to ensure no outbox entries are missed, regardless of tenant activity.
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    persistent:
+      scheduler:
+        enabled: true
+        allTenantsTask:
+          enabled: true
+          startDelay: PT30S
+          interval: PT2H
+          spreadTime: PT15M
+```
+:::
+
+The configuration options are:
+
+- `startDelay` (default `PT30S`): Delay after application startup before the first execution.
+- `interval` (default `PT2H`): Interval between successive executions.
+- `spreadTime` (default `PT15M`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
+
+::: warning Performance consideration
+For applications with a large number of tenants, traversing all tenants can cause significant overhead due to tenant context switches. This may impact application performance. Consider the [Hot-Tenant Task](#hot-tenant-task) as a lighter alternative that only checks recently active tenants.
+:::
+
+### Hot-Tenant Task { #hot-tenant-task}
+
+Instead of iterating over all tenants, the hot-tenant task tracks which tenants have been recently active and only triggers the outbox collector for those tenants. Lookups are well distributed over time to avoid activity jams.
+
+The hot-tenant task requires:
+
+1. The outbox scheduler must be enabled (`cds.outbox.persistent.scheduler.enabled: true`).
+2. A [shared outbox](#shared-outbox) must be configured — the hot-tenant task uses the shared outbox to persist tenant activity records independently from the tenant context.
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    persistent:
+      scheduler:
+        enabled: true
+        hotTenantTask:
+          enabled: true
+          sharedOutbox: "MySharedOutbox"
+          maxTaskDelay: PT2H
+    services:
+      MySharedOutbox:
+        persistenceService: "my-shared-ps"
+```
+:::
+
+The configuration options are:
+
+- `sharedOutbox`: The name of the shared outbox service used to store tenant activity records. This outbox must be configured with a dedicated persistence service as described in the [Shared Outbox](#shared-outbox) section.
+- `maxTaskDelay` (default `PT2H`): The maximum time to wait after a tenant event before checking that tenant's outbox. Lookups are distributed within this window to spread the load evenly.
+
+[Learn more about configuring a Shared Outbox.](#shared-outbox){.learn-more}
+
+
 ## Outbox Dead Letter Queue
 
 The transactional outbox tries to process each entry a specific number of times. The number of attempts is configurable per outbox by setting the configuration `cds.outbox.services.<key>.maxAttempts`.
