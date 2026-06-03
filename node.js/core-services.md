@@ -397,15 +397,9 @@ var srv.options : { //> from cds.requires config
 
 
 ### . entities {.property alt="The following documentation on actions also applies to entities. "}
-###### entities
-
 ### . events {.property alt="The following documentation on actions also applies to events. "}
-
-### . operations {.property .deprecated alt="The following documentation on actions also applies to operations. "}
-
-Use [`.actions`](#actions) instead.
-
 ### . actions {.property}
+###### srv-entities
 
 ```tsx
 var srv.entities/events/actions : Iterable <{
@@ -413,19 +407,33 @@ var srv.entities/events/actions : Iterable <{
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service.
-
-They are *iterable* objects, which means you can use them in all of these ways:
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#iterable) which you can use in all of these ways:
 
 ```js
 // Assumed `this` is an instance of cds.Service
-let { Books, Authors } = this.entities
-let all_entities = [ ... this.entities ]
+const { Books, Authors } = this.entities
+const all_entities = [ ... this.entities ]
 for (let k in this.entities) //... k is a CSN definition's name
 for (let d of this.entities) //... d is a CSN definition
 ```
 
+#### Similarity _and_ difference to `cds.entities`
 
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#entities). However, note this difference:
+
+While both of these work with [`cds.entities`](cds-facade#cds-entities):
+```js
+const { 'some.namespace.Books':Books, ... } = cds.entities  //> works
+const { Books, Authors } = cds.entities ('some.namespace')  //> works
+```
+
+Only the first one works with [`srv.entities`](#srv-entities):
+```js
+const { Books, Authors } = srv.entities                     //> works
+const { Books, Authors } = srv.entities ('some.namespace')  //> FAILS! [!code --]
+```
+
+ Reason is that `cds.entities` is sort of a chimera, which can be used both **as a getter** returning _all_ definitions, and **as a function** which accepts a namespace to fetch definitions for. The latter doesn't make sense in the context of a service, as the namespace is already implied by the service's name.
 
 
 ### srv. init() {.method}
@@ -511,30 +519,29 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers actually fulfill requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, frequently for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, frequently to enrich outbound data
+- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
+- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
+- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
 
 **Argument `event`** can be one of:
 
-- `'CREATE'`, `'READ'`, `'UPDATE'`, `'UPSERT'`,`'DELETE'`
-- `'INSERT'`,`'SELECT'` → as aliases for: `'CREATE'`,`'READ'`
-- `'POST'`,`'GET'`,`'PUT'`,`'PATCH'` → as aliases for: `'CREATE'`,`'READ'`,`'UPDATE'`
-- `'each'` → convenience feature to register `.after` `'READ'` handler that runs for each individual result entry
-- Any other string name of a custom action or function – for example,, `'submitOrder'`
-- An `array` of the above to register the given handler for multiple events
-- The string `'*'` to register the given handler for *all* potential events
-- The string `'error'` to register an error handler for *all* potential events
+- String `CREATE`, `READ`, `UPDATE`, `UPSERT`, `DELETE`
+- String `SELECT`, `INSERT` → aliases for: `READ` and `CREATE`
+- String `GET`, `PUT`, `POST`, `PATCH` → aliases for: `READ`, `CREATE`, `UPDATE`
+- String `each` → shorthand for `.after` `READ` handler ran for _each_ result entry
+- String `error` to register an error handler for *all* potential events
+- A name of a custom action or function – for example, `submitOrder`
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → as obtained from [`this.entities`](#entities)
-- A `string` matching the name of an entity served by this service → see [draft support](./fiori#draft-support)
-- A `path`  navigating from a served entity to associated ones → for example, `'Books/author'`
-- An `array` of the above to register the given handler for multiple entities / paths
-- The string `'*'` to register the given handler for *all* potential entities / paths
+- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `string` corresponding to the _name_ of an entity served by this service
+- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
 
+**Multiple `events` or `entities`** – for both parameters, you can also specify:
 
+- An `array` of the above to register a handler for _multiple_ events or entities
+- String `*` to register a handler for _all_ potential events or entities.
 
 ::: tip Best Practices
 
@@ -766,7 +773,7 @@ All these registered handlers would get executed concurrently, and independently
 
 [Learn more about how requests are processed by `srv.handle(event)`](#srv-handle-event) {.learn-more}
 
-  
+
 
 ### srv. on (error) {.method}
 ###### srv-on-error

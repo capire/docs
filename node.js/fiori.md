@@ -67,10 +67,6 @@ The `NEW` event is triggered when the user created a new draft.
 As a result `MyEntity.drafts` is created in the database.
 You can modify the initial draft data in a `before` handler.
 
-:::warning Known Limitation
-With the [`hdb` SAP HANA driver](https://www.npmjs.com/package/hdb), trying to `INSERT` draft entities with fields that use the [`LargeBinary` type](../cds/types#core-built-in-types) will cause a deadlock.
-The known workaround is to [configure your CAP app](../guides/databases/hana#setup-configuration) to use the [`hana-client` SAP HANA driver](https://www.npmjs.com/package/@sap/hana-client) instead.
-:::
 
 ### `EDIT`
 
@@ -84,20 +80,6 @@ The `EDIT` event is triggered when the user starts editing an active entity.
 As a result, a new entry to `MyEntity.drafts` is created.
 
 For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
-
-
-### `DISCARD`
-
-```js
-srv.before('DISCARD', MyEntity.drafts, /*...*/)
-srv.after('DISCARD', MyEntity.drafts, /*...*/)
-srv.on('DISCARD', MyEntity.drafts, /*...*/)
-```
-
-The `DISCARD` event is triggered when the user discards a draft started before.
-In this case, the draft entity is deleted and the active entity isn't changed.
-
-`CANCEL`, as a synonym for `DISCARD`, works as well.
 
 
 ### `PATCH`
@@ -124,6 +106,21 @@ The `SAVE` event is triggered when the user saves / activates a draft. This resu
 
 > [!note]
 > The `SAVE` event is also available for non-draft, i.e. active entities. In that case it acts as an convenience shortcut for registering handlers for the combination of `CREATE` and `UPDATE` events. In contrast to that, the `SAVE` event on draft entities is a distinct event that is only triggered when **activating** a draft.
+
+
+
+### `DISCARD`
+
+```js
+srv.before('DISCARD', MyEntity.drafts, /*...*/)
+srv.after('DISCARD', MyEntity.drafts, /*...*/)
+srv.on('DISCARD', MyEntity.drafts, /*...*/)
+```
+
+The `DISCARD` event is triggered when the user discards a draft started before.
+In this case, the draft entity is deleted and the active entity isn't changed.
+
+`CANCEL`, as a synonym for `DISCARD`, works as well.
 
 
 ### Custom Actions
@@ -188,23 +185,13 @@ It can occur that inactive drafts are still in the database after the configured
 :::
 
 
-
-## Bypassing Drafts {.deprecated}
-
-Use [Direct CRUD](../guides/uis/fiori#direct-crud) instead.
-
-Until the next major release (`cds10`), you can still activate the draft bypass without also allowing direct CRUD via <Config>cds.fiori.bypass_draft:true</Config>.
-
-
-
 ## Programmatic APIs <Beta />
 
 You can programmatically invoke draft actions with the following APIs:
 
 ```js
-await srv.new(MyEntity.drafts, data)     // create new draft
-await srv.discard(MyEntity.drafts, keys) // discard draft
-await srv.edit(MyEntity, keys)           // create draft from active instance
-await srv.new(MyEntity.drafts).for(keys) // same as above
-await srv.save(MyEntity.drafts, keys)    // activate draft
+await srv.new (MyEntity.drafts, data)     // create new draft
+await srv.edit (MyEntity, keys)           // create draft from active instance
+await srv.save (MyEntity.drafts, keys)    // activate draft
+await srv.discard (MyEntity.drafts, keys) // discard draft
 ```

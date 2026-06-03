@@ -283,6 +283,22 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
+### How to fix "SqlError: invalid table name: Could not find table/view ..."?
+
+On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written. 
+:::
+
+To fix this on Windows, install the tar library:
+
+```sh
+npm add -D tar
+```
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
+
 
 
 ## Java
@@ -689,7 +705,14 @@ See [How to configure your App Router](../guides/extensibility/customization#app
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
 
-<div id="hana-tms-errors" />
+### Why does my subscription fail with "Subaccount verification failed"
+
+When using HANA TMS v2, the message "Subaccount verification failed" indicates that you are trying to create a tenant container for a HANA tenant that was created in a different subaccount.
+
+Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as another application that has been deployed in another subaccount.
+
+See how to [handle HANA tenants with HANA TMS v2](/@external/guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
+
 
 ## BTP
 

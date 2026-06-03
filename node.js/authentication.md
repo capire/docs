@@ -361,7 +361,7 @@ Please see [`@sap/xssec` documentation](https://www.npmjs.com/package/@sap/xssec
 
 #### XSUAA Fallback
 
-To ease your migration from XSUAA-based to IAS-based authentication, the `ias` strategy automatically supports tokens issued by XSUAA when you provide the necessary credentials at `cds.env.requires.xsuaa.credentials`. 
+To ease your migration from XSUAA-based to IAS-based authentication, the `ias` strategy automatically supports tokens issued by XSUAA when you provide the necessary credentials at `cds.env.requires.xsuaa.credentials`.
 
 For standard bindings, add `xsuaa` to the list of required services as follows:
 
@@ -477,11 +477,11 @@ The following steps assume you've set up the [**Cloud Foundry Command Line Inter
     If you don't know the API endpoint, refer to [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
 
 2. Go to the project you have created in [Getting started in a Nutshell](../get-started/bookshop).
- 
+
 #### Configure the Application
 
 1. Configure your app for XSUAA-based authentication if not done yet:
-   
+
     ```sh
     cds add xsuaa --for hybrid
     ```
@@ -602,7 +602,7 @@ The resulting JWT token is sent to the application where it's used to enforce au
 3. In your project folder run:
 
     ::: code-group
-    ```sh [Mac/Linux]
+    ```sh [macOS/Linux]
     cds bind --exec -- npm start --prefix app/router
     ```
     ```cmd [Windows]
@@ -691,7 +691,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     cds add ams
     npm install
     ```
-  
+
     This command installs `ams` and `ias` plugins, adds the required dependencies to `package.json` and updates `mta.yaml`.
 
     Learn more about [**Adding AMS Support**](../guides/security/cap-users#adding-ams-support) and [**Adding IAS**](../guides/security/authentication#adding-ias).{.learn-more}
@@ -741,13 +741,13 @@ The login fails pointing to the correct OAuth configuration URL that is expected
     ```
 
 #### Deploy the Application
-  
+
 1. Log in to Cloud Foundry:
     ```sh
     cf l -a <api-endpoint>
     ```
     If you don't know the API endpoint, refer to [Regions and API Endpoints Available for the Cloud Foundry Environment](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/350356d1dc314d3199dca15bd2ab9b0e.html#loiof344a57233d34199b2123b9620d0bb41).
- 
+
 2. Pack and deploy the application:
 
     ```sh
@@ -757,13 +757,13 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 #### Assign Policies in the Administrative Console
 
 1. Log in to your Administrative Console for IAS and go to `Applications & Resources`.
-   
+
    [Learn more about the Administrative Console for IAS.](/@external/guides/security/authentication#ias-admin){.learn-more}
 
 2. Assign policies to IAS users or create custom policies, see [Cloud Deployment](../guides/security/cap-users#ams-deployment).
 
 #### Start Hybrid Testing
- 
+
 1. Bind your local application to the Identity Service Instance:
 
     ```sh
@@ -798,7 +798,7 @@ The login fails pointing to the correct OAuth configuration URL that is expected
 2. In your project folder run:
 
     ::: code-group
-    ```sh [Mac/Linux]
+    ```sh [macOS/Linux]
     cds bind --exec -- npm start --prefix app/router
     ```
     ```cmd [Windows]
