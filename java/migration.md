@@ -77,7 +77,6 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `cds.security.authentication.mode` | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
 | `cds.errors.preferServiceException` | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
 | `cds.multitenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
 | `cds.odataV2.batch.maxRequests` | `-1` (unlimited) | `10` | OData V2 batch requests are now limited to 10 by default to protect against overload. |
@@ -87,6 +86,8 @@ Some property defaults have been adjusted:
 | `cds.persistence.changeSet.enforceTransactional` | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
 | `cds.query.restrictions.enabled` | `false` | `true` | |
+| `cds.security.authentication.mode` | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
+| `cds.sql.hana.search.fuzzy` | `false` | `true` | Fuzzy search is now enabled on HANA by default |
 | `cds.sql.toOnePath.mode` | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 ### Deprecated Properties
