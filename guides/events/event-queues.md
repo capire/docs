@@ -106,8 +106,8 @@ If the surrounding transaction later fails, the external booking may already exi
 Some services are outboxed automatically, including `cds.MessagingService` and `cds.AuditLogService`.
 You don't need to call `cds.queued()` or configure anything extra for these — they use the persistent queue by default.
 
-[Learn more about auto-outboxed services in Node.js.](../../node.js/queue#per-configuration){.learn-more}
-[Learn more about the outbox in Java.](../../java/outbox){.learn-more}
+[Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
+[Learn more about the outbox in Java.](../../java/event-queues){.learn-more}
 
 
 ### Inbox
@@ -416,8 +416,8 @@ The following services are outboxed by default — you don't need to wrap or con
 
 This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks.
 
-[Learn more about auto-outboxed services in Node.js.](../../node.js/queue#per-configuration){.learn-more}
-[Learn more about the outbox in Java.](../../java/outbox#persistent){.learn-more}
+[Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
+[Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
 
 #### Outboxing a Remote Service
 
@@ -448,6 +448,9 @@ cds:
 #### Configuring the Queue
 
 The persistent queue is enabled by default. Messages are stored in a database table within the current transaction.
+
+> [!note] Defaults differ between stacks
+> Node.js enables the **persistent** queue for every queued service by default. Java enables the persistent outbox for `cds.MessagingService` and `cds.AuditLogService` only; other services use the in-memory outbox unless you opt them in via `cds.requires.outbox.kind: persistent-outbox`. The Java configuration sample below already does that.
 
 ::: code-group
 ```json [Node.js — package.json]
@@ -777,8 +780,8 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 ```
 :::
 
-[Learn more about the dead letter queue in Node.js.](../../node.js/queue#managing-the-dead-letter-queue){.learn-more}
-[Learn more about the dead letter queue in Java.](../../java/outbox#outbox-dead-letter-queue){.learn-more}
+[Learn more about the dead letter queue in Node.js.](../../node.js/event-queues#dead-letter-queue){.learn-more}
+[Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
 
 ### Deferred Principal Propagation
 
@@ -792,12 +795,30 @@ This means queued handlers must not rely on request-time role checks.
 If you need authorization in queued processing, encode the required information in the event payload itself or derive it from persisted business data.
 
 
+## Stack Differences at a Glance
+
+The two stacks share the concept and the data model, but their APIs and feature sets diverge in a few places. The following table summarizes the differences as of `@sap/cds` 10:
+
+| Feature | Node.js | Java |
+|---|---|---|
+| Programmatic wrap | `cds.queued(srv)` | `OutboxService.outboxed(svc)` / `AsyncCqnService.of(svc, outbox)` |
+| Default for non-auto-outboxed services | persistent | in-memory |
+| Custom outbox services | through configuration | dedicated API + configuration |
+| `srv.schedule()` (delay / recurrence / cron) | available | equivalent API; documentation to follow |
+| Singleton tasks (`srv.schedule.task` / `srv.unschedule.task`) | available | not available |
+| Callback events `#succeeded` / `#failed` | available | on the roadmap |
+| Manual processing trigger (`cds.flush()`) | available | not needed; both stacks recover automatically |
+| Event versioning for blue/green deployments | not available | available |
+| OpenTelemetry KPI metrics | not available | available |
+| Shared-database isolation pattern | not applicable | available |
+
+
 ## Next Steps
 
 For stack-specific APIs, configuration keys, and troubleshooting:
 
-- [Event Queues in Node.js](../../node.js/queue) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule`, queue and scheduling configuration.
-- [Transactional Outbox in Java](../../java/outbox) — `OutboxService`, `AsyncCqnService`, custom outboxes, observability via OpenTelemetry.
+- [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. singleton tasks and `#succeeded` / `#failed` callbacks), queue and scheduling configuration, troubleshooting.
+- [Event Queues in Java](../../java/event-queues) — `OutboxService`, `AsyncCqnService`, custom outbox services, the technical outbox API, error-handling patterns, event versioning for blue/green deployments, and OpenTelemetry observability.
 
 Most real-world event-queue use comes through messaging or remote services. From here you'll likely want to look at:
 

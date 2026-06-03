@@ -39,7 +39,7 @@
   ## [Class cds. Event](events#cds-event)
   ## [Class cds. Request](events#cds-request)
   ## [Error Handling](events#req-reject)
-  ## [Event Queues](queue)
+  ## [Event Queues](event-queues)
 
 # [cds. Queries](cds-ql)
 

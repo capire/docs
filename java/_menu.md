@@ -20,7 +20,7 @@
 # [Messaging](messaging)
 # [Audit Logging](auditlog)
 # [Change Tracking](change-tracking)
-# [Transactional Outbox](outbox)
+# [Event Queues](event-queues)
 # [Multitenancy](multitenancy)
 # [Security](security)
 # [Spring Boot Integration](spring-boot-integration)
