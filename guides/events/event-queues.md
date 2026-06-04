@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  Transactional Event Queues allow to schedule events and background tasks for asynchronous exactly once processing and withultimate resilience.
+  Transactional Event Queues allow the scheduling of events and background tasks for asynchronous exactly once processing and with ultimate resilience.
 status: released
 ---
 
@@ -17,12 +17,12 @@ The _Outbox Pattern_ is a reliable strategy used in distributed systems to ensur
 
 * **Outbox** → for outbound calls to remote services
 * **Inbox** → for asynchronously handling inbound requests
-* **Background tasks** → e.g., scheduled periodically
+* **Background tasks** → e.g. scheduled periodically
 * **Remote Callbacks** → implementing SAGA patterns
 
 The core principle remains the same:
 
-Instead of being sent directy to receivers, event messages are persisted in an _Event Queue_ table in the database -- **within the same transaction** as the triggering action, if applicable.
+Instead of being sent directly to receivers, event messages are persisted in an _Event Queue_ table in the database -- **within the same transaction** as the triggering action, if applicable.
 
 Later on, these event messages are read from the database and actually sent to the receiving services, hence **processed asynchronously** -- with retries, if necessary, so guaranteeing **ultimate resilience**.
 
@@ -40,13 +40,13 @@ Regarding the _outbox_, please see the following existing documentation:
 ## Inbox <Beta /> { #inbox }
 
 Through the _inbox_, inbound messages can be accepted as asynchronous tasks.
-That is, the messaging service persists the message to the database, acknowledges it to the message broker, and schedules its processing.
+That is, the messaging service persists the message to the database, acknowledges its receipt to the message broker, and schedules its processing.
 
 Simply configure your messaging service for Node.js as <Config>cds.requires.messaging.inboxed = true</Config> and for CAP Java as <Config java keyOnly>cds.messaging.services=[{"name": "messaging-name", "inbox": {"enabled": true}}]</Config>
 
 **Inboxing moves the dead letter queue into your CAP app❗️**
 
-With the inbox, all messages are acknowledged towards the message broker regardless of whether they can be processed or not.
+With the inbox, all messages are acknowledged with the message broker regardless of whether they can be processed or not.
 Hence, failures need to be managed via the dead letter queue built on `cds.outbox.Messages`.
 
 [Learn more about the dead letter queue in Node.js.](../../node.js/queue#managing-the-dead-letter-queue){.learn-more}
