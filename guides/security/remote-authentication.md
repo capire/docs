@@ -270,7 +270,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. CAP Java handles IAS token exchange natively, while CAP Node.js requires a custom handler using SAP Cloud SDK v4's `createDestinationFromIasService` API.
+[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App - Java handles it natively via configuration, while Node.js can use either BTP Destinations with `tokenService.body.resource` or Cloud SDK's `createDestinationFromIasService` API.
 
 
 ### IAS App-2-App { #app-to-app }
@@ -291,7 +291,7 @@ CAP offers App-2-App setup by leveraging remote services that require:
 - URL pointing to the provider
 - Principal propagation mode (optional)
 
-**Note:** CAP Java handles IAS App-2-App natively. CAP Node.js requires a custom handler using SAP Cloud SDK v4.
+**Note:** CAP Java handles IAS App-2-App natively. CAP Node.js can use BTP Destinations with `tokenService.body.resource` or Cloud SDK's `createDestinationFromIasService` API.
 :::
 
 [Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
@@ -428,10 +428,7 @@ cds:
         "[production]": {
           "credentials": {
             "path": "/hcql/data",
-            "iasOptions": {
-              "targetUrl": "https://<xflights-srv url>",
-              "resource": "data-consumer"
-            }
+            "destination": "xflights-ias-app2app"
           }
         }
       }
@@ -450,20 +447,48 @@ The `ias-dependency-name` property configures the IAS App-2-App flow directly in
 
 ::: details Node.js configuration explained
 
-CAP Node.js does not yet have native support for IAS App-2-App token exchange. A custom handler is required that uses SAP Cloud SDK v4's `createDestinationFromIasService` API.
+CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote service configuration.
 
-**1. Configuration** - The `iasOptions` in `credentials` is a custom configuration (not natively supported by CAP) that the custom handler reads:
+**1. Configuration** - Use a named destination in `credentials`:
 - `path`: The HCQL endpoint path on the provider
-- `iasOptions.targetUrl`: Full URL of the provider application
-- `iasOptions.resource`: The IAS dependency name (must match the `@requires` annotation on the provider and the IAS dependency configured in step 3)
+- `destination`: Name of the BTP Destination configured for IAS App-2-App
 
-**2. MTA descriptor** - bind the IAS service:
+**2. BTP Destination** - Create a destination in BTP Cockpit with these properties:
+
+| Property | Value |
+|----------|-------|
+| Name | `xflights-ias-app2app` |
+| Type | `HTTP` |
+| URL | `https://<xflights-srv url>` |
+| Proxy Type | `Internet` |
+| Authentication | `OAuth2ClientCredentials` or `OAuth2JWTBearer` |
+| Client ID | Consumer IAS client ID |
+| Client Secret | Consumer IAS client secret |
+| Token Service URL | `https://<IAS tenant>/oauth2/token` |
+| Token Service URL Type | `Dedicated` |
+
+**Additional Property (required for IAS App-2-App):**
+
+| Property | Value |
+|----------|-------|
+| `tokenService.body.resource` | `urn:sap:identity:application:provider:name:data-consumer` |
+
+The key is `tokenService.body.resource` which passes the `resource` parameter to IAS, triggering App-2-App token scoping and adding the `ias_apis` claim.
+
+**3. Authentication type depends on use case:**
+- **OAuth2ClientCredentials**: For technical user scenarios (no user context)
+- **OAuth2JWTBearer**: For user propagation (requires user token from authorization_code flow)
+
+Both support `tokenService.body.resource` for IAS App-2-App scoping.
+
+**4. MTA descriptor** - bind the IAS and Destination services:
 
 ```yaml
 modules:
   - name: xtravels-srv
     requires:
       - name: xtravels-ias
+      - name: xtravels-destination
 
 resources:
   - name: xtravels-ias
@@ -476,111 +501,19 @@ resources:
         oauth2-configuration:
           token-policy:
             access-token-format: jwt
+
+  - name: xtravels-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
 ```
 
-**3. SAP Cloud SDK dependencies** - required for IAS token exchange:
+::: warning MTA inline destination limitation
+MTA cannot resolve cross-service credential references like `${generated>xtravels-ias/clientid}`. The destination must be created manually in BTP Cockpit or via Destination Service API.
+:::
 
-```sh
-npm add @sap-cloud-sdk/http-client @sap-cloud-sdk/connectivity
-```
-
-**4. Custom handler** - implement IAS App-2-App in your service (e.g., `srv/travel-service.js`):
-
-```javascript
-const cds = require('@sap/cds')
-
-class TravelService extends cds.ApplicationService {
-  async init() {
-    const xflights = await cds.connect.to('sap.capire.flights.data')
-    const { Flights, Supplements } = this.entities
-
-    // Check if IAS App2App is configured
-    if (cds.env.requires?.['sap.capire.flights.data']?.credentials?.iasOptions) {
-      this.on('READ', Flights, req => this._iasApp2AppRequest(req))
-      this.on('READ', Supplements, req => this._iasApp2AppRequest(req))
-    } else {
-      // Local/mock mode - delegate to remote service directly
-      this.on('READ', Flights, req => xflights.run(req.query))
-      this.on('READ', Supplements, req => xflights.run(req.query))
-    }
-    return super.init()
-  }
-
-  /**
-   * Execute request using Cloud SDK v4 IAS App2App authentication.
-   * Supports both technical user (OAuth2ClientCredentials) and
-   * user propagation (OAuth2JWTBearer) flows.
-   */
-  async _iasApp2AppRequest(req) {
-    const { executeHttpRequest } = require('@sap-cloud-sdk/http-client')
-    const { createDestinationFromIasService, decodeJwt } = require('@sap-cloud-sdk/connectivity')
-
-    const iasConfig = cds.env.requires['sap.capire.flights.data'].credentials.iasOptions
-    const path = cds.env.requires['sap.capire.flights.data'].credentials.path || ''
-
-    // Get JWT token from request
-    const jwt = req.user?.token?.jwt ||
-                req.headers?.authorization?.split(/^bearer /i)[1] ||
-                req._.req?.headers?.authorization?.split(/^bearer /i)[1]
-
-    try {
-      // Detect if token is user token or technical token
-      const decoded = jwt ? decodeJwt(jwt) : null
-      const isUserToken = decoded && (decoded.email || decoded.user_uuid || decoded.sub !== decoded.azp)
-
-      let iasOptions
-      if (isUserToken) {
-        // User propagation - exchange user token for IAS App2App token
-        iasOptions = {
-          targetUrl: iasConfig.targetUrl,
-          resource: { name: iasConfig.resource },
-          authenticationType: 'OAuth2JWTBearer',
-          assertion: jwt
-        }
-      } else {
-        // Technical user - use client credentials
-        iasOptions = {
-          targetUrl: iasConfig.targetUrl,
-          resource: { name: iasConfig.resource },
-          authenticationType: 'OAuth2ClientCredentials'
-        }
-      }
-
-      // Create destination with IAS token
-      // 'identity' resolves IAS binding from VCAP_SERVICES
-      const destination = await createDestinationFromIasService('identity', iasOptions)
-
-      // Transform query to use remote entity names
-      const query = JSON.parse(JSON.stringify(req.query))
-      if (query.SELECT?.from?.ref) {
-        const localName = query.SELECT.from.ref[0]
-        // Map local entity names to remote service entity names
-        if (localName === 'TravelService.Flights')
-          query.SELECT.from.ref[0] = 'sap.capire.flights.data.Flights'
-        if (localName === 'TravelService.Supplements')
-          query.SELECT.from.ref[0] = 'sap.capire.flights.data.Supplements'
-      }
-
-      // Execute HCQL request (no CSRF token needed)
-      const response = await executeHttpRequest(destination, {
-        method: 'POST',
-        url: path,
-        headers: { 'content-type': 'application/json', 'accept': 'application/json' },
-        data: query
-      }, { fetchCsrfToken: false })
-
-      return response.data
-    } catch (error) {
-      console.error('IAS App2App request failed:', error.message)
-      throw error
-    }
-  }
-}
-
-module.exports = { TravelService }
-```
-
-See [Node.js: Custom Handler for IAS App-2-App](#nodejs-ias-handler) for a detailed explanation.
+**Alternative: Cloud SDK API** - If you prefer programmatic control, you can use Cloud SDK's `createDestinationFromIasService` API with a custom handler. See [Node.js: Custom Handler for IAS App-2-App](#nodejs-ias-handler).
 
 :::
 
@@ -603,7 +536,7 @@ cds up
 Remote HCQL service responded with HTTP status code '401', ...
 ```
 
-Technically, the App-2-App flow takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect). In Java, CAP's remote service handles this automatically. In Node.js, the custom handler initiates this flow using Cloud SDK's `createDestinationFromIasService`.
+Technically, the App-2-App flow takes the token from the request and triggers an IAS token exchange for the target [IAS dependency](#connect). In Java, CAP's remote service handles this automatically. In Node.js, the BTP Destination with `tokenService.body.resource` triggers the token exchange via the Destination Service.
 As the IAS dependency is not created yet, IAS rejects the token exchange request and the call to the provider fails with `401` (not authenticated).
 
 Note that property `oauth2-configuration.token-policy.access-token-format: jwt` is set in the identity instance to ensure the exchanged token has JWT format.
@@ -616,7 +549,7 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](./a
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
-3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name` in Java, or `iasOptions.resource` in Node.js) and pick provided API `data-consumer` from the provider IAS application `xflights`.
+3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name` in Java, or the dependency name in `tokenService.body.resource` for Node.js) and pick provided API `data-consumer` from the provider IAS application `xflights`.
 4. Confirm with **Save**
 
 ::: details Create IAS dependency in Administrative Console
@@ -647,21 +580,11 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## Node.js: Custom Handler for IAS App-2-App { #nodejs-ias-handler }
 
-CAP Node.js does not yet natively support IAS App-2-App token exchange in its remote service configuration. While CAP Java can handle IAS App-2-App with a simple `ias-dependency-name` property, Node.js requires a custom handler that directly uses SAP Cloud SDK v4.
+As an alternative to using BTP Destinations, CAP Node.js can use Cloud SDK's `createDestinationFromIasService` API directly via a custom handler. This approach gives you more programmatic control but requires more code.
 
-### Why a Custom Handler?
-
-CAP's remote service `credentials` configuration supports:
-
-```json
-"credentials": {
-  "destination": "name",        // BTP Destination - requires XSUAA
-  "url": "https://...",         // Direct URL - no auth or forwardAuthToken
-  "destinationOptions": {...}   // Cloud SDK options - but no iasOptions
-}
-```
-
-**What's missing:** There's no `iasOptions` support to configure IAS-specific parameters like `targetUrl`, `resource`, and `authenticationType`. CAP's internal HTTP client doesn't call Cloud SDK's `createDestinationFromIasService` API.
+::: tip Recommended approach
+For most use cases, the [BTP Destination approach](#consumer) is simpler and requires no custom code. Use the custom handler approach only if you need programmatic control over the token exchange.
+:::
 
 ### Cloud SDK v4 API
 
@@ -693,17 +616,32 @@ const response = await executeHttpRequest(destination, requestConfig, { fetchCsr
 | `OAuth2ClientCredentials` | Technical user (no user context) | `ias_apis: ["data-consumer"]` |
 | `OAuth2JWTBearer` | User propagation (exchange user token) | `ias_apis: ["data-consumer"]` + user identity |
 
-The custom handler detects the token type automatically:
-- **User token**: Has `email`, `user_uuid`, or `sub !== azp` → uses `OAuth2JWTBearer`
-- **Technical token**: Client credentials token → uses `OAuth2ClientCredentials`
+### Configuration for Custom Handler
 
-### Key Implementation Details
+If using the custom handler approach, configure `iasOptions` in `package.json`:
 
-1. **Entity name mapping**: Local entity names (e.g., `TravelService.Flights`) must be mapped to remote service entity names (e.g., `sap.capire.flights.data.Flights`)
+```json
+{
+  "cds": {
+    "requires": {
+      "sap.capire.flights.data": {
+        "kind": "hcql",
+        "[production]": {
+          "credentials": {
+            "path": "/hcql/data",
+            "iasOptions": {
+              "targetUrl": "https://<xflights-srv url>",
+              "resource": "data-consumer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
-2. **CSRF tokens**: HCQL protocol doesn't require CSRF tokens. Pass `{ fetchCsrfToken: false }` to avoid Cloud SDK sending a HEAD request that crashes CAP's HCQL adapter.
-
-3. **CQN query format**: Send the CQN query directly as the request body (not stringified or wrapped).
+Then implement the custom handler in your service file. See the [Cloud SDK IAS documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service) for details.
 
 [Learn more about SAP Cloud SDK IAS connectivity](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service){.learn-more}
 
@@ -711,10 +649,10 @@ The custom handler detects the token type automatically:
 ## Pitfalls
 
 - **Don't write custom integration logic** for consumed services unless necessary.
-Leverage CAP's remote service architecture when possible to ensure a seamless integration experience. For Node.js IAS App-2-App, a custom handler is currently required until CAP adds native support.
+Leverage CAP's remote service architecture when possible to ensure a seamless integration experience. For Node.js IAS App-2-App, use BTP Destinations with `tokenService.body.resource` for the simplest approach.
 
 - **Don't implement connectivity layer code** (for example, to fetch or exchange tokens) unless necessary.
-For Java, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests. For Node.js IAS App-2-App, use SAP Cloud SDK v4's `createDestinationFromIasService` API as shown in [Custom Handler for IAS App-2-App](#nodejs-ias-handler).
+For Java, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests. For Node.js IAS App-2-App, BTP Destinations handle the token exchange automatically.
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
