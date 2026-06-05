@@ -624,7 +624,7 @@ In a nutshell, this introduction to the objectives of hexagonal architecture tra
 > - To reduce complexity and speed up turnaround times at *development*, and in *tests*
 >   <br/>→ [*'Airplane Mode' Development & Tests*](features#fast-inner-loops)
 >
-> **In contrast to that**, if you (think you) are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
+> **In contrast to that**, if (you think) you are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
 
 
 
