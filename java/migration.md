@@ -108,6 +108,7 @@ The following table gives an overview about the removed properties:
 | `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
 | `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
 | `cds.taskScheduler.enabled` | Use `cds.outbox.persistent.scheduler.enabled`. |
+| `cds.sql.hana. optimizationMode ` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
