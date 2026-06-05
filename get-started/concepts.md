@@ -5,26 +5,26 @@ status: released
 # Core Concepts of CAP
 Cloud Scale by Design  {.subtitle}
 
-<!-- 
+<!--
 - Domain-driven Development
 - Service-centric Paradigm
 - Event-driven Runtimes
 - Querying & Pushdown
-- Intrinsic Extensibility 
+- Intrinsic Extensibility
 - The Calesi Pattern
 
 
 Appendix: Common Design Principles
-  - SOLID Principles: 
-    - **S**ingle Responsibility 
-    - **O**pen/Closed 
-    - **L**iskov Substitution 
-    - **I**nterface Segregation 
-    - **D**ependency Inversion 
+  - SOLID Principles:
+    - **S**ingle Responsibility
+    - **O**pen/Closed
+    - **L**iskov Substitution
+    - **I**nterface Segregation
+    - **D**ependency Inversion
   - DRY Principle
   - KISS Principle
-  - YAGNI Principle 
-  
+  - YAGNI Principle
+
   -->
 
 [[toc]]
@@ -43,7 +43,7 @@ The CAP framework features a mix of proven and broadly adopted open-source and S
 The major building blocks are as follows:
 
 - [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
-  
+
 - [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
 
 - [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
@@ -90,16 +90,16 @@ In a first iteration, it would look like this in CDS, with some fields added:
 
 ::: code-group
 ```cds [Domain Data Model]
-entity Authors { 
+entity Authors {
   name   : String;
   books  : Association to many Books;
 }
-entity Books { 
+entity Books {
   title  : String;
   author : Association to Authors;
   genre  : Association to Genres;
 }
-entity Genres { 
+entity Genres {
   name   : String;
   parent : Association to Genres;
 }
@@ -608,13 +608,12 @@ So, in total, and in effect, we learn:
 
 
 
-The *[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
+The *[Hexagonal Architecture](https://en.wikipedia.org/wiki/hexagonal_architecture_(software))* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
 
 *"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {.indent style="font-family:serif"}
 
 ... and he illustrated that like this:
-
-![Hexagonal architecture basic.gif](https://alistair.cockburn.us/hexFig1.png)
+![Hexagonal Architecture original illustration by Alistair Cockburn](assets/concepts/hexagonal-archritecture-origin.png)
 
 In a nutshell, this introduction to the objectives of hexagonal architecture translates to that in our world of cloud-based business applications:
 
