@@ -509,9 +509,7 @@ resources:
       service-plan: lite
 ```
 
-::: warning MTA inline destination limitation
-MTA cannot resolve cross-service credential references like `${generated>xtravels-ias/clientid}`. The destination must be created manually in BTP Cockpit or via Destination Service API.
-:::
+**Note:** MTA cannot resolve cross-service credential references like `${generated>xtravels-ias/clientid}`. The destination must be created manually in BTP Cockpit or via Destination Service API.
 
 **Alternative: Cloud SDK API** - If you prefer programmatic control, you can use Cloud SDK's `createDestinationFromIasService` API with a custom handler. See [Node.js: Custom Handler for IAS App-2-App](#nodejs-ias-handler).
 
