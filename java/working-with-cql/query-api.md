@@ -1658,7 +1658,7 @@ To automatically generate vector embeddings on write in the database, you can de
 ```cds
 extend Incidents with {
   @cds.api.ignore
-  embedding : cds.Vector(768) = vector_embedding(
+  embedding : Vector = vector_embedding(
        'title: ' || title || ', summary: ' || summary,
        'DOCUMENT', 'SAP_GXY.20250407') stored;
 }
