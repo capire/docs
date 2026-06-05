@@ -608,23 +608,24 @@ So, in total, and in effect, we learn:
 
 
 
-The *[Hexagonal Architecture](https://en.wikipedia.org/wiki/hexagonal_architecture_(software))* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
+The *[Hexagonal Architecture](https://en.wikipedia.org/wiki/hexagonal_architecture_(software))* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). He introduced it back then with the following opening statement and illustration:
 
-*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {.indent style="font-family:serif"}
+*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {style="font-family:serif; font-size:115%; padding:0 44px"}
 
-... and he illustrated that like this:
 ![Hexagonal Architecture original illustration by Alistair Cockburn](assets/concepts/hexagonal-archritecture-origin.png)
 
-In a nutshell, this introduction to the objectives of hexagonal architecture translates to that in our world of cloud-based business applications:
+We can translate that to these objectives in our world of cloud-based business applications:
 
 > [!tip] Objectives of Hexagonal Architecture
 >
 > - Your *Application* (→ the inner hexagon) should stay ***agnostic*** to *"the outside"*
 > - Thereby allowing to replace *"the outside"* met in production by *mocked* variants
 > - To reduce complexity and speed up turnaround times at *development*, and in *tests*
->   <br/>→ [*'Airplane Mode' Development & Tests*](features#fast-inner-loops)
 >
-> **In contrast to that**, if (you think) you are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
+> -> See also: [*Inner-Loop Development & Tests*](features#fast-inner-loops)
+>
+
+In contrast to that, if (you think) you are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
 
 
 
