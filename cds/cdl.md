@@ -1993,10 +1993,12 @@ service AdminService {
 Auto-redirection fails if a target can't be resolved unambiguously, that is, when there is more than one projection with the same minimal 'distance' to the source. For example, compiling the following model with two projections on `my.Books` would produce this error:
 
 ::: danger
-Target "Books" is exposed in service "AdminService" by multiple projections "AdminService.ListOfBooks", "AdminService.Books" - no implicit redirection.
+Add “@cds.redirection.target” to either “AdminService.Books” or “AdminService.ListOfBooks” to select the entity as redirection target for “bookshop.Books” in this service; can't auto-redirect “AdminService.Authors:books” otherwise (in entity:“AdminService.Books”)
 :::
 
 ```cds
+using bookshop as my from '../db/schema';
+
 service AdminService {
   entity ListOfBooks as projection on my.Books;
   entity Books as projection on my.Books;
