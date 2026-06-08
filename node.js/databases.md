@@ -27,7 +27,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 
 ## cds.DatabaseService — Consumption {#databaseservice-consumption }
-[databaseservice consumption]: #databaseservice-consumption
+###### databaseservice-consumption
 
 
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->
@@ -47,30 +47,11 @@ This method is called automatically by the framework on the first query, so **yo
 
 
 ## cds.DatabaseService — Configuration {#databaseservice-configuration }
-[databaseservice configuration]: #databaseservice-configuration
+###### databaseservice-configuration
 
 ### Pool
 
-Instead of opening and closing a database connection for every request, we use a pool to reuse connections.
-By default, the following [pool configuration](https://www.npmjs.com/package/generic-pool) is used:
-
-```json
-{
-  "acquireTimeoutMillis": <if (NODE_ENV='production') 1000 else 10000>,
-  "evictionRunIntervalMillis": <2 * (idleTimeoutMillis || softIdleTimeoutMillis || 30000)>,
-  "min": 0,
-  "max": 100,
-  "numTestsPerEvictionRun": <(max - min) / 3>,
-  "softIdleTimeoutMillis": 30000,
-  "idleTimeoutMillis": 30000,
-  "testOnBorrow": true,
-  "fifo": false
-}
-```
-
-::: warning
-This default pool configuration does not apply to `@cap-js` database implementations.
-:::
+Instead of opening and closing a database connection for every request, we use a [`generic-pool`](https://www.npmjs.com/package/generic-pool)-based pool to reuse connections.
 
 The _generic-pool_ has a built-in pool evictor, which inspects idle database connections in the pool and destroys them if they are too old.
 
@@ -111,7 +92,7 @@ Pool configuration can be adjusted by setting the `pool` option as shown in the 
 }
 ```
 
-::: warning _❗ Warning_
+::: warning 
 The parameters are very specific to the current technical setup, such as the application environment and database location.
 Even though we provide a default pool configuration, we expect that each application provides its own configuration based on its specific needs.
 :::
@@ -122,7 +103,7 @@ Even though we provide a default pool configuration, we expect that each applica
 
 
 ## cds.DatabaseService — UPSERT {#databaseservice-upsert }
-[databaseservice upsert]: #databaseservice-upsert
+###### databaseservice-upsert
 
 
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->

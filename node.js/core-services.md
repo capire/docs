@@ -1,5 +1,4 @@
 ---
-status: released
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -17,7 +16,7 @@ A CAP application mainly consists of the services it provides to clients. Such *
 
 #### CDS-Modeling *Provided* Services
 
-For example, a simplified all-in-one variant of [*cap/samples/bookshop/srv/cat-service.cds*](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/srv/cat-service.cds):
+For example, a simplified all-in-one variant of [*capire/bookshop/srv/cat-service.cds*](https://github.com/capire/bookshop/blob/main/srv/cat-service.cds):
 
 ```cds
 using { User, sap.capire.bookshop as my } from '../db/schema';
@@ -33,7 +32,7 @@ service CatalogService {
 }
 ```
 
-[Learn more about defining services using CDS](../guides/providing-services) {.learn-more}
+[Learn more about defining services using CDS](../guides/services/providing-services) {.learn-more}
 
 
 
@@ -45,7 +44,8 @@ In essence, the built-in bootstrapping logic works like that:
 
 ```js
 cds.app = require('express')()
-cds.model = await cds.load('*')
+const csn = await cds.load('*')
+cds.model = cds.compile.for.nodejs(csn)
 cds.services = await cds.serve('all').from(cds.model).in(cds.app)
 ```
 
@@ -107,7 +107,7 @@ By default `cds.serve` creates an instance of `cds.ApplicationService` for each 
 
 #### In sibling `.js` files, next to `.cds` sources
 
-The easiest way to add custom service implementations is to simply place a `.js` file with the same name next to the `.cds` file containing the respective service definition. For example, as in [*cap/samples/bookshop*](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/):
+The easiest way to add custom service implementations is to simply place a `.js` file with the same name next to the `.cds` file containing the respective service definition. For example, as in [*cap/samples/bookshop*](https://github.com/capire/bookshop):
 
 ```zsh
 bookshop/
@@ -258,7 +258,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/providing-services#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions-functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -282,7 +282,7 @@ await srv.update(Books,201).with({stock:111})
 await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
 ```
 
-[Emitting Asynchronous Event Messsages:](#srv-emit-event)
+[Emitting Asynchronous Event Messages:](#srv-emit-event)
 
 ```js
 await srv.emit ('SomeEvent', {foo:'bar'})
@@ -396,35 +396,48 @@ var srv.options : { //> from cds.requires config
 
 
 
-### . entities {.property alt="The following documentation on operations also applies to entities. "}
-
-### . events {.property alt="The following documentation on operations also applies to events. "}
-
-### . operations {.property}
+### . entities {.property alt="The following documentation on actions also applies to entities. "}
+### . events {.property alt="The following documentation on actions also applies to events. "}
+### . actions {.property}
+###### srv-entities
 
 ```tsx
-var srv.entities/events/operations : Iterable <{
+var srv.entities/events/actions : Iterable <{
   name : CSN definition
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and operations — that is *actions* and *functions* — exposed by this service.
-
-They are *iterable* objects, which means you can use them in all of these ways:
+These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#iterable) which you can use in all of these ways:
 
 ```js
 // Assumed `this` is an instance of cds.Service
-let { Books, Authors } = this.entities
-let all_entities = [ ... this.entities ]
+const { Books, Authors } = this.entities
+const all_entities = [ ... this.entities ]
 for (let k in this.entities) //... k is a CSN definition's name
 for (let d of this.entities) //... d is a CSN definition
 ```
 
+#### Similarity _and_ difference to `cds.entities`
 
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#entities). However, note this difference:
 
+While both of these work with [`cds.entities`](cds-facade#cds-entities):
+```js
+const { 'some.namespace.Books':Books, ... } = cds.entities  //> works
+const { Books, Authors } = cds.entities ('some.namespace')  //> works
+```
+
+Only the first one works with [`srv.entities`](#srv-entities):
+```js
+const { Books, Authors } = srv.entities                     //> works
+const { Books, Authors } = srv.entities ('some.namespace')  //> FAILS! [!code --]
+```
+
+ Reason is that `cds.entities` is sort of a chimera, which can be used both **as a getter** returning _all_ definitions, and **as a function** which accepts a namespace to fetch definitions for. The latter doesn't make sense in the context of a service, as the namespace is already implied by the service's name.
 
 
 ### srv. init() {.method}
+###### srv-init
 
 ```tsx
 async function srv.init()
@@ -451,6 +464,7 @@ Ensure to call `super.init()` to allow subclasses to register their handlers. Do
 
 
 ### srv. prepend() {.method}
+###### srv-prepend
 
 ```tsx
 function srv.prepend(()=>{...})
@@ -472,6 +486,7 @@ cds.on('served',()=>{
 
 
 ### srv. on, before, after() {.method}
+###### srv-on-before-after
 
 ```tsx
 function srv.on/before/after (
@@ -504,30 +519,29 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers actually fulfill requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, frequently for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, frequently to enrich outbound data
+- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
+- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
+- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
 
 **Argument `event`** can be one of:
 
-- `'CREATE'`, `'READ'`, `'UPDATE'`, `'UPSERT'`,`'DELETE'`
-- `'INSERT'`,`'SELECT'` → as aliases for: `'CREATE'`,`'READ'`
-- `'POST'`,`'GET'`,`'PUT'`,`'PATCH'` → as aliases for: `'CREATE'`,`'READ'`,`'UPDATE'`
-- `'each'` → convenience feature to register `.after` `'READ'` handler that runs for each individual result entry
-- Any other string name of a custom action or function – for example,, `'submitOrder'`
-- An `array` of the above to register the given handler for multiple events
-- The string `'*'` to register the given handler for *all* potential events
-- The string `'error'` to register an error handler for *all* potential events
+- String `CREATE`, `READ`, `UPDATE`, `UPSERT`, `DELETE`
+- String `SELECT`, `INSERT` → aliases for: `READ` and `CREATE`
+- String `GET`, `PUT`, `POST`, `PATCH` → aliases for: `READ`, `CREATE`, `UPDATE`
+- String `each` → shorthand for `.after` `READ` handler ran for _each_ result entry
+- String `error` to register an error handler for *all* potential events
+- A name of a custom action or function – for example, `submitOrder`
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → as obtained from [`this.entities`](#entities)
-- A `string` matching the name of an entity served by this service → see [draft support](./fiori#draft-support)
-- A `path`  navigating from a served entity to associated ones → for example, `'Books/author'`
-- An `array` of the above to register the given handler for multiple entities / paths
-- The string `'*'` to register the given handler for *all* potential entities / paths
+- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `string` corresponding to the _name_ of an entity served by this service
+- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
 
+**Multiple `events` or `entities`** – for both parameters, you can also specify:
 
+- An `array` of the above to register a handler for _multiple_ events or entities
+- String `*` to register a handler for _all_ potential events or entities.
 
 ::: tip Best Practices
 
@@ -544,6 +558,7 @@ Your services are mostly constructed by [`cds.serve()`](cds-serve) based on serv
 
 
 ### srv. before (request) {.method}
+###### srv-before-request
 
 ```tsx
 function srv.before (event, entity?, handler: (
@@ -587,6 +602,7 @@ The input validation handlers above collect input errors with [`req.error()`](./
 
 
 ### srv. after (request) {.method}
+###### srv-after-request
 
 ```tsx
 function srv.after (event, entity?, handler: (
@@ -628,6 +644,7 @@ this.after ('each', Books, book => {
 
 
 ### srv. on (request) {.method}
+###### srv-on-request
 
 ```tsx
 function srv.on (event, entity?, handler: (
@@ -701,6 +718,7 @@ this.on ('READ',[Books,Authors], req => req.target.data)
 
 
 ### srv. on (event) {.method}
+###### srv-on-event
 
 ```tsx
 function srv.on (event, handler: (
@@ -758,6 +776,7 @@ All these registered handlers would get executed concurrently, and independently
 
 
 ### srv. on (error) {.method}
+###### srv-on-error
 
 ```ts
 function srv.on ('error', handler: (
@@ -783,6 +802,7 @@ Error handlers are invoked whenever an error occurs during event processing of *
 
 
 ### srv. send (request) {.method}
+###### srv-send-request
 
 ```ts
 async function srv.send (
@@ -796,8 +816,10 @@ return : result of this.dispatch(req)
 
 Use this method to send synchronous requests to a service for execution.
 
--  `method` can be an HTTP method, or a name of a custom action or function
+-  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
+
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 
@@ -836,6 +858,7 @@ await srv.send({ query: SELECT.from('Books'), headers: { some: 'header' } })
 
 
 ### srv. emit (event) {.method}
+###### srv-emit-event
 
 ```ts
 async function srv.emit (
@@ -874,21 +897,21 @@ return this.dispatch(msg)
 
 All *cds.Services* are intrinsically events & messaging-enabled. The core implementation provides local in-process messaging, while [*cds.MessagingService*](messaging) plugs in to that to extend it to cross-process messaging via common message brokers.
 
-[**⇨ Read the Messaging Guide**](../guides/messaging/index) for the complete story.
+[**⇨ Read the Messaging Guide**](../guides/events/index) for the complete story.
 
 :::
 
 ::: danger **PLEASE NOTE**
 
-Although emitters do not handle any return values from consumers, it is necessary to always call them with `await`. Keep in mind that `srv.emit()` is an *`async`* method, it is **very important** to properly handle the returned *Promises* by using `await`. Not handing them will likely lead to invalid transaction states and deadlocks.
+Although emitters do not handle any return values from consumers, it is necessary to always call them with `await`. Keep in mind that `srv.emit()` is an *`async`* method, it is **very important** to properly handle the returned *Promises* by using `await`. Not handling them will likely lead to invalid transaction states and deadlocks.
 
 :::
 
 
 
 
-
 ### srv. run (query) {.method}
+###### srv-run-query
 
 ```ts
 async function srv.run (
@@ -930,6 +953,7 @@ return this.dispatch(req)
 
 
 ### srv. run ( fn ) {.method}
+###### srv-run-fn
 
 ```tsx
 function srv.run ( fn? : tx<srv> => {...} ) => Promise
@@ -962,6 +986,7 @@ This method is also used by [`srv.dispatch()`](#srv-dispatch-event) to ensure si
 
 
 ### srv. dispatch (event) {.method}
+###### srv-dispatch-event
 
 ```ts
 async function srv.dispatch (
@@ -999,6 +1024,7 @@ When looking for overriding central event processing, rather choose  [`srv.handl
 
 
 ### srv. handle (event) {.method}
+###### srv-handle-event
 
 ```ts
 async function srv.handle (
@@ -1047,13 +1073,14 @@ All matching `.before`, `.on`, and `.after` handlers are executed in correspondi
   -  ***concurrently*** for instances of `cds.Event`
 - **`after`** handlers are always executed *concurrently*
 
-In effect, for asynchronous event messages, that is, instances of `cds.Event`, sent via [`srv.emit()`](#srv-emit-event), all registered `.on` handlers are always executed. In contrast to that, for synchronous resuests, that is, instances of `cds.Requests`  this is up to the individual handlers calling `next()`. See [`srv.on(request)`](#interceptor-stack-with-next) for an example.
+In effect, for asynchronous event messages, that is, instances of `cds.Event`, sent via [`srv.emit()`](#srv-emit-event), all registered `.on` handlers are always executed. In contrast to that, for synchronous requests, that is, instances of `cds.Requests`  this is up to the individual handlers calling `next()`. See [`srv.on(request)`](#interceptor-stack-with-next) for an example.
 
 
 
 
 
 ### srv. foreach (entity) {.method}
+###### srv-foreach-entity
 
 ```ts
 function foreach(
@@ -1063,18 +1090,14 @@ function foreach(
 
 Executes the statement and processes the result set row by row. Use this API instead of [`cds.run`](#srv-run-query) if you expect large result sets. Then they're processed in a streaming-like fashion instead of materializing the full result set in memory before processing.
 
-> Please note that this API is not yet implemented by any common `cds.Service` subclass (that is, `cds.DatabaseService`). Hence, the full result set is currently materialized in memory.
+> As of now, this API is only implemented by `cds.DatabaseService`. For all other subclasses, the full result set is currently materialized in memory.
 
-_**Common Usages:**_
+_**Common Usage:**_
 
 ```js
 cds.foreach (SELECT.from('Foo'), each => console.log(each))
-cds.foreach ('Foo', each => console.log(each))
 ```
 {.indent}
-
-> As depicted in the second line, a plain entity name can be used for the `entity` argument in which case it's expanded to a `SELECT * from ...`.
-
 
 
 ## REST-style API

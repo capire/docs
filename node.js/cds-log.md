@@ -245,7 +245,7 @@ You can specify winston custom options to that method [as documented for `winsto
 
 ```js
 cds.log.Logger = cds.log.winstonLogger({
-  format: winston.format.simple()
+  format: winston.format.simple(),
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
@@ -413,6 +413,11 @@ Some header values shall not appear in logs, for example when pertaining to auth
 In case your application shares any sensitive data (for example, secrets) via headers, please ensure that you adjust the configuration as necessary.
 :::
 
+::: tip
+In the log entry, header field names are normalized to lowercase with `_` instead of `-`.
+Make sure your matchers work on the original header name, for example, `"/Foo-Bar/"` instead of the normalized `"/foo_bar/"`.
+:::
+
 
 ### Custom Fields { #custom-fields }
 
@@ -475,10 +480,6 @@ Without the additional custom field `query` and it's respective value, it would 
 
 :::
 
-::: tip
-Before `@sap/cds^7.5`, the configuration property was called `kibana_custom_fields`. As Kibana is the dashboard technology and the custom fields are actually a feature of the SAP Application Logging Service, we changed the name to `als_custom_fields`. `kibana_custom_fields` is supported until `@sap/cds^8`.
-:::
-
 For SAP Cloud Logging, the JSON formatter uses the following default configuration:
 
 ```jsonc
@@ -493,7 +494,7 @@ For SAP Cloud Logging, the JSON formatter uses the following default configurati
 }
 ```
 
-In order for the JSON formatter to detect the binding to SAP Cloud Logging via user-provided service, the user-provided service must have a tag `cloud-logging`.
+In order for the JSON formatter to detect the binding to SAP Cloud Logging via user-provided service, the user-provided service must have either tag `cloud-logging` or `Cloud Logging`.
 (For existing user-provided services, tags can be added via [`cf update-user-provided-service`](https://cli.cloudfoundry.org/en-US/v7/update-user-provided-service.html).)
 
 The key-value pairs can either be part of the first argument or an exclusive object thereafter:

@@ -74,14 +74,14 @@ Similarly, no specific log output configuration is required for local developmen
 All logs are written, that have a log level greater or equal to the configured log level of the corresponding logger object.
 The following log levels are available:
 
-| Level    | Use case
-| :--------| :--------
-| `OFF`    | Turns off the logger
-| `TRACE`  | Tracks the application flow only
-| `DEBUG`  | Shows diagnostic messages
-| `INFO`   | Shows important flows of the application (default level)
-| `WARN`   | Indicates potential error scenarios
-| `ERROR`  | Shows errors and exceptions
+| Level   | Use case                                                 |
+| :------ | :------------------------------------------------------- |
+| `OFF`   | Turns off the logger                                     |
+| `TRACE` | Tracks the application flow only                         |
+| `DEBUG` | Shows diagnostic messages                                |
+| `INFO`  | Shows important flows of the application (default level) |
+| `WARN`  | Indicates potential error scenarios                      |
+| `ERROR` | Shows errors and exceptions                              |
 
 With Spring Boot, there are different convenient ways to configure log levels in a development scenario, which is explained in the following section.
 
@@ -144,25 +144,54 @@ curl -X POST -H 'Content-Type: application/json' -d '{"configuredLevel": "DEBUG"
 
 CAP Java SDK has useful built-in loggers that help to track runtime behavior:
 
-| Logger                         | Use case
-| :------------------------------| :--------
-| `com.sap.cds.security.authentication`  | Logs authentication and user information
-| `com.sap.cds.security.authorization`  | Logs authorization decisions
-| `com.sap.cds.odata.v2`  | Logs OData V2 request handling in the adapter
-| `com.sap.cds.odata.v4`  | Logs OData V4 request handling in the adapter
-| `com.sap.cds.handlers`  | Logs sequence of executed handlers as well as the lifecycle of RequestContexts and ChangeSetContexts
-| `com.sap.cds.persistence.sql` | Logs executed queries such as CQN and SQL statements (w/o parameters)
-| `com.sap.cds.persistence.sql-tx` | Logs transactions, ChangeSetContexts, and connection pool
-| `com.sap.cds.multitenancy`  | Logs tenant-related events and sidecar communication
-| `com.sap.cds.messaging`  | Logs messaging configuration and messaging events
-| `com.sap.cds.remote.odata`  | Logs request handling for remote OData calls
-| `com.sap.cds.remote.wire`  | Logs communication of remote OData calls
-| `com.sap.cds.auditlog`  | Logs audit log events
+| Logger                                | Use case                                                                                             |
+| :------------------------------------ | :--------------------------------------------------------------------------------------------------- |
+| `com.sap.cds.security.authentication` | Logs authentication and user information                                                             |
+| `com.sap.cds.security.authorization`  | Logs authorization decisions                                                                         |
+| `com.sap.cds.odata.v2`                | Logs OData V2 request handling in the adapter                                                        |
+| `com.sap.cds.odata.v4`                | Logs OData V4 request handling in the adapter                                                        |
+| `com.sap.cds.handlers`                | Logs sequence of executed handlers as well as the lifecycle of RequestContexts and ChangeSetContexts |
+| `com.sap.cds.persistence.sql`         | Logs executed queries such as CQN and SQL statements (w/o parameters)                                |
+| `com.sap.cds.persistence.sql-tx`      | Logs transactions, ChangeSetContexts, and connection pool                                            |
+| `com.sap.cds.multitenancy`            | Logs tenant-related events and sidecar communication                                                 |
+| `com.sap.cds.messaging`               | Logs messaging configuration and messaging events                                                    |
+| `com.sap.cds.remote.odata`            | Logs request handling for remote OData calls                                                         |
+| `com.sap.cds.remote.wire`             | Logs communication of remote OData calls                                                             |
+| `com.sap.cds.auditlog`                | Logs audit log events                                                                                |
+| `com.sap.cds.properties`              | Logs CDS properties with a non-default value on application startup                                  |
 
 Most of the loggers are used on DEBUG level by default as they produce quite some log output. It's convenient to control loggers on package level, for example, `com.sap.cds.security` covers all loggers that belong to this package (namely `com.sap.cds.security.authentication` and `com.sap.cds.security.authorization`).
 
 ::: tip
 Spring comes with its own [standard logger groups](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/html/boot-features-logging.html#boot-features-custom-log-groups). For instance, `web` is useful to track HTTP requests. However, HTTP access logs gathered by the Cloud Foundry platform router are also available in the application log.
+:::
+
+#### Log CDS Configuration
+
+Upon start-up, you can get an overview of the configured CDS properties. Use this feature to:
+- list all accepted CDS properties and double-check the running configuration
+- check for warnings of usage of deprecated properties
+- check for warnings of usage of undocumented properties
+
+Please note that secrets are masked.
+
+Turn it on by setting the log level <Config Java>com.sap.cds.properties = DEBUG</Config>.
+
+
+::: details Sample output:
+
+```sh
+... DEBUG ... com.sap.cds.properties : 'cds.dataSource.autoConfig.enabled': 'false' (default: 'true')
+... DEBUG ... com.sap.cds.properties : 'cds.dataSource.embedded': 'true' (default: 'false')
+...  WARN ... com.sap.cds.properties : 'cds.security.authorization.emptyAttributeValuesAreRestricted': 'false' (default: 'true', deprecated, not documented)
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.name': 'admin'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.password': '***' (sensitive)
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.roles[0]': 'admin'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.roles[1]': 'cds.Developer'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.attributes.businessPartner[0]': '10401010'
+... DEBUG ... com.sap.cds.properties : 'cds.odataV4.endpoint.path': '/api' (default: '/odata/v4')
+... DEBUG ... com.sap.cds.properties : 'cds.errors.defaultTranslations.enabled': 'true' (default: 'false')
+```
 :::
 
 ### Logging Service { #logging-service}
@@ -212,7 +241,7 @@ In case you've configured `cf-java-logging-support` as described in [Logging Ser
 
 - Generation of IDs in non-HTTP contexts
 - Thread propagation through [Request Contexts](../event-handlers/request-contexts#threading-requestcontext)
-- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy-classic#mtx-sidecar-server))
+- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy#setup-overview))
 
 By default, the ID is accepted and forwarded via HTTP header `X-CorrelationID`. If you want to accept `X-Correlation-Id` header in incoming requests alternatively,
 follow the instructions given in the guide [Instrumenting Servlets](https://github.com/SAP/cf-java-logging-support/wiki/Instrumenting-Servlets#correlation-id).
@@ -289,7 +318,7 @@ Step-by-step description on how to access a bash session in the application's co
 1. Locate java executable and JDBC driver:
 
    By default `JAVA_HOME` isn't set in the buildpack and contains minimal tooling, as it tries to minimize the container size. However, the default location of the `java` executable is `/layers/paketo-buildpacks_sap-machine/jre/bin`.
-   
+
    For convenience, store the path into a variable, for example, `JAVA_HOME`:
    ```sh
    export JAVA_HOME=/layers/paketo-buildpacks_sap-machine/jre/bin/
@@ -355,6 +384,10 @@ In addition, it's possible to add manual instrumentations using the [Open Teleme
 
 :::warning Dependency
 The configuration steps below assume that your application uses the [SAP Java Buildpack](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-jakarta-buildpack).
+:::
+
+:::tip
+You can conveniently enhance your application with Open Telemetry observability by running the command `cds add cloud-logging --with-telemetry` in your project directory.
 :::
 
 Configure your application to enable the Open Telemetry Java Agent by adding or adapting the `JBP_CONFIG_JAVA_OPTS` parameter in your deployment descriptor:
@@ -461,7 +494,7 @@ The following steps describe the required configuration:
 By default, instrumentation for CAP-specific components is disabled, so that no traces and spans are created even if the Open Telemetry Java Agent has been configured. It's possible to selectively activate specific spans by changing the log level for a component.
 
 | Logger                                         | Required Level | Description                                                |
-|------------------------------------------------|----------------|------------------------------------------------------------|
+| ---------------------------------------------- | -------------- | ---------------------------------------------------------- |
 | `com.sap.cds.otel.span.ODataBatch`             | `INFO`         | Spans for individual requests of a OData $batch request.   |
 | `com.sap.cds.otel.span.CQN`                    | `INFO`         | Spans for executed CQN statement.                          |
 | `com.sap.cds.otel.span.OutboxCollector`        | `INFO`         | Spans for execution of the transactional outbox collector. |
@@ -602,12 +635,12 @@ To add actuator support in your application, add the following dependency:
 
 The following table lists some of the available actuators that might be helpful to understand the internal status of the application:
 
-| Actuator    | Description
-| :--------| :--------
-| `metrics`    | Thread pools, connection pools, CPU, and memory usage of JVM and HTTP web server
-| `beans`    | Information about Spring beans created in the application
-| `env`    | Exposes the full Spring environment including application configuration
-| `loggers`    | List and modify application loggers
+| Actuator  | Description                                                                      |
+| :-------- | :------------------------------------------------------------------------------- |
+| `metrics` | Thread pools, connection pools, CPU, and memory usage of JVM and HTTP web server |
+| `beans`   | Information about Spring beans created in the application                        |
+| `env`     | Exposes the full Spring environment including application configuration          |
+| `loggers` | List and modify application loggers                                              |
 
 By default, nearly all actuators are active. You can switch off actuators individually in the configuration. The following configuration turns off `flyway` actuator:
 
@@ -696,7 +729,7 @@ The example configuration makes Spring exposing only the health endpoint with he
 For multitenancy scenarios, CAP Java replaces the default `db` indicator with an implementation that includes the status of all tenant databases.
 :::
 
-In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](/java/reflection-api#the-model-provider-service).
+In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](../reflection-api#the-model-provider-service).
 
 ```yaml
 management:

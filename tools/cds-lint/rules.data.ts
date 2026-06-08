@@ -3,32 +3,54 @@ import * as path from 'path'
 
 export default {
   async load() {
-    const data: any = { "Model Validation": [], "Environment": [] };
+    const data: any = { "Model Validation": [], "Environment": [], "Javascript": [] };
     let plugin: any;
     try {
       // @ts-ignore
       plugin = (await import('@sap/eslint-plugin-cds')).default;
-    } catch (e) {
+    } catch {
       return data
     }
-    const allRules = Object.keys(plugin.configs.all.rules).sort();
+    const allCdsRules = Object.keys(plugin.configs.all.rules)
+    .map((ruleName: string) => ruleName.replace('@sap/cds/', ''))
+    .sort();
 
-    allRules.forEach((rule: string) => {
-      rule = rule.replace('@sap/cds/', '');
-      const description = md2Html(plugin.rules[rule]?.meta.docs.description);
-      const ruleDocs = path.join(__dirname, `rules/${rule}.md`)
-      const hasRuleDocs = fs.existsSync(ruleDocs)
-      const url = hasRuleDocs ? `./${rule}` : null
-      const isRecommended = plugin.rules[rule]?.meta.docs.recommended ? '✅' : '';
-      const hasFix = plugin.rules[rule]?.meta.fixable ? '🔧' : '';
-      const hasSuggestions = plugin.rules[rule]?.meta.hasSuggestions ? '💡' : '';
-      const model = plugin.rules[rule]?.meta?.model === 'parsed' ? '👀' : '';
-      const category = plugin.rules[rule]?.meta?.model === 'none' ? "Environment" : "Model Validation";
-      data[category].push({ rule, description, url, isRecommended, hasFix, hasSuggestions, model })
-    })
+    for (const cdsRuleName of allCdsRules) {
+      const rule = plugin.rules[cdsRuleName]
+      const model = rule.meta?.model
+      const category = model === 'none' ? 'Environment' : 'Model Validation';
+      
+      data[category].push({...ruleInfo(cdsRuleName, rule),
+        model: model === 'parsed' ? '👀' : ''
+      })
+    }
+
+    const allJsRuleName = Object.keys(plugin.configs.js.all.rules)
+      .map((ruleName: string) => ruleName.replace('@sap/cds/', ''))
+      .sort();
+
+    for (const jsRuleName of allJsRuleName) {
+      data.Javascript.push(ruleInfo(jsRuleName, plugin.rules[jsRuleName]))
+    }
+
     return data;
   }
 
+}
+
+function ruleInfo (name, rule) {
+  const meta = rule.meta ?? {}
+  const ruleDocs = path.join(__dirname, `rules/${name}.md`)
+  const hasRuleDocs = fs.existsSync(ruleDocs)
+  return {
+    rule: name,
+    description: md2Html(meta.docs.description),
+    url: hasRuleDocs ? `./${name}` : null,
+    isRecommended: meta.docs?.recommended ? '✅' : '',
+    hasFix: meta.fixable ? '🔧' : '',
+    hasSuggestions: meta.hasSuggestions ? '💡' : '',
+    model: meta.model === 'parsed' ? '👀' : ''
+  }
 }
 
 function md2Html(string:string='') {

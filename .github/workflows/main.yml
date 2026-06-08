@@ -34,13 +34,14 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - run: npm test
       - run: npm run lint
       - run: npm run docs:build
         env:
           GH_BASE: /
           SITE_HOSTNAME: https://cap.js.org
           VITE_CAPIRE_PREVIEW: true
+          VITE_CAPIRE_EXTRA_ASSETS: true
+      - run: npm test
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

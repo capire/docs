@@ -33,9 +33,9 @@ New features are announced in the [CAP Release notes](/releases/).
 Find detailed information about versions and release in the [CAP release schedule](../releases/schedule#cap-java).
 
 ::: warning Consume latest versions
-We strongly recommend to consume the latest minor version on a monthly basis to keep future migration efforts as small as possible.
+We strongly recommend to **consume the latest minor version on a monthly basis** to keep future migration efforts as small as possible.
 
-Likewise, we strongly recommend to consume the latest patch version as soon as possible to receive critical bug fixes.
+Likewise, we strongly recommend to **consume the latest patch version as soon as possible** to receive critical bug fixes including security patches.
 :::
 
 ### Active Version { #active-version }
@@ -61,39 +61,35 @@ CAP Java uses various dependencies that are also used by the applications themse
 If the applications decide to manage the versions of these dependencies, it's helpful to know the minimum versions of these dependencies that CAP Java requires.
 The following table lists these minimum versions for various common dependencies, based on the latest release:
 
-
-#### Active Version 3.x { #dependencies-version-3 }
-
-| Dependency | Minimum Version | Recommended Version |
-| --- | --- | --- |
-| JDK | 17 | 21 |
-| Maven | 3.6.3 | 3.9.8 |
-| @sap/cds-dk | 7 | latest |
-| @sap/cds-compiler | 4 | latest |
-| Spring Boot | 3.0 | latest |
-| XSUAA | 3.0 | latest |
-| SAP Cloud SDK | 5.9 | latest |
-| Java Logging | 3.7 | latest |
-
-#### Maintenance Version 2.10.x { #dependencies-version-2 }
+#### Active Version 4.x { #dependencies-version-4 }
 
 | Dependency | Minimum Version | Recommended Version |
 | --- | --- | --- |
+| CAP Java | n/a | [latest 4.x](https://central.sonatype.com/artifact/com.sap.cds/cds-services-bom/versions) |
 | JDK | 17 | 21 |
-| Maven | 3.5.0 | 3.9.8 |
-| @sap/cds-dk | 6 | 7 |
-| @sap/cds-compiler | 3 | 4 |
-| Spring Boot | 3.0 | latest |
-| XSUAA | 3.0 | latest |
-| SAP Cloud SDK | 4.24 | latest |
-| Java Logging | 3.7 | latest |
+| Maven | 3.8.8 | 3.9.9 |
+| @sap/cds-dk | 8 | [latest](https://www.npmjs.com/package/@sap/cds-dk) |
+| @sap/cds-compiler | 5 | [latest](https://www.npmjs.com/package/@sap/cds-compiler) |
+| Spring Boot | 3.0 | [latest 3.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
+| XSUAA | 3.1 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
+| SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
+| Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
+| Node.js | 20 | 22 |
 
-::: warning
-The Cloud SDK BOM `sdk-bom` manages XSUAA until version 2.x, which isn't compatible with CAP Java 2.x.
-You have two options:
-* Replace `sdk-bom` with `sdk-modules-bom`, which [manages all Cloud SDK dependencies but not the transitive dependencies.](https://sap.github.io/cloud-sdk/docs/java/guides/manage-dependencies#the-sap-cloud-sdk-bill-of-material)
-* Or, add [dependency management for XSUAA](https://github.com/SAP/cloud-security-services-integration-library#installation) before Cloud SDK's `sdk-bom`.
-:::
+#### Maintenance Version 3.10.x { #dependencies-version-3 }
+
+| Dependency | Minimum Version | Recommended Version |
+| --- | --- | --- |
+| CAP Java | n/a | [latest 3.10.x](https://central.sonatype.com/artifact/com.sap.cds/cds-services-bom/versions) |
+| JDK | 17 | 21 |
+| Maven | 3.8.8 | 3.9.9 |
+| @sap/cds-dk | 7 | [latest 8.x](https://www.npmjs.com/package/@sap/cds-dk) |
+| @sap/cds-compiler | 4 | [latest 5.x](https://www.npmjs.com/package/@sap/cds-compiler) |
+| Spring Boot | 3.0 | [latest 3.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
+| XSUAA | 3.0 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
+| SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
+| Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
+| Node.js | 18 | 20 |
 
 
 ### Consistent Versions
@@ -104,10 +100,17 @@ Mixing different versions of SDK artifacts often results in compiler errors or u
 To help keeping the client configuration consistent, SDKs usually provide bill of material (BOM) poms as an optional maven dependency.
 We strongly recommended to import available BOM poms.
 
-Following example shows how BOM poms of `com.sap.cds`, `com.sap.cloud.sdk`, and `com.sap.cloud.security` can be added to the project's parent `pom.xml`:
+Following example shows how BOM poms of `com.sap.cds`, `com.sap.cloud.sdk`, and `com.sap.cloud.security` can be added to the project's parent `pom.xml`.
+For concrete version numbers, please refer to the version overviews above.
 
 ::: code-group
 ```xml [pom.xml]
+<properties>
+	<!-- ... -->
+	<cds.services.version>CAP Java version here</cds.services.version>
+	<cloud.sdk.version>Cloud SDK version here</cloud.sdk.version>
+	<xsuaa.version>XSUAA version here</xsuaa.version>
+</properties>
 <dependencyManagement>
 	<dependencies>
 		<!-- CDS SERVICES -->

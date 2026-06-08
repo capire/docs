@@ -1,13 +1,15 @@
 ---
-synopsis: >
+synopsis:
   This chapter contains comprehensive guides that help you to work through migrations such as from CAP Java 1.x to CAP Java 2.x.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 <script setup>
   import Cds4j from './components/Cds4jLink.vue'
   import CdsSrv from './components/CdsServicesLink.vue'
+  import { useData } from 'vitepress'
+  const { theme } = useData()
+  const { versions } = theme.value.capire
 </script>
 
 
@@ -22,6 +24,252 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 {{ $frontmatter.synopsis }}
 
 [[toc]]
+
+## Automatic CAP Java Migrations with OpenRewrite
+
+For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
+
+### Running OpenRewrite Recipes
+
+As migration is a one-time operation, run the OpenRewrite `recipes` as a command through Maven. Take this call as an example:
+
+
+```bash-vue
+mvn org.openrewrite.maven:rewrite-maven-plugin:run \
+  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
+```
+
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+
+### Currently Released CAP Java Migrations
+
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+
+|Name    |Description|Available since|
+|--------|-----------|---------------|
+|[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
+|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
+|[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+
+## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
+
+### Spring Boot 4
+
+CAP Java 5 uses Spring Boot 4 and Spring Security 7 as the underlying framework. If the CAP Java application is not using native Spring APIs directly, fixing Spring Boot 4 incompatibilities can be as straightforward as renaming of maven dependencies and smaller changes in test classes (for example, changed package name of `AutoConfigureMockMvc`). Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes between Spring Security 6.5 and 7, refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
+
+In any case, it's required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.0.
+
+### Minimum Versions
+
+CAP Java 5.0 increased some minimum required versions:
+
+| Dependency | Minimum Version |
+| --- | --- |
+| Spring Boot | 4.0 |
+| XSUAA (BTP Security Library) | 4.0.0 |
+| Maven | 3.9.15 |
+
+<!-- ### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `abc` | false | true | Any description. |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `abd`
+
+The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `abc` | Any description about replacement | -->
+
+### Removed Java APIs { #removed-java-apis-4-to-5 }
+
+Removed deprecated methods:
+
+| Removed method                                                                                         | Replacement / Explanation                                                                                             |
+|--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
+| `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
+| `c.s.c.services.ServiceExceptionUtils.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
+| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
+
+### Changes in the `cds-maven-plugin`
+
+There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+
+#### Minimum Maven Version
+
+For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+
+#### Removed deprecated goal `install-cdsdk`
+
+The goal `install-cdsdk` is deprecated since version 3.6.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
+Further details can be found [here](developing-applications/building#migration-install-cdsdk).
+
+#### Changes in goal `generate`
+
+1. Removed already deprecated properties:
+- eventContext: Interfaces for actions and functions now always extend `EventContext`.
+- cqnService: Typed interfaces are now always generated for application service.
+
+2. Deprecated properties and marked for removal:
+None
+
+3. Changed default value of properties:
+None
+
+### Changes in the `cds-services-archetype`
+
+The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CAP Java projects.
+
+#### Default JDK Version
+
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
+
+### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
+
+The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed from the delivery. If the project directly references these modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatibility of the code base:
+
+1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib`, and  rewrite code using CAP Java native APIs.
+
+2. Use `maven-dependency-plugin` to unpack (extract contents of dependency) Olingo sources into your code base during the project build.
+
+3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
+
+
+#### Module `com.sap.cds:cds4j-codegen` is removed
+
+The module `cds4j-codegen` is no longer available in CAP 5.0. The module `com.sap.cds:cds-services-code-generator` is delivered instead.
+
+## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
+
+### New License
+
+The license of CAP Java 4.0 has changed and it's released under the new [SAP Developer License Agreement for CAP](https://cap.cloud.sap/resources/license/developer-license-3_2_CAP.txt).
+
+### Minimum Versions
+
+CAP Java 4.0 increased some minimum required versions:
+
+| Dependency | Minimum Version |
+| --- | --- |
+| @sap/cds-dk | ^8 |
+
+CAP Java 4.0 no longer supports @sap/cds-dk ^7.
+
+### Removed feature `cds-feature-event-hub`
+
+The feature `cds-feature-event-hub` has been removed from CAP Java. The successor of this feature is the [CDS Plugin for SAP Cloud Application Event Hub](https://github.com/cap-java/cds-feature-event-hub). This new CAP Java Plugin is published independently of CAP Java and is open source. It however has the same Maven group ID and artifact ID as the previous CAP Java feature and starts versioning with `4.0.0`.
+
+### Changes in goal `generate` of the `cds-maven-plugin`
+
+1. Removed already deprecated properties:
+- sharedInterfaces
+- uniqueEventContexts
+
+2. Deprecated properties and marked for removal:
+- eventContext
+- cqnService
+
+3. Changed default value of properties:
+- excludes: "localized.**" -> null
+
+### Removed unstructured messages from MessagingService { #removed-unstructured }
+
+The deprecated `cds.messaging.services.<key>.structured` property, which allowed to handle messages as (unstructured) plain strings has now been completely removed.
+Messaging services always represent data in a structured way by using a `Map`. Headers are represented in a separate `Map`.
+
+With this change the following deprecated methods have been removed:
+- `void MessagingService.emit(String, String)`
+- `String TopicMessageEventContext.getData()`
+
+When publishing a unstructured String-based message, wrap the message into a Map:
+
+```java
+// instead of
+messagingService.emit("myTopic", "unstructured message");
+// use
+messagingService.emit("myTopic", Map.of("message", "unstructured message")); // [!code focus]
+```
+
+In case you receive a unstructured String-based message from a message broker, it is also wrapped into a structured message with a `message` property:
+
+```java
+@On(event = "myTopic")
+void handleMyTopic(TopicMessageEventContext context) {
+  // instead of
+  String message = context.getData();
+  // use
+  String message = (String) context.getDataMap().get("message"); // [!code focus]
+}
+```
+
+This change has no effect on CDS modelled events, as these have always been structured.
+
+### Adjusted Property Defaults
+
+Some property defaults have been adjusted:
+
+| Property | Old Value | New Value | Explanation |
+| --- | --- | --- | --- |
+| `cds.security.authorization.deep.enabled` | false | true | [Deep Authorization](../guides/security/authorization#deep-auth) is now enabled by default. |
+| `cds.security.authorization.instanceBased.rejectSelectedUnauthorizedEntity.enabled` | false | true | Requests that violate instance-based authorization conditions now fail with 403, instead of 404. |
+| `cds.security.authorization.instanceBased.checkInputData.enabled` | false | true | [Authorization Checks On Input Data](../guides/security/authorization#input-data-auth) are now enabled by default. |
+| `cds.errors.defaultTranslations.enabled` | false | true | [Translations for Validation Error Messages](./event-handlers/indicating-errors#ootb-translated-messages) are now enabled by default. |
+| `cds.sql.runtimeView.mode` | resolve | cte | [Runtime views](./working-with-cql/query-execution#runtimeviews) are now by default translated into Common Table Expressions |
+
+### Deprecated Properties
+
+The following properties have been deprecated and might be removed in a future major version:
+
+- `cds.errors.combined`
+- `cds.sql.hana.optimizationMode`
+- `cds.outbox.services.<key>.storeLastError.enabled`
+
+The functionality provided by these properties is enabled by default and there is no reason to switch these off.
+
+### Removed Properties
+
+The following table gives an overview about the removed properties:
+
+| Removed Property | Replacement / Explanation |
+| --- | --- |
+| `cds.messaging.services.`<br>`<key>.structured` | [Use structured messages.](#removed-unstructured) |
+| `cds.security.authorization.`<br>`emptyAttributeValuesAreRestricted` | [Use conditions with explicit checks for empty attributes.](../guides/security/authorization#user-attrs) |
+| `cds.odataV4.serializer.buffered` | OData V4 responses are now always streamed while serialized. |
+| `cds.environment.k8s` | Use service bindings from SAP BTP Operator on Kyma. |
+| `cds.multiTenancy.subscriptionManager.`<br>`clientCertificateHeader` | `cds.security.authentication.`<br>`clientCertificateHeader` |
+| `cds.multiTenancy.security.`<br>`internalUserAccess.enabled` | `cds.security.authentication.`<br>`internalUserAccess.enabled` |
+
+### Removed Java APIs
+
+- Removed deprecated classes:
+  - `com.sap.cds.ql.cqn.CqnSearchPredicate`, use `CqnSearchTermPredicate` instead
+
+- Removed deprecated methods:
+  - `com.sap.cds.ql.cqn.Modifier.search(String term)`, use `searchTerm(CqnSearchTermPredicate)` instead
+  - `com.sap.cds.ql.cqn.Modifier.selectListValue(Value<?> value, String alias)`, use `selectListValue(SelectableValue value, String alias)` instead
+  - `com.sap.cds.ql.SelectableValue.withoutAlias()`, use `as(String alias)` instead
 
 ## CAP Java 2.10 to CAP Java 3.0 { #two-to-three }
 
@@ -55,7 +303,7 @@ In addition, the deprecated `MtSubscriptionService` API, has been removed. It ha
 As part of this change the compatibility mode for the `MtSubscriptionService` API has been removed. Besides the removal of the Java APIs this includes the following behavioural changes:
 
 - During unsubscribe, the tenant's content (like HDI container) is now deleted by default when using the new `DeploymentService` API.
-- The HTTP-based tenant upgrade APIs provided by the CAP Java app have been removed, use the [`Deploy` main method](/java/multitenancy#deploy-main-method) instead. This includes the following endpoints:
+- The HTTP-based tenant upgrade APIs provided by the CAP Java app have been removed, use the [`Deploy` main method](multitenancy#deploy-main-method) instead. This includes the following endpoints:
   - `/mt/v1.0/subscriptions/deploy/**` (GET & POST)
   - `/messaging/v1.0/em/<tenant>` (PUT)
 
@@ -79,8 +327,6 @@ Though CAP does not support multiple XSUAA bindings, it was possible in previous
 In IAS scenarios, the [Proof-Of-Possession](https://github.com/SAP/cloud-security-services-integration-library/tree/main/java-security#proofofpossession-validation) is now enforced by default for incoming requests for versions starting from `3.5.1` of the [SAP BTP Spring Security Client](https://github.com/SAP/cloud-security-services-integration-library/tree/main/spring-security).
 
 Because of this, applications calling a CAP Java application will need to send a valid client certificate in addition to the JWT token. In particular, applications using an Approuter have to set `forwardAuthCertificates: true` on the Approuter destination pointing to your CAP backend.
-
-[Learn more about Proof-Of-Possession.](./security.md#proof-of-possession){.learn-more}
 
 ### Lazy Localization by default
 
@@ -174,7 +420,7 @@ Some property defaults have been adjusted:
 | `cds.sql.hana.optimizationMode` | `legacy` | `hex` | SQL for SAP HANA is optimized for the HEX engine. |
 | `cds.odataV4.lazyI18n.enabled` | `null` | `true` | Lazy localization is now enabled by default in multitenant scenarios. |
 | `cds.auditLog.personalData.`<br>`throwOnMissingDataSubject` | `false` | `true` | Raise errors for incomplete personal data annotations by default. |
-| `cds.messaging.services.<key>.structured` | `false` | `true` | [Enhanced message representation](./messaging.md#enhanced-messages-representation) is now enabled by default. |
+| `cds.messaging.services.<key>.structured` | `false` | `true` | [Structured message representation](./messaging.md#messages-representation) is now enabled by default. |
 
 ### Adjusted Property Behavior
 
@@ -309,12 +555,20 @@ Since version 1.27 CAP Java is running with Spring Boot 2.7, which uses Spring S
 
 Make sure that all libraries used in your project are either compatible with Spring Boot 3 / Jakarta EE 10 or alternatively offer a new version which you can adopt.
 
-CAP Java 2.0 itself requires updated [dependency versions](./versions#dependencies-version-2) of:
-- `@sap/cds-dk`
-- `@sap/cds-compiler`
-- XSUAA library
-- SAP Cloud SDK
-- Java Logging (replace `cf-java-logging-support-servlet` with `cf-java-logging-support-servlet-jakarta`)
+CAP Java 2.0 itself requires updated minimum dependency versions:
+
+| Dependency | Minimum Version | Recommended Version |
+| --- | --- | --- |
+| JDK | 17 | 21 |
+| Maven | 3.5.0 | 3.9.8 |
+| @sap/cds-dk | 6 | 7 |
+| @sap/cds-compiler | 3 | 4 |
+| Spring Boot | 3.0 | latest |
+| XSUAA | 3.0 | latest |
+| SAP Cloud SDK | 4.24 | latest |
+| Java Logging | 3.7 | latest |
+
+Java Logging (replace `cf-java-logging-support-servlet` with `cf-java-logging-support-servlet-jakarta`)
 
 ::: warning
 The Cloud SDK BOM `sdk-bom` manages XSUAA until version 2.x, which isn't compatible with CAP Java 2.x.
@@ -544,7 +798,7 @@ Some CdsProperties were already marked as deprected in CAP Java 1.x and are now 
 
 ### Removed Annotations Overview
 
-- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/providing-services#cds-search).
+- `@search.cascade` is no longer supported. It's replaced by [@cds.search](../guides/services/served-ootb#cds-search).
 
 ### Changed Behavior
 
@@ -789,7 +1043,7 @@ If this Maven build finishes successfully, you can optionally try to deploy your
 cds deploy --to hana
 ```
 
-[See section **SAP HANA Cloud** for more details about deploying to SAP HANA.](../guides/databases-hana){.learn-more}
+[See section **SAP HANA Cloud** for more details about deploying to SAP HANA.](../guides/databases/hana){.learn-more}
 
 
 ### Migrate Java Business Logic
@@ -1061,7 +1315,7 @@ With the help of these interfaces, the classic enforcement API can be mapped to 
 | `getUserAttribute(String attributeName)` | `user.getAttribute(attributeName)`    |
 | `isContainerSecurityEnabled()` | no substitution required            |
 
-[See section **Enforcement API & Custom Handlers in Java** for more details.](./security#enforcement-api){.learn-more}
+[See section **Developing with CAP Users** for more details.](../guides/security/cap-users#developing-with-users){.learn-more}
 
 <span id="moreenforcement" />
 
@@ -1296,3 +1550,4 @@ After rebuilding and restarting your application, your Application Services are 
 <!-- TODO: Move this to "Development" section -->
 
 <span id="afterenablingodata" />
+

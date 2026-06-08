@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes which events occur in combination with SAP Fiori Drafts.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -17,7 +16,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
 
 ## Overview { #draftevents}
 
-See [Cookbook > Serving UIs > Draft Support](../advanced/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
+See [Cookbook > Serving UIs > Draft Support](../guides/uis/fiori#draft-support) for an overview on SAP Fiori Draft support in CAP.
 
 ## Reading Drafts
 
@@ -60,6 +59,9 @@ public Result delegateToS4(ActiveReadEventContext context) {
 When setting `cds.drafts.persistence` to `split` only queries that are specified by the SAP Fiori draft orchestration are supported.
 :::
 
+### Aggregation Queries
+Aggregating over active and inactive draft entities isn't supported. Queries with aggregation functions implicitly add `IsActiveEntity` as a part of the group-by clause, resulting in disjunct `active` and `inactive` rows being returned instead of aggregated rows.
+
 ## Editing Drafts
 
 When users edit a draft-enabled entity in the frontend, the following requests are sent to the CAP Java backend. As an effect, draft-specific events are triggered, as described in the following table. The draft-specific events are defined by the [DraftService](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/draft/DraftService.html) interface.
@@ -68,16 +70,19 @@ When users edit a draft-enabled entity in the frontend, the following requests a
 Draft-enabled entities have an extra key `IsActiveEntity` by which you can access either the active entity or the draft (inactive entity).
 :::
 
-| HTTP / OData request                   | Event constant name                | Default implementation                                                                                                      |
-| -------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| POST                                   | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
-| PATCH with key `IsActiveEntity=false`  | `DraftService.EVENT_DRAFT_PATCH`   | Updates an existing draft                                                                                                   |
-| DELETE with key `IsActiveEntity=false` | `DraftService.EVENT_DRAFT_CANCEL`  | Deletes an existing draft                                                                                                   |
-| DELETE with key `IsActiveEntity=true`  | `CqnService.EVENT_DELETE`          | Deletes an active entity *and* the corresponding draft                                                                      |
-| POST with action `draftPrepare`        | `DraftService.EVENT_DRAFT_PREPARE` | Empty implementation                                                                                                        |
-| POST with action `draftEdit`           | `DraftService.EVENT_DRAFT_EDIT`    | Creates a new draft from an active entity. Internally triggers `DRAFT_CREATE`.                                              |
-| POST with action `draftActivate`       | `DraftService.EVENT_DRAFT_SAVE`    | Activates a draft and updates the active entity. Triggers an `CREATE` or `UPDATE` event on the affected entity.             |
-| n/a                                    | `DraftService.EVENT_DRAFT_CREATE`  | Stores a new draft in the database.                                                                                         |
+| HTTP / OData request                                                   | Event constant name                | Default implementation                                                                                                      |
+| ---------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| POST with `IsActiveEntity=false` in payload                            | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| POST (no `IsActiveEntity`) on entity *without* `draftNew` action    | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| POST (no `IsActiveEntity`) on entity *with* `draftNew` action       | `CqnService.EVENT_CREATE`          | Creates a new active entity.                                                                                                |
+| POST with action `draftNew`                                            | `DraftService.EVENT_DRAFT_NEW`     | Creates a new empty draft. Internally triggers `DRAFT_CREATE`.                                                              |
+| PATCH with key `IsActiveEntity=false`                                  | `DraftService.EVENT_DRAFT_PATCH`   | Updates an existing draft.                                                                                                   |
+| DELETE with key `IsActiveEntity=false`                                 | `DraftService.EVENT_DRAFT_CANCEL`  | Deletes an existing draft.                                                                                                   |
+| DELETE with key `IsActiveEntity=true`                                  | `CqnService.EVENT_DELETE`          | Deletes an active entity *and* the corresponding draft.                                                                      |
+| POST with `draftPrepare` action                                        | `DraftService.EVENT_DRAFT_PREPARE` | Empty implementation.                                                                                                        |
+| POST with `draftEdit` action                                           | `DraftService.EVENT_DRAFT_EDIT`    | Creates a new draft from an active entity. Internally triggers `DRAFT_CREATE`.                                              |
+| POST with `draftActivate` action                                       | `DraftService.EVENT_DRAFT_SAVE`    | Activates a draft and updates the active entity. Triggers an `CREATE` or `UPDATE` event on the affected entity.             |
+| n/a                                                                    | `DraftService.EVENT_DRAFT_CREATE`  | Stores a new draft in the database.                                                                                         |
 
 You can use these events to add custom logic to the SAP Fiori draft flow, for example to interact with drafts or to validate user data.
 
@@ -144,6 +149,15 @@ It's possible to create and update data directly without creating intermediate d
 
 These events have the same semantics as described in section [Handling CRUD events](./cqn-services/application-services#crudevents).
 
+
+::: tip POST Behavior with Direct CRUD
+With the 4.9.0 release, CAP Java introduced a mode where `POST` without a value for `IsActiveEntity` in the payload results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is automatically active when the entity is annotated with `@Common.DraftRoot.NewAction`, which is generated by the CDS compiler when the `cds_fiori_direct__crud` flag is set. It can also be added via explicit modeling. The annotation value needs to be the name of a bound action in the same service. If the entity has a key of type `UUID`, the action needs no further parameters. Otherwise, the action needs the key values of the entity as parameters. The behavior can be overridden via the `cds.drafts.post-active` property set to `false`.
+:::
+
+::: warning Draft locks still apply
+Directly updating the active entity does **not** bypass the [Draft Lock](#draft-lock). If an existing draft locks the active entity, the system blocks any attempt to update it directly. This ensures that the system does not lose changes to the active entity when you subsequently activate a draft.
+:::
+
 ## Draft Lock { #draft-lock }
 
 An entity with a draft is locked from being edited by other users until either the draft is saved or a timeout is hit (15 minutes by default). You can configure this timeout by the following application configuration property:
@@ -155,7 +169,7 @@ cds.drafts.cancellationTimeout: 1h
 You can turn off this feature completely by means of the application configuration property:
 
 ```yaml
-cds.security.draftProtection.enabled: false
+cds.security.authorization.draftProtection.enabled: false
 ```
 
 ## Draft Garbage Collection { #draft-gc }

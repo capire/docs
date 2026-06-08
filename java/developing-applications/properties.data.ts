@@ -1,43 +1,32 @@
 import { defineLoader } from 'vitepress'
-import AdmZip from 'adm-zip'
 
 const { themeConfig: { capire }} = global.VITEPRESS_CONFIG.site
 const version = capire.versions.java_services
-const url = capire.maven_host_base + `/com/sap/cds/cds-services-api/${version}/cds-services-api-${version}-sources.jar`
 
 export default defineLoader({
   async load() {
-    let props = await fetchProperties()
+    const props = (await import('./properties.json')).default.properties as unknown as JavaSdkProperties[]
     const properties = massageProperties(props)
     return { properties, version }
   }
 })
 
-async function fetchProperties(): Promise<JavaSdkProperties[]> {
-  // console.debug(`\n  fetching properties of CDS Java ${version}`)
-  const resp = await fetch(url)
-  const jar = await resp.arrayBuffer()
-
-  return new Promise((res, rej) => {
-    const zip = new AdmZip(Buffer.from(jar))
-    zip.readAsTextAsync('properties.json', (data, err) => {
-      if (err)  return rej(err)
-      res(JSON.parse(data).properties)
-    })
-  })
-}
-
 function massageProperties(properties: JavaSdkProperties[]): OurProperties[] {
-  return properties.map(({ name, header, type, default:defaultValue, doc }) => ({
-    // @ts-ignore
-    name: name.replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>'),  // decorate special <key> and <index> names
-    type,
-    description: md2Html(doc),
-    defaultValue: defaultValue ? `<code class="no-bg">${defaultValue}</code>` : '',
-    header,
-    // @ts-ignore
-    anchor: name.replaceAll('.', '-')
-  }))
+  return properties.map(({ name, header, type, default:defaultValue, doc }) => {
+    if (defaultValue && type?.startsWith('List')) { // split list default values into multiple lines for better readability
+      defaultValue = defaultValue.replace(/, ?/g, ',<br>')
+    }
+    return {
+      name: name.replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>'),  // decorate special <key> and <index> names
+      type: type?.replaceAll(/<(.*)>/g, ''), // remove generics for display
+      typeFull: type,
+      description: md2Html(doc),
+      defaultValue: defaultValue ? `<code class="no-bg">${defaultValue}</code>` : '',
+      header,
+      // @ts-ignore
+      anchor: name.replaceAll('.', '-')
+    }
+  })
 }
 
 function md2Html(string:string) {
@@ -61,5 +50,6 @@ type OurProperties = {
   type: string,
   description: string,
   defaultValue: string,
+  typeFull: string,
   anchor: string
 }

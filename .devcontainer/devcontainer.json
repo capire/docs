@@ -1,5 +1,5 @@
 {
-    "image":"mcr.microsoft.com/devcontainers/universal:2",
+    "image":"mcr.microsoft.com/vscode/devcontainers/javascript-node:22",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -7,5 +7,9 @@
                 "vue.volar"
             ]
         }
-    }
+    },
+    "runArgs": [
+        // disable IPv6, see https://github.com/vitejs/vite/issues/16522
+        "--sysctl", "net.ipv6.conf.all.disable_ipv6=1"
+    ]
 }

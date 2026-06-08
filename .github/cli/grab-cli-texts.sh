@@ -6,7 +6,7 @@ dir=`dirname -- "$0"`
 proj=/tmp/your-project
 rm -rf ${proj}
 mkdir -p `dirname ${proj}`
-pushd `dirname ${proj}` && cds init `basename ${proj}` && pushd `basename ${proj}` && npm i && popd && popd
+pushd `dirname ${proj}` && cds init `basename ${proj}` --nodejs && pushd `basename ${proj}` && npm i && popd && popd
 
 echo
 echo "Grabbing CLI texts..."

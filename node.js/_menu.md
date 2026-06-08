@@ -1,21 +1,5 @@
 # [The cds Facade](cds-facade)
 
-# [cds. Services](core-services)
-
-  ## [Class cds. Service](core-services)
-  ## [Class cds. ApplicationService](app-services)
-  ## [Class cds. RemoteService](remote-services)
-  ## [Class cds. MessagingService](messaging)
-  ## [Class cds. DatabaseService](databases)
-  ## [Class cds. SQLService](databases)
-
-# [cds. Events](events)
-
-  ## [cds. context](events#cds-context)
-  ## [Class cds. EventContext](events#cds-event-context)
-  ## [Class cds. Event](events#cds-event)
-  ## [Class cds. Request](events#cds-request)
-
 # [cds. compile()](cds-compile)
 
   ## [cds. compile()](cds-compile#cds-compile)
@@ -36,11 +20,28 @@
   ## [Class cds. Association](cds-reflect#cds-association)
   ## [cds. linked. classes](cds-reflect#cds-linked-classes)
 
-# [cds. server()](cds-server)
+# [cds. server](cds-server)
 # [cds. serve()](cds-serve)
 # [cds. connect()](cds-connect)
 
-# [cds. ql](cds-ql)
+# [cds. Services](core-services)
+
+  ## [Class cds. Service](core-services)
+  ## [Class cds. ApplicationService](app-services)
+  ## [Class cds. RemoteService](remote-services)
+  ## [Class cds. MessagingService](messaging)
+  ## [Class cds. DatabaseService](databases)
+
+# [cds. Events](events)
+
+  ## [cds. context](events#cds-context)
+  ## [Class cds. EventContext](events#cds-event-context)
+  ## [Class cds. Event](events#cds-event)
+  ## [Class cds. Request](events#cds-request)
+  ## [Error Handling](events#req-reject)
+  ## [Event Queues](queue)
+
+# [cds. Queries](cds-ql)
 
   ## [SELECT](cds-ql#select)
   ## [INSERT](cds-ql#insert)
@@ -49,15 +50,17 @@
   ## [DELETE](cds-ql#delete)
   ## [Expressions](cds-ql#expressions)
 
-# [cds. tx()](cds-tx)
 # [cds. log()](cds-log)
-# [cds. env](cds-env)
-# [cds. auth](authentication)
 # [cds. i18n](cds-i18n)
+# [cds. env](cds-env)
 # [cds. utils](cds-utils)
-# [cds. test()](cds-test)
-# [cds. plugins](cds-plugins)
-# [cds. outboxed()](outbox)
+
+# [Serving Fiori UIs](fiori)
+# [Transactions](cds-tx)
+# [Security](authentication)
+# [Plugins](cds-plugins)
+# [Testing](cds-test)
 # [TypeScript](typescript)
-# [Fiori Support](fiori)
 # [Best Practices](best-practices)
+# [Integrate with UCL](../../node.js/ucl) <!-- INTERNAL -->
+# [Upgrading @sap/cds](../../node.js/upgrading)

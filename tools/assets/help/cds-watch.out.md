@@ -37,6 +37,11 @@
     Specify the port for the livereload server. Defaults to '35729'.
     Disable it with value <i>false</i>.
 
+  <em>--experimental-hot-reload</em> &lt;true | false&gt;
+
+    Specify if the experimental hot reload should be used. Changes to the CDS model
+    in most scenarios no longer restart the server
+
   <em>--open</em> &lt;url&gt;
 
     Open the given URL (suffix) in the browser after starting.
@@ -46,6 +51,11 @@
 
     Specify from which profile(s) the binding information is taken.
     <em>Example:</em> cds w --profile hybrid,production
+
+  <em>--with-mtx</em>
+
+    A shortcut for <i>--profile with-mtx</i> to enable mtx features also in
+    development, while by default, these are only enabled in production.
 
   <em>--debug</em> / <em>--inspect</em> &lt;host:port | 127.0.0.1:9229&gt;
 

@@ -3,7 +3,6 @@
 shorty: Query Language
 synopsis: >
   Specification of the CDS Query Language (aka CQL) which is an extension of the standard SQL SELECT statement.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
@@ -399,7 +398,7 @@ SQL casts and CDL casts. The former produces SQL casts when rendered into SQL, w
 SELECT cast (foo+1 as Decimal) as bar from Foo;  -- standard SQL
 SELECT from Foo { foo+1 as bar : Decimal };      -- CDL-style
 ```
-[learn more about CDL type definitions](./cdl#types){.learn-more}
+[Learn more about CDL type definitions](./cdl#types){.learn-more}
 
 Use SQL casts when you actually want a cast in SQL. CDL casts are useful for expressions such as `foo+1` as the compiler does not deduce types.
 For the OData backend, by specifying a type, the compiler will also assign the correct EDM type in the generated EDM(X) files.

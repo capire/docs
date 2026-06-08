@@ -11,7 +11,11 @@ status: released
 
 # CDS Typer {#cds-typer}
 
-The following chapter describes the [`cds-typer` package](https://www.npmjs.com/package/@cap-js/cds-typer) in detail using the [bookshop sample](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop) as a running example.
+The following chapter describes the [`cds-typer` package](https://www.npmjs.com/package/@cap-js/cds-typer) in detail using the [bookshop sample](https://github.com/capire/bookshop) as a running example.
+
+::: tip
+If you are planning to use cds-typer in a TypeScript project, you should read the [setup guide for CDS with TypeScript](../node.js/typescript) first. Otherwise you can use cds-typer also in JavaScript projects as described in the following.
+:::
 
 ## Quickstart using VS Code {#cds-typer-vscode}
 
@@ -278,7 +282,7 @@ Note that (iii) through (v) are specific to TypeScript, while (i) and (ii) can a
 
 ## Fine Tuning
 ### Singular/ Plural
-The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain-modeling#naming-conventions).
+The generated types offer both a singular and plural form for convenience. The derivation of these names uses a heuristic that assumes entities are named with an English noun in plural form, following the [best practice guide](../guides/domain/index#naming-conventions).
 
 Naturally, this best practice can't be enforced on every model. Even for names that do follow best practices, the heuristic can fail. If you find that you would like to specify custom identifiers for singular or plural forms, you can do so using the `@singular` or `@plural` annotations.
 
@@ -348,7 +352,7 @@ Make sure to add the quotes around the asterisk so your shell environment does n
 ## Integrate Into Your Build Process
 Having `cds-typer` present as dependency provides the `typescript` build task. If your project also depends on the `typescript` package, this build task is automatically included when you run `cds build`.
 
-If you are [customizing your build task](../guides/deployment/custom-builds), you can add it after the `nodejs` build task:
+If you are [customizing your build task](../guides/deploy/build.md), you can add it after the `nodejs` build task:
 
 ```json {3}
 "tasks": [
@@ -426,7 +430,7 @@ You could import these types by using absolute paths, but there is a more conven
 
 Adding type support via `cds add typer` includes configuring [subpath imports](https://nodejs.org/api/packages.html#subpath-imports). The facet adds a mapping of `#cds-models/` to the default path your model's types are assumed to be generated to (_\<project root\>/@cds-models/_). If you are generating your types to another path and want to use subpath imports, you will have to adjust this setting in your _package.json_ **and** _jsconfig.json_/ _tsconfig.json_ accordingly.
 
-Consider [the bookshop sample](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop) with the following structure with types already generated into _@cds-models_:
+Consider [the bookshop sample](https://github.com/capire/bookshop) with the following structure with types already generated into _@cds-models_:
 
 ```zsh
 bookshop/
@@ -443,7 +447,7 @@ bookshop/
 └── ...
 ```
 
-The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookshop/srv/cat-service.js):
+The following two (equally valid) statements would amount to the same import [from within the catalog service](https://github.com/capire/bookshop/tree/main/srv/cat-service.js):
 
 ```js
 // srv/cat-service.js
@@ -503,7 +507,7 @@ class CatalogService extends cds.ApplicationService { async init(){
 }}
 ```
 
-### Static Top-Level Imports <Since version="0.26.0" of="@cap-js/cds-typer" /> {#typer-top-level-imports}
+### Static Top-Level Imports <Since version="0.26.0" package="@cap-js/cds-typer" /> {#typer-top-level-imports}
 You can pass a new option, `useEntitiesProxy`, to `cds-typer`. This option allows you to statically import your entities at the top level, as you intuitively would. However, you can still only _use these entities_ in a context where the CDS runtime is fully booted, like in a service definition:
 
 ```ts twoslash
