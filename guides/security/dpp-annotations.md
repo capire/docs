@@ -200,5 +200,5 @@ annotate my.Customers with {
 Having annotated your data model with `@PersonalData` annotations, you can now go on to the respective tasks that leverage these annotations to automate as much as possible:
 
 - [*Automated Audit Logging*](dpp-audit-logging)
-- [*Personal Data Management*](dpp-pdm)
-- [*Data Retention Management*](dpp-drm)
+- [*Information reporting*](dpp-pdm)
+- [*Retention management*](dpp-drm)
