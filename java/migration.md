@@ -127,7 +127,7 @@ Removed deprecated methods:
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
-
+| `c.s.c.reflect.CdsEntity.isAbstract() `               | always `false`                                                                               |
 ### Changes in the `cds-maven-plugin`
 
 There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
