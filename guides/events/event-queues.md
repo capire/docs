@@ -104,7 +104,7 @@ A queued call changes _when_ work happens and _what the caller can expect back_:
 - A **queued** call writes the message to the queue inside the local transaction and returns. The actual remote dispatch happens after commit, in the background.
 
 > [!warning] Queued calls discard the direct return value
-> A queued service persists the request and returns after the message is stored, not after the remote operation finishes. Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks-saga-patterns) on `#succeeded` or `#failed`.
+> A queued service persists the request and returns after the message is stored, not after the remote operation finishes. Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks) on `#succeeded` or `#failed`.
 
 ::: tip `await` is still needed
 Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
@@ -136,7 +136,7 @@ CqnService xflights = outbox.unboxed(outboxedXFlights);
 :::
 
 
-### Outboxing a Remote Service via Configuration
+### By Configuration
 
 You can outbox any *outbound* service through configuration without changing code. That is useful when you want to switch a remote integration to durable asynchronous processing centrally — every call from your handlers is then queued automatically.
 
@@ -163,7 +163,7 @@ cds:
 :::
 
 
-### Built-In Auto-Outboxing
+### Auto-Outboxed Services
 
 Some services are outboxed automatically — you don't need to wrap or configure them:
 
@@ -176,63 +176,6 @@ This ensures that messaging and audit log events are sent reliably and never los
 
 [Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
 [Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
-
-
-### Manual Processing
-
-In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
-
-To trigger processing manually — for example, from a startup hook or admin endpoint:
-
-::: code-group
-```js [Node.js]
-// Flush a specific queue
-const xflights = await cds.connect.to('xflights')
-await cds.flush(xflights.name)
-
-// Flush all queues
-await cds.flush()
-```
-:::
-
-> [!note] Node.js only
-> `cds.flush()` is currently a Node.js API. You rarely need it: both stacks have built-in recovery mechanisms that pick up pending messages automatically.
-
-
-### Callbacks: SAGA Patterns <Beta />
-
-Two-phase commits aren't possible across distributed systems — once an outboxed call goes out, you can't roll it back if your local transaction later fails. The way to keep the system consistent under that constraint is to react to the outcome of the remote call and *compensate* if needed. This is the [SAGA pattern](https://microservices.io/patterns/data/saga.html), and event queues support it through callback events on the same service:
-
-- `<event>/#succeeded` — emitted when processing completes successfully.
-- `<event>/#failed` — emitted when the message becomes a dead letter (after all retries are exhausted).
-
-**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
-
-::: code-group
-```js [Node.js]
-const xflights = await cds.connect.to('xflights')
-
-// Called when the queued booking succeeds
-xflights.after('bookFlight/#succeeded', async (result, req) => {
-  console.log('Flight booked successfully:', result)
-  // Replicate booking details from remote
-})
-
-// Called when the queued booking fails after max retries
-xflights.after('bookFlight/#failed', async (error, req) => {
-  console.log('Flight booking failed:', error)
-  // Trigger compensation logic
-})
-```
-:::
-
-> [!note] Node.js only
-> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
-
-::: tip Register on specific events
-Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
-The `*` wildcard handler is not called for these events.
-:::
 
 
 ## Inbox
@@ -332,6 +275,44 @@ The [data federation guide](../integration/data-federation) uses `srv.schedule()
 :::
 
 
+## Callbacks <Beta />
+
+Because queued calls return after the message is *stored* — not after the remote operation completes — you can't use the return value of `send()` or `run()` to react to success or failure. Instead, register a callback handler on the queued service:
+
+- `<event>/#succeeded` — fires when processing completes successfully.
+- `<event>/#failed` — fires when the message becomes a dead letter (after all retries are exhausted).
+
+**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
+
+::: code-group
+```js [Node.js]
+const xflights = await cds.connect.to('xflights')
+
+// Called when the queued booking succeeds
+xflights.after('bookFlight/#succeeded', async (result, req) => {
+  console.log('Flight booked successfully:', result)
+  // Replicate booking details from remote
+})
+
+// Called when the queued booking fails after max retries
+xflights.after('bookFlight/#failed', async (error, req) => {
+  console.log('Flight booking failed:', error)
+  // Trigger compensation logic
+})
+```
+:::
+
+This is also the foundation for [SAGA-style](https://microservices.io/patterns/data/saga.html) compensation across distributed systems: two-phase commits aren't possible once an outboxed call has gone out, so you keep consistency by reacting to outcomes and compensating where needed.
+
+> [!note] Node.js only
+> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
+
+::: tip Register on specific events
+Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
+The `*` wildcard handler is not called for these events.
+:::
+
+
 ## End-to-End Example
 
 The following example ties together queueing, callbacks, and local state updates.
@@ -374,11 +355,7 @@ This example highlights an important design rule:
 use callbacks or persisted status updates for outcomes, not direct return values.
 
 
-## How It Works
-
-This section covers the mechanics underneath the API: how to configure the queue, the data model that backs it, the locking and migration story across `@sap/cds` versions, and how scheduling and processing work in single- and multi-tenant deployments.
-
-### Configuration
+## Configuration
 
 The persistent queue is enabled by default. Messages are stored in a database table within the current transaction.
 
@@ -423,7 +400,7 @@ cds:
 | `storeLastError` | `true` | Store error information of the last failed attempt |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned |
 
-`cds.requires.scheduling` (multitenancy coordination):
+`cds.requires.scheduling` (multitenancy coordination — *markers* are lightweight notes in the provider database that record which tenants have pending work; see [*Three Phases*](#three-phases) for the mechanics):
 
 | Option | Description |
 |--------|-------------|
@@ -441,34 +418,12 @@ cds:
 
 :::
 
-#### Disabling the Queue
+To disable event queues entirely, set `cds.requires.queue: false`. To disable queueing for a specific service, set `outboxed: false` on it (for example, `cds.requires.messaging.outboxed: false`).
 
-You can disable event queues globally:
 
-```json
-{
-  "cds": {
-    "requires": {
-      "queue": false
-    }
-  }
-}
-```
+## How It Works
 
-Or disable queueing for a specific service:
-
-```json
-{
-  "cds": {
-    "requires": {
-      "messaging": {
-        "outboxed": false
-      }
-    }
-  }
-}
-```
-
+This section covers the mechanics underneath the API: the data model, the locking and migration story across `@sap/cds` versions, and how scheduling and processing work in single- and multi-tenant deployments.
 
 ### The Data Model
 
@@ -506,7 +461,7 @@ This guide describes the implementation in `@sap/cds` 10+. Older versions select
 A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
 :::
 
-### Scheduling, Processing, Recovery
+### Three Phases
 
 Behind the scenes, event queues run three independent loops:
 
@@ -535,7 +490,7 @@ CAP spreads marker timestamps across tenants so that processing doesn't synchron
 
 ## Working with Event Queues
 
-This section covers what you need to know to operate an event queue in production: how errors are retried, how to manage stuck messages, and how authorization carries over from the original request.
+This section covers what you need to know to operate an event queue in production: inspecting what's queued, triggering processing manually, and how authorization carries over from the original request. For retries and dead-letter management, see [*Error Handling*](#error-handling) above.
 
 ### Inspecting the Queue
 
@@ -549,7 +504,39 @@ SELECT ID, target, status, attempts, lastAttemptTimestamp, lastError
 
 For a managed view with bound *revive* and *delete* actions, expose a CDS service over the same entity — see [Dead Letter Queue](#dead-letter-queue) below. The same projection can be widened (drop the `attempts >= maxAttempts` filter) to inspect *all* pending messages, not just dead letters.
 
-### Error Handling
+### Manual Processing
+
+In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
+
+To trigger processing manually — for example, from a startup hook or admin endpoint:
+
+::: code-group
+```js [Node.js]
+// Flush a specific queue
+const xflights = await cds.connect.to('xflights')
+await cds.flush(xflights.name)
+
+// Flush all queues
+await cds.flush()
+```
+:::
+
+> [!note] Node.js only
+> `cds.flush()` is currently a Node.js API. You rarely need it: both stacks have built-in recovery mechanisms that pick up pending messages automatically.
+
+### User Context
+
+When an event is processed asynchronously, the original HTTP request context is no longer available.
+CAP handles this as follows:
+
+- The **user ID** is stored with the queued message and re-created when the message is processed.
+- **User roles and attributes** are _not_ stored. Asynchronous processing always runs in privileged mode.
+
+This means queued handlers must not rely on request-time role checks.
+If you need authorization in queued processing, encode the required information in the event payload itself or derive it from persisted business data.
+
+
+## Error Handling
 
 When processing fails, the system retries the message with exponentially increasing delays.
 After a configurable maximum number of attempts, the message is moved to the dead letter queue.
@@ -713,17 +700,6 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 
 [Learn more about the dead letter queue in Node.js.](../../node.js/event-queues#dead-letter-queue){.learn-more}
 [Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
-
-### Deferred Principal Propagation
-
-When an event is processed asynchronously, the original HTTP request context is no longer available.
-CAP handles this as follows:
-
-- The **user ID** is stored with the queued message and re-created when the message is processed.
-- **User roles and attributes** are _not_ stored. Asynchronous processing always runs in privileged mode.
-
-This means queued handlers must not rely on request-time role checks.
-If you need authorization in queued processing, encode the required information in the event payload itself or derive it from persisted business data.
 
 
 ## Stack Differences at a Glance

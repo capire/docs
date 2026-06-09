@@ -13,7 +13,7 @@ status: released
 
 For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Java-specific APIs and configuration on top of that.
 
-In Java, event queues are exposed as **outbox services**. The runtime ships two default outboxes — `DefaultOutboxOrdered` and `DefaultOutboxUnordered` — and you can register custom outbox services for advanced isolation, scaling, or shared-database scenarios.
+In Java, event queues are exposed as **outbox services**. The runtime ships two default outboxes — `DefaultOutboxOrdered` (used by messaging services; processes entries in submission order) and `DefaultOutboxUnordered` (used by the audit-log service; may process entries in parallel). You can register custom outbox services for advanced isolation, scaling, or shared-database scenarios.
 
 [[toc]]
 

@@ -68,7 +68,7 @@ You can outbox any *outbound* service through configuration without changing cod
 }
 ```
 
-Some services — `cds.MessagingService` and `cds.AuditLogService` — are outboxed by default; see [*Built-In Auto-Outboxing*](../guides/events/event-queues#built-in-auto-outboxing) in the common guide.
+Some services — `cds.MessagingService` and `cds.AuditLogService` — are outboxed by default; see [*Auto-Outboxed Services*](../guides/events/event-queues#auto-outboxed-services) in the common guide.
 
 
 ### Scheduling
