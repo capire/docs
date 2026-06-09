@@ -1,13 +1,13 @@
 ---
 synopsis: >
-  Transactional Event Queues let you persist events and background tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
+  Transactional Event Queues let you persist events and scheduled tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
 status: released
 ---
 
 # Transactional Event Queues
 The *'Transactional Outbox'* Pattern, generalized {.subtitle}
 
-Persist events and background tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
+Persist events and scheduled tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
 {.abstract}
 
 > [!tip] Transactional Event Queues – Guiding Principles
@@ -27,45 +27,44 @@ Persist events and background tasks in the same database transaction as your bus
 Distributed side effects are hard to get right.
 An application may commit local data, but a follow-up remote call can still fail because of network errors, service outages, or a process crash.
 
-_Transactional Event Queues_ solve this by storing the follow-up work in the database as part of the **same transaction** as your business data.
-After commit, a background runner executes that work asynchronously and retries failures until they succeed or become dead letters.
+_Transactional Event Queues_ solve this by storing the follow-up work in the database as part of the **same transaction** as your business data. Once the transaction commits, a background runner reads pending messages and dispatches them — retrying with exponentially increasing delays on failure, and moving the message to a dead letter queue after a configurable number of attempts.
 
-![Diagram showing the request handler writing both business data and a queued message into the database within the same transaction, marked by a dashed transaction box. After the COMMIT diamond, an asynchronous arrow leads to a background runner, which in turn dispatches to either a remote service or a background task.](assets/event-queues-motivation.drawio.svg)
+![Diagram showing the request handler writing both business data and a queued message into the database within the same transaction, marked by a dashed transaction box. After the COMMIT diamond, an asynchronous arrow leads to a background runner, which in turn dispatches to either a remote service or a scheduled task.](assets/event-queues-motivation.drawio.svg)
 
-This pattern is widely known as the *'Transactional Outbox'*, but CAP's event queues go beyond outbound messages. They cover four use cases:
+![Sequence diagram with four lifelines: Handler, Database, Background runner, and Remote service. Within the 'same transaction' bracket, the handler sends business data and the queued message to the database, which returns COMMIT. In the asynchronous phase, the background runner polls and locks the database, then dispatches to the remote service. The bottom 'result' bracket shows three alternative outcomes: success leads to a delete arrow back to the database, transient failure leads to a retry-later arrow, and max retries leads to a dead-letter arrow.](assets/event-queues-how-it-works.drawio.svg)
 
-- **Outbox** — defer outbound calls to remote services until the transaction succeeds.
+Because the queued message and your business data share the same database transaction, you get two core guarantees:
+
+- **No phantom events** — if the transaction rolls back, no message is sent.
+- **No lost events** — if the transaction commits, the queued work is persisted and processed eventually. CAP avoids duplicate execution under normal operation, but handlers should still be idempotent to tolerate rare crash windows or external side effects.
+
+This pattern is widely known as the *'Transactional Outbox'*, but CAP's event queues go beyond outbound messages. They cover three use cases:
+
+- **Outbox** — defer outbound calls to remote services and emits to message brokers until the transaction succeeds.
 - **Inbox** — acknowledge inbound messages immediately and process them asynchronously.
-- **Background Tasks** — schedule periodic or delayed tasks such as data replication.
-- **Callbacks** — react to completed or failed tasks, enabling SAGA-like compensation patterns.
+- **Scheduled Tasks** — run periodic or delayed work such as data replication.
+
+> [!tip] When **not** to use event queues
+> If you need an immediate, synchronous response from a remote system, use a normal service call. Queued calls execute asynchronously and discard the direct return value — for purely local logic that finishes inside the current request, an event queue adds nothing.
 
 
-## Quick Start
+## Outbox
 
-Event queues are enabled by default — there's nothing to install or activate. Use a queued service when a side effect must only happen after the current transaction commits.
+The outbox defers outbound calls to remote services and emits to message brokers until the main transaction succeeds.
+This prevents sending requests or messages to external systems when your transaction might still roll back.
+
+**Example:** In the *xtravels* application, when an agent creates a `Travels` record, the application also has to notify *xflights* to book the actual flight. The straightforward implementation is to call *xflights* directly from an `after CREATE` handler:
 
 ```js
-const xflights = await cds.connect.to('xflights')
-const qd_xflights = cds.queued(xflights)
-
+// Anti-pattern: the remote call happens before the local commit is safe
 this.after('CREATE', 'Travels', async (_, req) => {
-  await qd_xflights.send('bookFlight', { travelId: req.data.ID })
+  await xflights.send('bookFlight', { travelId: req.data.ID })
 })
 ```
 
-This stores the flight booking request in the database together with the travel creation. CAP dispatches it later in the background. If the transaction rolls back, no booking request is sent.
+This works in the happy case, but it's not safe: if the surrounding transaction later fails, the external booking may already exist while the local `Travels` row gets rolled back.
 
-The `xflights` connection in the example stands in for any remote service you've configured under `cds.requires`. The complete setup, including the *XTravels* application and the *xflights* service it consumes, lives in the [@capire/xtravels](https://github.com/capire/xtravels) sample.
-
-
-## Use Cases
-
-### Outbox
-
-The outbox defers outbound calls to remote services until the main transaction succeeds.
-This prevents sending requests to external systems when your transaction might still roll back.
-
-**Example:** In the *XTravels* application, when an agent creates a `Travels` record, the application also has to notify *xflights* to book the actual flight. Without the outbox, the booking call could go out even if the local `Travels` row never commits.
+The outbox fixes this. Wrap the remote service in `cds.queued()` (Node.js) or `OutboxService.outboxed()` (Java) and dispatch as before — the call is now persisted within the current transaction and sent after commit:
 
 ::: code-group
 ```js [Node.js]
@@ -92,25 +91,151 @@ void notifyXFlights(List<Travels> travels) {
 ```
 :::
 
-```js
-// Anti-pattern: remote side effect happens before local commit is safe
-this.after('CREATE', 'Travels', async (_, req) => {
-  await xflights.send('bookFlight', { travelId: req.data.ID })
-})
+If the transaction rolls back, no booking request is sent.
+
+> [!tip] Enabled by default
+> Event queues are enabled by default — there's nothing to install or activate. The persistent queue starts with your application; the configuration shown later is only for tuning.
+
+The `xflights` connection here stands in for any remote service you've configured under `cds.requires`. The complete setup of the *xtravels* application and the *xflights* service it consumes lives in the [@capire/xtravels](https://github.com/capire/xtravels) sample.
+
+A queued call changes _when_ work happens and _what the caller can expect back_:
+
+- A **direct** call returns the remote service's result (or error) and only then commits the local transaction.
+- A **queued** call writes the message to the queue inside the local transaction and returns. The actual remote dispatch happens after commit, in the background.
+
+> [!warning] Queued calls discard the direct return value
+> A queued service persists the request and returns after the message is stored, not after the remote operation finishes. Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks-saga-patterns) on `#succeeded` or `#failed`.
+
+::: tip `await` is still needed
+Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
+:::
+
+In Java, you can also wrap a service at runtime through the service catalog rather than wiring through Spring:
+
+::: code-group
+```java [Java]
+OutboxService outbox = runtime.getServiceCatalog()
+    .getService(OutboxService.class, "XFlightsOutbox");
+CqnService xflights = runtime.getServiceCatalog()
+    .getService(CqnService.class, "xflights");
+
+AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
+queued.emit("bookFlight", Map.of("travelId", "T-42"));
 ```
+:::
 
-If the surrounding transaction later fails, the external booking may already exist although the local travel record was rolled back.
+To unwrap a queued service back to its synchronous original:
 
-[See the *XTravels* sample for a comparable scenario.](https://github.com/capire/xtravels){.learn-more}
+::: code-group
+```js [Node.js]
+const xflights = cds.unqueued(qd_xflights)
+```
+```java [Java]
+CqnService xflights = outbox.unboxed(outboxedXFlights);
+```
+:::
 
-Some services are outboxed automatically, including `cds.MessagingService` and `cds.AuditLogService`.
-You don't need to call `cds.queued()` or configure anything extra for these — they use the persistent queue by default.
+
+### Outboxing a Remote Service via Configuration
+
+You can outbox any *outbound* service through configuration without changing code. That is useful when you want to switch a remote integration to durable asynchronous processing centrally — every call from your handlers is then queued automatically.
+
+::: code-group
+```json [Node.js — package.json]
+{
+  "cds": {
+    "requires": {
+      "xflights": {
+        "kind": "odata",
+        "outboxed": true
+      }
+    }
+  }
+}
+```
+```yaml [Java — application.yaml]
+cds:
+  outbox:
+    services:
+      XFlightsOutbox:
+        maxAttempts: 10
+```
+:::
+
+
+### Built-In Auto-Outboxing
+
+Some services are outboxed automatically — you don't need to wrap or configure them:
+
+| Service | Description |
+|---------|-------------|
+| `cds.MessagingService` | All messaging services |
+| `cds.AuditLogService` | Audit log events |
+
+This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks; they use the persistent queue by default.
 
 [Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
-[Learn more about the outbox in Java.](../../java/event-queues){.learn-more}
+[Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
 
 
-### Inbox
+### Manual Processing
+
+In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
+
+To trigger processing manually — for example, from a startup hook or admin endpoint:
+
+::: code-group
+```js [Node.js]
+// Flush a specific queue
+const xflights = await cds.connect.to('xflights')
+await cds.flush(xflights.name)
+
+// Flush all queues
+await cds.flush()
+```
+:::
+
+> [!note] Node.js only
+> `cds.flush()` is currently a Node.js API. You rarely need it: both stacks have built-in recovery mechanisms that pick up pending messages automatically.
+
+
+### Callbacks: SAGA Patterns <Beta />
+
+Two-phase commits aren't possible across distributed systems — once an outboxed call goes out, you can't roll it back if your local transaction later fails. The way to keep the system consistent under that constraint is to react to the outcome of the remote call and *compensate* if needed. This is the [SAGA pattern](https://microservices.io/patterns/data/saga.html), and event queues support it through callback events on the same service:
+
+- `<event>/#succeeded` — emitted when processing completes successfully.
+- `<event>/#failed` — emitted when the message becomes a dead letter (after all retries are exhausted).
+
+**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
+
+::: code-group
+```js [Node.js]
+const xflights = await cds.connect.to('xflights')
+
+// Called when the queued booking succeeds
+xflights.after('bookFlight/#succeeded', async (result, req) => {
+  console.log('Flight booked successfully:', result)
+  // Replicate booking details from remote
+})
+
+// Called when the queued booking fails after max retries
+xflights.after('bookFlight/#failed', async (error, req) => {
+  console.log('Flight booking failed:', error)
+  // Trigger compensation logic
+})
+```
+:::
+
+> [!note] Node.js only
+> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
+
+::: tip Register on specific events
+Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
+The `*` wildcard handler is not called for these events.
+:::
+
+
+## Inbox
 
 The inbox mirrors the *'Outbox'* pattern for inbound messages.
 When a message arrives from a broker, the messaging service immediately persists it to the database, acknowledges it to the broker, and schedules its processing.
@@ -154,10 +279,10 @@ If later processing fails, recovery no longer happens in the broker; it happens 
 :::
 
 
-### Background Tasks
+## Scheduled Tasks
 
 Event queues are not limited to messaging.
-You can schedule arbitrary background tasks such as data replication, cache refresh, or garbage collection.
+You can schedule arbitrary work such as data replication, cache refresh, or garbage collection.
 
 **Example:** Replicate airport master data from the xflights service every 10 minutes.
 
@@ -188,7 +313,7 @@ await xflights.schedule('replicate', { entity: 'Airports' }).every('*/10 * * * *
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`.
 `.every()` accepts the same plus a five-field cron expression.
 
-#### Singleton Tasks
+### Singleton Tasks
 
 Use `srv.schedule.task()` to schedule a *singleton task* — a task identified by name that exists only once:
 
@@ -205,70 +330,6 @@ The event name doubles as the task name. A subsequent call with the same name ov
 ::: tip Real-world example: data federation
 The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.
 :::
-
-
-### Callbacks (SAGA Patterns) <Beta />
-
-In distributed transactions, you often need to react when an asynchronous step completes or fails.
-Event queues support this with `#succeeded` and `#failed` callback events, enabling compensation logic similar to SAGA patterns.
-
-**Example:** After successfully creating a flight booking through *xflights*, the *XTravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
-
-::: code-group
-```js [Node.js]
-const xflights = await cds.connect.to('xflights')
-
-// Called when the queued booking succeeds
-xflights.after('bookFlight/#succeeded', async (result, req) => {
-  console.log('Flight booked successfully:', result)
-  // Replicate booking details from remote
-})
-
-// Called when the queued booking fails after max retries
-xflights.after('bookFlight/#failed', async (error, req) => {
-  console.log('Flight booking failed:', error)
-  // Trigger compensation logic
-})
-```
-:::
-
-> [!note] Node.js only
-> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
-
-::: tip Register on specific events
-Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
-The `*` wildcard handler is not called for these events.
-:::
-
-
-## Guarantees
-
-The core principle is straightforward:
-
-1. Instead of executing side effects directly, you write a message into a database table — **within the current transaction**.
-2. Once the transaction commits, a background runner reads pending messages and dispatches them to the respective service.
-3. If processing succeeds, the message is deleted.
-4. If processing fails, the system retries with exponentially increasing delays.
-5. After a configurable maximum number of attempts, the message is moved to the dead letter queue for manual intervention.
-
-![Sequence diagram with four lifelines: Handler, Database, Background runner, and Remote service. Within the 'same transaction' bracket, the handler sends business data and the queued message to the database, which returns COMMIT. In the asynchronous phase, the background runner polls and locks the database, then dispatches to the remote service. The bottom 'result' bracket shows three alternative outcomes: success leads to a delete arrow back to the database, transient failure leads to a retry-later arrow, and max retries leads to a dead-letter arrow.](assets/event-queues-how-it-works.drawio.svg)
-
-Because the queued message and your business data share the same database transaction, you get two core guarantees:
-
-- **No phantom events** — if the transaction rolls back, no message is sent.
-- **No lost events** — if the transaction commits, the queued work is persisted and processed eventually.
-
-### Transactional Persistence
-
-Because the queued message is written in the same database transaction as your business data, a rollback also removes the queued message.
-No event is ever dispatched for a transaction that didn't commit.
-
-### Eventual Processing
-
-The persistent queue guarantees transactional persistence and eventual processing.
-For database-backed processing, CAP avoids duplicate execution under normal operation, but handlers should still be idempotent to tolerate rare crash windows or external side effects.
-
-Database changes made during queued processing are committed only if the event is processed successfully.
 
 
 ## End-to-End Example
@@ -313,139 +374,11 @@ This example highlights an important design rule:
 use callbacks or persisted status updates for outcomes, not direct return values.
 
 
-## How to Use
+## How It Works
 
-To get a side effect dispatched **after** your transaction commits — with the guarantees described above — you write to an event queue rather than calling the service directly. There are two ways to make a service write to an event queue: programmatically, by wrapping a service in `cds.queued()`, or declaratively, by enabling outboxing in configuration. Either way, the trigger from your code is the same — a normal `srv.send()` or `srv.schedule()` call.
+This section covers the mechanics underneath the API: how to configure the queue, the data model that backs it, the locking and migration story across `@sap/cds` versions, and how scheduling and processing work in single- and multi-tenant deployments.
 
-> [!tip] When **not** to use event queues
-> If you need an immediate, synchronous response from a remote system, use a normal service call. Queued calls execute asynchronously and discard the direct return value — for purely local logic that finishes inside the current request, an event queue adds nothing.
-
-### Programmatically
-
-#### Triggering a Queued Event
-
-Wrap a service in `cds.queued()` (Node.js) or `AsyncCqnService.of()` (Java) and dispatch normally. The call is persisted to the event queue inside your current transaction and processed asynchronously after commit.
-
-For the Node.js shape, see [Quick Start](#quick-start) and the [*Outbox* use case](#outbox). In Java, you can also wrap a service at runtime through the service catalog rather than wiring through Spring:
-
-::: code-group
-```java [Java]
-OutboxService outbox = runtime.getServiceCatalog()
-    .getService(OutboxService.class, "XFlightsOutbox");
-CqnService xflights = runtime.getServiceCatalog()
-    .getService(CqnService.class, "xflights");
-
-AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
-queued.emit("bookFlight", Map.of("travelId", "T-42"));
-```
-:::
-
-A queued call changes _when_ work happens and _what the caller can expect back_:
-
-- A **direct** call returns the remote service's result (or error) and only then commits the local transaction.
-- A **queued** call writes the message to the queue inside the local transaction and returns. The actual remote dispatch happens after commit, in the background.
-
-> [!warning] Queued calls discard the direct return value
-> A queued service persists the request and returns after the message is stored, not after the remote operation finishes.
-> Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks-saga-patterns) on `#succeeded` or `#failed`.
-
-::: tip `await` is still needed
-Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
-:::
-
-To unwrap a queued service back to its synchronous original:
-
-::: code-group
-```js [Node.js]
-const xflights = cds.unqueued(qd_xflights)
-```
-```java [Java]
-CqnService xflights = outbox.unboxed(outboxedXFlights);
-```
-:::
-
-##### Scheduling a Task
-
-For delayed or recurring work, use the `schedule()` shortcut — equivalent to `cds.queued(srv).send(event, data)` plus optional timing. See [Background Tasks](#background-tasks).
-
-| API | Description |
-|-----|-------------|
-| `srv.send(event, data)` | Trigger a queued event; for queued services the direct return value is discarded |
-| `srv.schedule(event, data)` | Schedule a task with optional timing |
-| `srv.schedule.task(event, data)` | Schedule a *singleton* task identified by name |
-| `srv.unschedule.task(name)` | Remove a previously scheduled singleton task |
-
-The signatures above show the Node.js shape. Java has equivalent APIs; documentation to follow.
-
-#### Acting on the Outcome
-
-Because queued calls return after the *message is stored* — not after the remote operation completes — you can't use the return value of `send()` or `run()` to react to success or failure. Register a callback handler on `#succeeded` or `#failed` instead.
-
-[Learn more about callbacks.](#callbacks-saga-patterns){.learn-more}
-
-#### Manual Processing
-
-In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
-
-To trigger processing manually — for example, from a startup hook or admin endpoint:
-
-::: code-group
-```js [Node.js]
-// Flush a specific queue
-const xflights = await cds.connect.to('xflights')
-await cds.flush(xflights.name)
-
-// Flush all queues
-await cds.flush()
-```
-:::
-
-> [!note] Node.js only
-> `cds.flush()` is currently a Node.js API. You rarely need it: both stacks have built-in recovery mechanisms that pick up pending messages automatically.
-
-### By Configuration
-
-#### Auto-Outboxed Services
-
-The following services are outboxed by default — you don't need to wrap or configure them:
-
-| Service | Description |
-|---------|-------------|
-| `cds.MessagingService` | All messaging services |
-| `cds.AuditLogService` | Audit log events |
-
-This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks.
-
-[Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
-[Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
-
-#### Outboxing a Remote Service
-
-You can outbox any *outbound* service through configuration without changing code. That is useful when you want to switch a remote integration to durable asynchronous processing centrally — every call from your handlers is then queued automatically.
-
-::: code-group
-```json [Node.js — package.json]
-{
-  "cds": {
-    "requires": {
-      "xflights": {
-        "kind": "odata",
-        "outboxed": true
-      }
-    }
-  }
-}
-```
-```yaml [Java — application.yaml]
-cds:
-  outbox:
-    services:
-      XFlightsOutbox:
-        maxAttempts: 10
-```
-:::
-
-#### Configuring the Queue
+### Configuration
 
 The persistent queue is enabled by default. Messages are stored in a database table within the current transaction.
 
@@ -536,8 +469,6 @@ Or disable queueing for a specific service:
 }
 ```
 
-
-## How It Works
 
 ### The Data Model
 
