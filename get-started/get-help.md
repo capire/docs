@@ -301,6 +301,12 @@ Even with this dependency added, on macOS and Linux the built-in implementation 
 
 
 
+### How to fix "`Error: Could not locate the bindings file. Tried: ...`"
+
+You probably have `ignore-scripts` set to `true` in your npm configuration. While this is generally a good idea, it prevents certain libraries, like `better-sqlite3`, from running a required postinstall script.
+To solve this, you can either _temporarily_ allow scripts and run a reinstall, or manually run the build script for the library in question. In the case of `better-sqlite3`, this would be running `npm run build-release` from within the _node_modules/better-sqlite3_ directory. The relevant _node_modules_ directory can be found in the first line after the error message.
+
+
 ## Java
 
 ### How to bypass authorization checks?
