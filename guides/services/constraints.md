@@ -372,6 +372,8 @@ service Sue {
 `@mandatory` validation is **not** applied to nested data in deep update operations. To enforce mandatory values in those cases, use the [`not null` constraint](../../cds/cdl#constraints) instead.
 :::
 
+[Learn more about `@Fieldcontrol` annotation with `@mandatory`.](#mandatory-1){.learn-more}
+
 <div id="mandatorywithexpressions"/>
 
 
