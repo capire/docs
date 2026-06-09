@@ -1,6 +1,7 @@
 
 # [Core Concepts](core-concepts)
 # [Event Queues](event-queues)
+# [Event Queues NEW](event-queues-new)
 # [Messaging](messaging)
 # [Apache Kafka](../../../guides/events/apache-kafka) <!-- INTERNAL -->
 # [Advanced Event Mesh](is-aem)
