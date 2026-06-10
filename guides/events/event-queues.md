@@ -178,6 +178,44 @@ This ensures that messaging and audit log events are sent reliably and never los
 [Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
 
 
+### Callbacks <Alpha />
+
+Because queued calls return after the message is *stored* — not after the remote operation completes — you can't use the return value of `send()` or `run()` to react to success or failure. Instead, register a callback handler on the queued service:
+
+- `<event>/#succeeded` — fires when processing completes successfully.
+- `<event>/#failed` — fires when the message becomes a dead letter (after all retries are exhausted).
+
+**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
+
+::: code-group
+```js [Node.js]
+const xflights = await cds.connect.to('xflights')
+
+// Called when the queued booking succeeds
+xflights.after('bookFlight/#succeeded', async (result, req) => {
+  console.log('Flight booked successfully:', result)
+  // Replicate booking details from remote
+})
+
+// Called when the queued booking fails after max retries
+xflights.after('bookFlight/#failed', async (error, req) => {
+  console.log('Flight booking failed:', error)
+  // Trigger compensation logic
+})
+```
+:::
+
+This is also the foundation for [SAGA-style](https://microservices.io/patterns/data/saga.html) compensation across distributed systems: two-phase commits aren't possible once an outboxed call has gone out, so you keep consistency by reacting to outcomes and compensating where needed.
+
+> [!note] Node.js only
+> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
+
+::: tip Register on specific events
+Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
+The `*` wildcard handler is not called for these events.
+:::
+
+
 ## Inbox
 
 The inbox mirrors the *'Outbox'* pattern for inbound messages.
@@ -272,44 +310,6 @@ The event name doubles as the task name. A subsequent call with the same name ov
 
 ::: tip Real-world example: data federation
 The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.
-:::
-
-
-## Callbacks <Beta />
-
-Because queued calls return after the message is *stored* — not after the remote operation completes — you can't use the return value of `send()` or `run()` to react to success or failure. Instead, register a callback handler on the queued service:
-
-- `<event>/#succeeded` — fires when processing completes successfully.
-- `<event>/#failed` — fires when the message becomes a dead letter (after all retries are exhausted).
-
-**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
-
-::: code-group
-```js [Node.js]
-const xflights = await cds.connect.to('xflights')
-
-// Called when the queued booking succeeds
-xflights.after('bookFlight/#succeeded', async (result, req) => {
-  console.log('Flight booked successfully:', result)
-  // Replicate booking details from remote
-})
-
-// Called when the queued booking fails after max retries
-xflights.after('bookFlight/#failed', async (error, req) => {
-  console.log('Flight booking failed:', error)
-  // Trigger compensation logic
-})
-```
-:::
-
-This is also the foundation for [SAGA-style](https://microservices.io/patterns/data/saga.html) compensation across distributed systems: two-phase commits aren't possible once an outboxed call has gone out, so you keep consistency by reacting to outcomes and compensating where needed.
-
-> [!note] Node.js only
-> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
-
-::: tip Register on specific events
-Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
-The `*` wildcard handler is not called for these events.
 :::
 
 
@@ -713,7 +713,7 @@ The two stacks share the concept and the data model, but their APIs and feature 
 | Custom outbox services | through configuration | dedicated API + configuration |
 | `srv.schedule()` (delay / recurrence / cron) | available | equivalent API; documentation to follow |
 | Singleton tasks (`srv.schedule.task` / `srv.unschedule.task`) | available | not available |
-| Callback events `#succeeded` / `#failed` | available | on the roadmap |
+| Callback events `#succeeded` / `#failed` | available (alpha) | on the roadmap |
 | Manual processing trigger (`cds.flush()`) | available | not needed; both stacks recover automatically |
 | Event versioning for blue/green deployments | not available | available |
 | OpenTelemetry KPI metrics | not available | available |
