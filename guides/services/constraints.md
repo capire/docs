@@ -239,6 +239,81 @@ annotate TravelService.Travels with {
 
 
 
+#### Error Functions
+
+Instead of a plain message string in the `then` branch, you can use the **`error()` function** to attach dynamic message parameters and explicit error targets to an error. This is currently supported in **CAP Java only**.
+
+```cds
+annotate BookshopService.Books with {
+
+  price @assert: (case
+    when price < minPrice
+      then error(                                                         // [!code focus]
+        'Price ({}) must not be lower than minimum price ({})',           // [!code focus]
+        (price, minPrice)                                                 // [!code focus]
+      )                                                                   // [!code focus]
+  end);
+
+}
+```
+
+The `error()` function accepts up to three arguments:
+
+```cds
+error( message, parameters, targets? )
+```
+
+| Argument     | Required | Description |
+|--------------|----------|-------------|
+| `message`    | yes      | A plain text string or an [i18n key](#localized-messages). Use `{}` as placeholders for parameter values. |
+| `parameters` | yes       | A single expression or a parenthesized list of expressions `(expr1, expr2, ...)` whose values are inserted into `{}` placeholders in the message. |
+| `targets`    | no       | A single element reference or a parenthesized list of element references `(elem1, elem2, ...)` that the error should be attached to. The first target becomes the primary target; additional targets are reported as `@Common.additionalTargets`. |
+
+When `targets` is omitted, the error is attached to the annotated element.
+
+**Example — i18n message key with a parameter:**
+
+```cds
+// i18n bundle: "book.outOfStock=Only {0} copies left in stock"
+stock @assert: (case
+  when stock < quantity
+    then error('book.outOfStock', stock)
+end);
+```
+
+**Example — message with parameters and explicit targets:**
+
+When an error relates to more than one field, pass the affected element references as the third argument. The first target becomes the primary error target; the rest are reported as `@Common.additionalTargets`.
+
+```cds
+price @assert: (case
+  when price < minPrice
+    then error(
+      'Price ({}) must not be lower than minimum price ({})',
+      (price, minPrice),   // parameter values inserted into {}
+      (price, minPrice)    // error targets
+    )
+end);
+```
+
+**Example — mixing plain messages and error functions in one constraint:**
+
+A single `@assert` annotation can mix plain `then 'message'` branches with `then error(...)` branches:
+
+```cds
+stock @assert: (case
+  when stock < 0          then 'Stock must not be negative'
+  when stock < quantity
+    then error('Only {} copies left in stock', stock)
+  when stock = 0 and quantity > 0
+    then error(
+      'Book {} is out of stock',
+      title,
+      (stock, quantity)
+    )
+end);
+```
+
 
 
 
