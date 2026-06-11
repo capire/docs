@@ -270,7 +270,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App - Java handles it natively via configuration, while Node.js can use either BTP Destinations with `tokenService.body.resource` or Cloud SDK's `createDestinationFromIasService` API.
+[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App via configuration - Java uses service bindings with `ias-dependency-name`, while Node.js uses BTP Destinations with `tokenService.body.resource`.
 
 
 ### IAS App-2-App { #app-to-app }
@@ -291,7 +291,7 @@ CAP offers App-2-App setup by leveraging remote services that require:
 - URL pointing to the provider
 - Principal propagation mode (optional)
 
-**Note:** CAP Java handles IAS App-2-App natively. CAP Node.js can use BTP Destinations with `tokenService.body.resource` or Cloud SDK's `createDestinationFromIasService` API.
+**Note:** Both CAP Java and CAP Node.js handle IAS App-2-App via configuration.
 :::
 
 [Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
@@ -511,8 +511,6 @@ resources:
 
 **Note:** MTA cannot resolve cross-service credential references like `${generated>xtravels-ias/clientid}`. The destination must be created manually in BTP Cockpit or via Destination Service API.
 
-**Alternative: Cloud SDK API** - If you prefer programmatic control, you can use Cloud SDK's `createDestinationFromIasService` API with a custom handler. See [Node.js: Custom Handler for IAS App-2-App](#nodejs-ias-handler).
-
 :::
 
 Finally, deploy and start the application with
@@ -576,81 +574,13 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 <div id="btp-reuse-service" />
 
 
-## Node.js: Custom Handler for IAS App-2-App { #nodejs-ias-handler }
-
-As an alternative to using BTP Destinations, CAP Node.js can use Cloud SDK's `createDestinationFromIasService` API directly via a custom handler. This approach gives you more programmatic control but requires more code.
-
-::: tip Recommended approach
-For most use cases, the [BTP Destination approach](#consumer) is simpler and requires no custom code. Use the custom handler approach only if you need programmatic control over the token exchange.
-:::
-
-### Cloud SDK v4 API
-
-The custom handler uses these Cloud SDK v4 APIs:
-
-```typescript
-import { createDestinationFromIasService } from '@sap-cloud-sdk/connectivity'
-import { executeHttpRequest } from '@sap-cloud-sdk/http-client'
-
-// Create destination with IAS token exchange
-const destination = await createDestinationFromIasService(
-  'identity',  // Resolves IAS binding from VCAP_SERVICES
-  {
-    targetUrl: 'https://provider-app.cfapps.eu10.hana.ondemand.com',
-    resource: { name: 'data-consumer' },  // IAS dependency name
-    authenticationType: 'OAuth2ClientCredentials' | 'OAuth2JWTBearer',
-    assertion: jwt  // Required only for OAuth2JWTBearer
-  }
-)
-
-// Execute request with the IAS-authenticated destination
-const response = await executeHttpRequest(destination, requestConfig, { fetchCsrfToken: false })
-```
-
-### Authentication Types
-
-| Type | Use Case | Token Claim |
-|------|----------|-------------|
-| `OAuth2ClientCredentials` | Technical user (no user context) | `ias_apis: ["data-consumer"]` |
-| `OAuth2JWTBearer` | User propagation (exchange user token) | `ias_apis: ["data-consumer"]` + user identity |
-
-### Configuration for Custom Handler
-
-If using the custom handler approach, configure `iasOptions` in `package.json`:
-
-```json
-{
-  "cds": {
-    "requires": {
-      "sap.capire.flights.data": {
-        "kind": "hcql",
-        "[production]": {
-          "credentials": {
-            "path": "/hcql/data",
-            "iasOptions": {
-              "targetUrl": "https://<xflights-srv url>",
-              "resource": "data-consumer"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-Then implement the custom handler in your service file. See the [Cloud SDK IAS documentation](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service) for details.
-
-[Learn more about SAP Cloud SDK IAS connectivity](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/identity-authentication-service){.learn-more}
-
-
 ## Pitfalls
 
 - **Don't write custom integration logic** for consumed services unless necessary.
-Leverage CAP's remote service architecture when possible to ensure a seamless integration experience. For Node.js IAS App-2-App, use BTP Destinations with `tokenService.body.resource` for the simplest approach.
+Leverage CAP's remote service architecture when possible to ensure a seamless integration experience.
 
 - **Don't implement connectivity layer code** (for example, to fetch or exchange tokens) unless necessary.
-For Java, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests. For Node.js IAS App-2-App, BTP Destinations handle the token exchange automatically.
+Rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
