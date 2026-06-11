@@ -224,7 +224,7 @@ annotate TravelService.Bookings with {
 
 ```
 
-We can also do checks with sets of related data using path expressions which navigate along **to-many associations** or compositions, combined with SQL's `exists` quantifier, and optional [infix filters](../../cds/cql#with-infix-filters), as shown in this example:
+We can also do checks with sets of related data using path expressions which navigate along **to-many associations** or compositions, combined with SQL's `exists` quantifier, and optional [infix filters](../../cds/cxl#infix-filters), as shown in this example:
 
 ```cds
 annotate TravelService.Travels with {

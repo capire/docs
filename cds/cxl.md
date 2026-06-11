@@ -15,7 +15,7 @@ and other expressions in the context of CDS models and queries.
 
 `CXL` can be used in various places:
 
-- In [CQL queries](./cql#path-expressions) created at runtime via respective language bindings, such as the [`cds.ql`](../node.js/cds-ql) template tag API in JavaScript, or the fluent API variants.
+- In [CQL queries](./cql#select) created at runtime via respective language bindings, such as the [`cds.ql`](../node.js/cds-ql) template tag API in JavaScript, or the fluent API variants.
 
 - In [CDL views and projections](./cdl#views), as well as in on-conditions of [unmanaged associations](./cdl#associations), in [calculated elements](./cdl#calculated-elements), and in [annotations](./cdl.md#expressions-as-annotation-values)
 
@@ -437,7 +437,7 @@ SELECT from Authors { name }
 
 ### Applied to `from` Clause
 
-Infix filters can also be applied to [path expressions in the `from` clause](./cql#path-expressions-in-from-clauses).
+Infix filters can also be applied to [path expressions in the `from` clause](./cql#using-path-expressions).
 
 For example, we want to get the author names of books with a price greater than 19.99.
 Intuitively, we can formulate a query using a condition in the `where` clause:

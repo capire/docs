@@ -521,7 +521,7 @@ await SELECT.from `Authors {
 </span>
 
 > [!tip] CDS Query Language (CQL)
-> [CQL](../cds/cql) is a high-level query language, similar to SQL, but adapted to CDS  concepts, in particular associations, by [path expressions](../cds/cql#path-expressions) and [nested projections](../cds/cql#postfix-projections). It can be used in different CAP runtimes and services to capture and execute queries in a conceptual way, largely agnostic to the underlying database.
+> [CQL](../cds/cql) is a high-level query language, similar to SQL, but adapted to CDS  concepts, in particular associations, by [path expressions](../cds/cxl#path-expressions-ref) and [nested projections](../cds/cql#postfix-projections). It can be used in different CAP runtimes and services to capture and execute queries in a conceptual way, largely agnostic to the underlying database.
 
 
 
