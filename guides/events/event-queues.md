@@ -239,9 +239,8 @@ This brings two advantages:
 - **Quick acknowledgment** — the broker doesn't have to wait for your processing to complete, which keeps consumer throughput high under load.
 - **Flatten the curve** — if a burst of messages arrives, they are queued in your database and processed at a controlled pace.
 
-> [!note] Especially useful when brokers don't support redelivery
-> Some message brokers do not allow retriggering delivery or correcting message payloads.
-> With the inbox, failures are handled inside your app via the [dead letter queue](#dead-letter-queue), where you have full control over retry and correction.
+> [!note] Especially useful when broker redelivery doesn't fit
+> Some message brokers don't allow retriggering delivery or correcting message payloads. Others have aggressive or unconfigurable redelivery timeouts that misfire when your processing legitimately takes longer than the broker's window. With the inbox, the broker's job ends at acknowledgement and failures are handled inside your app via the [dead letter queue](#dead-letter-queue), where you have full control over retry timing, payload correction, and discard.
 
 Enable the inbox in your configuration:
 
