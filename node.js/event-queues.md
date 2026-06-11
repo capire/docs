@@ -10,6 +10,11 @@ For concepts, use cases, and guarantees, see the [Transactional Event Queues](..
 
 In Node.js, you wrap a service with `cds.queued()` to queue its events, or enable queueing through configuration. The persistent queue is the default for all queued services.
 
+> [!info] Event queues vs. `cds.spawn`
+> [`cds.spawn`](cds-tx#cds-spawn) runs a *detached continuation* — an in-memory background job in a fresh root transaction, optionally with `every` / `after` recurrence. It does not persist anything: a crash before the job completes loses it, and concurrent app instances each run their own copy.
+>
+> Reach for `cds.spawn` when the work is in-process, idempotent, and tolerates being dropped — for example, a periodic cache refresh. Use an event queue when you need **transactional integration with the calling request** (the message lives or dies with the surrounding commit) or **persistence and retries across restarts and instances**.
+
 [[toc]]
 
 

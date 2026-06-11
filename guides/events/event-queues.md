@@ -25,9 +25,9 @@ Persist events and scheduled tasks in the same database transaction as your busi
 ## Motivation
 
 Distributed side effects are hard to get right.
-An application may commit local data, but a follow-up remote call can still fail because of network errors, service outages, or a process crash.
+An application may commit local data, but a follow-up remote call can still fail because of network errors, service outages, or a process crash. Two-phase commits across a database and a remote service or message broker aren't an option in modern cloud architectures, so applications instead aim for **eventual consistency**: the local state and the remote state may diverge briefly, but converge after the dispatch completes (or after compensation, if it fails permanently).
 
-_Transactional Event Queues_ solve this by storing the follow-up work in the database as part of the **same transaction** as your business data. Once the transaction commits, a background runner reads pending messages and dispatches them — retrying with exponentially increasing delays on failure, and moving the message to a dead letter queue after a configurable number of attempts.
+_Transactional Event Queues_ are CAP's mechanism for that. They store the follow-up work in the database as part of the **same transaction** as your business data. Once the transaction commits, a background runner reads pending messages and dispatches them — retrying with exponentially increasing delays on failure, and moving the message to a dead letter queue after a configurable number of attempts.
 
 ![Diagram showing the request handler writing both business data and a queued message into the database within the same transaction, marked by a dashed transaction box. After the COMMIT diamond, an asynchronous arrow leads to a background runner, which in turn dispatches to either a remote service or a scheduled task.](assets/event-queues-motivation.drawio.svg)
 
@@ -38,11 +38,24 @@ Because the queued message and your business data share the same database transa
 - **No phantom events** — if the transaction rolls back, no message is sent.
 - **No lost events** — if the transaction commits, the queued work is persisted and processed eventually. CAP avoids duplicate execution under normal operation, but handlers should still be idempotent to tolerate rare crash windows or external side effects.
 
-This pattern is widely known as the *'Transactional Outbox'*, but CAP's event queues go beyond outbound messages. They cover three use cases:
+This pattern is widely known as the [*'Transactional Outbox'*](https://microservices.io/patterns/data/transactional-outbox.html), but CAP's event queues go beyond outbound messages. They cover three use cases:
 
 - **Outbox** — defer outbound calls to remote services and emits to message brokers until the transaction succeeds.
 - **Inbox** — acknowledge inbound messages immediately and process them asynchronously.
 - **Scheduled Tasks** — run periodic or delayed work such as data replication.
+
+### Pub/Sub vs. Event Queues
+
+These are sometimes confused but solve different problems.
+
+**Pub/sub** — typically realized through a message broker — *loosely couples microservices*. A producer publishes events without knowing who consumes them; consumers subscribe by topic. The unit of trust is the broker.
+
+**Event queues** address *async workload processing within one service*. They turn a piece of work into a database row that survives commit, restart, and retry, then dispatch it later — to the same service in process, to a remote service, or to a message broker. The unit of trust is the database transaction.
+
+The two compose: when the dispatch target *is* a message broker, the outbox is the transactional bridge that makes pub/sub safe across the local commit. The [Inbox](#inbox) does the mirror image on the receiving side.
+
+> [!info] Related patterns
+> [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by making an append-only event log the source of truth. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
 
 > [!tip] When **not** to use event queues
 > If you need an immediate, synchronous response from a remote system, use a normal service call. Queued calls execute asynchronously and discard the direct return value — for purely local logic that finishes inside the current request, an event queue adds nothing.
