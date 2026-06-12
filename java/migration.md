@@ -146,6 +146,9 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
 
+If your project uses Lombok, you need to explicitly add its annotation processor to your POM when you switch to Java 25. See https://projectlombok.org/setup/maven. 
+This is a change in Java compiler and affects all other annotation processors. See https://bugs.java.com/bugdatabase/JDK-8321314/description. 
+
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
 The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed from the delivery. If the project directly references these modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatibility of the code base:
