@@ -160,10 +160,9 @@ The persistent queue is enabled by default. Messages are stored in the `cds.outb
     "scheduling": {},
     "queue": {
       "kind": "persistent-queue",
-      "maxAttempts": 20,
+      "maxAttempts": 10,
       "chunkSize": 10,
       "parallel": true,
-      "storeLastError": true,
       "timeout": "1h"
     }
   }
@@ -180,10 +179,9 @@ The locking mechanism changed across `@sap/cds` major versions: cds 8 doesn't ch
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `maxAttempts` | `20` | Maximum retries before a message becomes a dead letter |
+| `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
 | `chunkSize` | `10` | Number of messages to process per batch |
 | `parallel` | `true` | Process messages in parallel |
-| `storeLastError` | `true` | Store error information of the last failed attempt |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
 | `legacyLocking` | `false` | Backward compatibility with `@sap/cds` v9; to be removed in a future release |
 

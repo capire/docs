@@ -287,10 +287,18 @@ A scheduled task is identified by its event name and exists only once: a subsequ
 const xflights = await cds.connect.to('xflights')
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10 minutes')
 ```
-:::
+```java [Java]
+RemoteService xflights = ...;
+OutboxService outbox = ...;
+Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox);
 
-> [!note] Java documentation to follow
-> Java has an equivalent scheduling API; documentation is on its way. The Node.js shape on this page applies analogously.
+scheduled
+  .scheduled(Schedule.create()
+    .taskName("replicate-airports")
+    .every(Duration.ofMinutes(10)))
+  .emit(...);
+```
+:::
 
 The `schedule()` method is a convenience shortcut for `cds.queued(srv).send(event, data)` with optional timing:
 
@@ -384,7 +392,7 @@ The persistent queue is enabled by default. Messages are stored in a database ta
     "requires": {
       "scheduling": {},
       "queue": {
-        "maxAttempts": 20,
+        "maxAttempts": 10,
         "chunkSize": 10
       }
     }
@@ -410,9 +418,8 @@ cds:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `maxAttempts` | `20` | Maximum retries before a message becomes a dead letter |
+| `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
 | `chunkSize` | `10` | Number of messages to process per batch |
-| `storeLastError` | `true` | Store error information of the last failed attempt |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned |
 
 `cds.requires.scheduling` (multitenancy coordination — *markers* are lightweight notes in the provider database that record which tenants have pending work; see [*Three Phases*](#three-phases) for the mechanics):
@@ -726,7 +733,7 @@ The two stacks share the concept and the data model, but their APIs and feature 
 | Programmatic wrap | `cds.queued(srv)` | `OutboxService.outboxed(svc)` / `AsyncCqnService.of(svc, outbox)` |
 | Default for non-auto-outboxed services | persistent | in-memory |
 | Custom outbox services | through configuration | dedicated API + configuration |
-| `srv.schedule()` (delay / recurrence / cron) | available | equivalent API; documentation to follow |
+| `srv.schedule()` (delay / recurrence / cron) | available | available via `Schedulable` + `Schedule` |
 | Callback events `#succeeded` / `#failed` | available (alpha) | on the roadmap |
 | Manual processing trigger (`cds.flush()`) | available | not needed; both stacks recover automatically |
 | Event versioning for blue/green deployments | not available | available |

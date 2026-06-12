@@ -183,7 +183,65 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 ### Scheduling
 
-An equivalent of the Node.js `srv.schedule()` API exists in Java; documentation is on its way. For the parity status, see [*Stack Differences at a Glance*](../guides/events/event-queues#stack-differences-at-a-glance) in the common guide.
+Every outboxed service is guaranteed to implement the [`Schedulable<T>`](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedulable.java) interface, which adds a single method, `scheduled(Schedule)`. It returns a service whose subsequent emits are queued with the given timing — equivalent to the Node.js `srv.schedule()` shortcut in the common guide.
+
+A scheduled task with a name is a **singleton**: a subsequent submission with the same task name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent — convenient during application startup, where the same registration code may run on every boot.
+
+**Example:** Replicate airport master data from the *xflights* service every 10 minutes.
+
+```java
+RemoteService xflights = ...;
+OutboxService outbox = ...;
+
+Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox);
+
+scheduled
+  .scheduled(Schedule.create()
+    .taskName("replicate-airports")
+    .every(Duration.ofMinutes(10)))
+  .emit(...); // your replication event
+```
+
+`Schedule` is a small builder with three timing options:
+
+```java
+// Execute once, after a delay
+Schedule.create().taskName("cleanup").after(Duration.ofHours(1));
+
+// Execute repeatedly, with a fixed delay between successful runs
+Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10));
+
+// Execute repeatedly, on a Spring cron expression
+Schedule.create().taskName("nightly-cleanup").cron("0 0 3 * * *");
+```
+
+`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (six fields, including seconds). The three are mutually exclusive — combining them throws `IllegalArgumentException`.
+
+Without a task name, every submission is a new scheduled entry. Set `taskName(...)` when you want the singleton-by-name semantics.
+
+To remove a previously scheduled task, submit a cancellation with the same task name:
+
+```java
+scheduled
+  .scheduled(Schedule.create()
+    .taskName("replicate-airports")
+    .cancel())
+  .emit(...);
+```
+
+Cancellation requires a task name — it's how the runtime locates the entry to delete.
+
+::: tip Scheduling without a wrapper
+The technical outbox API takes the same `Schedule` directly, for cases where you submit `OutboxMessage` instances rather than service events:
+
+```java
+outbox.submit("replicate", message,
+  Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10)));
+```
+:::
+
+[Learn more about `Schedulable`.](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedulable.java){.learn-more}
+[Learn more about `Schedule`.](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedule.java){.learn-more}
 
 
 ## Configuration
@@ -305,11 +363,9 @@ cds:
       # custom outboxes with unique names
       Service1CustomOutboxOrdered:
         maxAttempts: 10
-        storeLastError: true
         ordered: true
       Service1CustomOutboxUnordered:
         maxAttempts: 10
-        storeLastError: true
         ordered: false
 ```
 
