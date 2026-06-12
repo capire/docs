@@ -274,8 +274,10 @@ If later processing fails, recovery no longer happens in the broker; it happens 
 
 ## Scheduled Tasks
 
-Event queues are not limited to messaging.
+Event queues are not limited to outbound calls and messaging.
 You can schedule arbitrary work such as data replication, cache refresh, or garbage collection.
+
+A scheduled task is identified by its event name and exists only once: a subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent — convenient during application startup, where the same registration code may run on every boot.
 
 **Example:** Replicate airport master data from the xflights service every 10 minutes.
 
@@ -301,24 +303,23 @@ await xflights.schedule('cleanup', { olderThan: '30d' }).after('1h')
 // Execute repeatedly — supports time strings and cron expressions
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10 minutes')
 await xflights.schedule('replicate', { entity: 'Airports' }).every('*/10 * * * *')
+
+// Remove a previously scheduled task
+await xflights.unschedule('replicate')
 ```
 
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`.
 `.every()` accepts the same plus a five-field cron expression.
 
-### Singleton Tasks
-
-Use `srv.schedule.task()` to schedule a *singleton task* — a task identified by name that exists only once:
+To schedule the same event with different payloads under separate identities, give each its own task name with `.as(<name>)`:
 
 ```js
-// Replace any existing 'replicate' task with a new schedule
-await xflights.schedule.task('replicate', { entity: 'Airports' }).every('10 minutes')
+await xflights.schedule('replicate', { entity: 'Airports' }).as('airports').every('10 minutes')
+await xflights.schedule('replicate', { entity: 'Airlines' }).as('airlines').every('1 hour')
 
-// Remove the task
-await xflights.unschedule.task('replicate')
+// Each can be removed independently by its task name
+await xflights.unschedule('airports')
 ```
-
-The event name doubles as the task name. A subsequent call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated). This is convenient for idempotent registration during application startup.
 
 ::: tip Real-world example: data federation
 The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.
@@ -454,7 +455,7 @@ entity Messages {
       lastError            : LargeString;    // Error from last failed attempt
       lastAttemptTimestamp : Timestamp;      // When last attempt occurred
       status               : String(23);     // Current processing status
-      task                 : String(255);    // Task name for named/singleton tasks
+      task                 : String(255);    // Task name for scheduled tasks
       appid                : String(255);    // Application ID for shared HDI containers
 }
 ```
@@ -724,7 +725,6 @@ The two stacks share the concept and the data model, but their APIs and feature 
 | Default for non-auto-outboxed services | persistent | in-memory |
 | Custom outbox services | through configuration | dedicated API + configuration |
 | `srv.schedule()` (delay / recurrence / cron) | available | equivalent API; documentation to follow |
-| Singleton tasks (`srv.schedule.task` / `srv.unschedule.task`) | available | not available |
 | Callback events `#succeeded` / `#failed` | available (alpha) | on the roadmap |
 | Manual processing trigger (`cds.flush()`) | available | not needed; both stacks recover automatically |
 | Event versioning for blue/green deployments | not available | available |
@@ -736,7 +736,7 @@ The two stacks share the concept and the data model, but their APIs and feature 
 
 For stack-specific APIs, configuration keys, and troubleshooting:
 
-- [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. singleton tasks and `#succeeded` / `#failed` callbacks), queue and scheduling configuration, troubleshooting.
+- [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. `#succeeded` / `#failed` callbacks), queue and scheduling configuration, troubleshooting.
 - [Event Queues in Java](../../java/event-queues) — `OutboxService`, `AsyncCqnService`, custom outbox services, the technical outbox API, error-handling patterns, event versioning for blue/green deployments, and OpenTelemetry observability.
 
 Most real-world event-queue use comes through messaging or remote services. From here you'll likely want to look at:

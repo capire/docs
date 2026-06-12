@@ -85,26 +85,22 @@ await srv.schedule('someEvent', { some: 'message' })                       // ex
 await srv.schedule('someEvent', { some: 'message' }).after('1h')           // delay
 await srv.schedule('someEvent', { some: 'message' }).every('10 minutes')   // recurrence
 await srv.schedule('someEvent', { some: 'message' }).every('*/10 * * * *') // cron
+
+await srv.unschedule('someEvent')                                          // remove
 ```
 
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`. `.every()` accepts the same plus a five-field cron expression.
 
-#### Singleton Tasks
+A scheduled task is identified by its event name and exists only once. A subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated) — convenient for idempotent registration during application startup.
 
-A *singleton task* is identified by name and exists only once. Subsequent calls with the same name overwrite the previous schedule (tasks are upserted, not deduplicated). This is convenient for idempotent registration during application startup:
-
-> [!note] Node.js only
-> Singleton tasks have no Java equivalent yet. See [*Stack Differences at a Glance*](../guides/events/event-queues#stack-differences-at-a-glance).
+To schedule the same event under separate identities (for example, with different payloads), give each its own task name with `.as(<name>)`:
 
 ```js
-// Replace any existing 'replicate' task with a new schedule
-await srv.schedule.task('replicate', { entity: 'Airports' }).every('10 minutes')
+await srv.schedule('replicate', { entity: 'Airports' }).as('airports').every('10 minutes')
+await srv.schedule('replicate', { entity: 'Airlines' }).as('airlines').every('1 hour')
 
-// Remove the task
-await srv.unschedule.task('replicate')
+await srv.unschedule('airports')                                           // remove by task name
 ```
-
-The event name doubles as the task name.
 
 
 ### Callback Events <Alpha />
