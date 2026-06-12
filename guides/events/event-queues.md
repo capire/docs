@@ -66,16 +66,16 @@ The two compose: when the dispatch target *is* a message broker, the outbox is t
 The outbox defers outbound calls to remote services and emits to message brokers until the main transaction succeeds.
 This prevents sending requests or messages to external systems when your transaction might still roll back.
 
-**Example:** In the *xtravels* application, when an agent creates a `Travels` record, the application also has to notify *xflights* to book the actual flight. The straightforward implementation is to call *xflights* directly from an `after CREATE` handler:
+**Example:** In the *xtravels* application, when an agent creates a `Bookings` record (a flight booking on a travel), the application also has to notify *xflights* of the booking. The straightforward implementation is to call *xflights* directly from an `after CREATE` handler:
 
 ```js
 // Anti-pattern: the remote call happens before the local commit is safe
-this.after('CREATE', 'Travels', async (_, req) => {
-  await xflights.send('bookFlight', { travelId: req.data.ID })
+this.after('CREATE', 'Bookings', async (_, req) => {
+  await xflights.send('POST', 'BookingCreated', { flight: req.data.flight_ID, date: req.data.flight_date })
 })
 ```
 
-This works in the happy case, but it's not safe: if the surrounding transaction later fails, the external booking may already exist while the local `Travels` row gets rolled back.
+This works in the happy case, but it's not safe: if the surrounding transaction later fails, the external booking may already exist while the local `Bookings` row gets rolled back.
 
 The outbox fixes this. Wrap the remote service in `cds.queued()` (Node.js) or `OutboxService.outboxed()` (Java) and dispatch as before — the call is now persisted within the current transaction and sent after commit:
 
@@ -84,9 +84,9 @@ The outbox fixes this. Wrap the remote service in `cds.queued()` (Node.js) or `O
 const xflights = await cds.connect.to('xflights')
 const qd_xflights = cds.queued(xflights)
 
-this.after('CREATE', 'Travels', async (_, req) => {
+this.after('CREATE', 'Bookings', async (_, req) => {
   // Persisted within the current transaction, sent after commit
-  await qd_xflights.send('bookFlight', { travelId: req.data.ID })
+  await qd_xflights.send('POST', 'BookingCreated', { flight: req.data.flight_ID, date: req.data.flight_date })
 })
 ```
 ```java [Java]
@@ -96,10 +96,11 @@ OutboxService outbox;
 @Autowired @Qualifier(CqnService.DEFAULT_NAME)
 CqnService xflights;
 
-@After(event = CqnService.EVENT_CREATE, entity = Travels_.CDS_NAME)
-void notifyXFlights(List<Travels> travels) {
+@After(event = CqnService.EVENT_CREATE, entity = Bookings_.CDS_NAME)
+void notifyXFlights(List<Bookings> bookings) {
   AsyncCqnService outboxedXFlights = AsyncCqnService.of(xflights, outbox);
-  travels.forEach(t -> outboxedXFlights.emit("bookFlight", Map.of("travelId", t.getId())));
+  bookings.forEach(b -> outboxedXFlights.emit("BookingCreated",
+    Map.of("flight", b.getFlightId(), "date", b.getFlightDate())));
 }
 ```
 :::
@@ -133,7 +134,7 @@ CqnService xflights = runtime.getServiceCatalog()
     .getService(CqnService.class, "xflights");
 
 AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
-queued.emit("bookFlight", Map.of("travelId", "T-42"));
+queued.emit("BookingCreated", Map.of("flight", "AA017", "date", "2026-07-15"));
 ```
 :::
 
@@ -198,20 +199,20 @@ Because queued calls return after the message is *stored* — not after the remo
 - `<event>/#succeeded` — fires when processing completes successfully.
 - `<event>/#failed` — fires when the message becomes a dead letter (after all retries are exhausted).
 
-**Example:** After successfully creating a flight booking through *xflights*, the *xtravels* application replicates the full booking back into its own database. If the booking fails, the application updates the local `Travels` row to surface the error in its UI.
+**Example:** After *xflights* successfully processes a `BookingCreated` event, the *xtravels* application replicates the booking confirmation back into its own database. If the booking fails, the application updates the local `Bookings` row to surface the error in its UI.
 
 ::: code-group
 ```js [Node.js]
 const xflights = await cds.connect.to('xflights')
 
 // Called when the queued booking succeeds
-xflights.after('bookFlight/#succeeded', async (result, req) => {
+xflights.after('BookingCreated/#succeeded', async (result, req) => {
   console.log('Flight booked successfully:', result)
   // Replicate booking details from remote
 })
 
 // Called when the queued booking fails after max retries
-xflights.after('bookFlight/#failed', async (error, req) => {
+xflights.after('BookingCreated/#failed', async (error, req) => {
   console.log('Flight booking failed:', error)
   // Trigger compensation logic
 })
@@ -339,23 +340,24 @@ module.exports = class TravelService extends cds.ApplicationService {
     const xflights = await cds.connect.to('xflights')
     const qd_xflights = cds.queued(xflights)
 
-    this.after('CREATE', 'Travels', async (_, req) => {
-      await qd_xflights.send('bookFlight', {
-        travelId: req.data.ID,
-        customerId: req.data.customer_ID
+    this.after('CREATE', 'Bookings', async (_, req) => {
+      await qd_xflights.send('POST', 'BookingCreated', {
+        id: req.data.ID,
+        flight: req.data.flight_ID,
+        date: req.data.flight_date
       })
     })
 
-    xflights.after('bookFlight/#succeeded', async (_, req) => {
-      await UPDATE('Travels')
+    xflights.after('BookingCreated/#succeeded', async (_, req) => {
+      await UPDATE('Bookings')
         .set({ status: 'Booked' })
-        .where({ ID: req.data.travelId })
+        .where({ ID: req.data.id })
     })
 
-    xflights.after('bookFlight/#failed', async (err, req) => {
-      await UPDATE('Travels')
+    xflights.after('BookingCreated/#failed', async (err, req) => {
+      await UPDATE('Bookings')
         .set({ status: 'BookingFailed' })
-        .where({ ID: req.data.travelId })
+        .where({ ID: req.data.id })
       req.warn(`Flight booking permanently failed: ${err.message}`)
     })
 
