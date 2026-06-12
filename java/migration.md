@@ -69,7 +69,7 @@ CAP Java 5.0 increased some minimum required versions:
 | --- | --- |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
-| Maven | 3.9.15 |
+| Maven | 3.9.14 |
 
 <!-- ### Adjusted Property Defaults
 
