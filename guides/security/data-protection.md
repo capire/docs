@@ -576,7 +576,7 @@ Design your CDS services exposed to web adapters on need-to-know basis. Be espec
 #### CAP Service Runtime
 
 Open transactions are expensive as they bind many resources such as a database connection as well as memory buffers.
-To minimize the amount of time a transaction must be kept open, the CAP runtime offers an [Outbox Service](../../java/outbox) that allows to schedule asynchronous remote calls in the business transaction.
+To minimize the amount of time a transaction must be kept open, the CAP runtime offers an [Outbox Service](../../java/event-queues) that allows to schedule asynchronous remote calls in the business transaction.
 Hence, the request time to process a business query, which requires a remote call (such as to an audit log server or messaging broker), is minimized and independent from the response time of the remote service.
 
 ::: tip
