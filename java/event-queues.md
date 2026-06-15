@@ -262,17 +262,15 @@ cds:
     services:
       DefaultOutboxOrdered:
         maxAttempts: 10
-        # ordered: true
       DefaultOutboxUnordered:
         maxAttempts: 10
-        # ordered: false
 ```
 :::
 
 | Option | Default | Description |
 |---|---|---|
 | `maxAttempts` | `10` | Number of unsuccessful emits until the message is ignored. It still remains in the database. |
-| `ordered` | `true` | Process entries in submission order. Cannot be changed for the two default outboxes. |
+| `timeout` | `"1h"` | Time after which a `processing` entry is considered abandoned and eligible for reprocessing. |
 
 The persistent outbox stores the last error in the `lastError` element of `cds.outbox.Messages`.
 
@@ -363,10 +361,8 @@ cds:
       # custom outboxes with unique names
       Service1CustomOutboxOrdered:
         maxAttempts: 10
-        ordered: true
       Service1CustomOutboxUnordered:
         maxAttempts: 10
-        ordered: false
 ```
 
 #### 2. Adapt Audit Log Configuration

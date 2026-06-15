@@ -161,7 +161,6 @@ The persistent queue is enabled by default. Messages are stored in the `cds.outb
     "queue": {
       "kind": "persistent-queue",
       "maxAttempts": 10,
-      "chunkSize": 10,
       "parallel": true,
       "timeout": "1h"
     }
@@ -173,24 +172,16 @@ The persistent queue is enabled by default. Messages are stored in the `cds.outb
 The locking mechanism changed across `@sap/cds` major versions: cds 8 doesn't check the `status` column at all, cds 9 checks it but holds row locks for the duration of processing (`legacyLocking: true` was the cds 9 default), and cds 10 uses application-level locking via `status` and releases the row lock after selection. A rolling upgrade from cds 8 directly to cds 10 can lead to **double-processing of messages** — plan downtime, drain the queue first, or upgrade through cds 9.
 :::
 
-::: details Queue and scheduling options
+::: details Queue options
 
 `cds.requires.queue`:
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
-| `chunkSize` | `10` | Number of messages to process per batch |
 | `parallel` | `true` | Process messages in parallel |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
 | `legacyLocking` | `false` | Backward compatibility with `@sap/cds` v9; to be removed in a future release |
-
-`cds.requires.scheduling` (multitenancy coordination):
-
-| Option | Description |
-|--------|-------------|
-| `markerInterval` | Grid interval for markers; CAP picks a default that spreads tenant load across the interval |
-| `flushInterval` | Cadence at which the central runner checks for tenants with pending work |
 
 :::
 

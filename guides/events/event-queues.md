@@ -159,15 +159,14 @@ CqnService xflights = outbox.unboxed(outboxedXFlights);
 
 ### By Configuration
 
-You can outbox any *outbound* service through configuration without changing code. That is useful when you want to switch a remote integration to durable asynchronous processing centrally — every call from your handlers is then queued automatically.
+A service can also be outboxed centrally — without touching handler code — by setting a flag on its configuration. Every call from your handlers is then queued automatically.
 
 ::: code-group
 ```json [Node.js — package.json]
 {
   "cds": {
     "requires": {
-      "xflights": {
-        "kind": "odata",
+      "messaging": {
         "outboxed": true
       }
     }
@@ -178,10 +177,14 @@ You can outbox any *outbound* service through configuration without changing cod
 cds:
   outbox:
     services:
-      XFlightsOutbox:
+      DefaultOutboxOrdered:
         maxAttempts: 10
 ```
 :::
+
+This is the typical setup for **technical services** — messaging and audit logging — where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
+
+For **business services** (remote integrations called from your domain handlers), prefer the programmatic path with `cds.queued()` or `srv.schedule()`. You usually want to outbox specific calls — for example, the *post-commit* notification to *xflights* — while keeping other calls synchronous (a read-through query, a probe before commit). A config-level flag is too coarse for that.
 
 
 ### Auto-Outboxed Services
@@ -404,8 +407,7 @@ The persistent queue is enabled by default. Messages are stored in a database ta
     "requires": {
       "scheduling": {},
       "queue": {
-        "maxAttempts": 10,
-        "chunkSize": 10
+        "maxAttempts": 10
       }
     }
   }
@@ -417,29 +419,19 @@ cds:
     services:
       DefaultOutboxOrdered:
         maxAttempts: 10
-        ordered: true
       DefaultOutboxUnordered:
         maxAttempts: 10
-        ordered: false
 ```
 :::
 
-::: details Queue and scheduling options for Node.js
+::: details Queue options for Node.js
 
 `cds.requires.queue`:
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
-| `chunkSize` | `10` | Number of messages to process per batch |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned |
-
-`cds.requires.scheduling` (multitenancy coordination — *markers* are lightweight notes in the provider database that record which tenants have pending work; see [*Three Phases*](#three-phases) for the mechanics):
-
-| Option | Description |
-|--------|-------------|
-| `markerInterval` | Grid interval for markers; CAP picks a default that spreads tenant load across the interval |
-| `flushInterval` | Cadence at which the central runner checks for tenants with pending work |
 
 :::
 
@@ -448,7 +440,7 @@ cds:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before the entry is considered dead |
-| `ordered` | `true` | Process entries in submission order |
+| `timeout` | `"1h"` | Time after which a `processing` entry is considered abandoned |
 
 :::
 
@@ -588,27 +580,38 @@ A pending message is *processable* when all three conditions hold:
 Messages that fail criterion 2 become dead letters. Messages that fail criterion 3 are skipped on this run and become eligible again once the lock times out (recovery from a crashed runner).
 :::
 
-To mark your own errors as unrecoverable in Node.js:
+To mark your own errors as unrecoverable in Node.js — for example, when *xflights* rejects a `replicate` request with a permanent 4xx response:
 
 ```js
-const error = new Error('Invalid payload')
-error.unrecoverable = true
-throw error
+xflights.on('replicate', async (req) => {
+  try {
+    // call xflights to fetch the delta for the entity
+    // and write the result to the database
+  } catch (e) {
+    if (e.code >= 400 && e.code < 500) {  // [!code highlight]
+      // semantic error — don't retry     // [!code highlight]
+      e.unrecoverable = true              // [!code highlight]
+    }                                     // [!code highlight]
+    throw e
+  }
+})
 ```
 
 In Java, suppress retries by catching the error and calling `context.setCompleted()`:
 
 ```java
-@On(service = "<OutboxServiceName>", event = "myEvent")
-void process(OutboxMessageEventContext context) {
+@On(service = "XFlightsOutbox", event = "replicate")
+void replicate(OutboxMessageEventContext context) {
   try {
-    // processing logic
-  } catch (Exception e) {
-    if (isSemanticError(e)) {
-      context.setCompleted(); // remove from queue, no retry
-    } else {
-      throw e; // retry
-    }
+    // call xflights to fetch the delta for the entity
+    // and write the result to the database
+  } catch (HttpClientErrorException e) {
+    if (e.getStatusCode().is4xxClientError()) { // [!code highlight]
+      // semantic error — don't retry           // [!code highlight]
+      context.setCompleted();                   // [!code highlight]
+      return;                                   // [!code highlight]
+    }                                           // [!code highlight]
+    throw e; // transient — let the runner retry
   }
 }
 ```
