@@ -27,7 +27,7 @@ Persist events and scheduled tasks in the same database transaction as your busi
 Distributed side effects are hard to get right.
 An application may commit local data, but a follow-up remote call can still fail because of network errors, service outages, or a process crash. Two-phase commits across a database and a remote service or message broker aren't an option in modern cloud architectures, so applications instead aim for **eventual consistency**: the local state and the remote state may diverge briefly, but converge after the dispatch completes (or after compensation, if it fails permanently).
 
-_Transactional Event Queues_ are CAP's mechanism for that. They store the follow-up work in the database as part of the **same transaction** as your business data. Once the transaction commits, a background runner reads pending messages and dispatches them — retrying with exponentially increasing delays on failure, and moving the message to a dead letter queue after a configurable number of attempts.
+*Transactional Event Queues* are CAP's mechanism for that. They store the follow-up work in the database as part of the **same transaction** as your business data. Once the transaction commits, a background runner reads pending messages and dispatches them — retrying with exponentially increasing delays on failure, and moving the message to a dead letter queue after a configurable number of attempts.
 
 ![Two side-by-side diagrams contrasting two integration patterns. On the left, on a red background labelled 'High Risk of Inconsistent Data', Service A calls Service B directly and each service writes to its own database — if either step fails after the other has committed, the two databases diverge. On the right, on a green background labelled 'Eventual Consistency', Service A writes to its own database and into an event queue inside that same database in one transaction; the queued message is then dispatched to Service B asynchronously. Service B still writes to its own database. Either both writes on the Service-A side commit together or neither does, and the call to Service B is retried until it succeeds.](assets/event-queues-motivation.drawio.svg)
 
@@ -50,7 +50,7 @@ These are sometimes confused but solve different problems.
 
 **Event queues** address *async workload processing within one service*. They turn a piece of work into a database row that survives commit, restart, and retry, then dispatch it later — to the same service in process, to a remote service, or to a message broker. The unit of trust is the database transaction.
 
-The two compose: when the dispatch target *is* a message broker, the outbox is the transactional bridge that makes pub/sub safe across the local commit. The [Inbox](#inbox) does the mirror image on the receiving side.
+The two compose: when the dispatch target *is* a message broker, the event queue is the transactional bridge that makes pub/sub safe across the local commit. The [Inbox](#inbox) does the mirror image on the receiving side.
 
 > [!info] Related patterns
 > [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by making an append-only event log the source of truth. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
@@ -112,12 +112,15 @@ void notifyXFlights(List<Bookings> bookings) {
 
 If the transaction rolls back, no booking request is sent.
 
+> [!note] Java `@After` receives a list
+> CAP Java's `@After` handler receives the full result list, so the example iterates with `forEach` to emit one event per booking. The Node.js handler runs once per row and works on `req.data` directly.
+
 > [!tip] Enabled by default
 > Event queues are enabled by default — there's nothing to install or activate. The persistent queue starts with your application; the configuration shown later is only for tuning.
 
 The `xflights` connection here stands in for any remote service you've configured under `cds.requires`. The complete setup of the *xtravels* application and the *xflights* service it consumes lives in the [@capire/xtravels](https://github.com/capire/xtravels) sample.
 
-A queued call changes _when_ work happens and _what the caller can expect back_:
+A queued call changes *when* work happens and *what the caller can expect back*:
 
 - A **direct** call returns the remote service's result (or error) and only then commits the local transaction.
 - A **queued** call writes the message to the queue inside the local transaction and returns. The actual remote dispatch happens after commit, in the background.
@@ -125,14 +128,12 @@ A queued call changes _when_ work happens and _what the caller can expect back_:
 > [!warning] Queued calls discard the direct return value
 > A queued service persists the request and returns after the message is stored, not after the remote operation finishes. Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks) on `#succeeded` or `#failed`.
 
-::: tip `await` is still needed
-Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
-:::
+> [!tip] `await` is still needed
+> Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
 
 In Java, you can also wrap a service at runtime through the service catalog rather than wiring through Spring:
 
-::: code-group
-```java [Java]
+```java
 OutboxService outbox = runtime.getServiceCatalog()
     .getService(OutboxService.class, "XFlightsOutbox");
 CqnService xflights = runtime.getServiceCatalog()
@@ -141,7 +142,6 @@ CqnService xflights = runtime.getServiceCatalog()
 AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
 queued.emit("BookingCreated", Map.of("flight", "AA017", "date", "2026-07-15"));
 ```
-:::
 
 To unwrap a queued service back to its synchronous original:
 
@@ -182,7 +182,7 @@ cds:
 
 This is the typical setup for **technical services** — messaging and audit logging — where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
 
-For **business services** (remote integrations called from your domain handlers), prefer the programmatic path with `cds.queued()` or `srv.schedule()`. You usually want to outbox specific calls — for example, the *post-commit* notification to *xflights* — while keeping other calls synchronous (a read-through query, a probe before commit). A config-level flag is too coarse for that.
+For **business services**, however, a class-level flag is usually too coarse. Remote integrations called from domain handlers typically need *some* calls outboxed — the post-commit notification to *xflights*, say — while others stay synchronous (a read-through query, a probe before commit). For that finer control, prefer the programmatic path with `cds.queued()` or `srv.schedule()`.
 
 
 ### Auto-Outboxed Services
@@ -209,8 +209,7 @@ Because queued calls return after the message is *stored* — not after the remo
 
 **Example:** After *xflights* successfully processes a `BookingCreated` event, the *xtravels* application replicates the booking confirmation back into its own database. If the booking fails, the application updates the local `Bookings` row to surface the error in its UI.
 
-::: code-group
-```js [Node.js]
+```js
 const xflights = await cds.connect.to('xflights')
 
 // Called when the queued booking succeeds
@@ -225,22 +224,20 @@ xflights.after('BookingCreated/#failed', async (error, req) => {
   // Trigger compensation logic
 })
 ```
-:::
 
 This is also the foundation for [SAGA-style](https://microservices.io/patterns/data/saga.html) compensation across distributed systems: two-phase commits aren't possible once an outboxed call has gone out, so you keep consistency by reacting to outcomes and compensating where needed.
 
 > [!note] Node.js only
 > Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
 
-::: tip Register on specific events
-Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
-The `*` wildcard handler is not called for these events.
-:::
+> [!tip] Register on specific events
+> Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
+> The `*` wildcard handler is not called for these events.
 
 
 ## Inbox
 
-The inbox mirrors the *'Outbox'* pattern for inbound messages.
+The inbox mirrors the [*'Outbox'* pattern](#outbox) for inbound messages.
 When a message arrives from a broker, the messaging service immediately persists it to the database, acknowledges it to the broker, and schedules its processing.
 
 This brings two advantages:
@@ -275,10 +272,9 @@ cds:
 ```
 :::
 
-::: warning Inboxing shifts failure handling to your application
-With inboxing enabled, the broker considers the message delivered as soon as your app stores it.
-If later processing fails, recovery no longer happens in the broker; it happens in your application's retry and dead letter queue flow.
-:::
+> [!warning] Inboxing shifts failure handling to your application
+> With inboxing enabled, the broker considers the message delivered as soon as your app stores it.
+> If later processing fails, recovery no longer happens in the broker; it happens in your application's retry and dead letter queue flow.
 
 
 ## Scheduled Tasks
@@ -345,9 +341,8 @@ await xflights.unschedule('airports')
 await xflights.unschedule('airlines')
 ```
 
-::: tip Real-world example: data federation
-The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.
-:::
+> [!tip] Real-world example: data federation
+> The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.
 
 
 ## End-to-End Example
@@ -355,7 +350,7 @@ The [data federation guide](../integration/data-federation) uses `srv.schedule()
 The following example ties together queueing, callbacks, and local state updates.
 It shows a common pattern: create local business data first, then trigger remote work asynchronously, then react to its outcome.
 
-```js
+```js [srv/travel-service.js]
 const cds = require('@sap/cds')
 const LOG = cds.log('TravelService')
 
@@ -393,7 +388,7 @@ use callbacks or persisted status updates for outcomes, not direct return values
 
 ## Configuration
 
-The persistent queue is enabled by default — messages are stored in a database table within the current transaction. You only configure them when you want to deviate from the defaults.
+The persistent queue is enabled by default — messages are stored in the `cds.outbox.Messages` table within the current transaction (the `outbox` namespace is historical; the table backs all three patterns). You only configure the queue when you want to deviate from the defaults.
 
 ::: code-group
 ```json [Node.js — package.json]
@@ -447,21 +442,20 @@ To disable queueing for a specific service in Node.js, set `outboxed: false` on 
 
 ## Operations
 
-This section covers what you need to know to run an event queue in production: how runners coordinate across instances and what to watch out for during version upgrades, how authorization works for asynchronous processing, how failures are retried and when an error becomes unrecoverable, how to manage messages that ended up in the dead letter queue, and what queue KPIs you can observe.
+Production concerns: how runners coordinate across instances, how authorization carries over the queue boundary, retries, dead letters, and metrics.
 
-### Locking and Migration
+### Locking
 
 CAP uses **application-level locking** to coordinate processors across application instances. When a runner picks up a message, it sets the message's `status` to `processing`; other runners skip messages in that state. After processing, the row lock is released; the message is deleted (on success) or rescheduled (on failure) in the processing transaction.
 
-::: warning Migrating across `@sap/cds` major versions
-This guide describes the implementation in `@sap/cds` 10+. Older versions select messages differently:
-
-- **`@sap/cds` 8** does **not** check the `status` column at all.
-- **`@sap/cds` 9** checks `status` but holds a row-level lock for the duration of processing (`legacyLocking: true` is the default in cds 9).
-- **`@sap/cds` 10** uses application-level locking via `status` and releases the row lock after selection.
-
-A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
-:::
+> [!warning] Migrating across `@sap/cds` major versions
+> This guide describes the implementation in `@sap/cds` 10+. Older versions select messages differently:
+>
+> - **`@sap/cds` 8** does **not** check the `status` column at all.
+> - **`@sap/cds` 9** checks `status` but holds a row-level lock for the duration of processing (`legacyLocking: true` is the default in cds 9).
+> - **`@sap/cds` 10** uses application-level locking via `status` and releases the row lock after selection.
+>
+> A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
 
 ### Authorization
 
@@ -469,18 +463,18 @@ When an event is processed asynchronously, the original HTTP request context is 
 CAP handles this as follows:
 
 - The **user ID** is stored with the queued message and re-created when the message is processed.
-- **User roles, attributes, and tokens** are _not_ stored. Asynchronous processing always runs in privileged mode.
+- **User roles, attributes, and tokens** are *not* stored. Asynchronous processing always runs in privileged mode.
 
 There is no principal propagation across the queue boundary, by design — that would require CAP to persist authentication tokens in some encrypted form, and those tokens often expire long before the queued work runs.
 
-As a consequence, outbox calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Only outbox calls that the target system can authorize for a technical user. If a queued handler still needs request-time information, encode it in the event payload or derive it from persisted business data.
+As a consequence, outbox calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Outbox only those calls that the target system can authorize for a technical user — for example, service-to-service calls that don't depend on the end-user identity. If a queued handler still needs request-time information, encode it in the event payload or derive it from persisted business data.
 
 ### Error Handling
 
 When processing fails, the system retries the message with exponentially increasing delays.
 After a configurable maximum number of attempts, the message is moved to the dead letter queue.
 
-Some errors are identified as _unrecoverable_ — for example, when a topic is forbidden by the broker.
+Some errors are identified as *unrecoverable* — for example, when a topic is forbidden by the broker.
 These messages are immediately moved to the dead letter queue without further retries.
 
 To mark your own errors as unrecoverable in Node.js — for example, when *xflights* rejects a `replicate` request with a permanent 4xx response:
@@ -522,7 +516,7 @@ void replicate(OutboxMessageEventContext context) {
 ### Dead Letter Queue
 
 Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
-These entries form the _dead letter queue_ and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
+These entries form the *dead letter queue* and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
 
 For triage, query the table directly:
 
@@ -532,13 +526,10 @@ SELECT ID, target, status, attempts, lastAttemptTimestamp, lastError
   ORDER BY timestamp DESC;
 ```
 
-#### Managing Dead Letters
+You can also expose a CDS service to manage dead-letter entries with bound *revive* and *delete* actions:
 
-You can expose a CDS service to manage the dead letter queue with actions to revive or delete entries.
+**1. Define the service**
 
-##### 1. Define the Service
-
-::: code-group
 ```cds [srv/outbox-dead-letter-queue-service.cds]
 using from '@sap/cds/srv/outbox';
 
@@ -554,14 +545,12 @@ service OutboxDeadLetterQueueService {
 
 }
 ```
-:::
 
-::: warning Restrict access
-The dead letter queue contains sensitive data.
-Ensure the service is accessible only to internal users.
-:::
+> [!warning] Restrict access
+> The dead letter queue contains sensitive data.
+> Ensure the service is accessible only to internal users.
 
-##### 2. Filter for Dead Entries
+**2. Filter for dead entries**
 
 As `maxAttempts` is configurable, its value cannot be added as a static filter to the projection, but must be applied programmatically.
 
@@ -608,9 +597,9 @@ public class DeadOutboxMessagesHandler implements EventHandler {
 ```
 :::
 
-##### 3. Implement Bound Actions
+**3. Implement bound actions**
 
-Entries in the dead letter queue can be _revived_ by resetting the retry counter to zero, or _deleted_ permanently.
+Entries in the dead letter queue can be *revived* by resetting the retry counter to zero, or *deleted* permanently.
 
 ::: code-group
 ```js [Node.js — srv/outbox-dead-letter-queue-service.js]
@@ -622,7 +611,7 @@ this.on('delete', 'DeadOutboxMessages', async function (req) {
   await DELETE.from(req.subject)
 })
 ```
-```java [Java]
+```java [Java — DeadOutboxMessagesHandler.java]
 @On
 public void reviveOutboxMessage(DeadOutboxMessagesReviveContext context) {
   CqnAnalyzer analyzer = CqnAnalyzer.create(context.getModel());
