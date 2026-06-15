@@ -57,7 +57,7 @@ The two compose: when the dispatch target *is* a message broker, the outbox is t
 > [!info] Related patterns
 > [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by making an append-only event log the source of truth. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
 
-> [!tip] When **not** to use event queues
+> [!tip] When <i>not</i> to use event queues
 > If you need an immediate, synchronous response from a remote system, use a normal service call. Queued calls execute asynchronously and discard the direct return value — for purely local logic that finishes inside the current request, an event queue adds nothing.
 
 
@@ -66,12 +66,18 @@ The two compose: when the dispatch target *is* a message broker, the outbox is t
 The outbox defers outbound calls to remote services and emits to message brokers until the main transaction succeeds.
 This prevents sending requests or messages to external systems when your transaction might still roll back.
 
+
+### Programmatic Use
+
 **Example:** In the *xtravels* application, when an agent creates a `Bookings` record (a flight booking on a travel), the application also has to notify *xflights* of the booking. The straightforward implementation is to call *xflights* directly from an `after CREATE` handler:
 
 ```js
-// Anti-pattern: the remote call happens before the local commit is safe
+const xflights = await cds.connect.to('xflights')
+
 this.after('CREATE', 'Bookings', async (_, req) => {
-  await xflights.send('POST', 'BookingCreated', { flight: req.data.flight_ID, date: req.data.flight_date })
+  const { flight_ID: flight, flight_date: date } = req.data
+  // Anti-pattern: the remote call happens before the local commit is safe  // [!code --]
+  await xflights.send('POST', 'BookingCreated', { flight, date })           // [!code --]
 })
 ```
 
@@ -85,8 +91,9 @@ const xflights = await cds.connect.to('xflights')
 const qd_xflights = cds.queued(xflights)
 
 this.after('CREATE', 'Bookings', async (_, req) => {
-  // Persisted within the current transaction, sent after commit
-  await qd_xflights.send('POST', 'BookingCreated', { flight: req.data.flight_ID, date: req.data.flight_date })
+  const { flight_ID: flight, flight_date: date } = req.data
+  // Persisted within the current transaction, sent after commit      // [!code ++]
+  await qd_xflights.send('POST', 'BookingCreated', { flight, date })  // [!code ++]
 })
 ```
 ```java [Java]
@@ -285,7 +292,7 @@ A scheduled task is identified by its event name and exists only once: a subsequ
 ::: code-group
 ```js [Node.js]
 const xflights = await cds.connect.to('xflights')
-await xflights.schedule('replicate', { entity: 'Airports' }).every('10 minutes')
+await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
 ```
 ```java [Java]
 RemoteService xflights = ...;
@@ -307,11 +314,14 @@ The `schedule()` method is a convenience shortcut for `cds.queued(srv).send(even
 await xflights.schedule('cleanup', { olderThan: '30d' })
 
 // Execute once, after a delay
-await xflights.schedule('cleanup', { olderThan: '30d' }).after('1h')
+await xflights.schedule('cleanup', { olderThan: '30d' })
+  .after('1h') // [!code highlight]
 
 // Execute repeatedly — supports time strings and cron expressions
-await xflights.schedule('replicate', { entity: 'Airports' }).every('10 minutes')
-await xflights.schedule('replicate', { entity: 'Airports' }).every('*/10 * * * *')
+await xflights.schedule('replicate', { entity: 'Airports' })
+  .every('10m') // [!code highlight]
+await xflights.schedule('replicate', { entity: 'Airports' })
+  .every('*/10 * * * *') // [!code highlight]
 
 // Remove a previously scheduled task
 await xflights.unschedule('replicate')
@@ -319,15 +329,19 @@ await xflights.unschedule('replicate')
 
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`.
 `.every()` accepts the same plus a five-field cron expression.
+The fluent calls can be combined in any order; `.as()` is typically chained last.
 
 To schedule the same event with different payloads under separate identities, give each its own task name with `.as(<name>)`:
 
 ```js
-await xflights.schedule('replicate', { entity: 'Airports' }).as('airports').every('10 minutes')
-await xflights.schedule('replicate', { entity: 'Airlines' }).as('airlines').every('1 hour')
+await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
+  .as('airports') // [!code highlight]
+await xflights.schedule('replicate', { entity: 'Airlines' }).every('1h')
+  .as('airlines') // [!code highlight]
 
 // Each can be removed independently by its task name
 await xflights.unschedule('airports')
+await xflights.unschedule('airlines')
 ```
 
 ::: tip Real-world example: data federation
@@ -342,6 +356,7 @@ It shows a common pattern: create local business data first, then trigger remote
 
 ```js
 const cds = require('@sap/cds')
+const LOG = cds.log('TravelService')
 
 module.exports = class TravelService extends cds.ApplicationService {
   async init() {
@@ -349,11 +364,8 @@ module.exports = class TravelService extends cds.ApplicationService {
     const qd_xflights = cds.queued(xflights)
 
     this.after('CREATE', 'Bookings', async (_, req) => {
-      await qd_xflights.send('POST', 'BookingCreated', {
-        id: req.data.ID,
-        flight: req.data.flight_ID,
-        date: req.data.flight_date
-      })
+      const { flight_ID: flight, flight_date: date } = req.data
+      await qd_xflights.send('POST', 'BookingCreated', { flight, date })
     })
 
     xflights.after('BookingCreated/#succeeded', async (_, req) => {
@@ -366,7 +378,7 @@ module.exports = class TravelService extends cds.ApplicationService {
       await UPDATE('Bookings')
         .set({ status: 'BookingFailed' })
         .where({ ID: req.data.id })
-      req.warn(`Flight booking permanently failed: ${err.message}`)
+      LOG.warn(`Flight booking permanently failed: ${err.message}`)
     })
 
     await super.init()
