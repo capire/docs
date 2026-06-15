@@ -447,31 +447,9 @@ To disable event queues entirely, set `cds.requires.queue: false`.
 To disable queueing for a specific service in Node.js, set `outboxed: false` on it (for example, `cds.requires.messaging.outboxed: false`). In Java, set `cds.outbox.services.<name>.enabled: false`.
 
 
-## How It Works
+## Operations
 
-This section covers the mechanics underneath the API: the data model, the locking and migration story across `@sap/cds` versions, and how scheduling and processing work in single- and multi-tenant deployments.
-
-### The Data Model
-
-The persistent queue stores its messages in this entity, which CAP adds to your model on build and deploys with your other entities:
-
-```cds
-namespace cds.outbox;
-
-entity Messages {
-  key ID                   : UUID;           // Unique message identifier
-      timestamp            : Timestamp;      // When the message was queued
-      target               : String;         // Target service/queue name
-      msg                  : LargeString;    // Serialized event payload
-      attempts             : Integer default 0;  // Number of processing attempts
-      partition            : Integer default 0;
-      lastError            : LargeString;    // Error from last failed attempt
-      lastAttemptTimestamp : Timestamp;      // When last attempt occurred
-      status               : String(23);     // Current processing status
-      task                 : String(255);    // Task name for scheduled tasks
-      appid                : String(255);    // Application ID for shared HDI containers
-}
-```
+This section covers what you need to know to run an event queue in production: how runners coordinate across instances and what to watch out for during version upgrades, how authorization works for asynchronous processing, how failures are retried and when an error becomes unrecoverable, and how to manage messages that ended up in the dead letter queue.
 
 ### Locking and Migration
 
@@ -487,78 +465,25 @@ This guide describes the implementation in `@sap/cds` 10+. Older versions select
 A rolling upgrade from `@sap/cds` 8 directly to 10 can therefore lead to **double-processing of messages**, because cds 8 instances pick up messages that a cds 10 instance has already marked `processing`. Plan downtime, drain the queue before upgrading, or upgrade through cds 9 first.
 :::
 
-### Three Phases
-
-Behind the scenes, event queues run three independent loops:
-
-1. **Scheduling** — calling `srv.send()`, `srv.emit()`, or `srv.schedule()` on a queued service writes the message to the tenant's queue table within the current transaction. In multitenancy, a *marker* is also written to the provider database, recording that this tenant has pending work.
-2. **Processing** — a tenant-local task runner reads a chunk of messages, dispatches each event in its own transaction, and deletes successful messages. Failed messages are rescheduled with exponentially increasing delay; after `maxAttempts` they become dead letters.
-3. **Recovery** — a central runner periodically polls the provider markers and triggers processing for any tenant with pending work. This recovers from application restarts and tenants that became "cold" without losing messages.
-
-*Markers* contain no business data — only the information that some queue of some tenant needs to be flushed at some point in time.
-
-### Single-Tenancy vs Multi-Tenancy
-
-Event queues work in both single-tenant and multi-tenant deployments. In both cases, processing is triggered immediately after commit; markers are an optimization plus an extra layer of resilience.
-
-[Learn more about multitenancy.](../multitenancy/){.learn-more}
-
-#### Single-Tenancy
-
-Messages are stored in a queue table that resides in the application database. A background runner starts when your application starts and processes messages continuously.
-
-#### Multi-Tenancy
-
-Each tenant has its own database. To avoid having a central runner periodically scan every tenant, the system writes a lightweight *marker* to a central (provider) database whenever messages are queued. On startup the central runner only triggers processing for tenants that actually have pending work, and rechecks periodically as a recovery layer in case a runner crashed before processing completed.
-
-CAP spreads marker timestamps across tenants so that processing doesn't synchronize into bursts — you don't need to configure that.
-
-
-## Working with Event Queues
-
-This section covers what you need to know to operate an event queue in production: inspecting what's queued and how authorization carries over from the original request. For retries and dead-letter management, see [*Error Handling*](#error-handling) above.
-
-### Inspecting the Queue
-
-To see what's currently queued for a tenant, query `cds.outbox.Messages` directly. The columns most useful for triage are `status`, `attempts`, `target`, `lastError`, and `lastAttemptTimestamp`:
-
-```sql
-SELECT ID, target, status, attempts, lastAttemptTimestamp, lastError
-  FROM cds_outbox_Messages
-  ORDER BY timestamp DESC;
-```
-
-For a managed view with bound *revive* and *delete* actions, expose a CDS service over the same entity — see [Dead Letter Queue](#dead-letter-queue) below. The same projection can be widened (drop the `attempts >= maxAttempts` filter) to inspect *all* pending messages, not just dead letters.
-
-### User Context
+### Authorization
 
 When an event is processed asynchronously, the original HTTP request context is no longer available.
 CAP handles this as follows:
 
 - The **user ID** is stored with the queued message and re-created when the message is processed.
-- **User roles and attributes** are _not_ stored. Asynchronous processing always runs in privileged mode.
+- **User roles, attributes, and tokens** are _not_ stored. Asynchronous processing always runs in privileged mode.
 
-This means queued handlers must not rely on request-time role checks.
-If you need authorization in queued processing, encode the required information in the event payload itself or derive it from persisted business data.
+There is no principal propagation across the queue boundary, by design — that would require CAP to persist authentication tokens in some encrypted form, and those tokens often expire long before the queued work runs.
 
+As a consequence, outbox calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Only outbox calls that the target system can authorize for a technical user. If a queued handler still needs request-time information, encode it in the event payload or derive it from persisted business data.
 
-## Error Handling
+### Error Handling
 
 When processing fails, the system retries the message with exponentially increasing delays.
 After a configurable maximum number of attempts, the message is moved to the dead letter queue.
 
 Some errors are identified as _unrecoverable_ — for example, when a topic is forbidden by the broker.
 These messages are immediately moved to the dead letter queue without further retries.
-
-::: details When is a message picked up next?
-A pending message is *processable* when all three conditions hold:
-
-1. Its scheduled timestamp plus the retry backoff (`attempts × <exponential factor>`) is in the past.
-2. Its `attempts` count is less than `maxAttempts`.
-3. Its `status` is not `processing`, or its `processing` status has timed out (`timeout`).
-
-Messages that fail criterion 2 become dead letters. Messages that fail criterion 3 are skipped on this run and become eligible again once the lock times out (recovery from a crashed runner).
-:::
 
 To mark your own errors as unrecoverable in Node.js — for example, when *xflights* rejects a `replicate` request with a permanent 4xx response:
 
@@ -601,8 +526,13 @@ void replicate(OutboxMessageEventContext context) {
 Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
 These entries form the _dead letter queue_ and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
 
-For troubleshooting, inspect `cds.outbox.Messages` and pay special attention to `status`, `attempts`, `lastError`, and `lastAttemptTimestamp`.
-See [*The Data Model*](#the-data-model) for the entity structure.
+For triage, query the table directly:
+
+```sql
+SELECT ID, target, status, attempts, lastAttemptTimestamp, lastError
+  FROM cds_outbox_Messages
+  ORDER BY timestamp DESC;
+```
 
 #### Managing Dead Letters
 
