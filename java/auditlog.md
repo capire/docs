@@ -106,9 +106,7 @@ Instead of processing the audit log events synchronously in the [audit log handl
 
 As the stored events are processed asynchronously, the business request is also decoupled from the audit log handler which typically sends the events synchronously to a central audit log service. This improves resilience and performance.
 
-By default, the outbox comes in an [in-memory](./event-queues#persistent-vs-in-memory-outbox) flavour which has the drawback that it can't guarantee that the all events are processed after the transaction has been successfully closed.
-
-To close this gap, a sophisticated [persistent outbox](./event-queues#default-outbox-services) service can be configured.
+The audit-log service uses the [`DefaultOutboxUnordered`](./event-queues#default-outbox-services) outbox by default.
 
 By default, not all events are send asynchronously via (persistent) outbox.
 * [Security events](#security-event) are always send synchronously.

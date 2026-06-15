@@ -150,18 +150,13 @@ await cds.flush()
 
 ## Configuration
 
-### Persistent Queue
-
-The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction.
+The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction. `cds.requires.queue` and `cds.requires.scheduling` resolve to their default config automatically via `cds.env`; specify them only when tuning.
 
 ```json
 {
   "requires": {
-    "scheduling": {},
     "queue": {
-      "kind": "persistent-queue",
       "maxAttempts": 10,
-      "parallel": true,
       "timeout": "1h"
     }
   }
@@ -179,35 +174,9 @@ The locking mechanism changed across `@sap/cds` major versions: cds 8 doesn't ch
 | Option | Default | Description |
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
-| `parallel` | `true` | Process messages in parallel |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
 | `legacyLocking` | `false` | Backward compatibility with `@sap/cds` v9; to be removed in a future release |
 
-:::
-
-
-### In-Memory Queue
-
-For development and testing, the in-memory queue holds messages until the current transaction commits, then emits them — without persistence:
-
-```json
-{
-  "requires": {
-    "queue": {
-      "kind": "in-memory-queue"
-    }
-  }
-}
-```
-
-This is similar to the following code if done manually:
-
-```js
-cds.context.on('succeeded', () => this.emit(msg))
-```
-
-::: warning No retry mechanism
-With the in-memory queue, messages are lost if processing fails. There is no retry, no dead letter queue, and no recovery on application restart.
 :::
 
 

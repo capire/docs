@@ -395,19 +395,15 @@ use callbacks or persisted status updates for outcomes, not direct return values
 
 ## Configuration
 
-The persistent queue is enabled by default. Messages are stored in a database table within the current transaction.
-
-> [!note] Defaults differ between stacks
-> Node.js enables the **persistent** queue for every queued service by default. Java enables the persistent outbox for `cds.MessagingService` and `cds.AuditLogService` only; other services use the in-memory outbox unless you opt them in via `cds.requires.outbox.kind: persistent-outbox`. The Java configuration sample below already does that.
+The persistent queue is enabled by default — messages are stored in a database table within the current transaction. You only configure them when you want to deviate from the defaults.
 
 ::: code-group
 ```json [Node.js — package.json]
 {
   "cds": {
     "requires": {
-      "scheduling": {},
       "queue": {
-        "maxAttempts": 10
+        "maxAttempts": 11 //> default: 10
       }
     }
   }
@@ -417,34 +413,38 @@ The persistent queue is enabled by default. Messages are stored in a database ta
 cds:
   outbox:
     services:
-      DefaultOutboxOrdered:
-        maxAttempts: 10
       DefaultOutboxUnordered:
-        maxAttempts: 10
+        maxAttempts: 11 #> default: 10
 ```
 :::
 
-::: details Queue options for Node.js
-
-`cds.requires.queue`:
+::: details Node.js — `cds.requires.queue`
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
-| `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned |
+| `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
 
 :::
 
-::: details Configuration options for Java
+::: details Java — per outbox service
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `maxAttempts` | `10` | Maximum retries before the entry is considered dead |
-| `timeout` | `"1h"` | Time after which a `processing` entry is considered abandoned |
+| `maxAttempts` | `10` | Maximum retries before the entry becomes a dead letter |
+| `enabled` | `true` | Set to `false` to disable an outbox service |
+
+A separate, runtime-global setting controls how long a `processing` entry can be held before another instance may pick it up:
+
+```yaml
+cds.outbox.persistent.statusLock.timeout: PT1H  # default
+```
 
 :::
 
-To disable event queues entirely, set `cds.requires.queue: false`. To disable queueing for a specific service, set `outboxed: false` on it (for example, `cds.requires.messaging.outboxed: false`).
+To disable event queues entirely, set `cds.requires.queue: false`.
+
+To disable queueing for a specific service in Node.js, set `outboxed: false` on it (for example, `cds.requires.messaging.outboxed: false`). In Java, set `cds.outbox.services.<name>.enabled: false`.
 
 
 ## How It Works
@@ -746,7 +746,6 @@ The two stacks share the concept and the data model, but their APIs and feature 
 | Feature | Node.js | Java |
 |---|---|---|
 | Programmatic wrap | `cds.queued(srv)` | `OutboxService.outboxed(svc)` / `AsyncCqnService.of(svc, outbox)` |
-| Default for non-auto-outboxed services | persistent | in-memory |
 | Custom outbox services | through configuration | dedicated API + configuration |
 | `srv.schedule()` (delay / recurrence / cron) | available | available via `Schedulable` + `Schedule` |
 | Callback events `#succeeded` / `#failed` | available (alpha) | on the roadmap |

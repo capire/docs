@@ -20,9 +20,6 @@ In Java, event queues are exposed as **outbox services**. The runtime ships two 
 
 ## Programmatic API
 
-> [!warning] In-memory by default
-> Custom services wrapped through this API queue messages **in memory** by default. To make them durable across application restarts, enable the persistent outbox in your configuration — see [*Persistent vs. In-Memory Outbox*](#persistent-vs-in-memory-outbox).
-
 ### Outboxing a Service
 
 Wrap any CAP service with outbox handling. Events triggered on the returned wrapper are stored in the outbox first and executed asynchronously after commit. Relevant information from the `RequestContext` is stored with the event data; the user context is downgraded to a system user context.
@@ -270,36 +267,19 @@ cds:
 | Option | Default | Description |
 |---|---|---|
 | `maxAttempts` | `10` | Number of unsuccessful emits until the message is ignored. It still remains in the database. |
-| `timeout` | `"1h"` | Time after which a `processing` entry is considered abandoned and eligible for reprocessing. |
+| `enabled` | `true` | Set to `false` to disable an outbox service. |
 
-The persistent outbox stores the last error in the `lastError` element of `cds.outbox.Messages`.
+A separate, runtime-global setting controls how long a `processing` entry can be held before another instance may pick it up — useful when an instance crashes mid-processing:
 
-
-### Persistent vs. In-Memory Outbox
-
-CAP Java's default behavior is the **in-memory outbox** for services other than messaging and audit log: messages are kept in memory and emitted when the current transaction succeeds. To enable persistent processing across the runtime, add the `outbox` service of kind `persistent-outbox` to `cds.requires`:
-
-```jsonc
-{
-  "cds": {
-    "requires": {
-      "outbox": {
-        "kind": "persistent-outbox"
-      }
-    }
-  }
-}
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    persistent:
+      statusLock:
+        timeout: PT1H  # default
 ```
 
-::: warning Schema migration required
-Adding the persistent outbox enhances your CDS model. Migrate the database schema of all tenants after enabling it.
-:::
-
-For multitenancy scenarios, apply the same configuration in the MTX sidecar service and ensure the base model in all tenants is updated.
-
-::: info Add the outbox to your base model
-Alternatively, add `using from '@sap/cds/srv/outbox';` to your base model. With this approach, you update tenant models after deployment but don't have to update the MTX sidecar.
-:::
+The outbox stores the last error in the `lastError` element of `cds.outbox.Messages`.
 
 
 ### Custom Outbox Services
