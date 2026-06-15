@@ -449,7 +449,7 @@ To disable queueing for a specific service in Node.js, set `outboxed: false` on 
 
 ## Operations
 
-This section covers what you need to know to run an event queue in production: how runners coordinate across instances and what to watch out for during version upgrades, how authorization works for asynchronous processing, how failures are retried and when an error becomes unrecoverable, and how to manage messages that ended up in the dead letter queue.
+This section covers what you need to know to run an event queue in production: how runners coordinate across instances and what to watch out for during version upgrades, how authorization works for asynchronous processing, how failures are retried and when an error becomes unrecoverable, how to manage messages that ended up in the dead letter queue, and what queue KPIs you can observe.
 
 ### Locking and Migration
 
@@ -649,12 +649,30 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 [Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
 
 
+### Observability
+
+Both stacks export queue KPIs through OpenTelemetry, observed against the `cds.outbox.Messages` table:
+
+| Metric | Description | Type |
+|---|---|---|
+| `cold` (`com.sap.cds.outbox.coldEntries`) | Entries that exhausted retries and won't be retried — the dead letter queue size. | Gauge |
+| `remaining` (`com.sap.cds.outbox.remainingEntries`) | Entries pending delivery. | Gauge |
+| `min` / `med` / `max storage time` (`com.sap.cds.outbox.{min,med,max}StorageTimeSeconds`) | How long entries have been sitting in the outbox, in seconds. | Gauge |
+| `incoming` (`com.sap.cds.outbox.incomingMessages`) | Messages submitted to the outbox. | Counter |
+| `outgoing` (`com.sap.cds.outbox.outgoingMessages`) | Messages successfully dispatched. | Counter |
+
+Metrics are scoped per microservice instance, outbox name, and tenant. The Java integration is built in. For Node.js, add `@cap-js/telemetry` to your dependencies and queue metrics start emitting alongside CAP's other telemetry signals.
+
+[Learn more about Java OpenTelemetry integration.](../../java/operating-applications/observability#open-telemetry){.learn-more}
+[Learn more about `@cap-js/telemetry`.](https://github.com/cap-js/telemetry#queue){.learn-more}
+
+
 ## Next Steps
 
 For stack-specific APIs, configuration keys, and troubleshooting:
 
 - [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. `#succeeded` / `#failed` callbacks), queue and scheduling configuration, troubleshooting.
-- [Event Queues in Java](../../java/event-queues) — `OutboxService`, `AsyncCqnService`, custom outbox services, the technical outbox API, error-handling patterns, event versioning for blue/green deployments, and OpenTelemetry observability.
+- [Event Queues in Java](../../java/event-queues) — `OutboxService`, `AsyncCqnService`, custom outbox services, the technical outbox API, error-handling patterns, and event versioning for blue/green deployments.
 
 Most real-world event-queue use comes through messaging or remote services. From here you'll likely want to look at:
 

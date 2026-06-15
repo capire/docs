@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, custom outbox services, error handling, event versioning, and observability.
+  Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, custom outbox services, error handling, and event versioning.
 status: released
 ---
 
@@ -411,23 +411,6 @@ A startup log entry shows the configured version:
 ```
 
 To opt a specific custom outbox out of the version check entirely, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-<key>-checkVersion).
-
-
-## Observability via OpenTelemetry
-
-The transactional outbox integrates with [OpenTelemetry](./operating-applications/observability#open-telemetry) for telemetry data. In addition to the spans described in the [observability chapter](./operating-applications/observability), the outbox logs the following KPIs:
-
-| KPI Name                                   | Description                                                                                            | KPI Type |
-|--------------------------------------------|--------------------------------------------------------------------------------------------------------|----------|
-| `com.sap.cds.outbox.coldEntries`           | Number of entries that could not be delivered after repeated attempts and will not be retried anymore. | Gauge    |
-| `com.sap.cds.outbox.remainingEntries`      | Number of entries pending for delivery.                                                                | Gauge    |
-| `com.sap.cds.outbox.maxStorageTimeSeconds` | Maximum time in seconds an entry has been residing in the outbox.                                      | Gauge    |
-| `com.sap.cds.outbox.medStorageTimeSeconds` | Median time in seconds of an entry stored in the outbox.                                               | Gauge    |
-| `com.sap.cds.outbox.minStorageTimeSeconds` | Minimal time in seconds an entry has been stored in the outbox.                                        | Gauge    |
-| `com.sap.cds.outbox.incomingMessages`      | Number of incoming messages of the outbox.                                                             | Counter  |
-| `com.sap.cds.outbox.outgoingMessages`      | Number of outgoing messages of the outbox.                                                             | Counter  |
-
-KPIs are logged per microservice instance (in case of horizontal scaling), outbox, and tenant.
 
 
 ## Dead Letter Queue
