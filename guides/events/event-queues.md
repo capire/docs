@@ -516,7 +516,7 @@ CAP spreads marker timestamps across tenants so that processing doesn't synchron
 
 ## Working with Event Queues
 
-This section covers what you need to know to operate an event queue in production: inspecting what's queued, triggering processing manually, and how authorization carries over from the original request. For retries and dead-letter management, see [*Error Handling*](#error-handling) above.
+This section covers what you need to know to operate an event queue in production: inspecting what's queued and how authorization carries over from the original request. For retries and dead-letter management, see [*Error Handling*](#error-handling) above.
 
 ### Inspecting the Queue
 
@@ -529,26 +529,6 @@ SELECT ID, target, status, attempts, lastAttemptTimestamp, lastError
 ```
 
 For a managed view with bound *revive* and *delete* actions, expose a CDS service over the same entity — see [Dead Letter Queue](#dead-letter-queue) below. The same projection can be widened (drop the `attempts >= maxAttempts` filter) to inspect *all* pending messages, not just dead letters.
-
-### Manual Processing
-
-In single-tenancy, the background runner starts on application startup and processes pending messages automatically. In multitenancy, the central runner periodically checks markers and triggers processing.
-
-To trigger processing manually — for example, from a startup hook or admin endpoint:
-
-::: code-group
-```js [Node.js]
-// Flush a specific queue
-const xflights = await cds.connect.to('xflights')
-await cds.flush(xflights.name)
-
-// Flush all queues
-await cds.flush()
-```
-:::
-
-> [!note] Node.js only
-> `cds.flush()` is currently a Node.js API. You rarely need it: both stacks have built-in recovery mechanisms that pick up pending messages automatically.
 
 ### User Context
 
@@ -737,22 +717,6 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 
 [Learn more about the dead letter queue in Node.js.](../../node.js/event-queues#dead-letter-queue){.learn-more}
 [Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
-
-
-## Stack Differences at a Glance
-
-The two stacks share the concept and the data model, but their APIs and feature sets diverge in a few places. The following table summarizes the differences as of `@sap/cds` 10:
-
-| Feature | Node.js | Java |
-|---|---|---|
-| Programmatic wrap | `cds.queued(srv)` | `OutboxService.outboxed(svc)` / `AsyncCqnService.of(svc, outbox)` |
-| Custom outbox services | through configuration | dedicated API + configuration |
-| `srv.schedule()` (delay / recurrence / cron) | available | available via `Schedulable` + `Schedule` |
-| Callback events `#succeeded` / `#failed` | available (alpha) | on the roadmap |
-| Manual processing trigger (`cds.flush()`) | available | not needed; both stacks recover automatically |
-| Event versioning for blue/green deployments | not available | available |
-| OpenTelemetry KPI metrics | not available | available |
-| Shared-database isolation pattern | not applicable | available |
 
 
 ## Next Steps

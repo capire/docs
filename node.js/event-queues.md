@@ -106,7 +106,7 @@ await srv.unschedule('airports')                                           // re
 ### Callback Events <Alpha />
 
 > [!note] Node.js only
-> Callback events have no Java equivalent yet, but they're on the roadmap. See [*Stack Differences at a Glance*](../guides/events/event-queues#stack-differences-at-a-glance).
+> Callback events have no Java equivalent yet, but they're on the roadmap.
 
 Once a queued message has been successfully processed, the runtime emits `<event>/#succeeded` on the same service:
 
@@ -134,7 +134,7 @@ Callback handlers must be registered for the specific `#succeeded` or `#failed` 
 ### Manual Processing
 
 > [!note] Node.js only
-> `cds.flush()` is a Node.js API; both stacks have built-in recovery mechanisms that pick up pending messages automatically. See [*Stack Differences at a Glance*](../guides/events/event-queues#stack-differences-at-a-glance).
+> `cds.flush()` is a Node.js API; both stacks have built-in recovery mechanisms that pick up pending messages automatically.
 
 You rarely need to trigger processing manually — both single-tenant and multi-tenant runners pick up pending messages automatically. The most common use case is recovery after an application crash, where another emit for the same tenant and service would otherwise be needed to restart processing:
 
