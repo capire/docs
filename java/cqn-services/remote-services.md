@@ -211,6 +211,37 @@ Create a destination configuration with the following parameters:
 
 At runtime, this destination configuration will use the bound `identity` service instance's credentials to request a token for the _remote API_.
 
+##### Configuring the Authentication Strategy {#ias-destination-authentication-strategy}
+
+By default, when calling a remote IAS-based API through a destination, CAP propagates the current user's identity (`currentUser`). This means the remote API receives a token representing the currently logged-in user.
+
+In some scenarios, especially for background processing or technical integrations, you may want to call the remote API as a technical user instead. The `destination.onBehalfOf` configuration allows you to control this behavior:
+
+```yaml
+cds:
+  remote.services:
+    RemoteIasService:
+      destination:
+        name: my-ias-destination
+        onBehalfOf: systemUser
+```
+
+The following options are available:
+
+| Value | Description |
+|-------|-------------|
+| `currentUser` | Propagates the named user if available, or falls back to a tenant-specific technical user. **(default)** |
+| `systemUser` | Uses a tenant-specific technical user, based on the tenant set in the current Request Context. |
+| `systemUserProvider` | Uses a technical user of the provider tenant. Useful for internal communication that is not authorized tenant-specifically. |
+
+::: tip
+This behaves identically to the [`onBehalfOf` option in binding-based configurations](#configuring-the-authentication-strategy). Use it when your IAS app-2-app communication is configured via a BTP destination with `cloudsdk.ias-dependency-name` rather than a direct service binding.
+:::
+
+::: warning
+The `onBehalfOf` option only applies to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
+:::
+
 [Learn more about consuming APIs from other IAS-Applications in the **SAP Cloud Identity Services documentation**.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications){.learn-more}
 
 #### Retrieve Destinations
