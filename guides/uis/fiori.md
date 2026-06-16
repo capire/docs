@@ -307,7 +307,7 @@ Draft locks are not applied when creating drafts for new entities, as there is n
 Fiori clients send the following HTTP requests for draft operations:
 
 ```php:line-numbers [Requests to <i>draft</i> data]
-POST   /Foo/draftNew                                //> NEW
+POST   /Foo                                         //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
 PATCH  /Foo(ID,IsActiveEntity=false) {...}          //> PATCH
@@ -315,19 +315,16 @@ POST   /Foo(ID,IsActiveEntity=false)/draftActivate  //> SAVE
 DELETE /Foo(ID,IsActiveEntity=false)                //> DISCARD
 ```
 
- The key parameter `IsActiveEntity=false` addresses draft data, with the exception of `draftNew`, which is an _unbound_ action, and `draftEdit` for semantic reasons.
-
-::: details `draftNew` actions are used <Since package="@sap/cds" version="v10" /> and <Since package="CAP Java" version="v5" />
-Previously, regular `POST /Foo` requests without an `IsActiveEntity` parameter created new drafts, which caused ambiguities with requests to active data.
-Can be disabled with <Config>cds.fiori.draft_new_action: false</Config>.
-:::
+The key parameter `IsActiveEntity=false` addresses draft data, with the exception of the empty POST and `draftEdit` for semantic reasons.
 
 ::: details Full HTTP requests ...
 The requests above are abbreviated for clarity. The actual HTTP requests include the service path, content-type headers, and JSON bodies as shown below.
 
 ```http
-POST /odata/v4/TravelService/Travels/draftNew
+POST /odata/v4/TravelService/Travels
 Content-Type: application/json
+
+{}
 ```
 ```http
 POST /odata/v4/TravelService/Travels(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=true)/draftEdit
@@ -364,14 +361,20 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 
 #### Draft-agnostic Requests
 
-Taking this further, `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
+Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
 ```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
+// creation of active instances
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
 DELETE /Foo(ID)        //> DELETE
+// creation of draft instances
+POST   /Foo/draftNew   //> CREATE new draft [!code ++]
+...
 ```
+
+The previously used `POST /Foo` requests without an `IsActiveEntity` parameter to create new drafts is now replaced by the collection bound action `draftNew` to resolve the ambiguities with requests to active data.
 
 ::: details Available for CAP Node.js <Since package="@sap/cds" version="v10" /> – not yet for CAP Java
 Draft-agnostic requests as above assume `IsActiveEntity=true` by default for all requests that don't explicitly specify it.
