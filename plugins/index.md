@@ -432,7 +432,7 @@ The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Buil
 
 ## Data Inspector {#data-inspector}
 
-The [Data Inspector plugin](https://www.npmjs.com/package/@cap-js/data-inspector) enables developers and support users to inspect data from database entities and service definitions within a CAP application, in both local and production environments, while ensuring a secure and compliant experience.
+The Node.js plugin `@cap-js/data-inspector` lets developers and support users inspect data from database entities and service definitions in a CAP application, in both local and production environments. Inspection happens at the CAP service level, so all built-in authentication, authorization, and audit logging mechanisms are automatically respected.
 
 Features:
 
