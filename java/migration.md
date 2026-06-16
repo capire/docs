@@ -78,10 +78,7 @@ Some property defaults have been adjusted:
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
 | `cds.errors.preferServiceException` | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
-| `cds.multitenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
-| `cds.odataV2.batch.maxRequests` | `-1` (unlimited) | `10` | OData V2 batch requests are now limited to 10 by default to protect against overload. |
-| `cds.odatav2.searchMode` | `odata-lenient` | `pass-through` | |
-| `cds.odatav4.searchMode` | `odata-lenient` | `pass-through` | |
+| `cds.multiTenancy.serviceManager.cacheRefreshInterval` | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
 | `cds.outbox.services.<key>.ordered` | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
 | `cds.persistence.changeSet.enforceTransactional` | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
@@ -94,10 +91,11 @@ Some property defaults have been adjusted:
 
 The following properties have been deprecated and might be removed in a future major version:
 
-- `cds.outbox.inMemory.enabled`
-- `cds.outbox.inMemory.emitDuringChangeSetContext`
-
-The functionality provided by these properties is enabled by default and there is no reason to switch these off.
+| Deprecated Property | Explanation |
+| --- | --- |
+| `cds.outbox.inMemory.enabled` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.emitDuringChangeSetContext` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
 
 ### Removed Properties
 
@@ -108,7 +106,12 @@ The following table gives an overview about the removed properties:
 | `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
 | `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
 | `cds.taskScheduler.enabled` | Use `cds.outbox.persistent.scheduler.enabled`. |
-| `cds.sql.hana. optimizationMode ` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
+| `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
+| `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.multiTenancy.serviceManager.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
+| `cds.multiTenancy.serviceManager.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
+| `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
