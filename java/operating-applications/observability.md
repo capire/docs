@@ -99,6 +99,11 @@ logging.level.my.loggers.order.Consolidation: INFO
 
 # Turn off all loggers matching org.springframework.*:
 logging.level.org.springframework: OFF
+
+# Turn on debug logging for sql statements and messaging:
+logging.level:
+  com.sap.cds.persistence.sql: DEBUG
+  com.sap.cds.messaging: DEBUG
 ```
 :::
 
