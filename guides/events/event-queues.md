@@ -172,7 +172,7 @@ A service can also be outboxed centrally — without touching handler code — b
 cds:
   outbox:
     services:
-      DefaultOutboxOrdered:
+      DefaultOutboxUnordered:
         maxAttempts: 10
 ```
 :::
