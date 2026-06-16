@@ -470,6 +470,56 @@ This will not work in the `dev` plan of SAP Event Mesh.
 If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handshake requests](https://help.sap.com/docs/SAP_EM/bf82e6b26456494cbdd197057c09979f/6a0e4c77e3014acb8738af039bd9df71.html?q=handshake) from SAP Event Mesh might be intercepted.
 :::
 
+### SAP Integration Suite Event Mesh <Beta /> { #integration-suite-event-mesh }
+
+[SAP Integration Suite Event Mesh (EMIS)](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
+
+| Kind | Protocol | Equivalent to |
+|------|----------|---------------|
+| `event-mesh` | HTTP + webhooks | `enterprise-messaging` |
+| `event-mesh-shared` | AMQP | `enterprise-messaging-shared` |
+
+#### `event-mesh`
+
+Same as `enterprise-messaging` except it connects to an EMIS service instance (`event-mesh-message-client`).
+
+Example:
+
+```json
+{
+    "requires": {
+        "messaging": {
+            "[production]": { "kind": "event-mesh" }
+        }
+    }
+}
+```
+
+The configuration options are the same as for [`enterprise-messaging`](#sap-event-mesh).
+
+#### `event-mesh-shared`
+
+Same as `enterprise-messaging-shared` but connects to an EMIS service instance. Best suited for local hybrid testing.
+
+Example:
+
+```json
+{
+    "requires": {
+        "messaging": {
+            "[production]": { "kind": "event-mesh" },
+            "[hybrid]": { "kind": "event-mesh-shared" }
+        }
+    }
+}
+```
+
+The configuration options are the same as for [`enterprise-messaging-shared`](#event-mesh-shared).
+
+::: tip Setup via `cds add`
+Use `cds add event-mesh` or `cds add event-mesh-shared` to automatically configure `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors. Both support a `--cloudevents` flag.
+:::
+
 <span id="aftereventmesh" />
 
 ### SAP Cloud Application Event Hub { #event-broker }

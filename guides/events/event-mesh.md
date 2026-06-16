@@ -191,4 +191,18 @@ resources:
 [Learn more about Service Descriptors for SAP Event Mesh.](https://help.sap.com/docs/SAP_EM/bf82e6b26456494cbdd197057c09979f/5696828fd5724aa5b26412db09163530.html){.learn-more}
 
 
+## Use SAP Integration Suite Event Mesh <Beta /> { #integration-suite-event-mesh }
+
+[SAP Integration Suite Event Mesh (EMIS)](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported as an alternative to SAP Event Mesh. Use `cds add` to set up your project — it configures `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors automatically:
+
+```sh
+cds add event-mesh         # HTTP/webhooks (production)
+cds add event-mesh-shared  # AMQP (hybrid testing)
+```
+
+Both commands accept a `--cloudevents` flag to enable CloudEvents formatting.
+
+[Learn more about EMIS configuration options.](../../node.js/messaging#integration-suite-event-mesh){.learn-more}
+
+
 <span id="afterdeploymta" />
