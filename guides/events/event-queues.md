@@ -292,19 +292,20 @@ const xflights = await cds.connect.to('xflights')
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
 ```
 ```java [Java]
-RemoteService xflights = ...;
-OutboxService outbox = ...;
-Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox);
+@Autowired @Qualifier("DefaultOutboxUnordered")
+OutboxService outbox;
 
-scheduled
-  .scheduled(Schedule.create()
-    .taskName("replicate-airports")
+@Autowired
+RemoteService xflights;
+
+Schedulable.of(xflights, outbox)
+  .scheduled(Schedule.create().taskName("replicate-airports")
     .every(Duration.ofMinutes(10)))
-  .emit(...);
+  .emit("replicate", Map.of("entity", "Airports"));
 ```
 :::
 
-The `schedule()` method is a convenience shortcut for `cds.queued(srv).send(event, data)` with optional timing:
+The `schedule()` method queues like `cds.queued(srv).send(event, data)` — within the current transaction, dispatched after commit — but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It also accepts optional timing:
 
 ```js
 // Execute once, as soon as possible
@@ -632,7 +633,6 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 ```
 :::
 
-[Learn more about the dead letter queue in Node.js.](../../node.js/event-queues#dead-letter-queue){.learn-more}
 [Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
 
 
@@ -658,7 +658,7 @@ Metrics are scoped per microservice instance, outbox name, and tenant. The Java 
 
 For stack-specific APIs, configuration keys, and troubleshooting:
 
-- [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. `#succeeded` / `#failed` callbacks), queue and scheduling configuration, troubleshooting.
+- [Event Queues in Node.js](../../node.js/event-queues) — `cds.queued`, `cds.unqueued`, `cds.flush`, `srv.schedule` (incl. `#succeeded` / `#failed` callbacks), queue configuration, troubleshooting.
 - [Event Queues in Java](../../java/event-queues) — `OutboxService`, `AsyncCqnService`, custom outbox services, the technical outbox API, error-handling patterns, and event versioning for blue/green deployments.
 
 Most real-world event-queue use comes through messaging or remote services. From here you'll likely want to look at:

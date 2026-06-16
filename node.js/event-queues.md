@@ -78,12 +78,12 @@ Some services — `cds.MessagingService` and `cds.AuditLogService` — are outbo
 
 ### Scheduling
 
-`srv.schedule()` is a shortcut for `cds.queued(srv).send()` with optional timing:
+`srv.schedule()` queues like `cds.queued(srv).send()` — within the current transaction, dispatched after commit — but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
 
 ```js
 await srv.schedule('someEvent', { some: 'message' })                       // execute asap
 await srv.schedule('someEvent', { some: 'message' }).after('1h')           // delay
-await srv.schedule('someEvent', { some: 'message' }).every('10 minutes')   // recurrence
+await srv.schedule('someEvent', { some: 'message' }).every('10m')   // recurrence
 await srv.schedule('someEvent', { some: 'message' }).every('*/10 * * * *') // cron
 
 await srv.unschedule('someEvent')                                          // remove
@@ -96,14 +96,14 @@ A scheduled task is identified by its event name and exists only once. A subsequ
 To schedule the same event under separate identities (for example, with different payloads), give each its own task name with `.as(<name>)`:
 
 ```js
-await srv.schedule('replicate', { entity: 'Airports' }).as('airports').every('10 minutes')
+await srv.schedule('replicate', { entity: 'Airports' }).as('airports').every('10m')
 await srv.schedule('replicate', { entity: 'Airlines' }).as('airlines').every('1 hour')
 
 await srv.unschedule('airports')                                           // remove by task name
 ```
 
 
-### Callback Events <Alpha />
+### Callbacks <Alpha />
 
 > [!note] Node.js only
 > Callback events have no Java equivalent yet, but they're on the roadmap.
@@ -147,10 +147,12 @@ await cds.flush(srv.name)
 await cds.flush()
 ```
 
+The argument is a **queue name** (typically `srv.name`); `cds.flush()` without an argument flushes all queues. The returned promise resolves once a processing pass has completed for the targeted queues. It's safe to call when the runner is already active — the runner's own scheduling logic handles overlap.
+
 
 ## Configuration
 
-The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction. `cds.requires.queue` and `cds.requires.scheduling` resolve to their default config automatically via `cds.env`; specify them only when tuning.
+The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction. `cds.requires.queue` resolves to its default config automatically via `cds.env`; specify it only when tuning.
 
 ```json
 {
@@ -163,9 +165,8 @@ The persistent queue is enabled by default. Messages are stored in the `cds.outb
 }
 ```
 
-::: warning `legacyLocking` and rolling upgrades
-The locking mechanism changed across `@sap/cds` major versions: cds 8 doesn't check the `status` column at all, cds 9 checks it but holds row locks for the duration of processing (`legacyLocking: true` was the cds 9 default), and cds 10 uses application-level locking via `status` and releases the row lock after selection. A rolling upgrade from cds 8 directly to cds 10 can lead to **double-processing of messages** — plan downtime, drain the queue first, or upgrade through cds 9.
-:::
+> [!warning] Rolling upgrades and `legacyLocking`
+> The `legacyLocking` flag controls cross-version compatibility for the queue's status check. See [*Locking*](../guides/events/event-queues#locking) in the common guide for the version-by-version behavior and the rolling-upgrade caveat.
 
 ::: details Queue options
 
@@ -215,10 +216,10 @@ const messages = await SELECT.from('cds.outbox.Messages')
   .orderBy('timestamp desc')
 ```
 
-For a managed view with bound *revive* and *delete* actions, see [*Dead Letter Queue*](#dead-letter-queue) below.
+For a managed view with bound *revive* and *delete* actions, see [*Dead Letter Queue*](../guides/events/event-queues#dead-letter-queue) in the common guide.
 
 
-### Manually Deleting Entries
+### Deleting Entries
 
 To clear stuck messages programmatically:
 
@@ -252,10 +253,6 @@ For projects on `@sap/cds < 6.7.0` with custom build tasks that override `option
 
 Note that the model configuration isn't required for CAP projects using the standard project layout with `db`, `srv`, and `app` folders.
 
-
-## Dead Letter Queue
-
-The dead-letter queue lifecycle (define service → filter for dead entries → bound revive/delete actions) is the same shape across both stacks; see [*Dead Letter Queue*](../guides/events/event-queues#dead-letter-queue) in the common guide for the full flow with code in both Node.js and Java.
 
 ---
 

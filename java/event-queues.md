@@ -1,15 +1,10 @@
 ---
 synopsis: >
-  Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, custom outbox services, error handling, and event versioning.
+  Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, scheduling, custom outbox services, error handling, and event versioning.
 status: released
 ---
 
 # Event Queues in Java
-<style scoped>
-  h1:before {
-    content: "Java"; display: block; font-size: 60%; margin: 0 0 .2em;
-  }
-</style>
 
 For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Java-specific APIs and configuration on top of that.
 
@@ -63,6 +58,71 @@ A service wrapped by an outbox is a [Java Proxy](https://docs.oracle.com/javase/
 :::
 
 
+### Scheduling
+
+CAP Java offers two ways to schedule a queued event, both controlled by a `Schedule` builder.
+
+**Option 1 — pass a `Schedule` to `submit`** on a regular outbox, per call:
+
+```java
+@Autowired @Qualifier("DefaultOutboxUnordered")
+OutboxService outbox;
+
+OutboxMessage message = OutboxMessage.create();
+message.setParams(Map.of("entity", "Airports"));
+
+outbox.submit("replicate", message,
+  Schedule.create().taskName("replicate-airports")
+    .every(Duration.ofMinutes(10)));
+```
+
+**Option 2 — wrap a service with `Schedulable`** so all subsequent emits use a fixed schedule:
+
+```java
+@Autowired @Qualifier("DefaultOutboxUnordered")
+OutboxService outbox;
+
+@Autowired
+RemoteService xflights;
+
+Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox)
+  .scheduled(Schedule.create().taskName("replicate-airports")
+    .every(Duration.ofMinutes(10)));
+
+scheduled.emit("replicate", Map.of("entity", "Airports"));
+```
+
+Every outboxed service is guaranteed to implement `Schedulable<T>` — its single method `scheduled(Schedule)` returns the same service typed to use the given schedule on every subsequent emit.
+
+#### `Schedule` Options
+
+`Schedule` is a small builder with three mutually exclusive timing options:
+
+```java
+// Execute once, after a delay
+Schedule.create().taskName("cleanup").after(Duration.ofHours(1));
+
+// Execute repeatedly, with a fixed delay between successful runs
+Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10));
+
+// Execute repeatedly, on a Spring cron expression
+Schedule.create().taskName("nightly-cleanup").cron("0 0 3 * * *");
+```
+
+`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (six fields including seconds; differs from Node.js's five-field cron). The three are mutually exclusive — combining them throws `IllegalArgumentException`.
+
+A scheduled task with a name is a **singleton**: a subsequent submission with the same task name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent — convenient during application startup, where the same registration code may run on every boot. Without a task name, every submission creates a new scheduled entry.
+
+To remove a previously scheduled task, submit a cancellation with the same task name:
+
+```java
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().taskName("replicate-airports").cancel());
+```
+
+Cancellation requires a task name — it's how the runtime locates the entry to delete.
+
+
 ### Technical Outbox API
 
 The technical API outboxes custom messages for arbitrary events or processing logic. The `OutboxMessage` instance is serialized to JSON and stored in the database, so all data must be JSON-serializable.
@@ -97,7 +157,9 @@ The handler must complete the context after executing the processing logic.
 
 [Learn more about event handlers.](./event-handlers/){.learn-more}
 
-::: tip Customizing outbox entries
+
+#### Custom Serialization
+
 The outbox has no information about the structure or data types being serialized. If your custom messages use non-default data types — or you need extra context properties — register `@Before` and `@On` handlers to customize serialization and deserialization. *(This isn't required for CDS-model-based services.)*
 
 ```java [srv/src/main/java/com/myapp/CustomOutboxHandler.java]
@@ -126,16 +188,16 @@ public class CustomOutboxHandler implements EventHandler {
 
         // custom serialization logic
         Instant date = (Instant) context.getMessage().getParams().get("orderDate");
-        context.getMessage().getParams().put("orderDate", new Long(date.getEpochSecond()));
+        context.getMessage().getParams().put("orderDate", date.getEpochSecond());
     }
 }
 ```
 
-**Don't complete the context in either of those handlers**, otherwise the next handler in the chain isn't called and processing breaks.
-:::
+> [!warning] Don't complete the context in either of those handlers
+> Calling `setCompleted` here breaks the chain — the next handler isn't called and processing fails.
 
 
-### Error-Handling Patterns
+### Error Handling
 
 By default the outbox retries publishing a message on error until it reaches `maxAttempts`. This makes applications resilient against unavailability of external systems.
 
@@ -177,68 +239,8 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 [Learn more about `EventContext.proceed()`.](./event-handlers/#proceed-on){.learn-more}
 
-
-### Scheduling
-
-Every outboxed service is guaranteed to implement the [`Schedulable<T>`](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedulable.java) interface, which adds a single method, `scheduled(Schedule)`. It returns a service whose subsequent emits are queued with the given timing — equivalent to the Node.js `srv.schedule()` shortcut in the common guide.
-
-A scheduled task with a name is a **singleton**: a subsequent submission with the same task name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent — convenient during application startup, where the same registration code may run on every boot.
-
-**Example:** Replicate airport master data from the *xflights* service every 10 minutes.
-
-```java
-RemoteService xflights = ...;
-OutboxService outbox = ...;
-
-Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox);
-
-scheduled
-  .scheduled(Schedule.create()
-    .taskName("replicate-airports")
-    .every(Duration.ofMinutes(10)))
-  .emit(...); // your replication event
-```
-
-`Schedule` is a small builder with three timing options:
-
-```java
-// Execute once, after a delay
-Schedule.create().taskName("cleanup").after(Duration.ofHours(1));
-
-// Execute repeatedly, with a fixed delay between successful runs
-Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10));
-
-// Execute repeatedly, on a Spring cron expression
-Schedule.create().taskName("nightly-cleanup").cron("0 0 3 * * *");
-```
-
-`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (six fields, including seconds). The three are mutually exclusive — combining them throws `IllegalArgumentException`.
-
-Without a task name, every submission is a new scheduled entry. Set `taskName(...)` when you want the singleton-by-name semantics.
-
-To remove a previously scheduled task, submit a cancellation with the same task name:
-
-```java
-scheduled
-  .scheduled(Schedule.create()
-    .taskName("replicate-airports")
-    .cancel())
-  .emit(...);
-```
-
-Cancellation requires a task name — it's how the runtime locates the entry to delete.
-
-::: tip Scheduling without a wrapper
-The technical outbox API takes the same `Schedule` directly, for cases where you submit `OutboxMessage` instances rather than service events:
-
-```java
-outbox.submit("replicate", message,
-  Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10)));
-```
-:::
-
-[Learn more about `Schedulable`.](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedulable.java){.learn-more}
-[Learn more about `Schedule`.](https://github.wdf.sap.corp/cds-java/cds-services/blob/main/cds-services-api/src/main/java/com/sap/cds/services/outbox/Schedule.java){.learn-more}
+> [!note] Callbacks not yet available
+> The `#succeeded` / `#failed` callback events documented for Node.js have no Java equivalent yet — see [Callbacks](../guides/events/event-queues#callbacks) in the common guide.
 
 
 ## Configuration
@@ -323,13 +325,14 @@ Before removing a custom outbox from the configuration, ensure no unprocessed en
 :::
 
 
-### Outbox for Shared Databases
+### Shared Databases
 
-CAP Java does not yet support microservices with a shared database out of the box: the two static-named default outboxes (`DefaultOutboxOrdered`, `DefaultOutboxUnordered`) would be shared across all services and introduce conflicts.
+> [!warning] Workaround for unsupported scenario
+> CAP Java does not yet support microservices with a shared database out of the box: the two static-named default outboxes (`DefaultOutboxOrdered`, `DefaultOutboxUnordered`) would be shared across all services and introduce conflicts.
 
-A manual workaround uses isolated custom outboxes with service-specific names:
+The manual workaround uses isolated custom outboxes with service-specific names:
 
-#### 1. Deactivate the Default Outboxes and Create Service-Specific Ones
+**1. Deactivate the default outboxes and create service-specific ones**
 
 ```yaml
 cds:
@@ -345,7 +348,7 @@ cds:
         maxAttempts: 10
 ```
 
-#### 2. Adapt Audit Log Configuration
+**2. Adapt audit log configuration**
 
 The default audit-log outbox is `DefaultOutboxUnordered`. Point it at the new custom outbox:
 
@@ -355,7 +358,7 @@ cds:
     outbox.name: Service1CustomOutboxUnordered
 ```
 
-#### 3. Adapt Messaging Configuration
+**3. Adapt messaging configuration**
 
 For *each* messaging service in the application, point it at the new ordered outbox:
 
@@ -374,7 +377,7 @@ Both deactivating the defaults *and* using unique outbox namespaces are required
 :::
 
 
-### Event Versions for Blue/Green Deployments
+### Event Versions
 
 In blue/green scenarios, outbox collectors of an older deployment may not be able to process events emitted by a newer deployment. Configure each deployment with an *event version* so older collectors skip newer events:
 
@@ -411,6 +414,33 @@ A startup log entry shows the configured version:
 ```
 
 To opt a specific custom outbox out of the version check entirely, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-<key>-checkVersion).
+
+
+## Troubleshooting
+
+### Inspecting `cds.outbox.Messages`
+
+To see what's currently queued, query `cds.outbox.Messages` directly through the `PersistenceService`. The columns most useful for triage are `status`, `attempts`, `target`, `lastError`, and `lastAttemptTimestamp`:
+
+```java
+@Autowired @Qualifier(PersistenceService.DEFAULT_NAME)
+PersistenceService db;
+
+Result result = db.run(Select.from(Messages_.class)
+    .columns(m -> m.ID(), m -> m.target(), m -> m.status(),
+             m -> m.attempts(), m -> m.lastAttemptTimestamp(), m -> m.lastError())
+    .orderBy(m -> m.timestamp().desc()));
+```
+
+For a managed view with bound *revive* and *delete* actions, see [*Dead Letter Queue*](#dead-letter-queue) below.
+
+### Deleting Entries
+
+To clear stuck messages programmatically:
+
+```java
+db.run(Delete.from(Messages_.class));
+```
 
 
 ## Dead Letter Queue
