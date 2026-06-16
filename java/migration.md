@@ -119,7 +119,7 @@ There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-
 
 #### Minimum Maven Version
 
-For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+For security reasons, the minimum required Maven version has been increased to **3.9.14**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.16** at the time of writing.
 
 #### Removed deprecated goal `install-cdsdk`
 
