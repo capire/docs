@@ -211,13 +211,16 @@ Create a destination configuration with the following parameters:
 
 At runtime, this destination configuration will use the bound `identity` service instance's credentials to request a token for the _remote API_.
 
+[Learn more about consuming APIs from other IAS-Applications in the **SAP Cloud Identity Services documentation**.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications){.learn-more}
+
 ##### Configuring the Authentication Strategy {#ias-destination-authentication-strategy}
 
 By default, when calling a remote IAS-based API through a destination, CAP propagates the current user's identity (`currentUser`). This means the remote API receives a token representing the currently logged-in user.
 
 In some scenarios, especially for background processing or technical integrations, you may want to call the remote API as a technical user instead. The `destination.onBehalfOf` configuration allows you to control this behavior:
 
-```yaml
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
 cds:
   remote.services:
     RemoteIasService:
@@ -241,8 +244,6 @@ This behaves identically to the [`onBehalfOf` option in binding-based configurat
 ::: warning
 The `onBehalfOf` option only applies to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
 :::
-
-[Learn more about consuming APIs from other IAS-Applications in the **SAP Cloud Identity Services documentation**.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications){.learn-more}
 
 #### Retrieve Destinations
 
