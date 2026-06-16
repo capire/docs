@@ -112,9 +112,6 @@ void notifyXFlights(List<Bookings> bookings) {
 
 If the transaction rolls back, no booking request is sent.
 
-> [!note] Java `@After` receives a list
-> CAP Java's `@After` handler receives the full result list, so the example iterates with `forEach` to emit one event per booking. The Node.js handler runs once per row and works on `req.data` directly.
-
 > [!tip] Enabled by default
 > Event queues are enabled by default — there's nothing to install or activate. The persistent queue starts with your application; the configuration shown later is only for tuning.
 
@@ -150,7 +147,7 @@ To unwrap a queued service back to its synchronous original:
 const xflights = cds.unqueued(qd_xflights)
 ```
 ```java [Java]
-CqnService xflights = outbox.unboxed(outboxedXFlights);
+CqnService xflights = OutboxService.unboxed(outboxedXFlights);
 ```
 :::
 
@@ -519,6 +516,9 @@ void replicate(OutboxMessageEventContext context) {
 Messages that exceed the maximum retry count remain in the `cds.outbox.Messages` database table with their error information intact.
 These entries form the *dead letter queue* and require manual intervention — either to fix the underlying issue and retry, or to discard the message.
 
+> [!warning] Increasing `maxAttempts` between deployments
+> You can raise `maxAttempts` between deployments. Older entries that had reached the previous maximum will be retried automatically after the new deployment — if the dead letter queue is large, this can cause unintended load on the system.
+
 For triage, query the table directly:
 
 ```sql
@@ -581,7 +581,7 @@ public class DeadOutboxMessagesHandler implements EventHandler {
     this.db = db;
   }
 
-  @Before(entity = DeadOutboxMessages_.CDS_NAME)
+  @Before(event = CqnService.EVENT_READ, entity = DeadOutboxMessages_.CDS_NAME)
   public void addDeadEntryFilter(CdsReadEventContext context) {
     Optional<Predicate> outboxFilters = createOutboxFilters(context.getCdsRuntime());
     outboxFilters.ifPresent(filter -> {
@@ -633,7 +633,6 @@ public void deleteOutboxEntry(DeadOutboxMessagesDeleteContext context) {
 ```
 :::
 
-[Learn more about the dead letter queue in Java.](../../java/event-queues#dead-letter-queue){.learn-more}
 
 
 ### Observability

@@ -432,7 +432,7 @@ Result result = db.run(Select.from(Messages_.class)
     .orderBy(m -> m.timestamp().desc()));
 ```
 
-For a managed view with bound *revive* and *delete* actions, see [*Dead Letter Queue*](#dead-letter-queue) below.
+For a managed view with bound *revive* and *delete* actions, see [*Dead Letter Queue*](../guides/events/event-queues#dead-letter-queue) in the common guide.
 
 ### Deleting Entries
 
@@ -442,18 +442,6 @@ To clear stuck messages programmatically:
 db.run(Delete.from(Messages_.class));
 ```
 
-
-## Dead Letter Queue
-
-The dead-letter queue lifecycle (define service → filter for dead entries → bound revive/delete actions) is the same shape across both stacks; see [*Dead Letter Queue*](../guides/events/event-queues#dead-letter-queue) in the common guide for the full flow with code in both Node.js and Java.
-
-::: warning Changing `maxAttempts` between deployments
-You can increase `cds.outbox.services.<key>.maxAttempts` between deployments. Older entries that had reached the previous maximum will be retried automatically after the new deployment — if the dead letter queue is large, this can cause unintended load on the system.
-:::
-
-::: tip Use paging
-Avoid reading all outbox entries at once when entries with large request payloads are present. Prefer `READ` queries with paging.
-:::
 
 ---
 
