@@ -90,8 +90,6 @@ Make sure that you've prepared a [local environment for CF deployments](../deplo
 
 As client, `xtravels-srv` first needs a valid configuration for the remote service `sap.capire.flights.data`:
 
-::: code-group
-
 ```yaml [Java: application.yaml]
 ---
 spring:
@@ -110,6 +108,21 @@ cds:
           url: https://<xflights-srv-cert url>
 ```
 
+::: details Java configuration explained
+
+The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
+The `model` property needs to match the fully qualified name of the CDS service from the imported model.
+You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
+The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
+Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
+
+:::
+
+::: tip
+On behalf of `systemUser` (Java) works both in pure single tenant and in pure multitenant scenarios.
+If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
+:::
+
 ```json [Node.js: package.json]
 {
   "cds": {
@@ -127,30 +140,13 @@ cds:
   }
 }
 ```
-:::
-
-::: details Java configuration explained
-
-The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
-The `model` property needs to match the fully qualified name of the CDS service from the imported model.
-You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
-The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
-Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
-
-:::
 
 ::: details Node.js configuration explained
 
-The `kind` property activates the protocol for exchanging business data (same as `type` in Java).
-The key in `cds.requires` must match the fully qualified CDS service name (e.g., `sap.capire.flights.data`), which is the same name used in `cds.connect.to()`.
-The `credentials.url` provides the full endpoint URL including the service path `/hcql/data`.
-The `forwardAuthToken: true` enables direct forwarding of the incoming JWT token to the provider service - this is suitable for co-located services that share the same identity instance, as the token is already valid for the provider.
+The configuration follows the standard pattern for [required services](../integration/reuse-and-compose#configuring-required-services) with [service bindings](../integration/reuse-and-compose#binding-required-services).
 
-:::
+For co-located services sharing the same identity instance, `forwardAuthToken: true` forwards the incoming JWT directly to the provider - no token exchange needed since the token is already valid. Unlike Java's `onBehalfOf` option, no additional configuration is required as the original user context is preserved in the forwarded token.
 
-::: tip
-On behalf of `systemUser` (Java) works both in pure single tenant and in pure multitenant scenarios.
-If you are consuming a single tenant service from within a multitenant application choose on behalf of `systemUserProvider`.
 :::
 
 Now you are ready to deploy the application with
@@ -193,7 +189,7 @@ The provider service authorization needs to align with the configured user propa
 :::
 
 Additionally, to establish the co-located setup, the microservice needs to share the same identity instance.
-This is configured in the MTA deployment descriptor (applies to both Java and Node.js):
+This is configured in the MTA deployment descriptor:
 
 ::: code-group
 
@@ -270,7 +266,7 @@ As a consequence, external services can run cross-regionally; even non-BTP syste
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
 A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
-[BTP HTTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App via configuration - Java uses service bindings with `ias-dependency-name`, while Node.js uses BTP Destinations with `tokenService.body.resource`.
+[BTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App via configuration to handle token exchange automatically - Java uses service bindings with `ias-dependency-name`, while Node.js uses BTP Destinations with `tokenService.body.resource`.
 
 
 ### IAS App-2-App { #app-to-app }
@@ -290,8 +286,6 @@ CAP offers App-2-App setup by leveraging remote services that require:
 - Configured IAS dependency from consumer to provider
 - URL pointing to the provider
 - Principal propagation mode (optional)
-
-**Note:** Both CAP Java and CAP Node.js handle IAS App-2-App via configuration.
 :::
 
 [Learn more about how to consume external application APIs with IAS](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications) {.learn-more}
@@ -321,8 +315,8 @@ resources:
           token-policy:
             access-token-format: jwt
         provided-apis:
-        - name: data-consumer
-          description: Grants technical access to data service API
+          - name: data-consumer
+            description: Grants technical access to data service API
 ```
 :::
 
@@ -394,8 +388,6 @@ The remote service can be configured in a very similar way as with [co-located s
 You only need to add the information about the IAS dependency to be called.
 The name for the IAS dependency is flexible but **needs to match the chosen name in the next step** when [connecting consumer and provider in IAS](#connect).
 
-::: code-group
-
 ```yaml [Java: application.yaml]
 spring:
   config.activate.on-profile: cloud
@@ -413,6 +405,14 @@ cds:
           url: https://<xflights-srv-cert url>
           ias-dependency-name: data-consumer
 ```
+
+::: details Java configuration explained
+
+The `ias-dependency-name` property configures the IAS App-2-App flow directly in `application.yaml`. This is all that's needed for Java - the CAP Java runtime handles the token exchange automatically.
+
+:::
+
+**Node.js:** Configure a BTP Destination that handles the IAS token exchange. The destination references the IAS dependency name, which **must match** the name used when [connecting consumer and provider in IAS](#connect).
 
 ```json [Node.js: package.json]
 {
@@ -437,14 +437,6 @@ cds:
 }
 ```
 
-:::
-
-::: details Java configuration explained
-
-The `ias-dependency-name` property configures the IAS App-2-App flow directly in `application.yaml`. This is all that's needed for Java - the CAP Java runtime handles the token exchange automatically.
-
-:::
-
 ::: details Node.js configuration explained
 
 CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote service configuration.
@@ -467,6 +459,8 @@ CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote se
 | Token Service URL | `https://<IAS tenant>/oauth2/token` |
 | Token Service URL Type | `Dedicated` |
 
+Client ID and Client Secret are obtained from the consumer's IAS service binding (e.g., via `cf env xtravels-srv` or BTP Cockpit).
+
 **Additional Property (required for IAS App-2-App):**
 
 | Property | Value |
@@ -475,7 +469,7 @@ CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote se
 
 The key is `tokenService.body.resource` which passes the `resource` parameter to IAS, triggering App-2-App token scoping and adding the `ias_apis` claim.
 
-**3. Authentication type depends on use case:**
+**3. IAS App-2-App supports two authentication types:**
 - **OAuth2ClientCredentials**: For technical user scenarios (no user context)
 - **OAuth2JWTBearer**: For user propagation (requires user token from authorization_code flow)
 
@@ -545,7 +539,7 @@ Open the Administrative Console for the IAS tenant (see prerequisites [here](./a
 
 1. Select **Applications & Resources** > **Applications**. Choose the IAS application of the `xtravels` consumer from the list.
 2. In **Application APIs** select **Dependencies** and click on **Add**.
-3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name` in Java, or the dependency name in `tokenService.body.resource` for Node.js) and pick provided API `data-consumer` from the provider IAS application `xflights`.
+3. Type `data-consumer` as dependency name (needs to match property value `ias-dependency-name` in Java, or the name suffix in `tokenService.body.resource` URN for Node.js, e.g., `urn:sap:identity:application:provider:name:data-consumer`) and pick provided API `data-consumer` from the provider IAS application `xflights`.
 4. Confirm with **Save**
 
 ::: details Create IAS dependency in Administrative Console
@@ -576,11 +570,11 @@ To do so, assign a proper AMS policy (e.g., `admin`) to the test user as describ
 
 ## Pitfalls
 
-- **Don't write custom integration logic** for consumed services unless necessary.
-Leverage CAP's remote service architecture when possible to ensure a seamless integration experience.
+- **Don't write custom integration logic** for consumed services.
+Leverage CAP's remote service architecture instead to ensure a seamless integration experience.
 
-- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens) unless necessary.
-Rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
+- **Don't implement connectivity layer code** (for example, to fetch or exchange tokens).
+Instead, rely on the shared connectivity component, which ensures centralized and generic processing of outbound requests.
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
