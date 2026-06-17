@@ -575,6 +575,15 @@ Other options in this goal enable or disable certain features that change the wa
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
 
+- [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
+
+  Generates static class-based implementations for interfaces instead of JDK proxies at runtime.
+  This slightly improves performance and lifts the JDK limit on the number of methods an interface may declare.
+
+  The generated classes are internal; do not reference them directly in application code.
+
+  Interfaces from libraries or created manually are still implemented as JDK proxies at runtime.
+
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
 in your application that needs to be fixed.
