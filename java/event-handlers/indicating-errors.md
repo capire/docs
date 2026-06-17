@@ -98,6 +98,8 @@ The OData adapter turns this exception into an OData error response to indicate 
 `Messages.throwIfError()` is automatically called at the end of the `Before` handler phase to abort the event processing in case of errors. It is recommended to use the Messages API for validation errors and rely on the framework calling `Messages.throwIfError()` automatically, instead of throwing a `ServiceException`.
 
 
+<div id="error-functions"/>
+
 ## Formatting and Localization
 
 Texts passed to both `ServiceException` and the `Messages` API can be formatted and localized.
