@@ -335,7 +335,7 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 ```xml
 <properties>
 		<!-- ... -->
-		<cds.install-node.nodeVersion>v22.14.0</cds.install-node.nodeVersion>
+		<cds.install-node.nodeVersion>v24.14.1</cds.install-node.nodeVersion>
 		<!-- ... -->
 	</properties>
 
