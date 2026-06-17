@@ -70,7 +70,7 @@ CAP Java 5.0 increased some minimum required versions:
 | Java / JDK | 21 |
 | Spring Boot | 4.0 |
 | XSUAA (BTP Security Library) | 4.0.0 |
-| Maven | 3.9.10 |
+| Maven | 3.9.15 |
 
 <!-- ### Adjusted Property Defaults
 
@@ -157,6 +157,10 @@ The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odat
 
 3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
 
+
+#### Module `com.sap.cds:cds4j-codegen` is removed
+
+The module `cds4j-codegen` is no longer available in CAP 5.0. The module `com.sap.cds:cds-services-code-generator` is delivered instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
