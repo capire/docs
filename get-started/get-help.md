@@ -34,7 +34,7 @@ To start VS Code via the `code` CLI, users on macOS must first run a command (*S
 
 ### Check the Node.js version { #node-version}
 
-Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
+Run the latest LTS version of Node.js (even numbers: 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
 
 ```sh
 node -v
@@ -335,7 +335,7 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 ```xml
 <properties>
 		<!-- ... -->
-		<cds.install-node.nodeVersion>v20.11.0</cds.install-node.nodeVersion>
+		<cds.install-node.nodeVersion>v22.14.0</cds.install-node.nodeVersion>
 		<!-- ... -->
 	</properties>
 
