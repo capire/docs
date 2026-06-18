@@ -447,6 +447,10 @@ CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote se
 
 **2. BTP Destination** - Create a destination in BTP Cockpit with these properties:
 
+::: warning MTA cannot resolve cross-service credential references
+The destination must be created manually in BTP Cockpit or via Destination Service API, as MTA cannot reference IAS credentials like `${generated>xtravels-ias/clientid}`.
+:::
+
 | Property | Value |
 |----------|-------|
 | Name | `xflights-ias-app2app` |
@@ -459,7 +463,7 @@ CAP Node.js supports IAS App-2-App via BTP Destinations using standard remote se
 | Token Service URL | `https://<IAS tenant>/oauth2/token` |
 | Token Service URL Type | `Dedicated` |
 
-Client ID and Client Secret are obtained from the consumer's IAS service binding (e.g., via `cf env xtravels-srv` or BTP Cockpit).
+Client ID and Client Secret are obtained from the consumer's IAS service key (create one via `cf create-service-key xtravels-ias xtravels-ias-key`).
 
 **Additional Property (required for IAS App-2-App):**
 
@@ -502,8 +506,6 @@ resources:
       service: destination
       service-plan: lite
 ```
-
-**Note:** MTA cannot resolve cross-service credential references like `${generated>xtravels-ias/clientid}`. The destination must be created manually in BTP Cockpit or via Destination Service API.
 
 :::
 
