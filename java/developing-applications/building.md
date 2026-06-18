@@ -578,7 +578,7 @@ Other options in this goal enable or disable certain features that change the wa
 - [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
 
   Generates static class-based implementations for interfaces, replacing dynamic proxies at runtime.
-  This improves the performance significantly. It also removes the limit on the number of methods an interface may declare.
+  This improves the performance significantly. It also removes the limit on the number of methods an accessor interface may declare.
 
   The generated classes are internal — do not reference them directly from application code.
 
