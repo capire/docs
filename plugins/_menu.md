@@ -6,6 +6,7 @@
 # [Attachments](index#attachments)
 # [SAP Document Management](index#@cap-js/sdm)
 # [Audit Logging](index#audit-logging)
+# [Data Privacy](index#data-privacy)
 # [Change Tracking](index#change-tracking)
 # [Notifications](index#notifications)
 # [Telemetry](index#telemetry)
