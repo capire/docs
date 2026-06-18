@@ -276,12 +276,12 @@ Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging
 
 ## Data Privacy <Beta />
 
-The Node.js plugin `@cap-js/data-privacy` provides out-of-the-box integration with the [SAP Data Privacy Integration (DPI)](https://help.sap.com/docs/data-privacy-integration) service for CAP applications.
+The Node.js plugin `@cap-js/data-privacy` provides out-of-the-box integration for CAP applications with the [SAP Data Privacy Integration (DPI)](https://help.sap.com/docs/data-privacy-integration) service.
 
-Based on `@PersonalData` and `@ILM` annotations in your data model, the plugin automatically exposes two endpoints consumed by SAP DPI:
+Based on `@PersonalData` and `@ILM` annotations in your data model, the plugin automatically exposes two endpoints that SAP DPI consumes:
 
 - **`/dpp/information`** — returns personal data for display in the _Manage Personal Data_ app
-- **`/dpp/retention`** — handles blocking and deletion of data based on retention rules defined in SAP DPI
+- **`/dpp/retention`** — handles data blocking and deletion based on retention rules defined in SAP DPI
 
 Available for:
 
