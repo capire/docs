@@ -235,7 +235,7 @@ The following options are available:
 |-------|-------------|
 | `currentUser` | Propagates the named user if available, or falls back to a tenant-specific technical user. **(default)** |
 | `systemUser` | Uses a tenant-specific technical user, based on the tenant set in the current Request Context. |
-| `systemUserProvider` | Uses a technical user of the provider tenant. Useful for internal communication that is not authorized tenant-specifically. |
+| `systemUserProvider` | Uses a technical user of the provider tenant. Useful for internal communication that does not require tenant-specific authorization. |
 
 ::: tip
 This behaves identically to the [`onBehalfOf` option in binding-based configurations](#configuring-the-authentication-strategy). Use it when your IAS app-2-app communication is configured via a BTP destination with `cloudsdk.ias-dependency-name` rather than a direct service binding.
