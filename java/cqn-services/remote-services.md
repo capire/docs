@@ -217,7 +217,7 @@ At runtime, this destination configuration will use the bound `identity` service
 
 By default, when calling a remote IAS-based API through a destination, CAP propagates the user identity associated with the current `RequestContext` (`currentUser`). If the `RequestContext` contains a named user, CAP propagates the named user. If not, CAP requests a technical user token.
 
-In some scenarios, especially for background processing or technical integrations, you may want to enforce the call to the remote API as a technical user instead. The `destination.onBehalfOf` configuration allows you to control this behavior:
+For background processing or technical integrations, you may want to force the remote API call to use a technical user. Use the `destination.onBehalfOf` configuration to control this behavior:
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
