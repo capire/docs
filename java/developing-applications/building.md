@@ -578,11 +578,11 @@ Other options in this goal enable or disable certain features that change the wa
 - [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
 
   Generates static class-based implementations for interfaces, replacing dynamic proxies at runtime.
-  This improves the performance significantly. It also removes the limit on the number of methods an accessor interface may declare.
+  This significantly improves performance and removes the limit on the number of methods an accessor interface may declare.
 
   The generated classes are internal — do not reference them directly from application code.
 
-  Hand-written [accessor interfaces](../cds-data#typed-access), for which no implementation class is generated, are still supported by falling back to using [proxies](../cds-data#cds-data).
+  Hand-written [accessor interfaces](../cds-data#typed-access), for which no implementation class is generated, are still supported via [proxy](../cds-data#cds-data) fallback.
 
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
