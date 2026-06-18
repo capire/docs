@@ -242,7 +242,7 @@ This behaves identically to the [`onBehalfOf` option in binding-based configurat
 :::
 
 ::: warning
-The `onBehalfOf` option only applies to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
+The `onBehalfOf` option applies only to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
 :::
 
 #### Retrieve Destinations
