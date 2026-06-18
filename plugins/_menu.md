@@ -15,3 +15,4 @@
 # [SAP Cloud Appl. Event Hub](index#event-hub)
 # [Advanced Event Mesh](index#advanced-event-mesh)
 # [Process Automation](index#sap-build-process-automation)
+# [Data Inspector](index#data-inspector)
