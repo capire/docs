@@ -215,7 +215,7 @@ At runtime, this destination configuration will use the bound `identity` service
 
 ##### Configuring the Authentication Strategy {#ias-destination-authentication-strategy}
 
-By default, when calling a remote IAS-based API through a destination, CAP propagates the user identity associated with the current `RequestContext` (`currentUser`). If the user identity in the `RequestContext` is a named user, the named user will be propagated. If not, a technical user token will be requested.
+By default, when calling a remote IAS-based API through a destination, CAP propagates the user identity associated with the current `RequestContext` (`currentUser`). If the `RequestContext` contains a named user, CAP propagates the named user. If not, CAP requests a technical user token.
 
 In some scenarios, especially for background processing or technical integrations, you may want to enforce the call to the remote API as a technical user instead. The `destination.onBehalfOf` configuration allows you to control this behavior:
 
