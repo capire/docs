@@ -241,7 +241,7 @@ The following options are available:
 This behaves identically to the [`onBehalfOf` option in binding-based configurations](#configuring-the-authentication-strategy). Use it when your IAS app-2-app communication is configured via a BTP destination with `cloudsdk.ias-dependency-name` rather than a direct service binding.
 :::
 
-::: warning
+::: warning Only applicable to IAS app-2-app destinations
 The `onBehalfOf` option applies only to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
 :::
 
