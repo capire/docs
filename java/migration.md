@@ -93,9 +93,9 @@ The following properties have been deprecated and might be removed in a future m
 
 | Deprecated Property | Explanation |
 | --- | --- |
-| `cds.outbox.inMemory.enabled` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
-| `cds.outbox.inMemory.emitDuringChangeSetContext` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
+| [cds.outbox.inMemory.emitDuringChangeSetContext](../developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| [cds.outbox.inMemory.enabled](../developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
 
@@ -104,14 +104,15 @@ The following table gives an overview about the removed properties:
 | Removed Property | Replacement / Explanation |
 | --- | --- |
 | `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
-| `cds.mcp.autoConfig` | Use `cds.mcp.autoWired`. |
-| `cds.taskScheduler.enabled` | Use `cds.outbox.persistent.scheduler.enabled`. |
-| `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
-| `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
-| `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.mcp.autoConfig` | Replaced by `cds.mcp.autoWired`. |
 | `cds.multiTenancy.serviceManager.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
 | `cds.multiTenancy.serviceManager.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
+| `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
+| `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
+| `cds.sql.search.mode`| Replaced by `cds.sql.search.localized`. |
+| `cds.taskScheduler.enabled` | Replaced by  `cds.outbox.persistent.scheduler.enabled`. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
@@ -131,6 +132,7 @@ Removed deprecated methods:
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
 | `c.s.c.reflect.CdsEntity.isAbstract() `               | always `false`                                                                               |
+
 ### Changes in the `cds-maven-plugin`
 
 There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
