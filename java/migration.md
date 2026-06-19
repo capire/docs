@@ -113,7 +113,7 @@ The following table gives an overview about the removed properties:
 | `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
 | `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
-| `cds.sql.search.mode`| Replaced by `cds.sql.search.localized`. |
+| `cds.sql.search.mode`| Replaced by `cds.sql.search.localized` with value `view` to change the default. `generic` is not supported anymore. |
 | `cds.taskScheduler.enabled` | Replaced by  `cds.outbox.persistent.scheduler.enabled`. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
