@@ -607,7 +607,7 @@ The input validation handlers above collect input errors with [`req.error()`](./
 
 ```tsx
 function srv.after (event, entity?, handler: (
-  results : object[] | any,
+  results : object[] & { affected?: number },
   req     : cds.Request
 ))
 ```
@@ -616,7 +616,9 @@ function srv.after (event, entity?, handler: (
 
 Use this method to register handlers to run *after* the `.on` handlers, frequently used to enrich outbound data. The handlers receive two arguments:
 
-- `results` — the outcomes of the `.on` handler which ran before
+- `results` — the outcomes of the `.on` handler which ran before:
+  - For `READ` requests: an `object[]` array of result entries
+  - For write requests (`CREATE`, `UPDATE`, `UPSERT`, `DELETE`): an `object[]` array with an `.affected` property indicating the number of affected rows; for `CREATE`, the array additionally contains the generated primary keys of created entries
 - `req` — an instance of [`cds.Request`](./events.md#cds-request)
 
 ::: warning
