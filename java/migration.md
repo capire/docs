@@ -67,9 +67,10 @@ CAP Java 5.0 increased some minimum required versions:
 
 | Dependency | Minimum Version |
 | --- | --- |
-| Spring Boot | 4.0 |
+| Java / JDK | 21 |
+| Spring Boot | 4.1 |
 | XSUAA (BTP Security Library) | 4.0.0 |
-| Maven | 3.9.15 |
+| Maven | 3.9.14 |
 
 <!-- ### Adjusted Property Defaults
 
@@ -119,7 +120,7 @@ There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-
 
 #### Minimum Maven Version
 
-For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+For security reasons, the minimum required Maven version has been increased to **3.9.14**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.16** at the time of writing.
 
 #### Removed deprecated goal `install-cdsdk`
 
@@ -144,7 +145,7 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 #### Default JDK Version
 
-The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
