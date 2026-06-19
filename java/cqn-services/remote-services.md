@@ -213,7 +213,7 @@ At runtime, this destination configuration will use the bound `identity` service
 
 [Learn more about consuming APIs from other IAS-Applications in the **SAP Cloud Identity Services documentation**.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications){.learn-more}
 
-##### Configuring the Authentication Strategy {#ias-destination-authentication-strategy}
+##### Configuring the Authentication Strategy
 
 By default, when calling a remote IAS-based API through a destination, CAP propagates the user identity associated with the current `RequestContext` (`currentUser`). If the `RequestContext` contains a named user, CAP propagates the named user. If not, CAP requests a technical user token.
 
