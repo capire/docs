@@ -67,7 +67,8 @@ CAP Java 5.0 increased some minimum required versions:
 
 | Dependency | Minimum Version |
 | --- | --- |
-| Spring Boot | 4.0 |
+| Java / JDK | 21 |
+| Spring Boot | 4.1 |
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.14 |
 
@@ -144,7 +145,7 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 #### Default JDK Version
 
-The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
