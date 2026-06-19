@@ -274,6 +274,20 @@ Available for:
 Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging.md) and in [Java](../java/auditlog) {.learn-more}
 
 
+## Data Privacy <Beta />
+
+The Node.js plugin `@cap-js/data-privacy` provides out-of-the-box integration for CAP applications with the [SAP Data Privacy Integration (DPI)](https://help.sap.com/docs/data-privacy-integration) service.
+
+Based on `@PersonalData` and `@ILM` annotations in your data model, the plugin automatically exposes two endpoints that SAP DPI consumes:
+
+- **`/dpp/information`** — returns personal data for display in the _Manage Personal Data_ app
+- **`/dpp/retention`** — handles data blocking and deletion based on retention rules defined in SAP DPI
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy#readme)
+
+
 ## Change Tracking
 
 
@@ -429,3 +443,18 @@ Available for:
 The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Build Process Automation. It provides annotations and a programmatic API for working with processes. Use it to manage the lifecycle of processes — for example, to start, cancel, suspend, or resume them — and to retrieve information about running and finished processes.
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
+
+## Data Inspector {#data-inspector}
+
+The Node.js plugin `@cap-js/data-inspector` allows you to inspect data from database entities and service definitions in a CAP application in local and production environments. Inspection occurs at the CAP service level. This means all built-in authentication, authorization, and audit logging mechanisms are automatically respected.
+
+Features:
+
+- Seamless integration as a CAP plugin
+- Built on SAP standard reuse UI components
+- Authorization controls with comprehensive audit logging
+- Simple configuration optimized for productivity
+
+Available for:
+
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-inspector#readme)
