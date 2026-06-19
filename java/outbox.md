@@ -34,55 +34,32 @@ Once the transaction succeeds, the messages are read from the database table and
 - If an emit was successful, the respective message is deleted from the database table.
 - If an emit wasn't successful, there will be a retry after some (exponentially growing) waiting time. After a maximum number of attempts, the message is ignored for processing and remains in the database table. Even if the app crashes the messages can be redelivered after successful application startup.
 
-To enable the persistence for the outbox, you need to add the service `outbox` of kind `persistent-outbox` to the `cds.requires` section in the _package.json_ or _cdsrc.json_, which will automatically enhance your CDS model in order to support the persistent outbox.
 
-```jsonc
-{
-  // ...
-  "cds": {
-    "requires": {
-      "outbox": {
-        "kind": "persistent-outbox"
-      }
-    }
-  }
-}
+CAP Java provides the persistent outbox service `DefaultOutboxUnordered` by default. It is used by the [AuditLog service](../java/auditlog) and registered as the primary Spring bean for `OutboxService`. You can inject it directly without a qualifier:
+
+```java
+@Autowired
+private OutboxService outboxService;
 ```
 
-::: warning
-Be aware that you need to migrate the database schemas of all tenants after you've enhanced your model with an outbox version from `@sap/cds`  version 6.0.0 or later.
-:::
-
-For a multitenancy scenario, make sure that the required configuration is also done in the MTX sidecar service. Make sure that the base model in all tenants is updated to activate the outbox.
-
-::: info Option: Add outbox to your base model
-Alternatively, you can add `using from '@sap/cds/srv/outbox';` to your base model. In this case, you need to update the tenant models after deployment but you don't need to update MTX Sidecar.
-:::
-
-If enabled, CAP Java provides two persistent outbox services by default:
-
--  `DefaultOutboxOrdered` - is used by default by [messaging services](../java/messaging)
--  `DefaultOutboxUnordered` - is used by default by the [AuditLog service](../java/auditlog)
-
-The default configuration for both outboxes can be overridden using the `cds.outbox.services` section, for example in the _application.yaml_:
+The default configuration can be overridden using the `cds.outbox.services` section, for example in the _application.yaml_:
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
 cds:
   outbox:
     services:
-      DefaultOutboxOrdered:
-        maxAttempts: 10
-        # ordered: true
       DefaultOutboxUnordered:
         maxAttempts: 10
-        # ordered: false
 ```
 :::
 You have the following configuration options:
 - `maxAttempts` (default `10`): The number of unsuccessful emits until the message is ignored. It still remains in the database table.
-- `ordered` (default `true`): If this flag is enabled, the outbox instance processes the entries in the order they have been submitted to it. Otherwise, the outbox may process entries randomly and in parallel, by leveraging outbox processors running in multiple application instances. This option can't be changed for the default persistent outboxes.
 
 The persistent outbox stores the last error that occurred, when trying to emit the message of an entry. The error is stored in the element `lastError` of the entity `cds.outbox.Messages`.
+
+::: info
+Additionally, CAP Java creates a `DefaultOutboxOrdered` outbox, which is used by [messaging services](../java/messaging). It can be configured similarly via `cds.outbox.services.DefaultOutboxOrdered`.
+:::
 
 ### Configuring Custom Outboxes { #custom-outboxes}
 
@@ -416,42 +393,392 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 [Learn more about `EventContext.proceed()`.](./event-handlers/#proceed-on){.learn-more}
 
 
-## Shared Outbox { #shared-outbox}
+## Outbox Task Scheduling
 
-A shared outbox is a custom outbox configured with a dedicated persistence service. In this case, the outbox uses the assigned persistence service for all submits and lookups, independent from the current tenant context. This is useful in scenarios where outbox entries need to be stored and processed in a tenant-independent manner.
+The CAP Java provides an outbox-based task scheduling mechanism that allows services to emit events on a defined schedule. This enables recurring jobs, delayed execution, and cron-based task automation — all built on top of the existing outbox infrastructure.
 
-To configure a shared outbox, first create an additional persistence service for the dedicated database. Then, assign it to a custom outbox using the `persistenceService` parameter.
 
-#### 1. Create an Additional Persistence Service
+The scheduling feature consists of two main components:
 
-Define a persistence service that points to your shared database binding:
+| Component | Layer | Purpose |
+|-----------|-------|---------|
+| [`Schedule`](#schedule-api) | Technical | Defines *when* and *how often* a task executes |
+| [`Schedulable`](#schedulable-api) | Logical (CDS Service) | Wraps a CDS service so that emitted events are scheduled |
 
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-cds:
-  persistence.services:
-    my-shared-ps:
-      binding: "my-shared-hdi"
+
+### Schedule API
+
+**Package:** `com.sap.cds.services.outbox`  
+**Class:** `Schedule`
+
+The `Schedule` class defines the timing configuration for an outbox task. It uses a fluent builder pattern.
+
+#### Creating a Schedule
+
+```java
+import com.sap.cds.services.outbox.Schedule;
+import java.time.Duration;
+
+// Immediate execution (default)
+Schedule now = Schedule.NOW;
+
+// Delayed execution — run once after 30 seconds
+Schedule delayed = Schedule.create()
+    .after(Duration.ofSeconds(30));
+
+// Recurring with fixed delay — every 5 minutes, starting immediately
+Schedule recurring = Schedule.create()
+    .every(Duration.ofMinutes(5));
+
+// Recurring with initial delay — first run after 10s, then every 5 minutes
+Schedule delayedRecurring = Schedule.create()
+    .after(Duration.ofSeconds(10))
+    .every(Duration.ofMinutes(5));
+
+// Cron-based — every weekday at 8:00 AM
+Schedule cronBased = Schedule.create()
+    .cron("0 0 8 * * MON-FRI");
 ```
+
+#### Properties
+
+| Method | Description | Default |
+|--------|-------------|---------|
+| `taskName(String)` | Explicitly names the task, making it a **singleton** with **upsert** semantics (see [Named Tasks](#named-singleton-tasks)) | Event name (for scheduled tasks) |
+| `after(Duration)` | Initial delay before first execution | `Duration.ZERO` |
+| `every(Duration)` | Delay between recurring executions (after each successful run) | None (single execution) |
+| `cron(String)` | Spring Cron Expression for recurring execution | None |
+| `cancel()` | Marks the named task for cancellation | `false` |
+
+#### Constraints
+
+- **`cron`** is mutually exclusive with `after` and `every`. Combining them throws `IllegalArgumentException`.
+- **`every`** determines the delay *after* a successful execution, not a fixed-rate interval.
+
+
+#### Named (Singleton) Tasks
+
+All scheduled tasks (using any `Schedule` other than `Schedule.NOW`) are **singletons**. The task name determines the outbox message ID, ensuring only one active instance per name exists at any time.
+
+- If an explicit `taskName` is set via `.taskName(...)`, it is used as the task name.
+- If no explicit `taskName` is set, the **event name** is used as the task name.
+
+Re-submitting a task with the same name **replaces** the existing entry entirely — the schedule, message content, and execution timestamp are all updated to reflect the latest submission. This follows **last-write-wins** semantics.
+
+```java
+// Only one "daily-cleanup" task will exist, regardless of how often this code runs
+Schedule cleanup = Schedule.create()
+    .taskName("daily-cleanup")
+    .cron("0 0 2 * * *"); // daily at 2 AM
+```
+
+```java
+// Initial submission: run every hour
+Schedule hourly = Schedule.create()
+    .taskName("sync-job")
+    .every(Duration.ofHours(1));
+outboxService.submit("sync/trigger", message1, hourly);
+
+// Later: change to every 30 minutes — replaces the existing "sync-job"
+Schedule every30Min = Schedule.create()
+    .taskName("sync-job")
+    .every(Duration.ofMinutes(30));
+outboxService.submit("sync/trigger", message2, every30Min);
+
+// Result: only ONE task exists with the 30-minute schedule and message2 content
+```
+
+> **Important:** Both the schedule *and* the message payload are replaced. If you only want to update the timing, you must still provide the full message content.
+
+The upsert mechanism is safe for concurrent submissions. If a named task is re-submitted while it is currently being processed, the new submission is preserved and will be executed according to the updated schedule after the current execution completes.
+
+::: warning
+If you need multiple independent tasks for the same event (e.g., per-user reminders), you **must** set an explicit `taskName` to distinguish them. Without it, all submissions for the same event share one task name and re-submissions replace the existing task.
 :::
 
-[Learn more about additional Persistence Services.](./cqn-services/persistence-services#additional-persistence-services){.learn-more}
 
-#### 2. Configure the Shared Outbox
 
-Create a custom outbox and assign the persistence service using the `persistenceService` parameter:
+#### Cancelling a Scheduled Task
 
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-cds:
-  outbox:
-    services:
-      MySharedOutbox:
-        persistenceService: "my-shared-ps"
+Named tasks can be cancelled:
+
+```java
+Schedule cancelCleanup = Schedule.create()
+    .taskName("daily-cleanup")
+    .cancel();
+
+// Submit the cancellation
+outboxService.submit("maintenance/cleanup", message, cancelCleanup);
 ```
-:::
 
-With this configuration, the outbox `MySharedOutbox` uses the persistence service `my-shared-ps` for all submit and lookup operations. Since this persistence service points to a dedicated database, the outbox operates independently from the tenant context — outbox entries are stored and retrieved from the shared database regardless of which tenant triggers the processing.
+If no explicit `taskName` is set, the event name is used to identify the task to cancel:
+
+```java
+Schedule cancel = Schedule.create()
+    .cancel();
+
+// Cancels the task identified by the event name "sync/trigger"
+outboxService.submit("sync/trigger", message, cancel);
+```
+
+#### Cancellation Behavior
+
+When a cancellation is submitted, the named task is **deleted** from the outbox so that no future executions will occur. However, a **currently running execution will complete** — cancellation does not interrupt in-flight processing.
+
+**Key details:**
+
+| Aspect | Behavior |
+|--------|----------|
+| Future executions | Prevented — task is removed from the schedule |
+| Currently running execution | **Completes** — not interrupted |
+| At most one additional execution | Possible if the task was already picked up for processing |
+| Cancelling a non-existent task | Silent no-op (no error thrown) |
+| Cancellation without explicit `taskName` | Cancels the task identified by the event name |
+
+
+#### Cron Expression Syntax
+
+The cron expression follows the [Spring Cron Expression](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) format with **6 fields**:
+
+```
+┌───────── second (0-59)
+│ ┌───────── minute (0-59)
+│ │ ┌───────── hour (0-23)
+│ │ │ ┌───────── day of month (1-31)
+│ │ │ │ ┌───────── month (1-12 or JAN-DEC)
+│ │ │ │ │ ┌───────── day of week (0-7 or MON-SUN, 0 and 7 = Sunday)
+│ │ │ │ │ │
+* * * * * *
+```
+
+**Examples:**
+
+| Expression | Description |
+|-----------|-------------|
+| `0 0 * * * *` | Every hour |
+| `0 */15 * * * *` | Every 15 minutes |
+| `0 0 8 * * MON-FRI` | Weekdays at 8:00 AM |
+| `0 0 2 * * *` | Daily at 2:00 AM |
+| `0 0 0 1 * *` | First day of every month at midnight |
+
+
+**Restrictions:**
+
+- **`cron` is mutually exclusive** with both `after` and `every`. Setting `cron` after `after`/`every` (or vice versa) throws `IllegalArgumentException`.
+- **`every` without `after`** starts the first execution immediately (with zero delay), then applies `every` between subsequent executions.
+- **Cron expressions that never match** (e.g., February 30th) are silently discarded — the task is marked as completed without ever executing.
+- **All times are evaluated in UTC.**
+
+
+### Schedulable API
+
+**Package:** `com.sap.cds.services.outbox`  
+**Interface:** `Schedulable<T extends Service>`
+
+The `Schedulable` interface provides the **logical CDS service layer** for scheduling. It wraps any CDS `Service` so that all events emitted to it are automatically scheduled via the outbox.
+
+### Core Concept
+
+When you call `OutboxService.outboxed(service)`, the returned proxy **always** implements `Schedulable`. This means you can:
+
+1. Use the outboxed service for immediate async execution (default outbox behavior)
+2. Cast to `Schedulable` and call `.scheduled(schedule)` to get a service proxy whose events are scheduled
+
+### Creating a Schedulable Service
+
+```java
+import com.sap.cds.services.outbox.OutboxService;
+import com.sap.cds.services.outbox.Schedulable;
+import com.sap.cds.services.outbox.Schedule;
+import com.sap.cds.services.messaging.MessagingService;
+
+// Option 1: Using the static factory method
+Schedulable<MessagingService> schedulable = Schedulable.of(messagingService, outboxService);
+MessagingService scheduled = schedulable.scheduled(
+    Schedule.create().every(Duration.ofMinutes(5))
+);
+
+// Option 2: Direct cast from outboxed service
+MessagingService outboxed = outboxService.outboxed(messagingService);
+Schedulable<MessagingService> schedulable = (Schedulable<MessagingService>) outboxed;
+MessagingService scheduled = schedulable.scheduled(
+    Schedule.create().cron("0 0 */2 * * *") // every 2 hours
+);
+```
+
+### Using a Scheduled Service
+
+Once you have a scheduled service instance, use it exactly like the original service. All emitted events will be stored in the outbox with the configured schedule:
+
+```java
+// All events emitted to 'scheduled' will follow the defined schedule
+scheduled.emit("myTopic", messageData);
+```
+
+---
+
+### End-to-End Examples
+
+#### Example 1: Recurring Data Sync Every 10 Minutes
+
+```java
+@Autowired
+private OutboxService outboxService;
+
+@Autowired
+private MessagingService messagingService;
+
+public void setupRecurringSync() {
+    Schedule every10Min = Schedule.create()
+        .taskName("data-sync")
+        .every(Duration.ofMinutes(10));
+
+    MessagingService scheduled = Schedulable.of(messagingService, outboxService)
+        .scheduled(every10Min);
+
+    // This event will be emitted every 10 minutes
+    scheduled.emit("sync/trigger", Map.of("source", "system-a"));
+}
+```
+
+#### Example 2: Delayed One-Time Notification
+
+```java
+public void scheduleReminder(String userId) {
+    Schedule in24Hours = Schedule.create()
+        .taskName("reminder-" + userId) // explicit name ensures one task per user
+        .after(Duration.ofHours(24));
+
+    MessagingService scheduled = Schedulable.of(messagingService, outboxService)
+        .scheduled(in24Hours);
+
+    // Will be emitted once, 24 hours from now
+    scheduled.emit("notifications/reminder", Map.of("userId", userId));
+}
+```
+
+#### Example 3: Cron-Based Daily Report
+
+```java
+public void setupDailyReport() {
+    Schedule dailyAt6AM = Schedule.create()
+        .taskName("daily-report")
+        .cron("0 0 6 * * *");
+
+    MessagingService scheduled = Schedulable.of(messagingService, outboxService)
+        .scheduled(dailyAt6AM);
+
+    scheduled.emit("reports/daily", Map.of("type", "summary"));
+}
+```
+
+#### Example 4: Cancelling a Recurring Task
+
+```java
+public void stopDailyReport() {
+    Schedule cancel = Schedule.create()
+        .taskName("daily-report")
+        .cancel();
+
+    // Submit the cancellation through the outbox
+    outboxService.submit("reports/daily", outboxMessage, cancel);
+}
+```
+
+#### Example 5: Using the OutboxService Directly
+
+For lower-level control, you can submit messages with a schedule directly:
+
+```java
+public void submitScheduledMessage() {
+    OutboxMessage message = createOutboxMessage();
+
+    Schedule schedule = Schedule.create()
+        .taskName("cleanup-job")
+        .after(Duration.ofMinutes(5))
+        .every(Duration.ofHours(1));
+
+    // Submit directly to the outbox with scheduling
+    outboxService.submit("maintenance/cleanup", message, schedule);
+}
+```
+
+---
+
+### Execution Semantics
+
+#### Recurring Task Timing
+
+For `every`-based schedules, the next execution is calculated **after a successful execution**:
+
+```
+Time ──────────────────────────────────────────────────────►
+
+submit        execute         execute         execute
+  │──after──►│──── every ───►│──── every ───►│
+  t₀          t₁              t₂              t₃
+```
+
+For `cron`-based schedules, the next execution time is determined by evaluating the cron expression after the last successful execution.
+
+#### Singleton Behavior
+
+All scheduled tasks are singletons — each task has a name (explicit or derived from the event) and only one active instance per name can exist at a time. Re-submitting a task with the same name **replaces** the existing entry. This is ideal for recurring background jobs that should not overlap.
+
+#### Outbox Guarantees
+
+Scheduled tasks inherit the standard outbox guarantees:
+- **At-least-once delivery** — tasks are retried on failure
+- **Transactional** — task submission is part of the current transaction (persistent outbox)
+- **Tenant-aware** — tasks execute in the context of the tenant that created them
+
+---
+
+
+### API Reference Summary
+
+#### Schedule
+
+```java
+public class Schedule {
+    static Schedule NOW;                           // Immediate execution
+    static Schedule create();                      // Builder entry point
+    static Schedule of(Map<String, Object> map);   // Deserialize from map
+
+    Schedule taskName(String name);                // Singleton task name
+    Schedule after(Duration delay);                // Initial delay
+    Schedule every(Duration interval);             // Recurring interval
+    Schedule cron(String expression);              // Spring Cron Expression
+    Schedule cancel();                             // Mark for cancellation
+
+    Optional<String> taskName();                   // Get task name
+    Duration after();                              // Get initial delay
+    Optional<Duration> every();                    // Get recurring interval
+    Optional<String> cron();                       // Get cron expression
+    boolean isCanceled();                          // Check cancellation flag
+    Map<String, Object> toMap();                   // Serialize to map
+}
+```
+
+#### Schedulable
+
+```java
+public interface Schedulable<T extends Service> {
+    static <S extends Service> Schedulable<S> of(S service, OutboxService outbox);
+    T scheduled(Schedule schedule);
+}
+```
+
+#### OutboxService (schedule-related)
+
+```java
+public interface OutboxService extends Service {
+    void submit(String event, OutboxMessage message, Schedule schedule);
+    <S extends Service> S outboxed(S service);  // returned proxy implements Schedulable
+}
+```
+
+
 
 
 ## Outbox Collector Strategies { #outbox-collector-strategies}
@@ -507,10 +834,7 @@ For applications with a large number of tenants, traversing all tenants can caus
 
 Instead of iterating over all tenants, the hot-tenant task tracks which tenants have been recently active and only triggers the outbox collector for those tenants. Lookups are well distributed over time to avoid activity jams.
 
-The hot-tenant task requires:
-
-1. The outbox scheduler must be enabled (`cds.outbox.persistent.scheduler.enabled: true`).
-2. A [shared outbox](#shared-outbox) must be configured — the hot-tenant task uses the shared outbox to persist tenant activity records independently from the tenant context.
+The hot-tenant task requires the outbox scheduler to be enabled (`cds.outbox.persistent.scheduler.enabled: true`).
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
@@ -521,20 +845,32 @@ cds:
         enabled: true
         hotTenantTask:
           enabled: true
-          sharedOutbox: "MySharedOutbox"
           maxTaskDelay: PT2H
-    services:
-      MySharedOutbox:
-        persistenceService: "my-shared-ps"
 ```
 :::
 
 The configuration options are:
 
-- `sharedOutbox`: The name of the shared outbox service used to store tenant activity records. This outbox must be configured with a dedicated persistence service as described in the [Shared Outbox](#shared-outbox) section.
 - `maxTaskDelay` (default `PT2H`): The maximum time to wait after a tenant event before checking that tenant's outbox. Lookups are distributed within this window to spread the load evenly.
 
-[Learn more about configuring a Shared Outbox.](#shared-outbox){.learn-more}
+#### Persistence for Hot-Tenant Tracking
+
+The hot-tenant task manages tenant activity records centrally in the provider persistence. By default, the MTXs persistence (T0 tenant) is used.
+
+If the application uses a custom provider persistence bound, for instance, via an HDI binding, the property `cds.multiTenancy.provider.persistenceService` can reference the persistence service to use for the hot-tenant task:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  multiTenancy:
+    provider:
+      persistenceService: "my-custom-ps"
+```
+:::
+
+::: warning
+If you previously ran with the default MTXs/T0 persistence and switch to a custom provider persistence, the currently tracked hot tenants will be lost — there is no automatic migration. Plan accordingly before changing this configuration.
+:::
 
 
 ## Outbox Dead Letter Queue
