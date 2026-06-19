@@ -334,6 +334,7 @@ For local environments, use [`cds bind`](../tools/cds-bind#cds-bind-usage) in a 
 For local testing use [`kind`: `enterprise-messaging-shared`](#event-mesh-shared) to avoid the complexity of HTTP-based messaging.
 :::
 
+
 ### SAP Event Mesh (Shared) { #event-mesh-shared}
 
 `kind`: `enterprise-messaging-shared`
@@ -382,6 +383,7 @@ You need to install the latest version of the npm package `@sap/xb-msg-amqp-v100
 For optimal performance, you should set the correct access type.
 To make sure your server is not flooded with messages, you should set the incoming session window.
 :::
+
 
 ### SAP Event Mesh
 
@@ -470,9 +472,12 @@ This will not work in the `dev` plan of SAP Event Mesh.
 If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handshake requests](https://help.sap.com/docs/SAP_EM/bf82e6b26456494cbdd197057c09979f/6a0e4c77e3014acb8738af039bd9df71.html?q=handshake) from SAP Event Mesh might be intercepted.
 :::
 
-### SAP Integration Suite Event Mesh <Beta /> { #integration-suite-event-mesh }
+<span id="aftereventmesh" />
 
-[SAP Integration Suite Event Mesh (EMIS)](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
+
+### Event Mesh of SAP Integration Suite <Beta /> { #integration-suite-event-mesh }
+
+[Event Mesh of SAP Integration Suite (EMIS)](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
 
 | Kind | Protocol | Equivalent to |
 |------|----------|---------------|
@@ -520,16 +525,6 @@ The configuration options are the same as for [`enterprise-messaging-shared`](#e
 Use `cds add event-mesh` or `cds add event-mesh-shared` to automatically configure `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors. Both support a `--cloudevents` flag.
 :::
 
-<span id="aftereventmesh" />
-
-### SAP Cloud Application Event Hub { #event-broker }
-
-`kind`: `event-broker`
-
-Use this if you want to communicate using [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker).
-
-The integration with SAP Cloud Application Event Hub is provided using the plugin [`@cap-js/event-broker`](https://github.com/cap-js/event-broker).
-Please see the plugin's [setup guide](https://github.com/cap-js/event-broker/blob/main/README.md#setup) for more details.
 
 ### SAP Integration Suite, Advanced Event Mesh <Beta />  { #advanced-event-mesh }
 
@@ -540,9 +535,22 @@ Use this if you want to communicate using [SAP Integration Suite, advanced event
 The integration with SAP Integration Suite, advanced event mesh is provided using the plugin [`@cap-js/advanced-event-mesh`](https://github.com/cap-js/advanced-event-mesh).
 Please see the plugin's [setup guide](https://github.com/cap-js/advanced-event-mesh/blob/main/README.md#setup) for more details.
 
+
+### SAP Cloud Application Event Hub { #event-broker }
+
+`kind`: `event-broker`
+
+Use this if you want to communicate using [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker).
+
+The integration with SAP Cloud Application Event Hub is provided using the plugin [`@cap-js/event-broker`](https://github.com/cap-js/event-broker).
+Please see the plugin's [setup guide](https://github.com/cap-js/event-broker/blob/main/README.md#setup) for more details.
+
+
 <div id="queuing-sap" />
 
+
 <div id="kafka-sap" />
+
 
 ### Redis PubSub <Beta />
 ::: warning
@@ -600,6 +608,7 @@ When using `file-based-messaging` in a multitenant scenario, only the provider a
 `kind`: `local-messaging`
 
 You can use local messaging to communicate inside one Node.js process. It's especially useful in your automated tests.
+
 
 ### Composite-Messaging
 
