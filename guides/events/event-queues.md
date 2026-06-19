@@ -491,7 +491,23 @@ CAP handles this as follows:
 
 There is no principal propagation across the queue boundary, by design — that would require CAP to persist authentication tokens in some encrypted form, and those tokens often expire long before the queued work runs.
 
-As a consequence, queued calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Queue only those calls that the target system can authorize for a technical user — for example, service-to-service calls that don't depend on the end-user identity. If a queued handler still needs request-time information, encode it in the event payload or derive it from persisted business data.
+*"Privileged mode"* means `@requires` annotations don't gate execution in queued handlers — the runtime grants full service access regardless of the stored user ID. If your handler must enforce the original caller's identity, carry the relevant claims via **payload or headers** at queue time and read them during processing. For scheduled tasks, headers are a natural fit since they stay in-process:
+
+```js
+// Schedule a task, carrying the originating user as a header
+await xflights.schedule('replicate', { entity: 'Airports' }, { requestedBy: req.user.id })
+
+// At processing time — read from headers
+xflights.on('replicate', async (req) => {
+  const { requestedBy } = req.headers
+  // use requestedBy to derive authorization or audit context
+})
+```
+
+> [!warning] Headers are forwarded to the target system
+> When a **queued outbound call** (to a remote service or message broker) is dispatched, CAP forwards the stored headers to the target. Do not carry sensitive data — authentication tokens, personal data, secrets — in headers on outbound calls. For **scheduled tasks**, which are processed in-process and never leave the application, headers are not forwarded and this restriction doesn't apply.
+
+As a consequence, queued calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Queue only those calls that the target system can authorize for a technical user — for example, service-to-service calls that don't depend on the end-user identity.
 
 ### Error Handling
 
