@@ -382,6 +382,22 @@ srv.before("UPDATE", "EntityName", (req) => {
 Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that is converted to the right format, when sent to the database. So if in any case a date string is needed, the best solution would be to initialize a Date object, that is then translated to the correct UTC String for the database.
 
 
+## Decimals and Int64 as Strings { #decimals-int64 }
+
+`Decimal` and `Int64` values are always returned as **strings**, not JavaScript numbers. JavaScript's `Number` type cannot represent these values without risk of losing precision, so CAP aligns all databases — [HANA](../guides/databases/hana), [PostgreSQL](../guides/databases/postgres), and [SQLite](../guides/databases/sqlite) — on this behavior.
+
+#### Do arithmetic in the database { .good }
+
+Avoid calculations on `Decimal` / `Int64` fields in JavaScript — do them in the database instead:
+
+```js
+await UPDATE(Books).set('stock = stock + 1').where({ ID: 1 })
+```
+
+::: warning Integer arithmetic can exceed JavaScript's safe range
+Multiplication or addition on integer fields can produce values beyond `Number.MAX_SAFE_INTEGER`. Doing such calculations in JavaScript risks silently losing precision — do them in the database instead.
+:::
+
 ## Custom Streaming <Beta /> { #custom-streaming-beta }
 
 [Media Data](../guides/services/media-data) can be served from custom handlers of the type `READ`, `action`, or `function`.
