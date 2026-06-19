@@ -72,7 +72,8 @@ CAP Java 5.0 increased some minimum required versions:
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.14 |
 
-### Adjusted Property Defaults { #adjusted-defaults-4-to-5 }
+### Adjusted Property Defaults
+<div id="adjusted-defaults-4-to-5" />
 
 Some property defaults have been adjusted:
 
@@ -89,7 +90,8 @@ Some property defaults have been adjusted:
 | [cds.sql.toOnePath.mode](../developing-applications/properties#cds-sql-toOnePath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 
-### Deprecated Properties { #deprecated-properties-4-to-5 }
+### Deprecated Properties
+<div id="deprecated-properties-4-to-5 " />
 
 The following properties have been deprecated and might be removed in a future major version:
 
@@ -99,7 +101,8 @@ The following properties have been deprecated and might be removed in a future m
 | [cds.outbox.inMemory.emitDuringChangeSetContext](../developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 | [cds.outbox.inMemory.enabled](../developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
-### Removed Properties { #removed-properties-4-to-5 }
+### Removed Properties
+<div id="removed-properties-4-to-5 " />
 
 The following table gives an overview about the removed properties:
 
