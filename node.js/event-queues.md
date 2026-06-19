@@ -6,14 +6,14 @@ status: released
 
 # Event Queues in Node.js
 
-For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Node.js-specific APIs and configuration on top of that.
+For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Node.js-specific APIs and configuration.
 
 In Node.js, you wrap a service with `cds.queued()` to queue its events, or enable queueing through configuration. The persistent queue is the default for all queued services.
 
 > [!info] Event queues vs. `cds.spawn`
-> [`cds.spawn`](cds-tx#cds-spawn) runs a *detached continuation* — an in-memory background job in a fresh root transaction, optionally with `every` / `after` recurrence. It does not persist anything: a crash before the job completes loses it, and concurrent app instances each run their own copy.
+> [`cds.spawn`](cds-tx#cds-spawn) runs a *detached continuation*, which means an in-memory background job in a fresh root transaction, optionally with `every` / `after` recurrence. It does not persist anything: a crash before the job completes loses it, and concurrent app instances each run their own copy.
 >
-> Reach for `cds.spawn` when the work is in-process, idempotent, and tolerates being dropped — for example, a periodic cache refresh. Use an event queue when you need **transactional integration with the calling request** (the message lives or dies with the surrounding commit) or **persistence and retries across restarts and instances**.
+> Use `cds.spawn` when the work is in-process, idempotent, and tolerates being dropped, for example, a periodic cache refresh. Use an event queue when you need **transactional integration with the calling request** (the message is committed or discarded with the surrounding transaction) or **persistence and retries across restarts and instances**.
 
 [[toc]]
 
@@ -42,7 +42,7 @@ await qd_srv.send('someEvent', { some: 'message' })
 The persistent queue writes the message to the database within the current transaction; you still need to `await` to keep that write inside the transaction.
 :::
 
-For backwards compatibility, `cds.outboxed(srv)` works as a synonym; prefer `cds.queued` in new code.
+For backward compatibility, `cds.outboxed(srv)` works as a synonym.
 
 #### `cds.unqueued(srv)` { .method }
 
@@ -56,11 +56,11 @@ Get back the original synchronous service from a queued proxy:
 const srv = cds.unqueued(qd_srv)
 ```
 
-This is useful when a service is queued through configuration and you need a synchronous call site. For backwards compatibility, `cds.unboxed(srv)` works as a synonym; prefer `cds.unqueued` in new code.
+This is useful when a service is queued through configuration and you need a synchronous call site. For backward compatibility, `cds.unboxed(srv)` works as a synonym.
 
 #### Queueing through Configuration
 
-You can outbox any *outbound* service through configuration without changing code. The `outboxed` flag on the service config is the trigger:
+Set the `outboxed` flag in the *outbound* service's configuration:
 
 ```json
 {
@@ -73,12 +73,12 @@ You can outbox any *outbound* service through configuration without changing cod
 }
 ```
 
-Some services — `cds.MessagingService` and `cds.AuditLogService` — are outboxed by default; see [*Auto-Outboxed Services*](../guides/events/event-queues#auto-outboxed-services) in the common guide.
+Some services - `cds.MessagingService` and `cds.AuditLogService` - are outboxed by default. See [*Auto-Outboxed Services*](../guides/events/event-queues#auto-outboxed-services) in the common guide.
 
 
 ### Scheduling
 
-`srv.schedule()` queues like `cds.queued(srv).send()` — within the current transaction, dispatched after commit — but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
+`srv.schedule()` queues like `cds.queued(srv).send()`, that is within the current transaction, dispatched after commit, but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
 
 ```js
 await srv.schedule('someEvent', { some: 'msg' })                       // execute asap
@@ -94,7 +94,7 @@ await srv.unschedule('someEvent')                                      // remove
 > [!warning] Cron field counts differ between stacks
 > Java cron expressions are **six fields including seconds** (Spring syntax); Node.js cron expressions are **five fields**. A cron string copied between stacks won't behave the same way.
 
-A scheduled task is identified by its event name and exists only once. A subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated) — convenient for idempotent registration during application startup.
+A scheduled task is identified by its event name and exists only once. A subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated), which is convenient for idempotent registration during application startup.
 
 To schedule the same event under separate identities (for example, with different payloads), give each its own task name with `.as(<name>)`:
 
@@ -142,7 +142,7 @@ Callback handlers must be registered for the specific `#succeeded` or `#failed` 
 ### Manual Processing
 
 > [!note] Node.js only
-> `cds.flush()` is a Node.js API; both stacks have built-in recovery mechanisms that pick up pending messages automatically.
+> `cds.flush()` is a Node.js API. Both stacks have built-in recovery mechanisms that pick up pending messages automatically.
 
 The background runner picks up pending messages automatically. The main use case for a manual flush is triggering processing immediately after reviving a dead-letter entry — without waiting for the next runner cycle:
 
@@ -155,7 +155,7 @@ The returned promise resolves once the runner has finished dispatching all curre
 
 ## Configuration
 
-The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction. `cds.requires.queue` resolves to its default config automatically via `cds.env`; specify it only when tuning.
+The persistent queue is enabled by default. Messages are stored in the `cds.outbox.Messages` table within the current transaction. `cds.requires.queue` resolves to its default config automatically via `cds.env`. Specify it only when tuning.
 
 ```json
 {
@@ -179,7 +179,7 @@ The persistent queue is enabled by default. Messages are stored in the `cds.outb
 |--------|---------|-------------|
 | `maxAttempts` | `10` | Maximum retries before a message becomes a dead letter |
 | `timeout` | `"1h"` | Time after which a `processing` message is considered abandoned and eligible for reprocessing |
-| `legacyLocking` | `false` | Backward compatibility with `@sap/cds` v9; to be removed in a future release |
+| `legacyLocking` | `false` | Backward compatibility with `@sap/cds` v9. Planned for removal in a future release |
 
 :::
 
@@ -254,7 +254,7 @@ For projects on `@sap/cds < 6.7.0` with custom build tasks that override `option
 }
 ```
 
-Note that the model configuration isn't required for CAP projects using the standard project layout with `db`, `srv`, and `app` folders.
+The model configuration isn't required for CAP projects using the standard project layout with `db`, `srv`, and `app` folders.
 
 
 ---

@@ -25,7 +25,7 @@ Build tasks are derived from the CDS configuration and project context. By defau
 - _db/_, _srv/_, _app/_ — default root folders of a CAP project
 - _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
 - CDS model folders and files defined by [required services](../../node.js/cds-env#services)
-  - Built-in examples: [event queue](../../node.js/event-queues#configuration) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
+  - Built-in examples: [Event Queues](../../node.js/event-queues#configuration) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
 - Explicit `src` folder configured in the build task
 
 

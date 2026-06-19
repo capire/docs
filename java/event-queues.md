@@ -6,9 +6,9 @@ status: released
 
 # Event Queues in Java
 
-For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Java-specific APIs and configuration on top of that.
+For concepts, use cases, and guarantees, see the [Transactional Event Queues](../guides/events/event-queues) guide. This page covers the Java-specific APIs and configuration.
 
-In Java, event queues are exposed as **outbox services**. The runtime ships two default outboxes — `DefaultOutboxOrdered` (used by messaging services; processes entries in submission order) and `DefaultOutboxUnordered` (used by the audit-log service; may process entries in parallel). You can register custom outbox services for advanced isolation, scaling, or shared-database scenarios.
+In Java, event queues are exposed as **outbox services**. The runtime ships two default outboxes. First, `DefaultOutboxOrdered` that is used by messaging services and processes entries in submission order. Second, `DefaultOutboxUnordered` that is used by the audit-log service and processes entries in parallel. You can register custom outbox services for advanced isolation, scaling, or shared-database scenarios.
 
 [[toc]]
 
@@ -17,7 +17,7 @@ In Java, event queues are exposed as **outbox services**. The runtime ships two 
 
 ### Queueing a Service
 
-Wrap any CAP service with outbox handling. Events triggered on the returned wrapper are stored in the outbox first and executed asynchronously after commit. Relevant information from the `RequestContext` is stored with the event data; the user context is downgraded to a system user context.
+Wrap any CAP service with outbox handling. Events triggered on the returned wrapper are stored in the outbox first and executed asynchronously after commit. Relevant information from the `RequestContext` is stored with the event data. The user context is downgraded to a system user context.
 
 ```java
 OutboxService myCustomOutbox = ...;
@@ -25,7 +25,7 @@ CqnService remoteS4 = ...;
 CqnService outboxedS4 = myCustomOutbox.outboxed(remoteS4);
 ```
 
-If a method on the outboxed service has a return value, it returns `null` — the call is asynchronous. To make this explicit at the type level, use the variant that wraps the service with an asynchronous-suited API:
+If a method on the outboxed service has a return value, it returns `null` - the call is asynchronous. To make this explicit at the type level, use the variant that wraps the service with an API designed for asynchronous use:
 
 ```java
 OutboxService myCustomOutbox = ...;
@@ -43,18 +43,18 @@ AsyncCqnService outboxedS4 = AsyncCqnService.of(remoteS4, myCustomOutbox);
 
 The outboxed service is thread-safe and can be cached. Any service that implements the `Service` interface can be outboxed, and each call is asynchronously executed if the API method internally calls `Service.emit(EventContext)`.
 
-To recover the synchronous service from a wrapped one:
+To get the original synchronous service from a wrapped one:
 
 ```java
 CqnService synchronous = OutboxService.unboxed(outboxedS4);
 ```
 
-::: tip Custom asynchronous-suited APIs
-When defining your own asynchronous-suited interface, it must provide the same method signatures as the interface of the outboxed service, except for the return types — those should be `void`.
+::: tip Custom asynchronous-ready APIs
+When defining your own asynchronous-ready interface, it must provide the same method signatures as the interface of the outboxed service, except for the return types. Those return types must be `void`.
 :::
 
 ::: warning Java Proxy
-A service wrapped by an outbox is a [Java Proxy](https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/proxy.html). It only implements the *interfaces* of the underlying object — you can't cast an outboxed service proxy back to its concrete implementation class.
+A service wrapped by an outbox is a [Java Proxy](https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/proxy.html). It only implements the *interfaces* of the underlying object, which means you can't cast an outboxed service proxy back to its concrete implementation class.
 :::
 
 
@@ -62,7 +62,7 @@ A service wrapped by an outbox is a [Java Proxy](https://docs.oracle.com/javase/
 
 CAP Java offers two ways to schedule a queued event, both controlled by a `Schedule` builder.
 
-**Option 1 — pass a `Schedule` to `submit`** on a regular outbox, per call:
+**Option 1 - pass a `Schedule` to `submit`** on a regular outbox, per call:
 
 ```java
 @Autowired @Qualifier("DefaultOutboxUnordered")
@@ -75,7 +75,7 @@ outbox.submit("replicate", message,
   Schedule.create().every(Duration.ofMinutes(10)));
 ```
 
-**Option 2 — wrap a service with `Schedulable`** so all subsequent emits use a fixed schedule:
+**Option 2 - wrap a service with `Schedulable`** so all subsequent emits use a fixed schedule:
 
 ```java
 @Autowired @Qualifier("DefaultOutboxUnordered")
@@ -90,7 +90,7 @@ Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox)
 scheduled.emit("replicate", Map.of("entity", "Airports"));
 ```
 
-Every outboxed service is guaranteed to implement `Schedulable<T>` — its single method `scheduled(Schedule)` returns the same service typed to use the given schedule on every subsequent emit.
+Every outboxed service is guaranteed to implement `Schedulable<T>` --- its single method `scheduled(Schedule)` returns the same service typed to use the given schedule on every subsequent emit.
 
 #### `Schedule` Options
 
@@ -107,10 +107,12 @@ Schedule.create().every(Duration.ofMinutes(10));
 Schedule.create().cron("0 0 3 * * *");
 ```
 
-`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html). The three are mutually exclusive — combining them throws `IllegalArgumentException`.
+`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (six fields including seconds that differs from Node.js's five-field cron). The three are mutually exclusive, combining them throws `IllegalArgumentException`.
 
 > [!warning] Cron field counts differ between stacks
 > Java cron expressions are **six fields including seconds** (Spring syntax); Node.js cron expressions are **five fields**. A cron string copied between stacks won't behave the same way.
+
+A scheduled task with a name is a **singleton**: a subsequent submission with the same task name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent, which is convenient during application startup, where the same registration code runs on every boot. Without a task name, every submission creates a new scheduled entry.
 
 Every scheduled task has a name — by default it inherits the event name, which makes scheduling idempotent: a subsequent submission for the same event name overwrites the previous schedule (tasks are upserted, not deduplicated). Set `taskName(...)` explicitly only when you want a custom name different from the event name — for example, to schedule the same event with different payloads as separate, independently-managed tasks:
 
@@ -178,7 +180,7 @@ The handler must complete the context after executing the processing logic.
 
 #### Custom Serialization
 
-The outbox has no information about the structure or data types being serialized. If your custom messages use non-default data types — or you need extra context properties — register `@Before` and `@On` handlers to customize serialization and deserialization. *(This isn't required for CDS-model-based services.)*
+The outbox has no information about the structure or data types being serialized. If your custom messages use non-default data types, or you need extra context properties, register `@Before` and `@On` handlers to customize serialization and deserialization. This isn't required for CDS-model-based services.
 
 ```java [srv/src/main/java/com/myapp/CustomOutboxHandler.java]
 @Component
@@ -212,14 +214,14 @@ public class CustomOutboxHandler implements EventHandler {
 ```
 
 > [!warning] Don't complete the context in either of those handlers
-> Calling `setCompleted` here breaks the chain — the next handler isn't called and processing fails.
+> Calling `setCompleted` here breaks the chain. The next handler isn't called and processing fails.
 
 
 ### Error Handling
 
-By default the outbox retries publishing a message on error until it reaches `maxAttempts`. This makes applications resilient against unavailability of external systems.
+By default, the outbox retries publishing a message on error until it reaches `maxAttempts`. This makes applications resilient against unavailability of external systems.
 
-Some errors aren't worth retrying — for example, a `400 Bad Request` from a downstream service indicates a *semantic* error that the same payload will reproduce on every attempt. Wrap the processing in a try/catch and call `context.setCompleted()` to remove the message from the queue without further retries:
+Some errors aren't worth retrying, for example, a `400 Bad Request` from a downstream service indicates a *semantic* error that the same payload reproduces on every attempt. Wrap the processing in a try/catch and call `context.setCompleted()` to remove the message from the queue without further retries:
 
 ```java
 @On(service = "<OutboxServiceName>", event = "myEvent")
@@ -258,7 +260,7 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 [Learn more about `EventContext.proceed()`.](./event-handlers/#proceed-on){.learn-more}
 
 > [!note] Callbacks not yet available
-> The `#succeeded` / `#failed` callback events documented for Node.js have no Java equivalent yet — see [Callbacks](../guides/events/event-queues#callbacks) in the common guide.
+> The `#succeeded` / `#failed` callback events documented for Node.js have no Java equivalent yet, see [Callbacks](../guides/events/event-queues#callbacks) in the common guide.
 
 
 ## Configuration
@@ -267,8 +269,8 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 CAP Java ships two default outbox services:
 
-- **`DefaultOutboxOrdered`** — used by [messaging services](messaging) by default. Processes entries in submission order.
-- **`DefaultOutboxUnordered`** — used by the [AuditLog service](auditlog) by default. May process entries in parallel across application instances.
+- **`DefaultOutboxOrdered`** - used by [messaging services](messaging) by default. Processes entries in submission order.
+- **`DefaultOutboxUnordered`** - used by the [AuditLog service](auditlog) by default. Processes entries in parallel across application instances.
 
 The configuration of both can be overridden in *application.yaml*:
 
@@ -291,7 +293,7 @@ cds:
 
 #### Status Lock Timeout
 
-A separate, runtime-global setting controls how long a `processing` entry can be held before another instance may pick it up — useful when an instance crashes mid-processing:
+A separate, runtime-global setting controls how long a `processing` entry can be held before another instance picks it up, which is useful when an instance crashes mid-processing:
 
 ```yaml [srv/src/main/resources/application.yaml]
 cds:
@@ -346,7 +348,7 @@ Before removing a custom outbox from the configuration, ensure no unprocessed en
 ### Shared Databases
 
 > [!warning] Workaround for unsupported scenario
-> CAP Java does not yet support microservices with a shared database out of the box: the two static-named default outboxes (`DefaultOutboxOrdered`, `DefaultOutboxUnordered`) would be shared across all services and introduce conflicts.
+> CAP Java does not yet support microservices with a shared database out of the box: the two static-named default outboxes (`DefaultOutboxOrdered`, `DefaultOutboxUnordered`) are shared across all services and introduce conflicts.
 
 The manual workaround uses isolated custom outboxes with service-specific names:
 
@@ -390,14 +392,14 @@ cds:
         outbox.name: Service1CustomOutboxOrdered
 ```
 
-::: tip Important
-Both deactivating the defaults *and* using unique outbox namespaces are required to achieve service isolation in a shared-DB scenario.
+::: tip Required for isolation
+Both deactivating the defaults *and* using unique outbox namespaces are required to achieve service isolation in a shared-database scenario.
 :::
 
 
 ### Event Versions
 
-In blue/green scenarios, outbox collectors of an older deployment may not be able to process events emitted by a newer deployment. Configure each deployment with an *event version* so older collectors skip newer events:
+In blue/green scenarios, outbox collectors of an older deployment cannot process events emitted by a newer deployment. Configure each deployment with an *event version* so older collectors skip newer events:
 
 [`cds.environment.deployment.version: 2`](./developing-applications/properties#cds-environment-deployment-version)
 
@@ -431,7 +433,7 @@ A startup log entry shows the configured version:
 2024-12-19T11:21:33.253+01:00 INFO 3420 --- [main] cds.services.impl.utils.BuildInfo : application.deployment.version: 1.0.0-SNAPSHOT
 ```
 
-To opt a specific custom outbox out of the version check entirely, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-<key>-checkVersion).
+To bypass the version check for a specific custom outbox, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-<key>-checkVersion).
 
 
 ## Troubleshooting
