@@ -120,8 +120,9 @@ Removed deprecated methods:
 
 | Removed method                                                                                         | Replacement / Explanation                                                                                             |
 |--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
 | `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.reflect.CdsEntity.isAbstract()`                                                                 | always `false`                                                                                                        |
 | `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
 | `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
 | `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
@@ -131,7 +132,6 @@ Removed deprecated methods:
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
 | `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
-| `c.s.c.reflect.CdsEntity.isAbstract() `               | always `false`                                                                               |
 
 ### Changes in the `cds-maven-plugin`
 
