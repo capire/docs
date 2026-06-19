@@ -72,7 +72,7 @@ CAP Java 5.0 increased some minimum required versions:
 | XSUAA (BTP Security Library) | 4.0.0 |
 | Maven | 3.9.14 |
 
-### Adjusted Property Defaults
+### Adjusted Property Defaults { #adjusted-defaults-4-to-5 }
 
 Some property defaults have been adjusted:
 
@@ -80,7 +80,7 @@ Some property defaults have been adjusted:
 | --- | --- | --- | --- |
 | [cds.errors.preferServiceException](../developing-applications/properties#cds-errors-preferServiceException)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
 | [cacheRefreshInterval](../developing-applications/properties#cds-multiTenancy-serviceManager-cacheRefreshInterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
-| [cds.outbox.services.<key>.ordered](../developing-applications/properties#cds-outbox-services-%3Ckey%3E-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| [cds.outbox.services.&lt;key&gt;.ordered](../developing-applications/properties#cds-outbox-services-%3Ckey%3E-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
 | [enforceTransactional](../developing-applications/properties#cds-persistence-changeSet-enforceTransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
 | [cds.query.restrictions.enabled](../developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
@@ -88,7 +88,8 @@ Some property defaults have been adjusted:
 | [cds.sql.hana.search.fuzzy](../developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
 | [cds.sql.toOnePath.mode](../developing-applications/properties#cds-sql-toOnePath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
-### Deprecated Properties
+
+### Deprecated Properties { #deprecated-properties-4-to-5 }
 
 The following properties have been deprecated and might be removed in a future major version:
 
@@ -98,7 +99,7 @@ The following properties have been deprecated and might be removed in a future m
 | [cds.outbox.inMemory.emitDuringChangeSetContext](../developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 | [cds.outbox.inMemory.enabled](../developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
-### Removed Properties
+### Removed Properties { #removed-properties-4-to-5 }
 
 The following table gives an overview about the removed properties:
 
@@ -106,8 +107,8 @@ The following table gives an overview about the removed properties:
 | --- | --- |
 | `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
 | `cds.mcp.autoConfig` | Replaced by `cds.mcp.autoWired`. |
-| `cds.multiTenancy.serviceManager.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
-| `cds.multiTenancy.serviceManager.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
+| `cds.multiTenancy.serviceManager` `.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
+| `cds.multiTenancy.serviceManager` `.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
 | `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
@@ -121,18 +122,18 @@ Removed deprecated methods:
 
 | Removed method                                                                                         | Replacement / Explanation                                                                                             |
 |--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
-| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.feature.ucl.services.AssignEventContext` `.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.feature.ucl.services.AssignEventContext` `.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
 | `c.s.c.reflect.CdsEntity.isAbstract()`                                                                 | always `false`                                                                                                        |
-| `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
-| `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
-| `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
-| `c.s.c.services.mt.SaaSRegistryDependency.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
-| `c.s.c.services.ServiceExceptionUtils.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.getAppId()`                                                  | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.getAppName()`                                                | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
+| `c.s.c.services.ServiceExceptionUtils` `.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
 
 ### Changes in the `cds-maven-plugin`
 
