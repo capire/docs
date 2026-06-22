@@ -37,10 +37,10 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_5.0
 ```
 
-Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_5.0` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
