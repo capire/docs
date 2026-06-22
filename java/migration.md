@@ -37,21 +37,21 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.recipes.Cap_4.9
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
 ```
 
-Here, the *recipe* `com.sap.cds.services.recipes.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
-The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.recipes.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 |[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
 |[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
-|[com.sap.cds.services.recipes.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -67,33 +67,57 @@ CAP Java 5.0 increased some minimum required versions:
 
 | Dependency | Minimum Version |
 | --- | --- |
-| Spring Boot | 4.0 |
+| Java / JDK | 21 |
+| Spring Boot | 4.1 |
 | XSUAA (BTP Security Library) | 4.0.0 |
-| Maven | 3.9.10 |
+| Maven | 3.9.14 |
 
-<!-- ### Adjusted Property Defaults
+### Adjusted Property Defaults
+<div id="adjusted-defaults-4-to-5" />
 
 Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| `abc` | false | true | Any description. |
+| [cds.errors.preferServiceException](./developing-applications/properties#cds-errors-preferServiceException)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
+| [cacheRefreshInterval](./developing-applications/properties#cds-multiTenancy-serviceManager-cacheRefreshInterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
+| [cds.outbox.services.&lt;key&gt;.ordered](./developing-applications/properties#cds-outbox-services-%3Ckey%3E-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| [enforceTransactional](./developing-applications/properties#cds-persistence-changeSet-enforceTransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
+| `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
+| [cds.query.restrictions.enabled](./developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
+| [cds.security.authentication.mode](./developing-applications/properties#cds-security-authentication) | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
+| [cds.sql.hana.search.fuzzy](./developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
+| [cds.sql.toOnePath.mode](./developing-applications/properties#cds-sql-toOnePath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
+
 
 ### Deprecated Properties
+<div id="deprecated-properties-4-to-5 " />
 
 The following properties have been deprecated and might be removed in a future major version:
 
-- `abd`
-
-The functionality provided by these properties is enabled by default. This reflects its intended behavior once the properties are deleted in future releases.
+| Deprecated Property | Explanation |
+| --- | --- |
+| `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
+| [cds.outbox.inMemory.emitDuringChangeSetContext](./developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| [cds.outbox.inMemory.enabled](./developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
+<div id="removed-properties-4-to-5 " />
 
 The following table gives an overview about the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `abc` | Any description about replacement | -->
+| `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
+| `cds.mcp.autoConfig` | Replaced by `cds.mcp.autoWired`. |
+| `cds.multiTenancy.serviceManager` `.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
+| `cds.multiTenancy.serviceManager` `.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
+| `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
+| `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
+| `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
+| `cds.sql.search.mode`| Replaced by `cds.sql.search.localized` with value `view` to change the default. `generic` is not supported anymore. |
+| `cds.taskScheduler.enabled` | Replaced by  `cds.outbox.persistent.scheduler.enabled`. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
@@ -101,17 +125,18 @@ Removed deprecated methods:
 
 | Removed method                                                                                         | Replacement / Explanation                                                                                             |
 |--------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `c.s.c.feature.ucl.services.AssignEventContext.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
-| `c.s.c.feature.ucl.services.AssignEventContext.getUclResult()`                                         | `getResult()`                                                                                                         |
-| `c.s.c.services.mt.SaaSRegistryDependency.getAppId()`                                                  | `getXsappname()`                                                                                                      |
-| `c.s.c.services.mt.SaaSRegistryDependency.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
-| `c.s.c.services.mt.SaaSRegistryDependency.getAppName()`                                                | `getXsappname()`                                                                                                      |
-| `c.s.c.services.mt.SaaSRegistryDependency.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
-| `c.s.c.services.ServiceExceptionUtils.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
-| `c.s.c.services.ServiceExceptionUtils.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
+| `c.s.c.feature.ucl.services.AssignEventContext` `.getUclResult()`                                         | `getResult()`                                                                                                         |
+| `c.s.c.feature.ucl.services.AssignEventContext` `.setUclResult(SpiiResult)`                               | `setResult(SpiiResult)`                                                                                               |
+| `c.s.c.reflect.CdsEntity.isAbstract()`                                                                 | always `false`                                                                                                        |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.getAppId()`                                                  | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.setAppId(String appId)`                                      | `setXsappname(appId)`                                                                                                 |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.getAppName()`                                                | `getXsappname()`                                                                                                      |
+| `c.s.c.services.mt.SaaSRegistryDependency` `.setAppName(String appName)`                                  | `setXsappname(appName)`                                                                                               |
+| `c.s.c.services.ServiceExceptionUtils` `.getLocalizedMessage (String code, Object[] args, Locale locale)` | `getLocalizedMessage(code, args, locale, true)` (pass `true` for `errorStatusFallback` to keep the previous behavior) |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(Path path, CdsElement element)`                 | `MessageTarget.create(path, element)`                                                                                 |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String target)`                                 | `MessageTarget.create(target)`                                                                                        |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String parameter, Class type, Function path)`   | `MessageTarget.create(parameter, type, path)`                                                                         |
+| `c.s.c.services.ServiceExceptionUtils` `.getMessageTarget(String parameter, Function path)`               | `MessageTarget.create(parameter, path)`                                                                               |
 
 ### Changes in the `cds-maven-plugin`
 
@@ -119,7 +144,7 @@ There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-
 
 #### Minimum Maven Version
 
-For security reasons, the minimum required Maven version has been increased to **3.9.10**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.15** at the time of writing.
+For security reasons, the minimum required Maven version has been increased to **3.9.14**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.16** at the time of writing.
 
 #### Removed deprecated goal `install-cdsdk`
 
@@ -144,7 +169,7 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 #### Default JDK Version
 
-The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version hasn't changed and is still 17.
+The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
@@ -156,6 +181,10 @@ The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odat
 
 3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
 
+
+#### Module `com.sap.cds:cds4j-codegen` is removed
+
+The module `cds4j-codegen` is no longer available in CAP 5.0. The module `com.sap.cds:cds-services-code-generator` is delivered instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
