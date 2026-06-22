@@ -397,15 +397,6 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 The CAP Java provides an outbox-based task scheduling mechanism that allows services to emit events on a defined schedule. This enables recurring jobs, delayed execution, and cron-based task automation — all built on top of the existing outbox infrastructure.
 
-
-The scheduling feature consists of two main components:
-
-| Component | Layer | Purpose |
-|-----------|-------|---------|
-| [`Schedule`](#schedule-api) | Technical | Defines *when* and *how often* a task executes |
-| [`Schedulable`](#schedulable-api) | Logical (CDS Service) | Wraps a CDS service so that emitted events are scheduled |
-
-
 ### Schedule API
 
 **Package:** `com.sap.cds.services.outbox`  
@@ -416,8 +407,6 @@ The `Schedule` class defines the timing configuration for an outbox task. It use
 #### Creating a Schedule
 
 ```java
-import com.sap.cds.services.outbox.Schedule;
-import java.time.Duration;
 
 // Immediate execution (default)
 Schedule now = Schedule.NOW;
@@ -477,13 +466,13 @@ Schedule cleanup = Schedule.create()
 Schedule hourly = Schedule.create()
     .taskName("sync-job")
     .every(Duration.ofHours(1));
-outboxService.submit("sync/trigger", message1, hourly);
+outboxService.submit("sync/trigger", message0, hourly);
 
 // Later: change to every 30 minutes — replaces the existing "sync-job"
 Schedule every30Min = Schedule.create()
     .taskName("sync-job")
     .every(Duration.ofMinutes(30));
-outboxService.submit("sync/trigger", message2, every30Min);
+outboxService.submit("sync/trigger", message1, every30Min);
 
 // Result: only ONE task exists with the 30-minute schedule and message2 content
 ```
@@ -508,7 +497,7 @@ Schedule cancelCleanup = Schedule.create()
     .cancel();
 
 // Submit the cancellation
-outboxService.submit("maintenance/cleanup", message, cancelCleanup);
+outboxService.submit("maintenance/cleanup", null, cancelCleanup);
 ```
 
 If no explicit `taskName` is set, the event name is used to identify the task to cancel:
@@ -518,7 +507,7 @@ Schedule cancel = Schedule.create()
     .cancel();
 
 // Cancels the task identified by the event name "sync/trigger"
-outboxService.submit("sync/trigger", message, cancel);
+outboxService.submit("sync/trigger", null, cancel);
 ```
 
 #### Cancellation Behavior
@@ -587,10 +576,6 @@ When you call `OutboxService.outboxed(service)`, the returned proxy **always** i
 ### Creating a Schedulable Service
 
 ```java
-import com.sap.cds.services.outbox.OutboxService;
-import com.sap.cds.services.outbox.Schedulable;
-import com.sap.cds.services.outbox.Schedule;
-import com.sap.cds.services.messaging.MessagingService;
 
 // Option 1: Using the static factory method
 Schedulable<MessagingService> schedulable = Schedulable.of(messagingService, outboxService);
@@ -735,114 +720,22 @@ Scheduled tasks inherit the standard outbox guarantees:
 ---
 
 
-### API Reference Summary
-
-#### Schedule
-
-```java
-public class Schedule {
-    static Schedule NOW;                           // Immediate execution
-    static Schedule create();                      // Builder entry point
-    static Schedule of(Map<String, Object> map);   // Deserialize from map
-
-    Schedule taskName(String name);                // Singleton task name
-    Schedule after(Duration delay);                // Initial delay
-    Schedule every(Duration interval);             // Recurring interval
-    Schedule cron(String expression);              // Spring Cron Expression
-    Schedule cancel();                             // Mark for cancellation
-
-    Optional<String> taskName();                   // Get task name
-    Duration after();                              // Get initial delay
-    Optional<Duration> every();                    // Get recurring interval
-    Optional<String> cron();                       // Get cron expression
-    boolean isCanceled();                          // Check cancellation flag
-    Map<String, Object> toMap();                   // Serialize to map
-}
-```
-
-#### Schedulable
-
-```java
-public interface Schedulable<T extends Service> {
-    static <S extends Service> Schedulable<S> of(S service, OutboxService outbox);
-    T scheduled(Schedule schedule);
-}
-```
-
-#### OutboxService (schedule-related)
-
-```java
-public interface OutboxService extends Service {
-    void submit(String event, OutboxMessage message, Schedule schedule);
-    <S extends Service> S outboxed(S service);  // returned proxy implements Schedulable
-}
-```
-
-
-
-
 ## Outbox Collector Strategies { #outbox-collector-strategies}
 
 In a multitenant environment, outbox entries reside in tenant-specific persistences. The outbox collector is triggered when events are submitted to the outbox. However, if an application instance crashes, unprocessed outbox entries for a tenant are only retried when that tenant next produces a new outbox event. If after a crash, a tenant becomes inactive or has a long period until its next outbox submission, the remaining entries stay unprocessed until the tenant triggers a new event.
 
 To address this, CAP Java provides two scheduler-based strategies that periodically check tenant outboxes for unprocessed entries. Both strategies are disabled by default and must be explicitly enabled.
 
-::: tip Prerequisite
-The outbox scheduler must be enabled for both strategies. Set `cds.outbox.persistent.scheduler.enabled` to `true`.
-:::
-
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-cds:
-  outbox:
-    persistent:
-      scheduler:
-        enabled: true
-```
-:::
-
-### All-Tenants Task { #all-tenants-task}
-
-The all-tenants task periodically iterates over **all** tenant outboxes and triggers the collector for each tenant. It acts as a safety net to ensure no outbox entries are missed, regardless of tenant activity.
-
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-cds:
-  outbox:
-    persistent:
-      scheduler:
-        enabled: true
-        allTenantsTask:
-          enabled: true
-          startDelay: PT30S
-          interval: PT2H
-          spreadTime: PT15M
-```
-:::
-
-The configuration options are:
-
-- `startDelay` (default `PT30S`): Delay after application startup before the first execution.
-- `interval` (default `PT2H`): Interval between successive executions.
-- `spreadTime` (default `PT15M`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
-
-::: warning Performance consideration
-For applications with a large number of tenants, traversing all tenants can cause significant overhead due to tenant context switches. This may impact application performance. Consider the [Hot-Tenant Task](#hot-tenant-task) as a lighter alternative that only checks recently active tenants.
-:::
-
 ### Hot-Tenant Task { #hot-tenant-task}
 
 Instead of iterating over all tenants, the hot-tenant task tracks which tenants have been recently active and only triggers the outbox collector for those tenants. Lookups are well distributed over time to avoid activity jams.
 
-The hot-tenant task requires the outbox scheduler to be enabled (`cds.outbox.persistent.scheduler.enabled: true`).
-
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
 cds:
   outbox:
     persistent:
       scheduler:
-        enabled: true
         hotTenantTask:
           enabled: true
           maxTaskDelay: PT2H
@@ -873,6 +766,43 @@ If you previously ran with the default MTXs/T0 persistence and switch to a custo
 :::
 
 
+
+### All-Tenants Task { #all-tenants-task}
+
+The all-tenants task periodically iterates over **all** tenant outboxes and triggers the collector for each tenant. It acts as a safety net to ensure no outbox entries are missed, regardless of tenant activity.
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  outbox:
+    persistent:
+      scheduler:
+        enabled: true
+        allTenantsTask:
+          enabled: true
+          startDelay: PT30S
+          interval: PT2H
+          spreadTime: PT15M
+```
+:::
+
+The configuration options are:
+
+- `startDelay` (default `PT30S`): Delay after application startup before the first execution.
+- `interval` (default `PT2H`): Interval between successive executions.
+- `spreadTime` (default `PT15M`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
+
+::: warning Performance consideration
+For applications with a large number of tenants, traversing all tenants can cause significant overhead due to tenant context switches. This may impact application performance. Consider the [Hot-Tenant Task](#hot-tenant-task) as a lighter alternative that only checks recently active tenants.
+:::
+
+
+::: tip Prerequisite
+Both strategies require the outbox scheduler to be enabled. By default, `cds.outbox.persistent.scheduler.enabled` is set to `true`. Set this property to false if you want to disable outbox scheduling.
+:::
+
+
+
 ## Outbox Dead Letter Queue
 
 The transactional outbox tries to process each entry a specific number of times. The number of attempts is configurable per outbox by setting the configuration `cds.outbox.services.<key>.maxAttempts`.
@@ -883,7 +813,7 @@ Once the maximum number of attempts is exceeded, the corresponding entry is not 
 
 ::: warning Changing configuration between deployments
 
-It's possible to increase the value of the configuration `cds.outbox.services.<key>.maxAttempts` in between of deployments. Older entries which have reached their max attempts in the past would be retried automatically after deployment of the new microservice version. If the dead letter queue has a large size, this leads to unintended load on the system.
+Both strategies require the outbox scheduler to be enabled. Scheduling is enabled by default `cds.outbox.persistent.scheduler.enabled=true`. Ensure that this property is not set to `false`, as disabling the scheduler prevents outbox messages scheduling.
 
 :::
 
