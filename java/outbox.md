@@ -433,7 +433,7 @@ Schedule cronBased = Schedule.create()
 
 | Method | Description | Default |
 |--------|-------------|---------|
-| `taskName(String)` | Explicitly names the task, making it a **singleton** with **upsert** semantics (see [Named Tasks](#named-singleton-tasks)) | Event name (for scheduled tasks) |
+| `as(String)` | Explicitly names the task, making it a **singleton** with **upsert** semantics (see [Named Tasks](#named-singleton-tasks)) | Event name (for scheduled tasks) |
 | `after(Duration)` | Initial delay before first execution | `Duration.ZERO` |
 | `every(Duration)` | Delay between recurring executions (after each successful run) | None (single execution) |
 | `cron(String)` | Spring Cron Expression for recurring execution | None |
@@ -449,28 +449,28 @@ Schedule cronBased = Schedule.create()
 
 All scheduled tasks (using any `Schedule` other than `Schedule.NOW`) are **singletons**. The task name determines the outbox message ID, ensuring only one active instance per name exists at any time.
 
-- If an explicit `taskName` is set via `.taskName(...)`, it is used as the task name.
-- If no explicit `taskName` is set, the **event name** is used as the task name.
+- If an explicit name is set via `.as(...)`, it is used as the task name.
+- If no explicit name is set, the **event name** is used as the task name.
 
 Re-submitting a task with the same name **replaces** the existing entry entirely — the schedule, message content, and execution timestamp are all updated to reflect the latest submission. This follows **last-write-wins** semantics.
 
 ```java
 // Only one "daily-cleanup" task will exist, regardless of how often this code runs
 Schedule cleanup = Schedule.create()
-    .taskName("daily-cleanup")
+    .as("daily-cleanup")
     .cron("0 0 2 * * *"); // daily at 2 AM
 ```
 
 ```java
 // Initial submission: run every hour
 Schedule hourly = Schedule.create()
-    .taskName("sync-job")
+    .as("sync-job")
     .every(Duration.ofHours(1));
 outboxService.submit("sync/trigger", message0, hourly);
 
 // Later: change to every 30 minutes — replaces the existing "sync-job"
 Schedule every30Min = Schedule.create()
-    .taskName("sync-job")
+    .as("sync-job")
     .every(Duration.ofMinutes(30));
 outboxService.submit("sync/trigger", message1, every30Min);
 
@@ -482,7 +482,7 @@ outboxService.submit("sync/trigger", message1, every30Min);
 The upsert mechanism is safe for concurrent submissions. If a named task is re-submitted while it is currently being processed, the new submission is preserved and will be executed according to the updated schedule after the current execution completes.
 
 ::: warning
-If you need multiple independent tasks for the same event (e.g., per-user reminders), you **must** set an explicit `taskName` to distinguish them. Without it, all submissions for the same event share one task name and re-submissions replace the existing task.
+If you need multiple independent tasks for the same event (e.g., per-user reminders), you **must** set an explicit name via `.as(...)` to distinguish them. Without it, all submissions for the same event share one task name and re-submissions replace the existing task.
 :::
 
 
@@ -493,14 +493,14 @@ Named tasks can be cancelled:
 
 ```java
 Schedule cancelCleanup = Schedule.create()
-    .taskName("daily-cleanup")
+    .as("daily-cleanup")
     .cancel();
 
 // Submit the cancellation
 outboxService.submit("maintenance/cleanup", null, cancelCleanup);
 ```
 
-If no explicit `taskName` is set, the event name is used to identify the task to cancel:
+If no explicit name is set via `.as(...)`, the event name is used to identify the task to cancel:
 
 ```java
 Schedule cancel = Schedule.create()
@@ -522,7 +522,7 @@ When a cancellation is submitted, the named task is **deleted** from the outbox 
 | Currently running execution | **Completes** — not interrupted |
 | At most one additional execution | Possible if the task was already picked up for processing |
 | Cancelling a non-existent task | Silent no-op (no error thrown) |
-| Cancellation without explicit `taskName` | Cancels the task identified by the event name |
+| Cancellation without explicit name | Cancels the task identified by the event name |
 
 
 #### Cron Expression Syntax
@@ -615,7 +615,7 @@ private MessagingService messagingService;
 
 public void setupRecurringSync() {
     Schedule every10Min = Schedule.create()
-        .taskName("data-sync")
+        .as("data-sync")
         .every(Duration.ofMinutes(10));
 
     MessagingService scheduled = Schedulable.of(messagingService, outboxService)
@@ -631,7 +631,7 @@ public void setupRecurringSync() {
 ```java
 public void scheduleReminder(String userId) {
     Schedule in24Hours = Schedule.create()
-        .taskName("reminder-" + userId) // explicit name ensures one task per user
+        .as("reminder-" + userId) // explicit name ensures one task per user
         .after(Duration.ofHours(24));
 
     MessagingService scheduled = Schedulable.of(messagingService, outboxService)
@@ -647,7 +647,7 @@ public void scheduleReminder(String userId) {
 ```java
 public void setupDailyReport() {
     Schedule dailyAt6AM = Schedule.create()
-        .taskName("daily-report")
+        .as("daily-report")
         .cron("0 0 6 * * *");
 
     MessagingService scheduled = Schedulable.of(messagingService, outboxService)
@@ -662,7 +662,7 @@ public void setupDailyReport() {
 ```java
 public void stopDailyReport() {
     Schedule cancel = Schedule.create()
-        .taskName("daily-report")
+        .as("daily-report")
         .cancel();
 
     // Submit the cancellation through the outbox
@@ -679,7 +679,7 @@ public void submitScheduledMessage() {
     OutboxMessage message = createOutboxMessage();
 
     Schedule schedule = Schedule.create()
-        .taskName("cleanup-job")
+        .as("cleanup-job")
         .after(Duration.ofMinutes(5))
         .every(Duration.ofHours(1));
 
