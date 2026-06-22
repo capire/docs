@@ -14,6 +14,8 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 {{ $frontmatter.synopsis }}
 
+[Before you continue reading, make sure to know about models in CAP.](../guides/domain-modeling){.learn-more}
+
 ## The CDS Model
 
 The interface `CdsModel` represents the complete CDS model of the CAP application and is the starting point for the introspection.
