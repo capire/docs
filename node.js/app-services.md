@@ -55,13 +55,12 @@ class cds.ApplicationService extends cds.Service {
     const generics = //... all static methods with prefix 'handle_'
     for (let each of generics) this.constructor[each].call(this)
     // per-request handlers — assigned unless a subclass already defined a static handle_* for it
-    this.handle_authorization ??= get_handle_authorization.call(this)
-    this.handle_etags ??= get_handle_etags.call(this)
-    this.handle_validations ??= get_handle_validations.call(this)
-    this.handle_media_type ??= get_handle_media_type.call(this)
-    this.handle_temporal_data ??= get_handle_temporal_data.call(this)
-    this.handle_paging ??= get_handle_paging.call(this)
-    this.handle_sorting ??= get_handle_sorting.call(this)
+    if (!generics.has('handle_authorization'))
+      this.handle_authorization ??= get_handle_authorization.call(this)
+    if (!generics.has('handle_etags'))
+      this.handle_etags ??= get_handle_etags.call(this)
+    if (!generics.has('handle_validations'))
+      this.handle_validations ??= get_handle_validations.call(this)
     return super.init()
   }
   async handle(req) {
@@ -69,13 +68,7 @@ class cds.ApplicationService extends cds.Service {
     if (this.handle_authorization) await this.handle_authorization(req)
     if (this.handle_etags) await this.handle_etags(req)
     if (this.handle_validations) await this.handle_validations(req)
-    if (req.event === 'READ') {
-      this.handle_temporal_data?.(req)
-      this.handle_paging?.(req)
-      this.handle_sorting?.(req)
-    } else if (req.event === 'UPDATE') {
-      this.handle_media_type?.(req)
-    }
+    // handed over to cds.Service's handle
     return super.handle(req)
   }
   // registered as before/on handlers during init():
@@ -104,29 +97,6 @@ Called per request to perform input validation based on `@assert` annotations, a
 
 
 
-### handle_media_type() {.method}
-
-Called per `UPDATE` request to handle media type / streaming concerns.
-
-
-
-### handle_temporal_data() {.method}
-
-Called per `READ` request to handle temporal data, as documented in the [Temporal Data guide](../guides/domain/temporal-data.md).
-
-
-
-### handle_paging() {.method}
-
-Called per `READ` request to apply paging, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
-
-
-
-### handle_sorting() {.method}
-
-Called per `READ` request to apply implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
-
-
 
 ### _static_ handle_fiori() {.method}
 
@@ -142,7 +112,7 @@ Registers on handlers for all CRUD operations including *deep* CRUD during `init
 
 ## Overriding Generic Handlers
 
-The per-request handlers (`handle_authorization`, `handle_etags`, `handle_validations`, `handle_media_type`, `handle_temporal_data`, `handle_paging`, `handle_sorting`) are instance properties. You can replace or disable one by assigning to it in `init()`:
+The per-request handlers (`handle_authorization`, `handle_etags`, `handle_validations`) are instance properties. You can replace or disable one by assigning to it in `init()`:
 
 ```js
 class YourService extends cds.ApplicationService {
