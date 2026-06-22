@@ -128,6 +128,34 @@ This method is adding request handlers for handling Fiori Drafts and other Fiori
 This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/served-ootb).
 
 
+### Results of Generic CRUD Handlers
+
+Custom `.on` handlers can return any value. When no custom handler provides a result — that is, when CAP's built-in generic handler runs the CRUD operation — the result follows a consistent shape:
+
+| Operation | Return value |
+|-----------|-------------|
+| **READ** | `object[]` — the matching records, or a single `object \| null` for singleton requests |
+| **INSERT** / **CREATE** | An array of primary-key objects of the inserted rows, with `.affected` set to the number of rows written |
+| **UPDATE** / **UPSERT** / **DELETE** | An empty array with `.affected` set to the number of rows changed or deleted |
+
+The `.affected` count is a property directly on the returned array:
+
+```js
+const inserted = await srv.create(Books).entries({title:'Catweazle'})
+inserted[0]      // { ID: '...' }  — primary key of the inserted row
+inserted.affected  // 1
+
+const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
+updated.affected   // number of rows updated
+```
+
+When a write targets a **specific subject** (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row is matched, the handler throws a `404` error. A query using only a `where` clause with zero matches returns `{ affected: 0 }` without throwing.
+
+::: tip Consistent results across local and remote services
+This return shape was introduced in **cds 10** to make results from local services, HCQL-proxied remote services, and database services consistent. To restore the previous behavior, set `{ "features": { "legacy_srv_results": true } }` in your project configuration.
+:::
+
+
 
 ## Overriding Generic Handlers
 
