@@ -607,7 +607,7 @@ The input validation handlers above collect input errors with [`req.error()`](./
 
 ```tsx
 function srv.after (event, entity?, handler: (
-  results : object[] & { affected?: number },
+  results : object[] | any,
   req     : cds.Request
 ))
 ```
@@ -616,9 +616,7 @@ function srv.after (event, entity?, handler: (
 
 Use this method to register handlers to run *after* the `.on` handlers, frequently used to enrich outbound data. The handlers receive two arguments:
 
-- `results` — the outcomes of the `.on` handler which ran before:
-  - For `READ` requests: an `object[]` array of result entries
-  - For write requests (`CREATE`, `UPDATE`, `UPSERT`, `DELETE`): an `object[]` array with an `.affected` property indicating the number of affected rows; for `CREATE`, the array additionally contains the generated primary keys of created entries
+- `results` — the outcomes of the `.on` handler which ran before; see [Results of Generic CRUD Handlers](#results-of-generic-crud-handlers) for the shape returned by the built-in handler
 - `req` — an instance of [`cds.Request`](./events.md#cds-request)
 
 ::: warning
@@ -1037,7 +1035,7 @@ async function srv.handle (
 return : result of executed .on handlers
 ```
 
-This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
+This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. See [Results of Generic CRUD Handlers](#results-of-generic-crud-handlers) for the return value shape of the built-in handler. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
 
 The implementation basically works like that:
 
@@ -1080,6 +1078,34 @@ In effect, for asynchronous event messages, that is, instances of `cds.Event`, s
 
 
 
+
+
+### Results of Generic CRUD Handlers
+
+Custom `.on` handlers can return any value. When no custom handler provides a result — that is, when CAP's built-in generic handler runs the CRUD operation — the result follows a consistent shape:
+
+| Operation | Return value |
+|-----------|-------------|
+| **READ** | `object[]` — the matching records, or a single `object \| null` for singleton requests |
+| **INSERT** / **CREATE** | An array of primary-key objects of the inserted rows, with `.affected` set to the number of rows written |
+| **UPDATE** / **UPSERT** / **DELETE** | An empty array with `.affected` set to the number of rows changed or deleted |
+
+The `.affected` count is a property directly on the returned array:
+
+```js
+const inserted = await srv.create(Books).entries({title:'Catweazle'})
+inserted[0]      // { ID: '...' }  — primary key of the inserted row
+inserted.affected  // 1
+
+const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
+updated.affected   // number of rows updated
+```
+
+When a write targets a **specific subject** (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row is matched, the handler throws a `404` error. A query using only a `where` clause with zero matches returns `{ affected: 0 }` without throwing.
+
+::: tip Consistent results across local and remote services
+This return shape was introduced in **cds 10** to make results from local services, HCQL-proxied remote services, and database services consistent. To restore the previous behavior, set `{ "features": { "legacy_srv_results": true } }` in your project configuration.
+:::
 
 
 ### srv. foreach (entity) {.method}
@@ -1158,7 +1184,7 @@ srv.update('Books',...)...       --> UPDATE.entity ('Books',...)...
 srv.delete('Books',...)...       --> DELETE.from ('Books',...)...
 ```
 
-You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. Here are some examples:
+You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. See [Results of Generic CRUD Handlers](#results-of-generic-crud-handlers) for the return value shape. Here are some examples:
 
 ```js
 await srv.read(Books,201)
