@@ -169,7 +169,7 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database. 
+The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database.
 
 For Java, use the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments). For Node.js, this is supported by the standard plugin.
 
@@ -438,11 +438,6 @@ Available for:
 
 <div id="planned-plugins" />
 
-## SAP Build Process Automation <Beta />
-
-The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Build Process Automation. It provides annotations and a programmatic API for working with processes. Use it to manage the lifecycle of processes — for example, to start, cancel, suspend, or resume them — and to retrieve information about running and finished processes.
-
-[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
 
 ## Data Inspector {#data-inspector}
 
