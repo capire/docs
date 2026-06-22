@@ -738,13 +738,13 @@ cds:
       scheduler:
         hotTenantTask:
           enabled: true
-          maxTaskDelay: PT2H
+          maxTaskDelay: 2h
 ```
 :::
 
 The configuration options are:
 
-- `maxTaskDelay` (default `PT2H`): The maximum time to wait after a tenant event before checking that tenant's outbox. Lookups are distributed within this window to spread the load evenly.
+- `maxTaskDelay` (default `2h`): The maximum time to wait after a tenant event before checking that tenant's outbox. Lookups are distributed within this window to spread the load evenly.
 
 #### Persistence for Hot-Tenant Tracking
 
@@ -780,17 +780,17 @@ cds:
         enabled: true
         allTenantsTask:
           enabled: true
-          startDelay: PT30S
-          interval: PT2H
-          spreadTime: PT15M
+          startDelay: 30s
+          interval: 2h
+          spreadTime: 15m
 ```
 :::
 
 The configuration options are:
 
-- `startDelay` (default `PT30S`): Delay after application startup before the first execution.
-- `interval` (default `PT2H`): Interval between successive executions.
-- `spreadTime` (default `PT15M`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
+- `startDelay` (default `30s`): Delay after application startup before the first execution.
+- `interval` (default `2h`): Interval between successive executions.
+- `spreadTime` (default `15m`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
 
 ::: warning Performance consideration
 For applications with a large number of tenants, traversing all tenants can cause significant overhead due to tenant context switches. This may impact application performance. Consider the [Hot-Tenant Task](#hot-tenant-task) as a lighter alternative that only checks recently active tenants.
