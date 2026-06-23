@@ -45,113 +45,124 @@ module.exports = class AdminService extends cds.ApplicationService {
 
 
 
-### Generic Handlers in `srv.init()`
+### Generic Handlers
 
-Generic handlers are registered by via respective class methods documented below in `cds.ApplicationService.prototype.init()` like so:
+`cds.ApplicationService` overrides `srv.handle(req)` to call several per-request handler functions directly — inline, before delegating to `super.handle(req)`. These are assigned as instance properties during `init()`:
 
 ```tsx
 class cds.ApplicationService extends cds.Service {
   init() {
-    const generics = //... all static method with prefix 'handle_'
-    for (let each of generics) this[each].call(this)
+    const generics = //... all static methods with prefix 'handle_'
+    for (let each of generics) this.constructor[each].call(this)
+    // per-request handlers — assigned unless a subclass already defined a static handle_* for it
+    if (!generics.has('handle_authorization'))
+      this.handle_authorization ??= get_handle_authorization.call(this)
+    if (!generics.has('handle_etags'))
+      this.handle_etags ??= get_handle_etags.call(this)
+    if (!generics.has('handle_validations'))
+      this.handle_validations ??= get_handle_validations.call(this)
     return super.init()
   }
-  static handle_authorization() {...}
-  static handle_etags() {...}
-  static handle_validations() {...}
-  static handle_temporal_data() {...}
-  static handle_localized_data() {...}
-  static handle_managed_data() {...}
-  static handle_paging() {...}
+  async handle(req) {
+    // called directly per request:
+    if (this.handle_authorization) await this.handle_authorization(req)
+    if (this.handle_etags) await this.handle_etags(req)
+    if (this.handle_validations) await this.handle_validations(req)
+    // handed over to cds.Service's handle
+    return super.handle(req)
+  }
+  // registered as before/on handlers during init():
   static handle_fiori() {...}
   static handle_crud() {...}
 }
 ```
 
-> The reason we used `static` methods was to **(a)** give you an easy way of overriding and adding new generic handlers / features, and **(b)** without getting into conflicts with instance methods of subclasses.
+
+
+### handle_authorization() {.method}
+
+Called per request to perform authorization checks, as documented in the [Authorization guide](../guides/security/authorization.md).
 
 
 
-### _static_ handle_authorization() {.method}
+### handle_etags() {.method}
 
-This method is adding request handlers for initial authorization checks, as documented in the [Authorization guide](../guides/security/authorization.md).
-
-
-
-### _static_ handle_etags() {.method}
-
-This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/served-ootb#concurrency-control).
+Called per request to perform concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/served-ootb#concurrency-control).
 
 
 
-### _static_ handle_validations() {.method}
+### handle_validations() {.method}
 
-This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/services/constraints).
+Called per request to perform input validation based on `@assert` annotations, as documented in the [Providing Services guide](../guides/services/constraints).
 
-
-
-
-### _static_ handle_temporal_data() {.method}
-
-This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/domain/temporal-data.md).
-
-
-
-
-### _static_ handle_localized_data() {.method}
-
-This method is adding request handlers for handling localized data, as documented in the [Localized Data guide](../guides/uis/localized-data.md).
-
-
-
-
-### _static_ handle_managed_data() {.method}
-
-This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/index#managed-data).
-
-
-
-### _static_ handle_paging() {.method}
-
-This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
 
 
 
 ### _static_ handle_fiori() {.method}
 
-This method is adding request handlers for handling Fiori Drafts and other Fiori-specifics, as documented in the [Serving Fiori guide](../guides/uis/fiori.md).
+Registers before/on handlers for Fiori Drafts and other Fiori-specifics during `init()`, as documented in the [Serving Fiori guide](../guides/uis/fiori.md).
 
 
 
 ### _static_ handle_crud() {.method}
 
-This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/served-ootb).
+Registers on handlers for all CRUD operations including *deep* CRUD during `init()`, as documented in the [Providing Services guide](../guides/services/served-ootb).
 
 
 
 ## Overriding Generic Handlers
 
-You can override some of these methods in subclasses, for example to skip certain generic features, or to add additional ones. For example like that:
+The per-request handlers (`handle_authorization`, `handle_etags`, `handle_validations`) are instance properties. You can replace or disable one by assigning to it in `init()`:
 
 ```js
 class YourService extends cds.ApplicationService {
-  static handle_validations() {
-    // Note: this is an instance of YourService here:
-    this.on('CREATE','*', req => {...})
-    return super.handle_validations()
+  init() {
+    const result = super.init()
+    // replace with a no-op to skip validations entirely:
+    this.handle_validations = null
+    // or wrap the default:
+    const orig = this.handle_validations
+    this.handle_validations = async (req) => {
+      // run before default validations
+      if (req.data.someField === 'forbidden') req.reject(400, 'Not allowed')
+      return orig?.(req)
+    }
+    return result
   }
 }
 ```
 
->
+Alternatively, define a **static** `handle_*` on your subclass. If found, the built-in instance function is skipped entirely, and your static method is called during `init()` instead (with `this` bound to the instance), where you can register `before`/`on` handlers as usual:
+
+```js
+class YourService extends cds.ApplicationService {
+  static handle_validations() {
+    // 'this' is the service instance — register handlers directly
+    this.before('CREATE', '*', req => { /*...*/ })
+  }
+}
+```
+
+For `handle_fiori` and `handle_crud`, which remain `static` and register event handlers during `init()`, override them the same way:
+
+```js
+class YourService extends cds.ApplicationService {
+  static handle_fiori() {
+    super.handle_fiori.call(this) // keep standard Fiori support
+    this.before('SAVE', '*', req => { /*...*/ })
+  }
+}
+```
 
 ## Adding Generic Handlers
 
-You can also add own sets of generic handlers to all instances of `cds.ApplicationService`, and subclasses thereof, by simply adding a new class method prefixed with `handle_` like so:
+You can add your own sets of generic handlers to all instances of `cds.ApplicationService` by adding a new **static** method prefixed with `handle_`:
 
 ```js
 const cds = require('@sap/cds')
-cds.ApplicationService.handle_log_events = cds.service.impl (function(){
+cds.ApplicationService.handle_log_events = function() {
   this.on('*', req => console.log(req.event))
-})
+}
 ```
+
+Static `handle_*` methods are called during `init()` with `this` bound to the service instance, so you can register event handlers directly.
