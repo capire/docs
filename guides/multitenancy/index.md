@@ -838,7 +838,7 @@ If you start with a multitenant application that's configured to use to SAP HANA
 
 For SAP HANA TMS v2, you also need to specify the database ID of the database that you plan to use for your tenant containers. You can specify this using the [`cds.xt.DeploymentService` configuration](/@external/guides/multitenancy/mtxs#deployment-config).
 
-This is only the default database ID. If you want to specify different database IDs per tenant, you need to [add the database ID to the payload of the individual subscription using a handler](/@external/guides/multitenancy/mtxs#example-handler-for-saasprovisioningservice).
+This is only the default database ID. If you want to specify different database IDs for a tenant HDI container, you need to [add the database ID to the payload of the individual subscription using a handler](/@external/guides/multitenancy/mtxs#example-handler-for-saasprovisioningservice).
 
 To keep the application configuration agnostic, we recommend adding the <Config label="database_id" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config> configuration as an environment variable to the MTX service in _mta.yaml_:
 ```yaml{6-17}
