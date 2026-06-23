@@ -54,7 +54,9 @@ The following table lists the individual recipes provided by CAP for APIs that h
 |[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
 |com.sap.cds.services.migrations.Cap_4.9_Properties|Replaces deprecated application properties with their CAP Java 4.9 equivalents (for example `cds.mcp.autoConfig.*` &rarr; `cds.mcp.autoWired.*`, `cds.taskScheduler.enabled` &rarr; `cds.outbox.persistent.scheduler.enabled`).|4.9.0|
 |[com.sap.cds.services.migrations.Cap_5.0_Properties](#removed-properties-4-to-5)|Removes application properties that are no longer supported in CAP Java 5.0 and have no replacement (for example `cds.errors.combined`, `cds.sql.collate`, `cds.sql.hana.optimizationMode`, `cds.odataV4.searchMode`, `cds.odataV2.searchMode`, and the removed `cds.multiTenancy.serviceManager.*` flags).|5.0.0|
-|[com.sap.cds.services.migrations.Cap_5.0_OutboxOrdered](#adjusted-defaults-4-to-5)|Adds `ordered: true` to every custom entry under `cds.outbox.services` (except the built-in `DefaultOutboxOrdered`/`DefaultOutboxUnordered`) to preserve the previous behavior, as the default of `cds.outbox.services.<name>.ordered` changes from `true` to `false` in CAP Java 5.0.|5.0.0|
+|com.sap.cds.services.migrations.SearchModeProperty|Migrates the legacy `cds.sql.search.mode` property to `cds.sql.search.localized`. Values `localized-view` and `generic` are mapped to `view`; `localized-association` causes the property to be removed.|5.0.0|
+|com.sap.cds.services.migrations.MigrateCdsMavenPluginConfig|Migrates the `cds-maven-plugin` configuration to CAP Java 5.0: removes configuration elements no longer supported by the plugin and aligns the `@sap/cds-dk` version with the cds-services release shipping this recipe.|5.0.0|
+|[com.sap.cds.services.migrations.CustomOutboxOrdered](#adjusted-defaults-4-to-5)|Adds `ordered: true` to every custom entry under `cds.outbox.services` (except the built-in `DefaultOutboxOrdered`/`DefaultOutboxUnordered`) to preserve the previous behavior, as the default of `cds.outbox.services.<name>.ordered` changes from `true` to `false` in CAP Java 5.0.|5.0.0|
 
 In addition, the following umbrella recipes are provided per release. Each one includes all individual recipes for APIs deprecated in this AND previous releases, plus Maven dependency upgrades for all CAP Java modules to the matching version. Run the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
 
@@ -62,7 +64,7 @@ In addition, the following umbrella recipes are provided per release. Each one i
 |--------|-----------|---------------|
 |com.sap.cds.services.migrations.Cap_4.8|Migrates an application to CAP Java SDK 4.8. Includes `MigrateStatements` and upgrades all CAP Java Maven dependencies to `4.8.x`.|4.8.0|
 |com.sap.cds.services.migrations.Cap_4.9|Migrates an application to CAP Java SDK 4.9. Includes `Cap_4.8`, `UclMigration`, `MigrateSaasRegistryDependency`, `ServiceExceptionUtils`, `Cap_4.9_Properties`, and upgrades all CAP Java Maven dependencies to `4.9.x`.|4.9.0|
-|com.sap.cds.services.migrations.Cap_5.0|Migrates an application to CAP Java SDK 5.0. Includes `Cap_4.9`, `Cap_5.0_Properties`, `Cap_5.0_OutboxOrdered`, and upgrades all CAP Java Maven dependencies to `5.0.x`.|5.0.0|
+|com.sap.cds.services.migrations.Cap_5.0|Migrates an application to CAP Java SDK 5.0. Includes `Cap_4.9`, `Cap_5.0_Properties`, `MigrateCdsMavenPluginConfig`, `CustomOutboxOrdered`, `SearchModeProperty`, and upgrades all CAP Java Maven dependencies to `5.0.x`.|5.0.0|
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
