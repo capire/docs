@@ -303,7 +303,8 @@ Schedulable.of(xflights, outbox)
 
 The `schedule()` method queues like `cds.queued(srv).send(event, data)`, that is within the current transaction and dispatched after commit, but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It also accepts optional timing:
 
-```js
+::: code-group
+```js [Node.js]
 // Execute once, as soon as possible
 await xflights.schedule('cleanup', { olderThan: '30d' })
 
@@ -320,14 +321,42 @@ await xflights.schedule('replicate', { entity: 'Airports' })
 // Remove a previously scheduled task
 await xflights.unschedule('replicate')
 ```
+```java [Java]
+@Autowired
+OutboxService outbox;
 
-`.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`.
-`.every()` accepts the same plus a five-field cron expression.
-The fluent calls can be combined in any order. `.as()` is typically chained last.
+// Execute once, as soon as possible
+outbox.submit("cleanup", message, Schedule.NOW);
+
+// Execute once, after a delay
+outbox.submit("cleanup", message,
+  Schedule.create().after(Duration.ofHours(1))); // [!code highlight]
+
+// Execute repeatedly
+outbox.submit("replicate", message,
+  Schedule.create().every(Duration.ofMinutes(10))); // [!code highlight]
+
+// Execute repeatedly on a cron expression (6-field Spring syntax)
+outbox.submit("replicate", message,
+  Schedule.create().cron("0 */10 * * * *")); // [!code highlight]
+
+// Remove a previously scheduled task
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().cancel());
+```
+:::
+
+**Node.js** — `.after()` accepts milliseconds or a time string (`'1s'`, `'10m'`, `'1h'`). `.every()` accepts the same plus a five-field cron expression. Fluent calls can be combined in any order; `.as()` is typically chained last.
+
+**Java** — `after(Duration)` and `every(Duration)` accept a `java.time.Duration`. `cron(String)` uses the six-field [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (second minute hour day month weekday). `cron` is mutually exclusive with `after`/`every`; `after` and `every` may be combined.
+
+> [!note] `every` is a post-execution delay
+> The interval defined by `.every()` is applied *after* a successful execution completes — it is not a fixed-rate interval. The next run is scheduled from the moment the previous run finishes, not from when it started.
 
 To schedule the same event with different payloads as independent tasks, give each its own task name with `.as(<name>)`:
 
-```js
+::: code-group
+```js [Node.js]
 // Two independent singleton tasks for the same "replicate" event
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
   .as('replicate-airports') // [!code highlight]
@@ -338,6 +367,30 @@ await xflights.schedule('replicate', { entity: 'Airlines' }).every('1h')
 await xflights.unschedule('replicate-airports')
 await xflights.unschedule('replicate-airlines')
 ```
+```java [Java]
+OutboxMessage airports = OutboxMessage.create();
+airports.setParams(Map.of("entity", "Airports"));
+outbox.submit("replicate", airports,
+  Schedule.create().as("replicate-airports").every(Duration.ofMinutes(10))); // [!code highlight]
+
+OutboxMessage airlines = OutboxMessage.create();
+airlines.setParams(Map.of("entity", "Airlines"));
+outbox.submit("replicate", airlines,
+  Schedule.create().as("replicate-airlines").every(Duration.ofHours(1))); // [!code highlight]
+
+// Each can be removed independently by its task name
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().as("replicate-airports").cancel());
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().as("replicate-airlines").cancel());
+```
+:::
+
+> [!important] Re-submitting replaces both schedule and payload
+> When a named task is re-submitted, both the schedule *and* the payload are replaced. If you only want to update the timing, you still need to provide the full payload. Re-submitting while the task is currently being processed is safe — the updated schedule and payload take effect after the current execution completes.
+
+> [!note] Cancellation semantics
+> Cancelling a scheduled task removes it from the schedule so no future executions occur. A currently running execution **completes** — cancellation is not an interrupt. If the task was already picked up for processing at the moment the cancellation is submitted, at most one additional execution may occur. Cancelling a non-existent task is a silent no-op.
 
 > [!tip] Real-world example: data federation
 > The [data federation guide](../integration/data-federation) uses `srv.schedule().every()` to implement polling-based replication, fetching incremental updates from remote services on a regular interval.

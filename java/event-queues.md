@@ -66,12 +66,12 @@ CAP Java offers two ways to schedule a queued event, both controlled by a `Sched
 
 ```java
 @Autowired
-OutboxService outboxService;  // DefaultOutboxUnordered — injectable without qualifier
+OutboxService outbox;  // DefaultOutboxUnordered — injectable without qualifier
 
 OutboxMessage message = OutboxMessage.create();
 message.setParams(Map.of("entity", "Airports"));
 
-outboxService.submit("replicate", message,
+outbox.submit("replicate", message,
   Schedule.create().every(Duration.ofMinutes(10)));
 ```
 
@@ -79,7 +79,7 @@ outboxService.submit("replicate", message,
 
 ```java
 @Autowired
-OutboxService outboxService;
+OutboxService outbox;
 
 @Autowired
 RemoteService xflights;
@@ -113,36 +113,52 @@ Schedule.create().after(Duration.ofSeconds(10)).every(Duration.ofMinutes(5));
 Schedule.create().cron("0 0 3 * * *");
 ```
 
-`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html). `cron` is mutually exclusive with `after`/`every` — combining them throws `IllegalArgumentException`. `after` and `every` may be combined: the first execution is delayed by `after`, then `every` applies between subsequent runs.
+`after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html). `cron` is mutually exclusive with `after`/`every` — combining them throws `IllegalArgumentException`. `after` and `every` may be combined: the first execution is delayed by `after`, then `every` applies between subsequent runs. Omitting `after` with `every` starts the first execution immediately.
 
 > [!warning] Cron field counts differ between stacks
 > Java cron expressions are **six fields including seconds** (Spring syntax); Node.js cron expressions are **five fields**. A cron string copied between stacks won't behave the same way.
 
-Every scheduled task has a name — by default it inherits the event name, which makes scheduling idempotent: a subsequent submission for the same event name overwrites the previous schedule (tasks are upserted, not deduplicated). Use `.as(name)` explicitly only when you want a custom name different from the event name — for example, to schedule the same event with different payloads as separate, independently-managed tasks:
+> [!note] Cron times are UTC
+> All cron expressions are evaluated in UTC. A cron of `"0 0 8 * * MON-FRI"` means 08:00 UTC, not local time.
+
+Common cron examples (six fields: `second minute hour day month weekday`):
+
+| Expression | Fires |
+|---|---|
+| `0 0 * * * *` | Every hour |
+| `0 */15 * * * *` | Every 15 minutes |
+| `0 0 8 * * MON-FRI` | Weekdays at 08:00 UTC |
+| `0 0 2 * * *` | Daily at 02:00 UTC |
+| `0 0 0 1 * *` | First of every month at midnight |
+
+> [!warning] Never-matching cron expressions
+> A cron that never matches (for example, February 30th) is silently deleted — the task is marked as completed without ever executing.
+
+Every scheduled task has a name — by default it inherits the event name, which makes scheduling idempotent: a subsequent submission for the same event name overwrites the previous schedule (tasks are upserted, not deduplicated). Use `.as(name)` explicitly only when you want a custom name different from the event name — for example, to schedule the same event with different payloads as separate, independently-managed tasks.
 
 ```java
 // Two independent singleton tasks for the same "replicate" event
 OutboxMessage airports = OutboxMessage.create();
 airports.setParams(Map.of("entity", "Airports"));
-outboxService.submit("replicate", airports,
+outbox.submit("replicate", airports,
   Schedule.create().as("replicate-airports").every(Duration.ofMinutes(10)));
 
 OutboxMessage airlines = OutboxMessage.create();
 airlines.setParams(Map.of("entity", "Airlines"));
-outboxService.submit("replicate", airlines,
+outbox.submit("replicate", airlines,
   Schedule.create().as("replicate-airlines").every(Duration.ofHours(1)));
 
 // Each can be removed independently by its task name
-outboxService.submit("replicate", OutboxMessage.create(),
+outbox.submit("replicate", OutboxMessage.create(),
   Schedule.create().as("replicate-airports").cancel());
-outboxService.submit("replicate", OutboxMessage.create(),
+outbox.submit("replicate", OutboxMessage.create(),
   Schedule.create().as("replicate-airlines").cancel());
 ```
 
 To remove a task that uses the default event name, submit a cancellation without `.as()`:
 
 ```java
-outboxService.submit("replicate", OutboxMessage.create(),
+outbox.submit("replicate", OutboxMessage.create(),
   Schedule.create().cancel());
 ```
 
@@ -152,13 +168,13 @@ outboxService.submit("replicate", OutboxMessage.create(),
 The technical API outboxes custom messages for arbitrary events or processing logic. The `OutboxMessage` instance is serialized to JSON and stored in the database, so all data must be JSON-serializable.
 
 ```java
-OutboxService outboxService = runtime.getServiceCatalog()
+OutboxService outbox = runtime.getServiceCatalog()
   .getService(OutboxService.class, "<OutboxServiceName>");
 
 OutboxMessage message = OutboxMessage.create();
 message.setParams(Map.of("name", "John", "lastname", "Doe"));
 
-outboxService.submit("myEvent", message);
+outbox.submit("myEvent", message);
 ```
 
 Register an `@On` handler on the outbox service to perform the processing logic when the message is published:
@@ -275,7 +291,7 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 ```java
 @Autowired
-OutboxService outboxService; // DefaultOutboxUnordered
+OutboxService outbox; // DefaultOutboxUnordered
 ```
 
 `DefaultOutboxOrdered` is used by [messaging services](messaging) by default; it processes entries in submission order.
@@ -334,6 +350,20 @@ cds:
 ```
 :::
 
+The hot-tenant task tracks tenant activity in the provider persistence (MTXs/T0 by default). To use a custom provider persistence instead, set `cds.multiTenancy.provider.persistenceService`:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  multiTenancy:
+    provider:
+      persistenceService: "my-custom-ps"
+```
+:::
+
+> [!warning] Switching provider persistence loses tracked tenants
+> Changing from the default MTXs/T0 persistence to a custom provider persistence discards all currently tracked hot tenants — there is no automatic migration. Plan accordingly before changing this setting.
+
 #### All-Tenants Task
 
 Periodically iterates over **all** tenant outboxes. Acts as a safety net to ensure no entries are missed regardless of tenant activity.
@@ -355,6 +385,9 @@ cds:
 
 > [!warning] Performance for large tenant counts
 > Traversing all tenants can cause significant overhead due to tenant context switches. Consider the hot-tenant task as a lighter alternative.
+
+> [!tip] Prerequisite: outbox scheduler
+> Both strategies require the outbox scheduler to be enabled. The scheduler is enabled by default (`cds.outbox.persistent.scheduler.enabled: true`). Set it to `false` to disable all outbox-based task scheduling across both strategies.
 
 
 ### Custom Outbox Services
