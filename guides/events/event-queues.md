@@ -289,7 +289,7 @@ const xflights = await cds.connect.to('xflights')
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
 ```
 ```java [Java]
-@Autowired @Qualifier("DefaultOutboxUnordered")
+@Autowired
 OutboxService outbox;
 
 @Autowired
