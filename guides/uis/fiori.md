@@ -287,7 +287,7 @@ In essence, the draft choreography defines the following flows:
 - Filling in draft data through a series of _PATCH_ events.
 - **Saving** the draft back to the active entity, or **discarding** it.
 
-Drafts are isolated from any active data until they are saved/activated. When drafts are discarded, they are removed as if they never existed. Draft locks are the mechanism to prevent conflicting changes.
+Drafts are isolated from any active data until they're saved/activated. When drafts are discarded, they're removed as if they never existed. Draft locks serve as the mechanism to prevent conflicting changes.
 
 
 ### Draft Locks
@@ -398,9 +398,9 @@ Select.from(FOO).where(o -> o.ID().eq(201).and(
                             o.IsActiveEntity().eq(false))); //> reads draft
 ```
 
-Alternativley you can define a filtered structured type `activeFoos`, which gives you access to active versions only and then just work with `activeFoos`:
+Alternatively you can define a filtered structured type `activeFoos`, which gives you access to active versions only and then just work with `activeFoos`:
 
-``java
+```java
 Foo_ activeFoos = CQL.entity(FOO).filter(f -> f.isActiveEntity().eq(true)); //> active versions only
 Select.from(activeFoos).byId(201); //> reads active version
 ```
@@ -421,7 +421,7 @@ this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
 this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
 ```
 
-In CAP Java, use an [entity reference](../../java/event-handlers/#entity-reference-arguments) in your handler's method signature which capture the `IsActiveEntity` key component so that you don't have to specify it in your code:
+In CAP Java, use an [entity reference](../../java/event-handlers/#entity-reference-arguments) in your handler's method signature which captures the `IsActiveEntity` key component so that you don't have to specify it in your code:
 
 ```java
 @On(event = TravelService.APPROVE)
