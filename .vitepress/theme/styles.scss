@@ -264,9 +264,10 @@ main .vp-doc {
   .prefer::before { content: 'Prefer: '; color: var(--vp-c-green-1); }
   .avoid::before { content: 'Avoid: '; color: var(--vp-c-red-2); }
 
-  .good, .green { color: var(--vp-c-green-1) };
+  .good, .green { color: var(--vp-c-green-1) }
   .bad, .red { color: var(--vp-c-red-2) }
-  .dimmed { color: var(--vp-c-text-2) };
+  .yellow { color: var(--vp-c-yellow-2) }
+  .dimmed { color: var(--vp-c-text-2) }
 
   .constructor::before { content: 'Constructor: '; color: var(--vp-c-text-2) }
   .annotation::before { content: 'Annotation: '; color: var(--vp-c-text-2) }
