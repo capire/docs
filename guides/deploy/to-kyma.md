@@ -674,3 +674,7 @@ Additionally Cloud Native Buildpacks can be easily plugged together to fulfill m
 [Learn more about Cloud Native Buildpacks Concepts.](https://buildpacks.io/docs/for-platform-operators/concepts/){ .learn-more}
 
 <div id="aftercloudnative" />
+
+## Further reading
+
+If you want to further automate deployment for your CAP applications, see the [CAP Operator](https://github.com/SAP/cap-operator).
