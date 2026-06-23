@@ -15,7 +15,7 @@ In Java, event queues are exposed as **outbox services**. The runtime ships two 
 
 ## Programmatic API
 
-### Outboxing a Service
+### Queueing a Service
 
 Wrap any CAP service with outbox handling. Events triggered on the returned wrapper are stored in the outbox first and executed asynchronously after commit. Relevant information from the `RequestContext` is stored with the event data. The user context is downgraded to a system user context.
 
@@ -72,8 +72,7 @@ OutboxMessage message = OutboxMessage.create();
 message.setParams(Map.of("entity", "Airports"));
 
 outbox.submit("replicate", message,
-  Schedule.create().taskName("replicate-airports")
-    .every(Duration.ofMinutes(10)));
+  Schedule.create().every(Duration.ofMinutes(10)));
 ```
 
 **Option 2 - wrap a service with `Schedulable`** so all subsequent emits use a fixed schedule:
@@ -86,8 +85,7 @@ OutboxService outbox;
 RemoteService xflights;
 
 Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outbox)
-  .scheduled(Schedule.create().taskName("replicate-airports")
-    .every(Duration.ofMinutes(10)));
+  .scheduled(Schedule.create().every(Duration.ofMinutes(10)));
 
 scheduled.emit("replicate", Map.of("entity", "Airports"));
 ```
@@ -100,27 +98,49 @@ Every outboxed service is guaranteed to implement `Schedulable<T>` --- its singl
 
 ```java
 // Execute once, after a delay
-Schedule.create().taskName("cleanup").after(Duration.ofHours(1));
+Schedule.create().after(Duration.ofHours(1));
 
 // Execute repeatedly, with a fixed delay between successful runs
-Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10));
+Schedule.create().every(Duration.ofMinutes(10));
 
 // Execute repeatedly, on a Spring cron expression
-Schedule.create().taskName("nightly-cleanup").cron("0 0 3 * * *");
+Schedule.create().cron("0 0 3 * * *");
 ```
 
 `after` and `every` accept any [`java.time.Duration`](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). `cron` follows the [Spring cron syntax](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html) (six fields including seconds that differs from Node.js's five-field cron). The three are mutually exclusive, combining them throws `IllegalArgumentException`.
 
+> [!warning] Cron field counts differ between stacks
+> Java cron expressions are **six fields including seconds** (Spring syntax); Node.js cron expressions are **five fields**. A cron string copied between stacks won't behave the same way.
+
 A scheduled task with a name is a **singleton**: a subsequent submission with the same task name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent, which is convenient during application startup, where the same registration code runs on every boot. Without a task name, every submission creates a new scheduled entry.
 
-To remove a previously scheduled task, submit a cancellation with the same task name:
+Every scheduled task has a name — by default it inherits the event name, which makes scheduling idempotent: a subsequent submission for the same event name overwrites the previous schedule (tasks are upserted, not deduplicated). Set `taskName(...)` explicitly only when you want a custom name different from the event name — for example, to schedule the same event with different payloads as separate, independently-managed tasks:
+
+```java
+// Two independent singleton tasks for the same "replicate" event
+OutboxMessage airports = OutboxMessage.create();
+airports.setParams(Map.of("entity", "Airports"));
+outbox.submit("replicate", airports,
+  Schedule.create().taskName("replicate-airports").every(Duration.ofMinutes(10)));
+
+OutboxMessage airlines = OutboxMessage.create();
+airlines.setParams(Map.of("entity", "Airlines"));
+outbox.submit("replicate", airlines,
+  Schedule.create().taskName("replicate-airlines").every(Duration.ofHours(1)));
+
+// Each can be removed independently by its task name
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().taskName("replicate-airports").cancel());
+outbox.submit("replicate", OutboxMessage.create(),
+  Schedule.create().taskName("replicate-airlines").cancel());
+```
+
+To remove a task that uses the default event name, submit a cancellation without a custom task name:
 
 ```java
 outbox.submit("replicate", OutboxMessage.create(),
-  Schedule.create().taskName("replicate-airports").cancel());
+  Schedule.create().cancel());
 ```
-
-Cancellation requires a task name - it's how the runtime locates the entry to delete.
 
 
 ### Technical Outbox API
@@ -271,6 +291,8 @@ cds:
 | `maxAttempts` | `10` | Number of unsuccessful emits until the message is ignored. It still remains in the database. |
 | `enabled` | `true` | Set to `false` to disable an outbox service. |
 
+#### Status Lock Timeout
+
 A separate, runtime-global setting controls how long a `processing` entry can be held before another instance picks it up, which is useful when an instance crashes mid-processing:
 
 ```yaml [srv/src/main/resources/application.yaml]
@@ -280,8 +302,6 @@ cds:
       statusLock:
         timeout: PT1H  # default
 ```
-
-The outbox stores the last error in the `lastError` element of `cds.outbox.Messages`.
 
 
 ### Custom Outbox Services

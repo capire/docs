@@ -52,7 +52,7 @@ These are sometimes confused but solve different problems.
 
 The two patterns complement each other: when the dispatch target *is* a message broker, the event queue is the transactional bridge that makes pub/sub safe across the local commit. The [Inbox](#inbox) does the mirror image on the receiving side.
 
-> [!info] Related patterns
+> [!note] Related patterns
 > [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by making an append-only event log the source of truth. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
 
 > [!tip] When <i>not</i> to use event queues
@@ -115,7 +115,7 @@ If the transaction rolls back, no booking request is sent.
 > [!tip] Enabled by default
 > Event queues are enabled by default — there's nothing to install or activate. The persistent queue starts with your application; the configuration shown later is only for tuning.
 
-The `xflights` connection here stands in for any remote service you've configured under `cds.requires`. The complete setup of the *xtravels* application and the *xflights* service it consumes lives in the [@capire/xtravels](https://github.com/capire/xtravels) sample.
+The `xflights` connection here stands in for any remote service you've configured under `cds.requires`. The complete setup of the *xtravels* application and the *xflights* service it consumes lives in the [*@capire/xtravels*](https://github.com/capire/xtravels) sample.
 
 A queued call changes *when* work happens and *what the caller can expect back*:
 
@@ -281,7 +281,7 @@ You can schedule arbitrary work such as data replication, cache refresh, or garb
 
 A scheduled task is identified by its event name and exists only once: a subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated). This makes scheduling idempotent, which is convenient during application startup, where the same registration code runs on every boot.
 
-**Example:** Replicate airport master data from the xflights service every 10 minutes.
+**Example:** Replicate airport master data from the *xflights* service every 10 minutes.
 
 ::: code-group
 ```js [Node.js]
@@ -296,8 +296,7 @@ OutboxService outbox;
 RemoteService xflights;
 
 Schedulable.of(xflights, outbox)
-  .scheduled(Schedule.create().taskName("replicate-airports")
-    .every(Duration.ofMinutes(10)))
+  .scheduled(Schedule.create().every(Duration.ofMinutes(10)))
   .emit("replicate", Map.of("entity", "Airports"));
 ```
 :::
@@ -329,14 +328,15 @@ The fluent calls can be combined in any order. `.as()` is typically chained last
 To schedule the same event with different payloads as independent tasks, give each its own task name with `.as(<name>)`:
 
 ```js
+// Two independent singleton tasks for the same "replicate" event
 await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
-  .as('airports') // [!code highlight]
+  .as('replicate-airports') // [!code highlight]
 await xflights.schedule('replicate', { entity: 'Airlines' }).every('1h')
-  .as('airlines') // [!code highlight]
+  .as('replicate-airlines') // [!code highlight]
 
 // Each can be removed independently by its task name
-await xflights.unschedule('airports')
-await xflights.unschedule('airlines')
+await xflights.unschedule('replicate-airports')
+await xflights.unschedule('replicate-airlines')
 ```
 
 > [!tip] Real-world example: data federation
@@ -345,34 +345,57 @@ await xflights.unschedule('airlines')
 
 ## End-to-End Example
 
-The following example ties together queueing, callbacks, and local state updates.
-It shows a common pattern: create local business data first, then trigger remote work asynchronously, then react to its outcome.
+The following example from [*@capire/xtravels*](https://github.com/capire/xtravels) ties together queueing, callbacks, and local state updates — a choreography-based SAGA pattern across two microservices.
+
+> [!note] Uses an alpha API
+> This example relies on [Callbacks](#callbacks), which are currently `<Alpha />` and Node.js-only.
 
 ```js [srv/travel-service.js]
 const cds = require('@sap/cds')
-const LOG = cds.log('TravelService')
 
 module.exports = class TravelService extends cds.ApplicationService {
   async init() {
+
     const xflights = await cds.connect.to('xflights')
     const qd_xflights = cds.queued(xflights)
+    const messaging = await cds.connect.to('messaging')
 
-    this.after('CREATE', 'Bookings', async (_, req) => {
-      const { flight_ID: flight, flight_date: date } = req.data
-      await qd_xflights.send('POST', 'BookingCreated', { flight, date })
+    const { Flights, Travels } = this.entities
+    const { Bookings } = cds.entities('sap.capire.travels')
+
+    // After saving a Travel, emit a BookingCreated event for each booking.
+    // Travel_ID + Pos are carried as headers so the callbacks can correlate back.
+    this.after('SAVE', Travels, (_, req) => {
+      const { Bookings: bookings = [] } = req.data
+      return Promise.all(bookings.map(booking => {
+        const { Flight_ID: flight, Flight_date: date, Travel_ID, Pos } = booking
+        return qd_xflights.emit('BookingCreated', { flight, date }, { Travel_ID, Pos })
+      }))
     })
 
+    // xflights confirmed the seat — mark the booking as Confirmed
     xflights.after('BookingCreated/#succeeded', async (_, req) => {
-      await UPDATE('Bookings')
-        .set({ status: 'Booked' })
-        .where({ ID: req.data.id })
+      const { Travel_ID, Pos } = req.headers
+      await UPDATE(Bookings, { Travel_ID, Pos }).set({ Status_code: 'C' })
     })
 
+    // xflights rejected the seat (e.g. no availability) — mark as Failed
+    // This is not a rollback: the booking was never confirmed, so there is nothing to undo.
+    // The status is recorded explicitly, leaving it visible for manual resolution or retry.
     xflights.after('BookingCreated/#failed', async (err, req) => {
-      await UPDATE('Bookings')
-        .set({ status: 'BookingFailed' })
-        .where({ ID: req.data.id })
-      LOG.warn(`Flight booking permanently failed: ${err.message}`)
+      const { Travel_ID, Pos } = req.headers
+      await UPDATE(Bookings, { Travel_ID, Pos }).set({ Status_code: 'F' })
+    })
+
+    // Keep the local Flights replica current whenever xflights updates seat counts.
+    // The inbox (inboxed: true on messaging) stores the event before acknowledging the broker,
+    // so it is processed reliably even if xflights is temporarily ahead of xtravels.
+    // FlightUpdated intentionally carries no seat count in its payload — messages can overtake each
+    // other, so we re-read the authoritative current value from xflights instead.
+    messaging.on('FlightUpdated', async (event) => {
+      const { flight_ID: ID, date } = event.data
+      const { free_seats } = await xflights.read(Flights, { ID, date }).columns('free_seats')
+      await UPDATE(Flights, { ID, date }).set({ free_seats })
     })
 
     await super.init()
@@ -380,8 +403,11 @@ module.exports = class TravelService extends cds.ApplicationService {
 }
 ```
 
-This example highlights an important design rule:
-use callbacks or persisted status updates for outcomes, not direct return values.
+The correlation context (`Travel_ID`, `Pos`) is passed as **headers** on the queued emit and available on `req.headers` in the callbacks — the payload itself carries only the business data needed by xflights.
+
+The `FlightUpdated` handler illustrates the inbox pattern: the broker acknowledges delivery as soon as the message is stored, and the re-read from xflights avoids stale data from out-of-order messages.
+
+This example highlights three design rules: use callbacks or persisted status updates for outcomes, not direct return values; carry correlation context in event headers, not in the payload; and re-read authoritative state at processing time rather than trusting the event payload when messages can overtake each other.
 
 
 ## Configuration
@@ -440,7 +466,7 @@ To disable queueing for a specific service in Node.js, set `outboxed: false` on 
 
 ## Operations
 
-This section covers production concerns: how runners coordinate across instances, how authorization carries over the queue boundary, retries, dead letters, and metrics.
+Once event queues are in production, you need to know how runners coordinate across instances, how authorization carries over the queue boundary, what happens when processing fails, how to manage messages that have ended up in the dead letter queue, and how to observe the queue's health.
 
 ### Locking
 
@@ -465,7 +491,23 @@ CAP handles this as follows:
 
 No principal propagation occurs across the queue boundary, by design. That would require CAP to persist authentication tokens in some encrypted form, and those tokens often expire long before the queued work runs.
 
-As a consequence, outbox calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Outbox only those calls that the target system can authorize for a technical user, for example, service-to-service calls that don't depend on the end-user identity. If a queued handler still needs request-time information, encode it in the event payload or derive it from persisted business data.
+*"Privileged mode"* means `@requires` annotations don't gate execution in queued handlers — the runtime grants full service access regardless of the stored user ID. If your handler must enforce the original caller's identity, carry the relevant claims via **payload or headers** at queue time and read them during processing. For scheduled tasks, headers are a natural fit since they stay in-process:
+
+```js
+// Schedule a task, carrying the originating user as a header
+await xflights.schedule('replicate', { entity: 'Airports' }, { requestedBy: req.user.id })
+
+// At processing time — read from headers
+xflights.on('replicate', async (req) => {
+  const { requestedBy } = req.headers
+  // use requestedBy to derive authorization or audit context
+})
+```
+
+> [!warning] Headers are forwarded to the target system
+> When a **queued outbound call** (to a remote service or message broker) is dispatched, CAP forwards the stored headers to the target. Do not carry sensitive data — authentication tokens, personal data, secrets — in headers on outbound calls. For **scheduled tasks**, which are processed in-process and never leave the application, headers are not forwarded and this restriction doesn't apply.
+
+As a consequence, queued calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Queue only those calls that the target system can authorize for a technical user, for example, service-to-service calls that don't depend on the end-user identity.
 
 ### Error Handling
 

@@ -81,25 +81,33 @@ Some services - `cds.MessagingService` and `cds.AuditLogService` - are outboxed 
 `srv.schedule()` queues like `cds.queued(srv).send()`, that is within the current transaction, dispatched after commit, but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
 
 ```js
-await srv.schedule('someEvent', { some: 'message' })                       // execute asap
-await srv.schedule('someEvent', { some: 'message' }).after('1h')           // delay
-await srv.schedule('someEvent', { some: 'message' }).every('10m')   // recurrence
-await srv.schedule('someEvent', { some: 'message' }).every('*/10 * * * *') // cron
+await srv.schedule('someEvent', { some: 'msg' })                       // execute asap
+await srv.schedule('someEvent', { some: 'msg' }).after('1h')           // delay
+await srv.schedule('someEvent', { some: 'msg' }).every('10m')          // recurrence
+await srv.schedule('someEvent', { some: 'msg' }).every('*/10 * * * *') // cron
 
-await srv.unschedule('someEvent')                                          // remove
+await srv.unschedule('someEvent')                                      // remove
 ```
 
 `.after()` accepts milliseconds (as a number) or a time string such as `'1s'`, `'10m'`, `'1h'`. `.every()` accepts the same plus a five-field cron expression.
+
+> [!warning] Cron field counts differ between stacks
+> Java cron expressions are **six fields including seconds** (Spring syntax); Node.js cron expressions are **five fields**. A cron string copied between stacks won't behave the same way.
 
 A scheduled task is identified by its event name and exists only once. A subsequent `schedule()` call with the same name overwrites the previous schedule (tasks are upserted, not deduplicated), which is convenient for idempotent registration during application startup.
 
 To schedule the same event under separate identities (for example, with different payloads), give each its own task name with `.as(<name>)`:
 
 ```js
-await srv.schedule('replicate', { entity: 'Airports' }).as('airports').every('10m')
-await srv.schedule('replicate', { entity: 'Airlines' }).as('airlines').every('1 hour')
+// Two independent singleton tasks for the same "replicate" event
+await srv.schedule('replicate', { entity: 'Airports' }).every('10m')
+  .as('replicate-airports') // [!code highlight]
+await srv.schedule('replicate', { entity: 'Airlines' }).every('1 hour')
+  .as('replicate-airlines') // [!code highlight]
 
-await srv.unschedule('airports')                                           // remove by task name
+// Each can be removed independently by its task name
+await srv.unschedule('replicate-airports')
+await srv.unschedule('replicate-airlines')
 ```
 
 
@@ -136,18 +144,13 @@ Callback handlers must be registered for the specific `#succeeded` or `#failed` 
 > [!note] Node.js only
 > `cds.flush()` is a Node.js API. Both stacks have built-in recovery mechanisms that pick up pending messages automatically.
 
-You rarely need to trigger processing manually. Both single-tenant and multi-tenant runners pick up pending messages automatically. The most common use case is recovery after an application crash, where another emit for the same tenant and service would otherwise be needed to restart processing:
+The background runner picks up pending messages automatically. The main use case for a manual flush is triggering processing immediately after reviving a dead-letter entry — without waiting for the next runner cycle:
 
 ```js
-// Flush a specific queue
-const srv = await cds.connect.to('yourService')
-await cds.flush(srv.name)
-
-// Flush all queues
 await cds.flush()
 ```
 
-The argument is a **queue name** (typically `srv.name`). `cds.flush()` without an argument flushes all queues. The returned promise resolves once a processing pass has completed for the targeted queues. It's safe to call when the runner is already active. The runner's own scheduling logic handles overlap.
+The returned promise resolves once the runner has finished dispatching all currently processable messages and goes idle. Handler failures don't reject it — failed messages are rescheduled for the next retry.
 
 
 ## Configuration
