@@ -35,7 +35,7 @@ Once the transaction succeeds, the messages are read from the database table and
 - If an emit wasn't successful, there will be a retry after some (exponentially growing) waiting time. After a maximum number of attempts, the message is ignored for processing and remains in the database table. Even if the app crashes the messages can be redelivered after successful application startup.
 
 
-CAP Java provides the persistent outbox service `DefaultOutboxUnordered` by default. It is used by the [AuditLog service](../java/auditlog) and registered as the primary Spring bean for `OutboxService`. You can inject it directly without a qualifier:
+CAP Java provides the persistent outbox service `DefaultOutboxUnordered` by default. It's used by the [AuditLog service](../java/auditlog) and registered as the primary Spring bean for `OutboxService`. You can inject it directly without a qualifier:
 
 ```java
 @Autowired
@@ -395,7 +395,7 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 ## Outbox Task Scheduling
 
-The CAP Java provides an outbox-based task scheduling mechanism that allows services to emit events on a defined schedule. This enables recurring jobs, delayed execution, and cron-based task automation — all built on top of the existing outbox infrastructure.
+CAP Java provides an outbox-based task scheduling mechanism that allows services to emit events on a defined schedule. This mechanism enables recurring jobs, delayed execution, and cron-based task automation — all built on top of the existing outbox infrastructure.
 
 ### Schedule API
 
@@ -449,10 +449,10 @@ Schedule cronBased = Schedule.create()
 
 All scheduled tasks (using any `Schedule` other than `Schedule.NOW`) are **singletons**. The task name determines the outbox message ID, ensuring only one active instance per name exists at any time.
 
-- If an explicit name is set via `.as(...)`, it is used as the task name.
+- If an explicit name is set via `.as(...)`, it's used as the task name.
 - If no explicit name is set, the **event name** is used as the task name.
 
-Re-submitting a task with the same name **replaces** the existing entry entirely — the schedule, message content, and execution timestamp are all updated to reflect the latest submission. This follows **last-write-wins** semantics.
+Re-submitting a task with the same name **replaces** the existing entry entirely — the schedule, message content, and execution timestamp are all updated to reflect the latest submission. Replacement follows **last-write-wins** semantics.
 
 ```java
 // Only one "daily-cleanup" task will exist, regardless of how often this code runs
@@ -479,17 +479,17 @@ outboxService.submit("sync/trigger", message1, every30Min);
 
 > **Important:** Both the schedule *and* the message payload are replaced. If you only want to update the timing, you must still provide the full message content.
 
-The upsert mechanism is safe for concurrent submissions. If a named task is re-submitted while it is currently being processed, the new submission is preserved and will be executed according to the updated schedule after the current execution completes.
+The upsert mechanism is safe for concurrent submissions. If a named task is re-submitted while it's currently being processed, the new submission is preserved and will be executed according to the updated schedule after the current execution completes.
 
 ::: warning
-If you need multiple independent tasks for the same event (e.g., per-user reminders), you **must** set an explicit name via `.as(...)` to distinguish them. Without it, all submissions for the same event share one task name and re-submissions replace the existing task.
+If you need multiple independent tasks for the same event (for example, per-user reminders), you **must** set an explicit name via `.as(...)` to distinguish them. Without it, all submissions for the same event share one task name and re-submissions replace the existing task.
 :::
 
 
 
-#### Cancelling a Scheduled Task
+#### Canceling a Scheduled Task
 
-Named tasks can be cancelled:
+Named tasks can be canceled:
 
 ```java
 Schedule cancelCleanup = Schedule.create()
@@ -512,7 +512,7 @@ outboxService.submit("sync/trigger", null, cancel);
 
 #### Cancellation Behavior
 
-When a cancellation is submitted, the named task is **deleted** from the outbox so that no future executions will occur. However, a **currently running execution will complete** — cancellation does not interrupt in-flight processing.
+When a cancellation is submitted, the named task is **deleted** from the outbox so that no future executions occur. However, a **currently running execution will complete** — cancellation doesn't interrupt in-flight processing.
 
 **Key details:**
 
@@ -521,7 +521,7 @@ When a cancellation is submitted, the named task is **deleted** from the outbox 
 | Future executions | Prevented — task is removed from the schedule |
 | Currently running execution | **Completes** — not interrupted |
 | At most one additional execution | Possible if the task was already picked up for processing |
-| Cancelling a non-existent task | Silent no-op (no error thrown) |
+| Canceling a non-existent task | Silent no-op (no error thrown) |
 | Cancellation without explicit name | Cancels the task identified by the event name |
 
 
@@ -553,9 +553,9 @@ The cron expression follows the [Spring Cron Expression](https://docs.spring.io/
 
 **Restrictions:**
 
-- **`cron` is mutually exclusive** with both `after` and `every`. Setting `cron` after `after`/`every` (or vice versa) throws `IllegalArgumentException`.
+- **`cron` cannot be used** with `after` and `every`. Setting `cron` when `after`/`every` is already defined throws `IllegalArgumentException`.
 - **`every` without `after`** starts the first execution immediately (with zero delay), then applies `every` between subsequent executions.
-- **Cron expressions that never match** (e.g., February 30th) are silently discarded — the task is marked as completed without ever executing.
+- **Cron expressions that never match** (for example, February 30th) are silently deleted — the task is marked as completed without ever executing.
 - **All times are evaluated in UTC.**
 
 
@@ -593,7 +593,7 @@ MessagingService scheduled = schedulable.scheduled(
 
 ### Using a Scheduled Service
 
-Once you have a scheduled service instance, use it exactly like the original service. All emitted events will be stored in the outbox with the configured schedule:
+Once you have a scheduled service instance, use it exactly like the original service. All emitted events are stored in the outbox with the configured schedule:
 
 ```java
 // All events emitted to 'scheduled' will follow the defined schedule
@@ -657,7 +657,7 @@ public void setupDailyReport() {
 }
 ```
 
-#### Example 4: Cancelling a Recurring Task
+#### Example 4: Canceling a Recurring Task
 
 ```java
 public void stopDailyReport() {
@@ -708,7 +708,7 @@ For `cron`-based schedules, the next execution time is determined by evaluating 
 
 #### Singleton Behavior
 
-All scheduled tasks are singletons — each task has a name (explicit or derived from the event) and only one active instance per name can exist at a time. Re-submitting a task with the same name **replaces** the existing entry. This is ideal for recurring background jobs that should not overlap.
+All scheduled tasks are singletons — each task has a name (explicit or derived from the event) and only one active instance per name can exist at a time. Re-submitting a task with the same name **replaces** the existing entry. This Behavior is ideal for recurring background jobs that should not overlap.
 
 #### Outbox Guarantees
 
@@ -762,14 +762,14 @@ cds:
 :::
 
 ::: warning
-If you previously ran with the default MTXs/T0 persistence and switch to a custom provider persistence, the currently tracked hot tenants will be lost — there is no automatic migration. Plan accordingly before changing this configuration.
+If you previously ran with the default MTXs/T0 persistence and switch to a custom provider persistence, the currently tracked hot tenants will be lost — there's no automatic migration. Plan accordingly before changing this configuration.
 :::
 
 
 
 ### All-Tenants Task { #all-tenants-task}
 
-The all-tenants task periodically iterates over **all** tenant outboxes and triggers the collector for each tenant. It acts as a safety net to ensure no outbox entries are missed, regardless of tenant activity.
+The all-tenants task periodically iterates over **all** tenant outboxes and triggers the collector for each tenant. It acts as a safety net to ensure that no outbox entries are missed, regardless of tenant activity.
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]
@@ -790,7 +790,7 @@ The configuration options are:
 
 - `startDelay` (default `30s`): Delay after application startup before the first execution.
 - `interval` (default `2h`): Interval between successive executions.
-- `spreadTime` (default `15m`): Time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
+- `spreadTime` (default `15m`): The time span over which individual tenant checks are randomly distributed. This avoids a thundering-herd effect where all tenant outboxes are checked simultaneously.
 
 ::: warning Performance consideration
 For applications with a large number of tenants, traversing all tenants can cause significant overhead due to tenant context switches. This may impact application performance. Consider the [Hot-Tenant Task](#hot-tenant-task) as a lighter alternative that only checks recently active tenants.
