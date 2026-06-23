@@ -2,6 +2,7 @@
 synopsis: >
   API reference documentation for MTX Services.
 search: false
+sitemap: false
 ---
 
 
