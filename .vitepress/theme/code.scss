@@ -16,6 +16,7 @@ main .vp-doc {
     padding: 12px 0 !important;
     code {
       padding: 0 22px !important;
+      white-space: pre-wrap !important;
     }
   }
   div[class*='language-'] > button.copy {
