@@ -484,6 +484,10 @@ If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handsh
 | `event-mesh` | HTTP + webhooks | `enterprise-messaging` |
 | `event-mesh-shared` | AMQP | `enterprise-messaging-shared` |
 
+::: tip Setup via `cds add`
+Use `cds add event-mesh` or `cds add event-mesh-shared` to automatically configure `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors. Both support a `--cloudevents` flag.
+:::
+
 #### `event-mesh`
 
 Same as `enterprise-messaging` except it connects to an Event Mesh in SAP Integration Suite service instance (`event-mesh-message-client`).
@@ -521,9 +525,6 @@ Example:
 
 The configuration options are the same as for [`enterprise-messaging-shared`](#event-mesh-shared).
 
-::: tip Setup via `cds add`
-Use `cds add event-mesh` or `cds add event-mesh-shared` to automatically configure `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors. Both support a `--cloudevents` flag.
-:::
 
 
 ### SAP Integration Suite, Advanced Event Mesh <Beta />  { #advanced-event-mesh }
