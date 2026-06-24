@@ -79,15 +79,15 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| [cds.errors.preferServiceException](./developing-applications/properties#cds-errors-preferServiceException)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
-| [cacheRefreshInterval](./developing-applications/properties#cds-multiTenancy-serviceManager-cacheRefreshInterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
-| [cds.outbox.services.&lt;key&gt;.ordered](./developing-applications/properties#cds-outbox-services-%3Ckey%3E-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
-| [enforceTransactional](./developing-applications/properties#cds-persistence-changeSet-enforceTransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
+| [cds.errors.preferServiceException](./developing-applications/properties#cds-errors-preferserviceexception)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
+| [cacheRefreshInterval](./developing-applications/properties#cds-multitenancy-servicemanager-cacherefreshinterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
+| [cds.outbox.services.&lt;key&gt;.ordered](./developing-applications/properties#cds-outbox-services-key-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| [enforceTransactional](./developing-applications/properties#cds-persistence-changeset-enforcetransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
 | [cds.query.restrictions.enabled](./developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
 | [cds.security.authentication.mode](./developing-applications/properties#cds-security-authentication) | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
 | [cds.sql.hana.search.fuzzy](./developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
-| [cds.sql.toOnePath.mode](./developing-applications/properties#cds-sql-toOnePath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
+| [cds.sql.toOnePath.mode](./developing-applications/properties#cds-sql-toonepath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 
 ### Deprecated Properties
