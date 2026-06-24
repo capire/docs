@@ -164,7 +164,7 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 - `vector_embedding(field, kind?, model?)` -> Vector
 
 > [!warning] HANA and PostgreSQL only
-> Vector functions require SAP HANA Cloud or PostgreSQL with [pgvector](https://github.com/pgvector/pgvector). On SQLite and H2, they are emulated via user-defined functions for local testing.
+> Vector functions require SAP HANA Cloud or PostgreSQL with [pgvector](https://github.com/pgvector/pgvector).
 
 
 ### Aggregate Functions
