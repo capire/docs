@@ -173,14 +173,14 @@ npm add @sap-cloud-sdk/resilience
 
 #### Native Fetch Client <Beta /> {#native-fetch}
 
-As an alternative to SAP Cloud SDK, CAP can use Node.js's built-in `fetch` API for remote service calls. Native fetch is selected per request based on the following rules, in that order:
+As an alternative to SAP Cloud SDK, CAP can use Node.js's built-in `fetch` API for remote service calls. Native fetch is selected per request based on the following rules:
 
-1. If the destination requires features only available in CloudSDK (e.g., BTP Destination Service resolution or non-basic authentication), CloudSDK is always used.
+1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), the SAP Cloud SDK is always used.
 2. If <Config>cds.remote.native_fetch</Config> is explicitly set to `true` or `false`, that setting is used.
 3. Otherwise, native fetch is used when `@sap-cloud-sdk/http-client` is not installed.
 
 ::: warning Current limitations
-The native fetch client does not yet support named destinations via BTP Destination Service, only [application defined destinations](../services/consuming-services#use-application-defined-destinations). Authentication is limited to `NoAuthentication` and `BasicAuthentication`. CSRF token handling is not yet fully on par with SAP Cloud SDK.
+The native fetch client does not yet support named destinations using the SAP BTP Destination service. Only [application defined destinations](../services/consuming-services#use-application-defined-destinations) are supported. In addition, authentication is limited to `NoAuthentication` and `BasicAuthentication`. CSRF token handling is not yet at parity with SAP Cloud SDK.
 :::
 
 
