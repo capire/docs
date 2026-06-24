@@ -163,6 +163,8 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 - `l2normalize(x)` -> Vector
 - `vector_embedding(field, kind?, model?)` -> Vector
 
+For `vector_embedding`, `kind` defaults to `'DOCUMENT'` and `model` to `'SAP_GXY.20250407'`; use the `vectorEmbeddingDefaultModel` and `vectorEmbeddingHanaDefaultRemoteSource` compiler options to change these defaults.
+
 > [!warning] HANA and PostgreSQL only
 > Vector functions require SAP HANA Cloud or PostgreSQL with [pgvector](https://github.com/pgvector/pgvector). On SQLite and H2, they are emulated via user-defined functions for local testing.
 
