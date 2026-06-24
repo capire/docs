@@ -456,7 +456,7 @@ Available for:
 
 ## AI
 
-The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1 - it automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
+The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1. It automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
 
 AI-powered recommendations are then added to your Fiori UIs as shown below.
 
