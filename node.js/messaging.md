@@ -475,9 +475,9 @@ If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handsh
 <span id="aftereventmesh" />
 
 
-### Event Mesh of SAP Integration Suite <Beta /> { #integration-suite-event-mesh }
+### Event Mesh in SAP Integration Suite <Beta /> { #integration-suite-event-mesh }
 
-[Event Mesh of SAP Integration Suite (EMIS)](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
+[Event Mesh in SAP Integration Suite](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
 
 | Kind | Protocol | Equivalent to |
 |------|----------|---------------|
@@ -486,7 +486,7 @@ If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handsh
 
 #### `event-mesh`
 
-Same as `enterprise-messaging` except it connects to an EMIS service instance (`event-mesh-message-client`).
+Same as `enterprise-messaging` except it connects to an Event Mesh in SAP Integration Suite service instance (`event-mesh-message-client`).
 
 Example:
 
@@ -504,7 +504,7 @@ The configuration options are the same as for [`enterprise-messaging`](#sap-even
 
 #### `event-mesh-shared`
 
-Same as `enterprise-messaging-shared` but connects to an EMIS service instance. Best suited for local hybrid testing.
+Same as `enterprise-messaging-shared` but connects to an Event Mesh in SAP Integration Suite service instance. Best suited for local hybrid testing.
 
 Example:
 
