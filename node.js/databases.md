@@ -377,12 +377,6 @@ SAP HANA does not support default values on `BLOB` types. Provide values explici
 - The upper bound is `9999-12-31 23:59:59` — `24:00:00` is **not** accepted (it is on some other databases).
 - Truncated forms are not auto-expanded; date components must be fully specified when a time is included.
 
-#### `DateTime` / timestamp precision
-
-Timestamps with more than 3 fractional digits of second precision (i.e. sub-millisecond / microsecond precision) are not reliably supported on SAP HANA. Values are truncated to milliseconds.
-
-This was originally reported for the [`hdb`](#hana-limitations-hdb) driver — see [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368) — but the runtime currently applies the same truncation for every HANA driver until higher precision is confirmed.
-
 #### `UNION`-based queries
 
 Queries with a top-level `UNION` (`SELECT.SET.op === 'union'`) are not supported by the database service layer — this applies to **all** databases, not only HANA, and is listed here for completeness.
@@ -428,6 +422,10 @@ A `groupBy` that includes elements with identical names from different paths (e.
 ### `hdb` driver {#hana-limitations-hdb}
 
 The following limitations are specific to the [`hdb`](https://www.npmjs.com/package/hdb) driver.
+
+#### Timestamp precision limited to 3 fractional digits
+
+`hdb` does not yet support timestamps with more than 3 fractional digits of second precision (milliseconds, not microseconds). See [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368).
 
 #### `$filter` with binary literals fails
 
