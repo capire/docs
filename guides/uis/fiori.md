@@ -1,7 +1,7 @@
 
 # Serving SAP Fiori UIs
 
-CAP provides out-of-the-box support for SAP Fiori elements. This guide explains how to add one or more SAP Fiori elements apps to a CAP project, how to add SAP Fiori elements annotations to respective service definitions, and more. In the following sections, when mentioning Fiori, we always mean SAP Fiori elements.
+CAP provides out-of-the-box support for SAP Fiori elements. This guide explains how to add SAP Fiori elements apps to a CAP project and how to add SAP Fiori elements annotations to service definitions. Throughout this guide, "Fiori" refers to SAP Fiori elements.
 
 [Learn more about developing SAP Fiori elements and OData V4 (since 1.84.)](https://sapui5.hana.ondemand.com/#/topic/62d3f7c2a9424864921184fd6c7002eb){.learn-more}
 
@@ -15,15 +15,15 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 ### Using Fiori Previews
 ###### Fiori Preview
 
-For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
+For entities exposed via OData V4, a _Fiori preview_ link appears on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
 > [!important] Not for production
-> The preview is meant for quick tests and iterations during development, but not for production use, and hence automatically disabled in production. To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config> for Node.js apps, or <Config java>cds.index-page.enabled:true</Config> for Java
+> The preview is meant for quick tests and iterations during development, but not for production use, and hence automatically disabled in production. To also enable it in cloud deployments for test or demo purposes, set <Config>cds.fiori.preview:true</Config> for Node.js apps, or <Config java>cds.index-page.enabled:true</Config> for Java
 
 
 ### Adding Fiori Apps
 
-As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app), SAP Fiori apps should be added as sub folders to the `app/` of a CAP project. Each sub folder constitutes an individual SAP Fiori application, with [local annotations](#fiori-annotations), _manifest.json_, etc. So, a typical folder layout would look like this:
+As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app), SAP Fiori apps should be added as subfolders of the `app/` directory in a CAP project. Each subfolder constitutes an individual SAP Fiori application, with [local annotations](#fiori-annotations), _manifest.json_, etc. So, a typical folder layout would look like this:
 
 
 | Folder/Sub Folder          | Description                          |
@@ -34,7 +34,7 @@ As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app)
 | &nbsp; &nbsp; `admin/`     | SAP Fiori app for admins             |
 | &nbsp; &nbsp; `index.html` | For sandbox tests                    |
 | `srv/`                     | All services                         |
-| `db/`                      | Domain models, and db stuff          |
+| `db/`                      | Domain models and database artifacts |
 
 ::: tip
 Links to Fiori applications created in the `app/` folder are automatically added to the index page of your CAP application for local development.
@@ -47,7 +47,7 @@ The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https:/
 
 ### OData Annotations Plugin
 
-The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds) includes a plugin. It helps you adding and editing OData annotations in CDS syntax in VS Code by providing the following features:
+The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds) includes a plugin that helps you add and edit OData annotations in CDS syntax in VS Code. It provides the following features:
 
 -   Code completion
 -   Validation against the OData vocabularies and project metadata
@@ -55,9 +55,9 @@ The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items
 -   Quick view of vocabulary information
 -   Internationalization support
 
-These assisting features are provided for [OData annotations in CDS syntax](../protocols/odata#annotations) and can't be used yet for the [core data services common annotations](../../cds/annotations).
+These features are available for [OData annotations in CDS syntax](../protocols/odata#annotations) but not yet for [core data services common annotations](../../cds/annotations).
 
-The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) module doesn't require any manual installation. The latest version is fetched by default from [npmjs.com](https://npmjs.com) as indicated in the user preference setting **CDS > Contributions: Registry**.
+The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) module requires no manual installation. The latest version is fetched automatically from [npmjs.com](https://npmjs.com), as indicated by the user preference setting **CDS > Contributions: Registry**.
 
 [Learn more about the **CDS extension for VS Code**.](https://www.youtube.com/watch?v=eY7BTzch8w0){.learn-more}
 
@@ -65,7 +65,7 @@ The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/
 
 ## Fiori Annotations
 
-SAP Fiori elements apps are generic front ends, which construct and render the pages and controls based on annotated metadata documents. The annotations provide semantic annotations used to render such content, for example:
+SAP Fiori elements apps are generic front ends that construct and render pages and controls based on annotated metadata documents. The annotations provide the semantic information needed to render that content, for example:
 
 
 ```cds
@@ -90,7 +90,7 @@ annotate CatalogService.Books with @(
 
 ### Where to Put Them?
 
-While CDS in principle allows you to add such annotations everywhere in your models, we recommend putting them in separate _.cds_ files placed in your _./app/*_ folders, for example, as follows.
+Although CDS allows you to add annotations anywhere in your models, we recommend placing them in separate _.cds_ files in your _./app/*_ folders, for example, as follows.
 
 ```sh
 ./app  #> all your Fiori annotations should go here, for example:
@@ -107,7 +107,7 @@ While CDS in principle allows you to add such annotations everywhere in your mod
 
 [See this also in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/services.cds){.learn-more}
 
-**Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../domain/index#domain-driven-design) and [Separation of Concerns](../domain/index#separation-of-concerns).
+This recommendation follows the principles of [Conceptual Modeling](../domain/index#domain-driven-design) and [Separation of Concerns](../domain/index#separation-of-concerns).
 
 
 ### Prefer `@title` and `@description`
@@ -241,12 +241,12 @@ With that, all UIs on all services exposing `Books` will automatically receive V
 
 
 ## Fiori Draft Support
-###### Draft Support
+<div id="draft-support" />
 
-SAP Fiori uses Drafts to enable users to save their progress while editing data and continue later on without losing changes. Drafts are stored on the server and can be accessed from different devices and locations, providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
+SAP Fiori uses drafts to let users save their progress while editing data and continue later without losing changes. Drafts are stored on the server and can be accessed from different devices and locations providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
 > [!note] This documentation focuses on CAP only
-> For general information on the user experience and the technical details of drafts in SAP Fiori, please consult respective SAP Fiori documentation, such as the [SAP Fiori Design Guidelines](https://experience.sap.com/fiori-design-web/draft-handling/), and the [SAP UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
+> For general information on the user experience and the technical details of drafts in SAP Fiori, refer to the [SAP Fiori Design Guidelines](https://experience.sap.com/fiori-design-web/draft-handling/) and the [SAP UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
 ### Draft-Enabled Entities
 
@@ -258,7 +258,7 @@ annotate TravelService.Travels with @odata.draft.enabled;
 ```
 :::
 
-Behind the scenes, CAP takes care of all the rest. Most importantly, it adds a new `.drafts` entity, next to the active entity, and with the same elements, used to store draft data. Think of it like a shadow entity, defined like this:
+Behind the scenes, CAP handles everything else. Most importantly, it adds a new `.drafts` entity next to the active entity with the same elements, used to store draft data. Think of it as a shadow entity, defined like this:
 
 ::: code-group
 ```cds [=> generated automatically:]
@@ -266,7 +266,7 @@ entity TravelService.Travels.drafts : TravelService.Travels { ... }
 ```
 :::
 
-We can access the definition of this entity from the model at runtime to, for example, add custom handlers to draft events, or to access draft data in our code. For example, from within a service implementation in CAP Node.js, we can use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
+You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
 
 ```js
 const { Travels } = this.entities
@@ -283,11 +283,11 @@ With [`@odata.draft.enabled`](#draft-enabled-entities) entities in place, CAP au
 
 In essence, the draft choreography defines the following flows:
 
-- creating drafts for **new** active entities, or for **editing** existing ones
-- filling in draft data through a series of _PATCH_ events
-- **saving** the draft back to the active entity, or **discarding** it
+- Creating drafts for **new** active entities, or for **editing** existing ones.
+- Filling in draft data through a series of _PATCH_ events.
+- **Saving** the draft back to the active entity, or **discarding** it.
 
-Drafts are isolated from any active data until they are saved/activated, when discarded, they are removed, as if they never existed – with draft locks as the only exception, to prevent conflicting changes.
+Drafts are isolated from any active data until they are saved/activated. When drafts are discarded, they are removed as if they never existed – with draft locks as the only exception to prevent conflicting changes.
 
 
 ### Draft Locks
@@ -297,17 +297,17 @@ Whenever a draft is created to _edit_ an active entity, this active entity is lo
 - No other draft can be created for the same active instance.
 - No direct updates or deletes to the active instance are allowed.
 
-The lock is released automatically when the draft is either saved/activated, or discarded. It can also be manually reclaimed by other users after a certain period of inactivity, which is 15 minutes by default, but can be configured via <Config>cds.fiori.draft_lock_timeout: 1h</Config> for CAP Node.js and <Config java>cds.drafts.cancellationTimeout: 1h</Config> for CAP Java, respectively. See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
+The lock is released automatically when the draft is saved, activated, or discarded. Other users can manually reclaim it after a period of inactivity, which is 15 minutes by default, but can be configured via <Config>cds.fiori.draft_lock_timeout: 1h</Config> for CAP Node.js and <Config java>cds.drafts.cancellationTimeout: 1h</Config> for CAP Java, respectively. See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
 
 Draft locks are not applied when creating drafts for new entities, as there is no active entity to be locked in this case.
 
 
 ### Requests to Drafts
 
-The HTTP requests sent from Fiori clients that deal with drafts are as follows:
+Fiori clients send the following HTTP requests for draft operations:
 
 ```php:line-numbers [Requests to <i>draft</i> data]
-POST   /Foo/draftNew                                //> NEW
+POST   /Foo                                         //> NEW
 POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
 GET    /Foo(ID,IsActiveEntity=false)                //> READ
 PATCH  /Foo(ID,IsActiveEntity=false) {...}          //> PATCH
@@ -315,19 +315,16 @@ POST   /Foo(ID,IsActiveEntity=false)/draftActivate  //> SAVE
 DELETE /Foo(ID,IsActiveEntity=false)                //> DISCARD
 ```
 
- The key parameter `IsActiveEntity=false` is used to address draft data – with the exceptions of `draftNew`, which is an _unbound_ action, and `draftEdit` for semantic reasons.
-
-::: details `draftNew` actions are used <Since package="@sap/cds" version="v10" /> and <Since package="CAP Java" version="v5" />
-Before, regular `POST /Foo` requests without an `IsActiveEntity` parameter were used to create new drafts, which always created ambiguities with requests to active data.
-Can be disabled with <Config>cds.fiori.draft_new_action: false</Config>.
-:::
+The key parameter `IsActiveEntity=false` addresses draft data, with the exception of the empty POST and `draftEdit` for semantic reasons.
 
 ::: details Full HTTP requests ...
-The requests above are shown in an abbreviated form for clarity. The actual HTTP requests include the service path, content-type headers and JSON bodies as shown below.
+The requests above are abbreviated for clarity. The actual HTTP requests include the service path, content-type headers, and JSON bodies as shown below.
 
 ```http
-POST /odata/v4/TravelService/Travels/draftNew
+POST /odata/v4/TravelService/Travels
 Content-Type: application/json
+
+{}
 ```
 ```http
 POST /odata/v4/TravelService/Travels(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=true)/draftEdit
@@ -345,7 +342,7 @@ Content-Type: application/json
 
 ### Requests to Active Data
 
-Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts, for example:
+Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts (draft locks still apply), for example:
 
 ```php:line-numbers [Requests to <i>active</i> data]
 POST   /Books { IsActiveEntity:true, ... }       //> CREATE
@@ -358,27 +355,34 @@ GET    /Books(ID=201,IsActiveEntity=true)        //> READ
 While this was always possible in CAP Java before, it's available for CAP Node.js in the same way by default since v10. Can be disabled with <Config>cds.fiori.bypass_draft: false</Config>, which prevents bypassing the draft flow for _CREATE_ and _UPDATE_ operations entirely.
 :::
 
+> [!tip] Draft locks still apply
+> Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
+> If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
+
 #### Draft-agnostic Requests
 
-Going one step further, we assume `IsActiveEntity=true` by default, so that clients which don't know anything about drafts, or don't want to deal with them, can simply ignore any draft-specific requests and parameters:
+Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
 ```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
+// creation of active instances
 POST   /Foo            //> CREATE
 GET    /Foo(ID)        //> READ
 PATCH  /Foo(ID) {...}  //> UPDATE
 DELETE /Foo(ID)        //> DELETE
+// creation of draft instances
+POST   /Foo/draftNew   //> CREATE new draft [!code ++]
+...
 ```
+
+The previously used `POST /Foo` requests without an `IsActiveEntity` parameter to create new drafts is now replaced by the collection bound action `draftNew` to resolve the ambiguities with requests to active data.
 
 ::: details Available for CAP Node.js <Since package="@sap/cds" version="v10" /> – not yet for CAP Java
 Draft-agnostic requests as above assume `IsActiveEntity=true` by default for all requests that don't explicitly specify it.
-Doing so was possible in CAP Node.js, but not in CAP Java, as we are (still) bound by the [*Olingo*](https://olingo.apache.org) library there. Thus, for CAP Java, you need to explicitly add `IsActiveEntity=true` as key parameters to address active data
+This was possible in CAP Node.js, but not in CAP Java, which is still bound by the [*Olingo*](https://olingo.apache.org) library. For CAP Java, explicitly add `IsActiveEntity=true` as a key parameter to address active data
 
 [Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
 :::
 
-> [!tip] Draft locks still apply
-> Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
-> If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
 
 
 ### Programmatic Access
@@ -402,7 +406,7 @@ SELECT.from (Foo, 201)          // reads active data only
 SELECT.from (Foo.drafts, 201)  // reads draft data, if exists
 ```
 
-Or even better, prefer using [`req.subject`](../../node.js/events#subject) which automatically resolves to the correct entity instance, active or draft, based on the current request context. For example, in a custom action handlers, that should be triggered for both active and draft data:
+Even better, use [`req.subject`](../../node.js/events#subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
 
 ```js
 this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
@@ -413,11 +417,11 @@ this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
 ### Draft Input Validation
 ###### Validating Drafts
 
-During draft phase, i.e., on `PATCH` requests to draft data, all [`@assert`s](../services/constraints) are validated, and respective error messages are returned to the client. Yet, in contrast to active entities, the draft is still created/updated, even with invalid data, so that users can correct it later on without losing their progress.
+During the draft phase - that is, on `PATCH` requests to draft data - all [`@assert`s](../services/constraints) are validated and error messages are returned to the client. Unlike with active entities, the draft is still created or updated even with invalid data, so users can correct it later without losing their progress.
 
 #### Custom Handlers for Draft Events
 
-You can add custom handlers to draft events by referring to the draft-specific events and/or `.drafts` entities, for example like that in CAP Node.js ([learn more](../../node.js/fiori#draft-specific-events)):
+You can add custom handlers to draft events by referring to draft-specific events and `.drafts` entities, as shown for CAP Node.js ([learn more](../../node.js/fiori#draft-specific-events)):
 
 ```js:line-numbers
 const { Foo } = this.entities
@@ -440,7 +444,7 @@ Similar in CAP Java ([learn more](../../java/fiori-drafts#editing-drafts)):
 
 #### Validation on Active Entities
 
-Finally upon saving a draft, all validations for active entities are executed as usual, with invalid data being rejected, so that only valid data gets activated. This includes all constraints like `@assert` and `@readonly`, as well as all custom handlers registered to active entity events, for example:
+When a draft is saved, all validations for active entities run as usual. Invalid data is rejected, so only valid data gets activated. This includes constraints such as `@assert` and `@readonly`, and all custom handlers registered to active entity events, for example:
 
 ```js
 const { Foo } = this.entities
@@ -448,13 +452,13 @@ this.before ([ 'CREATE', 'UPDATE' ], Foo, req => {/* validate all */})
 ```
 
 > [!caution] Validate on active entities, not only on drafts
-> Validations on draft entities are not sufficient, as active entities can be updated directly, bypassing drafts. Thus, make sure to always perform all necessary validations on active entities, not only on drafts.
-> Note also, that updates to active entities could be partial, for example only updating an individual `OrderItem` within an `Order` through navigation like `PATCH /Orders(1)/Items(3)`, so make sure to cover such cases as well in your validation logic.
+> Validations on draft entities alone are not sufficient, because active entities can be updated directly, bypassing drafts. Always perform all necessary validations on active entities, not only on drafts.
+> Also note that updates to active entities can be partial, for example, updating only an individual `OrderItem` within an `Order` via `PATCH /Orders(1)/Items(3)`. Make sure your validation logic covers such cases.
 
 
 ### Persistent Messages
 
-While in draft state, error messages are automatically persisted, so that they remain visible, even after editing other fields, or navigating away from the page and returning later on.
+While in draft state, error messages are automatically persisted and remain visible even after you edit other fields or navigate away from the page.
 
 CAP automatically generates corresponding side-effect annotations in the EDMX to instruct Fiori clients to fetch state messages after every `PATCH` request.
 
@@ -479,7 +483,7 @@ annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
 ```
 
 :::info Background
-SAP Fiori drafts required single keys of type `UUID`, which isn't the case case for [`.texts`](./localized-data#behind-the-scenes) entities, generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
+SAP Fiori drafts require single keys of type `UUID`, which is not the case for [`.texts`](./localized-data#behind-the-scenes) entities, that are generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
 :::
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
@@ -495,7 +499,7 @@ Following the same principle of convenience as for Value Helps, CAP provides a s
 
 ### Recursive Associations
 
-Hierarchies are most commonly parent-child structures created via recursive associations. For example, in a the [capire/bookshop](https://github.com/capire/bookshop) sample, we have the `Genres` entity with a recursive association `parent` to itself:
+Hierarchies are most commonly parent-child structures created via recursive associations. For example, in the [capire/bookshop](https://github.com/capire/bookshop) sample, we have the `Genres` entity with a recursive association `parent` to itself:
 
 ::: code-group
 ```cds [db/schema.cds]
@@ -508,7 +512,7 @@ entity Genres : cuid { //...
 
 ### The `@hierarchy` Annotation
 
-All we have to do to get a Tree View in SAP Fiori clients is to annotate the entity with `@hierarchy`, for example as we did in the Fiori Annotations of the [capire/bookstore](https://github.com/capire/bookstore) sample:
+To get a Tree View in SAP Fiori clients, annotate the entity with `@hierarchy`, for example as we did in the Fiori Annotations of the [capire/bookstore](https://github.com/capire/bookstore) sample:
 
 ::: code-group
 ```cds [app/genres/fiori-service.cds]
@@ -516,7 +520,7 @@ annotate AdminService.Genres with @hierarchy;
 ```
 :::
 
-If there are multiple associations that could be used as parent association, you can specify the one to be used with the value of the `@hierarchy` annotation, for example:
+If multiple associations can serve as the parent association, specify the one to use as the value of the `@hierarchy` annotation, for example:
 
 ```cds
 annotate AdminService.Genres with @hierarchy: parent;
@@ -524,7 +528,7 @@ annotate AdminService.Genres with @hierarchy: parent;
 
 ::: details Under the hood...
 
-The `@hierarchy` annotation is a convenient shortcut for the following Fiori-level `annotate` and `extend` statements that you would have to write manually otherwise.
+The `@hierarchy` annotation is a shortcut for the following Fiori-level `annotate` and `extend` statements, which you would otherwise have to write manually.
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
@@ -604,25 +608,25 @@ following `annotate` and `extend` statements.
 
 ## Cache Control in Java
 
-CAP provides the option to set a [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header with a [max-age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#max-age) directive to indicate that a response remains fresh until _n_ seconds after it was generated .
-In the CDS model, this can be done using the `@http.CacheControl: {maxAge: <seconds>}` annotation on stream properties. The header indicates that caches can store the response and reuse it for subsequent requests while it's fresh.
-The `max-age` (in seconds) specifies the maximum age of the content before it becomes stale.
+CAP lets you set a [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header with a [max-age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#max-age) directive to indicate that a response remains fresh for _n_ seconds after it was generated.
+In the CDS model, use the `@http.CacheControl: {maxAge: <seconds>}` annotation on stream properties. The header tells caches to store the response and reuse it for subsequent requests while it is fresh.
+`max-age` (in seconds) specifies how long the content remains fresh before becoming stale.
 
 :::info Elapsed time since the response was generated
-The `max-age` is the elapsed time since the response was generated on the origin server. It's not related to when the response was received.
+`max-age` is the elapsed time since the response was generated on the origin server, not the time since the response was received.
 :::
 
 ::: warning Only Java
-Cache Control feature is currently supported on the Java runtime only.
+The Cache Control feature is currently supported only on the Java runtime.
 :::
 
-
+<!-- Do we have an example for that in our samples? -->
 
 ## Role-based Visibility
 
-In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are use cases where you only want to hide certain parts of the UI for specific users. This is possible by using the respective UI annotations like `@UI.Hidden` or `@UI.CreateHidden` in conjunction with `$edmJson` pointing to a singleton.
+In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are cases where you want to hide certain UI elements for specific users. You can do this using annotations such as `@UI.Hidden` or `@UI.CreateHidden` together with `$edmJson` pointing to a singleton.
 
-First, you define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artefact is created:
+First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artifact is created:
 
 ```cds
 @odata.singleton @cds.persistence.skip
@@ -631,9 +635,9 @@ entity Configuration {
     isAdmin : Boolean;
 }
 ```
-> A key is technically not required, but without it some consumers might run into problems.
+> A key is technically not required, but omitting it may cause issues for some consumers.
 
-Then define an `on` handler for serving the request:
+Then, define an `on` handler to serve the request:
 
 ```js
 srv.on('READ', 'Configuration', async req => {
@@ -652,7 +656,7 @@ annotate service.Books with @(
 );
 ```
 
-The Entity Container is OData specific and refers to the `$metadata` of the OData service in which all accessible entities are located within the Entity Container.
+The Entity Container is OData-specific. It refers to the `$metadata` of the OData service, where all accessible entities are registered.
 
 :::details SAP Fiori elements also allows to not include it in the path
 ```cds
