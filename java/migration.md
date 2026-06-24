@@ -44,7 +44,7 @@ Here, the *recipe* `com.sap.cds.services.migrations.Cap_5.0` from CAP Java's Ope
 
 ### Currently Released CAP Java Migrations
 
-The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
@@ -58,13 +58,7 @@ The following table lists the individual recipes provided by CAP for APIs that h
 |[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
 |[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
-In addition, the following umbrella recipes are provided per release. Each one includes all individual recipes for APIs deprecated in this AND previous releases, plus Maven dependency upgrades for all CAP Java modules to the matching version. Run the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
-
-|Name    |Description|Available since|
-|--------|-----------|---------------|
-|com.sap.cds.services.migrations.Cap_5.0|Migrates an application to CAP Java SDK 5.0. Includes `Cap_4.9`, `Cap_5.0_Properties`, `MigrateCdsMavenPluginConfig`, `CustomOutboxOrdered`, `SearchModeProperty`, and upgrades all CAP Java Maven dependencies to `5.0.x`.|5.0.0|
-|com.sap.cds.services.migrations.Cap_4.9|Migrates an application to CAP Java SDK 4.9. Includes `Cap_4.8`, `UclMigration`, `MigrateSaasRegistryDependency`, `ServiceExceptionUtils`, `Cap_4.9_Properties`, and upgrades all CAP Java Maven dependencies to `4.9.x`.|4.9.0|
-|com.sap.cds.services.migrations.Cap_4.8|Migrates an application to CAP Java SDK 4.8. Includes `MigrateStatements` and upgrades all CAP Java Maven dependencies to `4.8.x`.|4.8.0|
+In addition, an umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for APIs deprecated in that AND previous releases, plus Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
