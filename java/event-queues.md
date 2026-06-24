@@ -362,7 +362,7 @@ cds:
 :::
 
 > [!warning] Switching provider persistence loses tracked tenants
-> Changing from the default MTXs/T0 persistence to a custom provider persistence discards all currently tracked hot tenants — there is no automatic migration. Plan accordingly before changing this setting.
+> Changing from the default MTXs/T0 persistence to a custom provider persistence discards all currently tracked hot tenants — there's no automatic migration. Plan accordingly before changing this setting.
 
 #### All-Tenants Task
 
