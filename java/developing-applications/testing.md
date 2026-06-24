@@ -267,6 +267,10 @@ Check out the version in our [CAP Java bookshop sample project](https://github.c
 
   H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (assuming default port `8080`).
 
+::: warning Use the latest `2.3.x` version of H2
+H2 `2.4` has a bug causing performance degradations in certain subqueries, which are used by cascade delete.
+:::
+
 ### Setup & Configuration
 
 #### Using the Maven Archetype
