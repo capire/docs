@@ -379,11 +379,13 @@ SAP HANA does not support default values on `BLOB` types. Provide values explici
 
 #### `DateTime` / timestamp precision
 
-When using the [`hdb`](#hana-limitations-hdb) driver, only millisecond precision (3 fractional digits) is supported. See the [driver-specific section](#hana-limitations-hdb) below.
+Timestamps with more than 3 fractional digits of second precision (i.e. sub-millisecond / microsecond precision) are not reliably supported on SAP HANA. Values are truncated to milliseconds.
+
+This was originally reported for the [`hdb`](#hana-limitations-hdb) driver — see [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368) — but the runtime currently applies the same truncation for every HANA driver until higher precision is confirmed.
 
 #### `UNION`-based queries
 
-Queries with a top-level `UNION` (`SELECT.SET.op === 'union'`) are not supported.
+Queries with a top-level `UNION` (`SELECT.SET.op === 'union'`) are not supported by the database service layer — this applies to **all** databases, not only HANA, and is listed here for completeness.
 
 #### `HIERARCHY`, `HIERARCHY_DESCENDANTS`, and `HIERARCHY_ANCESTORS`
 
@@ -421,19 +423,11 @@ Filters that compare against a structured element whose value is a JSON array re
 
 A `groupBy` that includes elements with identical names from different paths (e.g. `author.ID` and `ID`) does not produce the expected result. See [cap/cdsnode#2366](https://github.tools.sap/cap/cdsnode/issues/2366).
 
-#### `any()` over unmanaged-association navigation *(on `@cap-js/hana`)*
-
-OData `$filter` expressions using `any()` that navigate through an **unmanaged** association are currently not supported by the new `@cap-js/hana` driver. The legacy `hdb`-based stack supports this case.
-
 ---
 
 ### `hdb` driver {#hana-limitations-hdb}
 
 The following limitations are specific to the [`hdb`](https://www.npmjs.com/package/hdb) driver.
-
-#### Timestamp precision is limited to 3 fractional digits
-
-`hdb` does not yet support timestamps with more than 3 fractional digits of second precision (milliseconds, not microseconds). See [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368).
 
 #### `$filter` with binary literals fails
 
@@ -492,6 +486,16 @@ When an `UPDATE` includes streamed parameters (LOBs), `@sap/hana-client` returns
 #### APM decorators (e.g. Dynatrace) cannot wrap internal methods
 
 `@sap/hana-client` does not allow wrapping/decorating `client.prepare()` and other internals. APM integrations that rely on method wrapping have reduced visibility on this driver.
+
+---
+
+### `@cap-js/hana` driver {#hana-limitations-cap-js-hana}
+
+The following limitations are specific to the new [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) driver.
+
+#### `any()` over unmanaged-association navigation
+
+OData `$filter` expressions using `any()` that navigate through an **unmanaged** association are currently not supported. The legacy `hdb`-based stack supports this case.
 
 ---
 
