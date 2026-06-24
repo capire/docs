@@ -675,6 +675,6 @@ Additionally Cloud Native Buildpacks can be easily plugged together to fulfill m
 
 <div id="aftercloudnative" />
 
-## Further reading
+### CAP Operator
 
-If you want to further automate deployment for your CAP applications, see the [CAP Operator](https://github.com/SAP/cap-operator).
+For further deployment automation, the [CAP Operator](https://github.com/SAP/cap-operator) provides Kubernetes-native lifecycle management for multi-tenant CAP applications. It introduces Custom Resource Definitions (CRDs) to declaratively describe your application and takes care of tenant provisioning, upgrades, and decommissioning — keeping operations consistent across Kyma and Gardener-managed clusters.
