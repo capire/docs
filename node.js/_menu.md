@@ -64,4 +64,3 @@
 # [TypeScript](typescript)
 # [Best Practices](best-practices)
 # [Integrate with UCL](../../node.js/ucl) <!-- INTERNAL -->
-# [Upgrading @sap/cds](../../node.js/upgrading)
