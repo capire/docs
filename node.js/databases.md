@@ -349,3 +349,152 @@ The way that the unified data structures is achieved is by leveraging the [`JSON
 
 This documentation is not complete yet, or the APIs are not released for general availability.
 Stay tuned to upcoming releases for further updates.
+
+
+## SAP HANA — Known Limitations {#hana-limitations}
+
+The following limitations apply when running on SAP HANA. Some apply regardless of which client driver is used, others depend on the chosen driver: [`hdb`](https://www.npmjs.com/package/hdb), [`@sap/hana-client`](https://www.npmjs.com/package/@sap/hana-client), or [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana).
+
+Please report additional limitations you encounter at [cap-js/cds-dbs](https://github.com/cap-js/cds-dbs/issues).
+
+### General {#hana-limitations-general}
+
+These limitations apply to SAP HANA independently of the chosen driver.
+
+#### Virtual elements in expressions
+
+Virtual elements (`@cds.virtual`/`virtual`) **must not appear** in `WHERE`, `SELECT`, `ORDER BY`, or any other expression. Such queries are rejected with *"Virtual elements are not allowed in expressions"*.
+
+The runtime cannot transparently replace virtual conditions with `1 = 1` because it does not have enough information about expression boundaries (`xpr`).
+
+#### `BLOB` columns cannot have default values
+
+SAP HANA does not support default values on `BLOB` types. Provide values explicitly on `INSERT`/`UPSERT` instead.
+
+#### Date/time range and formatting
+
+- `DATE`, `SECONDDATE`, and `TIMESTAMP` reject years ≤ 0 and years ≥ 10000.
+- The upper bound is `9999-12-31 23:59:59` — `24:00:00` is **not** accepted (it is on some other databases).
+- Truncated forms are not auto-expanded; date components must be fully specified when a time is included.
+
+#### `DateTime` / timestamp precision
+
+When using the [`hdb`](#hana-limitations-hdb) driver, only millisecond precision (3 fractional digits) is supported. See the [driver-specific section](#hana-limitations-hdb) below.
+
+#### `UNION`-based queries
+
+Queries with a top-level `UNION` (`SELECT.SET.op === 'union'`) are not supported.
+
+#### `HIERARCHY`, `HIERARCHY_DESCENDANTS`, and `HIERARCHY_ANCESTORS`
+
+These HANA functions are currently not exposed via the unified CQL function framework.
+
+#### `Binary` input restrictions
+
+Binary values are converted with `HEXTOBIN(...)` and therefore only work when the input is a string literal or a `NEW.<field>` reference. Arbitrary binary expressions cannot be embedded in DML.
+
+#### `Int64` and `Decimal` are returned as strings
+
+To prevent precision loss in JavaScript, `cds.Int64` and `cds.Decimal` values are returned as strings. Custom handlers must not assume `Number`. See the [Data structure](#databaseservice-data-structure) section above.
+
+#### Streaming binary content uses `NCLOB`
+
+`NVARCHAR` parameters quickly hit size limits when streaming. The runtime therefore interprets the parameter as `NCLOB` so that values up to 2 GB per row can be streamed.
+
+#### HANA Express (version ≤ 2)
+
+Older HANA Express versions cannot process large JSON documents (limit between 64 KB and 128 KB). The runtime falls back to inserting entries one at a time on such servers.
+
+#### `not not` requires HANA ≥ 4
+
+Double-negation (`not not <expr>`) is not supported on HANA servers older than version 4.
+
+#### `JSON_TABLE` does not produce `BOOLEAN`
+
+When working at SQL level: `JSON_TABLE` returns booleans via `NVARCHAR` + `CASE` workaround.
+
+#### Filtering on structured / JSON-array-valued elements
+
+Filters that compare against a structured element whose value is a JSON array return no results on HANA.
+
+#### `groupBy` with same-named fields from different associations
+
+A `groupBy` that includes elements with identical names from different paths (e.g. `author.ID` and `ID`) does not produce the expected result. See [cap/cdsnode#2366](https://github.tools.sap/cap/cdsnode/issues/2366).
+
+#### `any()` over unmanaged-association navigation *(on `@cap-js/hana`)*
+
+OData `$filter` expressions using `any()` that navigate through an **unmanaged** association are currently not supported by the new `@cap-js/hana` driver. The legacy `hdb`-based stack supports this case.
+
+---
+
+### `hdb` driver {#hana-limitations-hdb}
+
+The following limitations are specific to the [`hdb`](https://www.npmjs.com/package/hdb) driver.
+
+#### Timestamp precision is limited to 3 fractional digits
+
+`hdb` does not yet support timestamps with more than 3 fractional digits of second precision (milliseconds, not microseconds). See [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368).
+
+#### `$filter` with binary literals fails
+
+Queries such as `?$filter=binary eq binary'AB12…'` fail with `"Cannot set parameter at row: 1. Wrong input for BINARY type"`. See [cap/cdsnode#2357](https://github.tools.sap/cap/cdsnode/issues/2357).
+
+#### Large strings may be returned as streams
+
+`hdb` occasionally returns large `NCLOB`/`NVARCHAR` values as `Readable` streams instead of plain strings. Consumer code that reads such values directly must be prepared to drain a stream.
+
+#### Drafts: `cds.LargeBinary` is not auto-copied from draft to active
+
+When activating a draft (`draftActivate`), unchanged LOB columns (`cds.LargeBinary`) are not automatically copied from the draft table to the active table.
+
+To opt-in to the database-side move (`UPDATE ... FROM SELECT`), enable the feature flag:
+
+```jsonc
+// package.json
+"cds": {
+  "features": { /* … */ },
+  "fiori": { "move_media_data_in_db": true }
+}
+```
+
+The legacy flag `cds.features.binary_draft_compat` restores the pre-optimization behavior (every BLOB copied into the draft entity).
+
+#### Draft + binary streaming combined is not supported
+
+End-to-end tests for streamed binaries inside drafts are currently excluded on the `hdb` driver.
+
+---
+
+### `@sap/hana-client` driver {#hana-limitations-hana-client}
+
+The following limitations are specific to the [`@sap/hana-client`](https://www.npmjs.com/package/@sap/hana-client) driver.
+
+#### `communicationTimeout` must be set explicitly
+
+Without an explicit `communicationTimeout` (in milliseconds), queries can hang for over ten minutes. The runtime sets `60000` by default — applications can override via pool/connection configuration.
+
+#### `LOB`s cannot be streamed deferred
+
+The `ResultSet` API of `@sap/hana-client` only allows `getData()` on the current row and is forward-only. As a consequence, all LOB content of a result row is buffered in memory before processing continues — true deferred streaming is not possible with this driver.
+
+#### Result-set size ceiling (~4 GB)
+
+A consequence of the above limitation: result sets are capped at approximately `0xFFFFFFFB` bytes (~4 GB).
+
+#### `HanaLobStream` cannot be consumed with `for await`
+
+The `HanaLobStream` returned by `@sap/hana-client` hangs when iterated with `for await ... of`. The runtime detects this case (via `result[key].constructor.name === 'HanaLobStream'`) and uses a `PassThrough`-based reader instead.
+
+#### UPDATE with streams does not report affected rows
+
+When an `UPDATE` includes streamed parameters (LOBs), `@sap/hana-client` returns `0` even if rows were modified. The runtime treats `streams.length && changes === 0` as success. As a side effect, ETag/affected-row checks during streaming UPDATEs are unreliable.
+
+#### APM decorators (e.g. Dynatrace) cannot wrap internal methods
+
+`@sap/hana-client` does not allow wrapping/decorating `client.prepare()` and other internals. APM integrations that rely on method wrapping have reduced visibility on this driver.
+
+---
+
+### Reporting additional limitations
+
+If you hit a HANA-specific issue not listed here, please open an issue at [cap-js/cds-dbs](https://github.com/cap-js/cds-dbs/issues) (for new-stack issues) or at the [internal `cdsnode` tracker](https://github.tools.sap/cap/cdsnode/issues) (for legacy-stack issues). Driver name (`hdb`, `@sap/hana-client`, or `@cap-js/hana`), HANA version, and a minimal reproduction help triage.
