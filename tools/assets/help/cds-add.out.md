@@ -10,6 +10,8 @@
     Pick any of these:
 
       <em>completion</em>                   - shell completion for cds commands
+      <em>java</em>                         - creates a Java-based project
+      <em>nodejs</em>                       - creates a Node.js-based project
       <em>esm</em>                          - ESM-compatible Node.js project
       <em>typer</em>                        - type generation for CDS models
       <em>typescript</em>                   - minimum configuration for a bare TypeScript project
@@ -54,6 +56,8 @@
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
       <em>ui5</em>                          - SAP UI5 integration
+      <em>vue</em>                          - user interface for Vue.js
+      <em>react</em>                        - user interface for React
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
@@ -189,9 +193,16 @@
 
     <em>cds add kyma</em>
 
+      --y
+
+        Skip interactive prompts.
 
 
+    <em>cds add react</em>
 
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
 
 
     <em>cds add test</em>
@@ -205,6 +216,13 @@
       --out | -o
 
         Custom output directory. For Node.js, the default is 'test'.
+
+
+    <em>cds add vue</em>
+
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
 
 
     <em>cds add xsuaa</em>

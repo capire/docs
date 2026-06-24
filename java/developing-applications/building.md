@@ -337,7 +337,7 @@ It supports the following command-line options:
 | `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. Defaults to `v4`|
 | `-DtargetPlatform=cloudfoundry` | Adds CloudFoundry target platform support to the project. |
 | `-DinMemoryDatabase=[h2\|sqlite]` | Specify which in-memory database is used for local testing. If not specified, the default value is `h2`. |
-| `-DjdkVersion=[17\|21\|25]` | Specifies the target JDK version. Defaults to `21`. |
+| `-DjdkVersion=[21\|25]` | Specifies the target JDK version. Defaults to `25`. |
 | `-Dpersistence=[true\|false]` | Specify whether persistence is enabled (`true`) or disabled (`false`). Defaults to `true`. |
 | `-DcdsdkVersion=<a valid cds-dk version>` | Sets the provided cds-dk version in the project. If not specified, the default of CAP Java is used. |
 
@@ -574,6 +574,15 @@ Other options in this goal enable or disable certain features that change the wa
 - [`cqnServiceGetters`](../assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
+
+- [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
+
+  Generates static class-based implementations for interfaces, replacing dynamic proxies at runtime.
+  This significantly improves performance and removes the limit on the number of methods an accessor interface may declare.
+
+  The generated classes are internal — do not reference them directly from application code.
+
+  Hand-written [accessor interfaces](../cds-data#typed-access), for which no implementation class is generated, are still supported via [proxy](../cds-data#cds-data) fallback.
 
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors

@@ -320,7 +320,7 @@ await test.post('/browse/submitOrder',
 ```
 
 > [!tip] Using Fetch API under the hood
-> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/FetchAPI), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
+> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/Fetch_API), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
 
 > [!info] Using Axios instead of Fetch API
 > Former versions of `cds.test` used [Axios](https://axios-http.com/) as the HTTP client. With the move to Fetch API, Axios is no longer included as a dependency in `@cap-js/cds-test`. However, you can still use Axios in your tests if you prefer it over Fetch API. Simply add Axios as a dependency to your project, and it will be used automatically by `cds.test` instead of Fetch API.
