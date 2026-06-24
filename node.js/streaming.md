@@ -114,7 +114,7 @@ await pipeline(req, parse, async function* (stream) {
 As an alternative to this, you could simply define the transformation in your CDS model, as the `INSERT` and `UPSERT` queries are capable of doing the transformation directly in the database:
 
 ```cds
-entity BooksRenamed projection on Books {
+entity BooksRenamed as projection on Books {
   *,
   descr as description,
   // ...
