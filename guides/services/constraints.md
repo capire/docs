@@ -20,7 +20,7 @@ Use annotations like `@assert` and `@mandatory` to declaratively add constraints
 
 ### Constraints Annotations
 
-Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample:
+Following is an excerpt from the [`@capire/xtravels`](https://github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample:
 
 ::: code-group
 
@@ -211,7 +211,7 @@ annotate TravelService.Travels with {
 }
 ```
 
-We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association:
+We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https://github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association:
 
 ```cds
 annotate TravelService.Bookings with {
