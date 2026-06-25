@@ -26,7 +26,7 @@ npm run docs:dev
 
 Which usually starts a dev server on http://localhost:5173/ like this:
 
-```
+```sh
   vitepress v1.0.0...
 
   ➜  Local:   http://localhost:5173/

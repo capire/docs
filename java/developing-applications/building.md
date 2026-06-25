@@ -2,7 +2,6 @@
 synopsis: >
   This section describes various options to create a CAP Java project from scratch, to build your application with Maven, and to modify an existing project with the CDS Maven plugin.
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -13,19 +12,18 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-One of the key [CAP design principles](../../about/#open-and-opinionated) is to be an opinionated but yet open framework.
+One of the key [CAP design principles](../../get-started/features#open-and-opinionated) is to be an opinionated but yet open framework.
 Giving a clear guidance for cutting-edge technologies on the one hand and still keeping the door wide open for custom choice on the other hand, demands a highly flexible CAP Java runtime stack.
-The [modular architecture](#modular_architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack_configuration) based on standard or custom modules.
+The [modular architecture](#modular-architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack-configuration) based on standard or custom modules.
 
-## Modular Stack Architecture
-{ #modular_architecture}
+## Modular Stack Architecture { #modular-architecture}
 
 ### Overview
 
 One of the basic design principle of the CAP Java is to keep orthogonal functionality separated in independent components.
 The obvious advantage of this decoupling is that it makes concrete components exchangeable independently.
 Hence, it reduces the risk of expensive adaptions in custom code, which can be necessary due to new requirements with regards to the platform environment or used version of platform services.
-Hence, the application is [platform **and** service agnostic](../../about/best-practices#agnostic-by-design).
+Hence, the application is [platform **and** service agnostic](../../get-started/concepts#agnostic-by-design).
 
 For instance, custom code doesn't need to be written against the chosen type of persistence service, but can use the generic persistence service based on [CQL](../working-with-cqn/../working-with-cql/query-api).
 Likewise, the application isn't aware of the concrete (cloud) platform environment in which it gets embedded.
@@ -79,11 +77,11 @@ Lastly, in case you want to run your application on a 3rd party application fram
 ### Protocol Adapters
 
 
-The CAP runtime is based on an [event](../../about/best-practices#events) driven approach.
-Generally, [Service](../../about/best-practices#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/providing-services#event-handlers).
+The CAP runtime is based on an [event](../../get-started/concepts#events) driven approach.
+Generally, [Service](../../get-started/concepts#services) providers are the consumers of events, that means, they do the actual processing of events in [handlers](../../guides/services/custom-code#custom-event-handlers).
 During execution, services can send events to other service providers and consume the results.
 The native query language in CAP is [CQN](../../cds/cqn), which is accepted by all services that deal with data query and manipulation.
-Inbound requests therefore need to be mapped to corresponding CQN events, which are sent to an accepting Application Service (see concept [details](../../about/best-practices#querying)) afterwards.
+Inbound requests therefore need to be mapped to corresponding CQN events, which are sent to an accepting Application Service (see concept [details](../../get-started/concepts#querying)) afterwards.
 Mapping the ingress protocol to CQN essentially summarizes the task of protocol adapters depicted in the diagram.
 Most prominent example is the [OData V4](https://www.odata.org/documentation/) protocol adapter, which is fully supported by the CAP Java.
 Further HTTP-based protocols can be added in future, but often applications require specific protocols, most notably [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) ones.
@@ -95,9 +93,9 @@ Note that different endpoints can be served by different protocol adapters at th
 
 ### Service Providers { #service-providers}
 
-Services have different purposes. For instance, CDS model services provide an interface to work with persisted data of your [domain model](../../guides/domain-modeling).
+Services have different purposes. For instance, CDS model services provide an interface to work with persisted data of your [domain model](../../guides/domain/index).
 Other services are rather technical, for example, hiding the consumption API of external services behind a generic interface.
-As described in CAPs [core concepts](../../about/best-practices#services), services share the same generic provider interface and are implemented by event handlers.
+As described in CAPs [core concepts](../../get-started/concepts#services), services share the same generic provider interface and are implemented by event handlers.
 The service provider layer contains all generic services, which are auto-exposed by CAP Java according to the appropriate CDS model.
 In addition, technical services are offered such as the [Persistence Service](../cqn-services/#persistenceservice) or [Auditlog Service](../auditlog#auditlog-service), which can be consumed in custom service handlers.
 
@@ -126,9 +124,9 @@ CAP Java makes use of the plugin technique itself to offer optional functionalit
 Examples are [SAP Event Mesh](../messaging) and [Audit logging](../auditlog) integration.
 Find a full list of standard plugins in [Standard Modules](#standard-modules).
 
-## Stack Configuration { #stack_configuration}
+## Stack Configuration { #stack-configuration}
 
- As outlined in section [Modular Stack Architecture](#modular_architecture), the CAP Java runtime is highly flexible.
+ As outlined in section [Modular Stack Architecture](#modular-architecture), the CAP Java runtime is highly flexible.
  You can choose among modules prepared for different environments and in addition also include plugins which are optional extensions.
  Which set of modules and plugins is active at runtime is a matter of compile time and runtime configuration.
 
@@ -311,7 +309,7 @@ An example of a CAP application with OData V4 on Cloud Foundry environment:
 Use the following command line to create a project from scratch with the CDS Maven archetype:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 mvn archetype:generate -DarchetypeArtifactId=cds-services-archetype -DarchetypeGroupId=com.sap.cds -DarchetypeVersion=RELEASE
 ```
 
@@ -336,15 +334,14 @@ It supports the following command-line options:
 | `-Dpackage=<a valid Java package>` | The Java package for your project's classes. Defaults to `${groupId}.${artifactId}`. |
 | `-DincludeModel=true` | Adds a minimalistic sample CDS model to the project. |
 | `-DincludeIntegrationTest=true` | Adds an integration test module to the project. |
-| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. |
+| `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. Defaults to `v4`|
 | `-DtargetPlatform=cloudfoundry` | Adds CloudFoundry target platform support to the project. |
 | `-DinMemoryDatabase=[h2\|sqlite]` | Specify which in-memory database is used for local testing. If not specified, the default value is `h2`. |
-| `-DjdkVersion=[17\|21]` | Specifies the target JDK version. If not specified, the default value is `21`. |
+| `-DjdkVersion=[21\|25]` | Specifies the target JDK version. Defaults to `25`. |
 | `-Dpersistence=[true\|false]` | Specify whether persistence is enabled (`true`) or disabled (`false`). Defaults to `true`. |
 | `-DcdsdkVersion=<a valid cds-dk version>` | Sets the provided cds-dk version in the project. If not specified, the default of CAP Java is used. |
 
-## Building Projects with Maven
-{ #maven-build-options }
+## Building Projects with Maven { #maven-build-options }
 
 You can build and run your application by means of the following Maven command:
 
@@ -377,15 +374,258 @@ Use the _.cdsrc.json_ file to add project specific configuration of `@sap/cds-dk
 
 [Learn more about configuration and `cds.env`](../../node.js/cds-env){.learn-more}
 
+### Using profiles
 
-### Using a Local cds-dk
+Using Maven profiles allows you to distinguish between builds for local development and production deployment. This flexibility is valuable in several scenarios:
+
+* Generating [H2 database artifacts](../cqn-services/persistence-services#h2) for local development
+* Creating database-specific artifacts for different target databases
+* Add Maven dependencies used only in production
+
+Production cds build is triggered via the parameter `--production` as [described](../../guides/deploy/build#automatic-build-tasks).
+
+Add a Maven production profile in srv/pom.xml to override cds.build’s default non‑production build and H2 SQL generation.
+
+::: code-group
+```xml [srv/pom.xml]
+<project>
+......
+ <build>
+  <finalName>${project.artifactId}</finalName>
+  <plugins>
+   <plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+......
+    <executions>
+......
+     <execution>
+      <id>cds.build</id>
+      <goals>
+       <goal>cds</goal>
+      </goals>
+      <configuration>
+       <commands>
+        <command>build --for java</command>
+        <command>deploy --to h2 --with-mocks --dry --out "${project.basedir}/src/main/resources/schema-h2.sql"</command>
+       </commands>
+      </configuration>
+     </execution>
+......
+   </executions>
+   </plugin>
+  </plugins>
+ </build>
+......
+ <profiles>
+  <profile>
+   <id>production</id>
+   <build>
+    <plugins>
+     <plugin>
+      <groupId>com.sap.cds</groupId>
+      <artifactId>cds-maven-plugin</artifactId>
+      <executions>
+       <execution>
+        <id>cds.build</id>
+        <goals>
+         <goal>cds</goal>
+        </goals>
+        <configuration>
+         <commands>
+          <command>build --for java --production</command>
+         </commands>
+        </configuration>
+       </execution>
+      </executions>
+     </plugin>
+    </plugins>
+   </build>
+  </profile>
+ </profiles>
+</project>
+```
+:::
+
+Generally, you trigger the production build via mta.yaml. To activate the production profile, include the profile parameter (for example, `-P production`) as part of the build invocation:
+
+::: code-group
+```yaml [mta.yaml]
+  - name: bookstore-srv
+    type: java
+    path: bookstore/srv
+    ...
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode # [!code --]
+        - mvn clean package -DskipTests=true --batch-mode -P production # [!code ++]
+      build-result: target/*-exec.jar
+```
+:::
+
+## Code Generation for Typed Access {#codegen-config}
+
+The [interfaces for typed access](../cds-data#generated-accessor-interfaces) are generated at each build
+by the [`cds:generate`](../assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"} goal of the [CDS Maven Plugin](../assets/cds-maven-plugin-site/plugin-info.html){target="_blank"}.
+
+You configure this goal just like any other Maven plugin via its configuration options via your application's POM. For example:
+
+```xml [pom.xml]
+<execution>
+    <id>cds.generate</id>
+    <goals>
+        <goal>generate</goal>
+    </goals>
+    <configuration>
+        <basePackage>cds.gen</basePackage>
+        ...
+    </configuration>
+</execution>
+```
+
+Each time your application is built, these interfaces are regenerated. By default, they are excluded from your version control.
+
+### Typed Results
+
+Set the [`linkedInterfaces`](../assets/cds-maven-plugin-site/generate-mojo.html#linkedInterfaces){target="_blank"} option to link the generated [query builder interfaces](../working-with-cql/query-api#concepts) to the [data accessor interfaces](../cds-data#typed-access) for queries with [typed results](../working-with-cql/query-execution#typed-result-processing).
+
+### Package for Generated Code
+
+The option [`basePackage`](../assets/cds-maven-plugin-site/generate-mojo.html#basePackage){target="_blank"} can be used to specify a base package prefix for generated code. The suffix package structure will reflect namespaces defined in your CDS model.
+
+### Filter for CDS Entities
+
+By default, the complete model of your application is generated including all imported or re-used models.
+You can use options [`includes`](../assets/cds-maven-plugin-site/generate-mojo.html#includes){target="_blank"} and [`excludes`](../assets/cds-maven-plugin-site/generate-mojo.html#excludes){target="_blank"} to specify the part of your overall model that is subject to code generation. Both inclusion and exclusion can be used together, inclusion is evaluated first, then exclusion filters out of the included set of entities.
+
+These options use patterns that are applied on the fully qualified names of the entities in CDS models. For example, the pattern `my.bookshop.*` will cover all definitions with namespace `my.bookshop` and the pattern `my.bookshop.**` will cover all definitions with fully qualified name starting with `my.bookshop`.
+
+:::warning Cross-namespace references are not resolved
+Options `includes` and `excludes` are simple filters. If included parts of your model reference types from the excluded area, the resulting code will not compile.
+:::
+
+### Style of Interfaces
+
+By default, the accessor interfaces provide the setter and getter methods inspired by the JavaBeans specification. In this style, getter and setter method names are prefixed with `get` and `set`:
+
+
+```java
+    Authors author = Authors.create();
+    author.setName("Emily Brontë");
+
+    Books book = Books.create();
+    book.setAuthor(author);
+    book.setTitle("Wuthering Heights");
+```
+
+Alternatively, you can generate accessor interfaces in _fluent style_. In this mode, the getter methods are named after the property names. To enable fluent chaining, the setter methods return the accessor interface itself:
+
+
+```java
+   Authors author = Authors.create().name("Emily Brontë");
+   Books.create().author(author).title("Wuthering Heights");
+```
+
+The generation mode is configured by the option [`methodStyle`](../assets/cds-maven-plugin-site/generate-mojo.html#methodStyle). The selected style affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+
+Once, when starting a project, decide on the style of the interfaces that is best for your team and project.
+
+The way the interfaces are generated only determines how data is accessed by custom code. It does not affect how the data is represented in memory and handled by the CAP Java runtime.
+
+Moreover, it doesn't change the way how event contexts, delivered by CAP, look like. Such interfaces from CAP are always modelled in the default JavaBeans style.
+
+### Code Generation Features
+
+Other options in this goal enable or disable certain features that change the way generated code looks in a certain aspect. These changes can be incompatible with the existing code and require manual adaptation.
+
+- [`strictSetters`](../assets/cds-maven-plugin-site/generate-mojo.html#strictSetters)
+
+  This switch changes the signature of the setter methods in typed access interfaces so that they require concrete type instead of generic `Map` interface.
+  For example:
+
+  ```java
+  void setManager(Map<String, ?> manager); // [!code --]
+  void setManager(Manager manager); // [!code ++]
+  ```
+
+  It does not introduce any additional type checks at runtime, the correctness of the assignment is checked only at the time of compilation.
+
+- [`interfacesForAspects`](../assets/cds-maven-plugin-site/generate-mojo.html#interfacesForAspects)
+
+  If your entity is modelled with the [composition of aspects](../../cds/cdl#with-named-targets), the generated interfaces always reference original aspect as type for setters and getters.
+  When this switch is enabled, the code generator uses the type generated by the compiler instead of the type of the aspect itself and will include methods to fetch keys, for example.
+
+  :::warning Limitations
+  This is supported only for the named aspects (inline targets are not supported) and does not respect all possible options how such entities might be exposed by services.
+  :::
+
+- [`betterNames`](../assets/cds-maven-plugin-site/generate-mojo.html#betterNames)
+
+  CDS models from external sources might include elements that have some special characters in their names or include elements that clash with Java keywords. Such cases always can be solved with the [renaming features](../cds-data#renaming-elements-in-java) provided by code generator, but in case of large models, this is tedious.
+  When this switch is enabled, characters `/` and `$` behave as a separators for the name during case conversions, similar to `_` and `.`. For example, `GET_MATERIAL` yields `GetMaterial` (or `getMaterial` for attributes and methods). The same now applies for the names with `/`, for example, name `/DMO/GET_MATERIAL` will be converted to `DmoGetMaterial`.
+
+  The following conversions are applied:
+    - Names from CDS model that are Java keywords are suffixed with `_`.
+    - Names from CDS model that use characters that are not valid as Java identifiers, are replaced by `_`. This, however, might lead to a conflicts between names that yield the same name in Java.
+    - Leading `_` will remain in the name after conversions. This supports conventions where an association and its foreign key have names like `_assoc` and `assoc`.
+  These conversions no longer influence the splitting.
+
+- [`cqnServiceGetters`](../assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
+
+  The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
+
+- [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
+
+  Generates static class-based implementations for interfaces, replacing dynamic proxies at runtime.
+  This significantly improves performance and removes the limit on the number of methods an accessor interface may declare.
+
+  The generated classes are internal — do not reference them directly from application code.
+
+  Hand-written [accessor interfaces](../cds-data#typed-access), for which no implementation class is generated, are still supported via [proxy](../cds-data#cds-data) fallback.
+
+:::warning Check migration guides!
+In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors
+in your application that needs to be fixed.
+:::
+
+See [Maven Plugin Documentation](../assets/cds-maven-plugin-site/generate-mojo.html){target="_blank"} for actual status of deprecation and switches that are not described here. {.learn-more}
+
+### Annotation Detail Level
+
+The option [`annotationDetailLevel`](../assets/cds-maven-plugin-site/generate-mojo.html#annotationDetailLevel){target="_blank"} lets you choose the amount of the details for the Java annotation [`@Generated`](https://docs.oracle.com/en/java/javase/21/docs/api/java.compiler/javax/annotation/processing/Generated.html) added to each interface. This annotation has no effect at runtime but is evaluated by static code analysis tools to identify the artifacts as generated.
+
+Following levels of the details are available:
+- `MINIMAL` (default) - only the annotation is added, no additional information is added.
+
+   ```java
+    @CdsName("service.Entity")
+    @Generated("cds-maven-plugin")
+    public interface Entity extends CdsData {  }
+   ```
+
+- `FULL` - annotation contains the timestamp of the generation.
+
+  ```java
+  @CdsName("service.Entity")
+  @Generated(
+      value = "cds-maven-plugin",
+      date = "9999-12-31T23:59:59.999999Z",
+      comments = ""
+  )
+  public interface Entity extends CdsData {  }
+  ```
+
+- `NONE` - no `@Generated` annotation is added. This is not recommended.
+
+## Using a Local cds-dk
 
 Starting with version 3.6.0 of the `cds-services-archetype`, the default setup of a newly created CAP Java project has changed. The `@sap/cds-dk` is maintained as a `devDependency` in `package.json` and installed with an `npm ci` during the Maven build.
 The `install-cdsdk` goal is no longer used to install the `@sap/cds-dk` locally and it's also marked as deprecated. The version of the `@sap/cds-dk` is no longer maintained in _pom.xml_, it's configured in the _package.json_:
 ```json
 {
   "devDependencies" : {
-    "@sap/cds-dk" : "^8.5.1",
+    "@sap/cds-dk" : "^9",
   }
 }
 ```
@@ -395,8 +635,7 @@ A `package-lock.json` is also created during project creation with the `cds-serv
 For multitenant applications, ensure that the `@sap/cds-dk` version in the sidecar is in sync.
 :::
 
-#### Migrate From Goal `install-cdsdk` to `npm ci` 
-{ #migration-install-cdsdk }
+#### Migrate From Goal `install-cdsdk` to `npm ci` { #migration-install-cdsdk }
 
 To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach, the following steps are required:
 
@@ -434,7 +673,7 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 	```xml
 		<properties>
 			<!-- Delete from here ...  -->
-			<cds.install-cdsdk.version>8.4.2</cds.install-cdsdk.version>
+			<cds.install-cdsdk.version>x.x.x</cds.install-cdsdk.version>
 			<!-- ... to here -->
 		</properties>
 	```
@@ -442,9 +681,9 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 4. Add `@sap/cds-dk` as devDependency to _package.json_:
 	```json
 	{
-	"devDependencies" : {
-		"@sap/cds-dk" : "^8.5.0"
-	}
+		"devDependencies" : {
+			"@sap/cds-dk" : "^9"
+		}
 	}
 	```
 
@@ -452,17 +691,17 @@ To migrate from the deprecated goal `install-cdsdk` to the new `npm ci` approach
 
 6. Finally, do a `mvn clean install` and verify that the installation of `@sap/cds-dk` is done with the new approach.
 
-#### Maintaining cds-dk
+#### Maintaining cds-dk in _package.json_ (preferred)
 
-1. _package.json_ and `npm ci` <br>
-Newly created CAP Java projects maintain the `@sap/cds-dk` with a specific version as a devDependency in `package.json`. So, when you update the version, run npm install from the command line to update the `package-lock.json`. `npm ci` will then install the updated version of `@sap/cds-dk`.
+Newly created CAP Java projects maintain the `@sap/cds-dk` with a specific version as a `devDependency` in the _package.json_. So, when you update the cds-dk version in _package.json_, run `npm install` from the command line to update the _package-lock.json_. `npm ci` will then install the updated version of `@sap/cds-dk`.
 
-2. Goal `install-cdsdk` <br>
- Older CAP Java projects that use the `install-cdsdk` goal of the `cds-maven-plugin` don't update `@sap/cds-dk`. By default, the goal skips the installation if it's already installed.
-To update the `@sap/cds-dk` version:
+#### Maintaining cds-dk in _pom.xml_ (outdated)
 
-3. Specify a newer version of `@sap/cds-dk` in your *pom.xml* file.
-4. Execute `mvn spring-boot:run` with an additional property `-Dcds.install-cdsdk.force=true`, to force the installation of a **`@sap/cds-dk`** in the configured version.
+Older CAP Java projects, that still use the `install-cdsdk` goal of the `cds-maven-plugin`, maintain the `@sap/cds-dk` version in the *pom.xml* in property `cds.install-cdsdk.version`. To update the `@sap/cds-dk` version in this setup, the following steps are required:
+
+1. Specify a newer version of `@sap/cds-dk` in property `cds.install-cdsdk.version` in your *pom.xml* file.
+
+2. Execute `mvn spring-boot:run` with an additional property `-Dcds.install-cdsdk.force=true`, to force the installation of a `@sap/cds-dk` in the configured version.
 
     ```sh
     mvn spring-boot:run -Dcds.install-cdsdk.force=true
@@ -480,7 +719,7 @@ By default, the build is configured to download a Node.js runtime and the `@sap/
 This step makes the build self-contained, but the build also takes more time. You can omit these steps and speed up the Maven build, using the Maven profile `cdsdk-global`.
 
 Prerequisites:
-* `@sap/cds-dk` is [globally installed](../../get-started/#setup).
+* `@sap/cds-dk` is [globally installed](../../get-started/index#initial-setup).
 * Node.js installation is available in current *PATH* environment.
 
 If these prerequisites are met, you can use the profile `cdsdk-global` by executing:

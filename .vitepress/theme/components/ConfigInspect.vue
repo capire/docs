@@ -4,7 +4,7 @@
   >
   <!-- :hideTriggers="[]" :shown="true" -->
 
-    <a class="cfg vp-doc"><code class="cfg">{{ label }}</code></a>
+    <a class="cfg vp-doc"><span class="cfg">{{ label }}</span></a>
 
     <template #popper>
       <div class="vp-code-group vp-doc" v-if="java">
@@ -15,19 +15,20 @@
       </div>
       <div class="vp-code-group vp-doc" v-else>
         <CodeGroup :groups="[
-          { id: 'pkg-priv', label: '~/.cdsrc.json',  lang: 'json',       group, code: pkgStr, private: true },
-          { id: 'pkg', label: 'package/.cdsrc.json', lang: 'json',       group, code: pkgStr },
-          { id: 'js',  label: '.cdsrc.js',           lang: 'js',         group, code: jsStr },
-          { id: 'yml', label: '.cdsrc.yaml',         lang: 'yml',        group, code: ymlStr },
           { id: 'env', label: '.env file',           lang: 'properties', group, code: propStr },
-          { id: 'shl', label: 'Linux/macOS Shells',  lang: 'sh',         group, code: 'export '+envStr, transient: true },
-          { id: 'shp', label: 'Powershell',          lang: 'powershell', group, code: '$Env:'+envStr, transient: true },
-          { id: 'shw', label: 'Cmd Shell',           lang: 'cmd',        group, code: 'set '+envStr, transient: true }
+          { id: 'yml', label: '.cdsrc.yaml',         lang: 'yml',        group, code: rcYmlStr },
+          { id: 'js',  label: '.cdsrc.js',           lang: 'js',         group, code: rcJsStr },
+          { id: 'pkg-rc',   label: 'package.json',   lang: 'json',       group, code: pkgStr },
+          // { id: 'pkg-priv', label: '~/.cdsrc.json',  lang: 'json',       group, code: rcJsonStr, private: true },
+          // { id: 'pkg',      label: '.cdsrc.json',    lang: 'json',       group, code: rcJsonStr },
+          // { id: 'shl', label: 'Linux/macOS Shells',  lang: 'sh',         group, code: 'export '+envStr, transient: true },
+          // { id: 'shp', label: 'Powershell',          lang: 'powershell', group, code: '$Env:'+envStr, transient: true },
+          // { id: 'shw', label: 'Cmd Shell',           lang: 'cmd',        group, code: 'set '+envStr, transient: true }
         ]" />
       </div>
     </template>
   </VDropdown>
-  <code class="cfg" v-else>{{ label }}</code> <!-- intermediate fallback -->
+  <span class="cfg" v-else>{{ label }}</span> <!-- intermediate fallback -->
 </template>
 
 <script setup lang="ts">
@@ -35,12 +36,15 @@
   import FloatingVue from 'floating-vue'
   import yaml from 'yaml'
 
-  const { java, keyOnly, filesOnly, showPrivate, label:labelProp } = defineProps<{
+  const { value, java, keyOnly, filesOnly, showPrivate, section, label:labelProp, keyDelim } = defineProps<{
     java?: boolean,
     keyOnly?: boolean,
     filesOnly?: boolean,
     showPrivate?: boolean,
-    label?: string
+    section?: string,
+    label?: string,
+    value?: string,
+    keyDelim?: string
   }>()
 
   // sub component that renders code blocks similar to the markdown `::: code-block` syntax
@@ -80,18 +84,19 @@
   FloatingVue.options.themes.cfgPopper = { $extend: 'dropdown' }
 
   const slots = useSlots()
-  //@ts-expect-error
   const slotVal = slots.default?.().at(0)?.children?.toString().trim() ?? 'error: provide <Config>your_key:value</Config>'
 
-  const [key, val] = slotVal.split(/\s*[:=]\s*/)
-  const label = labelProp || `${keyOnly ? key: slotVal}`
+  const [key, val = value] = slotVal.split(/\s*[:=]\s*(.*)/) // split on first `:` or `=`
+  const label = labelProp || ( keyOnly ? key : slotVal )
+  const keyDel = keyDelim ?? '.'
 
   const cfgKey = ref()
   const popperVisible = ref(false)
   const group = ref()
   const pkgStr = ref()
-  const jsStr = ref()
-  const ymlStr = ref()
+  const rcJsonStr = ref()
+  const rcJsStr = ref()
+  const rcYmlStr = ref()
   const propStr = ref()
   const envStr = ref()
   const javaAppyml = ref()
@@ -99,37 +104,37 @@
 
   onMounted(() => {
     popperVisible.value = true
+    const fqn = (section ? section + keyDel : '') + key
+    cfgKey.value = fqn
+    let value:any = !val ? '...'
+    : val === 'true' ? true
+    : val === 'false' ? false
+    : val === 'null' ? null
+    : Number(val) || val
 
-    cfgKey.value = key
-    let value:any = val
-    if (val === 'true')  value = true
-    else if (val === 'false')  value = false
-    else if (val === 'null')  value = null
-    else if (parseInt(val).toString() === val)  value = parseInt(val)
-    else if (parseFloat(val).toString() === val)  value = parseFloat(val)
-    else if (!val)  value = '…'
-
-    group.value = 'group-'+key
+    group.value = 'group-'+fqn
 
     let jsonVal
     if (typeof value === 'string' && value.trim().match(/^[[{].*[\]}]$/)) { try { jsonVal = JSON.parse(value) } catch {/*ignore*/ } }
-    const pkg = toJson(key, jsonVal ?? value)
+    const pkg = toJson(fqn, jsonVal ?? value, keyDel)
 
     pkgStr.value = JSON.stringify(pkg, null, 2)
-    jsStr.value = 'module.exports = ' + pkgStr.value.replace(/"(\w*?)":/g, '$1:')
-    propStr.value = `${key}=${jsonVal ? JSON.stringify(jsonVal) : value}`
+    rcJsonStr.value = JSON.stringify(pkg.cds??{}, null, 2)
+    rcJsStr.value = 'exports.' + Object.keys(pkg.cds??{})[0] + ' = ' + JSON.stringify(Object.values(pkg.cds??{})[0], null, 2).replaceAll('"', '')
+    rcYmlStr.value = yaml.stringify(pkg.cds)
 
-    let envKey = key.replaceAll('_', '__').replaceAll('.', '_')
+    let envKey = fqn.replaceAll('_', '__').replaceAll(keyDel, '_')
     if (/^[a-z_]+$/.test(envKey)) envKey = envKey.toUpperCase() // only uppercase if not camelCase
     envStr.value = `${envKey}=${jsonVal ? JSON.stringify(jsonVal) : value}`
+    propStr.value = `${fqn} = ${jsonVal ? JSON.stringify(jsonVal) : value}`
 
-    javaAppyml.value = ymlStr.value = yaml.stringify(pkg)
+    javaAppyml.value = yaml.stringify(pkg)
     javaEnvStr.value = `-D${propStr.value}`
   })
 
-function toJson(key:string, value:string): Record<string, any> {
+function toJson(key:string, value:string, delim:string): Record<string, any> {
   let res  = {}
-  const parts = key.split('.')
+  const parts = key.split(delim)
   parts.reduce((r:Record<string,any>, a, i) => {
     r[a] = r[a] || (i < parts.length-1 ? {} : value)
     return r[a];
@@ -143,9 +148,6 @@ function toJson(key:string, value:string): Record<string, any> {
   .v-popper--theme-cfgPopper .v-popper__inner {
     background-color: var(--vp-code-block-bg) !important;
   }
-  code.cfg::after {
-    content: " ⛭";
-  }
 </style>
 
 <style scoped>
@@ -153,13 +155,8 @@ function toJson(key:string, value:string): Record<string, any> {
     display: inline;
   }
   a.cfg {
-    color: var(--vp-c-text-1);
-    text-decoration:none;
-  }
-  a.cfg:hover {
-    text-decoration:none;
-  }
-  a.cfg:active {
-    text-decoration:none;
+    color: var(--vp-c-brand-1);
+    font-style: italic;
+    text-decoration: underline dashed 0.5px;
   }
 </style>

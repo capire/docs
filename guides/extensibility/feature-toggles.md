@@ -1,13 +1,6 @@
 ---
-# layout: cookbook
-label: Feature Toggles
 synopsis: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Feature Toggles
-status: released
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 
@@ -45,18 +38,18 @@ code .
 
 ### Get `cap/samples` for Step-By-Step Exercises {.node}
 
-The following steps will extend the [cap/samples/fiori](https://github.com/sap-samples/cloud-cap-samples/blob/main/fiori) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/sap-samples/cloud-cap-samples) before, and prepare to extend the *fiori* app:
+The following steps will extend the [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/capire/samples) before, and prepare to extend the *bookstore* app:
 
 ```sh
-git clone https://github.com/sap-samples/cloud-cap-samples samples
+git clone --recurse-submodules https://github.com/capire/samples
 cd samples
 npm install
 ```
 
-Now, open the `fiori` app in your editor, for example, by this if you're using VS Code on macOS:
+Now, open the `bookstore` app in your editor, for example, by this if you're using VS Code on macOS:
 
 ```sh
-code fiori
+code bookstore
 ```
 
 ## Enable Feature Toggles {.node}
@@ -83,7 +76,7 @@ Add a subfolder per feature to folder *fts* and put `.cds` files into it. The na
 
 ### Feature *fts/isbn*
 
-Create a file *fiori/fts/isbn/schema.cds* with this content:
+Create a file *fts/isbn/schema.cds* with this content:
 
 ```cds
 using { CatalogService, sap.capire.bookshop.Books }
@@ -108,7 +101,7 @@ Note that all features will be deployed to each tenant database in order to allo
 
 ### Feature *fts/reviews*
 
-Create a file *fiori/fts/reviews/schema.cds* with this content:
+Create a file *fts/reviews/schema.cds* with this content:
 
 ```cds
 using { CatalogService } from '../../app/browse/fiori-service';
@@ -127,7 +120,7 @@ This feature extends corresponding SAP Fiori annotations to display already exis
 Note the following limitations for `.cds` files in features:
 
 - no `.cds` files in subfolders, for example, `fts/isbn/sub/file.cds`
-- no `using` dependencies between features
+- no `using` dependencies between features, any entity, service or type that you refer to or extend needs to be part of the base model
 - further limitations re `extend aspect` → to be documented
 :::
 
@@ -249,29 +242,53 @@ The `ModelProviderService`, which is used for toggling features, is implemented 
 
 An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default it's added to a subfolder *mtx/sidecar* within your main project, containing just a *package.json* file:
 
+<div class="impl node">
+
 ::: code-group
 
 ```json [mtx/sidecar/package.json]
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^7",
-    "@sap/cds-mtxs": "^1",
+    "@sap/cds": "^9",
+    "@sap/cds-mtxs": "^3",
     "express": "^4"
   },
   "cds": {
-    "requires": {
-      "cds.xt.ModelProviderService": "in-sidecar"
-    },
-    "[development]": {
-      "requires": { "auth": "dummy" },
-      "server": { "port": 4005 }
-    }
+    "profile": "mtx-sidecar"
   }
 }
 ```
 
 :::
+
+</div>
+
+
+<div class="impl java">
+
+::: code-group
+
+```json [mtx/sidecar/package.json]
+{
+  "name": "mtx-sidecar", "version": "0.0.0",
+  "dependencies": {
+    "@sap/cds": "^9",
+    "@sap/cds-mtxs": "^3",
+    "express": "^4"
+  },
+  "cds": {
+    "profiles": [
+      "mtx-sidecar",
+      "java"
+    ]
+  }
+}
+```
+
+:::
+
+</div>
 
 [Learn more about setting up **MTX sidecars**.](../multitenancy/mtxs#sidecars){.learn-more}
 

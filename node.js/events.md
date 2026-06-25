@@ -88,6 +88,7 @@ this.on ('*', req => {
 ```
 
 Keep in mind that multiple requests (that is, instances of `cds.Request`) may share the same incoming HTTP request and outgoing HTTP response (for example, in case of an OData batch request).
+See sections [`req`](#req) and [`res`](#res) of `cds.Request` to learn more about accessing the request and response objects of individual requests within an incoming batch request.
 
 
 
@@ -110,7 +111,7 @@ On outgoing HTTP messages, it's propagated as `x-correlation-id` header.
 
 ### . locale {.property}
 
-The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/i18n#normalized-locales).
+The current user's preferred locale, taken from the HTTP Accept-Language header of incoming requests and resolved to [_normalized_](../guides/uis/i18n#normalized-locales).
 
 
 
@@ -127,7 +128,7 @@ A unique string identifying the current tenant, or `undefined` if not in multite
 
 A constant timestamp for the current request being processed, as an instance of [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date). The CAP framework uses that to fill in values for the CDS pseudo variable `$now`, with the guaranteed same value.
 
-[Learn more in the **Managed Data** guide.](../guides/domain-modeling#managed-data){.learn-more}
+[Learn more in the **Managed Data** guide.](../guides/domain/index#managed-data){.learn-more}
 
 
 
@@ -241,13 +242,25 @@ Additional note about OData: For requests that are part of a changeset, the even
 
 
 
-Class `cds.Request` extends [`cds.Event`] with additional features to represent and deal with synchronous requests to services in [event handlers](./core-services#srv-handle-event), such as the [query](#query), additional [request parameters](#params), the [authenticated user](#user), and [methods to send responses](#req-reply).
+Class `cds.Request` extends [`cds.Event`] with additional features to represent and deal with synchronous requests to services in [event handlers](./core-services#srv-handle-event), such as the [query](#query), additional [request parameters](#params), the [authenticated user](#user), and [methods to send responses](#req-reply-results).
 
 
 [Router]: https://expressjs.com/en/4x/api.html#router
 [routing]: https://expressjs.com/en/guide/routing.html
 [middleware]: https://expressjs.com/en/guide/using-middleware.html
 
+
+
+
+### . req {.property}
+
+Provides access to the express request object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same request object as [`req.http.req`](#http).
+
+
+
+### . res {.property}
+
+Provides access to the express response object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same response object as [`req.http.res`](#http).
 
 
 
@@ -292,7 +305,7 @@ For example:
 Captures the full canonicalized path information of incoming requests with navigation.
 For requests without navigation, `req.path` is identical to [`req.target.name`](#target) (or [`req.entity`](#entity), which is a shortcut for that).
 
-Examples based on [cap/samples/bookshop AdminService](https://github.com/sap-samples/cloud-cap-samples/tree/master/bookshop/srv/admin-service.cds):
+Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/bookshop/blob/main/srv/admin-service.cds):
 
 | OData Request     | `req.path`                | `req.target.name`    |
 |-------------------|---------------------------|----------------------|
@@ -315,8 +328,7 @@ This is a convenience shortcut to [`msg.target.name`](#target).
 
 ### . params {.property}
 
-Provides access to parameters in URL paths as an [*iterable*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#The_iterable_protocol) with the contents matching the positional occurrence of parameters in the url path. In the case of compound parameters, the respective entry is the key value pairs as given in the URL.
-<!-- If the respective resource has a single key predicate called `ID`, the value is returned directly. -->
+Provides access to parameters in URL paths as an [*iterable*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#The_iterable_protocol) with the contents matching the positional occurrence of parameters in the url path. The respective entry is the key value pair matching the entity definition.
 
 For example, the parameters in an HTTP request like that:
 
@@ -328,7 +340,7 @@ The provided parameters can be accessed as follows:
 
 ```js
 const [ author, book ] = req.params
-// > author === 101
+// > author === { ID: 101 }
 // > book === { title: 'Eleonora', edition: 2 }
 ```
 
@@ -344,111 +356,300 @@ Captures the incoming request as a [CQN query](cds-ql#class-cds-ql-query). For e
 req.query = {SELECT:{from:{ref:['Books']}}}
 ```
 
-If bound custom operations `req.query` contains the query to the entity, on which the bound custom operation is called. For unbound custom operations, `req.query` contains an empty object.
+For bound custom operations, `req.query` contains the query to the entity on which the operation is called. For unbound custom operations, `req.query` contains an empty object.
 
 ### . subject {.property}
 
-Acts as a pointer to one or more instances targeted by the request.
-It can be used as input for [cds.ql](cds-ql) as follows:
+Acts as a pointer to the instances targeted by the request.
+The _target_ of a request is equivalent to the [`source` of a query](../cds/cqn#from).
+That is, additional query options, such as CQL's `.where()` or OData's `$filter`, are not considered.
+
+For example, for the equivalents of inbound requests, addressing _single rows_ like these:
 
 ```js
-SELECT.one.from(req.subject)   //> returns single object
-SELECT.from(req.subject)      //> returns one or many in array
-UPDATE(req.subject)          //> updates one or many
-DELETE(req.subject)         //> deletes one or many
+AdminService.read(Books,201)
+AdminService.update(Books,201).with({...})
+AdminService.delete(Books,201)
 ```
 
-It's available for CRUD events and bound actions.
+... `req.subject` would always look like that: 
+
+```js
+req.subject //> ...
+{ ref: [{
+  id: 'AdminService.Books', // == req.target.name
+  where: [ { ref: [ 'ID' ] }, '=', { val: 201 } ]
+}]}
+```
+
+... which allows it to be used in custom handlers of each inbound request to easily read or write this very target row using  [cds.ql](cds-ql) as follows:
+
+```js
+SELECT.from(req.subject)  //> returns the single target row
+UPDATE(req.subject)...    //> updates the single target row
+DELETE.from(req.subject)   //> deletes the single target row
+```
+
+> [!warning] 
+> You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
+> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple rows_**.
+
+The following example further illustrates the difference between request target and additional query options:
+
+```js
+// GET Books/201
+req.subject = { ref: [{ id: 'AdminService.Books', where: [{ ref: ['ID']}, '=', { val: 201 }] }] }
+// GET Books?$filter=ID eq 201
+req.subject = { ref: [{ id: 'AdminService.Books' }] }
+```
 
 
 
-### req. reply() {.method}
-[`req.reply`]: #req-reply
+### req. reply (results) {.method}
 
-Stores the given `results` in `req.results`, which is then sent back to the client, rendered in a protocol-specific way.
+```tsx
+function req.reply (
+  results : object | object[] | string | number | true | false | null
+)
+```
+
+Stores the given argument in `req.results`, which is subsequently sent back to the client, rendered in a protocol-specific way.
+
+```js
+this.on ('READ', Books, req => {
+  req.reply ([
+    { ID: 1, title: 'Wuthering Heights' },
+    { ID: 2, title: 'Catweazle' }
+  ])
+})
+```
+
+Alternatively, you can also just return a value from your `.on` handler, which is then automatically used as the reply:
+
+```js
+this.on ('READ', Books, req => {
+  return [
+    { ID: 1, title: 'Wuthering Heights' },
+    { ID: 2, title: 'Catweazle' }
+  ]
+})
+```
 
 
+### req. reject ({ ... }) {.method #req-reject}
 
-### req. reject() {.method}
-[`req.reject`]: #req-reject
 
-Rejects the request with the given HTTP response code and single message. Additionally, `req.reject` throws an error based on the passed arguments. Hence, no additional code and handlers is executed once `req.reject` has been invoked.
+Constructs and throws an error with the given arguments, which is then sent back to the client in an error response. This is the preferred way to reject requests with errors.
 
-[Arguments are the same as for `req.error`](#req-error){.learn-more}
+```js
+this.on('CREATE', Books, req => {
+  const { title } = req.data
+  if (!title?.trim().length)
+    return req.reject ({ // [!code focus]
+      status: 400, // [!code focus]
+      code: 'MISSING_INPUT', // [!code focus]
+      message: 'Input is required', // [!code focus]
+      target: 'title', // [!code focus]
+    }) // [!code focus]
+})
+```
+
+::: details **Best Practice:**{.good} Use the `@mandatory` annotation instead.
+The sample above is just for illustration. Instead, use the [`@mandatory`](../guides/services/constraints#mandatory)
+annotation in your CDS model to define mandatory inputs like that:
+
+```cds
+entity Books {
+  key ID : Integer;
+  title : String(111) @mandatory; // [!code focus]
+  ...
+}
+```
+
+This way, the framework automatically checks for mandatory inputs and rejects requests with errors if they are missing.
+So you don't have to (and should not) implement such checks manually in your code at all.
+:::
+
+
+The basic variant used above accepts a single object as argument with these properties:
+
+```tsx
+function req.reject ({
+  status?  : number,
+  code?    : string | number,
+  message? : string,
+  target?  : string,
+  args?    : string[],
+  ... // custom properties
+})
+```
+
+| Property | Description |
+| -------- | ----------- |
+| `status` | The numeric [HTTP status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status). |
+| `code`   | A string code for clients to identify the error, also used as [i18n](cds-i18n) key. |
+| `message`| A user-readable, potentially localized error message. |
+| `target` | The name of an input field/element an error is related to. |
+| `args`   | Values to fill in to localized error messages. |
+
+[Learn more about `target` for Fiori UIs](https://ui5.sap.com/#/topic/fbe1cb5613cf4a40a841750bf813238e){.learn-more}
+
+
+If `status` is omitted, and `code` is a number, that number is interpreted as the status code.
+
+The `code` is used as [i18n](cds-i18n) key to lookup translations for [error responses](#error-responses). If `code` is omitted, a given `message` will be used as [i18n](cds-i18n) key.
+
+
+### req. reject ( ... ) {.method}
+
+This is a convenience variant of the [`req.reject()`](#req-reject) method, with these arguments:
+
+```tsx
+function req.reject (
+  status?  : number,
+  message? : string,
+  target?  : string,
+  args?    : string[]
+)
+```
+
+For example, it would allow rewriting the [above](#req-reject) sample like that:
+
+```js
+this.on('CREATE', Books, req => {
+  const { title } = req.data
+  if (!title?.trim().length)
+    req.reject (400, 'MISSING_INPUT', 'title') // [!code focus]
+})
+```
+
+
 
 
 
 
 ### req. error() {.method}
+
+Constructs and records an error with the given arguments. The method is similar to [`req.reject()`](#req-reject), and accepts the same arguments, but does not throw the error immediately. Instead, it collects errors in `req.errors`, which are sent back to the client in an [error response](#error-responses) subsequently.
+
+For example:
+
+```js
+req.error (400, 'Invalid input', 'some_field')
+req.error (404, 'Not found')
+```
+
+All errors are collected in property `req.errors`, which is initially `undefined`, and initialized as an array on the first call. This allows to easily check, whether errors occurred with:
+
+```js
+if (req.errors) ... //> errors occurred
+```
+
+After each phase of request processing, i.e. _before_ / _on_ / _after_, the framework checks whether errors got recorded in `req.errors`. If so, it automatically [rejects](#req-reject) the request with an aggregate error containing all recorded errors, and the request is not processed further. So, in essence, the above ends up in the equivalent of:
+
+```js
+return req.reject ({
+  code: 'MULTIPLE_ERRORS',
+  details: [
+    { status: 400, message: 'Invalid input', target: 'some_field' },
+    { status: 404, message: 'Not found' }
+  ]
+})
+```
+
+
 ### req. warn() {.method}
 ### req. info() {.method}
 ### req. notify() {.method}
 
-[`req.info`]: #req-msg
-[`req.error`]: #req-msg
-
-Use these methods to collect messages or errors and return them in the request response to the caller. The method variants reflect different severity levels. Use them as follows:
-
-####  <i>  Variants </i>
-
-| Method         | Collected in   | Typical UI | Severity |
-| -------------- | -------------- | ---------- | :------: |
-| `req.notify()` | `req.messages` | Toasters   |    1     |
-| `req.info()`   | `req.messages` | Dialog     |    2     |
-| `req.warn()`   | `req.messages` | Dialog     |    3     |
-| `req.error()`  | `req.errors`   | Dialog     |    4     |
-
-{style="font-style:italic;width:80%;"}
-
-**Note:** messages with a severity less than 4 are collected and accessible in property `req.messages`, while error messages are collected in property `req.errors`. The latter allows to easily check, whether errors occurred with:
+Use these methods to record messages to be sent back to the client not in an error response but in addition to a successful response.
 
 ```js
-if (req.errors) //> get out somehow...
+req.notify ('Some notification message')
+req.info ('Some information message')
+req.warn ('Some warning message')
 ```
 
+The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (e.g. `sap-messages`), instead of the response body.
 
-####  <i>  Arguments </i>
-
-- `code` _Number (Optional)_ - Represents the error code associated with the message. If the number is in the range of HTTP status codes and the error has a severity of 4, this argument sets the HTTP response status code.
-- `message` _String \| Object \| Error_ - See below for details on the non-string version.
-- `target` _String (Optional)_ - The name of an input field/element a message is related to.
-- `args` _Array (Optional)_ - Array of placeholder values. See [Localized Messages](cds-i18n) for details.
-
-::: tip `target` property for UI5 OData model
-The `target` property is evaluated by the UI5 OData model and needs to be set according to [Server Messages in the OData V4 Model](https://ui5.sap.com/#/topic/fbe1cb5613cf4a40a841750bf813238e).
+::: warning User Input & Injection Vulnerabilities
+Ensure proper validation of the message text if it contains values ​​from user input.
 :::
 
 
-####  <i>  Using an Object as Argument </i>
+## Error Responses
 
-You can also pass an object as the sole argument, which then contains the properties `code`, `message`, `target`, and `args`. Additional properties are preserved until the error or message is sanitized for the client. In case of an error, the additional property `status` can be used to specify the HTTP status code of the response.
+When a request is rejected with an error, the protocol adapters provided with the CAP framework automatically renders them in a protocol-specific way, for example, like that in case of _OData_ as well as _REST_ endpoints:
 
-```js
-req.error ({
-  code: 'Some-Custom-Code',
-  message: 'Some Custom Error Message',
-  target: 'some_field',
-  status: 418
-})
+```http
+Status: 400
+Content-Type: application/json
+
+{
+  "error": {
+    "code": "MISSING_INPUT",
+    "message": "Input is required",
+    "target": "title"
+  }
+}
 ```
 
-Additional properties can be added as well, for example to be used in [custom error handlers](core-services#srv-on-error).
+::: details OData error responses get cleansed
 
-> In OData responses, notifications get collected and put into HTTP response header `sap-messages` as a stringified array, while the others are collected in the respective response body properties (&rarr; see [OData Error Responses](https://docs.oasis-open.org/odata/odata-json-format/v4.0/os/odata-json-format-v4.0-os.html#_Toc372793091)).
+In order to be compliant with the spec, all custom properties not foreseen in the spec are purged from the error response. If a custom property shall reach the client, it must be prefixed with `@` to not be purged.
 
-####  <i>  Error Sanitization </i>
+:::
 
-In production, errors should never disclose any internal information that could be used by malicious actors. Hence, we sanitize all server-side errors thrown by the CAP framework. That is, all errors with a 5xx status code (the default status code is 500) are returned to the client with only the respective generic message (example: `500 Internal Server Error`). Errors defined by app developers aren't sanitized and returned to the client unchanged.
+[Learn more about OData Error Responses](https://docs.oasis-open.org/odata/odata-json-format/v4.0/os/odata-json-format-v4.0-os.html#_Toc372793091){.learn-more}
 
-Additionally, the OData protocol specifies which properties an error object may have. If a custom property shall reach the client, it must be prefixed with `@` to not be purged.
+The error response is generated from the error object constructed via [`req.reject()`](#req-reject) or [`req.error()`](#req-error), and the properties are used and normalized as follows:
 
+1. If `status` is given, it is used as the HTTP status code of the response. If `status` is omitted, and `code` is a number in the range of 300...600, that number is used as the HTTP status code of the response.
 
-### req. diff() <Beta /> {.method}
-[`req.diff`]: #req-diff
+2. If `code` is given, and a string, it is used to look up a user-readable error `message` from the [`i18n/messages`](cds-i18n) bundles. If `code` is omitted, the given `message` is used as the [i18n](cds-i18n) key to look up the `message`, and if found, the original value of `message` is used as `code` in the response.
 
-Use this asynchronous method to calculate the difference between the data on the database and the passed data (defaults to `req.data`, if not passed). Note that the usage of `req.diff` only makes sense in *before* handlers as they are run before the actual change was persisted on the database.
-> This triggers database requests.
+3. If an `Accept-Language` header is present in the request, a localized message is looked up in addition, using the preferred language specified in the header, and used for the `message` property in the HTTP response. If no suitable localization is found, the original message as resolved in step 2 is returned.
+
+For example:
 
 ```js
-const diff = await req.diff()
+req.reject ({ code: 400, message: 'MISSING_INPUT', target: 'title' })
+req.reject (400, 'MISSING_INPUT', 'title') // same as above
 ```
+
+... would result in a response like this for `Accept-Language: de`:
+
+```http
+Status: 400
+Content-Type: application/json
+
+{
+  "error": {
+    "code": "MISSING_INPUT",
+    "message": "Eingabe ist erforderlich",
+    "target": "title"
+  }
+}
+```
+
+> [!warning] Error Sanitization
+> In production, error responses should never disclose internal information that could be exploited by attackers. To ensure that, all errors with a `5xx` status code are returned to the client with only the respective generic message (example: `500 Internal Server Error`).
+>
+> In very rare cases, you might want to return 5xx errors with a meaningful message to the client. This can be achieved with `err.$sanitize = false`. Use that option with care!
+
+
+## Translations for Validation Errors
+
+For the following annotations/error codes, the runtime provides default translations:
+
+| Annotation              | Error Code                      |
+|-------------------------|---------------------------------|
+| `@mandatory`            | ASSERT_MANDATORY<sup>(1)</sup> |
+| `@assert.range`         | ASSERT_RANGE                    |
+| `@assert.range` on enum | ASSERT_ENUM                     |
+| `@assert.format`        | ASSERT_FORMAT                   |
+| `@assert.target`        | ASSERT_TARGET                   |
+
+<sup>(1)</sup> Falls back to error code `ASSERT_NOT_NULL` if provided in custom translations.
+
+These can be overridden by the known technique of providing [custom i18n messages](cds-i18n#localized-messages).

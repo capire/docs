@@ -77,10 +77,10 @@ None of the listed features will be available out of the box in case you choose 
 
 | Bean              | Description                      | Example
 | :---------------------------------------------------- | :----------------------------------------------------- | :----------------------------------------------------- |
+| [Service](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/Service.html)  | All kinds of CDS services, application services, and technical services   | `@Autowired`<br>`CatalogService catService;`<br><br>`@Autowired`<br>`CatalogService.Draft catServiceDraft;`<br><br>`@Autowired`<br>`PersistenceService ps;`
+| [ServiceCatalog](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceCatalog.html)  | The catalog of all available services   | `@Autowired`<br>`ServiceCatalog catalog;`
 | [CdsRuntime](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/CdsRuntime.html)  | Runtime instance (singleton)  | `@Autowired`<br>`CdsRuntime runtime;`
 | [CdsRuntimeConfigurer](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/CdsRuntimeConfigurer.html)  | Runtime configuration instance (singleton)  | `@Autowired`<br>`CdsRuntimeConfigurer configurer;`
-| [Service](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/Service.html)  | All kinds of CDS services, application services, and technical services   | `@Autowired`<br>`@Qualifier(CatalogService_.CDS_NAME)`<br>`private ApplicationService cs;`<br><br>`@Autowired`<br>`private PersistenceService ps;`
-| [ServiceCatalog](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceCatalog.html)  | The catalog of all available services   | `@Autowired`<br>`ServiceCatalog catalog;`
 | [CdsModel](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/reflect/CdsModel.html)  | The current model   | `@Autowired`<br>`CdsModel model;`
 | [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html)  | Information about the authenticated user   | `@Autowired`<br>`UserInfo userInfo;`
 | [AuthenticationInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/authentication/AuthenticationInfo.html)  | Authentication claims   | `@Autowired`<br>`AuthenticationInfo authInfo;`

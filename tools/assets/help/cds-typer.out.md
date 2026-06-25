@@ -20,6 +20,20 @@ OPTIONS
     This value must be set in your project configuration.
     Passing it as parameter to the cds-typer CLI has no effect.
 
+  --brandedPrimitiveTypes
+  --branded_primitive_types: &lt;true | false&gt;
+    (default: false)
+
+    If set to true, generated primitive types will be branded to prevent accidental mixing of types with the same underlying primitive.
+    E.g., type CustomerID = string & { __brand: 'CustomerID' }
+
+  --cache: &lt;none | blake2s256&gt;
+    (default: none)
+
+    How to cache typer runs.
+    none: fully run cds-typer whenever it is called
+    blake2s256: only run if the blake2s256-hash of the model has changed. Hash is stored in a file between runs.
+
   --help
 
     This text.
@@ -68,12 +82,19 @@ OPTIONS
 
     Root directory to write the generated files to.
 
+  --outputDTsFiles
+  --output_d_ts_files: &lt;true | false&gt;
+    (default: false)
+
+    (experimental) If set to true, emits .d.ts files for each generated .js file. If set to false (default), emits .ts files instead. Note: skipLibCheck must be set to true in your tsconfig for this option to work properly.
+
   --propertiesOptional
   --properties_optional: &lt;true | false&gt;
     (default: true)
 
     If set to true, properties in entities are
     always generated as optional (a?: T).
+    Setting it to false makes properties non-optional instead (a: T).
 
   --targetModuleType
   --target_module_type: &lt;esm | cjs | auto&gt;
@@ -85,7 +106,7 @@ OPTIONS
 
   --useEntitiesProxy
   --use_entities_proxy: &lt;true | false&gt;
-    (default: false)
+    (default: true)
 
     If set to true the 'cds.entities' exports in the generated 'index.js'
     files will be wrapped in 'Proxy' objects

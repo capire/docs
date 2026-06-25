@@ -1,0 +1,2107 @@
+{
+  "properties": [
+    {
+      "header": true,
+      "name": "cds.environment",
+      "doc": "Properties for environments, like local development or Cloud Foundry."
+    },
+    {
+      "header": true,
+      "name": "cds.environment.local",
+      "doc": "Properties for the local environment."
+    },
+    {
+      "header": false,
+      "name": "cds.environment.local.defaultEnvPath",
+      "type": "String",
+      "doc": "Specification of the default environment JSON file. If this property starts with<br>\"classpath:\", it is read as classloader resource. Otherwise it is interpreted as<br>file-system path. The file content follows the structure of Cloud Foundry's VCAP_SERVICES<br>and VCAP_APPLICATION environment variables. If this property specifies a folder, the<br>filename `default-env.json` is appended to it."
+    },
+    {
+      "header": true,
+      "name": "cds.environment.production",
+      "doc": "Properties for the production environment."
+    },
+    {
+      "header": false,
+      "name": "cds.environment.production.profile",
+      "type": "String",
+      "default": "cloud",
+      "doc": "The Spring Boot profile to attach production-optimized default property values to."
+    },
+    {
+      "header": false,
+      "name": "cds.environment.production.enabled",
+      "type": "boolean",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.environment.deployment",
+      "doc": "Properties for the specific application deployment."
+    },
+    {
+      "header": false,
+      "name": "cds.environment.deployment.version",
+      "type": "String",
+      "doc": "The version of the application deployment in format x.y.z-qualifier. It is expected, that<br>application deployments can be sorted semantically by this version."
+    },
+    {
+      "header": true,
+      "name": "cds.dataSource",
+      "doc": "Properties for the primary data source, used by the default persistence service."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.embedded",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if the data source is considered embedded (in-memory)."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.binding",
+      "type": "String",
+      "doc": "The name of the primary service binding, used by the default persistence service."
+    },
+    {
+      "header": true,
+      "name": "cds.dataSource.csv",
+      "doc": "Properties for CSV initialization."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.csv.initializationMode",
+      "type": "String",
+      "default": "embedded",
+      "doc": "Determines in which scenarios the default persistence service is initialized with CSV data.<br>By default, CSV initialization only happens, if the data source is embedded (in-memory).<br>Possible values are: `embedded`, `never`, `always`."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.csv.fileSuffix",
+      "type": "String",
+      "default": ".csv",
+      "doc": "The file suffix of CSV files."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.csv.paths",
+      "type": "List<String>",
+      "default": "db/data/**, db/csv/**, ../db/data/**, ../db/csv/**",
+      "doc": "The file-system paths to search for CSV files in. Using `/**` at the end of the path<br>triggers a recursive search."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.csv.singleChangeset",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Enables import of all CSV files in a single changeset. By default, each CSV file is<br>imported in a separate changeset."
+    },
+    {
+      "header": true,
+      "name": "cds.dataSource.autoConfig",
+      "doc": "Properties to control the `DataSource` auto-configuration from service bindings."
+    },
+    {
+      "header": false,
+      "name": "cds.dataSource.autoConfig.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.model",
+      "doc": "Properties for the CDS model."
+    },
+    {
+      "header": false,
+      "name": "cds.model.csnPath",
+      "type": "String",
+      "default": "edmx/csn.json",
+      "doc": "The resource path to the `csn.json` file."
+    },
+    {
+      "header": false,
+      "name": "cds.model.includeUiAnnotations",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if UI annotations are included in the model."
+    },
+    {
+      "header": true,
+      "name": "cds.model.provider",
+      "doc": "The model provider configuration."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.url",
+      "type": "String",
+      "doc": "The URL of the Model Provider."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.extensibility",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Assume that dynamic models contain tenant-specific extensions."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.toggles",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Assume that dynamic models are feature-toggle specific."
+    },
+    {
+      "header": true,
+      "name": "cds.model.provider.cache",
+      "doc": "Properties for the CDS model and EDMX metadata caches."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.maxSize",
+      "type": "int",
+      "default": "20",
+      "doc": "The number of entries in the CDS model and EDMX metadata caches."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.expirationTime",
+      "type": "int",
+      "default": "3600",
+      "doc": "The lifetime of an entry in seconds after the entry's creation, the most recent<br>replacement of its value, or its last access."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.refreshTime",
+      "type": "int",
+      "default": "60",
+      "doc": "The time in seconds after which a cached entry is refreshed."
+    },
+    {
+      "header": true,
+      "name": "cds.security",
+      "doc": "Properties for security configurations of services and endpoints."
+    },
+    {
+      "header": false,
+      "name": "cds.security.logPotentiallySensitive",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if potentially sensitive data, for example values in CQN queries, might be<br>logged."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authentication",
+      "doc": "Properties for authentication in general."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.mode",
+      "type": "String",
+      "default": "model-strict",
+      "doc": "Determines the mode that is used when authenticating endpoints of protocol-adapters.<br>Possible values are: - never: No endpoint requires authentication - model-relaxed:<br>Authentication is derived from @requires/@restrict, defaults to public endpoints. -<br>model-strict: Authentication is derived from @requires/@restrict, defaults to authenticated<br>endpoints. - always: All endpoints require authentication"
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.authenticateMetadataEndpoints",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if OData $metadata endpoints enforce authentication."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.authenticateUnknownEndpoints",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if security configurations enforce authentication for endpoints not managed by<br>protocol-adapters."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.normalizeProviderTenant",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if the provider tenant is normalized to `null`."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.clientCertificateHeader",
+      "type": "String",
+      "default": "X-Forwarded-Client-Cert",
+      "doc": "Header name for forwarded client certificates."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authentication.authConfig",
+      "doc": "Properties for the Spring security auto-configuration."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.authConfig.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authentication.internalUserAccess",
+      "doc": "Determines of internal users are allowed to access endpoints offered for callbacks by reuse<br>services (e.g. SMS, SaaSRegistry, UCL) *"
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.internalUserAccess.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization",
+      "doc": "Properties for authorization."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authorization.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization.draftProtection",
+      "doc": "Properties to control the protection of drafts. If a draft is protected, it is only<br>accessible by its creator."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authorization.draftProtection.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization.deep",
+      "doc": "Determines, if the deep authorization checks are enforced"
+    },
+    {
+      "header": false,
+      "name": "cds.security.authorization.deep.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization.instanceBased",
+      "doc": "Properties for instance-based authorization conditions."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization.instanceBased.rejectSelectedUnauthorizedEntity",
+      "doc": "Enables additional instance-based features for entity selections, e.g. rejects UPDATE and<br>DELETE requests that don't satisfy restrictions with 403. This adds overhead, as an<br>additional READ request is emitted. Handles events that target single entities only."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authorization.instanceBased.rejectSelectedUnauthorizedEntity.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.authorization.instanceBased.checkInputData",
+      "doc": "Enables additional instance-based features for payloads, e.g. for UPDATE and CREATE<br>requests that don't satisfy restrictions for their _payload_. This adds overhead, as an<br>additional READ request is emitted after the event has been handled. In case the payload<br>doesn't pass the restrictions, the transaction is aborted / the request rejected."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authorization.instanceBased.checkInputData.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.identity",
+      "doc": "Properties for authentication based on Identity Service (IAS)."
+    },
+    {
+      "header": false,
+      "name": "cds.security.identity.binding",
+      "type": "String",
+      "doc": "The name of the IAS service binding, used for the identity security auto-configuration and<br>MTXs sidecar communication."
+    },
+    {
+      "header": false,
+      "name": "cds.security.identity.exposePlansAsRoles",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if service plans are mapped to roles in the UserInfo object."
+    },
+    {
+      "header": false,
+      "name": "cds.security.identity.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.xsuaa",
+      "doc": "Properties for authentication based on XSUAA."
+    },
+    {
+      "header": false,
+      "name": "cds.security.xsuaa.binding",
+      "type": "String",
+      "doc": "The name of the XSUAA service binding, used for the XSUAA security auto-configuration and<br>MTXs sidecar communication."
+    },
+    {
+      "header": false,
+      "name": "cds.security.xsuaa.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.mock",
+      "doc": "Properties for authentication based on mock-users."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.mock.users",
+      "doc": "The mock-users, used for basic authentication in local development and test scenarios. The<br>key can be chosen arbitrarily and is used as the user name, if the `name` property is not<br>explicitly defined. In addition it can be leveraged to split configuration across multiple<br>profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.id",
+      "type": "String",
+      "doc": "The ID of the mock-user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.name",
+      "type": "String",
+      "doc": "The (mandatory) name of the mock-user. It's used to perform the basic authentication."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.password",
+      "type": "String",
+      "doc": "The (optional) password of the mock-user. It's used to perform the basic authentication."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.tenant",
+      "type": "String",
+      "doc": "The tenant of the mock-user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.systemUser",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if this mock-user is treated as a system user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.privileged",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if this mock-user is treated as the privileged user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.internalUser",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if this mock-user is treated as the internal user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.roles",
+      "type": "List<String>",
+      "doc": "The list of roles, that are assigned to this mock-user."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.features",
+      "type": "List<String>",
+      "doc": "The list of enabled feature toggles for this user. If set, it overrules features of the<br>tenant (if provided)."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.attributes",
+      "type": "Map<String,List<String>>",
+      "doc": "A map of user attributes, that are assigned to the mock-user. The name of the attribute<br>needs to be given as the key. The attribute values are provided as a list."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.additional",
+      "type": "Map<String,Object>",
+      "doc": "A map of additional properties of the mock-user. It can be used to mock authentication<br>specific properties (e.g. email address). The name of the additional attribute needs to<br>be given as the key. The value of the attribute can be provided as an arbitrary object."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.users.<key>.policies",
+      "type": "List<String>",
+      "doc": "A list of AMS policies associated with the mock-user."
+    },
+    {
+      "header": true,
+      "name": "cds.security.mock.defaultUsers",
+      "doc": "Enables a list of default mock-users."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.defaultUsers.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.security.mock.tenants",
+      "doc": "The tenants in local development and test scenarios. The key can be chosen arbitrarily and<br>is used as the tenant name, if the `name` property is not explicitly defined. In addition<br>it can be leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.tenants.<key>.name",
+      "type": "String",
+      "doc": "The (mandatory) name of the tenant"
+    },
+    {
+      "header": false,
+      "name": "cds.security.mock.tenants.<key>.features",
+      "type": "List<String>",
+      "doc": "The list of enabled feature toggles for this tenant."
+    },
+    {
+      "header": true,
+      "name": "cds.indexPage",
+      "doc": "Properties for the index page."
+    },
+    {
+      "header": false,
+      "name": "cds.indexPage.path",
+      "type": "String",
+      "default": "/",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.indexPage.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.protocols",
+      "doc": "Properties for all protocols."
+    },
+    {
+      "header": false,
+      "name": "cds.protocols.defaults",
+      "type": "List<String>",
+      "default": "odata-v2, odata-v4, odata-x4",
+      "doc": "The default protocols each ApplicationService serves, if protocols are not explicitly<br>configured otherwise. The default protocols are \"odata-v2\", \"odata-v4\" and \"odata-x4\". If the<br>defaults are overwritten with an empty list, all ApplicationServices are served by all<br>available protocol adapters."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4",
+      "doc": "Properties for the OData V4 protocol adapter."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.contextAbsoluteUrl",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if URLs in the @odata.context response annotation are absolute."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.edmxPath",
+      "type": "String",
+      "default": "edmx/v4",
+      "doc": "The JAR resource path to search for OData V4 EDMX files."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.searchMode",
+      "type": "String",
+      "default": "odata-lenient",
+      "doc": "Defines the handling of the $search query option. In `odata-strict` mode the search string is<br>parsed and interpreted according to the OData v4 $search specification. In `pass-through`<br>mode the search string is passed through to the data store. In `odata-lenient` mode the<br>search string is parsed and only passed through on parsing errors."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.endpoint",
+      "doc": "Properties of the OData V4 protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.endpoint.path",
+      "type": "String",
+      "default": "/odata/v4",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.fioriPreview",
+      "doc": "Properties for the Fiori Preview on the index page."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.fioriPreview.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.fioriPreview.ui5",
+      "doc": "Properties for the UI5 dependency used for the Fiori Preview."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.fioriPreview.ui5.version",
+      "type": "String",
+      "doc": ""
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.fioriPreview.ui5.host",
+      "type": "String",
+      "default": "https://sapui5.hana.ondemand.com",
+      "doc": ""
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.lazyI18n",
+      "doc": "Determines, if localization is applied to the EDMX lazily, saving memory resources."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.lazyI18n.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.batch",
+      "doc": "Properties for OData batch requests."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.batch.maxRequests",
+      "type": "long",
+      "default": "-1",
+      "doc": "Defines the maximum number of requests within OData batch requests. By default, no limit<br>applies."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV2",
+      "doc": "Properties for the OData V2 protocol adapter."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.edmxPath",
+      "type": "String",
+      "default": "edmx/v2",
+      "doc": "The JAR resource path to search for OData V2 EDMX files."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.caseSensitiveFilter",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines whether OData functions 'substringof', 'startswith' and 'endswith' are<br>case-sensitive."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.searchMode",
+      "type": "String",
+      "default": "odata-lenient",
+      "doc": "Defines the handling of the $search query option. In `odata-strict` mode the search string is<br>parsed and interpreted according to the OData v4 $search specification. In `pass-through`<br>mode the search string is passed through to the data store. In `odata-lenient` mode the<br>search string is parsed and only passed through on parsing errors."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV2.endpoint",
+      "doc": "Properties of the OData V2 protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.endpoint.path",
+      "type": "String",
+      "default": "/odata/v2",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV2.batch",
+      "doc": "Properties for OData batch requests."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV2.batch.maxRequests",
+      "type": "long",
+      "default": "-1",
+      "doc": "Defines the maximum number of requests within OData batch requests. By default, no limit<br>applies."
+    },
+    {
+      "header": true,
+      "name": "cds.hcql",
+      "doc": "Properties for the HCQL protocol adapter."
+    },
+    {
+      "header": true,
+      "name": "cds.hcql.endpoint",
+      "doc": "Properties of the HCQL protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.hcql.endpoint.path",
+      "type": "String",
+      "default": "/hcql",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.hcql.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp",
+      "doc": "Properties for the MCP protocol adapter."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.callPerActionTool",
+      "type": "boolean",
+      "default": "false",
+      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call_action tool."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.toonFormat",
+      "type": "boolean",
+      "default": "true",
+      "doc": "True, if the MCP server should use TOON format for tool output, otherwise JSON."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.maxInputChars",
+      "type": "int",
+      "default": "2000",
+      "doc": "Maximum allowed size of MCP tool input arguments in characters."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.endpoint",
+      "doc": "Properties of the MCP protocol adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.path",
+      "type": "String",
+      "default": "/mcp",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.mcp.autoWired",
+      "doc": "Properties for auto-wiring of local MCP clients."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.host",
+      "type": "String",
+      "default": "localhost",
+      "doc": "The MCP server host."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.port",
+      "type": "Integer",
+      "doc": "The MCP server port."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.user",
+      "type": "String",
+      "default": "privileged",
+      "doc": "The mock-user to use."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.password",
+      "type": "String",
+      "doc": "The mock-user's password."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.autoWired.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging",
+      "doc": "Properties for messaging services."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.webhooks",
+      "doc": "Properties for receiving messages through the webhook."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.webhooks.url",
+      "type": "String",
+      "doc": "The application webhook URL. This URL is used when registering the webhook at the message<br>broker."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.webhooks.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.routes",
+      "doc": "The list of routes for the composite messaging service. The first route that matches is used.<br>Therefore the order of these routes has significance."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.routes.<index>.service",
+      "type": "String",
+      "doc": "The target service of the route."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.routes.<index>.events",
+      "type": "List<String>",
+      "doc": "The list of events/topics, which are propagated to/from the target service."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.services",
+      "doc": "Properties for messaging services. The key can be chosen arbitrarily and is used as the<br>messaging service name, if the `name` property is not explicitly defined. In addition it can<br>be leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.name",
+      "type": "String",
+      "doc": "The name of the messaging service."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.kind",
+      "type": "String",
+      "doc": "The kind of the messaging service. It usually reflects the corresponding service binding<br>type. Possible values are: `local-messaging`, `file-based-messaging`,<br>`enterprise-messaging`, `message-queuing`, `redis-pubsub`, `kafka-channel-messaging`."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.binding",
+      "type": "String",
+      "doc": "The name of the service binding used for this messaging service. In case of<br>file-based-messaging this specifies the file-system path to the exchange file."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.subscribePrefix",
+      "type": "String",
+      "doc": "The string used to prefix topics when subscribing to events."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.publishPrefix",
+      "type": "String",
+      "doc": "The string used to prefix topics when publishing events."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.format",
+      "type": "String",
+      "doc": "The message format to be assumed on subscriptions and applied when publishing. Possible<br>values are: `cloudevents`"
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.services.<key>.connection",
+      "doc": "Properties for the JMS client connection."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.connection.dedicated",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if this messaging service uses its own dedicated JMS client connection. By<br>default, JMS client connections to the same messaging broker are shared."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.connection.properties",
+      "type": "Map<String,String>",
+      "doc": "Properties passed to the JMS client connection. The possible keys and values depend on<br>the messaging service implementation."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.services.<key>.queue",
+      "doc": "Properties of the queue that is created for the messaging service."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.queue.name",
+      "type": "String",
+      "doc": "The name of the queue. The queue may already exist with some custom configuration. In<br>that case the queue is not recreated."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.queue.config",
+      "type": "Map<String,Object>",
+      "doc": "Properties passed to the messaging broker when creating the queue. The possible keys and<br>values depend on the messaging service implementation."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.queue.subscriptions",
+      "type": "List<String>",
+      "doc": "A list of additional topics, that are subscribed on the queue. By default event handler<br>registrations should be used to trigger subscriptions. This property is intended for<br>purposes when subscriptions can not be inferred from event handler registrations."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.queue.forceListening",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Specifies whether a queue listener should be connected even if no subscription is<br>available."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.services.<key>.outbox",
+      "doc": "Properties to control, if and how the Outbox should be used for this messaging service."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.outbox.name",
+      "type": "String",
+      "default": "DefaultOutboxOrdered",
+      "doc": "The name of the outbox service to use. If not available or set, the in-memory outbox is<br>used as fallback."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.outbox.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.messaging.services.<key>.inbox",
+      "doc": "Properties to control, if and how the Inbox should be used for this messaging service."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.inbox.name",
+      "type": "String",
+      "default": "DefaultOutboxOrdered",
+      "doc": "The name of the outbox service to use as inbox. If not available or set, the in-memory<br>outbox is used as fallback."
+    },
+    {
+      "header": false,
+      "name": "cds.messaging.services.<key>.inbox.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy",
+      "doc": "Properties for multitenancy and extensibility."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.componentScan",
+      "type": "String",
+      "doc": "Package to be included in the component scan of the Subscribe, Deploy and Unsubscribe main<br>methods."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.endpoint",
+      "doc": "Properties of the subscription HTTP endpoints."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.endpoint.path",
+      "type": "String",
+      "default": "/mt/v1.0/subscriptions",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.subscriptionManager",
+      "doc": "Properties for the subscription manager service."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.subscriptionManager.endpoint",
+      "doc": "Properties of the subscription HTTP endpoint for Subscription Manager Service (SMS)."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.subscriptionManager.endpoint.path",
+      "type": "String",
+      "default": "/mt/sms/subscriptions",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.subscriptionManager.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.dataSource",
+      "doc": "Properties for the multitenant aware datasource."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dataSource.pool",
+      "type": "String",
+      "default": "hikari",
+      "doc": "Pool to use for the multitenant-aware datasource. Possible values are: `hikari`, `tomcat`."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dataSource.hanaEncryptionMode",
+      "type": "String",
+      "doc": "Optional tenant encryption mode used by the HANA database for new tenants. Possible values<br>are DEDICATED_KEY and MANAGED_KEY."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.dataSource.combinePools",
+      "doc": "Properties to control how the connection pools are maintained. This allows to configure,<br>that the connection pools for tenants contained in the same database are combined. Instead<br>of having a dedicated connection pool for each tenant schema."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dataSource.combinePools.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.serviceManager",
+      "doc": "Properties for the service-manager client."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.serviceManager.cacheRefreshInterval",
+      "type": "Duration",
+      "default": "PT20M",
+      "doc": "The cache refresh interval (as Duration)."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.serviceManager.tokenRetrievalTimeout",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.hanaMtService",
+      "doc": "Properties for the Hana multi tenant service"
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.tokenRetrievalTimeout",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.hanaTenantPrefix",
+      "type": "String",
+      "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>-<btp tenant<br>id>"
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.security",
+      "doc": "Properties for authorization."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.security.subscriptionScope",
+      "type": "String",
+      "default": "mtcallback",
+      "doc": "The scope by which the subscription endpoints are authorized."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.sidecar",
+      "doc": "Properties for the MTX sidecar client."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.sidecar.url",
+      "type": "String",
+      "doc": "The URL of the MTX sidecar. Setting this property, in combination with a present<br>service-manager service binding, activates the MTX features."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.sidecar.pollingInterval",
+      "type": "Duration",
+      "default": "PT5S",
+      "doc": "Specifies the time interval between polling the status of the lifecycle operation."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.sidecar.pollingTimeout",
+      "type": "Duration",
+      "default": "PT20M",
+      "doc": "Specifies the maximum waiting time for the operation to finish."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.appUi",
+      "doc": "Properties for the URL to the application's UI endpoints."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.appUi.url",
+      "type": "String",
+      "doc": "The URL to the application's UI, used for the 'Go to Application' link."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.appUi.tenantSeparator",
+      "type": "String",
+      "doc": "The separator for the tenant in the URL. Possible values are: `.`, `-`."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.healthCheck",
+      "doc": "Properties for health check of the multitenant-aware datasource."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.healthCheck.healthCheckStatement",
+      "type": "String",
+      "doc": "The statement that is used when executing a health check of the multitenant-aware<br>datasource."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.healthCheck.interval",
+      "type": "Duration",
+      "default": "PT10S",
+      "doc": "The time a health check result is cached and no further health checks are performed."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.healthCheck.timeout",
+      "type": "Duration",
+      "default": "PT1S",
+      "doc": "The timeout for health check requests to the MTX sidecar."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.healthCheck.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.liquibase",
+      "doc": "Properties for DB lifecycle management via Liquibase."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.liquibase.changeLog",
+      "type": "String",
+      "default": "/db/changelog/db.changelog-master.yaml",
+      "doc": "The location of the master Liquibase file."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.liquibase.contexts",
+      "type": "String",
+      "doc": "Optional: Comma separated list of active contexts."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.provisioning",
+      "doc": "Properties for the ProvisioningService from @sap/cds-mtxs."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.provisioning.url",
+      "type": "String",
+      "doc": "URL of the provisioning service. If not specified, `cds.multitenancy.sidecar.url` is taken<br>as default."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.provisioning.pollingInterval",
+      "type": "Duration",
+      "default": "PT5S",
+      "doc": "Specifies the time interval between polling the status of the provisioning operation."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.provisioning.pollingTimeout",
+      "type": "Duration",
+      "default": "PT10M",
+      "doc": "Specifies the maximum waiting time for the provisioning operation to finish."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.mock",
+      "doc": "Properties for the SQLite-based MTX mock for local development and testing."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.mock.sqliteDirectory",
+      "type": "String",
+      "doc": "Path to the directory to start looking for SQLite database files."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.mock.enabled",
+      "type": "boolean",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.dependencies",
+      "doc": "Properties for automatically reported subscription dependencies."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dependencies.destination",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Indicates if a subscription dependency should be registered for a bound service instance of<br>Destination service."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dependencies.portal",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Indicates if a subscription dependency should be registered for a bound service instance of<br>Portal service."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.dependencies.html5AppsRepo",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Indicates if a subscription dependency should be registered for a bound service instance of<br>html5-app-repo service."
+    },
+    {
+      "header": true,
+      "name": "cds.persistence",
+      "doc": "Properties for persistence services."
+    },
+    {
+      "header": true,
+      "name": "cds.persistence.services",
+      "doc": "Properties for persistence services. The key can be chosen arbitrarily and is used as the<br>persistence service name, if the `name` property is not explicitly defined. In addition it<br>can be leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.services.<key>.name",
+      "type": "String",
+      "doc": "The name of the persistence service."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.services.<key>.binding",
+      "type": "String",
+      "doc": "The name of the service binding used for this persistence service. If not set, the name is<br>used."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.services.<key>.dataSource",
+      "type": "String",
+      "doc": "The name of the existing data source. If not set, the auto-configured data source of the<br>binding is used."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.services.<key>.transactionManager",
+      "type": "String",
+      "doc": "The name of the existing transaction manager. If not set, the transaction manager is<br>automatically created."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.services.<key>.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.persistence.changeSet",
+      "doc": "Properties for ChangeSetContexts."
+    },
+    {
+      "header": false,
+      "name": "cds.persistence.changeSet.enforceTransactional",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if a `ChangeSetContext` should be always marked as transactional. Setting this<br>to `false` allows avoiding transactions for Select queries."
+    },
+    {
+      "header": true,
+      "name": "cds.application",
+      "doc": "Properties for application services."
+    },
+    {
+      "header": true,
+      "name": "cds.application.services",
+      "doc": "Properties for application services. The key can be chosen arbitrarily and is used as the<br>application service name, if the `name` property is not explicitly defined. In addition it<br>can be leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.name",
+      "type": "String",
+      "doc": "The name of the application service."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.model",
+      "type": "String",
+      "doc": "The qualified name of the CDS service, which is the model definition of this application<br>service. It defaults to the name of the application service itself."
+    },
+    {
+      "header": true,
+      "name": "cds.application.services.<key>.serve",
+      "doc": "Properties to configure how this service is served by protocol adapters."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.serve.ignore",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if the service is ignored by protocol adapters."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.serve.path",
+      "type": "String",
+      "doc": "The path this service should be served at by protocol adapters. The path is appended to<br>the protocol adapter's base path. If a service is served by multiple protocol adapters,<br>each adapter serves the service under this path."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.serve.protocols",
+      "type": "List<String>",
+      "doc": "The list of protocols adapters this service should be served by. By default the service<br>is served by all available protocol adapters. Possible values are: `odata-v4`,<br>`odata-v2`."
+    },
+    {
+      "header": true,
+      "name": "cds.application.services.<key>.serve.endpoints",
+      "doc": "Properties to control more fine-grained under which endpoints this service is served.<br>These properties override the more general properties `paths` and `protocols`."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.serve.endpoints.<index>.path",
+      "type": "String",
+      "doc": "The path, this endpoint should be served at by the protocol adapter. The path is<br>appended to the protocol adapter's base path."
+    },
+    {
+      "header": false,
+      "name": "cds.application.services.<key>.serve.endpoints.<index>.protocol",
+      "type": "String",
+      "doc": "The protocol adapter that serves this endpoint. Possible values are: `odata-v4`,<br>`odata-v2`."
+    },
+    {
+      "header": true,
+      "name": "cds.remote",
+      "doc": "Properties for remote services."
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services",
+      "doc": "Properties for remote services. The key can be chosen arbitrarily and is used as the<br>application service name, if the `name` property is not explicitly defined. In addition it<br>can be leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.name",
+      "type": "String",
+      "doc": "The name of the remote service."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.model",
+      "type": "String",
+      "doc": "The qualified name of the CDS service, which is the model definition of this remote<br>service. It defaults to the name of the remote service itself."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.type",
+      "type": "String",
+      "default": "odata-v4",
+      "doc": "The protocol type of the destination. Possible values are: `odata-v4`, `odata-v2` and<br>`hcql`."
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services.<key>.http",
+      "doc": "Properties to configure http requests for this remote service."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.http.suffix",
+      "type": "String",
+      "doc": "A suffix for the remote service, that is appended to the remote service's URL."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.http.service",
+      "type": "String",
+      "doc": "The name of the modelled service, that is appended to the remote service's URL (after the<br>suffix). It defaults to the qualified name of the model definition."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.http.headers",
+      "type": "Map<String,String>",
+      "doc": "A map of headers and their values, to be added to every outgoing request."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.http.queries",
+      "type": "Map<String,String>",
+      "doc": "A map of query parameters and their values, to be added to every outgoing request."
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services.<key>.http.csrf",
+      "doc": "Properties to configure CSRF token requests for this service."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.http.csrf.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services.<key>.destination",
+      "doc": "Properties to configure a remote destination for this remote service."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.name",
+      "type": "String",
+      "doc": "The name of the destination in the destination service or SAP Cloud SDK destination<br>accessor."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.properties",
+      "type": "Map<String,Object>",
+      "doc": "A map of generic destination properties supported by SAP Cloud SDK. These properties are<br>used to dynamically build a destination."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.retrievalStrategy",
+      "type": "String",
+      "doc": "The retrieval strategy used, when loading destinations from SAP BTP Destination Service.<br>See<br>https://sap.github.io/cloud-sdk/docs/java/features/connectivity/sdk-connectivity-destination-service#retrieval-strategy-options<br>for possible values."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.tokenExchangeStrategy",
+      "type": "String",
+      "doc": "The token exchange strategy used, when loading destinations from SAP BTP Destination<br>Service. See<br>https://sap.github.io/cloud-sdk/docs/java/features/connectivity/sdk-connectivity-destination-service#token-exchange-options<br>for possible values."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.onBehalfOf",
+      "type": "String",
+      "default": "currentUser",
+      "doc": "Determines the user and tenant context that is used for IAS app-2-app destinations.<br>Possible values are: {@code currentUser}, {@code systemUser} and {@code<br>systemUserProvider}"
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services.<key>.binding",
+      "doc": "Properties to configure a service binding for this remote service. *"
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.binding.name",
+      "type": "String",
+      "doc": "The name of the service binding which provides the credentials."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.binding.onBehalfOf",
+      "type": "String",
+      "default": "currentUser",
+      "doc": "Determines the user and tenant context that is used. Possible values are: `currentUser`,<br>`systemUser` and `systemUserProvider`"
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.binding.options",
+      "type": "Map<String,String>",
+      "doc": "A map of additional options that are used to enrich the used service binding. The<br>supported options depend on the type of service binding that is used. Possible options<br>are: `url` for service bindings of type `xsuaa`"
+    },
+    {
+      "header": true,
+      "name": "cds.locales",
+      "doc": "Properties for locale configurations."
+    },
+    {
+      "header": true,
+      "name": "cds.locales.normalization",
+      "doc": "Properties to configure how locales should be normalized."
+    },
+    {
+      "header": false,
+      "name": "cds.locales.normalization.defaults",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if the non-normalization include list, as described in the documentation, is<br>applied."
+    },
+    {
+      "header": false,
+      "name": "cds.locales.normalization.includeList",
+      "type": "List<String>",
+      "doc": "The list of additional locales to add to the include list of non-normalized locales."
+    },
+    {
+      "header": true,
+      "name": "cds.errors",
+      "doc": "Properties for error handling."
+    },
+    {
+      "header": false,
+      "name": "cds.errors.extended",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if error messages are automatically extended with additional debug information<br>(only for development)."
+    },
+    {
+      "header": false,
+      "name": "cds.errors.preferServiceException",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if CDS4j exceptions are replaced with corresponding ServiceException."
+    },
+    {
+      "header": true,
+      "name": "cds.errors.stackMessages",
+      "doc": "Properties to configure how error messages from the framework are treated. If turned off,<br>only framework error messages, that are explicitly localized are returned. Other errors are<br>mapped to their plain HTTP error code representation."
+    },
+    {
+      "header": false,
+      "name": "cds.errors.stackMessages.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.errors.defaultTranslations",
+      "doc": "Properties to configure how default translations from the framework are used."
+    },
+    {
+      "header": false,
+      "name": "cds.errors.defaultTranslations.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.drafts",
+      "doc": "Properties for draft-enabled entities."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.cancellationTimeout",
+      "type": "Duration",
+      "default": "PT15M",
+      "doc": "The maximum amount of time, since the last change, an entity instance is locked by the user<br>who is editing its draft version."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.deletionTimeout",
+      "type": "Duration",
+      "default": "PT720H",
+      "doc": "The maximum amount of time a draft is kept, before it is garbage collected."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.persistence",
+      "type": "String",
+      "default": "joint",
+      "doc": "Determines the persistence mode for draft-enabled entities. In case of `joint` persistence<br>queries with JOINs between databases tables/views of active instances and databases tables of<br>draft instances can occur. If set to `split` such queries are avoided. Possible values are:<br>`joint`, `split`."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.enforceReadonly",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if @readonly, @Core.Computed and similar annotations are enforced on draft<br>instances already and therefore no longer during activation."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.postActive",
+      "type": "boolean",
+      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined. If not set, defaults to {@code true} when the<br>entity has a draft-new action and to {@code false} otherwise."
+    },
+    {
+      "header": true,
+      "name": "cds.drafts.gc",
+      "doc": "Properties to configure the automatic draft garbage collection."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.gc.interval",
+      "type": "Duration",
+      "default": "PT6H",
+      "doc": "The interval, in which the automatic draft garbage collection is triggered."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.gc.maxPause",
+      "type": "Duration",
+      "default": "PT5M",
+      "doc": "The max duration the draft GC timer task pauses in between processing GCs of different<br>tenants."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.gc.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query",
+      "doc": "Properties for augmentation of CQN queries."
+    },
+    {
+      "header": true,
+      "name": "cds.query.limit",
+      "doc": "Properties for server-driven paging."
+    },
+    {
+      "header": false,
+      "name": "cds.query.limit.default",
+      "type": "int",
+      "default": "0",
+      "doc": "The default page size for server-driven paging. Setting this property to 0 or -1 disables<br>the default page size."
+    },
+    {
+      "header": false,
+      "name": "cds.query.limit.max",
+      "type": "int",
+      "default": "1000",
+      "doc": "The maximum page size for server-driven paging. Setting this property to 0 or -1 disables<br>the maximum page size."
+    },
+    {
+      "header": true,
+      "name": "cds.query.limit.reliablePaging",
+      "doc": "Properties for reliable server-driven paging, based on last row of ordered result."
+    },
+    {
+      "header": false,
+      "name": "cds.query.limit.reliablePaging.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.implicitSorting",
+      "doc": "Properties for the implicit-sorting feature."
+    },
+    {
+      "header": false,
+      "name": "cds.query.implicitSorting.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.restrictions",
+      "doc": "Properties for query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.restrictions.expand",
+      "doc": "Properties for expand query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.expand.maxLevels",
+      "type": "int",
+      "default": "-1",
+      "doc": "The default limit on how many levels of expands are allowed. `-1` means no restriction."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.expand.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.query.restrictions.filter",
+      "doc": "Properties for filter query restrictions."
+    },
+    {
+      "header": false,
+      "name": "cds.query.restrictions.filter.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.sql",
+      "doc": "Properties for SQL generation. *"
+    },
+    {
+      "header": false,
+      "name": "cds.sql.maxBatchSize",
+      "type": "int",
+      "default": "1000",
+      "doc": "The JDBC batch size used for batch and bulk operations."
+    },
+    {
+      "header": true,
+      "name": "cds.sql.hana",
+      "doc": "Configuration properties for an SQL generation on SAP HANA."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.hana.ignoreLocale",
+      "type": "boolean",
+      "default": "false",
+      "doc": "If set to `true`, this property completely disables locale specific handling on SAP HANA."
+    },
+    {
+      "header": true,
+      "name": "cds.sql.hana.search",
+      "doc": "Properties for search on SAP HANA Cloud."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.hana.search.fuzzy",
+      "type": "boolean",
+      "default": "false",
+      "doc": "If set to `true`, fuzzy search on SAP HANA Cloud is activated. Requires<br>`cds.sql.hana.optimizationMode: hex`"
+    },
+    {
+      "header": false,
+      "name": "cds.sql.hana.search.fuzzinessThreshold",
+      "type": "BigDecimal",
+      "default": "0.8",
+      "doc": "The least level of fuzziness, searchable elements need to have to be considered in a<br>fuzzy search. The value can be in the inclusive range of 0 to 1, where 1 means no<br>fuzziness (exact search)."
+    },
+    {
+      "header": true,
+      "name": "cds.sql.inlineCount",
+      "doc": "Configuration properties for an SQL generation related to inline count."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.inlineCount.mode",
+      "type": "String",
+      "default": "auto",
+      "doc": "Sets the inline-count mode. Possible values are: `auto`, `window-function` and `query`"
+    },
+    {
+      "header": true,
+      "name": "cds.sql.toOnePath",
+      "doc": "Configuration properties for to-one path expressions."
+    },
+    {
+      "header": false,
+      "name": "cds.sql.toOnePath.mode",
+      "type": "String",
+      "default": "always-join",
+      "doc": "Sets the to-one path mode. Possible values are: `always-join` (default) and `optimize`. In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog",
+      "doc": "Properties for AuditLog configuration. *"
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.v2",
+      "doc": "Configuration of the AuditLog V2 feature."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.v2.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.personalData",
+      "doc": "Configuration of the Personal Data handler."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.personalData.throwOnMissingDataSubject",
+      "type": "boolean",
+      "default": "true",
+      "doc": "If set to {@code true} and the data subject is missing, a `ServiceException` is thrown."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.personalData.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.personalData.logRead",
+      "doc": "If set to {@code true}, audit logging of access to sensitive personal data is enabled."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.personalData.logRead.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.outbox",
+      "doc": "Properties to configure AuditLog usage of Outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.outbox.name",
+      "type": "String",
+      "default": "DefaultOutboxUnordered",
+      "doc": "The name of the outbox service to use. If not available or set, the in-memory outbox is<br>used as fallback."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.outbox.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.connectionPool",
+      "doc": "Properties to configure the HTTP connection pool for AuditLog usage."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.connectionPool.maxConnections",
+      "type": "Integer",
+      "default": "200",
+      "doc": "The max amount of connections in the pool."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.connectionPool.maxConnectionsPerRoute",
+      "type": "Integer",
+      "default": "20",
+      "doc": "The max amount of connections from the pool per route"
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.connectionPool.timeout",
+      "type": "Duration",
+      "default": "PT1M",
+      "doc": "The threshold for connect timeout, socket timeout and connection request timeout."
+    },
+    {
+      "header": true,
+      "name": "cds.auditLog.connectionPool.combinePools",
+      "doc": "Properties to control how the http connection pools are maintained. This allows to configure,<br>whether all tenants will share a common http connection pool instead of having a dedicated<br>http connection pool for each tenant."
+    },
+    {
+      "header": false,
+      "name": "cds.auditLog.connectionPool.combinePools.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox",
+      "doc": "Properties for Outbox configuration. *"
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.inMemory",
+      "doc": "Properties for the in-memory Outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.inMemory.emitDuringChangeSetContext",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Specifies whether the outbox emits the event during the current `ChangeSetContext` or<br>afterwards. In case the `ChangeSetContext` wraps a DB transaction, it needs to be<br>considered that emitted messages during the transaction can't be rolled back on cancelled<br>transaction. Messages being emitted after the transaction might get lost, after transaction<br>has been committed successful."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.inMemory.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent",
+      "doc": "Properties for the persistent Outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.statusLock",
+      "doc": "Properties to configure the locking strategy using a status column. By default row-level<br>database locks are used. Only enable status locks, if all deployed instances are already<br>using @sap/cds-dk >= 9 and CAP Java >= 4.5.0 and have already set<br>`cds.outbox.persistent.scheduler.enabled` to `true`"
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.statusLock.timeout",
+      "type": "Duration",
+      "default": "PT1H",
+      "doc": "The timeout, after which a message with status PROCESSING is considered for processing by<br>other instances again."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.statusLock.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler",
+      "doc": "Properties for the task-based outbox collector."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask",
+      "doc": "Properties to configure regular iterations over outbox tables of all tenants."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.startDelay",
+      "type": "Duration",
+      "default": "PT30S",
+      "doc": "The time to wait after startup, before triggering this task for the first time."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.interval",
+      "type": "Duration",
+      "default": "PT2H",
+      "doc": "The time to wait between executions of this task."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.spreadTime",
+      "type": "Duration",
+      "default": "PT15M",
+      "doc": "The time span over which checks of individual tenants are randomly distributed."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.allTenantsTask.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask",
+      "doc": "Properties to configure hot tenant management to avoid all tenants iterations."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.sharedOutbox",
+      "type": "String",
+      "doc": "The name of the outbox to be used for hot tenants events."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.maxTaskDelay",
+      "type": "Duration",
+      "default": "PT2H",
+      "doc": "The time to wait after tenant event to check the tenant outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.outbox.services",
+      "doc": "Properties for Outbox services. The key can be chosen arbitrarily and is used as the outbox<br>service name, if the `name` property is not explicitly defined. In addition it can be<br>leveraged to split configuration across multiple profiles."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.name",
+      "type": "String",
+      "doc": "The name of the Outbox service."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.maxAttempts",
+      "type": "int",
+      "default": "10",
+      "doc": "Specifies the maximum number of attempts to emit a message stored in the Outbox. Messages<br>that have reached the maximum number of attempts are ignored by the Outbox and need to be<br>handled by the application."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.threads",
+      "type": "int",
+      "default": "2",
+      "doc": "Determines the size of the thread pool, used to process outbox tasks. This configuration<br>only applies to outbox instances configured as `ordered: false`. For outbox instances<br>configured as `ordered: true` only one thread is used."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.ordered",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Controls how messages are published by the outbox. If set to `true`, the messages are<br>sequentially published exactly in the order they were stored in the Outbox. If set to<br>`false`, the messages are allowed to be published in random order and in parallel."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.observable",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Controls whether the outbox records telemetry information for observability purposes."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.checkVersion",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if message versions are checked to avoid processing newer messages in older<br>application deployments."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.services.<key>.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.ucl",
+      "doc": "Properties for the unified customer landscape."
+    },
+    {
+      "header": true,
+      "name": "cds.ucl.endpoint",
+      "doc": "Properties of the tenant mapping HTTP endpoint for Unified Customer Landscape (UCL) service."
+    },
+    {
+      "header": false,
+      "name": "cds.ucl.endpoint.path",
+      "type": "String",
+      "default": "ucl/spii/v1/tenantMappings",
+      "doc": "The base-path of the adapter endpoint."
+    },
+    {
+      "header": false,
+      "name": "cds.ucl.endpoint.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.ucl.x509",
+      "doc": "Properties for the certificate validation of the Unified Customer Landscape (UCL) service."
+    },
+    {
+      "header": false,
+      "name": "cds.ucl.x509.certIssuer",
+      "type": "String",
+      "doc": "Issuer of the certificate used for client certificate validation."
+    },
+    {
+      "header": false,
+      "name": "cds.ucl.x509.certSubject",
+      "type": "String",
+      "doc": "Subject of the certificate used for client certificate validation."
+    }
+  ]
+}
