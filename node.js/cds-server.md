@@ -45,6 +45,7 @@ The built-in `server.js` constructs an [express.js app](cds-facade#cds-app), and
 Its implementation essentially is as follows:
 
 ```js twoslash
+
 const cds = require('@sap/cds')
 module.exports = async function cds_server(options) {
 
