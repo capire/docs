@@ -58,7 +58,6 @@ The following table lists the individual recipes provided by CAP for APIs that h
 |[c.s.c.s.m.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
 |[c.s.c.s.m.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
-In addition, an umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for APIs deprecated in that AND previous releases, plus Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
