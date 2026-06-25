@@ -132,8 +132,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.9.0',
-    java_cds4j: '4.9.0',
+    java_services: '4.9.1',
+    java_cds4j: '4.9.1',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
@@ -201,12 +201,6 @@ config.themeConfig.search = {
   }
 }
 
-// Add twoslash transformer to the markdown config (if requested as it slows down builds)
-import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
-if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-  config.markdown.codeTransformers = [ transformerTwoslash() ]
-}
-
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
@@ -220,6 +214,15 @@ config.markdown.config = md => {
   MdLiveCode.install(md)
   MdDiagramSvg.install(md)
   md.use(dl)
+}
+
+// Add twoslash transformer to the markdown config (if requested as it slows down builds)
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
+  config.markdown.codeTransformers = [transformerTwoslash({
+    twoslashOptions: { compilerOptions: { paths: { "@sap/cds": [MdTypedModels.cdsTypesPath()] } } }
+  })],
+  config.markdown.languages.push('js', 'jsx', 'ts', 'tsx')
 }
 
 // Add custom buildEnd hook
