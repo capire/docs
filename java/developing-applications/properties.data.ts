@@ -17,7 +17,9 @@ function massageProperties(properties: JavaSdkProperties[]): OurProperties[] {
       defaultValue = defaultValue.replace(/, ?/g, ',<br>')
     }
     return {
-      name: name.replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>'),  // decorate special <key> and <index> names
+      name: name
+        .replaceAll(/<(index|key)>/g, '<i>&lt;$1&gt;</i>') // decorate special <key> and <index> names
+        .replaceAll('.', '.<wbr>'),  // wrap long property names on dots
       type: type?.replaceAll(/<(.*)>/g, ''), // remove generics for display
       typeFull: type,
       description: md2Html(doc),
