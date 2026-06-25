@@ -85,7 +85,7 @@ Make sure that you've prepared a [local environment for CF deployments](../deplo
 
 #### 2. Prepare and deploy the consumer application { #co-located-consumer }
 
-As client, `xtravels-srv` first needs a valid configuration for the remote service `sap.capire.flights.data`:
+As client, `xtravels` first needs a valid configuration for the remote service `sap.capire.flights.data`:
 
 ::: code-group
 ```yaml [Java: application.yaml]
@@ -171,7 +171,7 @@ For production deployment, we recommend combining both services with the shared 
 
 #### 3. Prepare and deploy the provider application { #co-located-provider }
 
-As server, `xflights-srv` needs to restrict service `sap.capire.flights.data` to the technical client calling from the same application.
+As server, `xflights` needs to restrict service `sap.capire.flights.data` to the technical client calling from the same application.
 This can be done by adding pseudo-role [`internal-user`](./cap-users#pseudo-roles) to the service:
 
 ::: code-group
