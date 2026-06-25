@@ -32,9 +32,11 @@ In property files `<index>` should be replaced with a number and `<key>` with an
   </thead>
   <tr v-for="p in properties" :key="p.name" :id="p.anchor">
     <td class="anchor"><a :href="'#'+p.anchor" class="header-anchor"></a></td>
-    <td class="prop"      v-html="p.name" :class="{ group: p.header }"></td>
+    <td class="prop"      :class="{ group: p.header }">
+      <Config :label="p.nameHTML" java>{{p.name}}={{ Array.isArray(p.defaultValue) ? `${JSON.stringify(p.defaultValue)}` : p.defaultValue }}</Config>
+    </td>
     <td class="java-type" v-html="p.type" :title="p.typeFull"></td>
-    <td class="default" v-html="p.defaultValue"></td>
+    <td class="default" v-html="p.defaultValueHTML"></td>
     <td class="descr"   v-html="p.description"></td>
   </tr>
 </table>
