@@ -60,9 +60,22 @@ In property files `<index>` should be replaced with a number and `<key>` with an
     border-right:none;
   }
   th.prop,   td.prop { border-left:none; padding-left:0px;}
+  thead {
+    position: sticky;
+    top: calc(var(--vp-nav-height, 44px) + var(--vp-layout-top-height, 0px));
+    z-index: 4;
+  }
+  thead th {
+    position: sticky;
+    top: calc(var(--vp-nav-height, 44px) + var(--vp-layout-top-height, 0px));
+    z-index: 5;
+    background: var(--vp-c-bg);
+  }
   table {
+    display: table;
     width: max-content;
     min-width: 100%;
+    overflow-x: visible;
   }
   th.java-type, td.java-type { white-space: nowrap; }
   th.default, td.default {
@@ -82,12 +95,6 @@ In property files `<index>` should be replaced with a number and `<key>` with an
 
   /* expand this extra wide table on big screens */
   @media screen and (min-width: 1600px) {
-    table {
-      display: table;
-      width: max-content;
-      min-width: 100%;
-      overflow-x: visible;
-    }
     th.prop, td.prop {
       width: 36ch;
       max-width: 36ch;
