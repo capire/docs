@@ -453,3 +453,20 @@ Features:
 Available for:
 
 [![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-inspector#readme)
+
+## AI
+
+The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1. It automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
+
+AI-powered recommendations are then added to your Fiori UIs as shown below.
+
+![Screenshot showing the Recommendations](assets/index/recommendations.png)
+
+Additionally, the AI Plugin embeds SAP AI Core as a standard CAP service following the Calesi pattern, giving you automatic service binding resolution along with tenant-aware access including managed resource groups and deployments.
+
+The Java version of this plugin is currently in alpha.
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
+[![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)
