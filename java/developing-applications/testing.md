@@ -15,7 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 This section describes some best practices and recommendations for testing CAP Java applications.
 
-As described in [Modular Architecture](building#modular_architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
+As described in [Modular Architecture](building#modular-architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
 
 Typical areas that require testing are the [services](../cqn-services/#cdsservices) that dispatch events to [event handlers](../event-handlers/), the event handlers themselves that implement the behaviour of the services, and finally the APIs that the application services define and that are exposed to clients through [OData](../cqn-services/application-services#odata-requests).
 
