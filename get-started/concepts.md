@@ -122,14 +122,14 @@ Refer to *[On the Nature of Models](../cds/models)* in the CDS reference docs. {
 
 ### Associations
 
-Approached from an SQL angle, CDS adds the concepts of (managed) *[Associations](../cds/cdl#associations)*, and [path expressions](../cds/cql#path-expressions) linked to that, which greatly increases the expressiveness of domain data models. For example, we can write queries, and hence declare views like that:
+Approached from an SQL angle, CDS adds the concepts of (managed) *[Associations](../cds/cdl#associations)*, and [path expressions](../cds/cxl#path-expressions-ref) linked to that, which greatly increases the expressiveness of domain data models. For example, we can write queries, and hence declare views like that:
 
 ```cds [Using Associations]
 entity EnglishBooks as select from Books
 where author.country.code = 'GB';
 ```
 
-This is an even more compact version, using *[infix filters](../cds/cql#with-infix-filters)* and *navigation*.
+This is an even more compact version, using *[infix filters](../cds/cxl#infix-filters)* and *navigation*.
 
 ```cds
 entity EnglishBooks as select from Authors[country.code='GB']:books;

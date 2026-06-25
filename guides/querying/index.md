@@ -173,7 +173,7 @@ JOIN Authors ON Books.author_ID = Authors.ID
 SELECT ID, title, author.name as author from Books
 ```
 
-[Learn more about Path Expressions in CQL.](../../cds/cql#path-expressions){.learn-more}
+[Learn more about Path Expressions in CXL.](../../cds/cxl#path-expressions-ref){.learn-more}
 
 ### Nested Projections
 
