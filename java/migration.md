@@ -110,7 +110,7 @@ The following properties have been deprecated and might be removed in a future m
 | [cds.outbox.inMemory.enabled](./developing-applications/properties#cds-outbox-inmemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
-<div id="removed-properties-4-to-5 " />
+<div id="removed-properties-4-to-5" />
 
 The following table gives an overview about the removed properties:
 
