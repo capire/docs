@@ -98,8 +98,8 @@ The following properties have been deprecated and might be removed in a future m
 | Deprecated Property | Explanation |
 | --- | --- |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
-| [cds.outbox.inMemory.emitDuringChangeSetContext](./developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
-| [cds.outbox.inMemory.enabled](./developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| [cds.outbox.inMemory.emitDuringChangeSetContext](./developing-applications/properties#cds-outbox-inmemory-emitduringchangesetcontext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| [cds.outbox.inMemory.enabled](./developing-applications/properties#cds-outbox-inmemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
 <div id="removed-properties-4-to-5 " />

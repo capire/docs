@@ -155,7 +155,7 @@ Also a service binding to the AuditLog v2 service has to be added to the CAP Jav
 
 <div id="handler-service-plans"/>
 
-If it's required to disable the AuditLog v2 handler for some reason, this can be achieved by setting the CDS property [`cds.auditLog.v2.enabled`](../java/developing-applications/properties#cds-auditLog-v2-enabled) to `false` in _application.yaml_:
+If it's required to disable the AuditLog v2 handler for some reason, this can be achieved by setting the CDS property [`cds.auditLog.v2.enabled`](../java/developing-applications/properties#cds-auditlog-v2-enabled) to `false` in _application.yaml_:
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]

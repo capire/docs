@@ -944,6 +944,6 @@ See section [Multitenancy Configuration Properties](#mtx-properties) for more de
 
 ## Multitenancy Configuration Properties { #mtx-properties }
 
-A number of multitenancy settings can be configured through application configuration properties. See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details. All properties can be found in the [properties overview](./developing-applications/properties#cds-multiTenancy). The prefix for multitenancy-related settings is `cds.multitenancy`.
+A number of multitenancy settings can be configured through application configuration properties. See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details. All properties can be found in the [properties overview](./developing-applications/properties#cds-multitenancy). The prefix for multitenancy-related settings is `cds.multitenancy`.
 
 <span id="aftermtxpropertis" />

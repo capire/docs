@@ -363,8 +363,8 @@ By default, the CAP Java SDK provides protocol adapters for OData V4 and V2 and 
 
 | Protocol | Default base path | CDS Property                                                                      |
 |----------|-------------------|-----------------------------------------------------------------------------------|
-| OData V4 | `/odata/v4`       | [`cds.odataV4.endpoint.path`](../developing-applications/properties#cds-odataV4-endpoint-path) |
-| OData V2 | `/odata/v2`       | [`cds.odataV2.endpoint.path`](../developing-applications/properties#cds-odataV2-endpoint-path) |
+| OData V4 | `/odata/v4`       | [`cds.odataV4.endpoint.path`](../developing-applications/properties#cds-odatav4-endpoint-path) |
+| OData V2 | `/odata/v2`       | [`cds.odataV2.endpoint.path`](../developing-applications/properties#cds-odatav2-endpoint-path) |
 
 The following example shows, how to deviate from the defaults:
 ::: code-group
