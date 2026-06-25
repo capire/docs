@@ -44,7 +44,7 @@ Here, the *recipe* `com.sap.cds.services.migrations.Cap_5.0` from CAP Java's Ope
 
 ### Currently Released CAP Java Migrations
 
-An umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for APIs deprecated in that AND previous releases, plus Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
+An umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for this release and all previous releases. Additionally, it performs Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
 
 The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal.
 
