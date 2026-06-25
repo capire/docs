@@ -42,7 +42,7 @@ All three service scenarios can be addressed through configuration variants of t
 CAP supports out-of-the-box consumption of various types of [remote services](#remote-services):
 
 * [Co-located services](#co-located-services) as part of the same deployment and bound to the same identity instance (that is, belong to the same trusted [application zone](./overview#application-zone)).
-* [External services](#app-to-app) that can be running on non-BTP platforms.
+* [External services](#ias-app-2-app) that can be running on non-BTP platforms.
 * [BTP reuse services](#ias-reuse) consumed via service binding. <!-- INTERNAL -->
 
 
@@ -65,8 +65,8 @@ You can test CAP's built-in support for co-located services in practice by modif
 `xflights` acts as a master data provider exposing basic flight data in service `sap.capire.flights.data` via different protocols.
 On the client side, `xtravels` imports this service as a CAP remote service and fetches data for federation.
 
-::: tip
-CAP offers a simplified co-located service setup by leveraging remote services that require:
+::: tip CAP offers 
+A simplified co-located service setup by leveraging remote services that require:
 - Shared identity instance
 - URL for the destination
 - Principal propagation mode (optional)
@@ -75,7 +75,7 @@ CAP offers a simplified co-located service setup by leveraging remote services t
 
 To combine both applications in a co-located setup, follow these steps:
 
-#### 1. Prepare the CF environment { #prepare }
+#### 1. Prepare the Cloud Foundry Environment { #prepare }
 
 Make sure that you've prepared a [local environment for CF deployments](../deploy/to-cf#prerequisites) and in addition:
 - A Cloud Foundry (CF) space in a subaccount.
@@ -83,7 +83,7 @@ Make sure that you've prepared a [local environment for CF deployments](../deplo
 - [IAS tenant](./authentication#ias-ready) mapped to the subaccount.
 
 
-#### 2. Prepare and deploy the consumer application { #co-located-consumer }
+#### 2. Prepare and Deploy the Consumer Application { #co-located-consumer }
 
 As client, `xtravels` first needs a valid configuration for the remote service `sap.capire.flights.data`:
 
@@ -169,7 +169,7 @@ For production deployment, we recommend combining both services with the shared 
 :::
 
 
-#### 3. Prepare and deploy the provider application { #co-located-provider }
+#### 3. Prepare and Deploy the Provider Application { #co-located-provider }
 
 As server, `xflights` needs to restrict service `sap.capire.flights.data` to the technical client calling from the same application.
 This can be done by adding pseudo-role [`internal-user`](./cap-users#pseudo-roles) to the service:
@@ -224,7 +224,7 @@ cds up
 ```
 :::
 
-#### 4. Verify the deployment { #verify }
+#### 4. Verify the Deployment
 
 First, you can check the overall deployment status at the CF CLI level. Specifically, the application services must be started successfully and the shared identity instance must be verified.
 
@@ -266,11 +266,11 @@ In contrast to [co-located services](#co-located-services), external services do
 As a consequence, external services can run cross-regionally; even non-BTP systems might be involved.
 A prerequisite for external service calls is a trust federation between the consumer and the provider system.
 
-A seamless integration experience for external service communication is provided by [IAS App-2-App](#app-to-app) flows, which are offered by CAP via remote services.
+A seamless integration experience for external service communication is provided by [IAS App-2-App](#ias-app-2-app) flows, which are offered by CAP via remote services.
 [BTP Destinations](../services/consuming-services#using-destinations) offer [various authentication strategies](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/http-destinations) such as SAML 2.0 as required by many S/4 system endpoints. Both CAP Java and CAP Node.js support IAS App-2-App via configuration to handle token exchange automatically - Java uses service bindings with `ias-dependency-name`, while Node.js uses BTP Destinations with `tokenService.body.resource`.
 
 
-### IAS App-2-App { #app-to-app }
+### IAS App-2-App
 
 As a first-class citizen, [IAS](./authentication#ias-auth) is positioned to simplify cross-regional requests with user propagation.
 Prerequisites are identity instances on both consumer and provider sides, plus a registered IAS dependency in the consumer instance.
@@ -293,7 +293,7 @@ CAP offers App-2-App setup by leveraging remote services that require:
 
 
 
-#### 1. Prepare and deploy the provider application
+#### 1. Prepare and Deploy the Provider Application
 
 Assuming the same local CF environment setup as [here](#prepare), clone the sample application ([`xflights-java`](https://github.com/capire/xflights-java/tree/main) or [`xflights`](https://github.com/capire/xflights/tree/main) for Node.js), or if already cloned and modified locally, reset to the remote branch.
 
@@ -382,7 +382,7 @@ Use different CAP roles for technical clients without user propagation and for n
 Instead of using the same role, expose dedicated CDS services to technical clients that are not accessible to business users and vice versa.
 :::
 
-#### 2. Prepare and deploy the consumer application { #consumer }
+#### 2. Prepare and Deploy the Consumer Application { #consumer }
 
 Like the provider application (xflights), clone the sample application ([`xtravels-java`](https://github.com/capire/xtravels-java/tree/main) or [`xtravels`](https://github.com/capire/xtravels/tree/main) for Node.js), or if already cloned and modified locally, reset to the remote branch.
 
@@ -547,7 +547,7 @@ Note that property `oauth2-configuration.token-policy.access-token-format: jwt` 
 
 :::
 
-#### 3. Connect consumer with provider { #connect }
+#### 3. Connect Consumer with Provider { #connect }
 
 Now create the missing IAS dependency to establish trust for the API service call targeting the provided API with ID `data-consumer`.
 
