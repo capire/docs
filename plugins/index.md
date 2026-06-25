@@ -456,8 +456,6 @@ Available for:
 
 ## AI
 
-Node.js &nbsp; Java <Alpha />
-
 The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1. It automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
 
 AI-powered recommendations are then added to your Fiori UIs as shown below.
@@ -465,6 +463,8 @@ AI-powered recommendations are then added to your Fiori UIs as shown below.
 ![Screenshot showing the Recommendations](assets/index/recommendations.png)
 
 Additionally, the AI Plugin embeds SAP AI Core as a standard CAP service following the Calesi pattern, giving you automatic service binding resolution along with tenant-aware access including managed resource groups and deployments.
+
+The Java version of this plugin is currently in alpha.
 
 Available for:
 
