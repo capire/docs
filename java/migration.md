@@ -37,21 +37,29 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
   -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_5.0
 ```
 
-Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_5.0` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
-The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+An umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for this release and all previous releases. Additionally, it performs Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
+
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
-|[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
-|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
-|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
-|[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[c.s.c.s.m.CustomOutboxOrdered](#adjusted-defaults-4-to-5)|Adds `ordered: true` to every custom entry under `cds.outbox.services` (except the built-in `DefaultOutboxOrdered`/`DefaultOutboxUnordered`) to preserve the previous behavior, as the default of `cds.outbox.services.<name>.ordered` changes from `true` to `false` in CAP Java 5.0.|5.0.0|
+|c.s.c.s.m.MigrateCdsMavenPluginConfig|Migrates the `cds-maven-plugin` configuration to CAP Java 5.0: removes configuration elements no longer supported by the plugin and aligns the `@sap/cds-dk` version with the cds-services release shipping this recipe.|5.0.0|
+|c.s.c.s.m.SearchModeProperty|Migrates the legacy `cds.sql.search.mode` property to `cds.sql.search.localized`. Values `localized-view` and `generic` are mapped to `view`; `localized-association` causes the property to be removed.|5.0.0|
+|[c.s.c.s.m.Cap_5.0_Properties](#removed-properties-4-to-5)|Removes application properties that are no longer supported in CAP Java 5.0 and have no replacement (for example `cds.errors.combined`, `cds.sql.collate`, `cds.sql.hana.optimizationMode`, `cds.odataV4.searchMode`, `cds.odataV2.searchMode`, and the removed `cds.multiTenancy.serviceManager.*` flags).|5.0.0|
+|c.s.c.s.m.Cap_4.9_Properties|Replaces deprecated application properties with their CAP Java 4.9 equivalents (for example `cds.mcp.autoConfig.*` &rarr; `cds.mcp.autoWired.*`, `cds.taskScheduler.enabled` &rarr; `cds.outbox.persistent.scheduler.enabled`).|4.9.0|
+|[c.s.c.s.m.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[c.s.c.s.m.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
+|[c.s.c.s.m.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
+|[c.s.c.s.m.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
