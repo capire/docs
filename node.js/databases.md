@@ -338,18 +338,11 @@ One of the features most databases provide, but are not extensively specified by
 
 There are some functions that are provided by `HANA` which are not supported by other databases, but the primary goal of the application might be to run `HANA` in production. Therefor it is impossible or impractical to use `SQLite` for development. To improve this primary use case the `@cap-js` services are able to leverage the function framework to provide `HANA` function APIs. Not all functions will be available so when your application requires a `HANA` specific function [contributions](https://github.com/cap-js/cds-dbs/pulls) are always welcome. There are already some functions implemented of varied complexity from [`current_timestamp`](https://github.com/cap-js/cds-dbs/blob/7c6b2f5a6837afbeb1e24daef9a49e25cf7e92f0/db-service/lib/cql-functions.js#L186) to [`months_between`](https://github.com/cap-js/cds-dbs/blob/7c6b2f5a6837afbeb1e24daef9a49e25cf7e92f0/sqlite/lib/cql-functions.js#L129C3-L129C17) to [`hierarchy`](https://github.com/cap-js/cds-dbs/blob/7c6b2f5a6837afbeb1e24daef9a49e25cf7e92f0/db-service/lib/cql-functions.js#L200) allowing anyone with `cql` knowledge to implement any missing functions.
 
-##### Data structure
+##### Data structure {#databaseservice-data-structure }
 
 A very common issue has been so far that applications where getting different results based upon which database or even which database driver they where using. Causing many un expected side effects when writing custom handlers. One of the primary root causes where `cds.Int64` and `cds.Decimal` which would either return as a `Number` or as a `String`. Which resulted in many application developers to write a custom handler that expected a `Number` to be returned for their productive system to receive a `String` which caused their computational logic to produce the wrong result. As javascript is very lenient it doesn't have a problem doing `1 + 1` or `'1' + 1`, but the produced result will very drastically.
 
 The way that the unified data structures is achieved is by leveraging the [`JSON`](#databaseservice-json) format as return type. Which results in all the database drivers only every handling arbitrary string contents. Which prevents the drivers from influencing the data structure.
-
-
-##  <i>  More to Come </i>
-
-This documentation is not complete yet, or the APIs are not released for general availability.
-Stay tuned to upcoming releases for further updates.
-
 
 ## SAP HANA — Known Limitations {#hana-limitations}
 
@@ -374,16 +367,12 @@ SAP HANA does not support default values on `BLOB` types. Provide values explici
 #### Date/time range and formatting
 
 - `DATE`, `SECONDDATE`, and `TIMESTAMP` reject years ≤ 0 and years ≥ 10000.
-- The upper bound is `9999-12-31 23:59:59` — `24:00:00` is **not** accepted (it is on some other databases).
-- Truncated forms are not auto-expanded; date components must be fully specified when a time is included.
+- The upper bound is `9999-12-31 23:59:59` — `24:00:00` is **not** accepted.
+- Truncated forms are not auto-expanded. Date components must be fully specified when a time is included.
 
 #### `UNION`-based queries
 
 Queries with a top-level `UNION` (`SELECT.SET.op === 'union'`) are not supported by the database service layer — this applies to **all** databases, not only HANA, and is listed here for completeness.
-
-#### `HIERARCHY`, `HIERARCHY_DESCENDANTS`, and `HIERARCHY_ANCESTORS`
-
-These HANA functions are currently not exposed via the unified CQL function framework.
 
 #### `Binary` input restrictions
 
@@ -415,7 +404,7 @@ Filters that compare against a structured element whose value is a JSON array re
 
 #### `groupBy` with same-named fields from different associations
 
-A `groupBy` that includes elements with identical names from different paths (e.g. `author.ID` and `ID`) does not produce the expected result. See [cap/cdsnode#2366](https://github.tools.sap/cap/cdsnode/issues/2366).
+A `groupBy` that includes elements with identical names from different paths (e.g. `author.ID` and `ID`) does not produce the expected result.
 
 ---
 
@@ -425,11 +414,11 @@ The following limitations are specific to the [`hdb`](https://www.npmjs.com/pack
 
 #### Timestamp precision limited to 3 fractional digits
 
-`hdb` does not yet support timestamps with more than 3 fractional digits of second precision (milliseconds, not microseconds). See [cap/cdsnode#2368](https://github.tools.sap/cap/cdsnode/issues/2368).
+`hdb` does not yet support timestamps with more than 3 fractional digits of second precision (milliseconds, not microseconds).
 
 #### `$filter` with binary literals fails
 
-Queries such as `?$filter=binary eq binary'AB12…'` fail with `"Cannot set parameter at row: 1. Wrong input for BINARY type"`. See [cap/cdsnode#2357](https://github.tools.sap/cap/cdsnode/issues/2357).
+Queries such as `?$filter=binary eq binary'AB12…'` fail with `"Cannot set parameter at row: 1. Wrong input for BINARY type"`.
 
 #### Large strings may be returned as streams
 
@@ -485,18 +474,13 @@ When an `UPDATE` includes streamed parameters (LOBs), `@sap/hana-client` returns
 
 `@sap/hana-client` does not allow wrapping/decorating `client.prepare()` and other internals. APM integrations that rely on method wrapping have reduced visibility on this driver.
 
----
-
-### `@cap-js/hana` driver {#hana-limitations-cap-js-hana}
-
-The following limitations are specific to the new [`@cap-js/hana`](https://www.npmjs.com/package/@cap-js/hana) driver.
-
 #### `any()` over unmanaged-association navigation
 
-OData `$filter` expressions using `any()` that navigate through an **unmanaged** association are currently not supported. The legacy `hdb`-based stack supports this case.
+OData `$filter` expressions using `any()` that navigate through an **unmanaged** association are currently not supported.
 
 ---
 
-### Reporting additional limitations
+##  <i>  More to Come </i>
 
-If you hit a HANA-specific issue not listed here, please open an issue at [cap-js/cds-dbs](https://github.com/cap-js/cds-dbs/issues) (for new-stack issues) or at the [internal `cdsnode` tracker](https://github.tools.sap/cap/cdsnode/issues) (for legacy-stack issues). Driver name (`hdb`, `@sap/hana-client`, or `@cap-js/hana`), HANA version, and a minimal reproduction help triage.
+This documentation is not complete yet, or the APIs are not released for general availability.
+Stay tuned to upcoming releases for further updates.
