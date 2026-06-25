@@ -359,7 +359,7 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 > Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
 > If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
 
-> [!warning] Ensure additional entry points are imlemented
+> [!warning] Ensure validation for all entry points
 > Through this feature also partial CREATE/UPDATE requests to the root entity and its composition children have to be handled. Ensure that the validations and determinations are run in all situations, not only on the root.
 
 #### Draft-agnostic Requests
