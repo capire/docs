@@ -173,9 +173,9 @@ npm add @sap-cloud-sdk/resilience
 
 #### Native Fetch Client <Beta /> {#native-fetch}
 
-CAP provides a built-in remote client that uses the native Node.js `fetch` API (see limitations below). This means during local development, installing SAP Cloud SDK is not required, though installing and using it remains an option. For production, SAP Cloud SDK is still needed, for example to resolve named destinations via the SAP BTP Destination service.
+CAP provides a built-in remote client that uses the native Node.js `fetch` API (see limitations below). During local development, SAP Cloud SDK is therefore not required, though using it remains an option. For production, SAP Cloud SDK is still needed, for example to resolve named destinations via the SAP BTP Destination service.
 
-The native fetch client is selected per outgoing request based on the following rules:
+CAP selects the native fetch client per outgoing request according to the following rules:
 
 1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), the SAP Cloud SDK is always used.
 2. If <Config>cds.remote.native_fetch</Config> is explicitly set to `true` or `false`, that setting is used.
