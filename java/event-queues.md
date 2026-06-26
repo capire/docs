@@ -327,7 +327,7 @@ cds:
   outbox:
     persistent:
       statusLock:
-        timeout: PT1H  # default
+        timeout: 1h # default
 ```
 
 
