@@ -190,7 +190,7 @@ async function check (options={}) {
         for (let hash of fetchLocalIn(doc)) p.hashed.push ({ hash })
 
         walkLinks(doc, (href) => {
-            if (!href || href.startsWith('mailto:') || href.startsWith('javascript:') || href.startsWith('tel:')) return
+            if (!href || href.startsWith('mailto:') || href.startsWith('javascript:') || href.startsWith('data:') || href.startsWith('vbscript:') || href.startsWith('tel:')) return
             let resolved
             try { resolved = new URL(href, resolveBase).href } catch { return }
 
@@ -231,7 +231,7 @@ async function check (options={}) {
         const externalLinks = new Map()
         for (const p of Object.values(pages)) {
             walkLinks(p.doc, href => {
-                if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('javascript:') || href.startsWith('tel:')) return
+                if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('javascript:') || href.startsWith('data:') || href.startsWith('vbscript:') || href.startsWith('tel:')) return
                 let resolved
                 try { resolved = new URL(href, p.url).href } catch { return }
                 if (!resolved.startsWith(base)) {
