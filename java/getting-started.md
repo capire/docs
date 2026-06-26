@@ -109,7 +109,7 @@ This command adds the following dependency to the pom.xml:
 </dependency>
 ```
 ::: tip
-CAP Java also provides a starter bundle for SAP BTP Kyma environment. See [CAP Starter Bundles](./developing-applications/building#starter-bundles#starter-bundles) for more details.
+CAP Java also provides a starter bundle for SAP BTP Kyma environment. See [CAP Starter Bundles](./developing-applications/building#starter-bundles) for more details.
 :::
 
 ### Project Layout

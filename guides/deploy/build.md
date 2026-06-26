@@ -52,7 +52,7 @@ cds.build?.register?.('my-plugin',
 
 If custom build tasks are configured, those properties have precedence.
 
-For example, you want to configure the _src_ folder and add the default models. To achieve this, do not define the _model_ option in your build task:
+For example, you want to configure the _src_ folder and add the default models. To achieve this, **do not define the _model_ option in your build task**:
 
 ::: code-group
 ```jsonc [package.json]

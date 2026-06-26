@@ -19,10 +19,9 @@
   "devDependencies": {
     "@cap-js/cds-typer": "^0",
     "@cap-js/cds-types": "^0",
-    "@cap-js/db-service": "^2",
-    "@cap-js/sqlite": "^2",
+    "@cap-js/sqlite": ">=2",
     "@mdit/plugin-dl": ">=0.22.2",
-    "@sap/cds": "^9",
+    "@sap/cds": ">=9",
     "@shikijs/monaco": "^4",
     "@shikijs/vitepress-twoslash": "^4",
     "@sqlite.org/sqlite-wasm": "latest",
@@ -35,8 +34,8 @@
     "globals": "^17.4.0",
     "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
-    "vite": "^7",
+    "vite": "^8",
     "vite-plugin-cds": "^0.3.1",
-    "vitepress": "^1"
+    "vitepress": "2.0.0-alpha.17"
   }
 }

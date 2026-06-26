@@ -334,16 +334,6 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
 :::
 
-
-## Staying Up-to-date { #freeze-dependencies }
-
-Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
-
-It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
-
-We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
-
-
 ### Use MTA Extensions with `cds up`
 
 For Cloud Foundry deployments, you can pass an [MTA extension descriptor](https://help.sap.com/docs/btp/sap-business-technology-platform/defining-mta-extension-descriptors) to `cds up` using `--overlay`:
@@ -364,6 +354,17 @@ modules:
     parameters:
       instances: 2
 ```
+
+
+## Staying Up-to-date { #freeze-dependencies }
+
+Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
+
+It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
+
+We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
+
+
 
 ## Upgrade Tenants {.java}
 

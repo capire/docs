@@ -23,8 +23,7 @@ function massageProperties(properties: JavaSdkProperties[]): OurProperties[] {
       description: md2Html(doc),
       defaultValue: defaultValue ? `<code class="no-bg">${defaultValue}</code>` : '',
       header,
-      // @ts-ignore
-      anchor: name.replaceAll('.', '-')
+      anchor: name.replaceAll('.', '-').replaceAll(/[<>]/g, '').toLowerCase()
     }
   })
 }

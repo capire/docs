@@ -594,9 +594,9 @@ You can cmd/ctrl-click or double click on that to see the file's content, and fi
 
 Whenever you start a CAP server with `cds watch`, this is what happens automatically:
 
-1. For all *provided* services, corresponding entries are written to _~/cds-services.json_ with respective `credentials`, namely the `url`.
+1. For all *provided* services, corresponding entries are written to _~/.cds-services.json_ with respective `credentials`, namely the `url`.
 
-2. For all *required* services, corresponding entries are fetched from _~/cds-services.json_. If found, the `credentials` are filled into the respective entry in `cds.env.requires.<service>`  [as introduced previously](#bindings-via-cds-env).
+2. For all *required* services, corresponding entries are fetched from _~/.cds-services.json_. If found, the `credentials` are filled into the respective entry in `cds.env.requires.<service>`  [as introduced previously](#bindings-via-cds-env).
 
 In effect, all the services that you start locally in separate processes automatically receive their required bindings so they can talk to each other out of the box.
 
@@ -624,7 +624,7 @@ cds.requires.ReviewsService.credentials = { "url": "http://localhost:4005/review
 
 #### Through `VCAP_SERVICES` {#bindings-via-vcap_services}
 
-When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables [as documented here](../../node.js/cds-connect#vcap_services).
+When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables [as documented here](../../node.js/cds-connect#vcap-services).
 
 
 

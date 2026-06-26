@@ -1460,6 +1460,13 @@
       "doc": "The token exchange strategy used, when loading destinations from SAP BTP Destination<br>Service. See<br>https://sap.github.io/cloud-sdk/docs/java/features/connectivity/sdk-connectivity-destination-service#token-exchange-options<br>for possible values."
     },
     {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.onBehalfOf",
+      "type": "String",
+      "default": "currentUser",
+      "doc": "Determines the user and tenant context that is used for IAS app-2-app destinations.<br>Possible values are: {@code currentUser}, {@code systemUser} and {@code<br>systemUserProvider}"
+    },
+    {
       "header": true,
       "name": "cds.remote.services.<key>.binding",
       "doc": "Properties to configure a service binding for this remote service. *"
