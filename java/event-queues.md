@@ -25,7 +25,9 @@ CqnService remoteS4 = ...;
 CqnService outboxedS4 = myCustomOutbox.outboxed(remoteS4);
 ```
 
-If a method on the outboxed service has a return value, it returns `null` - the call is asynchronous. To make this explicit at the type level, use the variant that wraps the service with an API designed for asynchronous use:
+A typical use case is outboxing a remote OData service, but any CAP service can be wrapped this way to decouple its calls from the calling transaction.
+
+If a method on the outboxed service has a return value, it returns `null` because the call is executed asynchronously — a common surprise on `CqnService.run(...)`. To make the asynchronous nature explicit at the type level, use the two-argument variant of `outboxed` to wrap the service with an interface whose methods return `void`. CAP ships `AsyncCqnService` for the common case of outboxing a `CqnService`:
 
 ```java
 OutboxService myCustomOutbox = ...;
@@ -33,7 +35,7 @@ CqnService remoteS4 = ...;
 AsyncCqnService outboxedS4 = myCustomOutbox.outboxed(remoteS4, AsyncCqnService.class);
 ```
 
-`AsyncCqnService.of()` is a convenience for the common case:
+For `CqnService` instances, the static factory `AsyncCqnService.of(service, outbox)` is the most direct way to obtain an outboxed proxy:
 
 ```java
 OutboxService myCustomOutbox = ...;
@@ -50,7 +52,7 @@ CqnService synchronous = OutboxService.unboxed(outboxedS4);
 ```
 
 ::: tip Custom asynchronous-ready APIs
-When defining your own asynchronous-ready interface, it must provide the same method signatures as the interface of the outboxed service, except for the return types. Those return types must be `void`.
+You can define your own asynchronous-ready interface (analogous to `AsyncCqnService` for other service types). It must provide the same method signatures as the interface of the outboxed service, except for the return types — those must be `void`.
 :::
 
 ::: warning Java Proxy
