@@ -99,7 +99,7 @@ Some property defaults have been adjusted:
 
 
 ### Deprecated Properties
-<div id="deprecated-properties-4-to-5 " />
+<div id="deprecated-properties-4-to-5" />
 
 The following properties have been deprecated and might be removed in a future major version:
 
