@@ -95,17 +95,16 @@ this.after('CREATE', 'Bookings', async (_, req) => {
 })
 ```
 ```java [Java]
-@Autowired @Qualifier("XFlightsOutbox")
+@Autowired
 OutboxService outbox;
 
-@Autowired @Qualifier(CqnService.DEFAULT_NAME)
-CqnService xflights;
+@Autowired
+TravelService xflights;
 
 @After(event = CqnService.EVENT_CREATE, entity = Bookings_.CDS_NAME)
 void notifyXFlights(List<Bookings> bookings) {
-  AsyncCqnService outboxedXFlights = AsyncCqnService.of(xflights, outbox);
-  bookings.forEach(b -> outboxedXFlights.emit("BookingCreated",
-    Map.of("flight", b.getFlightId(), "date", b.getFlightDate())));
+  xflights = outbox.outboxed(xflights);
+  bookings.forEach(b -> xflights.bookingCreated(...));
 }
 ```
 :::
@@ -133,11 +132,11 @@ In Java, you can also wrap a service at runtime through the service catalog rath
 ```java
 OutboxService outbox = runtime.getServiceCatalog()
     .getService(OutboxService.class, "XFlightsOutbox");
-CqnService xflights = runtime.getServiceCatalog()
-    .getService(CqnService.class, "xflights");
+TravelService xflights = runtime.getServiceCatalog()
+    .getService(TravelService.class, "xflights");
 
-AsyncCqnService queued = AsyncCqnService.of(xflights, outbox);
-queued.emit("BookingCreated", Map.of("flight", "AA017", "date", "2026-07-15"));
+xflights = outbox.outboxed(xflights);
+xflights.bookingCreated(...);
 ```
 
 To get the original synchronous service from a queued proxy:
