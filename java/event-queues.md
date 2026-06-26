@@ -82,12 +82,11 @@ outbox.submit("replicate", message,
 OutboxService outbox;
 
 @Autowired
-RemoteService xflights;
+TravelService xflights;
 
-Schedulable<RemoteService> scheduled = Schedulable.of(xflights, outboxService)
-  .scheduled(Schedule.create().every(Duration.ofMinutes(10)));
-
-scheduled.emit("replicate", Map.of("entity", "Airports"));
+Schedulable.of(xflights, outbox)
+  .scheduled(Schedule.create().every(Duration.ofMinutes(10)))
+  .replicateTravels(...);
 ```
 
 Every outboxed service is guaranteed to implement `Schedulable<T>` — its single method `scheduled(Schedule)` returns the same service typed to use the given schedule on every subsequent emit.

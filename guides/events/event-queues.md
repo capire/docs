@@ -293,11 +293,11 @@ await xflights.schedule('replicate', { entity: 'Airports' }).every('10m')
 OutboxService outbox;
 
 @Autowired
-RemoteService xflights;
+TravelService xflights;
 
 Schedulable.of(xflights, outbox)
   .scheduled(Schedule.create().every(Duration.ofMinutes(10)))
-  .emit("replicate", Map.of("entity", "Airports"));
+  .replicateTravels(...);
 ```
 :::
 
