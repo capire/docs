@@ -38,7 +38,7 @@ Because the queued message and your business data share the same database transa
 
 This pattern is widely known as the [*'Transactional Outbox'*](https://microservices.io/patterns/data/transactional-outbox.html), but CAP's event queues go beyond outbound messages. They cover three use cases:
 
-- **Outbox**: defer outbound calls to remote services and emits to message brokers until the transaction succeeds.
+- **Outbox**: defer outbound calls to remote services and emit messages to message brokers until the transaction succeeds.
 - **Inbox**: acknowledge inbound messages immediately and process them asynchronously.
 - **Scheduled Tasks**: run periodic or delayed work such as data replication.
 
@@ -46,7 +46,7 @@ This pattern is widely known as the [*'Transactional Outbox'*](https://microserv
 
 These are sometimes confused but solve different problems.
 
-**Pub/sub**, typically realized through a message broker, address *loosely couples microservices*. A producer publishes events without knowing who consumes them; consumers subscribe by topic. The unit of trust is the broker.
+**Pub/sub**, typically realized through a message broker, addresses *loosely coupled microservices*. A producer publishes events without knowing who consumes them; consumers subscribe by topic. The unit of trust is the broker.
 
 **Event queues** address *asynchronous workload processing within one service*. They turn a piece of work into a database row that survives commit, restart, and retry, then dispatch it later: to the same service in process, to a remote service, or to a message broker. The unit of trust is the database transaction.
 
@@ -61,7 +61,7 @@ The two patterns complement each other: when the dispatch target *is* a message 
 
 ## Outbox
 
-The outbox defers outbound calls to remote services and emits to message brokers until the main transaction succeeds.
+The outbox defers outbound calls to remote services and emits messages to message brokers until the main transaction succeeds.
 This prevents sending requests or messages to external systems when your transaction has not yet committed.
 
 
@@ -79,7 +79,7 @@ this.after('CREATE', 'Bookings', async (_, req) => {
 })
 ```
 
-This works when everything succeeds, but it's not safe: if the surrounding transaction later fails, the external booking can already exist while the local `Bookings` row gets rolled back.
+This works when everything succeeds, but it's not safe: if the surrounding transaction later fails, the external booking may already exist while the local `Bookings` row is rolled back.
 
 The outbox fixes this. Wrap the remote service in `cds.queued()` (Node.js) or `OutboxService.outboxed()` (Java) and dispatch as before. The call is now persisted within the current transaction and sent after commit:
 
@@ -169,9 +169,9 @@ To outbox a required service centrally, without touching handler code, set a fla
 ```
 :::
 
-This is the typical setup for **technical services**, like messaging and audit logging, where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
+This is the typical setup for **technical services**, such as messaging and audit logging, where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
 
-For **business services**, however, a class-level flag is usually too coarse. Remote integrations called from domain handlers typically need *some* calls outboxed, for example, the post-commit notification to *xflights*, while others stay synchronous (a read-through query, a probe before commit). For that finer control, prefer the programmatic path with `cds.queued()` or `srv.schedule()`.
+For **business services**, however, a class-level flag is usually too coarse. Remote integrations called from domain handlers typically need *some* calls outboxed, for example, the post-commit notification to *xflights*, while others stay synchronous (a read-through query, a probe before commit). For finer control, prefer the programmatic path with `cds.queued()` or `srv.schedule()`.
 
 > [!note] Node.js only
 > Outboxing required services by configuration is available in Node.js only.
@@ -457,7 +457,7 @@ The correlation context (`Travel_ID`, `Pos`) is passed as **headers** on the que
 
 The `FlightUpdated` handler illustrates the inbox pattern: the broker acknowledges delivery as soon as the message is stored, and the re-read from xflights avoids stale data from out-of-order messages.
 
-This example highlights three design rules: use callbacks or persisted status updates for outcomes, not direct return values; carry correlation context in event headers, not in the payload; and re-read authoritative state at processing time rather than trusting the event payload when messages can overtake each other.
+This example highlights three design rules. First, use callbacks or persisted status updates for outcomes, not direct return values. Second, carry correlation context in event headers, not in the payload. Third, re-read authoritative state at processing time rather than trusting the event payload when messages can overtake each other.
 
 
 ## Configuration
@@ -516,7 +516,7 @@ To disable queueing for a specific service in Node.js, set `outboxed: false` on 
 
 ## Operations
 
-Once event queues are in production, you need to know how runners coordinate across instances, how authorization carries over the queue boundary, what happens when processing fails, how to manage messages that have ended up in the dead letter queue, and how to observe the queue's health.
+Once event queues are in production, you need to understand runner coordination, how authorization crosses the queue boundary, failure and retry behavior, dead letter queue management, and observability.
 
 ### Locking
 
@@ -541,7 +541,7 @@ CAP handles this as follows:
 
 No principal propagation occurs across the queue boundary, by design. That would require CAP to persist authentication tokens in some encrypted form, and those tokens often expire long before the queued work runs.
 
-*"Privileged mode"* means `@requires` annotations don't gate execution in queued handlers — the runtime grants full service access regardless of the stored user ID. If your handler must enforce the original caller's identity, carry the relevant claims via **payload or headers** at queue time and read them during processing. For scheduled tasks, headers are a natural fit since they stay in-process:
+*"Privileged mode"* means `@requires` annotations do not gate execution in queued handlers — the runtime grants full service access regardless of the stored user ID. If your handler must enforce the original caller's identity, carry the relevant claims via **payload or headers** at queue time and read them during processing. For scheduled tasks, headers are a natural fit since they stay in-process:
 
 ```js
 // Schedule a task, carrying the originating user as a header
@@ -555,9 +555,9 @@ xflights.on('replicate', async (req) => {
 ```
 
 > [!warning] Headers are forwarded to the target system
-> When a **queued outbound call** (to a remote service or message broker) is dispatched, CAP forwards the stored headers to the target. Do not carry sensitive data — authentication tokens, personal data, secrets — in headers on outbound calls. For **scheduled tasks**, which are processed in-process and never leave the application, headers are not forwarded and this restriction doesn't apply.
+> When a **queued outbound call** (to a remote service or message broker) is dispatched, CAP forwards the stored headers to the target. Do not carry sensitive data — authentication tokens, personal data, secrets — in headers on outbound calls. For **scheduled tasks**, which are processed in-process and never leave the application, headers are not forwarded and this restriction does not apply.
 
-As a consequence, queued calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Queue only those calls that the target system can authorize for a technical user, for example, service-to-service calls that don't depend on the end-user identity.
+As a consequence, queued calls reach their target system in the context of a *technical user* of the calling application, not the original end user. Queue only those calls that the target system can authorize for a technical user, for example, service-to-service calls that do not depend on the end-user identity.
 
 ### Error Handling
 
@@ -645,7 +645,7 @@ service OutboxDeadLetterQueueService {
 
 **2. Filter for dead entries**
 
-As `maxAttempts` is configurable, its value is not added as a static filter to the projection. Apply it programmatically.
+Because `maxAttempts` is configurable, its value is not added as a static filter to the projection. Apply it programmatically.
 
 ::: code-group
 ```js [Node.js — srv/outbox-dead-letter-queue-service.js]
@@ -739,7 +739,7 @@ Both stacks export queue metrics through OpenTelemetry, sourced from the `cds.ou
 | `incoming` (`com.sap.cds.outbox.incomingMessages`) | Messages submitted to the outbox. | Counter |
 | `outgoing` (`com.sap.cds.outbox.outgoingMessages`) | Messages successfully dispatched. | Counter |
 
-Metrics are scoped per microservice instance, outbox name, and tenant. The Java integration is built in. For Node.js, add `@cap-js/telemetry` to your dependencies. Queue metrics then emit alongside CAP's other telemetry signals.
+Metrics are scoped per microservice instance, outbox name, and tenant. The Java integration is built in. For Node.js, add `@cap-js/telemetry` to your dependencies. Queue metrics are then emitted alongside CAP's other telemetry signals.
 
 [Learn more about Java OpenTelemetry integration.](../../java/operating-applications/observability#open-telemetry){.learn-more}
 [Learn more about `@cap-js/telemetry`.](https://github.com/cap-js/telemetry#queue){.learn-more}
