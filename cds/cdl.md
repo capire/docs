@@ -152,11 +152,11 @@ Using directives allows to import definitions from other CDS models. As shown in
 
 using foo.bar.scoped.Bar from './contexts';
 using foo.bar.scoped.nested from './contexts';
-using foo.bar.scoped.nested as specified from './contexts';
+using foo.bar.scoped.nested as animal from './contexts';
 
 entity Car : Bar {}            //> : foo.bar.scoped.Bar
 entity Moo : nested.Zoo {}     //> : foo.bar.scoped.nested.Zoo
-entity Zoo : specified.Zoo {}  //> : foo.bar.scoped.nested.Zoo
+entity Zoo : animal.Zoo {}  //> : foo.bar.scoped.nested.Zoo
 ```
 
 :::
