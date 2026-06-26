@@ -321,7 +321,7 @@ Share the generic App-Router URL with SaaS consumers for logging in as extension
 :::
 
 ::: tip No index page and SAP Fiori preview in the cloud
-The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
+The default index page and [SAP Fiori preview](../uis/fiori#fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
 :::
 
 ### Inspect Apps in BTP Cockpit
@@ -333,16 +333,6 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 ::: tip Next up: Assign the _admin_ role
 To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
 :::
-
-
-## Staying Up-to-date { #freeze-dependencies }
-
-Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
-
-It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
-
-We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
-
 
 ### Use MTA Extensions with `cds up`
 
@@ -364,6 +354,17 @@ modules:
     parameters:
       instances: 2
 ```
+
+
+## Staying Up-to-date { #freeze-dependencies }
+
+Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
+
+It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
+
+We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
+
+
 
 ## Upgrade Tenants {.java}
 

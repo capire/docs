@@ -396,18 +396,19 @@ var srv.options : { //> from cds.requires config
 
 
 
-### . entities {.property alt="The following documentation on actions also applies to entities. "}
-### . events {.property alt="The following documentation on actions also applies to events. "}
 ### . actions {.property}
+### . events {.property}
+### . types {.property}
+### . entities {.property}
 ###### srv-entities
 
 ```tsx
-var srv.entities/events/actions : Iterable <{
+var srv.entities/events/actions/types : Iterable <{
   name : CSN definition
 }>
 ```
 
-These properties provide convenient access to the CSN definitions of the *entities*, *events* and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#iterable) which you can use in all of these ways:
+These properties provide convenient access to the CSN definitions of the *entities*, *types*, *events*, and *actions* (incl. *functions*) exposed by this service. They return instances of [`LinkedDefinitions`](cds-reflect#iterable) which you can use in all of these ways:
 
 ```js
 // Assumed `this` is an instance of cds.Service
@@ -615,7 +616,7 @@ function srv.after (event, entity?, handler: (
 
 Use this method to register handlers to run *after* the `.on` handlers, frequently used to enrich outbound data. The handlers receive two arguments:
 
-- `results` — the outcomes of the `.on` handler which ran before
+- `results` — the outcomes of the `.on` handler which ran before; see [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the shape returned by the built-in handler
 - `req` — an instance of [`cds.Request`](./events.md#cds-request)
 
 ::: warning
@@ -1034,7 +1035,7 @@ async function srv.handle (
 return : result of executed .on handlers
 ```
 
-This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
+This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. See [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the return value shape of the built-in handler. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
 
 The implementation basically works like that:
 
@@ -1155,7 +1156,7 @@ srv.update('Books',...)...       --> UPDATE.entity ('Books',...)...
 srv.delete('Books',...)...       --> DELETE.from ('Books',...)...
 ```
 
-You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. Here are some examples:
+You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. See [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the return value shape. Here are some examples:
 
 ```js
 await srv.read(Books,201)

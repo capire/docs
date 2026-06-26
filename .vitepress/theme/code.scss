@@ -1,6 +1,9 @@
 
 main .vp-doc {
 
+  div.vp-code-group .tabs label {
+    line-height: 40px;
+  }
   div.vp-code-group + div[class*='language-'] {
     margin-top: -8px !important; // override code group margin
   }
@@ -11,8 +14,9 @@ main .vp-doc {
 
   pre {
     padding: 12px 0 !important;
-    code { 
+    code {
       padding: 0 22px !important;
+      white-space: pre !important;
     }
   }
   div[class*='language-'] > button.copy {

@@ -34,7 +34,7 @@ To start VS Code via the `code` CLI, users on macOS must first run a command (*S
 
 ### Check the Node.js version { #node-version}
 
-Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
+Run the latest LTS version of Node.js (even numbers: 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
 
 ```sh
 node -v
@@ -283,6 +283,28 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
+### How to fix "SqlError: invalid table name: Could not find table/view ..."?
+
+On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written.
+:::
+
+To fix this on Windows, install the tar library:
+
+```sh
+npm add -D tar
+```
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
+
+
+
+### How to fix "`Error: Could not locate the bindings file. Tried: ...`"
+
+You probably have `ignore-scripts` set to `true` in your npm configuration. While this is generally a good idea, it prevents certain libraries, like `better-sqlite3`, from running a required postinstall script.
+To solve this, you can either temporarily allow scripts and run a reinstall, or manually run the build script for the library in question. For `better-sqlite3`, run `npm run build-release` from within the _node_modules/better-sqlite3_ directory. The first line after the error message shows the relevant _node_modules_ directory.
 
 
 ## Java
@@ -313,7 +335,7 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 ```xml
 <properties>
 		<!-- ... -->
-		<cds.install-node.nodeVersion>v20.11.0</cds.install-node.nodeVersion>
+		<cds.install-node.nodeVersion>v24.14.1</cds.install-node.nodeVersion>
 		<!-- ... -->
 	</properties>
 
@@ -847,7 +869,7 @@ See the [_Health Checks_](../guides/deploy/health-checks) guide  for the correct
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
 
-Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in
+Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexpage) and in
 [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
 ## Kyma / K8s

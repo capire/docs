@@ -218,8 +218,8 @@ await cds.run `SELECT from sap_capire_bookshop_Books`
 | Int32      | INTEGER      | INTEGER        | INTEGER      | INTEGER     |
 | Int64      | BIGINT       | BIGINT        | BIGINT       | BIGINT      |
 | UInt8      | TINYINT      | TINYINT        | SMALLINT      | SMALLINT    |
-| Decimal (p,s) | DECIMAL(p,s)   | DECIMAL(p,s)    | DECIMAL(p,s)   | DECIMAL(p,s)  |
-| Decimal     | DECIMAL      | DECIMAL        | DECFLOAT      | DECIMAL     |
+| Decimal (p,s) | DECIMAL(p,s) | REAL_DECIMAL(p,s) | DECIMAL(p,s) | DECIMAL(p,s)  |
+| Decimal     | DECIMAL      | REAL_DECIMAL  | DECFLOAT     | DECIMAL     |
 | Double      | DOUBLE       | DOUBLE        | DOUBLE       | FLOAT8      |
 | DateTime    | SECONDDATE    | DATETIME_TEXT    | TIMESTAMP(0)   | TIMESTAMP    |
 | Date       | DATE        | DATE_TEXT      | DATE        | DATE       |
