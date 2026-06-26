@@ -32,6 +32,7 @@
     "express": "^5",
     "fflate": "^0.8.2",
     "globals": "^17.4.0",
+    "htmlparser2": "^12",
     "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
     "vite": "^8",
