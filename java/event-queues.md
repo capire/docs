@@ -60,9 +60,11 @@ A service wrapped by an outbox is a [Java Proxy](https://docs.oracle.com/javase/
 
 ### Scheduling
 
-CAP Java offers two ways to schedule a queued event, both controlled by a `Schedule` builder.
+CAP Java offers two ways to schedule a queued event, both controlled by a `Schedule` builder. They differ in the level of abstraction they operate at.
 
-**Option 1 — pass a `Schedule` to `submit`** on a regular outbox, per call:
+**Option 1 — Technical level: pass a `Schedule` to `submit`**
+
+You submit directly to the outbox service with a generic, untyped payload. This gives you lower-level access and is the right fit when you don't have (or don't want) a CDS service interface for the event.
 
 ```java
 @Autowired
@@ -75,7 +77,9 @@ outbox.submit("replicate", message,
   Schedule.create().every(Duration.ofMinutes(10)));
 ```
 
-**Option 2 — wrap a service with `Schedulable`** so all subsequent emits use a fixed schedule:
+**Option 2 — CDS level: wrap a service with `Schedulable`**
+
+You wrap a CDS service with `Schedulable`, and subsequent calls go through the service's typed API. This offers a more type-safe and domain-oriented programming model.
 
 ```java
 @Autowired
