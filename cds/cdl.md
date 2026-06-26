@@ -156,7 +156,7 @@ using foo.bar.scoped.nested as animal from './contexts';
 
 entity Car : Bar {}            //> : foo.bar.scoped.Bar
 entity Moo : nested.Zoo {}     //> : foo.bar.scoped.nested.Zoo
-entity Zoo : animal.Zoo {}  //> : foo.bar.scoped.nested.Zoo
+entity Zoo : animal.Zoo {}     //> : foo.bar.scoped.nested.Zoo
 ```
 
 :::
