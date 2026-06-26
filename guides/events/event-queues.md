@@ -686,6 +686,17 @@ public class DeadOutboxMessagesHandler implements EventHandler {
       context.setCqn(modified);
     });
   }
+
+  private Optional<Predicate> createOutboxFilters(CdsRuntime runtime) {
+    CdsProperties.Outbox outboxConfigs = runtime.getEnvironment().getCdsProperties().getOutbox();
+    return runtime.getServiceCatalog().getServices(OutboxService.class)
+      .map(service -> {
+        OutboxServiceConfig config = outboxConfigs.getService(service.getName());
+        return CQL.get(Messages.TARGET).eq(service.getName())
+          .and(CQL.get(Messages.ATTEMPTS).ge(config.getMaxAttempts()));
+      })
+      .reduce(Predicate::or);
+  }
 }
 ```
 :::
