@@ -624,7 +624,7 @@ cds.requires.ReviewsService.credentials = { "url": "http://localhost:4005/review
 
 #### Through `VCAP_SERVICES` {#bindings-via-vcap_services}
 
-When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables [as documented here](../../node.js/cds-connect#vcap_services).
+When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables [as documented here](../../node.js/cds-connect#vcap-services).
 
 
 

@@ -70,7 +70,7 @@ const { ReviewsService } = cds.services
 
 
 
-## Configuring Required Services 
+## Configuring Required Services
 ###### cds-env-requires
 
 To configure required remote services in Node.js, simply add respective entries to the `cds.requires` sections in your _package.json_ or in _.cdsrc.json_ or _.yaml_. These configurations are constructed as follows:
@@ -272,7 +272,7 @@ Cloud Foundry uses auto configuration of service credentials through the `VCAP_S
 
 
 
-#### Through `VCAP_SERVICES` env var {#vcap_services}
+#### Through `VCAP_SERVICES` env var {#vcap-services}
 
 When deploying to Cloud Foundry, service bindings are provided in `VCAP_SERVICES` process environment variables, which is JSON-stringified array containing credentials for multiple services. The entries are matched to the entries in `cds.requires` as follows, in order of precedence:
 
@@ -556,7 +556,7 @@ CAP supports [servicebinding.io](https://servicebinding.io/) service bindings an
 
     The `secretName` property refers to an existing Kubernetes secret, either manually created or by the `ServiceBinding` resource. The name of the sub directory (`auth` in the example) is recognized as the binding name.
 
-CAP services receive their credentials from these bindings [as if they were provided using VCAP_SERVICES](#vcap_services).
+CAP services receive their credentials from these bindings [as if they were provided using VCAP_SERVICES](#vcap-services).
 
 <!-- todo: add link once BTP Service Operator migration is finished and doc is updated:
 
