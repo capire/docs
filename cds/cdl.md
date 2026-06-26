@@ -146,18 +146,17 @@ Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`
 
 #### The `using` Directive {#using}
 
-Using directives allows to import definitions from other CDS models. As shown in line three below you can specify aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix. Optional: Choose a local alias.
+Using directives allow to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
 
 ::: code-group
 
-```cds [using-from.cds]
 using foo.bar.scoped.Bar from './contexts';
 using foo.bar.scoped.nested from './contexts';
-using foo.bar.scoped.nested as specified from './contexts';
+using foo.bar.scoped.nested as animal from './contexts';
 
 entity Car : Bar {}            //> : foo.bar.scoped.Bar
 entity Moo : nested.Zoo {}     //> : foo.bar.scoped.nested.Zoo
-entity Zoo : specified.Zoo {}  //> : foo.bar.scoped.nested.Zoo
+entity Zoo : animal.Zoo {}     //> : foo.bar.scoped.nested.Zoo
 ```
 
 :::
@@ -172,6 +171,9 @@ entity Car : Bar { /*...*/ }
 
 > Also in the deconstructor variant of `using` shown in the previous example, specify fully qualified names.
 
+> [!important] Names do not restrict the import scope
+> All definitions of the model provided after `from` are imported, no matter which names are specified before `from`.
+> The purpose of these names is only to make global names accessible locally.
 
 
 
