@@ -73,12 +73,12 @@ Set the `outboxed` flag in the *outbound* service's configuration:
 }
 ```
 
-Some services - `cds.MessagingService` and `cds.AuditLogService` - are outboxed by default. See [*Auto-Outboxed Services*](../guides/events/event-queues#auto-outboxed-services) in the common guide.
+Some services - `cds.MessagingService` and `cds.AuditLogService` - are outboxed by default. See [*Auto-Outboxed Services*](../guides/events/event-queues#auto-outboxed-services) in the Transactional Event Queues guide.
 
 
 ### Scheduling
 
-`srv.schedule()` queues like `cds.queued(srv).send()`, that is within the current transaction, dispatched after commit, but it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
+The `srv.schedule()` method queues like `cds.queued(srv).send()`, that is within the current transaction, dispatched after commit. But it **upserts** a singleton task keyed by event name (or by `.as(name)`) instead of inserting a new entry on every call. It accepts optional timing:
 
 ```js
 await srv.schedule('someEvent', { some: 'msg' })                       // execute asap
