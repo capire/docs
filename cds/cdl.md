@@ -146,7 +146,7 @@ Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`
 
 #### The `using` Directive {#using}
 
-Using directives allows to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
+Using directives allow to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
 
 ::: code-group
 
