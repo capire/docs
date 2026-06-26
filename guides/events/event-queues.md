@@ -154,7 +154,7 @@ CqnService xflights = OutboxService.unboxed(outboxedXFlights);
 
 ### By Configuration
 
-To outbox a service centrally, without touching handler code, set a flag on its configuration. Every call from your handlers is then queued automatically.
+To outbox a required service centrally, without touching handler code, set a flag on its configuration. Every call from your handlers is then queued automatically.
 
 ::: code-group
 ```json [Node.js — package.json]
@@ -168,18 +168,14 @@ To outbox a service centrally, without touching handler code, set a flag on its 
   }
 }
 ```
-```yaml [Java — application.yaml]
-cds:
-  outbox:
-    services:
-      DefaultOutboxUnordered:
-        maxAttempts: 10
-```
 :::
 
 This is the typical setup for **technical services**, like messaging and audit logging, where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
 
 For **business services**, however, a class-level flag is usually too coarse. Remote integrations called from domain handlers typically need *some* calls outboxed, for example, the post-commit notification to *xflights*, while others stay synchronous (a read-through query, a probe before commit). For that finer control, prefer the programmatic path with `cds.queued()` or `srv.schedule()`.
+
+> [!note] Node.js only
+> Outboxing required services by configuration is available in Node.js only.
 
 
 ### Auto-Outboxed Services
@@ -194,7 +190,7 @@ Some services are outboxed automatically, so you don't need to wrap or configure
 This ensures that messaging and audit log events are sent reliably and never lost because of transaction rollbacks. They use the persistent queue by default.
 
 [Learn more about auto-outboxed services in Node.js.](../../node.js/event-queues#queueing-a-service){.learn-more}
-[Learn more about the outbox in Java.](../../java/event-queues#default-outbox-services){.learn-more}
+[Learn more about auto-outboxed services in Java.](../../java/event-queues#default-outbox-services){.learn-more}
 
 
 ### Callbacks <Alpha />
@@ -206,7 +202,8 @@ Because queued calls return after the message is *stored*, not after the remote 
 
 **Example:** After *xflights* successfully processes a `BookingCreated` event, the *xtravels* application replicates the booking confirmation back into its own database. If the booking fails, the application updates the local `Bookings` row to surface the error in its UI.
 
-```js
+::: code-group
+```js [Node.js]
 const xflights = await cds.connect.to('xflights')
 
 // Called when the queued booking succeeds
@@ -221,15 +218,16 @@ xflights.after('BookingCreated/#failed', async (error, req) => {
   // Trigger compensation logic
 })
 ```
+:::
 
 This is also the foundation for [SAGA-style](https://microservices.io/patterns/data/saga.html) compensation across distributed systems: once an outboxed call has gone out, you maintain consistency by reacting to outcomes and applying compensation logic where needed.
-
-> [!note] Node.js only
-> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
 
 > [!tip] Register on specific events
 > Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
 > The `*` wildcard handler is not called for these events.
+
+> [!note] Node.js only
+> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
 
 
 ## Inbox
