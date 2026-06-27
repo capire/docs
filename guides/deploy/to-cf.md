@@ -182,7 +182,7 @@ CAP selects the native fetch client per outgoing request according to the follow
 3. Otherwise, native fetch is used when `@sap-cloud-sdk/http-client` is not installed.
 
 ::: warning Current limitations
-The native fetch client does not yet support named destinations using the SAP BTP Destination service. Only [application defined destinations](../services/consuming-services#use-application-defined-destinations) are supported. In addition, authentication is limited to `NoAuthentication` and `BasicAuthentication`. CSRF token handling is not yet at parity with SAP Cloud SDK.
+The native fetch client does not yet support named destinations using the SAP BTP Destination service. Only [application defined destinations](../services/consuming-services#use-application-defined-destinations) are supported. In addition, authentication is limited to `NoAuthentication` and `BasicAuthentication`.
 :::
 
 
