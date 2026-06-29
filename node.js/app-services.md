@@ -159,27 +159,29 @@ cds.ApplicationService.handle_log_events = cds.service.impl (function(){
 
 ## Results of Generic CRUD Handlers
 
-Custom `.on` handlers can return any value. When no custom handler provides a result — that is, when CAP's built-in generic handler runs the CRUD operation — the result follows a consistent shape:
+When CAP's generic handlers run a CRUD operation, the result follows a consistent shape (custom `.on` handlers may return any value):
 
-| Operation | Return value |
-|-----------|-------------|
-| **READ** | `object[]` — the matching records, or a single `object \| null` for singleton requests |
-| **INSERT** / **CREATE** | An array of primary-key objects of the inserted rows, with `.affected` set to the number of rows written |
-| **UPDATE** / **UPSERT** / **DELETE** | An empty array with `.affected` set to the number of rows changed or deleted |
+| Operation             | Return value                                                                              |
+|-----------------------|-------------------------------------------------------------------------------------------|
+| `READ`                | Array of matching records, or a single record / `null` when read by key                   |
+| `INSERT` / `CREATE`   | Array with `.affected` (rows written), populated with rows from a `RETURNING` clause      |
+| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed), populated with rows from a `RETURNING` clause      |
+| `DELETE`              | Array with `.affected` (rows deleted), populated with rows from a `RETURNING` clause      |
 
-The `.affected` count is a property directly on the returned array:
+SQL `RETURNING` is not yet supported, so the array is currently always empty. For `INSERT`s, you can spread the result to access the generated primary keys — a transitional convenience until `RETURNING` lands. Once an `INSERT` query includes a `RETURNING` clause, the array is populated directly with the returned rows.
 
 ```js
 const inserted = await srv.create(Books).entries({title:'Catweazle'})
-inserted[0]      // { ID: '...' }  — primary key of the inserted row
-inserted.affected  // 1
+inserted.affected            // 1
+const [row] = [...inserted]  // generated primary keys
 
 const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
-updated.affected   // number of rows updated
+updated.affected             // number of rows updated
 ```
 
-When a write targets a **specific subject** (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row is matched, the handler throws a `404` error. A query using only a `where` clause with zero matches returns `{ affected: 0 }` without throwing.
+When a write targets a single row by key (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row matches, the handler throws a 404 error. A `where` clause that matches zero rows returns an array with `affected: 0` without throwing.
 
-::: tip Consistent results across local and remote services
-This return shape was introduced in **cds 10** to make results from local services, HCQL-proxied remote services, and database services consistent. To restore the previous behavior, set `{ "features": { "legacy_srv_results": true } }` in your project configuration.
-:::
+> [!tip] Consistent Results Across Local and Remote Services
+> This shape was introduced in cds 10 so that local services, HCQL-proxied remote services, and database services return the same thing. To restore the previous behavior, set <Config>cds.features.legacy_srv_results: true</Config>.
+
+[See the migration guide for opt-out options.](../migration/cds10#fixed-service-results){.learn-more}
