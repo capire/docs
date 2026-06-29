@@ -97,6 +97,7 @@ The express.js `app` constructed by the server implementation.
 
 
 ##   Custom `server.js`
+<div id="custom-server-js"></div>
 
 The CLI command `cds serve` optionally bootstraps from project-local `./server.js` or  `./srv/server.js`.
 

@@ -836,9 +836,9 @@ If you start with a multitenant application that's configured to use to SAP HANA
 > [!danger] Only use the `hana-multitenancy` plan
 > As the tenant containers are filtered by the SAP HANA Cloud service instance, applications will potentially access data of other applications when using a different plan.
 
-For SAP HANA TMS v2, you also need to specify the database ID of the database that you plan to use for your tenant containers. You can specify this using the [`cds.xt.DeploymentService` configuration](/@external/guides/multitenancy/mtxs#deployment-config).
+For SAP HANA TMS v2, you also need to specify the database ID of the database that you plan to use for your tenant containers. You can specify this using the [`cds.xt.DeploymentService` configuration](./mtxs#deployment-config).
 
-With `cds.xt.DeploymentService` you only configure the default database ID. If you want to specify different database IDs for a tenant HDI container, you need to [add the database ID to the payload of the individual subscription using a handler](/@external/guides/multitenancy/mtxs#example-handler-for-saasprovisioningservice).
+With `cds.xt.DeploymentService` you only configure the default database ID. If you want to specify different database IDs for a tenant HDI container, you need to [add the database ID to the payload of the individual subscription using a handler](./mtxs#example-handler-for-saasprovisioningservice).
 
 To keep the application configuration agnostic, we recommend adding the <Config label="database_id" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config> configuration as an environment variable to the MTX service in _mta.yaml_:
 ```yaml{6-17}
@@ -863,7 +863,7 @@ To keep the application configuration agnostic, we recommend adding the <Config 
 
 To further separate deployment configuration, you can also use a separate [Deployment Extension Descriptor](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/mta-deployment-extension-descriptor) on Cloud Foundry.
 
-You can also pass the configuration for each individual subscription as a payload extension in the request to the [SaasProvisioningService](/@external/guides/multitenancy/mtxs#subscription).
+You can also pass the configuration for each individual subscription as a payload extension in the request to the [SaasProvisioningService](./mtxs#subscription).
 
 #### Handle SAP HANA Tenants
 
@@ -918,7 +918,7 @@ For **CAP Java** applications you need to set the same prefix in the <Config jav
 
 **... in CAP Node.js**
 ###### CAP Node.js
-If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](/@external/guides/multitenancy/mtxs#put-tenant):
+If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](./mtxs#put-tenant):
 ```jsonc
 {
   "subscribedTenantId": "t1",
@@ -951,7 +951,7 @@ public void beforeSubscription(SubscribeEventContext context) {
 }
 ```
 
-This will affect every new [tenant subscription](/@external/java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
+This will affect every new [tenant subscription](../../java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
 
 <div id="tmscmk" />
 
@@ -965,8 +965,8 @@ When you unsubscribe and the tenant container is deleted, the corresponding SAP 
 There are still some limitations with the current client implementation.
 
 - **Database ID is Mandatory**
-  As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](/@external/guides/multitenancy/mtxs#deployment-config).
-- [`clusterSize` configuration](/@external/guides/multitenancy/mtxs#saas-provisioning-config) needs to be set to `1` (default is `3`). HANA TMS v2 does not provide a performant way to determine all database IDs,
+  As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](./mtxs#deployment-config).
+- [`clusterSize` configuration](./mtxs#saas-provisioning-config) needs to be set to `1` (default is `3`). HANA TMS v2 does not provide a performant way to determine all database IDs,
 so clustering the upgrade by database does not work properly.
 
 

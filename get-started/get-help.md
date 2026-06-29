@@ -392,7 +392,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ### How do I generate an OData response in Node.js for Error 404?
 
-If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-serve#custom-server-js).
+If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-server-js).
 
 ```js
 let app
@@ -717,7 +717,7 @@ When using HANA TMS v2, the message "Subaccount verification failed" indicates t
 
 Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as another application that has been deployed in another subaccount.
 
-See how to [handle HANA tenants with HANA TMS v2](/@external/guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
+See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
 
 
 ## BTP
