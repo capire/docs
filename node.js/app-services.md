@@ -161,20 +161,25 @@ cds.ApplicationService.handle_log_events = cds.service.impl (function(){
 
 When CAP's generic handlers run a CRUD operation, the result follows a consistent shape (custom `.on` handlers may return any value):
 
-| Operation             | Return value                                                                              |
-|-----------------------|-------------------------------------------------------------------------------------------|
-| `READ`                | Array of matching records, or a single record / `null` when read by key                   |
-| `INSERT` / `CREATE`   | Array with `.affected` (rows written), populated with rows from a `RETURNING` clause      |
-| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed), populated with rows from a `RETURNING` clause      |
-| `DELETE`              | Array with `.affected` (rows deleted), populated with rows from a `RETURNING` clause      |
+| Operation             | Return value                                                                                  |
+|-----------------------|-----------------------------------------------------------------------------------------------|
+| `READ`                | Array of matching records, or a single record / `null` when read by key                       |
+| `INSERT` / `CREATE`   | Array with `.affected` (rows written); iterate to access the inserted rows' primary keys      |
+| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); populated with rows from a `RETURNING` clause          |
+| `DELETE`              | Array with `.affected` (rows deleted); populated with rows from a `RETURNING` clause          |
 
-SQL `RETURNING` is not yet supported, so the array is currently always empty. For `INSERT`s, you can spread the result to access the generated primary keys — a transitional convenience until `RETURNING` lands. Once an `INSERT` query includes a `RETURNING` clause, the array is populated directly with the returned rows.
+For `INSERT`s, the result is a lazy array: iterating it (`[...result]`, `for…of`, `JSON.stringify`) materializes the inserted rows' generated primary keys in place. Direct index access works after the first iteration.
 
 ```js
 const inserted = await srv.create(Books).entries({title:'Catweazle'})
 inserted.affected            // 1
-const [row] = [...inserted]  // generated primary keys
+const [row] = [...inserted]  // materializes — row holds the generated key
+inserted[0]                  // same row (materialized above)
+```
 
+For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause — not yet supported, so currently always empty:
+
+```js
 const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
 updated.affected             // number of rows updated
 ```
