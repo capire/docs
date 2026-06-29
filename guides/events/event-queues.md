@@ -53,7 +53,7 @@ These are sometimes confused but solve different problems.
 The two patterns complement each other: when the dispatch target *is* a message broker, the event queue is the transactional bridge that makes pub/sub safe across the local commit. The [Inbox](#inbox) does the mirror image on the receiving side.
 
 > [!note] Related patterns
-> [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by making an append-only event log the source of truth. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
+> [*Event Sourcing*](https://microservices.io/patterns/data/event-sourcing.html) solves the same atomic-state-change-and-publish problem by establishing a source of truth through an append-only event log. Event queues persist messages only until processed and then delete them — they're a transactional bridge to remote systems, not the system of record.
 
 > [!tip] When <i>not</i> to use event queues
 > If you need an immediate, synchronous response from a remote system, use a normal service call. Queued calls execute asynchronously and discard the direct return value. For purely local logic that finishes inside the current request, an event queue adds nothing.
