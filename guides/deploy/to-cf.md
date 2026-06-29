@@ -155,7 +155,11 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
-### 3. SAP Cloud SDK {#add-cloud-sdk}
+### 3. Remote Service Consumption {#remote-services}
+
+CAP supports two HTTP clients for remote service calls.
+
+#### SAP Cloud SDK {#add-cloud-sdk}
 
 If you intend to consume remote services in production, for example, via [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/destination-service), add the requisite SAP Cloud SDK packages, like that for Node.js:
 
@@ -166,6 +170,20 @@ npm add @sap-cloud-sdk/resilience
 ```
 
 [Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
+
+#### Native Fetch Client <Beta /> {#native-fetch}
+
+CAP provides a built-in remote client that uses the native Node.js `fetch` API. For limitations, see the warning below. During local development, you don't need SAP Cloud SDK, but you can still use it. For production, you still need SAP Cloud SDK. For example, you use it to resolve named destinations through the SAP BTP Destination service.
+
+CAP selects the native fetch client for each outgoing request according to the following rules:
+
+1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), CAP always uses SAP Cloud SDK.
+2. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
+3. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
+
+::: warning Current limitations
+The native fetch client does not yet support named destinations using the SAP BTP Destination service. It supports only [application-defined destinations](../services/consuming-services#use-application-defined-destinations). In addition, it limits authentication to `NoAuthentication` and `BasicAuthentication`.
+:::
 
 
 ### 4. MTA-Based Deployment {#add-mta-yaml}
