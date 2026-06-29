@@ -388,15 +388,15 @@ Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that
 
 #### Do arithmetic in the database { .good }
 
-Avoid calculations on `Decimal` / `Int64` fields in JavaScript — do them in the database instead:
+Calculations on `Decimal` / `Int64` fields  should be done in the database:
 
 ```js
 await UPDATE(Books).set('stock = stock + 1').where({ ID: 1 })
 ```
 
-::: warning Integer arithmetic can exceed JavaScript's safe range
-Multiplication or addition on integer fields can produce values beyond `Number.MAX_SAFE_INTEGER`. Doing such calculations in JavaScript risks silently losing precision — do them in the database instead.
-:::
+#### Arithmetic in Javascript {.bad}
+Calculations on `Decimal` / `Int64` fields in JavaScript should be avoided as integer arithmetic can exceed JavaScript's safe range. Multiplication or addition on integer fields can produce values beyond `Number.MAX_SAFE_INTEGER`. Doing such calculations in JavaScript risks silently losing precision — do them in the database instead.
+
 
 ## Custom Streaming <Beta /> { #custom-streaming-beta }
 
