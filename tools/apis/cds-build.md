@@ -65,7 +65,7 @@ The CDS build system auto-detects all required build tasks by invoking the stati
 The compiled CSN model can be accessed using the asynchronous methods `model()` or `basemodel()`.
 
 - The method `model()` returns a CSN model for the scope defined by the `options.model` setting. If [feature toggles](../../guides/extensibility/feature-toggles) are enabled, this model also includes any toggled feature enhancements.
-- To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to-xyz), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
+- To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
 - Use [`cds.reflect`](../../node.js/cds-reflect) to access advanced query and filter functionality on the CDS model.
 
 ## Add build task type to cds schema <Since version="7.6.0" package="@sap/cds-dk" />

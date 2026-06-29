@@ -36,22 +36,30 @@ As migration is a one-time operation, run the OpenRewrite `recipes` as a command
 
 ```bash-vue
 mvn org.openrewrite.maven:rewrite-maven-plugin:run \
-  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:{{ versions.java_services }} \
-  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_4.9
+  -Drewrite.recipeArtifactCoordinates=com.sap.cds:cds-services-recipes:5.0.0 \
+  -Drewrite.activeRecipes=com.sap.cds.services.migrations.Cap_5.0
 ```
 
-Here, the *recipe* `com.sap.cds.services.migrations.Cap_4.9` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
+Here, the *recipe* `com.sap.cds.services.migrations.Cap_5.0` from CAP Java's OpenRewrite Maven artifact `com.sap.cds:cds-services-recipes` is called in the given project context. The *recipe* is a container for one or more recipes. A recipe is a rule that tells OpenRewrite how to transform code.
 
 ### Currently Released CAP Java Migrations
 
-The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal. Besides these fine grained recipes, course grained recipes might be provided per release (e.g. `com.sap.cds.services.migrations.Cap_4.9`). These type of recipes include all recipes for APIs deprecated in this AND previous releases. Consequently, it is sufficient to execute the latest recipe matching the version of the CAP Java SDK you are upgrading to.
+An umbrella recipe is provided per release (`com.sap.cds.services.migrations.Cap_<major>.<minor>`, for example `Cap_5.0`). Each umbrella recipe runs all individual recipes for this release and all previous releases. Additionally, it performs Maven dependency upgrades for all CAP Java modules to the matching version. Consequently, it is sufficient to execute the latest umbrella recipe matching the version of the CAP Java SDK you are upgrading to.
+
+The following table lists the individual recipes provided by CAP for APIs that have been deprecated and are subject for removal.
 
 |Name    |Description|Available since|
 |--------|-----------|---------------|
-|[com.sap.cds.services.migrations.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
-|[com.sap.cds.services.migrations.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
-|[com.sap.cds.services.migrations.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
-|[com.sap.cds.services.migrations.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[c.s.c.s.m.CustomOutboxOrdered](#adjusted-defaults-4-to-5)|Adds `ordered: true` to every custom entry under `cds.outbox.services` (except the built-in `DefaultOutboxOrdered`/`DefaultOutboxUnordered`) to preserve the previous behavior, as the default of `cds.outbox.services.<name>.ordered` changes from `true` to `false` in CAP Java 5.0.|5.0.0|
+|c.s.c.s.m.MigrateCdsMavenPluginConfig|Migrates the `cds-maven-plugin` configuration to CAP Java 5.0: removes configuration elements no longer supported by the plugin and aligns the `@sap/cds-dk` version with the cds-services release shipping this recipe.|5.0.0|
+|c.s.c.s.m.SearchModeProperty|Migrates the legacy `cds.sql.search.mode` property to `cds.sql.search.localized`. Values `localized-view` and `generic` are mapped to `view`; `localized-association` causes the property to be removed.|5.0.0|
+|[c.s.c.s.m.Cap_5.0_Properties](#removed-properties-4-to-5)|Removes application properties that are no longer supported in CAP Java 5.0 and have no replacement (for example `cds.errors.combined`, `cds.sql.collate`, `cds.sql.hana.optimizationMode`, `cds.odataV4.searchMode`, `cds.odataV2.searchMode`, and the removed `cds.multiTenancy.serviceManager.*` flags).|5.0.0|
+|c.s.c.s.m.Cap_4.9_Properties|Replaces deprecated application properties with their CAP Java 4.9 equivalents (for example `cds.mcp.autoConfig.*` &rarr; `cds.mcp.autoWired.*`, `cds.taskScheduler.enabled` &rarr; `cds.outbox.persistent.scheduler.enabled`).|4.9.0|
+|[c.s.c.s.m.UclMigration](#removed-java-apis-4-to-5)|Migrates deprecated UCL result getter and setter methods to the new API.|4.9.0|
+|[c.s.c.s.m.MigrateSaasRegistryDependency](#removed-java-apis-4-to-5)|Replaces deprecated `SaasRegistryDependency` methods `setAppId`/`setAppName`/`getAppId`/`getAppName` with their `xsappname`-based replacements.|4.9.0|
+|[c.s.c.s.m.ServiceExceptionUtils](#removed-java-apis-4-to-5)|Replaces deprecated methods in `ServiceExceptionUtils`.|4.9.0|
+|[c.s.c.s.m.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
+
 
 ## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
 
@@ -79,30 +87,30 @@ Some property defaults have been adjusted:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
-| [cds.errors.preferServiceException](../developing-applications/properties#cds-errors-preferServiceException)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
-| [cacheRefreshInterval](../developing-applications/properties#cds-multiTenancy-serviceManager-cacheRefreshInterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
-| [cds.outbox.services.&lt;key&gt;.ordered](../developing-applications/properties#cds-outbox-services-%3Ckey%3E-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
-| [enforceTransactional](../developing-applications/properties#cds-persistence-changeSet-enforceTransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
+| [cds.errors.preferServiceException](./developing-applications/properties#cds-errors-preferserviceexception)  | `false` | `true` | `ServiceException` is now preferred over generic exceptions when mapping errors to HTTP responses. |
+| [cacheRefreshInterval](./developing-applications/properties#cds-multitenancy-servicemanager-cacherefreshinterval) | `PT20M` (20 min) | `PT60M` (60 min) | The service manager cache is now refreshed less frequently to reduce overhead. |
+| [cds.outbox.services.&lt;key&gt;.ordered](./developing-applications/properties#cds-outbox-services-key-ordered) | `true` | `false` | Outbox instances now process entries in parallel by default. Set to `true` to restore ordered, single-threaded processing. |
+| [enforceTransactional](./developing-applications/properties#cds-persistence-changeset-enforcetransactional) | `true` | `false` | Transactional enforcement for change sets is now opt-in. |
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
-| [cds.query.restrictions.enabled](../developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
-| [cds.security.authentication.mode](../developing-applications/properties#cds-security-authentication) | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
-| [cds.sql.hana.search.fuzzy](../developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
-| [cds.sql.toOnePath.mode](../developing-applications/properties#cds-sql-toOnePath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
+| [cds.query.restrictions.enabled](./developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
+| [cds.security.authentication.mode](./developing-applications/properties#cds-security-authentication) | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
+| [cds.sql.hana.search.fuzzy](./developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
+| [cds.sql.toOnePath.mode](./developing-applications/properties#cds-sql-toonepath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 
 ### Deprecated Properties
-<div id="deprecated-properties-4-to-5 " />
+<div id="deprecated-properties-4-to-5" />
 
 The following properties have been deprecated and might be removed in a future major version:
 
 | Deprecated Property | Explanation |
 | --- | --- |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
-| [cds.outbox.inMemory.emitDuringChangeSetContext](../developing-applications/properties#cds-outbox-inMemory-emitDuringChangeSetContext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
-| [cds.outbox.inMemory.enabled](../developing-applications/properties#cds-outbox-inMemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.emitDuringChangeSetContext` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.enabled` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
-<div id="removed-properties-4-to-5 " />
+<div id="removed-properties-4-to-5" />
 
 The following table gives an overview about the removed properties:
 
@@ -170,6 +178,11 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 #### Default JDK Version
 
 The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
+
+If your project uses Lombok, you need to explicitly add its annotation processor to your POM when you switch to Java 25. This is a change in Java compiler and affects all other annotation processors.
+
+[Learn more about Maven setup with Lombok.](https://projectlombok.org/setup/maven){.learn-more}
+[Learn more about about the change in the Java compiler.](https://bugs.java.com/bugdatabase/JDK-8321314/description){.learn-more}
 
 ### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 

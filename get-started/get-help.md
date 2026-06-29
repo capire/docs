@@ -288,7 +288,7 @@ On macOS and Linux, the built-in implementation continues to be used.
 On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
 After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
 
-:::warning The build log will incorrectly report the file as written. 
+:::warning The build log will incorrectly report the file as written.
 :::
 
 To fix this on Windows, install the tar library:
@@ -303,7 +303,7 @@ Even with this dependency added, on macOS and Linux the built-in implementation 
 
 ### How to fix "`Error: Could not locate the bindings file. Tried: ...`"
 
-You probably have `ignore-scripts` set to `true` in your npm configuration. While this is generally a good idea, it prevents certain libraries, like `better-sqlite3`, from running a required postinstall script. 
+You probably have `ignore-scripts` set to `true` in your npm configuration. While this is generally a good idea, it prevents certain libraries, like `better-sqlite3`, from running a required postinstall script.
 To solve this, you can either temporarily allow scripts and run a reinstall, or manually run the build script for the library in question. For `better-sqlite3`, run `npm run build-release` from within the _node_modules/better-sqlite3_ directory. The first line after the error message shows the relevant _node_modules_ directory.
 
 
@@ -392,7 +392,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ### How do I generate an OData response in Node.js for Error 404?
 
-If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-serve#custom-server-js).
+If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-server-js).
 
 ```js
 let app
@@ -717,7 +717,7 @@ When using HANA TMS v2, the message "Subaccount verification failed" indicates t
 
 Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as another application that has been deployed in another subaccount.
 
-See how to [handle HANA tenants with HANA TMS v2](/@external/guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
+See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
 
 
 ## BTP
@@ -869,7 +869,7 @@ See the [_Health Checks_](../guides/deploy/health-checks) guide  for the correct
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
 
-Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in
+Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexpage) and in
 [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
 ## Kyma / K8s

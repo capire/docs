@@ -14,9 +14,9 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 One of the key [CAP design principles](../../get-started/features#open-and-opinionated) is to be an opinionated but yet open framework.
 Giving a clear guidance for cutting-edge technologies on the one hand and still keeping the door wide open for custom choice on the other hand, demands a highly flexible CAP Java runtime stack.
-The [modular architecture](#modular_architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack_configuration) based on standard or custom modules.
+The [modular architecture](#modular-architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack-configuration) based on standard or custom modules.
 
-## Modular Stack Architecture { #modular_architecture}
+## Modular Stack Architecture { #modular-architecture}
 
 ### Overview
 
@@ -124,9 +124,9 @@ CAP Java makes use of the plugin technique itself to offer optional functionalit
 Examples are [SAP Event Mesh](../messaging) and [Audit logging](../auditlog) integration.
 Find a full list of standard plugins in [Standard Modules](#standard-modules).
 
-## Stack Configuration { #stack_configuration}
+## Stack Configuration { #stack-configuration}
 
- As outlined in section [Modular Stack Architecture](#modular_architecture), the CAP Java runtime is highly flexible.
+ As outlined in section [Modular Stack Architecture](#modular-architecture), the CAP Java runtime is highly flexible.
  You can choose among modules prepared for different environments and in addition also include plugins which are optional extensions.
  Which set of modules and plugins is active at runtime is a matter of compile time and runtime configuration.
 

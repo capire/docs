@@ -361,6 +361,9 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 
 #### Draft-agnostic Requests (CAP Node.js)
 
+> [!warning] Ensure validation for all entry points
+> Requests to active data also features partial CREATE/UPDATE requests to the root entity and its composition children. Ensure that the validations and determinations are run in all situations, not only on the root.
+
 Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
 ```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
@@ -501,12 +504,12 @@ annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
 
 :::info Background
 SAP Fiori drafts require single keys of type `UUID`, which is not the case for [`.texts`](./localized-data#behind-the-scenes) entities, that are generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
+[Learn how to add initial data for such draft-enabled localized entities.](localized-data#adding-initial-data){.learn-more}
 :::
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
 
 [See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
-
 
 
 ## Fiori Tree Views

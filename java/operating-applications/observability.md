@@ -163,6 +163,7 @@ CAP Java SDK has useful built-in loggers that help to track runtime behavior:
 | `com.sap.cds.remote.odata`            | Logs request handling for remote OData calls                                                         |
 | `com.sap.cds.remote.wire`             | Logs communication of remote OData calls                                                             |
 | `com.sap.cds.auditlog`                | Logs audit log events                                                                                |
+| `com.sap.cds.outbox`                  | Logs activity of the transactional outbox                                                                                |
 | `com.sap.cds.properties`              | Logs CDS properties with a non-default value on application startup                                  |
 
 Most of the loggers are used on DEBUG level by default as they produce quite some log output. It's convenient to control loggers on package level, for example, `com.sap.cds.security` covers all loggers that belong to this package (namely `com.sap.cds.security.authentication` and `com.sap.cds.security.authorization`).
