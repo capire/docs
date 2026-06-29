@@ -106,8 +106,8 @@ The following properties have been deprecated and might be removed in a future m
 | Deprecated Property | Explanation |
 | --- | --- |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
-| [cds.outbox.inMemory.emitDuringChangeSetContext](./developing-applications/properties#cds-outbox-inmemory-emitduringchangesetcontext) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
-| [cds.outbox.inMemory.enabled](./developing-applications/properties#cds-outbox-inmemory-enabled) | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.emitDuringChangeSetContext` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.enabled` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
 
 ### Removed Properties
 <div id="removed-properties-4-to-5" />
@@ -179,7 +179,7 @@ The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CA
 
 The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
 
-If your project uses Lombok, you need to explicitly add its annotation processor to your POM when you switch to Java 25. This is a change in Java compiler and affects all other annotation processors. 
+If your project uses Lombok, you need to explicitly add its annotation processor to your POM when you switch to Java 25. This is a change in Java compiler and affects all other annotation processors.
 
 [Learn more about Maven setup with Lombok.](https://projectlombok.org/setup/maven){.learn-more}
 [Learn more about about the change in the Java compiler.](https://bugs.java.com/bugdatabase/JDK-8321314/description){.learn-more}

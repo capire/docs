@@ -677,4 +677,4 @@ Additionally Cloud Native Buildpacks can be easily plugged together to fulfill m
 
 ### CAP Operator
 
-The [CAP Operator]((https://sap.github.io/cap-operator/) brings enterprise-grade lifecycle automation to CAP applications. It is a Kubernetes-native Operator that declaratively deploys and manages application versions, automates tenant operations, and manages domains and networking consistently across Kyma and Gardener-managed clusters.
+The [CAP Operator](https://sap.github.io/cap-operator/) brings enterprise-grade lifecycle automation to CAP applications. It is a Kubernetes-native Operator that declaratively deploys and manages application versions, automates tenant operations, and manages domains and networking consistently across Kyma and Gardener-managed clusters.
