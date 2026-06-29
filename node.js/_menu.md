@@ -39,7 +39,6 @@
   ## [Class cds. Event](events#cds-event)
   ## [Class cds. Request](events#cds-request)
   ## [Error Handling](events#req-reject)
-  ## [Event Queues](queue)
 
 # [cds. Queries](cds-ql)
 
@@ -55,6 +54,7 @@
 # [cds. env](cds-env)
 # [cds. utils](cds-utils)
 
+# [Event Queues](event-queues)
 # [Serving Fiori UIs](fiori)
 # [Transactions](cds-tx)
 # [Security](authentication)

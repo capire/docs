@@ -265,7 +265,7 @@ this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
 ```
 ::: tip
 The messages are sent once the transaction is successful.
-Per default, a persistent queue is used. See [Messaging - Queue](./queue) for more information.
+By default, a persistent queue is used. See [Event Queues](./event-queues) for more information.
 :::
 
 ## Receiving Events
@@ -300,7 +300,7 @@ In general, messages don't contain user information but operate with a technical
 
 ### Inbox <Beta />
 
-You can store received messages in an inbox before they're processed. Under the hood, it uses the [task queue](./queue) for reliable asynchronous processing.
+You can store received messages in an inbox before they're processed. Internally, it uses the [task queue](./event-queues) for reliable asynchronous processing.
 Enable it by setting the `inboxed` option to `true`, for example:
 
 ```js
