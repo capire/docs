@@ -85,10 +85,10 @@ As shown in the example, there are two flavors of sending messages with the mess
 In section [CDS-Declared Events](#cds-declared-events), we show how to declare events in CDS models and by this let CAP generate EventContext interfaces especially tailored for the defined payload, that allows type safe access to the payload.
 
 ::: tip Using an outbox
-The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
+The messages are sent once the transaction is successful. By default, an in-memory outbox is used, but there's also support for a [persistent outbox](./event-queues#default-outbox-services).
 
-You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/events/messaging#using-multiple-channels).
+You can configure a [custom outbox](./event-queues#custom-outbox-services) for a messaging service by setting the property
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This is especially useful when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
