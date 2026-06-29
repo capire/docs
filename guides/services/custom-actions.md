@@ -64,7 +64,7 @@ Event handlers for actions or functions are very similar to those for CRUD event
 **Method-style Implementations** in Node.js, you can alternatively implement actions and functions using conventional JavaScript methods with subclasses of `cds.Service`:
 
 ```js
-module.exports = class Sue extends cds.Service {
+module.exports = class Sue extends cds.ApplicationService {
   sum(x,y) { return x+y }
   add(x,to) { return stocks[to] += x }
   stock(id) { return stocks[id] }
