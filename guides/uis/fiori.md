@@ -569,6 +569,11 @@ extend AdminService.Genres with @(
 
 :::
 
+::: details Hierarchies with Aggregations
+
+CAP Java supports calculation of aggregates for hierarchy views by annotating a `virtual` element with `@cds.java.descendants.aggregate` and specifying the aggregation expression.
+
+:::
 
 ### UI5 manifest Configuration
 
