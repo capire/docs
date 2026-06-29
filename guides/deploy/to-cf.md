@@ -173,16 +173,16 @@ npm add @sap-cloud-sdk/resilience
 
 #### Native Fetch Client <Beta /> {#native-fetch}
 
-CAP provides a built-in remote client that uses the native Node.js `fetch` API (see limitations below). During local development, SAP Cloud SDK is therefore not required, though using it remains an option. For production, SAP Cloud SDK is still needed, for example to resolve named destinations via the SAP BTP Destination service.
+CAP provides a built-in remote client that uses the native Node.js `fetch` API. For limitations, see the warning below. During local development, you don't need SAP Cloud SDK, but you can still use it. For production, you still need SAP Cloud SDK. For example, you use it to resolve named destinations through the SAP BTP Destination service.
 
-CAP selects the native fetch client per outgoing request according to the following rules:
+CAP selects the native fetch client for each outgoing request according to the following rules:
 
-1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), the SAP Cloud SDK is always used.
-2. If <Config>cds.remote.native_fetch</Config> is explicitly set to `true` or `false`, that setting is used.
-3. Otherwise, native fetch is used when `@sap-cloud-sdk/http-client` is not installed.
+1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), CAP always uses SAP Cloud SDK.
+2. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
+3. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
 
 ::: warning Current limitations
-The native fetch client does not yet support named destinations using the SAP BTP Destination service. Only [application defined destinations](../services/consuming-services#use-application-defined-destinations) are supported. In addition, authentication is limited to `NoAuthentication` and `BasicAuthentication`.
+The native fetch client does not yet support named destinations using the SAP BTP Destination service. It supports only [application-defined destinations](../services/consuming-services#use-application-defined-destinations). In addition, it limits authentication to `NoAuthentication` and `BasicAuthentication`.
 :::
 
 
