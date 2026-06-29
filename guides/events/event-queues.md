@@ -154,11 +154,14 @@ CqnService xflights = OutboxService.unboxed(outboxedXFlights);
 
 
 ### By Configuration
+  
+  > [!note] Node.js only
+  > Outboxing required services by configuration is available in Node.js only.
 
 To outbox a required service centrally, without touching handler code, set a flag on its configuration. Every call from your handlers is then queued automatically.
 
 ::: code-group
-```json [Node.js — package.json]
+```json [Node.js - package.json]
 {
   "cds": {
     "requires": {
@@ -174,9 +177,6 @@ To outbox a required service centrally, without touching handler code, set a fla
 This is the typical setup for **technical services**, such as messaging and audit logging, where every emit must be durable. CAP enables it by default for those services (see [*Auto-Outboxed Services*](#auto-outboxed-services) below).
 
 For **business services**, however, a class-level flag is usually too coarse. Remote integrations called from domain handlers typically need *some* calls outboxed, for example, the post-commit notification to *xflights*, while others stay synchronous (a read-through query, a probe before commit). For finer control, prefer the programmatic path with `cds.queued()` or `srv.schedule()`.
-
-> [!note] Node.js only
-> Outboxing required services by configuration is available in Node.js only.
 
 
 ### Auto-Outboxed Services
@@ -195,6 +195,9 @@ This ensures that messaging and audit log events are sent reliably and never los
 
 
 ### Callbacks <Alpha />
+
+> [!note] Node.js only
+> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
 
 Because queued calls return after the message is *stored*, not after the remote operation completes, you can't use the return value of `send()` or `run()` to react to success or failure. Instead, register a callback handler on the queued service:
 
@@ -226,9 +229,6 @@ This is also the foundation for [SAGA-style](https://microservices.io/patterns/d
 > [!tip] Register on specific events
 > Callback handlers must be registered for the specific `#succeeded` or `#failed` events.
 > The `*` wildcard handler is not called for these events.
-
-> [!note] Node.js only
-> Callback events `#succeeded` and `#failed` are currently available in Node.js only. Java doesn't have an equivalent yet, but it's on the roadmap.
 
 
 ## Inbox
