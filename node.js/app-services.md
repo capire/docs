@@ -184,4 +184,4 @@ When a write targets a single row by key (for example, `srv.update(Books, 201)` 
 > [!tip] Consistent Results Across Local and Remote Services
 > This shape was introduced in cds 10 so that local services, HCQL-proxied remote services, and database services return the same thing. To restore the previous behavior, set <Config>cds.features.legacy_srv_results: true</Config>.
 
-[See the migration guide for opt-out options.](../migration/cds10#fixed-service-results){.learn-more}
+[See the migration guide for opt-out options.](../releases/migration/cds10#fixed-service-results){.learn-more}
