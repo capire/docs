@@ -104,7 +104,21 @@ TravelService xflights;
 @After(event = CqnService.EVENT_CREATE, entity = Bookings_.CDS_NAME)
 void notifyXFlights(List<Bookings> bookings) {
   xflights = outbox.outboxed(xflights);
-  bookings.forEach(b -> xflights.bookingCreated(...));
+  // Persisted within the current transaction, sent after commit      // [!code ++]
+  bookings.forEach(b -> xflights.bookingCreated(...));                // [!code ++]
+}
+```
+```java [Java w/o <code>@Autowired</code>]
+@After(event = CqnService.EVENT_CREATE, entity = Bookings_.CDS_NAME)
+void notifyXFlights(List<Bookings> bookings) {
+  OutboxService outbox = runtime.getServiceCatalog()
+    .getService(OutboxService.class, "XFlightsOutbox");
+  TravelService xflights = runtime.getServiceCatalog()
+    .getService(TravelService.class, "xflights");
+
+  xflights = outbox.outboxed(xflights);
+  // Persisted within the current transaction, sent after commit      // [!code ++]
+  bookings.forEach(b -> xflights.bookingCreated(...));                // [!code ++]
 }
 ```
 :::
@@ -113,6 +127,9 @@ If the transaction rolls back, no booking request is sent.
 
 > [!tip] Enabled by default
 > Event queues are enabled by default — there's nothing to install or activate. The persistent queue starts with your application; the configuration shown later is only for tuning.
+
+> [!tip] Node.js: <code>await</code> is still needed
+> Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
 
 The `xflights` connection here stands in for any remote service you've configured under `cds.requires`. The complete setup of the *xtravels* application and the *xflights* service it consumes lives in the [*@capire/xtravels*](https://github.com/capire/xtravels) sample.
 
@@ -123,21 +140,6 @@ A queued call changes *when* work happens and *what the caller can expect back*:
 
 > [!warning] Queued calls discard the direct return value
 > A queued service persists the request and returns after the message is stored, not after the remote operation finishes. Any return value from `send()` or `run()` is therefore not available to the caller. To act on the outcome, register a [callback handler](#callbacks) on `#succeeded` or `#failed`.
-
-> [!tip] `await` is still needed
-> Even though processing is asynchronous, you still need to `await` because the message is written to the database within the current transaction.
-
-In Java, you can also wrap a service at runtime through the service catalog rather than wiring through Spring:
-
-```java
-OutboxService outbox = runtime.getServiceCatalog()
-    .getService(OutboxService.class, "XFlightsOutbox");
-TravelService xflights = runtime.getServiceCatalog()
-    .getService(TravelService.class, "xflights");
-
-xflights = outbox.outboxed(xflights);
-xflights.bookingCreated(...);
-```
 
 To get the original synchronous service from a queued proxy:
 
