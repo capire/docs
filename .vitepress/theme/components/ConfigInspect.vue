@@ -4,7 +4,7 @@
   >
   <!-- :hideTriggers="[]" :shown="true" -->
 
-    <a class="cfg vp-doc"><span class="cfg">{{ label }}</span></a>
+    <a class="cfg vp-doc"><span class="cfg" v-html="label"></span></a>
 
     <template #popper>
       <div class="vp-code-group vp-doc" v-if="java">
