@@ -106,8 +106,8 @@ The following properties are deprecated and may be removed in a future major ver
 | Deprecated Property | Explanation |
 | --- | --- |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
-| `cds.outbox.inMemory.emitDuringChangeSetContext` | This functionality is always enabled by default. You cannot switch it off. |
-| `cds.outbox.inMemory.enabled` | This functionality is always enabled by default. You cannot switch it off. |
+| `cds.outbox.inMemory.emitDuringChangeSetContext` | This functionality is now always enabled. |
+| `cds.outbox.inMemory.enabled` | This functionality is now always enabled. |
 
 ### Removed Properties
 <div id="removed-properties-4-to-5" />
@@ -195,7 +195,7 @@ The internal Maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-li
 3. Use upstream open-source Apache Olingo. Change dependencies from the corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4` and `org.apache.olingo:olingo-odata2`.
 
 
-#### Module `com.sap.cds:cds4j-codegen` Is Removed
+#### Module `com.sap.cds:cds4j-codegen` is Removed
 
 The module `cds4j-codegen` is no longer available in CAP 5.0. Use `com.sap.cds:cds-services-code-generator` instead.
 
