@@ -65,9 +65,9 @@ The following table lists the individual recipes provided by CAP for APIs that h
 
 ### Spring Boot 4
 
-CAP Java 5 uses Spring Boot 4 and Spring Security 7 as the underlying framework. If the CAP Java application is not using native Spring APIs directly, fixing Spring Boot 4 incompatibilities can be as straightforward as renaming of maven dependencies and smaller changes in test classes (for example, changed package name of `AutoConfigureMockMvc`). Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes between Spring Security 6.5 and 7, refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
+CAP Java 5 uses Spring Boot 4 and Spring Security 7 as the underlying framework. If your application does not use native Spring APIs directly, fixing Spring Boot 4 incompatibilities can be as straightforward as renaming Maven dependencies and making smaller changes in test classes (for example, changing the package name of `AutoConfigureMockMvc`). Consult the [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide) for changes between Spring Boot 3.5 and Spring Boot 4.0. For changes from Spring Security 6.5 to 7, refer to the [Spring Security 7 Migration Guide](https://docs.spring.io/spring-security/reference/migration/).
 
-In any case, it's required to upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version > 4.0.0.
+You must also upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version 4.0.0 or later.
 
 ### Minimum Versions
 
@@ -83,7 +83,7 @@ CAP Java 5.0 increased some minimum required versions:
 ### Adjusted Property Defaults
 <div id="adjusted-defaults-4-to-5" />
 
-Some property defaults have been adjusted:
+CAP Java 5.0 adjusts the following property defaults:
 
 | Property | Old Value | New Value | Explanation |
 | --- | --- | --- | --- |
@@ -94,38 +94,38 @@ Some property defaults have been adjusted:
 | `cds.query.deepEntityReadonly` | `false` | `true` | Readonly handling is now enforced for deep entity reads by default. |
 | [cds.query.restrictions.enabled](./developing-applications/properties#cds-query-restrictions) | `false` | `true` | |
 | [cds.security.authentication.mode](./developing-applications/properties#cds-security-authentication) | `model-strict` | `model-relaxed` | Authentication mode now defaults to `model-relaxed`, which only enforces authentication for endpoints protected via `@requires` or `@restrict`. |
-| [cds.sql.hana.search.fuzzy](./developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default |
+| [cds.sql.hana.search.fuzzy](./developing-applications/properties#cds-sql-hana-search-fuzzy) | `false` | `true` | Fuzzy search is now enabled on HANA by default. |
 | [cds.sql.toOnePath.mode](./developing-applications/properties#cds-sql-toonepath-mode) | `always-join` | `optimize` | SQL generation now avoids joins for to-one path expressions when a FK column can be selected directly, improving query performance. |
 
 
 ### Deprecated Properties
 <div id="deprecated-properties-4-to-5" />
 
-The following properties have been deprecated and might be removed in a future major version:
+The following properties are deprecated and may be removed in a future major version:
 
 | Deprecated Property | Explanation |
 | --- | --- |
 | `cds.dashboard.*` | The entire `cds.dashboard` configuration namespace is deprecated and may be removed in a future major version. |
-| `cds.outbox.inMemory.emitDuringChangeSetContext` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
-| `cds.outbox.inMemory.enabled` | The functionality provided by this property is enabled by default and there is no reason to switch it off. |
+| `cds.outbox.inMemory.emitDuringChangeSetContext` | This functionality is always enabled by default. You cannot switch it off. |
+| `cds.outbox.inMemory.enabled` | This functionality is always enabled by default. You cannot switch it off. |
 
 ### Removed Properties
 <div id="removed-properties-4-to-5" />
 
-The following table gives an overview about the removed properties:
+The following table gives an overview of the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
-| `cds.errors.combined` | Was deprecated since CAP Java 4.0. The property had no effect anymore and has been removed. |
+| `cds.errors.combined` | Deprecated since CAP Java 4.0. This property had no effect and has been removed. |
 | `cds.mcp.autoConfig` | Replaced by `cds.mcp.autoWired`. |
 | `cds.multiTenancy.serviceManager` `.acceptInstancesWithoutTenant` | Removed. No replacement — silent breaking change. |
 | `cds.multiTenancy.serviceManager` `.ignoreDuplicateTenantInstances` | Removed. No replacement — silent breaking change. |
 | `cds.odataV2.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.odataV4.searchMode` | Removed. The runtime now behaves as if `pass-through` was set (the search string is passed through to the data store). The property has no effect anymore. Remove any configured value. |
 | `cds.sql.collate` | Removed. The property had no documented effect and was never exposed. Remove any configured value. |
-| `cds.sql.hana.optimizationMode` | Was deprecated since CAP Java 4.0. SAP HANA's HEX engine is used ever since. |
-| `cds.sql.search.mode`| Replaced by `cds.sql.search.localized` with value `view` to change the default. `generic` is not supported anymore. |
-| `cds.taskScheduler.enabled` | Replaced by  `cds.outbox.persistent.scheduler.enabled`. |
+| `cds.sql.hana.optimizationMode` | Deprecated since CAP Java 4.0. SAP HANA's HEX engine has been used since then. |
+| `cds.sql.search.mode` | Replaced by `cds.sql.search.localized` with value `view` to change the default. `generic` is no longer supported. |
+| `cds.taskScheduler.enabled` | Replaced by `cds.outbox.persistent.scheduler.enabled`. |
 
 ### Removed Java APIs { #removed-java-apis-4-to-5 }
 
@@ -148,24 +148,24 @@ Removed deprecated methods:
 
 ### Changes in the `cds-maven-plugin`
 
-There are some incompatibilities in the [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) between version 4.9.x and 5.0.0, which require adjustments in the pom.xml of a CAP Java application when upgrading to CAP Java 5.0.0.
+The [`cds-maven-plugin`](./assets/cds-maven-plugin-site/plugin-info.html) has incompatibilities between version 4.9.x and 5.0.0 that require adjustments to your application's pom.xml when upgrading to CAP Java 5.0.0.
 
 #### Minimum Maven Version
 
-For security reasons, the minimum required Maven version has been increased to **3.9.14**. Make sure to update your Maven version accordingly in your build environment. We strongly recommend using the latest available Maven 3.9.x (not 4.0.x) version, which is currently **3.9.16** at the time of writing.
+For security reasons, the minimum required Maven version is now **3.9.14**. Update your Maven version in your build environment. We recommend using the latest available Maven 3.9.x (not 4.0.x) version, currently **3.9.16**.
 
-#### Removed deprecated goal `install-cdsdk`
+#### Removed Deprecated Goal `install-cdsdk`
 
-The goal `install-cdsdk` is deprecated since version 3.6.0 of the `cds-maven-plugin`. With version 5.0.0 it is removed and no longer available. As an alternative, the goal `npm` can be used to install a local `@sap/cds-dk` if required.
-Further details can be found [here](developing-applications/building#migration-install-cdsdk).
+The goal `install-cdsdk` was deprecated in version 3.6.0 of the `cds-maven-plugin` and was removed in version 5.0.0. Instead, use the `npm` goal to install a local `@sap/cds-dk` if needed.
+For more information, see [Migrating from `install-cdsdk`](developing-applications/building#migration-install-cdsdk).
 
-#### Changes in goal `generate`
+#### Changes in Goal `generate`
 
-1. Removed already deprecated properties:
+1. Removed deprecated properties:
 - eventContext: Interfaces for actions and functions now always extend `EventContext`.
-- cqnService: Typed interfaces are now always generated for application service.
+- cqnService: Typed interfaces are now always generated for the application service.
 
-2. Deprecated properties and marked for removal:
+2. Properties deprecated and marked for removal:
 None
 
 3. Changed default value of properties:
@@ -173,31 +173,31 @@ None
 
 ### Changes in the `cds-services-archetype`
 
-The `cds-services-archetype` is used by the `@sap/cds-dk` to generate initial CAP Java projects.
+The `@sap/cds-dk` uses the `cds-services-archetype` to generate initial CAP Java projects.
 
 #### Default JDK Version
 
-The default JDK version of new CAP Java projects has been changed to JDK **25**. The minimum required JDK version is now **21**.
+The default JDK version for new CAP Java projects is now JDK **25**. The minimum required JDK version is now **21**.
 
-If your project uses Lombok, you need to explicitly add its annotation processor to your POM when you switch to Java 25. This is a change in Java compiler and affects all other annotation processors.
+If your project uses Lombok, you must explicitly add its annotation processor to your POM when you switch to Java 25. This is a change in the Java compiler and affects all other annotation processors.
 
 [Learn more about Maven setup with Lombok.](https://projectlombok.org/setup/maven){.learn-more}
-[Learn more about about the change in the Java compiler.](https://bugs.java.com/bugdatabase/JDK-8321314/description){.learn-more}
+[Learn more about the change in the Java compiler.](https://bugs.java.com/bugdatabase/JDK-8321314/description){.learn-more}
 
-### Removed repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
+### Removed Repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
 
-The internally used maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` are removed from the delivery. If the project directly references these modules and doesn't compile after migrating to CAP Java 5.x, there are 3 options to keep the compatibility of the code base:
+The internal Maven modules `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib` have been removed. If your project directly references these modules and does not compile after migrating to CAP Java 5.x, you have three options to maintain compatibility:
 
-1. [**Recommended**] Remove `mvn` dependencies to `repackaged/odata-v4-lib`, `repackaged/odata-v2-lib`, and  rewrite code using CAP Java native APIs.
+1. [**Recommended**] Remove `mvn` dependencies on `repackaged/odata-v4-lib` and `repackaged/odata-v2-lib`, and rewrite code using CAP Java native APIs.
 
-2. Use `maven-dependency-plugin` to unpack (extract contents of dependency) Olingo sources into your code base during the project build.
+2. Use `maven-dependency-plugin` to unpack (extract contents of dependency) Olingo sources into your codebase during the project build.
 
-3. Use upstream open-source Apache Olingo. Change dependencies from corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4`, `org.apache.olingo:olingo-odata2`
+3. Use upstream open-source Apache Olingo. Change dependencies from the corresponding internal CAP `mvn` modules to OSS packages `org.apache.olingo:olingo-odata4` and `org.apache.olingo:olingo-odata2`.
 
 
-#### Module `com.sap.cds:cds4j-codegen` is removed
+#### Module `com.sap.cds:cds4j-codegen` Is Removed
 
-The module `cds4j-codegen` is no longer available in CAP 5.0. The module `com.sap.cds:cds-services-code-generator` is delivered instead.
+The module `cds4j-codegen` is no longer available in CAP 5.0. Use `com.sap.cds:cds-services-code-generator` instead.
 
 ## CAP Java 3.10 to CAP Java 4.0 { #three-to-four }
 
@@ -221,11 +221,11 @@ The feature `cds-feature-event-hub` has been removed from CAP Java. The successo
 
 ### Changes in goal `generate` of the `cds-maven-plugin`
 
-1. Removed already deprecated properties:
+1. Removed deprecated properties:
 - sharedInterfaces
 - uniqueEventContexts
 
-2. Deprecated properties and marked for removal:
+2. Properties deprecated and marked for removal:
 - eventContext
 - cqnService
 
@@ -288,7 +288,7 @@ The functionality provided by these properties is enabled by default and there i
 
 ### Removed Properties
 
-The following table gives an overview about the removed properties:
+The following table gives an overview of the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
@@ -468,7 +468,7 @@ Some property defaults have been adjusted:
 
 ### Removed Properties
 
-The following table gives an overview about the removed properties:
+The following table gives an overview of the removed properties:
 
 | Removed Property | Replacement / Explanation |
 | --- | --- |
