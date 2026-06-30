@@ -569,6 +569,11 @@ extend AdminService.Genres with @(
 
 :::
 
+::: tip Build hierarchies with aggregations in CAP Java
+
+Annotate a `virtual` element with `@cds.java.descendants.aggregate` and specify the aggregation expression to build hierarchy views using calculation of aggregates.
+
+:::
 
 ### UI5 manifest Configuration
 
