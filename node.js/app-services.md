@@ -177,7 +177,7 @@ const [row] = [...inserted]  // materializes — row holds the generated key
 inserted[0]                  // same row (materialized above)
 ```
 
-For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause — not yet supported, so currently always empty:
+For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause. But `RETURNING` is not yet supported, so the array currently is always empty:
 
 ```js
 const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
