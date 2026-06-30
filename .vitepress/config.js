@@ -2,10 +2,17 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
+import { dirname, join, resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
+import playground from './lib/cds-playground/index.js'
 import languages from './languages'
-import path from 'node:path'
 import { Menu } from './menu.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const codeGrSharedScript = readFileSync(resolve(__dirname, './lib/code-groups/shared.js'),'utf-8').replace(/^export\s+/gm, '')
+const codeGrRestoreScript = readFileSync(resolve(__dirname, './lib/code-groups/restoreCodeGroupPreferences.js'),'utf-8').replace('__CODE_GROUP_SHARED__', codeGrSharedScript)
 
 const config = defineConfig({
 
@@ -75,10 +82,19 @@ const config = defineConfig({
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
-    ['script', { src: base+'script.js' } ]
+    // Inline script to restore impl-variant selection immediately (before first paint)
+    ['script', { id: 'check-impl-variant' }, `{const p=new URLSearchParams(location.search),v=p.get('impl-variant')||localStorage.getItem('impl-variant');if(v)document.documentElement.classList.add(v)}`],
+    // Inline script to restore code group tab preferences (before Vue hydration)
+    ['script', {}, codeGrRestoreScript]
   ],
 
   vite: {
+    plugins: [...playground.plugins()],
+    esbuild: {
+      supported: {
+        'top-level-await': true //browsers can handle top-level-await features in special cases
+      },
+    },
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
@@ -105,7 +121,7 @@ import rewrites from './rewrites'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
-if (process.cwd() === path.dirname(__dirname)) {
+if (process.cwd() === dirname(__dirname)) {
   const menu = await Menu.from ('./menu.md', rewrites)
   config.themeConfig.sidebar = menu.items
   config.themeConfig.nav = menu.navbar
@@ -116,8 +132,9 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.7.0',
-    java_cds4j: '4.7.0'
+    java_services: '5.0.0',
+    java_cds4j: '5.0.0',
+    cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
   siteURL
@@ -131,8 +148,8 @@ if (process.env.VITE_CAPIRE_PREVIEW) {
 // Add link to survey
 if (process.env.NODE_ENV !== 'production') {
   // open in VS Code
-  const home = path.resolve(__dirname, '..')
-  let href = 'vscode://' + path.join('file', home, encodeURIComponent('${filePath}')).replaceAll(/\\/g, '/').replace('@external/', '')
+  const home = resolve(__dirname, '..')
+  let href = 'vscode://' + join('file', home, encodeURIComponent('${filePath}')).replaceAll(/\\/g, '/').replace('@external/', '')
   config.themeConfig.capire.gotoLinks.push({ href, key: 'o', name: 'VS Code' })
 }
 
@@ -184,35 +201,42 @@ config.themeConfig.search = {
   }
 }
 
-// Add twoslash transformer to the markdown config (if requested as it slows down builds)
-import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
-if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-  config.markdown.codeTransformers = [ transformerTwoslash() ]
-}
-
 // Add custom markdown renderers...
+import { dl } from '@mdit/plugin-dl'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdTypedModels from './lib/md-typed-models'
-import { dl } from '@mdit/plugin-dl'
+import * as MdLiveCode from './lib/cds-playground/md-live-code'
+import * as MdDiagramSvg from './lib/md-diagram-svg'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
+  MdLiveCode.install(md)
+  MdDiagramSvg.install(md)
   md.use(dl)
 }
 
+// Add twoslash transformer to the markdown config (if requested as it slows down builds)
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
+  config.markdown.codeTransformers = [transformerTwoslash({
+    twoslashOptions: { compilerOptions: { paths: { "@sap/cds": [MdTypedModels.cdsTypesPath()] } } }
+  })],
+  config.markdown.languages.push('js', 'jsx', 'ts', 'tsx')
+}
+
 // Add custom buildEnd hook
-import * as cdsMavenSite from './lib/cds-maven-site'
 import { promises as fs } from 'node:fs'
+import * as cdsMavenSite from './lib/cds-maven-site'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
-  sitemapURL.pathname = path.join(sitemapURL.pathname, 'sitemap.xml')
+  sitemapURL.pathname = join(sitemapURL.pathname, 'sitemap.xml')
   console.debug('✓ writing robots.txt with sitemap URL', sitemapURL.href) // eslint-disable-line no-console
-  const robots = (await fs.readFile(path.resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
-  await fs.writeFile(path.join(outDir, 'robots.txt'), robots)
+  const robots = (await fs.readFile(resolve(__dirname, 'robots.txt'))).toString().replace('{{SITEMAP}}', sitemapURL.href)
+  await fs.writeFile(join(outDir, 'robots.txt'), robots)
 
   // disabled by default to avoid online fetches during local build
   if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-    await cdsMavenSite.copySiteAssets(path.join(outDir, 'java/assets/cds-maven-plugin-site'), site)
+    await cdsMavenSite.copySiteAssets(join(outDir, 'java/assets/cds-maven-plugin-site'), site)
   }
 }

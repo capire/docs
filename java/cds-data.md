@@ -328,58 +328,27 @@ On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1
 
 Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
 
-## Vector Embeddings <Beta /> { #vector-embeddings }
+## Vector Embeddings { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases/hana#vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS [vector embeddings](../guides/databases/vector-embeddings) are stored in elements of type `Vector`:
 
-```cds
-entity Books : cuid { // [!code focus]
-  title         : String(111);
-  description   : LargeString;  // [!code focus]
-  embedding     : Vector(1536); // vector space w/ 1536 dimensions // [!code focus]
-} // [!code focus]
-```
+CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 
-In CAP Java, vector embeddings are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
+In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
 
 ```Java
-// Vector embedding of text, for example, from SAP GenAI Hub or via LangChain4j
-float[] embedding = embeddingModel.embed(bookDescription).content().vector();
+// Vector embedding of text via SAP Cloud SDK for AI
+float[] embedding = embeddingModel.embedding(
+  new OpenAiEmbeddingRequest(List.of(text))).getEmbeddingVectors().get(0);
 
 CdsVector v1 = CdsVector.of(embedding); // float[] format
-CdsVector v2 = CdsVector.of("[0.42, 0.73, 0.28, ...]"); // String format
 ```
 
-You can use the functions, `CQL.cosineSimilarity` or `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity or distance of embeddings in the vector space. To use vector embeddings in functions, wrap them using `CQL.vector`:
+::: info
+In CDS QL queries, elements of type `Vector` are excluded from the select list by default.
+:::
 
-```Java
-CqnVector v = CQL.vector(embedding);
-
-CdsResult<Books> similarBooks = service.run(Select.from(BOOKS).where(b ->
-  CQL.cosineSimilarity(b.embedding(), v).gt(0.9))
-);
-```
-
-You can also use parameters for vectors in queries:
-
-```Java
-var similarity = CQL.cosineSimilarity(CQL.get(Books.EMBEDDING), CQL.param(0).type(VECTOR));
-
-CqnSelect query = Select.from(BOOKS)
-  .columns(b -> b.title(), b -> similarity.as("similarity"))
-  .where(b -> b.ID().ne(bookId).and(similarity.gt(0.9)))
-  .orderBy(b -> b.get("similarity").desc());
-
-Result similarBooks = db.run(query, CdsVector.of(embedding));
-```
-
-In CDS QL queries, elements of type `cds.Vector` are not included in select _all_ queries. They must be explicitly added to the select list:
-
-```Java
-CdsVector embedding = service.run(Select.from(BOOKS).byId(101)
-  .columns(b -> b.embedding())).single(Books.class).getEmbedding();
-```
-
+CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Data in CDS Query Language (CQL)
 
@@ -521,14 +490,14 @@ The name of the CDS element referred to by a getter or setter, is defined throug
 
 ### Generated Accessor Interfaces
 
-For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](/java/assets/cds-maven-plugin-site/plugin-info.html). The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
+For all structured types of the CDS model, accessor interfaces can be generated using the [CDS Maven Plugin](./assets/cds-maven-plugin-site/plugin-info.html){target="_blank"}. The generated accessor interfaces allow for hybrid access and easy serialization to JSON. Code generation is executed by default at build time and is configurable.
 
 ```java
    Authors author = Authors.create().name("Emily Brontë");
    Books.create().author(author).title("Wuthering Heights");
 ```
 
-The generation mode is configured by the property [`<methodStyle>`](/java/assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
+The generation mode is configured by the property [`<methodStyle>`](./assets/cds-maven-plugin-site/generate-mojo.html#methodstyle){target="_blank"} of the goal `cds:generate` provided by the CDS Maven Plugin. The selected `<methodStyle>` affects all entities and event contexts in your services. The default value is `BEAN`, which represents JavaBeans-style interfaces.
 
 Once, when starting a project, decide on the style of the interfaces that is best for your team and project. We recommend the default JavaBeans style.
 
@@ -670,9 +639,9 @@ This feature requires version 8.2.0 of the [CDS Command Line Interface](../tools
 
 #### Excluding Elements
 
-You can exclude elements from accessor interfaces with the annotation `@cds.java.ignore`. 
+You can exclude elements from accessor interfaces with the annotation `@cds.java.ignore`.
 
-For example, you can exclude an element from the entity like this: 
+For example, you can exclude an element from the entity like this:
 
 ```cds
 namespace my.bookshop;
@@ -706,7 +675,7 @@ service CatalogService {
 }
 ```
 
-This annotation propagates across projections and they also omit the ignored elements. This can be overridden with the following annotation: 
+This annotation propagates across projections and they also omit the ignored elements. This can be overridden with the following annotation:
 
 ```cds
 annotate Books:ignored with @cds.java.ignore: false;

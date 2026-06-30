@@ -31,8 +31,6 @@ To use `cds` from your command line, install package  `@sap/cds-dk` globally:
 npm i -g @sap/cds-dk
 ```
 
-<ImplVariantsHint />
-
 [[toc]]
 
 ## cds version
@@ -88,17 +86,19 @@ Use `cds help <command>` or `cds <command> ?` to get specific help:
 
 Use `cds init` to create new projects.
 
-The simplest form creates a minimal Node.js project.  For Java, use
-
-```sh
-cds init --java
-```
-
+The simplest form creates a minimal project.
 In addition, you can add (most of) the project 'facets' from [below](#cds-add) right when creating the project.
-For example to create a project with a sample bookshop model and configuration for SAP HANA, use:
+For example to create a Node.js project with a sample bookshop model and configuration for SAP HANA, use:
 
 ```sh
 cds init --nodejs --add sample,hana
+```
+
+To create just a basic Node.js or Java project, use
+
+```sh
+cds init --nodejs # OR
+cds init --java
 ```
 
 ::: details See the full help text of `cds init`
@@ -295,12 +295,11 @@ In [VS Code](./cds-editors#vscode), use the command _Generate HTTP Requests_ to 
 
 #### Authentication / Authorization
 
-##### To local applications
+##### -> To local applications
 
-<div class="impl node">
+By default, an authorization header with a local mock user is written to the `http` file, and `localhost` is the target host.
 
-By default, an authorization header with a [local mock user](../node.js/authentication#mock-users) is written to the `http` file, and `localhost` is the target host.
-
+::: code-group
 ```http [Node.js]
 @server = http://localhost:4004
 @auth = Authorization: Basic alice:
@@ -310,24 +309,23 @@ GET {{server}}/odata/v4/admin/Books
 {{auth}}
 ...
 ```
-</div>
-
-<div class="impl java">
-
-By default, an authorization header with a [local mock user](../java/security#mock-users) is written to the `http` file, and `localhost` is the target host.
-
 ```http [Java]
 @server = http://localhost:8080
 
 ### CatalogService.Books
 GET {{server}}/odata/v4/admin/Books
-{{auth}}
+
 ...
 ```
-</div>
+:::
+
+[Learn more about mock users in Node.js.](../node.js/authentication#mock-users){.learn-more}
+[Learn more about mock users in Java.](../java/security#mock-users){.learn-more}
 
 
-##### To remote applications
+
+
+##### -> To remote applications
 
 Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For example:
 
@@ -335,7 +333,7 @@ Use `--for-app <cf-appname>` to use a JWT token of a remote application.  For ex
 cds add http --for-app bookshop
 ```
 
-assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
+This assumes a remote app named `bookshop` on CloudFoundry and a JWT token for this app is written to the request file:
 
 ```http
 @server = https://...
@@ -468,7 +466,7 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 - [Diagram: Queries](vscode://settings/cds.preview.diagram.queries)
 
 
-## cds export <Beta />
+## cds export
 
 With `cds export` you create an API client package to be used
 for data exchange via CAP-level Service integration ("Calesi").
@@ -645,6 +643,25 @@ If you scale out to more instances, only some of your requests will hit the inst
 However, it's possible to [route a request to a specific instance](https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#surgical-routing), which is useful if you can't reduce the number of app instances.
 :::
 
+::: warning Cloud Foundry's HTTP health checks kill paused containers
+While paused at a breakpoint, the Node.js event loop is frozen and the app cannot respond to Cloud Foundry's `http` health probe. As a consequence, Cloud Foundry marks the container unhealthy and destroys it within seconds.
+
+Instead, switch the health check to `process` for the duration of the debug session:
+
+```sh
+cf set-health-check <app-name> process
+cf restart <app-name>
+```
+
+Restore it afterwards:
+
+```sh
+cf set-health-check <app-name> http
+```
+
+`cds debug` detects this situation and prompts you to confirm before continuing. Note that the setting is overwritten on the next `cds up` unless persisted in `mta.yaml`.
+:::
+
 ### Node.js Applications
 
 #### Remote Applications
@@ -753,3 +770,113 @@ If you do this in VS Code's integrated terminal with the 'Auto Attach' feature e
 For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
+
+## cds upgrade
+
+`cds upgrade` scans your project for breaking changes in a new CDS major version and reports exactly where you are affected.
+
+The command evaluates migration rules against your project sources, configuration, and dependencies. It reports:
+
+- Which breaking changes affect your project
+- Where exactly in your code (file and line number)
+- What needs to change and how
+
+A typical scan takes seconds and covers about 40 rules for CDS 10.
+
+### Run the Command
+
+```sh
+cds upgrade
+```
+
+Without a global installation:
+
+```sh
+npx -p @sap/cds-dk@10 cds upgrade
+```
+
+
+The following table explains the options:
+
+| Flag       | Effect                                                                        |
+|------------|-------------------------------------------------------------------------------|
+| `--fix`    | Apply dependency version rewrites (and OpenRewrite recipes for Java projects) |
+| `--report` | Write `report.md` to `.cds-upgrade/`                                          |
+
+
+
+Before running the analysis, the command validates prerequisites: Node.js version, clean working tree, recognized project structure, and installed dependencies. Any issues appear as `[FAIL]` items in the output before the analysis begins.
+
+### Output
+
+#### Console
+
+By default, the command prints a compact summary to the terminal:
+
+```
+Environment Analysis
+
+  Node.js CAP project
+  cds-dk version: v10.0.1 → CDS 10
+  cds version: @sap/cds 9.9.1 (CDS 9)
+
+Code Analysis
+
+  10 rules with potential issues:
+
+    1  Fixed Bulk Inserts via REST
+    1  Fixed `cds.ql.clone()`
+    1  Fixed `srv.entities()` – texts entity access
+    1  Fixed Affinity for Decimals
+    2  Bypass Draft Choreography
+    1  hdbcds compiler backend removed
+    2  Decimals & Int64 as Strings
+    1  Fixed Service Results – legacy_srv_results flag
+    4  cds.requires.scheduling defaults to true — Scheduling Service auto-connects when a database is configured
+    2  Fixed `srv.entities()` – getter methods removed
+    16  matches total
+
+
+Run cds upgrade --fix to update dependency versions.
+Re-run with --report to write .cds-upgrade/report.md listing remaining code changes.
+```
+
+The output lists the match count and rule title for each affected rule.
+
+#### Report Files {#report}
+
+With `--report`, a human-readable report is written to `.cds-upgrade/report.md`. It groups findings by migration topic (matching the structure of the [migration guide](/releases/migration/cds10)). Each finding includes:
+
+- Migration context explaining what changed and how to address it
+- Match locations in `file:line` format
+- A link to the corresponding section on cap.cloud.sap
+
+Rules that cannot be checked automatically appear in a separate **Manual Review** section with guidance on what to look for.
+
+#### Understanding the Report
+
+Open `.cds-upgrade/report.md` and work through it section by section. Each finding includes:
+
+1. **What changed** - the breaking change explained, with examples
+2. **Where** - file and line in your code
+3. **What to do** - fix guidance from the migration guide
+
+Items that the CDS compiler can detect also surface as build errors after you upgrade. The report gives you a head start before the actual version bump.
+
+You can also pass the report to an AI coding agent to interpret findings in context, filter false positives, search for additional occurrences, and apply fixes directly.
+
+### After the Scan
+
+1. Fix the reported issues, guided by the report.
+2. Run `cds build` to confirm that compiler-level issues are resolved.
+3. Run your test suite to verify runtime behavior.
+
+### Limitations
+
+- Detection is structural (pattern-based) — semantic-only issues require manual review or AI assistance.
+- Monorepo support is limited to one project root per invocation.
+
+### Related
+
+- [Migration Guide for CDS 10](/releases/migration/cds10) — complete list of breaking changes
+- [Java Migration Guide](/java/migration) — migration steps for CAP Java projects

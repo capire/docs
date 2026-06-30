@@ -69,6 +69,16 @@ Writing the messages into explicitly modeled messages properties isn't yet suppo
 
 SAP Fiori uses these messages to display detailed information on the UI. The style how a message appears on the UI depends on the severity of the message.
 
+For [draft-enabled entities](../../guides/uis/fiori#validating-drafts), messages are **persistent by default** and stored in `DraftAdministrativeData.DraftMessages`. Storing messages allows them to survive page refreshes and helps users see validation errors before activating the draft.
+
+To make specific messages *non-persistent* (for example, action success messages that shouldn't accumulate), use the `transition()` method:
+
+```java
+// Transient message - won't be persisted with drafts
+messages.success("Operation completed successfully")
+    .transition(true);
+```
+
 ::: warning User Input & Injection Vulnerabilities
 Ensure proper validation of the message text and URL if they contain values ​​from user input.
 :::
@@ -130,7 +140,7 @@ throw new ServiceException(ErrorStatuses.BAD_REQUEST, "my.message.key", paramNum
 CAP Java provides out-of-the-box translation for error messages that originate from input validation annotations such as `@assert...` or `@mandatory` and security annotations `@requires` and `@restrict`.
 
 The error messages are optimized for UI scenarios and avoid any technical references to entity names or element names. Message targets are used where appropriate to allow the UI to show the error message next to the affected UI element.
-You can disable these translated error messages by setting [<Config java>cds.errors.defaultTranslations.enabled: false</Config>](../developing-applications/properties#cds-errors-defaultTranslations-enabled).
+You can disable these translated error messages by setting [<Config java>cds.errors.defaultTranslations.enabled: false</Config>](../developing-applications/properties#cds-errors-defaulttranslations-enabled).
 
 ### Provide custom error messages
 

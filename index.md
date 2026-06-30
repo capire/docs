@@ -9,8 +9,8 @@ hero:
 
   tagline:
     Build enterprise-grade cloud applications
-    with maximized productivity, 
-    fueled by proven best practices, 
+    with maximized productivity,
+    fueled by proven best practices,
     served out of the box.
 
   actions:
@@ -18,7 +18,7 @@ hero:
     - text: Get Started
       link: /get-started/
       theme: alt
-      
+
     - text: Develop
       link: /guides/
       theme: alt
@@ -36,8 +36,8 @@ features:
   icon: ⭕️
   details:
     •&nbsp; Jumpstart & Grow as you go... <br/>
-    •&nbsp; Fast local inner loops <br/>
-    •&nbsp; Decoupled dev tracks <br/>
+    •&nbsp; Inner loop fast tracks <br/>
+    •&nbsp; Decoupled dev teams <br/>
   link: get-started/
   linkText: Getting Started
 
@@ -69,9 +69,3 @@ features:
   linkText: Intrinsic Cloud Qualities
 
 ---
-
-<style>
-.VPFeature .details li {
-  white-space: nowrap;
-}
-</style>

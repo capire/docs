@@ -40,7 +40,7 @@ OData is an OASIS standard that enhances plain REST with standardized system que
 | [Parameters Aliases](https://docs.oasis-open.org/odata/odata/v4.01/os/part1-protocol/odata-v4.01-os-part1-protocol.html#sec_ParameterAliases) | Replace literal value in URL with parameter alias | <X/> | <X/> <sup>(4)</sup>   |
 
 - <sup>(1)</sup> The elements to be searched are specified with the [`@cds.search` annotation](../services/served-ootb#searching-data).
-- <sup>(2)</sup> Node.js only supports a limited subset in `$select` query option.
+- <sup>(2)</sup> Node.js only supports a limited subset.
 - <sup>(3)</sup> The navigation path identifying the collection can only contain one segment.
 - <sup>(4)</sup> Supported for key values and for parameters of functions only.
 
@@ -1454,3 +1454,19 @@ to customize the annotation as follows:
 If you set `contextAbsoluteUrl` to something truthy that doesn't match `http(s)://*`, the system constructs an absolute path based on the environment of the application on a best effort basis.
 
 We encourage you to stay with the default relative format, if possible, as it's proxy safe.
+
+### Parallel Processing of Atomicity Groups in Node.js Apps
+###### Atomicity Groups
+
+By default, atomicity groups in an OData `$batch` request are processed sequentially.
+In some specific scenarios, such as custom overview pages with multiple data sources, this may result in high roundtrip times.
+
+Hence, for `$batch` requests that exclusively contain `GET` requests, you can enable parallel processing of atomicity groups to improve throughput.
+
+<Config keyOnly>cds.odata.max_batch_parallelization = 1</Config> specifies the maximum number of atomicity groups processed concurrently.
+The default is `1`, which means sequential processing.
+
+::: warning OData Specification Violation
+Parallel processing of atomicity groups is in conflict with the OData specification for `multipart/mixed`, which requires sequential processing.
+For example, the `continue-on-error` preference default can then no longer be adhered to.
+:::

@@ -1,5 +1,6 @@
 ## Getting Started Guides
 
+- [about](get-started/concepts)
 - [about/](get-started/concepts)
 - [about/best-practices](get-started/features#served-out-of-the-box)
 - [about/features](get-started/features)
@@ -23,6 +24,7 @@
 - [guides/deploy-to-cloud](guides/deploy/)
 - [guides/deployment/(.*)](guides/deploy/$1)
 - [guides/deployment/deploy-to-kyma](guides/deploy/to-kyma)
+- [guides/deployment/to-kyma](guides/deploy/to-kyma)
 - [guides/domain-models](guides/domain/)
 - [guides/domain-modeling](guides/domain/)
 - [guides/dps](guides/protocols/cdi)
@@ -38,11 +40,14 @@
 - [guides/services/consuming-services](guides/integration/calesi)
 - [guides/temporal-data](guides/domain/temporal-data)
 - [guides/using-services](guides/integration/calesi)
+- [guides/databases-hana](guides/databases/hana)
+- [guides/databases-postgres](guides/databases/postgres)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
 - [security/data-protection-privacy](guides/security/data-protection)
 - [security/overview](guides/security/overview)
+- [guides/security/aspects](guides/security/overview)
 
 - [advanced/asyncapi](guides/protocols/asyncapi)
 - [advanced/deploy-to-cloud](guides/deploy/)
@@ -55,6 +60,8 @@
 - [advanced/performance-modeling](guides/databases/performance)
 - [advanced/publishing-apis/(.*)](guides/protocols/$1)
 - [advanced/troubleshooting](get-started/get-help)
+- [advanced/hybrid-testing](tools/cds-bind)
+- [advanced/odata](guides/protocols/odata)
 
 ## CDS
 
@@ -81,6 +88,7 @@
 - [java/indicating-errors](java/event-handlers/indicating-errors)
 - [java/messaging-foundation](java/messaging)
 - [java/observability](java/operating-applications/observability)
+- [java/outbox](java/event-queues)
 - [java/overview](java/getting-started)
 - [java/persistence-services](java/cqn-services/persistence-services)
 - [java/provisioning-api](java/event-handlers)
@@ -97,7 +105,8 @@
 
 - [node.js/cds-dk](tools/apis/cds-import)
 - [node.js/middlewares](node.js/cds-serve)
-- [node.js/outbox](node.js/queue)
+- [node.js/outbox](node.js/event-queues)
+- [node.js/queue](node.js/event-queues)
 - [node.js/protocols](node.js/cds-serve)
 - [node.js/requests](node.js/events)
 - [node.js/services](node.js/core-services)

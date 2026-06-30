@@ -1,10 +1,7 @@
----
-impl-variants: true
----
 
 # Serving SAP Fiori UIs
 
-CAP provides out-of-the-box support for SAP Fiori elements. This guide explains how to add one or more SAP Fiori elements apps to a CAP project, how to add SAP Fiori elements annotations to respective service definitions, and more. In the following sections, when mentioning Fiori, we always mean SAP Fiori elements.
+CAP provides out-of-the-box support for SAP Fiori elements. This guide explains how to add SAP Fiori elements apps to a CAP project and how to add SAP Fiori elements annotations to service definitions. Throughout this guide, "Fiori" refers to SAP Fiori elements.
 
 [Learn more about developing SAP Fiori elements and OData V4 (since 1.84.)](https://sapui5.hana.ondemand.com/#/topic/62d3f7c2a9424864921184fd6c7002eb){.learn-more}
 
@@ -12,36 +9,21 @@ CAP provides out-of-the-box support for SAP Fiori elements. This guide explains 
 [[toc]]
 
 
-## SAP Fiori Preview
 
-For entities exposed via OData V4 there is a _Fiori preview_ link on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
+## Getting Started
 
-::: details Be aware that this is **not meant for production**.
+### Using Fiori Previews
+###### Fiori Preview
 
-<div class="impl node">
+For entities exposed via OData V4, a _Fiori preview_ link appears on the index page. It dynamically serves an SAP Fiori elements list page that allows you to quickly see the effect of annotation changes without having to create a UI application first.
 
-The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is only active locally where the [development profile](../../node.js/cds-env#profiles) is enabled.
-
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config>cds.fiori.preview:true</Config>.
-
-</div>
-
-<div class="impl java">
-
-The preview is not meant as a replacement for a proper SAP Fiori elements (UI5) application.
-It is active by default, but disabled automatically in case the [production profile](../../java/developing-applications/configuring#production-profile) is enabled.
-
-To also enable it in cloud deployments, for test or demo purposes maybe, set <Config java>cds.index-page.enabled:true</Config>.
-
-</div>
-
-:::
+> [!important] Not for production
+> The preview is meant for quick tests and iterations during development, but not for production use, and hence automatically disabled in production. To also enable it in cloud deployments for test or demo purposes, set <Config>cds.fiori.preview:true</Config> for Node.js apps, or <Config java>cds.index-page.enabled:true</Config> for Java
 
 
-## Adding Fiori Apps
+### Adding Fiori Apps
 
-As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app), SAP Fiori apps should be added as sub folders to the `app/` of a CAP project. Each sub folder constitutes an individual SAP Fiori application, with [local annotations](#fiori-annotations), _manifest.json_, etc. So, a typical folder layout would look like this:
+As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app), SAP Fiori apps should be added as subfolders of the `app/` directory in a CAP project. Each subfolder constitutes an individual SAP Fiori application, with [local annotations](#fiori-annotations), _manifest.json_, etc. So, a typical folder layout would look like this:
 
 
 | Folder/Sub Folder          | Description                          |
@@ -52,40 +34,38 @@ As showcased in [cap/samples](https://github.com/capire/bookstore/tree/main/app)
 | &nbsp; &nbsp; `admin/`     | SAP Fiori app for admins             |
 | &nbsp; &nbsp; `index.html` | For sandbox tests                    |
 | `srv/`                     | All services                         |
-| `db/`                      | Domain models, and db stuff          |
+| `db/`                      | Domain models and database artifacts |
 
 ::: tip
 Links to Fiori applications created in the `app/` folder are automatically added to the index page of your CAP application for local development.
 :::
 
-### Using SAP Fiori Tools
+### SAP Fiori Tools
 
 The SAP Fiori tools provide advanced support for [adding SAP Fiori apps](https://help.sap.com/docs/SAP_FIORI_tools/17d50220bcd848aa854c9c182d65b699/db44d45051794d778f1dd50def0fa267.html) to existing CAP projects as well as a wealth of productivity tools, for example for adding SAP Fiori annotations, or graphical modeling and editing. They can be used locally in [Visual Studio Code (VS Code)](https://marketplace.visualstudio.com/items?itemName=SAPSE.sap-ux-fiori-tools-extension-pack) or in [SAP Business Application Studio](https://help.sap.com/docs/SAP_FIORI_tools/17d50220bcd848aa854c9c182d65b699/b0110400b44748d7b844bb5977a657fa.html).
 
 
-### Using [`cds add`](../../tools/cds-cli#sample)
+### OData Annotations Plugin
 
-Use `cds add sample` to add Fiori sample code to an existing project, or create a new one with `cds init <project> --nodejs --add sample`.
+The [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds) includes a plugin that helps you add and edit OData annotations in CDS syntax in VS Code. It provides the following features:
 
+-   Code completion
+-   Validation against the OData vocabularies and project metadata
+-   Navigation to the referenced annotations
+-   Quick view of vocabulary information
+-   Internationalization support
 
-### From [Capire Samples](https://github.com/capire)
+These features are available for [OData annotations in CDS syntax](../protocols/odata#annotations) but not yet for [core data services common annotations](../../cds/annotations).
 
-For example, you can copy the [SAP Fiori apps from capire/bookshop](https://github.com/capire/bookstore/tree/main/app) as a template and modify the content as appropriate.
+The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) module requires no manual installation. The latest version is fetched automatically from [npmjs.com](https://npmjs.com), as indicated by the user preference setting **CDS > Contributions: Registry**.
 
+[Learn more about the **CDS extension for VS Code**.](https://www.youtube.com/watch?v=eY7BTzch8w0){.learn-more}
 
-### From [Incidents Sample](https://github.com/SAP-samples/fiori-elements-incident-management/tree/sampleSolution)
-
-This is a sample to create an incident management app with SAP Fiori elements for OData V4.
 
 
 ## Fiori Annotations
 
-The main content to add is service definitions annotated with information about how to render respective data.
-
-
-### What Are SAP Fiori Annotations?
-
-SAP Fiori elements apps are generic front ends, which construct and render the pages and controls based on annotated metadata documents. The annotations provide semantic annotations used to render such content, for example:
+SAP Fiori elements apps are generic front ends that construct and render pages and controls based on annotated metadata documents. The annotations provide the semantic information needed to render that content, for example:
 
 
 ```cds
@@ -110,7 +90,7 @@ annotate CatalogService.Books with @(
 
 ### Where to Put Them?
 
-While CDS in principle allows you to add such annotations everywhere in your models, we recommend putting them in separate _.cds_ files placed in your _./app/*_ folders, for example, as follows.
+Although CDS allows you to add annotations anywhere in your models, we recommend placing them in separate _.cds_ files in your _./app/*_ folders, for example, as follows.
 
 ```sh
 ./app  #> all your Fiori annotations should go here, for example:
@@ -127,204 +107,7 @@ While CDS in principle allows you to add such annotations everywhere in your mod
 
 [See this also in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/services.cds){.learn-more}
 
-**Reasoning:** This recommendation essentially follows the best practices and guiding principles of [Conceptual Modeling](../domain/index#domain-driven-design) and [Separation of Concerns](../domain/index#separation-of-concerns).
-
-
-### Maintaining Annotations
-
-Maintaining OData annotations in _.cds_ files is accelerated by the SAP Fiori tools - CDS OData Language Server [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) in the [SAP CDS language support plugin](https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds). It helps you add and edit OData annotations in CDS syntax with:
-
--   Code completion
--   Validation against the OData vocabularies and project metadata
--   Navigation to the referenced annotations
--   Quick view of vocabulary information
--   Internationalization support
-
-These assisting features are provided for [OData annotations in CDS syntax](../protocols/odata#annotations) and can't be used yet for the [core data services common annotations](../../cds/annotations).
-
-The [@sap/ux-cds-odata-language-server-extension](https://www.npmjs.com/package/@sap/ux-cds-odata-language-server-extension) module doesn't require any manual installation. The latest version is fetched by default from [npmjs.com](https://npmjs.com) as indicated in the user preference setting **CDS > Contributions: Registry**.
-
-[Learn more about the **CDS extension for VS Code**.](https://www.youtube.com/watch?v=eY7BTzch8w0){.learn-more}
-
-### Code Completion
-
-The CDS OData Language Server provides a list of context-sensitive suggestions based on the service metadata and OData vocabularies. You can use it to choose OData annotation terms, their properties, and values from the list of suggestions in annotate directives applied to service entities and entity elements. See [annotate directives](../../cds/cdl#annotate) for more details.
-
-
-#### Using Code Completion
-
-To trigger code completion, choose <kbd>Ctrl</kbd><kbd>Space</kbd>. The list of suggested values is displayed.
-
-> Note: You can filter the list of suggested values by typing more characters.
-
-Navigate to the desired value using the up or down arrows or your mouse. Accept the highlighted value by pressing <kbd>Enter</kbd> or by clicking the mouse.
-Use code completion to add and change individual values (word-based completion) and to add small code blocks containing annotation structures along with mandatory properties (micro-snippets). In an active code snippet, you can use the <kbd>&#x21e5;</kbd> (tab) key to quickly move to the next tab stop.
-
-
-##### Example: Annotating Service Entities
-
-  \(cursor position indicated by `|`\)
-
-1.  Place cursor in the `annotate` directive for a service entity, for example `annotate Foo.Bar with ;` and trigger code completion.
-
-2.  Type `u` to filter the suggestions and choose `{} UI`. Micro-snippet `@UI : {|}` is inserted: `annotate Foo.Bar with @UI : {|};`
-
-3.  Use code completion again to add an annotation term from the UI vocabulary, in this example `SelectionFields`. The micro snippet for this annotation is added and the cursor is placed directly after the term name letting you define a qualifier: `annotate Foo.Bar with @UI : {SelectionFields | : []};`
-
-4.  Press the <kbd>&#x21e5;</kbd> (tab) key to move the cursor to the next tab stop and use code completion again to add values. Because the `UI.SelectionFields` annotation is a collection of entity elements \(entity properties\), all elements of the annotated entity are suggested.
-
-    ::: tip
-    To choose an element of an associated entity, first select the corresponding association from the list and type *. \(period\)*. Elements of associated entity are suggested.
-
-    Note: You can add multiple values separated by comma.
-    :::
-
-   ```cds
-   annotate Foo.Bar with @UI : { SelectionFields : [
-       description, assignedIndividual.lastName|
-     ],
-   };
-   ```
-
-5. Add a new line after `,` (comma) and use code completion again to add another annotation from the UI vocabulary, such as `LineItem`. Line item is a collection of `DataField` records. To add a record, select the record type you need from the completion list.
-
-
-   ```cds
-   annotate Foo.Bar with @UI : {
-      SelectionFields : [
-        description, assignedIndividual.lastName
-      ],
-      LineItem : [{
-        $Type:'UI.DataField',
-        Value : |,
-     },
-   };
-   ```
-
-    > Note: For each record type, two kinds of micro-snippets are provided: one containing only mandatory properties and one containing all properties defined for this record \(full record\). Usually you need just a subset of properties. So, you either select a full record and then remove the properties you don't need, or add the record containing only required properties and then add the remaining properties.
-
-6.  Use code completion to add values for the annotation properties.
-
-
-    ```cds
-    annotate Foo.Bar with @UI : {
-      SelectionFields : [
-        description, assignedIndividual.lastName
-      ],
-      LineItem : [
-        {
-            $Type:'UI.DataField',
-            Value : description,
-        },
-        {
-            $Type:'UI.DataFieldForAnnotation',
-            Target :  'assignedIndividual/@Communication.Contact',
-        },|
-      ]
-    };
-    ```
-
-    > Note: To add values pointing to annotations defined in another CDS source, you must reference this source with the `using` directive. See [The `using` Directive](../../cds/cdl#using) for more details.
-
-
-##### Example: Annotating Entity Elements
-
-  \(cursor position indicated by `|`\)
-
-1.  Place the cursor in the `annotate` directive, for example `annotate Foo.Bar with {|};`, add a new line and trigger code completion. You get the list of entity elements. Choose the one that you want to annotate.
-
-  ```cds
-  annotate Foo.Bar with {
-      code|
-  };
-  ```
-
-2.  Press the <kbd class="space">⎵</kbd> key, use code completion again, and choose `{} UI`. The `@UI : {|}` micro-snippet is inserted:
-
-  ```cds
-  annotate Foo.Bar with {
-      code @UI : { | }
-  };
-  ```
-
-3.  Trigger completion again and choose an annotation term from the UI vocabulary, in this example: **Hidden**.
-
-
-  ```cds
-  annotate Foo.Bar with {
-      code @UI : {Hidden : |}
-  };
-  ```
-
-4.  Press the <kbd>&#x21e5;</kbd> (tab) key to move the cursor to the next tab stop and use code completion again to add the value. Because the `UI.Hidden` annotation is of Boolean type, the values true and false are suggested:
-
-
-  ```cds
-  annotate Foo.Bar with {
-      code @UI : {Hidden : false }
-  };
-  ```
-
-### Diagnostics
-
-The CDS OData Language Server validates OData annotations in _.cds_ files against the service metadata and OData vocabularies. It also checks provided string content for language-dependent annotation values and warns you if the format doesn't match the internationalization (i18n) key reference. It shows you that this string is hard coded and won't change based on the language setting in your application. See [Internationalization support](#internationalization-support) for more details.
-
-Validation is performed when you open a _.cds_ file and then is retriggered with each change to the relevant files.
-
-You can view the diagnostic messages by hovering over the highlighted part in the annotation file or by opening the problems panel. Click on the message in the problems panel to navigate to the related place in the annotation file.
-
-> Note: If an annotation value points to the annotation defined in another CDS source, you must reference this source with a `using` directive to avoid warnings. See [The `using` Directive](../../cds/cdl#using) for more details.
-
-
-### Navigation to Referenced Annotations
-
-CDS OData Language Server enables quick navigation to the definition of referenced annotations. For example, if your annotation file contains a `DataFieldForAnnotation` record referencing an `Identification` annotation defined in the service file, you can view which file it's defined in and what fields or labels this annotation contains. You can even update the `Identification` annotation or add comments.
-
-You can navigate to the referenced annotation using the [Peek Definition](#peek-definition) and [Go To Definition](#go-to-definition) features.
-
-> Note: If the referenced annotation is defined in another CDS source, you must reference this source with the `using` directive to enable the navigation. See [The `using` Directive](../../cds/cdl#using) for more details.
-
-
-#### Peek Definition { #peek-definition}
-
-Peek Definition lets you preview and update the referenced annotation without switching away from the code that you're writing. It's triggered when your cursor is inside the referenced annotation value.
-- Using a keyboard: choose <kbd class="space">⌥</kbd><kbd>F12</kbd> (macOS) or <kbd>Alt</kbd><kbd>F12</kbd> (other platforms)
-- Using a mouse: right-click and select **Peek Definition**
-If an annotation is defined in multiple sources, all these sources are listed. You can select which one you want to view or update. Annotation layering isn't considered.
-
-
-#### Go to Definition { #go-to-definition}
-
-Go To Definition lets you navigate to the source of the referenced annotation and opens the source file scrolled to the respective place in a new tab. It's triggered when your cursor is inside the referenced annotation value.
-
-Place your cursor inside the path referencing the annotation term segment or translatable string value, and trigger Go to Definition:
-
--   Using a keyboard: choose <kbd>F12</kbd> in VS Code, or <kbd>Ctrl</kbd><kbd>F12</kbd> in SAP Business Application Studio
--   Using a mouse: right-click and select **Go To Definition**
--   Using a keyboard and mouse: <kbd>⌘</kbd> + mouse click (macOS) or <kbd>Ctrl</kbd> + mouse click (other platforms)
-
-If an annotation is defined in multiple sources, a Peek definition listing these sources will be shown instead. Annotation layering isn't considered.
-
-
-### Documentation \(Quick Info\)
-
-The annotation language server provides quick information for annotation terms, record types, and properties used in the annotation file, or provided as suggestions in code completion lists. This information is retrieved from the respective OData vocabularies and can provide answers to the following questions:
-
--   What is the type and purpose of the annotation term/record type/property?
--   What targets can the annotation term apply to?
--   Is the annotation term/record type/property experimental? Is it deprecated?
--   Is this annotation property mandatory or optional?
-
-> Note: The exact content depends on the availability in OData vocabularies.
-
-To view the quick info for an annotation term, record type, or property used in the annotation file, hover your mouse over it. The accompanying documentation is displayed in a hover window, if provided in the respective OData vocabularies.
-
-To view the quick info for each suggestion in the code completion list, either pressing <kbd>Ctrl</kbd><kbd>Space</kbd>, or click the *info* icon. The accompanying documentation for the suggestion expands to the side. The expanded documentation stays open and updates as you navigate the list.
-
-
-#### Internationalization Support
-
-When you open an annotation file, all language-dependent string values are checked against the _i18n.properties_ file. Each value that doesn't represent a valid reference to the existing text key in the _i18n.properties_ file, is indicated with a warning. A Quick Fix action is suggested to generate a text key in i18n file and substitute your string value with the reference to that entry.
+This recommendation follows the principles of [Conceptual Modeling](../domain/index#domain-driven-design) and [Separation of Concerns](../domain/index#separation-of-concerns).
 
 
 ### Prefer `@title` and `@description`
@@ -373,203 +156,19 @@ entity Foo @(Capabilities:{
 Similar recommendations apply to `@mandatory` and others &rarr; see [Common Annotations](../../cds/annotations#common-annotations).
 
 
-## Draft Support
 
-SAP Fiori supports edit sessions with draft states stored on the server, so users can interrupt and continue later on, possibly from different places and devices. CAP, as well as SAP Fiori elements, provide out-of-the-box support for drafts as outlined in the following sections. **We recommend to always use draft** when your application needs data input by end users.
+## Simple Value Helps
 
-[For details and guidelines, see **SAP Fiori Design Guidelines for Draft**.](https://experience.sap.com/fiori-design-web/draft-handling/){.learn-more}
+In addition to supporting the standard `@Common.ValueList` annotations as defined in the [OData Vocabularies](../protocols/odata#annotations), CAP provides convenient support for Value Helps.
 
-[Find a working end-to-end version in **capire/bookstore**.](https://github.com/capire/bookstore/tree/main/app){.learn-more}
 
-[For details about the draft flow in SAP Fiori elements, see **SAP Fiori elements > Draft Handling**](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d){.learn-more}
-
-
-### Enabling Draft with `@odata.draft.enabled`
-
-To enable draft for an entity exposed by a service, simply annotate it with `@odata.draft.enabled` as in this example:
-
-```cds
-annotate AdminService.Books with @odata.draft.enabled;
-```
-
-[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L79){.learn-more}
-
-::: warning
-You can't project from draft-enabled entities, as annotations are propagated. Either _enable_ the draft for the projection and not the original entity or _disable_ the draft on the projection using `@odata.draft.enabled: null`.
-:::
-
-### Difference between Compositions and Associations
-
-Be aware that you cannot modify _associated_ entities through drafts. Only _compositions_ will get a "Create" button in SAP Fiori elements UIs because they are stored as part of the same draft entity.
-
-### Enabling Draft for [Localized Data](./localized-data) {#draft-for-localized-data}
-
-Annotate the underlying base entity in the base model with `@fiori.draft.enabled` to also support drafts for [localized data](./localized-data):
-
-```cds
-annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
-```
-
-:::info Background
-SAP Fiori drafts required single keys of type `UUID`, which isn't the case by default for the automatically generated `_texts` entities (&rarr; [see the _Localized Data_ guide for details](./localized-data#behind-the-scenes)). The `@fiori.draft.enabled` annotation tells the compiler to add such a technical primary key element named `ID_texts`.
-:::
-
-::: warning
-Adding the annotation `@fiori.draft.enabled` won't work if the corresponding `_texts` entities contain any entries, because existing entries don't have a value for the new key field `ID_texts`.
-:::
-
-![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
-
-[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
-
-If you're editing data in multiple languages, the _General_ tab in the example above is reserved for the default language (often "en"). Any change to other languages has to be done in the _Translations_ tab, where a corresponding language can be chosen [from a drop-down menu](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L104) as illustrated above. This also applies if you use the URL parameter `sap-language` on the draft page.
-
-### Draft Choreography: How Draft Editing Works
-
-With draft-enabled entities, changes are made to a draft copy instead of the active entity. The typical flow is:
-- Create a draft
-- Edit the draft
-- Activate the draft
-
-Below are example HTTP requests for each step:
-
-#### 1. Create a Draft
-```http
-POST /odata/v4/AdminService/Books
-Content-Type: application/json
-
-{}
-```
-
-#### 2. Edit the Draft
-```http
-PATCH /odata/v4/AdminService/Books(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=false)
-Content-Type: application/json
-
-{
-  "title": "Book Title"
-}
-```
-
-#### 3. Activate the Draft
-```http
-POST /odata/v4/AdminService/Books(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=false)/draftActivate
-Content-Type: application/json
-
-{}
-```
-
-For more details, see the [official UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
-
-### Validating Drafts
-
-With Fiori draft state messages, you benefit from the following improvements without any change in your application code:
-- The UI displays error messages for annotation-based validations (such as `@mandatory` or `@assert...`) while editing drafts.
-- You can register [custom validations](#custom-validations) to the `PATCH` event and write (error) messages. The draft choreography ensures the invalid value still persists.
-- Messages remain visible in the UI, even after editing other fields.
-- The UI automatically loads messages when reopening a previously edited draft.
-CAP generates side-effect annotations in the EDMX to instruct UI5 to fetch state messages after every `PATCH` request. To control side-effect annotations more precisely, override or disable them per entity:
-
-  ```cds
-  // Setting `null` disables the side-effect annotation for always fetching messages.
-  annotate MyService.MyEntity with @Common.SideEffects #alwaysFetchMessages: null;
-  ```
-
-For this feature to work correctly, CAP adds additional elements to your draft-enabled entities and [`DraftAdministrativeData`](../security/data-privacy#personal-data-stored-by-cap) to store and serve the state messages. CAP runtimes persist (error) messages for draft-enabled entities.
-
-::: warning Requires Schema Update
-This feature initiates a database schema update, as it adds an additional element to `DraftAdministrativeData`.
-:::
-
-::: warning Requires OData V4 and UI5 version >=1.136.0
-State messages require UI5 to use _document URLs_. CAP sets the `@Common.AddressViaNavigationPath` annotation to enable this. You need OData V4 and UI5 version >= 1.136.0. OData V2 does not support this annotation.
-:::
-To disable this feature, set <Config>cds.fiori.draft_messages:false</Config>.
-
-
-#### Custom Validations
-
-You can add [custom handlers](../services/custom-code) to add specific validations, as usual. In addition, for a draft, you can register handlers to the respective `UPDATE` events to validate input per field, during the edit session, as follows.
-
-
-##### ... in Java
-
-You can add your validation logic before operation event handlers. Specific events for draft operations exist. See [Java > Fiori Drafts > Editing Drafts](../../java/fiori-drafts#draftevents) for more details.
-
-
-##### ... in Node.js
-
-You can add your validation logic before the operation handler for either CRUD or draft-specific events. See [Node.js > Fiori Support > Handlers Registration](../../node.js/fiori#draft-support) for more details about handler registration.
-
-
-<div id="query-data-draft-enabled" />
-
-### Query Drafts Programmatically
-
-To access drafts in code, you can use the [`.drafts` reflection](../../node.js/cds-reflect#drafts).
-```js
-SELECT.from(Books.drafts) //returns all drafts of the Books entity
-```
-
-[Learn how to query drafts in Java.](../../java/fiori-drafts#draftservices){.learn-more}
-
-## Use Roles to Toggle Visibility of UI elements
-
-In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are use cases where you only want to hide certain parts of the UI for specific users. This is possible by using the respective UI annotations like `@UI.Hidden` or `@UI.CreateHidden` in conjunction with `$edmJson` pointing to a singleton.
-
-First, you define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artefact is created:
-
-```cds
-@odata.singleton @cds.persistence.skip
-entity Configuration {
-    key ID: String;
-    isAdmin : Boolean;
-}
-```
-> A key is technically not required, but without it some consumers might run into problems.
-
-Then define an `on` handler for serving the request:
-
-```js
-srv.on('READ', 'Configuration', async req => {
-    req.reply({
-        isAdmin: req.user.is('admin') //admin is the role, which for example is also used in @requires annotation
-    });
-});
-```
-
-Finally, refer to the singleton in the annotation by using a [dynamic expression](../protocols/odata#dynamic-expressions):
-
-```cds
-annotate service.Books with @(
-    UI.CreateHidden : { $edmJson: {$Not: { $Path: '/CatalogService.EntityContainer/Configuration/isAdmin'} } },
-    UI.UpdateHidden : { $edmJson: {$Not: { $Path: '/CatalogService.EntityContainer/Configuration/isAdmin'} } },
-);
-```
-
-The Entity Container is OData specific and refers to the `$metadata` of the OData service in which all accessible entities are located within the Entity Container.
-
-:::details SAP Fiori elements also allows to not include it in the path
-```cds
-annotate service.Books with @(
-    UI.CreateHidden : { $edmJson: {$Not: { $Path: '/Configuration/isAdmin'} } },
-    UI.UpdateHidden : { $edmJson: {$Not: { $Path: '/Configuration/isAdmin'} } },
-);
-```
-:::
-
-## Value Helps
-
-In addition to supporting the standard `@Common.ValueList` annotations as defined in the [OData Vocabularies](../protocols/odata#annotations), CAP provides advanced, convenient support for Value Help as understood and supported by SAP Fiori.
-
-
-### Convenience Option `@cds.odata.valuelist`
+### `@cds.odata.valuelist`
 
 Simply add the `@cds.odata.valuelist` annotation to an entity, and all managed associations targeting this entity will automatically receive Value Lists in SAP Fiori clients. For example:
 
 ```cds
 @cds.odata.valuelist
-entity Currencies {}
+entity Currencies { key code ... }
 ```
 ```cds
 service BookshopService {
@@ -579,8 +178,32 @@ service BookshopService {
 }
 ```
 
+This would be expanded by the compiler to the following OData annotations, in the EDMX documents generated for Fiori clients:
 
-### Pre-Defined Types in `@sap/cds/common`
+```xml
+<Annotations Target="AdminService.Books/currency_code">
+  <Annotation Term="Common.ValueList">
+    <Record Type="Common.ValueListType">
+      <PropertyValue Property="CollectionPath" String="Currencies"/>
+      <PropertyValue Property="Label" String="Currency"/>
+      <PropertyValue Property="Parameters">
+        <Collection>
+          <Record Type="Common.ValueListParameterInOut">
+            <PropertyValue Property="ValueListProperty" String="code"/>
+            <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+          </Record>
+          <Record Type="Common.ValueListParameterDisplayOnly">
+            <PropertyValue Property="ValueListProperty" String="name"/>
+          </Record>
+        </Collection>
+      </PropertyValue>
+    </Record>
+  </Annotation>
+</Annotations>
+```
+
+
+### `@sap/cds/common`
 
 [@sap/cds/common]: ../../cds/common
 
@@ -602,8 +225,6 @@ annotate sap.common.CodeList with @(
 );
 ```
 
-### Usages of `@sap/cds/common`
-
 In effect, usages of [@sap/cds/common] stay clean of any pollution, for example:
 
 ```cds
@@ -613,210 +234,304 @@ entity Books { //...
 }
 ```
 
-[Find this also in our **capire/bookstore**.](https://github.com/capire/bookshop/blob/main/db/schema.cds){.learn-more}
+[Find this also in **capire/bookstore**.](https://github.com/capire/bookshop/blob/main/db/schema.cds){.learn-more}
 
-Still, all SAP Fiori UIs, on all services exposing `Books`, will automatically receive Value Help for currencies. You can also benefit from that when [deriving your project-specific code list entities from **sap.common.CodeList**](../../cds/common#adding-own-code-lists).
-
-
-### Resulting Annotations in EDMX
-
-Here is an example showing how this ends up as OData `Common.ValueList` annotations:
-
-```xml
-<Annotations Target="AdminService.Books/currency_code">
-  <Annotation Term="Common.ValueList">
-    <Record Type="Common.ValueListType">
-      <PropertyValue Property="CollectionPath" String="Currencies"/>
-      <PropertyValue Property="Label" String="Currency"/>
-      <PropertyValue Property="Parameters">
-        <Collection>
-          <Record Type="Common.ValueListParameterInOut">
-            <PropertyValue Property="ValueListProperty" String="code"/>
-            <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
-          </Record>
-          <Record Type="Common.ValueListParameterDisplayOnly">
-            <PropertyValue Property="ValueListProperty" String="name"/>
-          </Record>
-        </Collection>
-      </PropertyValue>
-    </Record>
-  </Annotation>
-</Annotation>
-```
-
-## Actions
-
-In our SFLIGHT sample application, we showcase how to use actions covering the definition in your CDS model, the needed custom code and the UI implementation.
-
-[Learn more about Custom Actions & Functions.](../services/custom-actions){.learn-more}
+With that, all UIs on all services exposing `Books` will automatically receive Value Help for currencies. You can also benefit from that when [deriving your project-specific code list entities from **sap.common.CodeList**](../../cds/common#adding-own-code-lists).
 
 
-We're going to look at three things.
-1. Define the action in CDS and custom code.
-1. Create buttons to bring the action to the UI
-1. Dynamically define the buttons status on the UI
 
+## Fiori Draft Support
+<div id="draft-support" />
 
-First you need to define an action, like in the [_travel-service.cds_ file](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/srv/travel-service.cds#L11).
+SAP Fiori uses drafts to let users save their progress while editing data and continue later without losing changes. Drafts are stored on the server and can be accessed from different devices and locations providing flexibility and convenience for users. CAP provides out-of-the-box support for drafts, making it easy to implement this functionality in your applications.
 
-```cds
-entity Travel as projection on my.Travel actions {
-    action createTravelByTemplate() returns Travel;
-    action rejectTravel();
-    action acceptTravel();
-    action deductDiscount( percent: Percentage not null ) returns Travel;
-  };
-```
+> [!note] This documentation focuses on CAP only
+> For general information on the user experience and the technical details of drafts in SAP Fiori, refer to the [SAP Fiori Design Guidelines](https://experience.sap.com/fiori-design-web/draft-handling/) and the [SAP UI5 documentation](https://ui5.sap.com/#/topic/ed9aa41c563a44b18701529c8327db4d).
 
-To define what the action actually is doing, you need to write some custom code. See the [_travel-service.ts_](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/srv/travel-service.ts#L86) file for example:
+### Draft-Enabled Entities
 
-```js
-this.on('acceptTravel', req => UPDATE(req.subject).with({TravelStatus_code:'A'}))
-```
-
-Create the buttons, to bring this action onto the UI and make it actionable for the user. There are two buttons: On the overview and in the detail screen. Both are defined in the [_layouts.cds_](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/app/travel_processor/layouts.cds) file.
-
-For the overview of all travels, use the [`@UI.LineItem` annotation](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/app/travel_processor/layouts.cds#L40-L41).
-
-```cds
-annotate TravelService.Travel with @UI : {
-LineItem : [
-    { $Type  : 'UI.DataFieldForAction',
-      Action : 'TravelService.acceptTravel',
-      Label  : '{i18n>AcceptTravel}'   }
-  ]
-};
-```
-
-For the detail screen of a travel, use the [`@UI.Identification` annotation](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/app/travel_processor/layouts.cds#L9-L10).
-
-```cds
-annotate TravelService.Travel with @UI : {
-  Identification : [
-    { $Type  : 'UI.DataFieldForAction',
-      Action : 'TravelService.acceptTravel',
-      Label  : '{i18n>AcceptTravel}'   }
-  ]
-};
-```
-
-Now, the buttons are there and connected to the action. The missing piece is to define the availability of the buttons dynamically. Annotate the `Travel` entity in the `TravelService` service accordingly in the [_field-control.cds_](https://github.com/SAP-samples/cap-sflight/blob/42ee666e40f9dba1176f8263b512c10d23f07907/app/travel_processor/field-control.cds#L23-L36) file.
-
-```cds
-annotate TravelService.Travel with actions {
- acceptTravel @(
-   Core.OperationAvailable : {
-     $edmJson: { $Ne: [{ $Path: 'in/TravelStatus_code'}, 'A']}
-   },
-   Common.SideEffects.TargetProperties : ['in/TravelStatus_code'], ) };
-```
-This annotation uses [dynamic expressions](../protocols/odata#dynamic-expressions) to control the buttons for each action. And the status of a travel on the UI is updated, triggered by the `@Common.SideEffects.TargetProperties` annotation.
-
-:::info More complex calculation
-If you have the need for a more complex calculation, then the interesting parts in (an older version of) SFLIGHT are [virtual fields in _field-control.cds_](https://github.com/SAP-samples/cap-sflight/blob/dfc7827da843ace0ea126f76fc78a6591b325c67/app/travel_processor/field-control.cds#L10-L16) (also lines 37-44) and [custom code in _travel-service.js_](https://github.com/SAP-samples/cap-sflight/blob/dfc7827da843ace0ea126f76fc78a6591b325c67/srv/travel-service.js#L13-L22).
-:::
-
-
-## Cache Control
-
-CAP provides the option to set a [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header with a [max-age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#max-age) directive to indicate that a response remains fresh until _n_ seconds after it was generated .
-In the CDS model, this can be done using the `@http.CacheControl: {maxAge: <seconds>}` annotation on stream properties. The header indicates that caches can store the response and reuse it for subsequent requests while it's fresh.
-The `max-age` (in seconds) specifies the maximum age of the content before it becomes stale.
-
-:::info Elapsed time since the response was generated
-The `max-age` is the elapsed time since the response was generated on the origin server. It's not related to when the response was received.
-:::
-
-::: warning Only Java
-Cache Control feature is currently supported on the Java runtime only.
-:::
-
-<div id="client-side-validations" />
-
-<div id="fiori-compat" />
-
-## Hierarchical Tree Views
-
-Recursive hierarchies are parent-child related structures: each entity references its parent and through that defines the hierarchical structure. A common example is a company organization structure or HR reporting, where each employee entity references another employee as a direct report or manager.
-
-A generic hierarchy implementation for hierarchies is available on all relational databases supported by the CAP runtimes.
-
-::: warning
-On H2, only small hierarchies should be used for performance reasons.
-:::
-
-### Example
-Let's assume we have the following domain model and its projection in a service:
+All you need to do to serve an entity with draft support enabled is to annotate it with `@odata.draft.enabled`. For example, as we do in the [_capire/xtravels_](https://github.com/capire/xtravels/blob/b147a1daad27d11352e0d39b525b25ed3241c016/app/travels/capabilities.cds#L3) sample:
 
 ::: code-group
-```cds [schema.cds]
-namespace my.bookshop;
+```cds [app/travels/capabilities.cds]
+annotate TravelService.Travels with @odata.draft.enabled;
+```
+:::
 
-entity Genres { //...
-  ID : UUID;
+Behind the scenes, CAP handles everything else. Most importantly, it adds a new `.drafts` entity next to the active entity with the same elements, used to store draft data. Think of it as a shadow entity, defined like this:
+
+::: code-group
+```cds [=> generated automatically:]
+entity TravelService.Travels.drafts : TravelService.Travels { ... }
+```
+:::
+
+You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
+
+```js
+const { Travels } = this.entities
+SELECT.from (Travels)        //> queries active data
+SELECT.from (Travels.drafts) //> queries draft data
+```
+
+### Draft Choreography
+
+
+With [`@odata.draft.enabled`](#draft-enabled-entities) entities in place, CAP automatically serves the Fiori draft choreography as illustrated in the following diagram:
+
+![](./fiori-draft.drawio.svg)
+
+In essence, the draft choreography defines the following flows:
+
+- Creating drafts for **new** active entities, or for **editing** existing ones.
+- Filling in draft data through a series of _PATCH_ events.
+- **Saving** the draft back to the active entity, or **discarding** it.
+
+Drafts are isolated from any active data until they are saved/activated. When drafts are discarded, they are removed as if they never existed – with draft locks as the only exception to prevent conflicting changes.
+
+
+### Draft Locks
+
+Whenever a draft is created to _edit_ an active entity, this active entity is locked for any operation that could result in conflicting changes. In particular:
+
+- No other draft can be created for the same active instance.
+- No direct updates or deletes to the active instance are allowed.
+
+The lock is released automatically when the draft is saved, activated, or discarded. Other users can manually reclaim it after a period of inactivity, which is 15 minutes by default, but can be configured via <Config>cds.fiori.draft_lock_timeout: 1h</Config> for CAP Node.js and <Config java>cds.drafts.cancellationTimeout: 1h</Config> for CAP Java, respectively. See draft lock configuration for [Node.js](../../node.js/fiori#draft-locks) or [Java](../../java/fiori-drafts#draft-lock).
+
+Draft locks are not applied when creating drafts for new entities, as there is no active entity to be locked in this case.
+
+
+### Requests to Drafts
+
+Fiori clients send the following HTTP requests for draft operations:
+
+```php:line-numbers [Requests to <i>draft</i> data]
+POST   /Foo                                         //> NEW
+POST   /Foo(ID,IsActiveEntity=true)/draftEdit       //> EDIT
+GET    /Foo(ID,IsActiveEntity=false)                //> READ
+PATCH  /Foo(ID,IsActiveEntity=false) {...}          //> PATCH
+POST   /Foo(ID,IsActiveEntity=false)/draftActivate  //> SAVE
+DELETE /Foo(ID,IsActiveEntity=false)                //> DISCARD
+```
+
+The key parameter `IsActiveEntity=false` addresses draft data, with the exception of the empty POST and `draftEdit` for semantic reasons.
+
+::: details Full HTTP requests ...
+The requests above are abbreviated for clarity. The actual HTTP requests include the service path, content-type headers, and JSON bodies as shown below.
+
+```http
+POST /odata/v4/TravelService/Travels
+Content-Type: application/json
+
+{}
+```
+```http
+POST /odata/v4/TravelService/Travels(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=true)/draftEdit
+Content-Type: application/json
+```
+```http
+PATCH /odata/v4/TravelService/Travels(ID=a11fb6f1-36ab-46ec-b00c-d379031e817a,IsActiveEntity=false)
+Content-Type: application/json
+
+{ ... }
+```
+... and so forth.
+:::
+
+
+### Requests to Active Data
+
+Add `IsActiveEntity=true` as a key parameter to your requests to address *active* data directly, bypassing potentially existing drafts (draft locks still apply), for example:
+
+```php:line-numbers [Requests to <i>active</i> data]
+POST   /Books { IsActiveEntity:true, ... }       //> CREATE
+PATCH  /Books(ID=201,IsActiveEntity=true) {...}  //> UPDATE
+DELETE /Books(ID=201,IsActiveEntity=true)        //> DELETE
+GET    /Books(ID=201,IsActiveEntity=true)        //> READ
+```
+
+::: details Available for CAP Node.js <Since package="@sap/cds" version="v10" />
+While this was always possible in CAP Java before, it's available for CAP Node.js in the same way by default since v10. Can be disabled with <Config>cds.fiori.bypass_draft: false</Config>, which prevents bypassing the draft flow for _CREATE_ and _UPDATE_ operations entirely.
+:::
+
+> [!tip] Draft locks still apply
+> Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
+> If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
+
+> [!warning] Ensure validation for all entry points
+> Requests to active data also features partial CREATE/UPDATE requests to the root entity and its composition children. Ensure that the validations and determinations are run in all situations, not only on the root.
+
+#### Draft-agnostic Requests
+
+Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
+
+```php:line-numbers [Draft-agnostic requests to <i>active</i> data]
+// creation of active instances
+POST   /Foo            //> CREATE
+GET    /Foo(ID)        //> READ
+PATCH  /Foo(ID) {...}  //> UPDATE
+DELETE /Foo(ID)        //> DELETE
+// creation of draft instances
+POST   /Foo/draftNew   //> CREATE new draft [!code ++]
+...
+```
+
+The previously used `POST /Foo` requests without an `IsActiveEntity` parameter to create new drafts is now replaced by the collection bound action `draftNew` to resolve the ambiguities with requests to active data.
+
+::: details Available for CAP Node.js <Since package="@sap/cds" version="v10" /> – not yet for CAP Java
+Draft-agnostic requests as above assume `IsActiveEntity=true` by default for all requests that don't explicitly specify it.
+This was possible in CAP Node.js, but not in CAP Java, which is still bound by the [*Olingo*](https://olingo.apache.org) library. For CAP Java, explicitly add `IsActiveEntity=true` as a key parameter to address active data
+
+[Learn more about Direct CRUD events in **Java**.](../../java/fiori-drafts#bypassing-draft-flow){.learn-more}
+:::
+
+
+
+### Programmatic Access
+
+You can also access draft data programmatically from custom code in JavaScript or Java.
+
+In CAP Java, add `IsActiveEntity` as a key parameter to your queries ([learn more](../../java/fiori-drafts#draftservices)):
+
+```java {3}
+Select.from(FOO).where(o -> o.ID().eq(201);       //> reads active data
+Select.from(FOO).where(o -> o.ID().eq(201) .and( //> reads draft data
+  o.IsActiveEntity().eq(false))
+);
+```
+
+In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#drafts) references to access draft data:
+
+```js {3}
+const { Foo } = this.entities
+SELECT.from (Foo, 201)          // reads active data only
+SELECT.from (Foo.drafts, 201)  // reads draft data, if exists
+```
+
+Even better, use [`req.subject`](../../node.js/events#subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
+
+```js
+this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
+this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
+```
+
+
+### Draft Input Validation
+###### Validating Drafts
+
+During the draft phase - that is, on `PATCH` requests to draft data - all [`@assert`s](../services/constraints) are validated and error messages are returned to the client. Unlike with active entities, the draft is still created or updated even with invalid data, so users can correct it later without losing their progress.
+
+#### Custom Handlers for Draft Events
+
+You can add custom handlers to draft events by referring to draft-specific events and `.drafts` entities, as shown for CAP Node.js ([learn more](../../node.js/fiori#draft-specific-events)):
+
+```js:line-numbers
+const { Foo } = this.entities
+this.before ('NEW', Foo.drafts, ...)
+this.before ('EDIT', Foo, ...) //> note: refers to active entity
+this.before ('PATCH', Foo.drafts, ...)
+this.before ('SAVE', Foo.drafts, ...)
+this.before ('DISCARD', Foo.drafts, ...)
+```
+
+Similar in CAP Java ([learn more](../../java/fiori-drafts#editing-drafts)):
+
+```java:line-numbers
+@Before (event = DraftService.EVENT_DRAFT_CREATE)
+@Before (event = DraftService.EVENT_DRAFT_EDIT)
+@Before (event = DraftService.EVENT_DRAFT_PATCH)
+@Before (event = DraftService.EVENT_DRAFT_SAVE)
+@Before (event = DraftService.EVENT_DRAFT_CANCEL)
+```
+
+#### Validation on Active Entities
+
+When a draft is saved, all validations for active entities run as usual. Invalid data is rejected, so only valid data gets activated. This includes constraints such as `@assert` and `@readonly`, and all custom handlers registered to active entity events, for example:
+
+```js
+const { Foo } = this.entities
+this.before ([ 'CREATE', 'UPDATE' ], Foo, req => {/* validate all */})
+```
+
+> [!caution] Validate on active entities, not only on drafts
+> Validations on draft entities alone are not sufficient, because active entities can be updated directly, bypassing drafts. Always perform all necessary validations on active entities, not only on drafts.
+> Also note that updates to active entities can be partial, for example, updating only an individual `OrderItem` within an `Order` via `PATCH /Orders(1)/Items(3)`. Make sure your validation logic covers such cases.
+
+
+### Persistent Messages
+
+While in draft state, error messages are automatically persisted and remain visible even after you edit other fields or navigate away from the page.
+
+CAP automatically generates corresponding side-effect annotations in the EDMX to instruct Fiori clients to fetch state messages after every `PATCH` request.
+
+You can override generated side-effect annotations per entity, for example:
+
+  ```cds
+  annotate MyService.Foo with @(
+    Common.SideEffects #alwaysFetchMessages: false
+  );
+  ```
+
+::: details Available <Since package="CAP Java" version="v3.8"/> and <Since package="CAP Node.js" version="v9.1" />
+Can be disabled with <Config>cds.fiori.draft_messages: false</Config>.
+:::
+
+### Draft for Localized Data
+
+Annotate the underlying base entity in the base model with `@fiori.draft.enabled` to also support drafts for [localized data](./localized-data):
+
+```cds
+annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
+```
+
+:::info Background
+SAP Fiori drafts require single keys of type `UUID`, which is not the case for [`.texts`](./localized-data#behind-the-scenes) entities, that are generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
+[Learn how to add initial data for such draft-enabled localized entities.](localized-data#adding-initial-data){.learn-more}
+:::
+
+![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
+
+[See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
+
+
+## Fiori Tree Views
+
+Following the same principle of convenience as for Value Helps, CAP provides a shortcut annotation to define hierarchies on entities with recursive associations, which are then rendered as Tree Views in SAP Fiori clients.
+
+
+### Recursive Associations
+
+Hierarchies are most commonly parent-child structures created via recursive associations. For example, in the [capire/bookshop](https://github.com/capire/bookshop) sample, we have the `Genres` entity with a recursive association `parent` to itself:
+
+::: code-group
+```cds [db/schema.cds]
+entity Genres : cuid { //...
   parent : Association to Genres;
 }
 ```
 :::
 
+
+### The `@hierarchy` Annotation
+
+To get a Tree View in SAP Fiori clients, annotate the entity with `@hierarchy`, for example as we did in the Fiori Annotations of the [capire/bookstore](https://github.com/capire/bookstore) sample:
+
 ::: code-group
-```cds [AdminService.cds]
-service AdminService {
-  entity Genres as projection on my.bookshop.Genres;
-}
+```cds [app/genres/fiori-service.cds]
+annotate AdminService.Genres with @hierarchy;
 ```
 :::
 
-In this example, there is a managed to-one association `parent` that defines the parent-child hierarchy
-based on a single key element. In such a situation you can define the Tree View via the annotation `@hierarchy`:
+If multiple associations can serve as the parent association, specify the one to use as the value of the `@hierarchy` annotation, for example:
 
 ```cds
-annotate AdminService.Genres with @hierarchy : parent;
+annotate AdminService.Genres with @hierarchy: parent;
 ```
 
-If the entity contains only one such association, you can even omit the value:
+::: details Under the hood...
 
-```cds
-annotate AdminService.Genres with @hierarchy;
-```
-
-Configure the TreeTable in UI5's _manifest.json_ file:
-
-```jsonc
-  "sap.ui5": { ...
-    "routing": { ...
-      "targets": { ...
-        "GenresList": { ...
-          "options": {
-            "settings": { ...
-              "controlConfiguration": {
-                "@com.sap.vocabularies.UI.v1.LineItem": {
-                  "tableSettings": {
-                    "hierarchyQualifier": "GenresHierarchy", // [!code focus]
-                    "type": "TreeTable" // [!code focus]
-                  }
-                }
-              }
-            }
-          }
-        },
-      },
-    },
-```
-
-> Note: construct the `hierarchyQualifier` with the following pattern: <br>
-> `<entity name in service>Hierarchy`
-
-You can now start the server with `cds watch` and see the hierarchical tree view in action in the [_Browse Genres_](http://localhost:4004/fiori-apps.html#Genres-display) app.
-
-![Fiori UI with hierarchical tree view.](hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
-
-The compiler automatically expands the shortcut annotation `@hierarchy` to the
-following `annotate` and `extend` statements. 
-
-### Manual Approach
-
-The following documents what happens behind the scenes, done by the compiler as described before. You can also use it, if you cannot use the `@hierarchy` annotation, for example, because you only have an unmanaged parent association.
+The `@hierarchy` annotation is a shortcut for the following Fiori-level `annotate` and `extend` statements, which you would otherwise have to write manually.
 
 ```cds
 // declare a hierarchy with the qualifier "GenresHierarchy"
@@ -852,4 +567,110 @@ extend AdminService.Genres with @(
 > Note: When naming the hierarchy qualifier, use the following pattern: <br>
 > `<entity name in service>Hierarchy`
 
-<div id="reserved-words" />
+:::
+
+::: tip Build hierarchies with aggregations in CAP Java
+
+Annotate a `virtual` element with `@cds.java.descendants.aggregate` and specify the aggregation expression to build hierarchy views using calculation of aggregates.
+
+:::
+
+### UI5 manifest Configuration
+
+In addition, you need to configure the TreeTable in UI5's _manifest.json_ file:
+
+```jsonc
+  "sap.ui5": { ...
+    "routing": { ...
+      "targets": { ...
+        "GenresList": { ...
+          "options": {
+            "settings": { ...
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "hierarchyQualifier": "GenresHierarchy",
+                    "type": "TreeTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+      },
+    },
+```
+
+> Note: construct the `hierarchyQualifier` with the following pattern: <br>
+> `<entity name in service>Hierarchy`
+
+You can now start the server with `cds watch` and see the hierarchical tree view in action in the [_Browse Genres_](http://localhost:4004/fiori-apps.html#Genres-display) app.
+
+![Fiori UI with hierarchical tree view.](hierarchical-tree-view.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
+
+The compiler automatically expands the shortcut annotation `@hierarchy` to the
+following `annotate` and `extend` statements.
+
+
+
+
+## Cache Control in Java
+
+CAP lets you set a [Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control) header with a [max-age](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#max-age) directive to indicate that a response remains fresh for _n_ seconds after it was generated.
+In the CDS model, use the `@http.CacheControl: {maxAge: <seconds>}` annotation on stream properties. The header tells caches to store the response and reuse it for subsequent requests while it is fresh.
+`max-age` (in seconds) specifies how long the content remains fresh before becoming stale.
+
+:::info Elapsed time since the response was generated
+`max-age` is the elapsed time since the response was generated on the origin server, not the time since the response was received.
+:::
+
+::: warning Only Java
+The Cache Control feature is currently supported only on the Java runtime.
+:::
+
+<!-- Do we have an example for that in our samples? -->
+
+## Role-based Visibility
+
+In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are cases where you want to hide certain UI elements for specific users. You can do this using annotations such as `@UI.Hidden` or `@UI.CreateHidden` together with `$edmJson` pointing to a singleton.
+
+First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artifact is created:
+
+```cds
+@odata.singleton @cds.persistence.skip
+entity Configuration {
+    key ID: String;
+    isAdmin : Boolean;
+}
+```
+> A key is technically not required, but omitting it may cause issues for some consumers.
+
+Then, define an `on` handler to serve the request:
+
+```js
+srv.on('READ', 'Configuration', async req => {
+    req.reply({
+        isAdmin: req.user.is('admin') //admin is the role, which for example is also used in @requires annotation
+    });
+});
+```
+
+Finally, refer to the singleton in the annotation by using a [dynamic expression](../protocols/odata#dynamic-expressions):
+
+```cds
+annotate service.Books with @(
+    UI.CreateHidden : { $edmJson: {$Not: { $Path: '/CatalogService.EntityContainer/Configuration/isAdmin'} } },
+    UI.UpdateHidden : { $edmJson: {$Not: { $Path: '/CatalogService.EntityContainer/Configuration/isAdmin'} } },
+);
+```
+
+The Entity Container is OData-specific. It refers to the `$metadata` of the OData service, where all accessible entities are registered.
+
+:::details SAP Fiori elements also allows to not include it in the path
+```cds
+annotate service.Books with @(
+    UI.CreateHidden : { $edmJson: {$Not: { $Path: '/Configuration/isAdmin'} } },
+    UI.UpdateHidden : { $edmJson: {$Not: { $Path: '/Configuration/isAdmin'} } },
+);
+```
+:::

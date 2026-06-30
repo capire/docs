@@ -37,6 +37,11 @@
     Specify the port for the livereload server. Defaults to '35729'.
     Disable it with value <i>false</i>.
 
+  <em>--experimental-hot-reload</em> &lt;true | false&gt;
+
+    Specify if the experimental hot reload should be used. Changes to the CDS model
+    in most scenarios no longer restart the server
+
   <em>--open</em> &lt;url&gt;
 
     Open the given URL (suffix) in the browser after starting.

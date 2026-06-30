@@ -16,12 +16,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: 24
 
       - name: Extract CLI texts
         run: |
@@ -51,20 +51,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: 24
 
       - name: Update Java Properties
         run: |
           npm ci
           .github/java-properties/update-properties.js
-        env:
-          MAVEN_HOST: https://common.repositories.cloud.sap/artifactory/build.releases
-          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
 
       - name: Check for changes
         run: |

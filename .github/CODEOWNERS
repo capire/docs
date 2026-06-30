@@ -1,13 +1,16 @@
 # This files defines code ownership.
+# We start with defining ownership globally and later on can get more granular.
 
 # General content
-* @renejeglinsky
-node.js/ @smahati
-java/ @smahati
+* @renejeglinsky @danjoa
+
+node.js/ @smahati @renejeglinsky @danjoa
+java/    @smahati @renejeglinsky @danjoa
 
 # Infra
 .github/    @chgeo @swaldmann
-.vitepress/ @chgeo @swaldmann
+.vitepress/ @chgeo @swaldmann @danjoa
+public/     @chgeo @swaldmann @danjoa
 
 # allow dependencies updates through renovate w/o code owners
 package.json

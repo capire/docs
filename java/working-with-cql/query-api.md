@@ -942,6 +942,54 @@ import static com.sap.cds.ql.cqn.CqnLock.Mode.SHARED;
 Select.from("bookshop.Books").byId(1).lock(SHARED);
 ```
 
+#### Wait Strategies
+
+If the selected rows are already locked by another transaction, by default, the query waits until the lock is released. You can specify a [wait strategy](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnLock.Wait.Strategy.html) to control whether and how long the query execution waits.
+
+- `DEFAULT` - wait until the lock is released:
+
+  By default, if the selected rows are locked by another transaction, the query waits, and if the lock isn't released within the database's predefined timeout a `CdsLockTimeoutException` is thrown:
+  ```java
+  Select.from("bookshop.Books").byId(1).lock();
+  ```
+- `WAIT` - wait unless given timeout expires:
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+
+  // wait max 10s  
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, 10);
+  ```
+
+- `NOWAIT` — fail _immediately_ if the rows are already locked:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.NOWAIT;
+
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, NOWAIT);
+  ```
+  If any target row is locked, a `CdsLockTimeoutException` is thrown without waiting.
+
+- `SKIP LOCKED` — skip locked rows and return only unlocked rows:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.SKIP_LOCKED;
+
+  Select.from("bookshop.Books")
+      .where(b -> b.get("stock").gt(0))
+      .lock(EXCLUSIVE, SKIP_LOCKED);
+  ```
+
+  ::: warning
+  Rows that are currently locked by other transactions are silently excluded from the result.
+  :::
+  ::: tip
+  This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
+  :::
+  
+#### Restrictions
+
 Not every entity exposed via a CDS entity can be locked with the `lock()` clause. To use the `lock()` clause, databases require that the target of such statements is represented by one of the following:
 - a single table
 - a simple view, so that the database can unambiguously identify which rows to lock
@@ -1419,15 +1467,15 @@ Entity references specify entity sets. They can be used to define the target ent
 ```java
 import com.sap.cds.ql.CQL;
 
-// bookshop.Books[year = 2020].author // [!code focus]
-Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code focus]
+// bookshop.Books[year = 2020].author // [!code highlight]
+Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code highlight]
 
 // or as untyped entity ref
 StructuredType<?> authors =
    CQL.entity("bookshop.Books").filter(b -> b.get("year").eq(2020)).to("author");
 
-// SELECT from bookshop.Books[year = 2020]:author { name } // [!code focus]
-Select.from(authors).columns("name"); // [!code focus]
+// SELECT from bookshop.Books[year = 2020]:author { name } // [!code highlight]
+Select.from(authors).columns("name"); // [!code highlight]
 ```
 
 You can also get [entity references](query-execution#entity-refs) from the result of a CDS QL statement to address an entity via its key values in other statements.
@@ -1528,69 +1576,175 @@ When using named parameters, `Update` and `Delete` statements can be executed as
 
 Scalar functions are values that are calculated from other values. This calculation can be executing a function on the underlying data store or applying an operation, like an addition, to its parameters. The Query Builder API supports the generic `func` function, as well as a number of build-in functions.
 
-* Generic Scalar Function
+##### Generic Scalar Function
 
-    The generic function `func`, creates a scalar function call that is executed by the underlying data store. The first argument, being the native query language function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the native query language `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
+The method `func` creates a scalar function call that is executed by the underlying data store. The first argument being the native query language's (CQN) function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the CQN `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
 
-    ```java
-    import static com.sap.cds.ql.CQL.func;
-    Select.from(EMPLOYEE)
-      .columns(e -> e.name(), e -> func("COUNT", e.name()).as("count"))
-      .where(e -> e.name().eq("Monika"));
-    ```
+```java
+import static com.sap.cds.ql.CQL.func;
+Select.from(EMPLOYEE)
+  .columns(e -> e.name(), e -> func("COUNT", e.name()).as("count"))
+  .where(e -> e.name().eq("Monika"));
+```
 
-* To Lower
+##### `toLower`
 
-    The `toLower` function is a built-in string function for converting a given string value to lower case using the rules of the underlying data store.
+The `toLower` function is a built-in string function for converting a given string value to lower case using the rules of the underlying data store.
 
-    ```java
-    import static com.sap.cds.ql.CQL.toLower;
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().endsWith(toLower("IKA")));
-    ```
+```java
+import static com.sap.cds.ql.CQL.toLower;
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().endsWith(toLower("IKA")));
+```
 
-    In the following example, the `toLower` function is applied on the `name` element before applying the equals predicate.
+In the following example, the `toLower` function is applied on the `name` element before applying the equals predicate.
 
-    ```java
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().toLower().eq("monika"));
-    ```
+```java
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().toLower().eq("monika"));
+```
 
-* To Upper
+##### `toUpper`
 
-    The `toUpper` function is a built-in string function for converting a given string value to upper case using the rules of the underlying data store.
+The `toUpper` function is a built-in string function for converting a given string value to upper case using the rules of the underlying data store.
 
-    ```java
-    import static com.sap.cds.ql.CQL.toUpper;
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().endsWith(toUpper("ika")));
-    ```
+```java
+import static com.sap.cds.ql.CQL.toUpper;
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().endsWith(toUpper("ika")));
+```
 
-    In the following example, the `toUpper` function is applied on the `name` element before applying the equals predicate.
+In the following example, the `toUpper` function is applied on the `name` element before applying the equals predicate.
 
-    ```java
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().toUpper().eq("MONIKA"));
-    ```
+```java
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().toUpper().eq("MONIKA"));
+```
 
-* Substring
+##### `substring`
 
-    The `substring` method creates an expression for substring extraction from a string value. Extract a substring from a specified starting position of either a given length or to the end of the string. The first position is zero.
+The `substring` method creates an expression for substring extraction from a string value. Specify the starting position and optionally the length of the substring. Specifying only the starting position gets you all the characters to the end of the string. Note, the first character's position is zero!
 
-    ```java
-    Select.from("bookshop.Authors")
-      .columns(a -> a.get("name").substring(0,2).as("shortname"))
-    ```
-    In the following example, the `substring` function is applied as part of a predicate to test whether a subset of characters matches a given string.
+```java
+Select.from("bookshop.Authors")
+  .columns(a -> a.get("name").substring(0,2).as("shortname"));
+```
+In the following example, the `substring` function is applied as part of a predicate to test whether a subset of characters matches a given string.
 
-    ```java
-    Select.from("bookshop.Authors")
-      .where(e -> e.get("name").substring(2).eq("ter"));
-    ```
+```java
+Select.from("bookshop.Authors")
+  .where(e -> e.get("name").substring(2).eq("ter"));
+```
 
-* Concat
+##### `concat`
 
-  See [`Concat`](#string-expressions) String Expression
+See [`Concat Expression`](#concat-expression).
+
+#### Date/Time functions
+
+You can use date/time functions to extract components from date/time values and to compute the difference between timestamps:
+
+##### Extraction Functions
+
+| method | return CDS | return Java | example |
+| --- | --- | --- | --- |
+| year | Int32 | Integer | `date.year()` | 
+| month | Int32 | Integer | `CQL.year(date)` |
+| day | Int32 | Integer | `date.day()` |
+| hour | Int32 | Integer | `CQL.hour(time)` |
+| minute | Int32 | Integer | `time.minute()` |
+| second | Int32 | Integer | `time.second()` |
+| date | Date | LocalDate | `timestamp.date()` |
+| time | Time | LocalTime | `timestamp.time()` |
+
+You can also use the `extract` function to extract a _given_ chrono field (date/time component):
+
+```java
+date.extract(ChronoField.DAY_OF_MONTH)
+```
+
+##### Difference Computation Functions
+
+These methods allow you to compute the difference between timestamps:
+
+| method | return CDS | return Java | example |
+| --- | --- | --- | --- |
+| yearsBetween | Int32 | Integer | `start.yearsBetween(end)` | 
+| monthsBetween | Int32 | Integer | `start.monthsBetween(end)` |
+| daysBetween | Int32 | Integer | `CQL.daysBetween(start, end)` |
+| secondsBetween | Int64 | Integer | `start.secondsBetween(end)` |
+| nano100Between | Int64 | Integer | `start.nano100Between(end)` |
+
+
+
+#### Vector Functions
+
+Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
+
+::: warning Not supported with local MTXS on SQLite
+Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite isn't supported.
+:::
+
+##### Computing Vector Embeddings in SAP HANA <Beta />
+
+CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
+
+To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
+
+```cds
+extend Incidents with {
+  @cds.api.ignore
+  embedding : Vector = vector_embedding(
+       'title: ' || title || ', summary: ' || summary,
+       'DOCUMENT', 'SAP_GXY.20250407') stored;
+}
+```
+
+In Java queries, use the `CQL.vectorEmbedding` function to compute vector embeddings:
+
+```java
+var userQuery = CQL.val("""
+        Have we seen incidents with solar inverters this month,
+        and how were they resolved?
+        """);
+var v = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
+```
+
+On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
+
+```xml
+<dependency>
+   <groupId>dev.langchain4j</groupId>
+   <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
+   <scope>runtime</scope>
+</dependency>
+```
+
+##### Computing Vector Similarity and Distance
+
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+
+```Java
+CqnVector vec = CQL.vector(embedding);
+
+var similarIncidents = db.run(Select.from(INCIDENTS).where(i ->
+  CQL.cosineSimilarity(i.embedding(), vec).gt(0.75))
+);
+```
+
+You can also use parameters for vectors in queries:
+
+```Java
+var similarity = CQL.cosineSimilarity(
+     CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
+
+var query = Select.from(INCIDENTS)
+  .columns(i -> i.title(), i -> similarity.times(100).as("similarity"))
+  .where(i -> similarity.gt(0.75))
+  .orderBy(i -> i.get("similarity").desc());
+
+Result similarIncidents = db.run(query, CdsVector.of(embedding));
+```
 
 #### Case-When-Then Expressions
 
@@ -1603,59 +1757,59 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
-#### String Expressions
+#### Concat Expression
+###### String Expressions
 
-* Concat
+The function `concat` creates a string expression to concatenate a specified value to this value.
 
-    Function `concat` creates a string expression to concatenate a specified value to this value.
-
-    ```java
-    // SELECT from Author {name || ' - the Author' as author_name : String}
-    Select.from(AUTHOR)
-      .columns(a -> a.name().concat(" - the Author").as("author_name"));
-    ```
+```java
+// SELECT from Author {name || ' - the Author' as author_name : String}
+Select.from(AUTHOR)
+  .columns(a -> a.name().concat(" - the Author").as("author_name"));
+```
 
 #### Arithmetic Expressions
 
 Arithmetic Expressions are captured by scalar functions as well:
 
-* Plus
+##### `plus`
 
-    Function `plus` creates an arithmetic expression to add a specified value to this value.
+The function `plus` creates an arithmetic expression to add a specified value to this value.
 
-    ```java
-    // SELECT from Author {id + 2 as x : Integer}
-    Select.from(AUTHOR)
-      .columns(a -> a.id().plus(2).as("x"));
-    ```
+```java
+// SELECT from Author {id + 2 as x : Integer}
+Select.from(AUTHOR)
+  .columns(a -> a.id().plus(2).as("x"));
+```
 
-* Minus
-    Function `minus` creates an arithmetic expression to subtract a specified value with this value.
+##### `minus`
 
-    ```java
-    Select.from("bookshop.Authors")
-      .columns("name")
-      .limit(a -> literal(3).minus(1));
-    ```
+The function `minus` creates an arithmetic expression to subtract a specified value with this value.
 
-* Times
+```java
+Select.from("bookshop.Authors")
+  .columns("name")
+  .limit(a -> literal(3).minus(1));
+```
 
-    Function `times` creates an arithmetic expression to multiply a specified value with this value. In the following example, `p` is an Integer parameter value passed when executing the query.
+##### `times`
 
-    ```java
-    Parameter<Integer> p = param("p");
-    Select.from(AUTHOR)
-      .where(a -> a.id().between(10, p.times(30)));
-    ```
+The function `times` creates an arithmetic expression to multiply a specified value with this value. In the following example, `p` is an Integer parameter value passed when executing the query.
 
-* Divided By
+```java
+Parameter<Integer> p = param("p");
+Select.from(AUTHOR)
+  .where(a -> a.id().between(10, p.times(30)));
+```
 
-    Function `dividedBy` creates an arithmetic expression to divide this value with the specified value.
+##### `dividedBy`
 
-    ```java
-    Select.from(AUTHOR)
-      .where(a -> a.id().between(10, literal(30).dividedBy(2)));
-    ```
+The function `dividedBy` creates an arithmetic expression to divide this value with the specified value.
+
+```java
+Select.from(AUTHOR)
+  .where(a -> a.id().between(10, literal(30).dividedBy(2)));
+```
 
 ### Predicates
 
@@ -1677,7 +1831,7 @@ These comparison operators are supported:
 <th>
     CDL
 </th>
-<th width="400">
+<th width="500">
     Description
 </th>
 <th>
@@ -1693,9 +1847,7 @@ These comparison operators are supported:
     Test if this value equals a given value. NULL values might be treated as unknown resulting in a <i>three-valued logic</i> as in SQL.
 </td>
 <td align="left">
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">eq</span>(15));</code>
+<code>CQL.get("stock").eq(15)</code>
 </td>
 </tr>
 
@@ -1705,10 +1857,7 @@ These comparison operators are supported:
     Test if this value is NOT equal to a given value. NULL values might be treated as unknown resulting in a <i>three-valued logic</i> as in SQL.
 </td>
 <td>
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">ne</span>(25));</code>
-</td>
+<code>CQL.get("stock").ne(15)</code></td>
 </tr>
 
 <tr>
@@ -1717,12 +1866,7 @@ These comparison operators are supported:
     Test if this value equals a given value. NULL values are treated as any other value (<i>Boolean logic</i>).
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">is</span>(15));</code>
-
-</td>
+<code>CQL.get("stock").is(15)</code></td>
 </tr>
 
 <tr>
@@ -1731,12 +1875,7 @@ These comparison operators are supported:
     Test if this value is NOT equal to a given value. NULL values are treated as any other value (<i>Boolean logic</i>).
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">isNot</span>(25));</code>
-
-</td>
+<code>CQL.get("stock").isNot(15)</code></td>
 </tr>
 
 <tr>
@@ -1745,12 +1884,7 @@ These comparison operators are supported:
     Test if this value is greater than a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">gt</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").gt(15)</code></td>
 </tr>
 
 <tr>
@@ -1759,12 +1893,7 @@ These comparison operators are supported:
     Test if this value is greater than or equal to a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">ge</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").ge(15)</code></td>
 </tr>
 
 <tr>
@@ -1773,12 +1902,7 @@ These comparison operators are supported:
     Test if this value is less than a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">lt</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").lt(15)</code></td>
 </tr>
 
 <tr>
@@ -1787,12 +1911,7 @@ These comparison operators are supported:
     Test if this value is less than or equal to a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">le</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").le(15)</code></td>
 </tr>
 
 <tr>
@@ -1803,12 +1922,7 @@ BETWEEN
     Test if this value is between<sup>1</sup> a range of values.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">between</span>(5, 10));</code>
-
-</td>
+<code>CQL.get("stock").between(5, 10)</code></td>
 </tr>
 </tbody>
 </table>
@@ -1917,12 +2031,7 @@ AND
     Returns a predicate that represents a logical AND of this predicate and another.
 </td>
 <td>
-
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  a.get("name").eq("Peter)
-   .<span class="na">and</span>(a.get("Id").eq(1)));</code>
-
+<code>name().eq("Peter).and(ID().eq(1));</code>
 </td>
 </tr>
 
@@ -1935,11 +2044,7 @@ OR
 </td>
 <td>
 
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  a.get("name").eq("Peter)
-   .<span class="na">or</span>(a.get("Id").eq(1)));</code>
-
+<code>name().eq("Peter).or(ID().eq(1));</code>
 </td>
 </tr>
 
@@ -1951,11 +2056,8 @@ NOT
     Returns a predicate that represents the logical negation of this predicate.
 </td>
 <td>
-
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  <span class="na">not</span>(a.get("Id").eq(3)));</code>
-
+<code>name().eq("Peter).not()</code><br>  or<br>
+<code>CQL.not(name().eq("Peter))</code>
 </td>
 </tr>
 </tbody>
@@ -1964,6 +2066,8 @@ NOT
 #### `Predicate Functions` {#predicate-functions}
 
 These boolean-valued functions can be used in filters:
+
+##### Containment Test 
 
 <table>
 <thead>
@@ -1989,11 +2093,7 @@ CONTAINS
     Test if this string value contains a given substring.
 </td>
 <td>
-
-<code>Select.from(EMPLOYEE)
-  .where(e -> e.name()
-  .<span class="na">contains</span>("oni"));</code>
-
+<code>name().contains("oni")</code>
 </td>
 </tr>
 
@@ -2005,11 +2105,7 @@ STARTS WITH
     Test if this string value starts with a given prefix.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("title")
-  .<span class="na">startsWith</span>("The"));</code>
-
+<code>title().startsWith("The")</code>
 </td>
 </tr>
 
@@ -2021,17 +2117,13 @@ ENDS WITH
     Test if this string value ends with a given suffix.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("title")
-  .<span class="na">endsWith</span>("Raven"));</code>
-
+<code>title().endsWith("Raven")</code>
 </td>
 </tr>
 </tbody>
 </table>
 
-#### `matchesPattern` Predicate {#matches-pattern}
+##### Regular Expressions (`matchesPattern`) {#matches-pattern}
 
 The `matchesPattern` predicate is applied to a String value and tests if it matches a given regular expression.
 
@@ -2058,10 +2150,15 @@ The behavior of the regular expression can be customized with the options that c
 For example, the following code matches that the title of the book begins with the word "CAP" while ignoring the case of the letters:
 
 ```java
-Select.from("bookshop.Books").where(t -> t.get("title").matchesPattern(CQL.val("^CAP.+$"), CQL.val("i")));
+Select.from("bookshop.Books")
+  .where(t -> t.get("title")
+               .matchesPattern(CQL.val("^CAP.+$"), CQL.val("i")));
 ```
+#### Filter by Associated Data
 
-#### `anyMatch/allMatch` Predicate {#any-match}
+These function allow to filter data based on a condition on associated entities:
+
+##### Using `anyMatch/allMatch` {#any-match}
 
 The `anyMatch` and `allMatch` predicates are applied to an association and test if _any_ instance/_all_ instances of the associated entity set match a given filter condition. They are supported in filter conditions of [Select](#select), [Update](#update) and [Delete](#delete) statements.
 
@@ -2101,7 +2198,7 @@ Select.from(AUTHORS).where(a -> a.books().anyMatch(
         p.text().contains("unicorn"))));
 ```
 
-#### `EXISTS` Subquery {#exists-subquery}
+##### Using an `EXISTS` Subquery {#exists-subquery}
 
 An `exists` subquery is used to test if a subquery returns any records. Typically a subquery is correlated with the enclosing _outer_ query.
 You construct an `exists` subquery with the [`exists`](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/StructuredType.html#exists-java.util.function.Function-) method, which takes a [function](#lambda-expressions) that creates the subquery from a reference to the _outer_ query. To access elements of the outer query from within the subquery, this _outer_ reference must be used:

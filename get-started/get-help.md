@@ -34,13 +34,13 @@ To start VS Code via the `code` CLI, users on macOS must first run a command (*S
 
 ### Check the Node.js version { #node-version}
 
-Run the latest LTS version of Node.js (even numbers: 20, 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
+Run the latest LTS version of Node.js (even numbers: 22, 24). Avoid odd versions, as some modules with native parts may not install. Check version with:
 
 ```sh
 node -v
 ```
 
-Should you see an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
+If you encounter an error like "_Node.js v1... or higher is required for `@sap/cds ...`._" on server startup, upgrade to the indicated version at the minimum, or even better, the most recent LTS version.
 For [Cloud Foundry](https://docs.cloudfoundry.org/buildpacks/node/index.html#runtime), use the `engines` field in _package.json_.
 
 [Learn more about the release schedule of **Node.js**.](https://github.com/nodejs/release#release-schedule/){.learn-more}
@@ -166,6 +166,13 @@ Ensure that database transactions are either committed or rolled back. This can 
 
 If you're using [@sap/hana-client](https://www.npmjs.com/package/@sap/hana-client), verify that the environment variable [`HDB_NODEJS_THREADPOOL_SIZE`](https://help.sap.com/docs/SAP_HANA_CLIENT/f1b440ded6144a54ada97ff95dac7adf/31a8c93a574b4f8fb6a8366d2c758f21.html?version=2.11) is adjusted appropriately. This variable specifies the amount of workers that concurrently execute asynchronous method calls for different connections.
 
+### Why are requests rejected with `431` and not logged?
+
+|              | Explanation                                                                                                          |
+|--------------|----------------------------------------------------------------------------------------------------------------------|
+| _Root Cause_ | `431` occurs when the size of the request headers exceeds the maximum limit configured in the Node.js HTTP server. In this case, the Node.js HTTP server rejects the request during the initial parsing phase before it reaches CAP. Therefore, the request is not logged by the application.                                    |
+| _Solution_   | Inspect the request headers and check their size. If large headers are required and cannot be reduced, increase the maximum allowed HTTP header size in Node.js by setting the following environment variable `NODE_OPTIONS="--max-http-header-size=65536"` |
+
 
 ### Why are requests rejected with `502`?
 
@@ -276,6 +283,28 @@ npm add -D tar
 ```
 On macOS and Linux, the built-in implementation continues to be used.
 
+### How to fix "SqlError: invalid table name: Could not find table/view ..."?
+
+On Windows there's a known issue, where `cds build --production` may silently fail to create the _resources.tgz_ in the MTX sidecar build output.
+After deployment and subscription, you can then notice the mentioned SqlError or similar error messages that point to tables/views not being available.
+
+:::warning The build log will incorrectly report the file as written.
+:::
+
+To fix this on Windows, install the tar library:
+
+```sh
+npm add -D tar
+```
+
+Even with this dependency added, on macOS and Linux the built-in implementation continues to be used.
+
+
+
+### How to fix "`Error: Could not locate the bindings file. Tried: ...`"
+
+You probably have `ignore-scripts` set to `true` in your npm configuration. While this is generally a good idea, it prevents certain libraries, like `better-sqlite3`, from running a required postinstall script.
+To solve this, you can either temporarily allow scripts and run a reinstall, or manually run the build script for the library in question. For `better-sqlite3`, run `npm run build-release` from within the _node_modules/better-sqlite3_ directory. The first line after the error message shows the relevant _node_modules_ directory.
 
 
 ## Java
@@ -306,13 +335,13 @@ To fix this, either switch the Node.js version using a Node version manager, or 
 ```xml
 <properties>
 		<!-- ... -->
-		<cds.install-node.nodeVersion>v20.11.0</cds.install-node.nodeVersion>
+		<cds.install-node.nodeVersion>v24.14.1</cds.install-node.nodeVersion>
 		<!-- ... -->
 	</properties>
 
 ```
 
-[Learn more about the install-node goal.](/java/assets/cds-maven-plugin-site/install-node-mojo.html){.learn-more target="_blank"}
+[Learn more about the install-node goal.](../java/assets/cds-maven-plugin-site/install-node-mojo.html){.learn-more target="_blank"}
 
 ### How can I expose custom REST APIs with CAP?
 
@@ -363,7 +392,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ### How do I generate an OData response in Node.js for Error 404?
 
-If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-serve#custom-server-js).
+If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-server-js).
 
 ```js
 let app
@@ -418,7 +447,7 @@ In case you want a visual interface tool to work with SQLite, you can use [SQLit
 
 ### How to get an SAP HANA Cloud instance for SAP BTP? { #get-hana}
 
-To configure this service in the SAP BPT cockpit on trial, refer to the [SAP HANA Cloud Onboarding Guide](https://www.sap.com/documents/2021/09/7476f8c4-f77d-0010-bca6-c68f7e60039b.html). See [SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD) documentation or visit the [SAP HANA Cloud community](https://pages.community.sap.com/topics/hana/cloud) for more details.
+To configure this service in the SAP BTP cockpit on trial, refer to the [SAP HANA Cloud Onboarding Guide](https://www.sap.com/documents/2021/09/7476f8c4-f77d-0010-bca6-c68f7e60039b.html). See [SAP HANA Cloud](https://help.sap.com/docs/HANA_CLOUD) documentation or visit the [SAP HANA Cloud community](https://pages.community.sap.com/topics/hana/cloud) for more details.
 
 ::: warning HANA needs to be restarted on trial accounts
 On trial, your SAP HANA Cloud instance will be automatically stopped overnight, according to the server region time zone. That means you need to restart your instance every day before you start working with your trial.
@@ -441,6 +470,16 @@ On trial, your SAP HANA Cloud instance will be automatically stopped overnight, 
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | _Root Cause_ | An error like `Version incompatibility for the ... build plugin: "2.0.x" (installed) is incompatible with "2.0.y" (requested)` indicates that your project demands a higher version of SAP HANA than what is available in your org/space on SAP BTP, Cloud Foundry environment. The error might not occur on other landscapes for the same project. |
 | _Solution_   | Lower the version in file `db/src/.hdiconfig` to the one given in the error message. If you're the owner of the SAP HANA installation, ask for an upgrade of the SAP HANA instance.                                                                                                                                                                 |
+
+#### Deployment fails - _unable to get local issuer certificate_ {#root-cert-change}
++ _Could not connect to any host... - unable to get local issuer certificate_
++ MTX sidecar crashes with HTTP error _429 (Too Many Requests)_
+
+|              | Explanation                                                                                                                  |
+|--------------|--------------------------------|
+| _Root Cause_ | A change of SAP's root certificate from _DigiCert Global Root CA_ to _DigiCert TLS RSA4096 Root G5_ leads to deployment failures because older certificates get rejected by too old SAP HANA driver versions and/or older service bindings in SAP HANA Cloud. |
+| _Solution_   | For Node.js applications, update the `hdb` driver to the latest version. [See SAP note 3397584](https://me.sap.com/notes/3397584) for details.  See the [SAP HANA blog post](https://community.sap.com/t5/technology-blog-posts-by-sap/action-required-update-your-certificate-trust-stores-for-enhanced-sap-hana/ba-p/14332703) for the broader context. |
+
 
 #### Deployment fails — _Cannot create certificate store_ {#cannot-create-certificate-store}
 
@@ -511,6 +550,35 @@ This error occurs if all of the following applies:
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | _Root Cause_ | The name/prefix of the native SAP HANA object collides with a name/prefix in the CAP CDS model.                                                                                                                                                                                                                                                                                                  |
 | _Solution_   | Change the name of the native SAP HANA object so that it doesn't start with the name given in the error message and doesn't start with any other prefix that occurs in the CAP CDS model. If you can't change the name of the SAP HANA object, because it already exists, define a synonym for the object. The name of the synonym must follow the naming rule to avoid collisions (root cause). |
+
+#### Deployment fails — _The include_filter definitions ... use key values that are not disjunct_
+
+|              | Explanation                             |
+|--------------|----------------------------|
+| _Root Cause_ | You have changed from data files like `xxx_texts.csv` to `xxx_texts_de.csv`. |
+| _Solution_   | Add entries in `undeploy.json`. |
+
+
+If you've already deployed your application using translation files _without_ language key like `xxx_texts.csv` and now want to use language-specific translation files like `xxx_texts_de.csv`, you have to **undeploy the existing translation files**.
+
+Add the corresponding file entries, for example
+```json
+[
+  ...
+  "src/gen/data/xxx_texts.hdbtabledata",
+  "src/gen/data/xxx_texts.csv"
+]
+```
+to your _undeploy.json_.
+
+Otherwise, you will get a deployment error similar to this one:
+
+```
+The include_filter definitions in the table import files .../xxx_texts.hdbtabledata
+and .../xxx_texts_de.hdbtabledata use key values that are not disjunct;
+.../xxx_texts.hdbtabledata defines no include_filters which prohibits other imports
+from importing into the same table.
+```
 
 
 ### Why is removed sample _.csv_ deployed and overwriting existing data? { #hana-csv}
@@ -625,6 +693,10 @@ MTX uses **four parallel workers** by default to perform tenant upgrades. If you
 
 4. **Increase the number of MTX sidecars (scale out)**: To compensate for eventual performance losses from **3.**, distribute the work across multiple sidecars.
 
+### How do I get detailed SAP HANA deployment logs
+
+The deployment logs are part of the [application logs](#cflogs-recent). To avoid problems with the logging infrastructure, the default detail level of the deployment logs is limited to logs printed to `stderr`. To get more details, you need to increase the log level by setting the environment variable `DEBUG=deploy`.
+
 ### Why do I get 'Extensions exist, but extensibility is disabled'?
 
 This message indicates that extensions exist, but the application is not configured for extensibility. To avoid accidental data loss from removing existing extensions from the database, the upgrade is blocked.
@@ -638,6 +710,15 @@ This message indicates that extensions exist, but the application is not configu
 See [How to configure your App Router](../guides/extensibility/customization#app-router) to verify your setup.
 
 [Find the documentation on `cds login`](../guides/extensibility/customization#cds-login){.learn-more}
+
+### Why does my subscription fail with "Subaccount verification failed"
+
+When using HANA TMS v2, the message "Subaccount verification failed" indicates that you are trying to create a tenant container for a HANA tenant that was created in a different subaccount.
+
+Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as another application that has been deployed in another subaccount.
+
+See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
+
 
 ## BTP
 
@@ -788,7 +869,7 @@ See the [_Health Checks_](../guides/deploy/health-checks) guide  for the correct
 
 Only if absolutely required and you understand the security implications to your application, you can enable this page in your deployment.
 
-Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexPage) and in
+Learn more about enabling generic index page in [Java](../java/developing-applications/properties#cds-indexpage) and in
 [Node.js](../node.js/cds-server#toggle-generic-index-page).{.learn-more}
 
 ## Kyma / K8s

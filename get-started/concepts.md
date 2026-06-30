@@ -5,26 +5,26 @@ status: released
 # Core Concepts of CAP
 Cloud Scale by Design  {.subtitle}
 
-<!-- 
+<!--
 - Domain-driven Development
 - Service-centric Paradigm
 - Event-driven Runtimes
 - Querying & Pushdown
-- Intrinsic Extensibility 
+- Intrinsic Extensibility
 - The Calesi Pattern
 
 
 Appendix: Common Design Principles
-  - SOLID Principles: 
-    - **S**ingle Responsibility 
-    - **O**pen/Closed 
-    - **L**iskov Substitution 
-    - **I**nterface Segregation 
-    - **D**ependency Inversion 
+  - SOLID Principles:
+    - **S**ingle Responsibility
+    - **O**pen/Closed
+    - **L**iskov Substitution
+    - **I**nterface Segregation
+    - **D**ependency Inversion
   - DRY Principle
   - KISS Principle
-  - YAGNI Principle 
-  
+  - YAGNI Principle
+
   -->
 
 [[toc]]
@@ -43,7 +43,7 @@ The CAP framework features a mix of proven and broadly adopted open-source and S
 The major building blocks are as follows:
 
 - [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
-  
+
 - [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
 
 - [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
@@ -90,16 +90,16 @@ In a first iteration, it would look like this in CDS, with some fields added:
 
 ::: code-group
 ```cds [Domain Data Model]
-entity Authors { 
+entity Authors {
   name   : String;
   books  : Association to many Books;
 }
-entity Books { 
+entity Books {
   title  : String;
   author : Association to Authors;
   genre  : Association to Genres;
 }
-entity Genres { 
+entity Genres {
   name   : String;
   parent : Association to Genres;
 }
@@ -116,7 +116,7 @@ For processing at runtime CDS models are compiled into a *machine-readable* plai
 
 ![cdl-csn.drawio](./assets/concepts/cdl-csn.drawio.svg)
 
-See also *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
+Refer to *[On the Nature of Models](../cds/models)* in the CDS reference docs. {.learn-more}
 
 
 
@@ -441,7 +441,7 @@ All data processed and served by CAP services is *passive*, and represented by *
 
 ### Extensible Data
 
-Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
+Extensibility, in particular in a SaaS context, allows customers to tailor a SaaS application to their needs by adding extension fields. These fields are not known at design time but need to be served by your services, potentially through all interfaces. With CAP's combination of dynamic querying and passive data this is intrinsically covered and extension fields look and feel no different than pre-defined fields.
 
 For example, an extension like that can automatically be served by CAP:
 
@@ -608,24 +608,24 @@ So, in total, and in effect, we learn:
 
 
 
-The *[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
+The *[Hexagonal Architecture](https://en.wikipedia.org/wiki/hexagonal_architecture_(software))* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). He introduced it back then with the following opening statement and illustration:
 
-*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {.indent style="font-family:serif"}
+*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {style="font-family:serif; font-size:115%; padding:0 44px"}
 
-... and he illustrated that like this:
+![Hexagonal Architecture original illustration by Alistair Cockburn](assets/concepts/hexagonal-archritecture-origin.png)
 
-![Hexagonal architecture basic.gif](https://alistair.cockburn.us/hexFig1.png)
-
-In a nutshell, this introduction to the objectives of hexagonal architecture translates to that in our world of cloud-based business applications:
+We can translate that to these objectives in our world of cloud-based business applications:
 
 > [!tip] Objectives of Hexagonal Architecture
 >
 > - Your *Application* (→ the inner hexagon) should stay ***agnostic*** to *"the outside"*
 > - Thereby allowing to replace *"the outside"* met in production by *mocked* variants
 > - To reduce complexity and speed up turnaround times at *development*, and in *tests*
->   <br/>→ [*'Airplane Mode' Development & Tests*](features#fast-inner-loops)
 >
-> **In contrast to that**, if you (think you) are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
+> -> See also: [*Inner-Loop Development & Tests*](features#fast-inner-loops)
+>
+
+In contrast to that, if (you think) you are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
 
 
 
@@ -756,7 +756,7 @@ The *DatabaseService* subclasses provide implementations for the different datab
 
 
 
-SaaS customers of CAP applications use the very same techniques than any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
+SaaS customers of CAP applications use the very same techniques as any developer can use to adapt given models or service implementations to their needs. That applies to both, models and service implementations.
 
 ### Extending Models
 

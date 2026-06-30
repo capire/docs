@@ -10,9 +10,8 @@ Schema evolution is the capability of a database to adapt its schema (tables, co
 
 During development, schema evolution is typically handled using a "drop-create" strategy, where you drop and recreate the existing databases or schemas based on the current CDS model. This approach is simple and effective, and most suitable for development phases, as it:
 
-- Allows you to quickly iterate on your data models
-- Makes incompatible changes the standard, such as:
-  - Adding, removing, or renaming entities and fields
+- It allows you to quickly iterate on your data models.
+- It makes incompatible changes the standard, such as adding, removing, or renaming entities and fields.
 
 You can see this in action when you run `cds deploy`, which generates the necessary SQL statements to drop existing tables and recreate them or new ones according to the current CDS definitions:
 
@@ -194,5 +193,9 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 ## Liquibase for Java Projects
 
 For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how you deploy database changes. 
+
+::: tip Liquibase license change
+Please be aware that Liquibase [changed its license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
+:::
 
 Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).

@@ -94,7 +94,7 @@ The compiler translates this operator to the best-possible equivalent in the tar
 ## Standard Functions
 ###### Portable Functions
 
-The following sections list standardized string, numeric, date/time, and aggregate functions supported by CAP, and guaranteed to work across all supported databases with feature parity. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler translates them to the best-possible database-specific native SQL equivalents.
+The following sections list standardized string, numeric, date/time, and aggregate functions supported by CAP, and guaranteed to work across all supported databases with feature parity. You can safely use these in CDS view definitions and runtime queries expressed in CQL. The compiler, and the CAP runtimes, translate them to the best-possible database-specific native SQL equivalents.
 
 > [!important] Function names are case-sensitive
 > The names for standardized functions must be written exactly as listed below. For example, `toUpper` is invalid, while `toupper` is valid. Differently cased names might also work if they match native functions of the specific database, but are not guaranteed to be portable -> always use the exact casing as listed.
@@ -154,10 +154,6 @@ SELECT firstName || ' ' || lastName as fullName from Authors;
 - `months_between(x,y)` -> number
 - `days_between(x,y)` -> number
 - `seconds_between(x,y)` -> number
-
-> [!note] CAP Java support coming soon...
-> The above date / time functions are currently only supported by CAP Node.js. \
-> Support for CAP Java is planned for a future release.
 
 
 ### Aggregate Functions

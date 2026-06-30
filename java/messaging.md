@@ -85,10 +85,10 @@ As shown in the example, there are two flavors of sending messages with the mess
 In section [CDS-Declared Events](#cds-declared-events), we show how to declare events in CDS models and by this let CAP generate EventContext interfaces especially tailored for the defined payload, that allows type safe access to the payload.
 
 ::: tip Using an outbox
-The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
+The messages are sent once the transaction is successful. By default, an in-memory outbox is used, but there's also support for a [persistent outbox](./event-queues#default-outbox-services).
 
-You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/events/messaging#using-multiple-channels).
+You can configure a [custom outbox](./event-queues#custom-outbox-services) for a messaging service by setting the property
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This is especially useful when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
@@ -116,7 +116,7 @@ As you can see in the example, the event context not only provides access to the
 For messaging services, the `@On` handlers don't need to be completed by the `context.setCompleted()` method. The reason for that is because CAP wants to support the parallel handling of the messaging events and completes the context automatically. There could be numerous use cases where different components of the CAP application want to be notified by messaging events. Even more, you should not complete the context in the handler manually. Otherwise, not all registered handlers can be notified.
 :::
 
-::: warning 
+::: warning
 If any exceptions occur in the handler, the messaging service will not acknowledge the message as successfully processed to the broker. In consequence, the broker will deliver this message again.
 :::
 
@@ -511,7 +511,13 @@ cds:
 ```
 :::
 
-To use such a configuration, you need to use the composite messaging service for message handling. You can get hold of an instance of such a service in your code, by using the qualifier `MessagingService.COMPOSITE_NAME` when autowiring the messaging service – as shown in the following example:
+To use such a configuration, you need to use the composite messaging service for message handling. In the route definitions, you can use glob patterns to match topics:
+
+- **`**`** for any number of any character
+- **`*`** for any number of any character except `/`
+- **`.`**, **`?`** for a single character.
+
+When autowiring the messaging service, you can use the qualifier `MessagingService.COMPOSITE_NAME` to get an instance of the service:
 
 ```java
 @Autowired
@@ -760,7 +766,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-::: warning 
+::: warning
 The way how unsuccessfully delivered messages are treated, fully depends on the messaging broker. Please check in section [Acknowledgement Support](#acknowledgement-support)  whether the messaging broker you are using is suitable for your error handler implementation.
 :::
 

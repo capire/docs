@@ -8,8 +8,11 @@ CAP applications integrate at multiple levels — from reusing services and data
 [CAP-level Service Integration](calesi.md)
 : Learn how to consume and expose services using CAP's built-in service integration features (Calesi), enabling seamless communication between services at the framework level.
 
-[CAP-level Data Federation](data-federation.md) <!-- UNRELEASED -->
-: On top of CAP-level service integration, CAP provides advanced data federation capabilities out-of-the-box, including service-level replication, HANA virtual tables, synonyms, and SAP data products. <!-- UNRELEASED -->
+[CAP-level Data Federation](data-federation.md)
+: On top of CAP-level service integration, CAP provides advanced data federation capabilities out-of-the-box, including service-level replication, HANA virtual tables, synonyms, and SAP data products.
+
+[Inner Loop Development](inner-loops.md)
+: Decouple parallel development across distributed teams by swapping production-grade services with local mocks during development. In the context of application service integration, mock imported APIs of remote services in consuming applications.
 
 [Reuse and Compose](reuse-and-compose)
 : Explore in this guide how to reuse and compose enhanced solutions by reusing modular services from other projects, and adapt them to your needs with solution-specific projections and extensions.

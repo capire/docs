@@ -289,7 +289,7 @@ With `cds bind` you avoid storing credentials on your hard disk. If you need to 
 For example, you can run the App Router from an `approuter` child directory:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 cds bind --exec -- npm start --prefix approuter
 ```
 ```cmd [Windows]
@@ -303,7 +303,7 @@ cds bind --exec '--' npm start --prefix approuter
 This works by constructing a `VCAP_SERVICES` environment variable. You can output the content of this variable as follows:
 
 ::: code-group
-```sh [Mac/Linux]
+```sh [macOS/Linux]
 cds bind --exec -- node -e 'console.log(process.env.VCAP_SERVICES)'
 ```
 ```cmd [Windows]
@@ -506,9 +506,10 @@ Most of the following use cases are shown for Node.js, but can be easily adapted
 
 Learn how to [connect to remote services locally](../guides/services/consuming-services#connect-to-remote-services-locally) using SAP BTP destinations.
 
-### Authentication and Authorization using XSUAA
+### Authentication and Authorization
 
-Learn how to do hybrid testing using the XSUAA service in the [CAP Node.js authentication documentation](../node.js/authentication#xsuaa-setup).
+Learn how to do hybrid testing using the XSUAA or IAS + AMS service(s) in the [CAP Node.js authentication documentation](../node.js/authentication#hybrid-setup).
+
 ### Integration Tests
 
 `cds bind` can be handy for testing with real cloud services in your CI/CD pipeline.

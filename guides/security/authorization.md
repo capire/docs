@@ -2,6 +2,7 @@
 synopsis: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
+impl-variants: true
 ---
 
 <script setup>
@@ -95,7 +96,7 @@ service SomeService {
 
 #### Events to Auto-Exposed Entities { #events-and-auto-expose}
 
-In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](../../cds/cdl#auto-exposed-entities) by the CDS compiler for some reason.
+In general, entities can be exposed in services in different ways: they can be **explicitly exposed** by the modeler (for example, by a projection), or they can be [**auto-exposed**](../../cds/cdl#auto-exposed-entities) by the CDS compiler in certain circumstances.
 Access to auto-exposed entities needs to be controlled in a specific way. Consider the following example:
 
 ```cds
@@ -204,7 +205,7 @@ The following values are supported:
 
 - The `to` property lists all [user roles](cap-users#roles) or [pseudo roles](cap-users#pseudo-roles) that the privilege applies to. Note that the `any` pseudo-role applies for all users and is the default if no value is provided.
 
-- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based authorization](#instance-based-auth).
+- The `where`-clause can contain a Boolean expression in [CQL](../../cds/cql)-syntax that filters the instances that the event applies to. As it allows user values (name, attributes, etc.) and entity data as input, it's suitable for *dynamic authorizations based on the business domain*. Supported expressions and typical use cases are presented in [instance-based access control](#instance-based-auth).
 
 A privilege is met, if and only if **all properties are fulfilled** for the current request. In the following example, orders can only be read by an `Auditor` who meets `AuditBy` element of the instance:
 
@@ -244,7 +245,7 @@ entity Orders @(restrict: [
   ]) {/*...*/}
 ```
 
-Here an `Auditor` user can read all orders with matching `country` or that they have created.
+Here, users can read and write orders they've created, and `Auditor` users can read all orders with matching `country`.
 
 > Annotations such as @requires or @readonly are just convenience shortcuts for @restrict, for example:
    - `@requires: 'Viewer'` is equivalent to `@restrict: [{grant:'*', to: 'Viewer'}]`

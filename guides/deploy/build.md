@@ -25,7 +25,7 @@ Build tasks are derived from the CDS configuration and project context. By defau
 - _db/_, _srv/_, _app/_ — default root folders of a CAP project
 - _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles)
 - CDS model folders and files defined by [required services](../../node.js/cds-env#services)
-  - Built-in examples: [persistent queue](../../node.js/queue#persistent-queue) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
+  - Built-in examples: [Event Queues](../../node.js/event-queues#configuration) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
 - Explicit `src` folder configured in the build task
 
 
@@ -52,7 +52,7 @@ cds.build?.register?.('my-plugin',
 
 If custom build tasks are configured, those properties have precedence.
 
-For example, you want to configure the _src_ folder and add the default models. To achieve this, do not define the _model_ option in your build task:
+For example, you want to configure the _src_ folder and add the default models. To achieve this, **do not define the _model_ option in your build task**:
 
 ::: code-group
 ```jsonc [package.json]

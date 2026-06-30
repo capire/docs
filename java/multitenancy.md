@@ -272,7 +272,7 @@ To run the command manually or automated, you can for example use [Cloud Foundry
 To trigger it as part of a Cloud Foundry Task, login to the Cloud Foundry landscape using the Cloud Foundry command line client and execute:
 
 ```sh
-cf run-task <application_name> "<command>"
+cf run-task <application_name> --command "<command>"
 ```
 
 `<application_name>` needs to be replaced with the name of a Cloud Foundry application, typically the <i>srv</i> module of your CAP project. You can find the name for example in the section `modules` in your `mta.yaml`. `<command>` represents the adapted start command. The output of the command will be logged to the application logs of the application you have specified in `<application_name>`.
@@ -406,7 +406,7 @@ The logs can be inspected in the corresponding front ends such as `Kibana`, `Clo
 
 A number of multitenancy settings can be configured through application configuration properties.
 See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details.
-All properties can be found in the [properties overview](./developing-applications/properties#cds-multiTenancy).
+All properties can be found in the [properties overview](./developing-applications/properties#cds-multitenancy).
 The prefix for multitenancy-related settings is `cds.multitenancy`.
 
 <span id="aftermtxpropertis" />

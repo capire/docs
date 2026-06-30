@@ -54,19 +54,25 @@
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
-      <em>app-frontend</em>                 - SAP BTP AppFront service
+      <em>app-frontend</em>                 - SAP BTP Application Frontend service
       <em>portal</em>                       - SAP BTP Portal Service
       <em>application-logging</em>          - SAP BTP Application Logging Service
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
       <em>ui5</em>                          - SAP UI5 integration
+      <em>vue</em>                          - user interface for Vue.js
+      <em>react</em>                        - user interface for React
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
       <em>pipeline</em>                     - CI/CD pipeline via Jenkins (Piper)
       <em>github-actions</em>               - CI/CD pipeline via GitHub Actions
       <em>console</em>                      - installs the CAP console plugin
+
+    <em>--nodejs</em>
+
+        Create a CAP Node.js project.
 
     <em>--java</em>
 
@@ -84,6 +90,7 @@
 
 <strong>EXAMPLES</strong>
     <em>cds init</em> bookshop
+    <em>cds init</em> bookshop --nodejs
     <em>cds init</em> bookshop --java
     <em>cds init</em> bookshop --add hana
     <em>cds init</em> bookshop --add multitenancy,mta

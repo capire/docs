@@ -10,6 +10,8 @@
     Pick any of these:
 
       <em>completion</em>                   - shell completion for cds commands
+      <em>java</em>                         - creates a Java-based project
+      <em>nodejs</em>                       - creates a Node.js-based project
       <em>esm</em>                          - ESM-compatible Node.js project
       <em>typer</em>                        - type generation for CDS models
       <em>typescript</em>                   - minimum configuration for a bare TypeScript project
@@ -47,13 +49,15 @@
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
-      <em>app-frontend</em>                 - SAP BTP AppFront service
+      <em>app-frontend</em>                 - SAP BTP Application Frontend service
       <em>portal</em>                       - SAP BTP Portal Service
       <em>application-logging</em>          - SAP BTP Application Logging Service
       <em>audit-logging</em>                - SAP BTP Audit Logging Service
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
       <em>ui5</em>                          - SAP UI5 integration
+      <em>vue</em>                          - user interface for Vue.js
+      <em>react</em>                        - user interface for React
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
@@ -70,9 +74,9 @@
 
       Overwrite all files in case the target files already exist.
 
-    <em>--package</em> &lt;name&gt;
+    <em>--package | -p</em> &lt;name&gt;
 
-      Pull a package from your npm registry.
+      Pull a package from your configured npm registry.
 
 
 <strong>FEATURE OPTIONS</strong>
@@ -189,9 +193,16 @@
 
     <em>cds add kyma</em>
 
+      --y
+
+        Skip interactive prompts.
 
 
+    <em>cds add react</em>
 
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
 
 
     <em>cds add test</em>
@@ -205,6 +216,13 @@
       --out | -o
 
         Custom output directory. For Node.js, the default is 'test'.
+
+
+    <em>cds add vue</em>
+
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
 
 
     <em>cds add xsuaa</em>

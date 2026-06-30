@@ -2,6 +2,11 @@
 status: released
 ---
 
+<script setup>
+import { useData } from 'vitepress'
+const { versions } = useData().theme.value.capire
+</script>
+
 # CAP Plugins & Enhancements
 
 Following is a curated list of plugins that are available for the SAP Cloud Application Programming Model (CAP) which provide integration with SAP BTP services and technologies, or other SAP products.
@@ -164,7 +169,7 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database. 
+The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database.
 
 For Java, use the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments). For Node.js, this is supported by the standard plugin.
 
@@ -222,7 +227,6 @@ Features:
 - **Automated Malware Scanning for Uploaded Files**: Enhance security by automatically scanning all uploaded files for malware, ensuring the integrity and safety of your data.
 - **Automatic Fiori Annotations for Upload Controls**: Streamlined user interactions with automatic SAP Fiori annotations that enhance upload controls, providing a more intuitive and seamless user experience.
 - **Support for SAP Document Management Service-Hosted Cloud Repository**: Leverage the robust capabilities of the SAP Document Management service-hosted cloud repository to store and manage your documents efficiently.
-- **Support for Third-Party CMIS-Compliant Repositories**: Integrate with third-party repositories that adhere to the Content Management Interoperability Services (CMIS) standard, offering flexibility and compatibility with various document management systems.
 - **Intrinsic Multitenancy Handling**: Benefit from built-in multitenancy support, allowing for efficient management of multiple tenants without additional configuration.
 - **Automated Onboarding and Offboarding of Repositories**: Simplify repository management with automated repository provisioning upon subscription and seamless repository removal upon unsubscription.
 
@@ -268,6 +272,20 @@ Available for:
 ![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}
 
 Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging.md) and in [Java](../java/auditlog) {.learn-more}
+
+
+## Data Privacy <Beta />
+
+The Node.js plugin `@cap-js/data-privacy` provides out-of-the-box integration for CAP applications with the [SAP Data Privacy Integration (DPI)](https://help.sap.com/docs/data-privacy-integration) service.
+
+Based on `@PersonalData` and `@ILM` annotations in your data model, the plugin automatically exposes two endpoints that SAP DPI consumes:
+
+- **`/dpp/information`** — returns personal data for display in the _Manage Personal Data_ app
+- **`/dpp/retention`** — handles data blocking and deletion based on retention rules defined in SAP DPI
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy#readme)
 
 
 ## Change Tracking
@@ -419,3 +437,36 @@ Available for:
 <div id="upcoming-plugins" />
 
 <div id="planned-plugins" />
+
+
+## Data Inspector {#data-inspector}
+
+The Node.js plugin `@cap-js/data-inspector` allows you to inspect data from database entities and service definitions in a CAP application in local and production environments. Inspection occurs at the CAP service level. This means all built-in authentication, authorization, and audit logging mechanisms are automatically respected.
+
+Features:
+
+- Seamless integration as a CAP plugin
+- Built on SAP standard reuse UI components
+- Authorization controls with comprehensive audit logging
+- Simple configuration optimized for productivity
+
+Available for:
+
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-inspector#readme)
+
+## AI
+
+The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1. It automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
+
+AI-powered recommendations are then added to your Fiori UIs as shown below.
+
+![Screenshot showing the Recommendations](assets/index/recommendations.png)
+
+Additionally, the AI Plugin embeds SAP AI Core as a standard CAP service following the Calesi pattern, giving you automatic service binding resolution along with tenant-aware access including managed resource groups and deployments.
+
+The Java version of this plugin is currently in alpha.
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
+[![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)

@@ -15,19 +15,19 @@ CAP application developers [focus on their domain](../../get-started/features#fo
 
 The illustration below shows what happens automatically under the hood:
 
-- CDS models are compiled to database-native SQL/DDL 
-- which are deployed to the configured database, and
-- initial data from CSV files is loaded into the database tables
+- CDS models are compiled to database-native SQL/DDL statements.
+- These statements are deployed to the configured database.
+- Initial data from CSV files is loaded into the database tables.
 - CQL queries from CAP services are served automatically.
 
 ![Architecture diagram showing CAP database integration flow. Initial data in CSV files and CDS models in CDL and CQL format are compiled to native SQL and DDL statements, which are then deployed to a database. CAP Services query the database using CQL. Four database types are shown as supported options: SAP HANA, SQLite, H2, and PostgreSQL, all connecting to the central database component.](assets/overview.drawio.svg)
 
 > [!tip] Following the Calesi Pattern
-> The implementations of the CAP database layers follow the design principles of CAP-level Service Integration:
-> - Database Services are CAP services themselves, which...
-> - provide database-agnostic interfaces to applications
-> - provide mocks for local development out of the box
-> - can be extended through event handlers, as any other CAP service
+> The implementations of the CAP database layers follow the design principles of CAP-level Service Integration which means the following for database services:
+> - They are CAP services themselves.
+> - Provide database-agnostic interfaces to applications.
+> - Provide mocks for local development out of the box.
+> - Can be extended through event handlers, as any other CAP service.
 
 > [!tip] Promoting Fast Inner-Loop Development
 > Through the ability to easily swap production-grade databases like SAP HANA with SQLite or H2 in-memory databases during development, without any changes to CDS models nor implementations, we greatly promote inner-loop development with fast turnaround cycles, as well as speeding up test pipelines and minimizing TCD.
