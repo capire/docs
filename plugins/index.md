@@ -327,7 +327,9 @@ event IncidentCreated {
   title    : String;
   customer : String;
 }
+```
 
+```js
 this.on('CREATE', 'Incidents', async req => {
   await this.emit('IncidentCreated', {
     title:      req.data.title,
