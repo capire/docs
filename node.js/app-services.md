@@ -168,7 +168,7 @@ When CAP's generic handlers run a CRUD operation, the result follows a consisten
 | `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); populated with rows from a `RETURNING` clause          |
 | `DELETE`              | Array with `.affected` (rows deleted); populated with rows from a `RETURNING` clause          |
 
-For `INSERT`s, the result is a lazy array: iterating it (`[...result]`, `for…of`, `JSON.stringify`) materializes the inserted rows' generated primary keys in place. Direct index access works after the first iteration.
+For `INSERT`s, the result is a lazy array: iterating it (`[...result]`, `for…of`, `JSON.stringify`) materializes the generated primary keys of the inserted rows. Direct index access works after the first iteration.
 
 ```js
 const inserted = await srv.create(Books).entries({title:'Catweazle'})
