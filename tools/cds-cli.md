@@ -121,7 +121,7 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 | `cf-manifest`                 |       <X/>       |       <X/>       |
 | `helm`                        |       <X/>       |       <X/>       |
 | `containerize`                |       <X/>       |       <X/>       |
-| `kyma`                        |                |                |  
+| `kyma`                        |         <X/>       |       <X/>          |  
 | `multitenancy`                |       <X/>       |       <X/>       |
 | `toggles`                     |       <X/>       |       <X/>       |
 | `extensibility`               |       <X/>       |       <X/>       |
