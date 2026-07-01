@@ -324,12 +324,15 @@ The Notifications plugin provides support for publishing business notifications 
   }
 }
 event IncidentCreated {
-  title    : String;
-  customer : String;
+  title      : String;
+  customer   : String;
+  recipients : String;
 }
 ```
 
-```js
+::: code-group
+
+```js [Node.js]
 this.on('CREATE', 'Incidents', async req => {
   await this.emit('IncidentCreated', {
     title:      req.data.title,
@@ -339,12 +342,51 @@ this.on('CREATE', 'Incidents', async req => {
 })
 ```
 
+```java [Java]
+@Autowired
+private NotificationService notificationService;
+
+@After(event = CqnService.EVENT_CREATE, entity = Incidents_.CDS_NAME)
+public void afterIncidentCreated(Incidents incident) {
+    IncidentCreated data = IncidentCreated.create();
+    data.setTitle(incident.getTitle());
+    data.setCustomer(incident.getCustomer());
+    data.setRecipients("supporter@example.com");
+
+    IncidentCreatedContext ctx = IncidentCreatedContext.create();
+    ctx.setData(data);
+    notificationService.emit(ctx);
+}
+```
+
+:::
+
+Alternatively, for Java you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
+
+```cds [Java]
+service IncidentService {
+    @notifications : [{
+        type       : 'IncidentCreated',
+        on         : ['CREATE'],
+        recipients : $self.createdBy,
+        parameters : {
+            title    : $self.title,
+            customer : $self.customer
+        }
+    }]
+    entity Incidents as projection on my.Incidents;
+}
+```
+
 Features:
 
 - CAP service-based API — simple, backend-agnostic
-- Notification types defined via CDS @notification annotations or JSON
+- Notification types defined via CDS @notification annotations
+- Notification types defined via JSON (Node.js only)
 - Auto-emit: annotated CDS events are forwarded to ANS automatically
 - Email delivery via configurable delivery channels
+- Email HTML templates for rich email notifications
+- Batch notifications — emit multiple notifications in a single call
 - i18n support and dynamic priority for notification types
 - Console logging in development — no external service needed
 - Transactional outbox — maximised scalability and resilience
@@ -354,6 +396,7 @@ Features:
 Available for:
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme)
 
 
 ## Telemetry
