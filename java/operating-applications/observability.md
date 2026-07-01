@@ -664,7 +664,7 @@ CAP Java SDK plugs a CDS-specific actuator `cds`. This actuator provides informa
 - The version and commit ID of the currently used `cds-services` library
 - All services registered in the service catalog
 - Security configuration (authentication type and so on)
-- Loaded features such as `cds-feature-xsuaa`
+- Loaded features such as `cds-feature-identity`
 - Database pool statistics (requires `registerMbeans: true` in [Hikari pool configuration](../cqn-services/persistence-services#datasource-configuration))
 
 
