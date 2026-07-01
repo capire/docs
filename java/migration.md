@@ -61,7 +61,7 @@ The following table lists the individual recipes provided by CAP for APIs that h
 |[c.s.c.s.m.MigrateStatements](../releases/2025/aug25#typed-query-results)|Migrates CQN statements to comply with typed Query API changes in 4.3.0.|4.3.0|
 
 
-## CAP Java 4.9 to CAP Java 5.0 (TBA) { #four-to-five }
+## CAP Java 4.9 to CAP Java 5.0  { #four-to-five }
 
 ### Spring Boot 4
 
