@@ -287,7 +287,7 @@ In essence, the draft choreography defines the following flows:
 - Filling in draft data through a series of _PATCH_ events.
 - **Saving** the draft back to the active entity, or **discarding** it.
 
-Drafts are isolated from any active data until they are saved/activated. When drafts are discarded, they are removed as if they never existed – with draft locks as the only exception to prevent conflicting changes.
+Drafts are isolated from any active data until they're saved/activated. When drafts are discarded, they're removed as if they never existed. Draft locks serve as the mechanism to prevent conflicting changes.
 
 
 ### Draft Locks
@@ -359,10 +359,11 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 > Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
 > If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
 
+
 > [!warning] Ensure validation for all entry points
 > Requests to active data also features partial CREATE/UPDATE requests to the root entity and its composition children. Ensure that the validations and determinations are run in all situations, not only on the root.
 
-#### Draft-agnostic Requests
+#### Draft-agnostic Requests (CAP Node.js)
 
 Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
 
@@ -395,11 +396,19 @@ You can also access draft data programmatically from custom code in JavaScript o
 In CAP Java, add `IsActiveEntity` as a key parameter to your queries ([learn more](../../java/fiori-drafts#draftservices)):
 
 ```java {3}
-Select.from(FOO).where(o -> o.ID().eq(201);       //> reads active data
-Select.from(FOO).where(o -> o.ID().eq(201) .and( //> reads draft data
-  o.IsActiveEntity().eq(false))
-);
+Select.from(FOO).where(o -> o.ID().eq(201).and( 
+                            o.IsActiveEntity().eq(true)));  //> reads active version
+Select.from(FOO).where(o -> o.ID().eq(201).and( 
+                            o.IsActiveEntity().eq(false))); //> reads draft
 ```
+
+Alternatively you can define a filtered structured type `activeFoos`, which gives you access to active versions only and then just work with `activeFoos`:
+
+```java
+Foo_ activeFoos = CQL.entity(FOO).filter(f -> f.isActiveEntity().eq(true)); //> active versions only
+Select.from(activeFoos).byId(201); //> reads active version
+```
+
 
 In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#drafts) references to access draft data:
 
@@ -414,6 +423,15 @@ Even better, use [`req.subject`](../../node.js/events#subject), which automatica
 ```js
 this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
 this.on ('rejectTravel', req => UPDATE (req.subject) .with ({ status: 'X' }))
+```
+
+In CAP Java, use an [entity reference](../../java/event-handlers/#entity-reference-arguments) in your handler's method signature which captures the `IsActiveEntity` key component so that you don't have to specify it in your code:
+
+```java
+@On(event = TravelService.APPROVE)
+public void approveTravel(Travels_ ref) {
+  db.run(Update.entity(ref).set("status", "A"));
+}
 ```
 
 
