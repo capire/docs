@@ -6,5 +6,7 @@ requires.db.credentials.url = <em>':memory:'</em>
 requires.db.data = [ <em>'db/data'</em>, <em>'db/csv'</em>, <em>'test/data'</em> ]
 requires.db.impl = <em>'@cap-js/sqlite'</em>
 requires.db.kind = <em>'sqlite'</em>
+requires.db.pool.evictionRunIntervalMillis = <em>0</em>
 requires.db.pool.max = <em>1</em>
+requires.db.pool.min = <em>1</em>
 </pre>
