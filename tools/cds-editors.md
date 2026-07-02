@@ -463,7 +463,9 @@ entity Books {};
 
 ## CAP Project Explorer
 
-CAP Project Explorer is a new sidebar view for exploring your CAP projects directly within VS Code. It gives you access to your project's structure and symbols. To get started, just select the CAP Project Explorer icon in the *VS Code activity bar* (left sidebar).
+CAP Project Explorer is a sidebar view for exploring your CAP projects directly within VS Code. It gives you access to your project's structure and symbols. To get started, just select the CAP Project Explorer icon in the *VS Code activity bar* (left sidebar).
+
+![CAP Project Explorer sidebar view showing a structured tree of CDS artifacts](./assets/vscode/project-explorer.png){.ignore-dark width="300px"}
 
 ##### Getting Started
 
@@ -476,11 +478,7 @@ CAP Project Explorer is a new sidebar view for exploring your CAP projects direc
 
 You can configure the CAP Project Explorer in your VS Code settings:
 
-- `cds.explorer.enabled`: controls whether the CAP Project Explorer is active (default: `true`)
-
-The following image shows the [`cds.explorer.enabled`](vscode://settings/cds.explorer.enabled) setting in VS Code.
-
-![VS Code settings panel showing the cds.explorer.enabled toggle](./assets/vscode/project-explorer-enable.png){.ignore-dark}
+- [`cds.explorer.enabled`](vscode://settings/cds.explorer.enabled): controls whether the CAP Project Explorer is active (default: `true`)
 
 **Note:** A window reload is required after changing the `enabled` setting.
 
