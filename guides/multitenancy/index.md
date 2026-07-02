@@ -48,7 +48,7 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
   ```jsonc
   {
     "dependencies": {
-        "@sap/cds-mtxs": "^3"
+        "@sap/cds-mtxs": "^4"
     },
   }
   ```
@@ -77,9 +77,9 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
   {
     "name": "bookshop-mtx",
     "dependencies": {
-      "@cap-js/hana": "^2",
-      "@sap/cds": "^9",
-      "@sap/cds-mtxs": "^3",
+      "@cap-js/hana": "^3",
+      "@sap/cds": "^10",
+      "@sap/cds-mtxs": "^4",
       "@sap/xssec": "^4",
       "express": "^4"
     },
@@ -87,7 +87,7 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
       "@cap-js/sqlite": "^2"
     },
     "engines": {
-      "node": ">=20"
+      "node": ">=24"
     },
     "scripts": {
       "start": "cds-serve"
@@ -158,16 +158,16 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
       {
         "name": "bookshop-mtx",
         "dependencies": {
-          "@cap-js/hana": "^2",
-          "@sap/cds": "^9",
-          "@sap/cds-mtxs": "^3",
+          "@cap-js/hana": "^3",
+          "@sap/cds": "^10",
+          "@sap/cds-mtxs": "^4",
           "@sap/xssec": "^4"
         },
         "devDependencies": {
           "@cap-js/sqlite": "^2"
         },
         "engines": {
-          "node": ">=20"
+          "node": ">=24"
         },
         "scripts": {
           "start": "cds-serve",

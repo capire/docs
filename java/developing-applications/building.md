@@ -145,7 +145,7 @@ It basically helps to control the dependency versions of the artifacts and shoul
 
 ```xml
 <properties>
-	<cds.services.version>2.6.0</cds.services.version>
+	<cds.services.version>5.0.0</cds.services.version>
 </properties>
 
 <dependencyManagement>
