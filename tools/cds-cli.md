@@ -121,7 +121,7 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 | `cf-manifest`                 |       <X/>       |       <X/>       |
 | `helm`                        |       <X/>       |       <X/>       |
 | `containerize`                |       <X/>       |       <X/>       |
-| `kyma`                        |         <X/>       |       <X/>          |  
+| `kyma`                        |         <X/>       |       <X/>          |
 | `multitenancy`                |       <X/>       |       <X/>       |
 | `toggles`                     |       <X/>       |       <X/>       |
 | `extensibility`               |       <X/>       |       <X/>       |
@@ -771,7 +771,7 @@ For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
 
-## cds upgrade
+<!-- ## cds upgrade
 
 `cds upgrade` scans your project for breaking changes in a new CDS major version and reports exactly where you are affected.
 
@@ -879,4 +879,4 @@ You can also pass the report to an AI coding agent to interpret findings in cont
 ### Related
 
 - [Migration Guide for CDS 10](/releases/migration/cds10) — complete list of breaking changes
-- [Java Migration Guide](/java/migration) — migration steps for CAP Java projects
+- [Java Migration Guide](/java/migration) — migration steps for CAP Java projects -->
