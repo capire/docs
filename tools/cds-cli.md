@@ -771,7 +771,7 @@ For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
 
-## cds upgrade <Internal/>
+## cds upgrade <Beta/>
 
 Use `cds upgrade` to assist you in upgrading your project to new/latest CDS versions.
 Run it like that in your project's root directory with a globally installed `@sap/cds-dk` version 10:
