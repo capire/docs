@@ -6,6 +6,7 @@
 
 node.js/ @smahati @renejeglinsky @danjoa
 java/    @smahati @renejeglinsky @danjoa
+tools/   @chgeo @swaldmann @renejeglinsky
 
 # Infra
 .github/    @chgeo @swaldmann
