@@ -185,7 +185,8 @@ If your project uses Lombok, you must explicitly add its annotation processor to
 [Learn more about the change in the Java compiler.](https://bugs.java.com/bugdatabase/JDK-8321314/description){.learn-more}
 
 ::: warning
-The `cds-services-archetype` and therefore also `cds init --java` is not working with JDK 26, because of an incompatibility of the generic `maven-archetype-plugin`. For project creation use JDK 21 or 25 to avoid creation issues.
+The `cds-services-archetype` and therefore also `cds init --java` is not working with JDK 26, because of an incompatibility of the generic `maven-archetype-plugin` with that Java version. For project creation use JDK 21 or 25 to avoid creation issues.
+Using Homebrew on MacOS to install latest Maven version, will cause also the installation of a JDK 26. Ensure that the environment variable JAVA_HOME points to a JDK 21 or 25.
 :::
 
 ### Removed Repackaged Olingo Dependencies { #removed-olingo-4-to-5 }
