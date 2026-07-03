@@ -71,7 +71,7 @@ Add this to the *srv/pom.xml*:
 </dependencies>
 ```
 
-Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](/@external/java/getting-started.md#local).
+Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
 
 
@@ -138,7 +138,7 @@ using { AdminService } from './admin-service';
 :::
 
 
-> => See also: [_Use Case-Oriented Services_](/@external/get-started/bookshop#use-case-specific-services) in the getting started guide.
+> => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
 
 
 
@@ -146,7 +146,7 @@ using { AdminService } from './admin-service';
 
 As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#tool-describe) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
-- [Doc comments](/@external/cds/cdl#doc-comments) -> most recommended (Node.js only)
+- [Doc comments](../../cds/cdl#doc-comments) -> most recommended (Node.js only)
 - `@title`
 - `@description`
 
@@ -431,19 +431,19 @@ The adapter creates an MCP server per CAP service, hence each CAP application ca
 This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 #### Tool: `query`
-This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](/@external/cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
+This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
 
 Parameters of `query` requests:
 
 | Parameter | Description                                                                                                  |
 |-----------|--------------------------------------------------------------------------------------------------------------|
-| select    | Array of [`expr`](/@external/cds/cqn#expr) objects or `strings` ; allows path expressions along associations. |
+| select    | Array of [`expr`](../../cds/cqn#expr) objects or `strings` ; allows path expressions along associations. |
 | entity    | The entity to query (enum values from `describe`)                                                            |
-| where     | Array of [`xpr`](/@external/cds/cqn#where) objects used as predicates used for filtering                     |
+| where     | Array of [`xpr`](../../cds/cqn#where) objects used as predicates used for filtering                     |
 | limit     | An integer limiting the results to return                                                                    |
 | one       | Return a single record instead of an array. Implies `limit:1`; default: `false`                              |
 | distinct  | Return only unique rows; default: `false` (Node.js only)                                                     |
-| groupBy   | An array of [`ref`](/@external/cds/cqn#ref) objects or `strings` to group results.                           |
+| groupBy   | An array of [`ref`](../../cds/cqn#ref) objects or `strings` to group results.                           |
 | orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
 
 
@@ -475,7 +475,7 @@ The inspector should automatically open in your browser.
 
 ### Query and Actions Only
 
-The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](/@external/cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
+The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
 
 For example, action `submitOrder` in the `CatalogService` ultimately creates an Order:
 
