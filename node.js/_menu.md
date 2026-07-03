@@ -39,7 +39,6 @@
   ## [Class cds. Event](events#cds-event)
   ## [Class cds. Request](events#cds-request)
   ## [Error Handling](events#req-reject)
-  ## [Event Queues](queue)
 
 # [cds. Queries](cds-ql)
 
@@ -55,12 +54,13 @@
 # [cds. env](cds-env)
 # [cds. utils](cds-utils)
 
+# [Event Queues](event-queues)
 # [Serving Fiori UIs](fiori)
 # [Transactions](cds-tx)
 # [Security](authentication)
 # [Plugins](cds-plugins)
 # [Testing](cds-test)
+# [Streaming](streaming)
 # [TypeScript](typescript)
 # [Best Practices](best-practices)
 # [Integrate with UCL](../../node.js/ucl) <!-- INTERNAL -->
-# [Upgrading @sap/cds](../../node.js/upgrading)

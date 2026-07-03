@@ -88,6 +88,7 @@ this.on ('*', req => {
 ```
 
 Keep in mind that multiple requests (that is, instances of `cds.Request`) may share the same incoming HTTP request and outgoing HTTP response (for example, in case of an OData batch request).
+See sections [`req`](#req) and [`res`](#res) of `cds.Request` to learn more about accessing the request and response objects of individual requests within an incoming batch request.
 
 
 
@@ -251,6 +252,18 @@ Class `cds.Request` extends [`cds.Event`] with additional features to represent 
 
 
 
+### . req {.property}
+
+Provides access to the express request object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same request object as [`req.http.req`](#http).
+
+
+
+### . res {.property}
+
+Provides access to the express response object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same response object as [`req.http.res`](#http).
+
+
+
 ### . method {.property}
 
 The HTTP method of the incoming request:
@@ -348,7 +361,10 @@ For bound custom operations, `req.query` contains the query to the entity on whi
 ### . subject {.property}
 
 Acts as a pointer to the instances targeted by the request.
-For example for the equivalents of inbound requests addressing _single rows_ like these:
+The _target_ of a request is equivalent to the [`source` of a query](../cds/cqn#from).
+That is, additional query options, such as CQL's `.where()` or OData's `$filter`, are not considered.
+
+For example, for the equivalents of inbound requests, addressing _single rows_ like these:
 
 ```js
 AdminService.read(Books,201)
@@ -376,8 +392,16 @@ DELETE.from(req.subject)   //> deletes the single target row
 
 > [!warning] 
 > You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
-> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple row_**.
+> **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple rows_**.
 
+The following example further illustrates the difference between request target and additional query options:
+
+```js
+// GET Books/201
+req.subject = { ref: [{ id: 'AdminService.Books', where: [{ ref: ['ID']}, '=', { val: 201 }] }] }
+// GET Books?$filter=ID eq 201
+req.subject = { ref: [{ id: 'AdminService.Books' }] }
+```
 
 
 

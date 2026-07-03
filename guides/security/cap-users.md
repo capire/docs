@@ -1191,7 +1191,7 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 | User Property | UserInfo Getter                         | XSUAA JWT Property          | IAS JWT Property          | `@restrict`-annotation |
 |---------------|-----------------------------------------|-----------------------------|---------------------------|------------------------|
 | _Logon name_  | `getName()`                             | `user_name`                 | `sub`                     | `$user`                |
-| _Tenant_      | `getTenant()`                           | `zid`                       | `app_tid`                 | `$user.tenant`         |
+| _Tenant_      | `getTenant()`                           | `zid`                       | `app_tid`                 | `$tenant`         |
 | _Attributes_  | `getAttributeValues(String attr)`       | `xs.user.attributes.<attr>` | _All non-meta attributes_ | `$user.<attr>`         |
 | _Roles_       | `getRoles()` and `hasRole(String role)` | `scopes`                    | _n/a - injected via AMS_  | _String in `to`-clause_  |
 
@@ -1242,7 +1242,7 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 | User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
 |---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
 | _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
-| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$user.tenant`         |
+| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$tenant`         |
 | _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
 | _Roles_       | `is(role)`                          | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
 
@@ -1528,16 +1528,6 @@ runtime.requestContext().systemUser(tenant).run(reqContext -> {
 Avoid iterating through all subscriber tenants to perform tenant-specific tasks.
 Instead, prefer a task-based approach which processes specific subscriber tenants selectively.
 :::
-
-To use IAS-based Remote Services in background executions, you might in addition need to manually inject the tenant-specific IAS host into the created Request Context. If the background execution is initialized with a fresh Request Context, it will not carry inherited authentication details from a previous Request Context and thereby lacks the IAS host information required for remote service calls. The host can be retrieved from a `TenantInfo` object provided for example by the `TenantProviderService`.
-
-```java
-TenantInto tenantInfo = ...;
-String tenantHost = tenantInfo.get("subscriber").get("tenantHost");
-runtime.requestContext().systemUser(tenantId).modifyUser(user->user.setAdditionalAttribute("iss", tenantHost)).run((reqContext) -> {
-… //call remote service
-});
-```
 
 </div>
 

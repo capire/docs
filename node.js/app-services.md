@@ -155,3 +155,38 @@ cds.ApplicationService.handle_log_events = cds.service.impl (function(){
   this.on('*', req => console.log(req.event))
 })
 ```
+
+
+## Results of Generic CRUD Handlers
+
+When CAP's generic handlers run a CRUD operation, the result follows a consistent shape (custom `.on` handlers may return any value):
+
+| Operation             | Return value                                                                                  |
+|-----------------------|-----------------------------------------------------------------------------------------------|
+| `READ`                | Array of matching records, or a single record / `null` when read by key                       |
+| `INSERT` / `CREATE`   | Array with `.affected` (rows written); iterate to access the inserted rows' primary keys      |
+| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); populated with rows from a `RETURNING` clause          |
+| `DELETE`              | Array with `.affected` (rows deleted); populated with rows from a `RETURNING` clause          |
+
+For `INSERT`s, the result is a lazy array: iterating it (`[...result]`, `for…of`, `JSON.stringify`) materializes the generated primary keys of the inserted rows. Direct index access works after the first iteration.
+
+```js
+const inserted = await srv.create(Books).entries({title:'Catweazle'})
+inserted.affected            // 1
+const [row] = [...inserted]  // materializes — row holds the generated key
+inserted[0]                  // same row (materialized above)
+```
+
+For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause. But `RETURNING` is not yet supported, so the array currently is always empty:
+
+```js
+const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
+updated.affected             // number of rows updated
+```
+
+When a write targets a single row by key (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row matches, the handler throws a 404 error. A `where` clause that matches zero rows returns an array with `affected: 0` without throwing.
+
+> [!tip] Consistent Results Across Local and Remote Services
+> This shape was introduced in cds 10 so that local services, HCQL-proxied remote services, and database services return the same thing. To restore the previous behavior, set <Config>cds.features.legacy_srv_results: true</Config>.
+
+[See the migration guide for opt-out options.](../releases/migration/cds10#fixed-service-results){.learn-more}

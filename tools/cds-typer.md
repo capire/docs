@@ -40,7 +40,7 @@ service.before('CREATE', Books, ({ data }) => { /* data is of type any */})
 
 ```js twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
 // ---cut---
@@ -70,7 +70,7 @@ The types emitted by the type generator are tightly integrated with the CDS API.
 Most CQL constructs have an overloaded signature to support passing in generated types. Chained calls will offer code completion related to the type you pass in.
 
 ```js twoslash
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 // ---cut---
 // previous approach (still valid, but prefer using reflected entities over string names)
@@ -101,7 +101,7 @@ The CRUD handlers `before`, `on`, and `after` accept generated types:
 
 ```js twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 const { Book, Books } = require('#cds-models/sap/capire/bookshop')
 const service = new cds.ApplicationService
@@ -134,7 +134,7 @@ In the same manner, actions can be combined with `on`:
 
 ```js twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
 // ---cut---
@@ -156,7 +156,7 @@ Using [JSDoc](https://jsdoc.app/) in JavaScript projects:
 
 ```js twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
 // ---cut---
@@ -175,7 +175,7 @@ Using `import` in TypeScript projects:
 
 ```ts twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 import cds from '@sap/cds'
 const service = new cds.ApplicationService
 // ---cut---
@@ -198,7 +198,7 @@ CDS enums are supported by `cds-typer` and are represented during runtime as wel
 <<< assets/incidents/db/schema.cds
 
 ```js twoslash
-// @paths: {"#cds-models/*": ["%typedModels:incidents:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:incidents:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 const service = new cds.ApplicationService
 // ---cut---
@@ -254,7 +254,7 @@ class Book {
 In consequence, you will get called out by the type system when trying to chain property calls. You can overcome this in a variety of ways:
 
 ```ts twoslash
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 import cds from '@sap/cds'
 // ---cut---
 import { Author, Book } from '#cds-models/sap/capire/bookshop'
@@ -293,7 +293,7 @@ CDS file:
 Generated classes:
 
 ```ts twoslash
-// @paths: {"#cds-models/*": ["%typedModels:farm:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:farm:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 import { Mouse, Mice, Sheep, FlockOfSheep } from '#cds-models/farm'
 ```
 
@@ -459,7 +459,7 @@ These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.j
 
 ```js twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 // ---cut---
 class CatalogService extends cds.ApplicationService { init(){
@@ -477,7 +477,7 @@ class CatalogService extends cds.ApplicationService { init(){
 Similar to `cds.entities(…)`, you can't use static imports here. Instead, you need to use dynamic imports. However, there's an exception for [static top-level imports](#typer-top-level-imports).
 
 ```js twoslash
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 const cds = require('@sap/cds')
 // ---cut---
 // ❌ works during design time, but will cause runtime errors
@@ -493,7 +493,7 @@ In TypeScript you can use [type-only imports](https://www.typescriptlang.org/doc
 
 ```ts twoslash
 // @noErrors
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 import cds from '@sap/cds'
 // ---cut---
 // ❌ works during design time, but will cause runtime errors
@@ -511,7 +511,7 @@ class CatalogService extends cds.ApplicationService { async init(){
 You can pass a new option, `useEntitiesProxy`, to `cds-typer`. This option allows you to statically import your entities at the top level, as you intuitively would. However, you can still only _use these entities_ in a context where the CDS runtime is fully booted, like in a service definition:
 
 ```ts twoslash
-// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"]}
+// @paths: {"#cds-models/*": ["%typedModels:bookshop:resolved%"], "@sap/cds": ["%sap_cds:resolved%"]}
 import cds from '@sap/cds'
 // ---cut---
 // ✅ top level import now works both during design time and runtime

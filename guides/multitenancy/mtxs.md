@@ -171,14 +171,13 @@ An MTX sidecar is a standard, yet minimal Node.js CAP project. By default it's a
 {
   "name": "bookshop-mtx", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@cap-js/hana": "^2",
-    "@sap/cds-mtxs": "^3",
+    "@sap/cds": "^10",
+    "@cap-js/hana": "^3",
+    "@sap/cds-mtxs": "^4",
     "@sap/xssec": "^4",
-    "express": "^4"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^2"
+    "@cap-js/sqlite": "^3"
   },
   "scripts": {
     "start": "cds-serve"
@@ -607,6 +606,31 @@ cds.on('served', ()=>{
 For CLI usage via `cds subscribe|upgrade|unsubscribe` you can create a `mtx/sidecar/cli.js` file, which works analogously to a `server.js`.
 :::
 
+#### Example handler for SaasProvisioningService
+
+A common usecase is the specification of an individual database ID per subscription.
+```js
+cds.on('served', async () => {
+  const {
+    'cds.xt.SaasProvisioningService': provisioning,
+  } = cds.services
+
+  await provisioning.prepend(() => {
+    provisioning.on('UPDATE', 'tenant', async (req, next) => {
+      req.data = cds.utils.merge(req?.data, {
+        _: {
+          hdi: {
+            create: {
+              database_id: '<database_id>',
+            }
+          }
+        }
+      })
+      return next()
+    })
+  })
+})
+```
 ## Consumption
 
 ### Via Programmatic APIs

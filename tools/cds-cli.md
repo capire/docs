@@ -120,8 +120,8 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 | `mta`                         |       <X/>       |       <X/>       |
 | `cf-manifest`                 |       <X/>       |       <X/>       |
 | `helm`                        |       <X/>       |       <X/>       |
-| `helm-unified-runtime`        |       <X/>       |       <X/>       |
 | `containerize`                |       <X/>       |       <X/>       |
+| `kyma`                        |         <X/>       |       <X/>          |
 | `multitenancy`                |       <X/>       |       <X/>       |
 | `toggles`                     |       <X/>       |       <X/>       |
 | `extensibility`               |       <X/>       |       <X/>       |
@@ -466,7 +466,7 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 - [Diagram: Queries](vscode://settings/cds.preview.diagram.queries)
 
 
-## cds export <Beta />
+## cds export
 
 With `cds export` you create an API client package to be used
 for data exchange via CAP-level Service integration ("Calesi").
@@ -643,6 +643,25 @@ If you scale out to more instances, only some of your requests will hit the inst
 However, it's possible to [route a request to a specific instance](https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#surgical-routing), which is useful if you can't reduce the number of app instances.
 :::
 
+::: warning Cloud Foundry's HTTP health checks kill paused containers
+While paused at a breakpoint, the Node.js event loop is frozen and the app cannot respond to Cloud Foundry's `http` health probe. As a consequence, Cloud Foundry marks the container unhealthy and destroys it within seconds.
+
+Instead, switch the health check to `process` for the duration of the debug session:
+
+```sh
+cf set-health-check <app-name> process
+cf restart <app-name>
+```
+
+Restore it afterwards:
+
+```sh
+cf set-health-check <app-name> http
+```
+
+`cds debug` detects this situation and prompts you to confirm before continuing. Note that the setting is overwritten on the next `cds up` unless persisted in `mta.yaml`.
+:::
+
 ### Node.js Applications
 
 #### Remote Applications
@@ -751,3 +770,32 @@ If you do this in VS Code's integrated terminal with the 'Auto Attach' feature e
 For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
+
+## cds upgrade <Beta/>
+
+Use `cds upgrade` to assist you in upgrading your project to new/latest CDS versions.
+Run it like that in your project's root directory with a globally installed `@sap/cds-dk` version 10:
+
+```sh
+cds upgrade
+```
+
+::: details Run without a global installation ...
+```sh
+npx -p @sap/cds-dk@10 cds upgrade
+```
+:::
+
+That will:
+
+- Run preflight checks: Node.js version, clean working tree, installed dependencies.
+- Upgrade your project dependencies to the latest cds10 versions.
+- Scan your project for whether you're affected by breaking changes.
+
+See also:
+
+- [Migration Guide for cds10](/releases/migration/cds10) — complete list of breaking changes
+- [Java Migration Guide](/java/migration) — migration steps for CAP Java projects
+
+> [!warning] Limitations
+> Scans for breaking changes is pattern-based, likely includes false positives; require detailed investigation and manual review.  Some breaking changes are not detectable automatically, for example, semantic-only issues or changes in behavior that do not affect the code structure.

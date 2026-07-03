@@ -671,6 +671,10 @@ Cloud Native Buildpacks provide advantages like embracing [best practices](https
 
 Additionally Cloud Native Buildpacks can be easily plugged together to fulfill more complex requirements. For example the [ca-certificates](https://github.com/paketo-buildpacks/ca-certificates) enables adding additional certificates to the system trust-store at build and runtime. When using Cloud Native Buildpacks you can continuously benefit from best practices coming from the community without any changes required.
 
-[Learn more about Cloud Native Buildpacks Concepts.](https://buildpacks.io/docs/concepts/){ .learn-more}
+[Learn more about Cloud Native Buildpacks Concepts.](https://buildpacks.io/docs/for-platform-operators/concepts/){ .learn-more}
 
 <div id="aftercloudnative" />
+
+### CAP Operator
+
+The [CAP Operator](https://sap.github.io/cap-operator/) brings enterprise-grade lifecycle automation to CAP applications. It is a Kubernetes-native Operator that declaratively deploys and manages application versions, automates tenant operations, and manages domains and networking consistently across Kyma and Gardener-managed clusters.

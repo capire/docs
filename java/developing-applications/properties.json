@@ -199,8 +199,8 @@
       "header": false,
       "name": "cds.security.authentication.mode",
       "type": "String",
-      "default": "model-strict",
-      "doc": "Determines the mode that is used when authenticating endpoints of protocol-adapters.<br>Possible values are: - never: No endpoint requires authentication - model-relaxed:<br>Authentication is derived from @requires/@restrict, defaults to public endpoints. -<br>model-strict: Authentication is derived from @requires/@restrict, defaults to authenticated<br>endpoints. - always: All endpoints require authentication"
+      "default": "model-relaxed",
+      "doc": "Determines the mode that is used when authenticating endpoints of protocol-adapters.<br>Possible values are: - never: No endpoint requires authentication - model-relaxed:<br>Authentication is derived from @requires/@restrict, defaults to public endpoints. -<br>model-strict: Authentication is derived from @requires/@restrict, defaults to authenticated<br>endpoints. - always: All endpoints require authentication. In production environments this<br>defaults to 'model-strict'."
     },
     {
       "header": false,
@@ -504,6 +504,18 @@
     },
     {
       "header": true,
+      "name": "cds.protocols",
+      "doc": "Properties for all protocols."
+    },
+    {
+      "header": false,
+      "name": "cds.protocols.defaults",
+      "type": "List<String>",
+      "default": "odata-v2, odata-v4, odata-x4",
+      "doc": "The default protocols each ApplicationService serves, if protocols are not explicitly<br>configured otherwise. The default protocols are \"odata-v2\", \"odata-v4\" and \"odata-x4\". If the<br>defaults are overwritten with an empty list, all ApplicationServices are served by all<br>available protocol adapters."
+    },
+    {
+      "header": true,
       "name": "cds.odataV4",
       "doc": "Properties for the OData V4 protocol adapter."
     },
@@ -520,13 +532,6 @@
       "type": "String",
       "default": "edmx/v4",
       "doc": "The JAR resource path to search for OData V4 EDMX files."
-    },
-    {
-      "header": false,
-      "name": "cds.odataV4.searchMode",
-      "type": "String",
-      "default": "odata-lenient",
-      "doc": "Defines the handling of the $search query option. In `odata-strict` mode the search string is<br>parsed and interpreted according to the OData v4 $search specification. In `pass-through`<br>mode the search string is passed through to the data store. In `odata-lenient` mode the<br>search string is parsed and only passed through on parsing errors."
     },
     {
       "header": true,
@@ -621,13 +626,6 @@
       "doc": "Determines whether OData functions 'substringof', 'startswith' and 'endswith' are<br>case-sensitive."
     },
     {
-      "header": false,
-      "name": "cds.odataV2.searchMode",
-      "type": "String",
-      "default": "odata-lenient",
-      "doc": "Defines the handling of the $search query option. In `odata-strict` mode the search string is<br>parsed and interpreted according to the OData v4 $search specification. In `pass-through`<br>mode the search string is passed through to the data store. In `odata-lenient` mode the<br>search string is parsed and only passed through on parsing errors."
-    },
-    {
       "header": true,
       "name": "cds.odataV2.endpoint",
       "doc": "Properties of the OData V2 protocol adapter endpoint."
@@ -684,15 +682,27 @@
     },
     {
       "header": true,
+      "name": "cds.hcql.v2",
+      "doc": "Enables HCQL compatible with CAP Node.js."
+    },
+    {
+      "header": false,
+      "name": "cds.hcql.v2.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
       "name": "cds.mcp",
       "doc": "Properties for the MCP protocol adapter."
     },
     {
       "header": false,
-      "name": "cds.mcp.queryPerEntityTool",
+      "name": "cds.mcp.callPerActionTool",
       "type": "boolean",
       "default": "false",
-      "doc": "True, if the MCP server should offer a query tool per entity, instead of one generic query<br>tool."
+      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call_action tool."
     },
     {
       "header": false,
@@ -722,38 +732,38 @@
     },
     {
       "header": true,
-      "name": "cds.mcp.autoConfig",
-      "doc": "Properties for auto-configuration of local MCP clients."
+      "name": "cds.mcp.autoWired",
+      "doc": "Properties for auto-wiring of local MCP clients."
     },
     {
       "header": false,
-      "name": "cds.mcp.autoConfig.host",
+      "name": "cds.mcp.autoWired.host",
       "type": "String",
       "default": "localhost",
       "doc": "The MCP server host."
     },
     {
       "header": false,
-      "name": "cds.mcp.autoConfig.port",
+      "name": "cds.mcp.autoWired.port",
       "type": "Integer",
       "doc": "The MCP server port."
     },
     {
       "header": false,
-      "name": "cds.mcp.autoConfig.user",
+      "name": "cds.mcp.autoWired.user",
       "type": "String",
       "default": "privileged",
       "doc": "The mock-user to use."
     },
     {
       "header": false,
-      "name": "cds.mcp.autoConfig.password",
+      "name": "cds.mcp.autoWired.password",
       "type": "String",
       "doc": "The mock-user's password."
     },
     {
       "header": false,
-      "name": "cds.mcp.autoConfig.enabled",
+      "name": "cds.mcp.autoWired.enabled",
       "type": "boolean",
       "default": "false",
       "doc": "Determines, if it is enabled."
@@ -813,7 +823,7 @@
       "header": false,
       "name": "cds.messaging.services.<key>.kind",
       "type": "String",
-      "doc": "The kind of the messaging service. It usually reflects the corresponding service binding<br>type. Possible values are: `local-messaging`, `file-based-messaging`,<br>`enterprise-messaging`, `message-queuing`, `redis-pubsub`, `kafka-channel-messaging`."
+      "doc": "The kind of the messaging service. It usually reflects the corresponding service binding<br>type. Possible values are: `local-messaging`, `file-based-messaging`,<br>`enterprise-messaging` (deprecated), `message-queuing` (deprecated), `redis-pubsub` (beta),<br>`kafka-channel-messaging`."
     },
     {
       "header": false,
@@ -1025,7 +1035,7 @@
       "header": false,
       "name": "cds.multiTenancy.serviceManager.cacheRefreshInterval",
       "type": "Duration",
-      "default": "PT20M",
+      "default": "PT1H",
       "doc": "The cache refresh interval (as Duration)."
     },
     {
@@ -1034,6 +1044,18 @@
       "type": "Duration",
       "default": "PT30S",
       "doc": "The oauth token retrieval timeout (as Duration)."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.serviceManager.v2",
+      "doc": "Determines, if the Service Manager V2 API is used."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.serviceManager.v2.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
     },
     {
       "header": true,
@@ -1127,6 +1149,13 @@
     },
     {
       "header": false,
+      "name": "cds.multiTenancy.healthCheck.timeout",
+      "type": "Duration",
+      "default": "PT1S",
+      "doc": "The timeout for health check requests to the MTX sidecar."
+    },
+    {
+      "header": false,
       "name": "cds.multiTenancy.healthCheck.enabled",
       "type": "boolean",
       "default": "true",
@@ -1149,6 +1178,24 @@
       "name": "cds.multiTenancy.liquibase.contexts",
       "type": "String",
       "doc": "Optional: Comma separated list of active contexts."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.flyway",
+      "doc": "Properties for DB lifecycle management via Flyway."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.flyway.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Enables DB lifecycle management via Flyway."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.flyway.locations",
+      "type": "",
+      "doc": "The locations of the Flyway migration scripts."
     },
     {
       "header": true,
@@ -1191,6 +1238,25 @@
       "name": "cds.multiTenancy.mock.enabled",
       "type": "boolean",
       "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.multiTenancy.provider",
+      "doc": "Properties for the provider tenant configuration."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.provider.persistenceService",
+      "type": "String",
+      "default": "PersistenceService$Default",
+      "doc": "The name of the persistence service to use for the provider tenant."
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.provider.tenant",
+      "type": "String",
+      "default": "t0",
+      "doc": "The provider tenant identifier."
     },
     {
       "header": true,
@@ -1268,7 +1334,7 @@
       "header": false,
       "name": "cds.persistence.changeSet.enforceTransactional",
       "type": "boolean",
-      "default": "true",
+      "default": "false",
       "doc": "Determines, if a `ChangeSetContext` should be always marked as transactional. Setting this<br>to `false` allows avoiding transactions for Select queries."
     },
     {
@@ -1361,7 +1427,7 @@
       "name": "cds.remote.services.<key>.type",
       "type": "String",
       "default": "odata-v4",
-      "doc": "The protocol type of the destination. Possible values are: `odata-v4`, `odata-v2` and<br>`hcql`."
+      "doc": "The protocol type of the destination. Possible values are: `odata-v4` (default),<br>`odata-v2`, `hcql`, `rfc`."
     },
     {
       "header": true,
@@ -1434,6 +1500,13 @@
       "doc": "The token exchange strategy used, when loading destinations from SAP BTP Destination<br>Service. See<br>https://sap.github.io/cloud-sdk/docs/java/features/connectivity/sdk-connectivity-destination-service#token-exchange-options<br>for possible values."
     },
     {
+      "header": false,
+      "name": "cds.remote.services.<key>.destination.onBehalfOf",
+      "type": "String",
+      "default": "currentUser",
+      "doc": "Determines the user and tenant context that is used for IAS app-2-app destinations.<br>Possible values are: {@code currentUser}, {@code systemUser} and {@code<br>systemUserProvider}"
+    },
+    {
       "header": true,
       "name": "cds.remote.services.<key>.binding",
       "doc": "Properties to configure a service binding for this remote service. *"
@@ -1456,6 +1529,25 @@
       "name": "cds.remote.services.<key>.binding.options",
       "type": "Map<String,String>",
       "doc": "A map of additional options that are used to enrich the used service binding. The<br>supported options depend on the type of service binding that is used. Possible options<br>are: `url` for service bindings of type `xsuaa`"
+    },
+    {
+      "header": true,
+      "name": "cds.remote.services.<key>.rfc",
+      "doc": "Properties to configure RFC calls for this remote service."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.rfc.transactionalByDefault",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Property to specify whether RFC calls should be transactional by default."
+    },
+    {
+      "header": false,
+      "name": "cds.remote.services.<key>.rfc.commitAndWait",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Property to specify whether a COMMIT WORK AND WAIT is executed after each RFC call,<br>instead of a default COMMIT WORK."
     },
     {
       "header": true,
@@ -1496,7 +1588,7 @@
       "header": false,
       "name": "cds.errors.preferServiceException",
       "type": "boolean",
-      "default": "false",
+      "default": "true",
       "doc": "Determines, if CDS4j exceptions are replaced with corresponding ServiceException."
     },
     {
@@ -1560,8 +1652,7 @@
       "header": false,
       "name": "cds.drafts.postActive",
       "type": "boolean",
-      "default": "false",
-      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined."
+      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined. If not set, defaults to {@code true} when the<br>entity has a draft-new action and to {@code false} otherwise."
     },
     {
       "header": true,
@@ -1646,7 +1737,7 @@
       "header": false,
       "name": "cds.query.restrictions.enabled",
       "type": "boolean",
-      "default": "false",
+      "default": "true",
       "doc": "Determines, if it is enabled."
     },
     {
@@ -1713,8 +1804,8 @@
       "header": false,
       "name": "cds.sql.hana.search.fuzzy",
       "type": "boolean",
-      "default": "false",
-      "doc": "If set to `true`, fuzzy search on SAP HANA Cloud is activated. Requires<br>`cds.sql.hana.optimizationMode: hex`"
+      "default": "true",
+      "doc": "If set to `false`, fuzzy search on SAP HANA Cloud is disabled and an exact search is<br>performed instead."
     },
     {
       "header": false,
@@ -1744,8 +1835,8 @@
       "header": false,
       "name": "cds.sql.toOnePath.mode",
       "type": "String",
-      "default": "always-join",
-      "doc": "Sets the to-one path mode. Possible values are: `always-join` (default) and `optimize`. In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
+      "default": "optimize",
+      "doc": "Sets the to-one path mode. Possible values are: `always-join` and `optimize` (default). In<br>`always-join` mode, the SQL generation always generates a join for to-one path expressions,<br>in `optimize` mode joins are avoided if a FK column can be selected instead."
     },
     {
       "header": true,
@@ -1859,25 +1950,6 @@
     },
     {
       "header": true,
-      "name": "cds.outbox.inMemory",
-      "doc": "Properties for the in-memory Outbox."
-    },
-    {
-      "header": false,
-      "name": "cds.outbox.inMemory.emitDuringChangeSetContext",
-      "type": "boolean",
-      "default": "false",
-      "doc": "Specifies whether the outbox emits the event during the current `ChangeSetContext` or<br>afterwards. In case the `ChangeSetContext` wraps a DB transaction, it needs to be<br>considered that emitted messages during the transaction can't be rolled back on cancelled<br>transaction. Messages being emitted after the transaction might get lost, after transaction<br>has been committed successful."
-    },
-    {
-      "header": false,
-      "name": "cds.outbox.inMemory.enabled",
-      "type": "boolean",
-      "default": "true",
-      "doc": "Determines, if it is enabled."
-    },
-    {
-      "header": true,
       "name": "cds.outbox.persistent",
       "doc": "Properties for the persistent Outbox."
     },
@@ -1954,6 +2026,25 @@
     },
     {
       "header": true,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask",
+      "doc": "Properties to configure hot tenant management to avoid all tenants iterations."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.maxTaskDelay",
+      "type": "Duration",
+      "default": "PT2H",
+      "doc": "The time to wait after tenant event to check the tenant outbox."
+    },
+    {
+      "header": false,
+      "name": "cds.outbox.persistent.scheduler.hotTenantTask.enabled",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
       "name": "cds.outbox.services",
       "doc": "Properties for Outbox services. The key can be chosen arbitrarily and is used as the outbox<br>service name, if the `name` property is not explicitly defined. In addition it can be<br>leveraged to split configuration across multiple profiles."
     },
@@ -1981,7 +2072,7 @@
       "header": false,
       "name": "cds.outbox.services.<key>.ordered",
       "type": "boolean",
-      "default": "true",
+      "default": "false",
       "doc": "Controls how messages are published by the outbox. If set to `true`, the messages are<br>sequentially published exactly in the order they were stored in the Outbox. If set to<br>`false`, the messages are allowed to be published in random order and in parallel."
     },
     {
@@ -2009,6 +2100,12 @@
       "header": true,
       "name": "cds.ucl",
       "doc": "Properties for the unified customer landscape."
+    },
+    {
+      "header": false,
+      "name": "cds.ucl.destination",
+      "type": "String",
+      "doc": "Name of the destination used to call Unified Customer Landscape (UCL) for asynchronous tenant<br>mappings."
     },
     {
       "header": true,
@@ -2045,6 +2142,25 @@
       "name": "cds.ucl.x509.certSubject",
       "type": "String",
       "doc": "Subject of the certificate used for client certificate validation."
+    },
+    {
+      "header": true,
+      "name": "cds.bdc",
+      "doc": "Properties for Business Data Cloud (BDC) integration."
+    },
+    {
+      "header": false,
+      "name": "cds.bdc.formationTypeIds",
+      "type": "List<String>",
+      "default": "*",
+      "doc": "List of formation type IDs for the BDC integration. If specified, only SPII calls that match<br>one of these formation type IDs will be processed by the BDC integration. For testing<br>purposes all SPII calls can be allowed by using `*` (default for non-productive profiles). If<br>empty, no SPII calls will be processed by the BDC integration."
+    },
+    {
+      "header": false,
+      "name": "cds.bdc.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
     }
   ]
 }

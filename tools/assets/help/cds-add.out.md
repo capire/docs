@@ -10,7 +10,9 @@
     Pick any of these:
 
       <em>completion</em>                   - shell completion for cds commands
-      <em>esm</em>                          - ESM-compatible Node.js project
+      <em>java</em>                         - creates a Java-based project
+      <em>nodejs</em>                       - creates a Node.js-based project
+      <em>cjs</em>                          - CommonJS-compatible Node.js project
       <em>typer</em>                        - type generation for CDS models
       <em>typescript</em>                   - minimum configuration for a bare TypeScript project
       <em>extension</em>                    - extension project
@@ -38,14 +40,17 @@
       <em>approuter</em>                    - dynamic routing using @sap/approuter
       <em>local-messaging</em>              - messaging via local event bus
       <em>file-based-messaging</em>         - messaging via file system
-      <em>enterprise-messaging</em>         - messaging via SAP Enterprise Messaging
-      <em>enterprise-messaging-shared</em>  - messaging via shared SAP Enterprise Messaging
+      <em>enterprise-messaging</em>         - messaging via SAP Event Mesh
+      <em>enterprise-messaging-shared</em>  - messaging via shared SAP Event Mesh
+      <em>event-mesh</em>                   - messaging via Event Mesh of SAP Integration Suite
+      <em>event-mesh-shared</em>            - messaging via shared Event Mesh of SAP Integration Suite
       <em>redis-messaging</em>              - messaging via Redis
       <em>kafka</em>                        - messaging via Apache Kafka
       <em>attachments</em>                  - SAP BTP Object Store Service
       <em>malware-scanner</em>              - SAP BTP Malware Scanning Service
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
+      <em>ai</em>                           - SAP BTP AI Core
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
       <em>app-frontend</em>                 - SAP BTP Application Frontend service
       <em>portal</em>                       - SAP BTP Portal Service
@@ -54,6 +59,8 @@
       <em>notifications</em>                - SAP BTP Notification Service
       <em>workzone-standard</em>            - SAP BTP Work Zone, Standard Edition
       <em>ui5</em>                          - SAP UI5 integration
+      <em>vue</em>                          - user interface for Vue.js
+      <em>react</em>                        - user interface for React
       <em>data</em>                         - add CSV headers for modeled entities
       <em>http</em>                         - add .http files for modeled services
       <em>lint</em>                         - configure cds lint
@@ -142,6 +149,20 @@
         Use CloudEvents formatting.
 
 
+    <em>cds add event-mesh</em>
+
+      --cloudevents | -c
+
+        Use CloudEvents formatting.
+
+
+    <em>cds add event-mesh-shared</em>
+
+      --cloudevents | -c
+
+        Use CloudEvents formatting.
+
+
     <em>cds add extension</em>
 
       --base | -p
@@ -189,9 +210,16 @@
 
     <em>cds add kyma</em>
 
+      --y
+
+        Skip interactive prompts.
 
 
+    <em>cds add react</em>
 
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
 
 
     <em>cds add test</em>
@@ -207,6 +235,13 @@
         Custom output directory. For Node.js, the default is 'test'.
 
 
+    <em>cds add vue</em>
+
+      --into | -i
+
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
+
+
     <em>cds add xsuaa</em>
 
       --plan
@@ -219,7 +254,7 @@
   <em>cds add</em> multitenancy,hana,xsuaa
   <em>cds add</em> data --filter my.namespace.MyEntity
   <em>cds add</em> mta
-  <em>cds add</em> helm
+  <em>cds add</em> kyma
 
 <strong>SEE ALSO</strong>
   <em>cds init</em>

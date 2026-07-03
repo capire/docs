@@ -55,7 +55,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | Bind application to remote services                                                 | `cds bind`                 |
 | Debug your application                                                              | `cds debug`                |
 | Login to multitenant SaaS application                                               | `cds login <app-url>`      |
-| Upgrade SaaS tenant(s) to latest versions                                           | `cds upgrade`              |
+| Upgrade SaaS tenant(s) to latest versions                                           | `cds upgrade-tenant`       |
 | Logout from multitenant SaaS application                                            | `cds logout`               |
 | Subscribe a tenant to a SaaS application                                            | `cds subscribe <tenant>`   |
 | Unsubscribe a tenant from a SaaS application                                        | `cds unsubscribe <tenant>` |
@@ -224,7 +224,7 @@ Following is an index of the features currently covered by CAP, with status and 
 |--------------------------------------------------------------------------------------------|:----:|:-------:|:----:|
 | [Serving Fiori UIs](../guides/uis/fiori)                                                   | <X/> |  <X/>   | <X/> |
 | [Fiori Annotations in CDS](../guides/uis/fiori#fiori-annotations)                          | <X/> |  <X/>   | <X/> |
-| [Advanced Value Help](../guides/uis/fiori#value-helps)                                     | <X/> |  <X/>   | <X/> |
+| [Advanced Value Help](../guides/uis/fiori#simple-value-helps)                              | <X/> |  <X/>   | <X/> |
 | [Draft Support](../guides/uis/fiori#draft-support)                                         | <X/> |  <X/>   | <X/> |
 | [Draft for Localized Data](../guides/uis/fiori#draft-for-localized-data)                   | <X/> |  <X/>   | <X/> |
 | [Support for Fiori Analytics](../guides/uis/analytics)                                | <X/> |  <D/>   | <X/> | <!-- UNRELEASED -->
