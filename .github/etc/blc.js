@@ -2,8 +2,8 @@
 
 import { parseDocument } from 'htmlparser2'
 import { spawn } from 'child_process'
-import { readdirSync, existsSync } from 'fs'
-import { join } from 'path'
+import { readdirSync, existsSync, readFileSync } from 'fs'
+import { dirname, join, normalize } from 'path'
 import { parseArgs } from 'node:util'
 
 const { Bright,Dim,Reset, foreground:{
@@ -71,6 +71,10 @@ const { values, positionals } = parseArgs({
 const urlExcludes = values.public ? urlExcludesPublicRepo : urlExcludesBase
 
 let [base] = positionals
+const repoRoot = process.cwd()
+const sourceFolders = readdirSync(repoRoot, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== '@external')
+    .map(entry => entry.name)
 
 // Build a set of URL paths that are directory-backed (have index.html)
 // so we know when to add trailing slash for correct relative URL resolution.
@@ -127,10 +131,10 @@ async function check (options={}) {
     const queue = [base]
     const incomingLinks = {} // url -> [{ from: page, original: href }]
 
-    function record (link, reason, p) {
+    function record (link, reason, p, line) {
         ++N
         if (broken.page !== p)  errors.push (broken = {page:p,links:[]})
-        broken.links.push ({ link, reason, toString() { return reason +': '+ link } })
+        broken.links.push ({ link, reason, line, toString() { return reason +': '+ link } })
     }
 
     // Phase 1: Crawl all reachable internal pages
@@ -179,6 +183,7 @@ async function check (options={}) {
         const doc = parseDocument(html)
         const p = {
             url: cleanUrl, path,
+            resolveBase,
             doc,
             anchors: {},
             hashed: [],
@@ -262,7 +267,16 @@ async function check (options={}) {
         }
     }
 
-    // Phase 4: Check hash/anchor links across pages
+    // Phase 4: Check for relative links from top-level markdown sources, which should be absolute `/@external/...` ones
+    const sourceLinkIssues = []
+    for (const folder of sourceFolders) {
+        scanSourceFolder(folder, sourceLinkIssues)
+    }
+    for (const issue of sourceLinkIssues) {
+        record(issue.link, issue.reason, issue.page, issue.line)
+    }
+
+    // Phase 5: Check hash/anchor links across pages
     for (let p of Object.values(pages)) {
         for (let {url,hash} of p.hashed) try {
             if (url) {
@@ -278,22 +292,71 @@ async function check (options={}) {
         } catch(e) { record(url+' #'+hash, 'Unresolved hash link', p) }
     }
 
-    // Phase 5: Report results
+    // Phase 6: Report results
     console.log (`\n-----------------------------------------------------------------`)
     if (Object.keys(pages).length === 0) {
         console.log (Bright+Red+`Could not fetch any pages from ${base}\n`, Reset)
         process.exitCode = 1
     } else if (broken.links) {
-        console.log (Bright+Red+`Found ${N} broken link(s) to internal targets in ${errors.length} source(s):`, Reset)
+        console.log (Bright+Red+`Found ${N} link issue(s) in ${errors.length} source(s):\n`, Reset)
         for (let broken of errors) {
-            console.log ('in:', broken.page.path)
-            for (let each of broken.links)  console.log (Bright+Red+ each)
-            console.log (Reset)
+            let printedHeader = false
+            const pageFilePath = broken.page.path.endsWith('.md') ? broken.page.path : broken.page.path + '.md'
+            for (let each of broken.links) {
+                if (!printedHeader) {
+                    console.log(`in: ${pageFilePath}`)
+                    printedHeader = true
+                }
+                console.log(Bright+Red+ `  ${each.reason}: ${each.link}` + Reset + ` (${pageFilePath}${each.line ? ':' + each.line : ''})`)
+            }
         }
         if (N > 0) process.exitCode = 1
     } else {
-        console.log (Bright+Green+`It's all fine in ${all.size} links, no broken links found\n`, Reset)
+        console.log (Bright+Green+`It's all fine in ${all.size} links, no broken or inconsistent links found\n`, Reset)
     }
+
+    console.log()
+}
+
+function scanSourceFolder (folder, findings) {
+    for (const entry of readdirSync(join(repoRoot, folder), { withFileTypes: true })) {
+        const fullPath = join(repoRoot, folder, entry.name)
+        if (entry.isDirectory()) {
+            scanSourceFolder(join(folder, entry.name), findings)
+            continue
+        }
+        if (!entry.isFile() || !entry.name.endsWith('.md')) continue
+
+        const sourceText = readFileSync(fullPath, 'utf8')
+        const sourcePage = { path: '/' + normalize(join(folder, entry.name)).replace(/\\/g, '/') }
+        const sourceDir = dirname(fullPath)
+        const linkPattern = /!?(?:\[[^\]]*\]|\([^)]*\))\(([^)]+)\)/g
+        let match
+        while ((match = linkPattern.exec(sourceText))) {
+            const href = match[1].trim()
+            if (!href || href.startsWith('/') || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('javascript:') || href.startsWith('data:') || href.startsWith('vbscript:') || href.startsWith('tel:')) continue
+            const line = lineNumberAt(sourceText, match.index)
+
+            const linkTarget = href.split('#')[0].split('?')[0]
+            const sourceTarget = normalize(join(sourceDir, linkTarget))
+            const relativeTarget = sourceTarget.replace(repoRoot + '/', '')
+            if (relativeTarget.startsWith('@external/')) continue
+
+            const externalTarget = normalize(join(repoRoot, '@external', relativeTarget))
+            if (existsSync(externalTarget + '.md') || existsSync(externalTarget + '.fragment.md') || existsSync(join(externalTarget, 'index.md'))) {
+                findings.push({
+                    page: sourcePage,
+                    link: href,
+                    line,
+                    reason: 'Use an absolute /@external link',
+                })
+            }
+        }
+    }
+}
+
+function lineNumberAt (text, index) {
+    return text.slice(0, index).split('\n').length
 }
 
 function checkLocal (doc, id) {
