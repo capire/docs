@@ -51,7 +51,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 ### Pool
 
-Instead of opening and closing a database connection for every request, we use a built-in pool to reuse connections.
+Instead of opening and closing a database connection for every request, we use a pool to reuse connections.
 
 The following parameters are provided in the pool configuration:
 
