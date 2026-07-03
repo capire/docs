@@ -60,7 +60,8 @@ sqlite3 -version
 
 ::: code-group
 ```shell [macOS/Linux]
-brew install sapmachine-jdk
+brew tap sap/sapmachine
+brew install sapmachine25-jdk
 brew install maven
 ```
 ```PowerShell [Windows]
