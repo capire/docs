@@ -67,7 +67,7 @@ brew install maven
 winget install --silent SAP.SapMachine.25.JDK
 
 # Apache Maven is not available using winget so download it directly
-$v="3.9.12"; `
+$v="3.9.16"; `
 $url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
 $mvnzip="$env:LOCALAPPDATA\maven.zip"; `
 curl $url -o $mvnzip; `
