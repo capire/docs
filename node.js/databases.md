@@ -51,9 +51,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 ### Pool
 
-Instead of opening and closing a database connection for every request, we use a [`generic-pool`](https://www.npmjs.com/package/generic-pool)-based pool to reuse connections.
-
-The _generic-pool_ has a built-in pool evictor, which inspects idle database connections in the pool and destroys them if they are too old.
+Instead of opening and closing a database connection for every request, we use a pool to reuse connections.
 
 The following parameters are provided in the pool configuration:
 
