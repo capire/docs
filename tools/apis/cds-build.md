@@ -83,7 +83,7 @@ The `cds.build.Plugin` class provides methods for copying or writing contents to
 ```js [postgres/lib/build.js]
 await this.copy(path.join(this.task.src, 'package.json')).to('package.json');
 await this.write({
-  dependencies: { '@sap/cds': '^9', '@cap-js/postgres': '^2' },
+  dependencies: { '@sap/cds': '^10', '@cap-js/postgres': '^3' },
   scripts: { start: 'cds-deploy' }
 }).to('package.json');
 ```
@@ -121,7 +121,7 @@ In the application's _package.json_, add a dependency to your plugin package to 
 
 ```jsonc [package.json]
 "dependencies": {
-  "@cap-js/postgres": "^2"
+  "@cap-js/postgres": "^3"
 }
 ```
 
