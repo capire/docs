@@ -263,7 +263,7 @@ claude "list books with authors and genres"
 
 Here's the same query ran in Claude Code for VSCode:
 
-![Claude Code interface displaying query results in VSCode editor with a table showing books data, a sidebar with available tools and prompts, and syntax highlighting indicating the integration of MCP tools with the code editor environment](../../../guides/protocols/assets/mcp/claude-vscode.png){style="width:70%"}
+![Claude Code interface displaying query results in VSCode editor with a table showing books data, a sidebar with available tools and prompts, and syntax highlighting indicating the integration of MCP tools with the code editor environment](./assets/mcp/claude-vscode.png){style="width:70%"}
 
 
 #### With Opencode CLI:
@@ -292,7 +292,7 @@ Here are the books with their authors and genres:
 
 You can also run `opencode web` to open the OpenCode web interface, which provides a more user-friendly way to interact with your MCP servers, including features like tool inspection and query building. Here's a screenshot of a simple session:
 
-![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](../../../guides/protocols/assets/mcp/opencode-web.png){style="width:70%"}
+![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](./assets/mcp/opencode-web.png){style="width:70%"}
 
 ### Inspect Log Output
 
