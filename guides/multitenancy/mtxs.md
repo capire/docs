@@ -178,7 +178,7 @@ An MTX sidecar is a standard, yet minimal Node.js CAP project. By default it's a
     "express": "^4"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^2"
+    "@cap-js/sqlite": "^3"
   },
   "scripts": {
     "start": "cds-serve"

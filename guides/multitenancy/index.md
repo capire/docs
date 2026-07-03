@@ -84,7 +84,7 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
       "express": "^4"
     },
     "devDependencies": {
-      "@cap-js/sqlite": "^2"
+      "@cap-js/sqlite": "^3"
     },
     "engines": {
       "node": ">=24"
@@ -164,7 +164,7 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
           "@sap/xssec": "^4"
         },
         "devDependencies": {
-          "@cap-js/sqlite": "^2"
+          "@cap-js/sqlite": "^3"
         },
         "engines": {
           "node": ">=24"
