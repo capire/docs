@@ -13,7 +13,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 
 > [!note]
 >
-> This guide is about the *MCP Adapter* – e.g. as provided through the [*@cap-js/mcp*](https://github.tools.sap/cap/mcp-adapter) plugin – which powers domain-specific application use cases, for example, to respond to questions for CAP-based applications like *"List all overstocked books"*.
+> This guide is about the *MCP Adapter* – e.g. as provided through the [*@cap-js/mcp*](https://github.com/cap-js/mcp) plugin – which powers domain-specific application use cases, for example, to respond to questions for CAP-based applications like *"List all overstocked books"*.
 >
 > In parallel, there's also the *MCP Server* plugin ([*@cap-js/mcp-server*](https://github.com/cap-js/mcp-server)), which serves a different purpose, though, that is: AI-assisted *development* of CAP projects.
 
@@ -52,7 +52,7 @@ code bookshop
 
 ### In CAP Node.js Projects
 
-Within your project root run this to add the [`@cap-js/mcp`](https://github.tools.sap/cap/mcp-adapter) plugin:
+Within your project root run this to add the [`@cap-js/mcp`](https://github.com/cap-js/mcp) plugin:
 
 ```shell [Node.js]
 npm add @cap-js/mcp
