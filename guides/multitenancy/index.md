@@ -81,7 +81,6 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
       "@sap/cds": "^10",
       "@sap/cds-mtxs": "^4",
       "@sap/xssec": "^4",
-      "express": "^4"
     },
     "devDependencies": {
       "@cap-js/sqlite": "^3"
