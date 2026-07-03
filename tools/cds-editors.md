@@ -461,23 +461,41 @@ entity Books {};
 ```
 
 
-## CAP Notebooks { #cap-vscode-notebook }
+## CAP Project Explorer
 
-A **CAP Notebook** is a [Custom Notebook in Visual Studio Code](https://code.visualstudio.com/blogs/2021/11/08/custom-notebooks) that serves you as a guide on how to create, navigate, and monitor CAP projects. With this approach, we want to encourage the CAP community to work with CAP in the same explorative manner that scientists work with their data, namely by:
+CAP Project Explorer is a sidebar view for exploring your CAP projects directly within VS Code. It gives you access to your project's structure and symbols. To get started, just select the CAP Project Explorer icon in the *VS Code activity bar* (left sidebar).
 
-- Visually interacting with their code
-- Playing with REPL-type inputs (notebook input cells)
-- Storing persistent code (notebook output cells)
+![CAP Project Explorer sidebar view showing a structured tree of CDS artifacts](./assets/vscode/project-explorer.png){.ignore-dark width="300px"}
 
-The cell inputs/outputs are especially useful at later points in time when the project's details have long been forgotten. In addition, notebooks are a good way to share, compare, and also reproduce projects.
+##### Getting Started
 
-* To see which features are available in a CAP Notebook, open our [CAP Notebook page](#cap-notebooks-page): <kbd>F1</kbd> → *CDS: Open CAP Notebooks Page*
+1. Select the **CAP Project Explorer** icon in the VS Code activity bar (left sidebar).
+2. Open the explorer view.
+3. Browse the tree or use search to filter artifacts.
+4. Right-click on items for context actions such as **Find References** or **Go to Definition**.
 
-* Magics, or magic commands, known from [IPython](https://ipython.readthedocs.io/en/stable/interactive/magics.html) are convenient functions to solve common problems. To see which line- and cell-magics can be used within a CAP Notebook, run a code cell with `%quickref`.
+##### Configuration
 
-* Start an empty CAP Notebook by creating a _*.capnb_ file.
+You can configure the CAP Project Explorer in your VS Code settings:
 
-> Provided that the [**CDS Editor**](#cds-editor) is installed, the CAP Notebook will be rendered automatically as the file is selected.
+- [`cds.explorer.enabled`](vscode://settings/cds.explorer.enabled): controls whether the CAP Project Explorer is active (default: `true`)
+
+**Note:** A window reload is required after changing the `enabled` setting.
+
+##### Available Commands
+
+The following commands are available in the Command Palette (Cmd+Shift+P or Ctrl+Shift+P):
+
+- **CDS Explorer: Search**: search for artifacts in your project
+
+##### Benefits
+
+The CAP Project Explorer helps you:
+
+- Reduce navigation time with quick access to project artifacts
+- Understand code structure through organized views
+- Filter large projects to focus on relevant parts
+- Switch between file-based and symbol-based perspectives on your codebase
 
 
 ## Using Docker { #docker }

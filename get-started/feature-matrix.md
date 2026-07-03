@@ -55,7 +55,7 @@ Following is an index of the features currently covered by CAP, with status and 
 | Bind application to remote services                                                 | `cds bind`                 |
 | Debug your application                                                              | `cds debug`                |
 | Login to multitenant SaaS application                                               | `cds login <app-url>`      |
-| Upgrade SaaS tenant(s) to latest versions                                           | `cds upgrade`              |
+| Upgrade SaaS tenant(s) to latest versions                                           | `cds upgrade-tenant`       |
 | Logout from multitenant SaaS application                                            | `cds logout`               |
 | Subscribe a tenant to a SaaS application                                            | `cds subscribe <tenant>`   |
 | Unsubscribe a tenant from a SaaS application                                        | `cds unsubscribe <tenant>` |
