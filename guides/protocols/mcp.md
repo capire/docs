@@ -184,16 +184,13 @@ To consume them, you need an MCP client. For local testing, you can use tools li
     brew install claude-code
     ```
 
-2. Configure it to use the Hyperspace proxy:
-    ```sh
-    hai configure claude-code
-    ```
-
-3. Optionally add [Claude Code for VSCode](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code):
+2. Optionally add [Claude Code for VSCode](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code):
 
     ```shell
     code --install-extension anthropic.claude-code
     ```
+
+<div id="haiclaude" />
 
 ### Using OpenCode
 
@@ -203,8 +200,7 @@ To consume them, you need an MCP client. For local testing, you can use tools li
     npm i -g opencode-ai
     ```
 
-2. Configure it to use LLMs through the Hyperspace proxy, or an existing GitHub Copilot setup, by following the instructions in the [Hyperspace documentation](https://ai-docs.portal.hyperspace.tools.sap/llm-proxy/recipes/opencode/)
-
+<div id="haiopencode" />
 
 
 ### Run your CAP server
