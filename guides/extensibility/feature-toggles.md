@@ -1,14 +1,11 @@
 ---
 synopsis: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
-impl-variants: true  # to enable Node.js/Java toggle
 ---
 
 # Feature Toggles
 
 {{$frontmatter?.synopsis}}
-
-<ImplVariantsHint />
 
 ## Introduction and Overview
 
@@ -16,43 +13,36 @@ CAP feature-toggled aspects allow SaaS providers to create pre-built features as
 
 ![This graphic shows an inbound request passing authentication and then the CAP runtime queries the database as well as the model provider service to know which features belong to the inbound request.](./assets/feature-toggles.drawio.svg)
 
-### Get `cloud-cap-samples-java` for step-by-step Exercises {.java}
+### Get Sample for Step-By-Step Exercises
 
-The following steps will extend the [CAP samples for Java](https://github.com/SAP-samples/cloud-cap-samples-java) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cloud-cap-samples-java](https://github.com/SAP-samples/cloud-cap-samples-java) before, and prepare to extend the *Fiori* app:
+The following steps will extend the [CAP samples for Java](https://github.com/SAP-samples/cloud-cap-samples-java) / [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cloud-cap-samples-java](https://github.com/SAP-samples/cloud-cap-samples-java) before, and prepare to extend the *Fiori* (Java) / *bookstore* (Node.js) app:
 
-<div class="impl java">
-
-```sh
+::: code-group
+```sh [Java]
 git clone https://github.com/SAP-samples/cloud-cap-samples-java
 cd cloud-cap-samples-java
 mvn clean install
 ```
-
-</div>
-
-Now, open the app in your editor, for example, for VS Code type:
-
-```sh
-code .
-```
-
-### Get `cap/samples` for Step-By-Step Exercises {.node}
-
-The following steps will extend the [cap/samples/bookstore](https://github.com/capire/bookstore) app to demonstrate how features can extend data models, services, as well as SAP Fiori UIs. If you want to exercise these steps, get [cap/samples](https://github.com/capire/samples) before, and prepare to extend the *bookstore* app:
-
-```sh
+```sh [Node.js]
 git clone --recurse-submodules https://github.com/capire/samples
 cd samples
 npm install
 ```
 
-Now, open the `bookstore` app in your editor, for example, by this if you're using VS Code on macOS:
+:::
 
-```sh
+Now, open the app in your editor, for example, for VS Code type:
+
+::: code-group
+```sh [Java]
+code .
+```
+```sh [Node.js]
 code bookstore
 ```
+:::
 
-## Enable Feature Toggles {.node}
+## Enable Feature Toggles in Node.js
 
 ### Add `@sap/cds-mtxs` Package Dependency
 
@@ -130,11 +120,10 @@ In principle, features can be toggled per request, per user, or per tenant; most
 
 ### In Development
 
-<div class="impl node">
+CAP Node.js' `mocked-auth` strategy has built-in support for toggling features per tenant, per user, or per request. CAP Java's [Mock User Authentication with Spring Boot](../../java/security#mock-users) allows to assign feature toggles to users based on the mock user configuration. To demonstrate toggling features per tenant, or user, you can add these lines of configuration to our `package.json` of the SAP Fiori app (Node.js) or to the mock user configuration in the `srv/src/main/resources/application.yaml` file (CAP Java).
 
-CAP Node.js' `mocked-auth` strategy has built-in support for toggling features per tenant, per user, or per request. To demonstrate toggling features per tenant, or user, you can add these lines of configuration to our `package.json` of the SAP Fiori app:
-
-```json
+::: code-group
+```json [Node.js: package.json]
 {"cds":{
   "requires": {
     "auth": {
@@ -152,13 +141,7 @@ CAP Node.js' `mocked-auth` strategy has built-in support for toggling features p
 }}
 ```
 
-</div>
-
-<div class="impl java">
-
-CAP Java's [Mock User Authentication with Spring Boot](../../java/security#mock-users) allows to assign feature toggles to users based on the mock user configuration. To demonstrate toggling features per user, you can add these lines to the mock user configuration in the `srv/src/main/resources/application.yaml` file:
-
-```yaml
+```yaml [Java: application.yaml]
 cds:
   security.mock.users:
     - name: carol
@@ -171,36 +154,32 @@ cds:
     - name: fred
       features:
 ```
-
-</div>
+:::
 
 In effect of this, for the user `carol` the feature `isbn` is enabled, for `erin`, the features `isbn` and `reviews` are enabled, and for the user `fred` all features are disabled.
 
 ### In Production
 
-<div class="impl node">
-
-::: warning No features toggling for production yet
+::: warning Bring your own toggle provider for production
 Note that the previous sample is only for demonstration purposes. As user and tenant management is outside of CAP's scope, there's no out-of-the-box feature toggles provider for production yet. → Learn more about that in the following section [*Feature Vector Providers*](#feature-vector-providers).
 :::
 
 <div id="toggle-production-node-end" />
 
-</div>
+#### In CAP Java
 
-<div class="impl java">
-
-For productive use, the mock user configuration must not be used. The set of active features is determined per request by the [Feature Toggles Info Provider](../../java/reflection-api#feature-toggles-info-provider).
+For productive use in CAP Java, the mock user configuration must not be used. The set of active features is determined per request by the [Feature Toggles Info Provider](../../java/reflection-api#feature-toggles-info-provider).
 
 You can register a [Custom Implementation](../../java/reflection-api#custom-implementation) as a Spring bean that computes the active feature set based on the request's `UserInfo` and `ParameterInfo`.
 
 <div id="toggle-production-java-end" />
 
-</div>
-
-## Test-Drive Locally {.node}
+## Test-Drive Locally in Node.js
 
 To test feature toggles, just run your CAP server as usual, then log on with different users, assigned to different tenants, to see the effects.
+
+> [!INFO] Local test with CAP Java and sidecar
+> How to test a CAP Java project locally is described in [Model Provider in Sidecar](#model-provider-in-sidecar).
 
 ### Run `cds watch`
 
@@ -221,7 +200,7 @@ cds watch
 
 > The `ModelProviderService` is used by the runtime to get feature-enhanced models.
 
-### See Effects in SAP Fiori UIs {#test-fiori-node}
+### See Effects in SAP Fiori UIs
 
 To see the effects in the UIs open three anonymous browser windows, one for each user to log in, and:
 
@@ -238,15 +217,13 @@ For example the displayed UI should look like that for `erin`:
 
 The `ModelProviderService`, which is used for toggling features, is implemented in Node.js only. To use it with CAP Java apps, you run it in a so-called *MTX sidecar*. For a CAP Node.js project, this service is always run embedded with the main application.
 
-### Create Sidecar as Node.js Project
+### Create Sidecar
 
 An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default it's added to a subfolder *mtx/sidecar* within your main project, containing just a *package.json* file:
 
-<div class="impl node">
-
 ::: code-group
 
-```json [mtx/sidecar/package.json]
+```json [Node.js: mtx/sidecar/package.json]
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
@@ -259,16 +236,7 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 }
 ```
 
-:::
-
-</div>
-
-
-<div class="impl java">
-
-::: code-group
-
-```json [mtx/sidecar/package.json]
+```json [Java: mtx/sidecar/package.json]
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
@@ -283,16 +251,13 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
   }
 }
 ```
-
 :::
-
-</div>
 
 [Learn more about setting up **MTX sidecars**.](../multitenancy/mtxs#sidecars){.learn-more}
 
 ### Add Remote Service Link to Sidecar
 
-<div class="impl node">
+#### In Node.js
 
 ::: tip
 In Node.js apps you usually don't consume services from the sidecar. The *ModelProviderService* is served both, embedded in the main app as well as in the sidecar. The following is documented for the sake of completeness only...
@@ -311,9 +276,7 @@ You can use the `from-sidecar` preset to tell the CAP runtime to use the remote 
 
 [Learn more about configuring ModelProviderService.](../multitenancy/mtxs#model-provider-config){.learn-more}
 
-</div>
-
-<div class="impl java">
+#### In CAP Java
 
 You need to configure the CAP Java application to request the CDS model from the Model Provider Service.
 This is done in the `application.yaml` file of your application.
@@ -328,8 +291,6 @@ cds:
       extensibility: false
 ```
 
-</div>
-
 ### Test-Drive Sidecar Locally
 
 With the setup as described in place, you can run the main app locally with the Model Provider as sidecar. Simply start the main app and the sidecar in two separate shells:
@@ -342,27 +303,22 @@ cds watch mtx/sidecar
 
 **Then, start the main app** in the second shell:
 
-<div class="impl node">
-
-```sh
+::: code-group
+```sh [Node.js]
 cds watch
 ```
-
-</div>
-
-<div class="impl java">
-
-```sh
+```sh [Java]
 mvn spring-boot:run
 ```
 
-</div>
+:::
 
-#### Remote `getCsn()` Calls to Sidecar at Runtime {.node}
 
-When you now run and use our application again as described in the previous section [See Effects in SAP Fiori UIs](#test-fiori-node), you can see in the trace logs that the main app sends `getCsn` requests to the sidecar, which in response to that reads and returns the main app's models. That means, the models from two levels up the folder hierarchy as configured by `root: ../..` for development.
+#### Remote `getCsn()` Calls to Sidecar at Runtime in Node.js
 
-### See Effects in SAP Fiori UIs {#test-fiori-java .java}
+When you now run and use our application again as described in the previous section [See Effects in SAP Fiori UIs](#see-effects-in-sap-fiori-uis), you can see in the trace logs that the main app sends `getCsn` requests to the sidecar, which in response to that reads and returns the main app's models. That means, the models from two levels up the folder hierarchy as configured by `root: ../..` for development.
+
+### See Effects in SAP Fiori UIs in CAP Java
 
 To see the effects in the UIs open three anonymous browser windows, one for each user to log in, and:
 
@@ -375,7 +331,7 @@ For example the displayed UI should look like that for `erin`:
 
 ![A standard SAP Fiori UI including the new columns ratings and isbn that are available to erin.](assets/image-20220630132726831.png)
 
-## Feature Vector Providers {.node}
+## Feature Vector Providers in Node.js
 
 In principle, features can be toggled *per request* using the `req.features` property (`req` being the standard HTTP req object here, not the CAP runtimes `req` object). This property is expected to contain one of the following:
 
@@ -395,7 +351,7 @@ cds.on('bootstrap', app => app.use ((req,res,next) => {
 
 ## Feature-Toggled Custom Logic
 
-<div class="impl java">
+### In CAP Java
 
 [Evaluate the `FeatureTogglesInfo` in custom code](../../java/reflection-api#using-feature-toggles-in-custom-code) to check if a feature is enabled:
 
@@ -409,9 +365,7 @@ if (features.isEnabled("discount")) {
 }
 ```
 
-</div>
-
-<div class="impl node">
+### In Node.js
 
 Within your service implementations, you can react on feature toggles by inspecting `cds.context.features` like so:
 
@@ -438,5 +392,3 @@ if (reviews) {
 }
 // common coding...
 ```
-
-</div>
