@@ -135,7 +135,7 @@ entity Genres : sap.common.CodeList {
 
 ###### Focus on Domain
 > [!tip] Primary Focus on Domain
-> Strive to keep your domain models simple, concise and comprehensible, focused on the core concepts of your domain, i.e., [_“Keep it simple, stupid!”_](https://en.wikipedia.org/wiki/kiss_principle). Factor out secondary concerns into separate sources, which _extend_ and _annotate_ the core models.\
+> Strive to keep your domain models simple, concise and comprehensible, focused on the core concepts of your domain, that is, [_“Keep it simple, stupid!”_](https://en.wikipedia.org/wiki/kiss_principle). Factor out secondary concerns into separate sources, which _extend_ and _annotate_ the core models.\
 > See also: [_Separation of Concerns_](#separation-of-concerns).
 
 [Learn more about _Domain Modeling_.](../guides/domain/index){ .learn-more}

@@ -1206,7 +1206,7 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 | `isAuthenticated()` | _True if the current user has been authenticated._                                                                   | `authenticated-user` |
 | `isSystemUser()`    | _Indicates whether the current user has pseudo-role `system-user`._                                                  | `system-user`        |
 | `isInternalUser()`  | _Indicates whether the current user has pseudo-role `internal-user`._                                                | `internal-user`      |
-| `isPrivileged()`    | _Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted._ | -                    |
+| `isPrivileged()`    | _Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), that is is unrestricted._ | -                    |
 
 </div>
 

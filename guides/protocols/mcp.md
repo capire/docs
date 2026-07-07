@@ -374,7 +374,7 @@ During startup, the generated MCP servers and their URL are added to the client-
 When the application stops, the added configuration is removed. This is only intended for local development.
 
 > [!warning] For Development Only
-> The autowiring is only enabled during development (i.e., when running `cds watch` or `mvn cds:watch`) and not meant for production use cases.
+> The autowiring is only enabled during development (that is, when running `cds watch` or `mvn cds:watch`) and not meant for production use cases.
 
 #### Mock Authentication
 

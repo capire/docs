@@ -535,7 +535,7 @@ class BooksService extends cds.ApplicationService {
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `CSN definition` of an entity served by this service → from [`this.entities`](#entities)
 - A `string` corresponding to the _name_ of an entity served by this service
 - A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
 

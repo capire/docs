@@ -205,7 +205,7 @@ let input = 201 //> might be entered by end users
 let books = await SELECT.from `Books` .where ('ID='+input)
 let bookz = await SELECT.from `Books` .where (`ID=${input}`)
 ```
-> **Note** also that tagged template strings never have surrounding parentheses! I.e., the third line above does the very same string concatenation as the second line.
+> **Note** also that tagged template strings never have surrounding parentheses! That means, the third line above does the very same string concatenation as the second line.
 
 
 A malicious user might enter some SQL code fragment like that:

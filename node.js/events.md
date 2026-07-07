@@ -545,7 +545,7 @@ All errors are collected in property `req.errors`, which is initially `undefined
 if (req.errors) ... //> errors occurred
 ```
 
-After each phase of request processing, i.e. _before_ / _on_ / _after_, the framework checks whether errors got recorded in `req.errors`. If so, it automatically [rejects](#req-reject) the request with an aggregate error containing all recorded errors, and the request is not processed further. So, in essence, the above ends up in the equivalent of:
+After each phase of request processing, that is, _before_ / _on_ / _after_, the framework checks whether errors got recorded in `req.errors`. If so, it automatically [rejects](#req-reject) the request with an aggregate error containing all recorded errors, and the request is not processed further. So, in essence, the above ends up in the equivalent of:
 
 ```js
 return req.reject ({
