@@ -459,7 +459,7 @@ This allows us to update imported APIs later on using standard commands like `np
 
 You can also `cds import` APIs from other sources, such as OData APIs for customer data from SAP S/4 HANA systems:
 
-1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, e.g., from [*SAP Business Accelerator Hub*](https://api.sap.com):
+1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, for example, from [*SAP Business Accelerator Hub*](https://api.sap.com):
 
    ::: details Detailed steps through SAP Business Accelerator Hub ...
       - Open https://api.sap.com in your browser
@@ -630,7 +630,7 @@ namespace sap.capire.s4;
 
 The noteworthy aspects here are:
 
-- We map names to match our domain, e.g., `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
+- We map names to match our domain, for example, `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
 
 - For entity `Flights` we flatten data from associations directly into the consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
 
@@ -1080,7 +1080,7 @@ await s4.run (q2)
 > Modifying queries prior to forwarding them to remote services is a powerful technique to implement advanced integration scenarios. For example, you can adapt queries to the capabilities of target services, implement custom filtering, paging, or sorting logic, or even split and merge queries across multiple services.
 
 ::: details First-Class Query Objects
-On a side note: We leverage key principles of [_first-class objects_](https://google.com/search?q=first+class+objects+programming) here, as known from functional programming and dynamic languages: As queries are represented as first-class CQN objects, we can construct and manipulate them programmatically at runtime, pass them as arguments, and return them from functions. And, not the least, this opens the doors for things like higher-order queries, query delegation – e.g. push down to databases –, and late materialization.
+On a side note: We leverage key principles of [_first-class objects_](https://google.com/search?q=first+class+objects+programming) here, as known from functional programming and dynamic languages: As queries are represented as first-class CQN objects, we can construct and manipulate them programmatically at runtime, pass them as arguments, and return them from functions. And, not the least, this opens the doors for things like higher-order queries, query delegation – for example push down to databases –, and late materialization.
 :::
 
 > [!warning] Always Clone Before Modifying
@@ -1238,7 +1238,7 @@ await SELECT.from (Bookings) .where`Flight.ID in ${flightIDs}`
 :::
 
 > [!tip] What is 'Navigation'?
-> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
+> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – for example, `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
 
 
 ### Expands

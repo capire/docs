@@ -762,7 +762,7 @@ If not done yet, prepare your project Cloud deployment as [explained before](./a
 
 Policies can be automatically deployed to the AMS server during deployment of the application by means of AMS deployer provided by module `@sap/ams`.
 
-Enhancing the project by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deployment.
+Enhancing the project by `cds add ams` automatically adds task for example in the MTA for AMS policy deployment.
 
 <div class="impl java">
 

@@ -73,7 +73,7 @@ annotate TravelService.Travels with {
 
 The constraints are enforced automatically by the CAP runtimes on any input, and if failures occur, the request is ultimately rejected and the transaction rolled back.
 
-Some of the checks, e.g. the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
+Some of the checks, for example, the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
 
 
 

@@ -597,7 +597,7 @@ We can also send such OData requests programmatically, for example, doing the ve
     await cds.service.bindings
     ```
     ::: details About _cds.service.bindings_ ...
-    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, e.g., within `cds repl`.
+    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, for example, within `cds repl`.
     ```js
     [cds] - using bindings from: { registry: '~/.cds-services.json' }
     Bindings {

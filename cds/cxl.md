@@ -234,7 +234,7 @@ This syntax diagram describes the possible expressions:
 
   ### In Queries
 
-  Expressions can be used in various parts of a query, e.g., on the select list, in the where clause, in order by clauses, and more:
+  Expressions can be used in various parts of a query, for example,, on the select list, in the where clause, in order by clauses, and more:
 
   ```cds live
   SELECT from Books {

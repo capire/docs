@@ -114,7 +114,7 @@ let books = await cats.run (query)
 
 > `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
-The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
+The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), for example:
 
 ```js
 const db = cds.db

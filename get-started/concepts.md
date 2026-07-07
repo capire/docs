@@ -150,7 +150,7 @@ INNER JOIN Countries as country ON country.code = author.country_code
 -- the actual filter condition:
 WHERE country.code = 'GB';
 ```
-Path expressions in *infix filters*  become *SEMI JOINs*, e.g.using `IN`:
+Path expressions in *infix filters*  become *SEMI JOINs*, for example, using `IN`:
 ```sql
 CREATE VIEW EnglishBooks AS SELECT * FROM Books
 -- for Association Books:author:

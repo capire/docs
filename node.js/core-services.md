@@ -520,9 +520,11 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
+|Method | Description | Example
+| --- | --- | --- |
+| `.on`| handlers _fulfill_ requests | reading/writing data from/to databases |
+| `.before` | handlers run before the `.on` handlers | validating inbound data |
+| `.after` | handlers run after the `.on` handlers | enrich outbound data |
 
 **Argument `event`** can be one of:
 
@@ -537,7 +539,7 @@ class BooksService extends cds.ApplicationService {
 
 - A `CSN definition` of an entity served by this service → from [`this.entities`](#entities)
 - A `string` corresponding to the _name_ of an entity served by this service
-- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
+- A `path`  navigating from a served entity to associated ones, e.g., `Books/author`
 
 **Multiple `events` or `entities`** – for both parameters, you can also specify:
 
