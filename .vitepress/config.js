@@ -44,6 +44,17 @@ const config = defineConfig({
     toc: {
       level: [2,3]
     },
+    anchor: {
+      slugify: (str) => str.replace(/\{[^}]*\}/g, '').normalize('NFKD')
+        .replace(/[\u0300-\u036F]/g, '')
+        .replace(/[\u0000-\u001f]/g, '')
+        .replace(/\./g, '')
+        .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'\u2018\u2019\u201C\u201D<>,.?/]+/g, '-')
+        .replace(/-{2,}/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/^(\d)/, '_$1')
+        .toLowerCase()
+    },
     container: { // Doesn't seem to work yet
       infoLabel: 'Info',
       noteLabel: 'Note',
