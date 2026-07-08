@@ -47,7 +47,6 @@ const config = defineConfig({
     anchor: {
       // VS Code-compatible GitHub-style slugifier (mirrors markdown-language-features/src/slugify.ts)
       slugify: (str) => str
-        .replace(/\{[^}]*\}/g, '')
         .trim().toLowerCase()
         .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
         .replace(/\s/g, '-'),
