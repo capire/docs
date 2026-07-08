@@ -368,13 +368,11 @@ service Sue {
 }
 ```
 
-In addition to server-side input validation as introduced above, this adds a corresponding `@FieldControl` annotation to the EDMX so that OData / Fiori clients would enforce a valid entry, thereby avoiding unnecessary request roundtrips:
+::: warning Deep updates not covered
+`@mandatory` validation is **not** applied to nested data in deep update operations. To enforce mandatory values in those cases, use the [`not null` constraint](../../cds/cdl#constraints) instead.
+:::
 
-```xml
-<Annotations Target="Sue.Books/title">
-  <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
-</Annotations>
-```
+[Learn more about `@Fieldcontrol` annotation with `@mandatory`.](#mandatory-1){.learn-more}
 
 <div id="mandatorywithexpressions"/>
 
