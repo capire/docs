@@ -82,7 +82,7 @@ const { Books } = cds.entities
 let q1 = SELECT.from (Books) .where `ID=${201}`
 ```
 
-[Learn more about using reflected definitions from a service's model](core-services#entities){.learn-more}
+[Learn more about using reflected definitions from a service's model](core-services#-entities){.learn-more}
 
 ####  Not Locked in to SQL
 

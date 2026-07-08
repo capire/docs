@@ -576,10 +576,10 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 | `and`, `or` | Logical operators. | `x>1 or y<2` |
 
 > [!tip] Bivalent `==` and `!=` Operators
-> In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent-and-operators) section of the databases documentation.
+> In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent--and--operators) section of the databases documentation.
 
 > [!tip] Ternary `?:` Operator 
-> In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary-operator) section of the databases documentation.
+> In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary--operator) section of the databases documentation.
 
 
 

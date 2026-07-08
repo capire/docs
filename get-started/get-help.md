@@ -212,7 +212,7 @@ module.exports = cds.server
 |              | Explanation                                                                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
 | _Root Cause_ | Most probably, the service name in the `requires` section does not match the served service definition.                                                |
-| _Solution_   | Set the `.service` property in the respective `requires` entry. See [cds.connect()](../node.js/cds-connect#cds-requires-srv-service) for more details. |
+| _Solution_   | Set the `.service` property in the respective `requires` entry. See [cds.connect()](../node.js/cds-connect#cdsrequiressrvservice) for more details. |
 
 
 ### Why does my remote service call not work?

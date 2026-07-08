@@ -75,13 +75,13 @@ Let's analyze the highlighted the code above line by line:
 ```js :line-numbers=2
 const ... cds.test... // > loads the cds-test module
 ```
-- By accessing [`cds.test`](#class-cds-test-test) the `cds-test` module is loaded, which ensures that...
+- By accessing [`cds.test`](#class-cdstesttest) the `cds-test` module is loaded, which ensures that...
 - Functions like [`describe`](https://vitest.dev/api/describe.html), [`test`](https://vitest.dev/api/test.html), [`it`](https://vitest.dev/api/test.html), etc. are made available in test scope.
 
 ```js :line-numbers=2
 const { GET, ... } = cds.test ('@capire/bookshop')
 ```
-- Calling the [`cds.test()`](#cds-test) function launches a CAP server for the given CAP project.
+- Calling the [`cds.test()`](#cdstest) function launches a CAP server for the given CAP project.
 
 ```js :line-numbers=3
 defaults.auth = { username: 'alice' }
@@ -171,7 +171,7 @@ To keep your tests portable across different test runners, it's recommended to a
 ### Dos and Don'ts
 
 ::: danger Don't load `cds.env` before `cds.test()`
-To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cds-test) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds-test-env-check)
+To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cdstest) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds_test_env_check)
 :::
 
 ::: warning Keep it simple, stupid!
@@ -181,14 +181,14 @@ Using these bells and whistles might also cause conflicts with generic features 
 :::
 
 ::: tip  Avoid `process.chdir()` -> prefer `cds.test.in()`
-CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cds-test), or use [`cds.test.in()`](#test-in-folder) instead.
+CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cdstest), or use [`cds.test.in()`](#test-in-folder-) instead.
 :::
 
 
 
 ## Class `cds.test.Test`
 
-Instances of this class are returned by [`cds.test()`](#cds-test), for example:
+Instances of this class are returned by [`cds.test()`](#cdstest), for example:
 
 ```js
 const test = cds.test()
@@ -207,7 +207,7 @@ test.run().in(_dirname)
 
 ### cds.test() {.method}
 
-This method is the most convenient way to start a test server. It's actually just a convenient shortcut to construct a new instance of class `Test` and call [`test.run()`](#test-run), defined as follows:
+This method is the most convenient way to start a test server. It's actually just a convenient shortcut to construct a new instance of class `Test` and call [`test.run()`](#test-run-), defined as follows:
 
 ```js
 const { Test } = cds.test
@@ -391,7 +391,7 @@ The implementation redirects any console operations in a `beforeAll()` hook, cle
 
 ### test. run (...) {.method}
 
-This is the method behind [`cds.test()`](#cds-test) to start a CDS server, that is the following are equivalent:
+This is the method behind [`cds.test()`](#cdstest) to start a CDS server, that is the following are equivalent:
 
 ```js
 cds.test(...)
@@ -412,7 +412,7 @@ cds.test('serve','srv/cat-service.cds')
 cds.test('serve','CatalogService')
 ```
 
-You can optionally add [`test.in(folder)`](#test-in-folder) in fluent style to run the test in a specific folder:
+You can optionally add [`test.in(folder)`](#test-in-folder-) in fluent style to run the test in a specific folder:
 
 ```js
 cds.test('serve','srv/cat-service.cds').in('/cap/samples/bookshop')
@@ -435,7 +435,7 @@ cds.test().in('/cap/samples/bookshop') //> equivalent
 
 ### test. in (folder, ...) {.method}
 
-Safely switches [`cds.root`](cds-facade#cds-root) to the specified target folder. Most frequently you'd use it in combination with starting a server with [`cds.test()`](#cds-test) in fluent style like that:
+Safely switches [`cds.root`](cds-facade#cds-root) to the specified target folder. Most frequently you'd use it in combination with starting a server with [`cds.test()`](#cdstest) in fluent style like that:
 
 ```js
 let test = cds.test(...).in(__dirname)
@@ -460,7 +460,7 @@ cds.test(__dirname)               //> target folder: __dirname
 
 This would result in the test server started from `__dirname`, but erroneously using `cds.env` loaded from `./`.
 
-As these mistakes end up in hard-to-resolve follow up errors, [`test.in()`](#test-in-folder) can detect this if environment variable `CDS_TEST_ENV_CHECK` is set. The previous code will then result into an error like that:
+As these mistakes end up in hard-to-resolve follow up errors, [`test.in()`](#test-in-folder-) can detect this if environment variable `CDS_TEST_ENV_CHECK` is set. The previous code will then result into an error like that:
 
 ```sh
 CDS_TEST_ENV_CHECK=y jest cds.test.test.js

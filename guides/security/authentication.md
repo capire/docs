@@ -336,7 +336,7 @@ Integration tests running in production profile should verify that unauthenticat
 <div class="impl node">
 
 [Learn more about testing with authenticated endpoints.](../../node.js/cds-test#authentication){.learn-more}
-[Learn more about testing.](../../node.js/cds-test#testing-with-cds-test){.learn-more}
+[Learn more about testing.](../../node.js/cds-test#testing-with-cdstest){.learn-more}
 
 </div>
 
@@ -1290,7 +1290,7 @@ module.exports = function custom_auth (req, res, next) {
 -->
 
 :::tip
-In case you want to customize the `cds.context.user`, check out [this example](../../node.js/cds-serve#customization-of-cds-context-user).
+In case you want to customize the `cds.context.user`, check out [this example](../../node.js/cds-serve#customization-of-cdscontextuser).
 :::
 
 </div>

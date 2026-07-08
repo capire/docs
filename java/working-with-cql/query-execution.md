@@ -223,7 +223,7 @@ long deleteCount = service.run(delete).rowCount();
 
 ## Views and Projections { #views }
 
-With CDS [views](../../cds/cdl#views-projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
+With CDS [views](../../cds/cdl#views--projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
 
 From the CDS model the CDS compiler generates [DDL](../../guides/databases/cdl-to-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
 

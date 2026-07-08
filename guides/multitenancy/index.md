@@ -676,7 +676,7 @@ There are several ways to update the database schema of a multitenant applicatio
 * For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update).
 * For **CAP Node.js** applications, you can use either of the following as shown in the examples below:
   - the `cds-mtx upgrade` command from a terminal
-  - the [MTX Sidecar API](mtxs#upgrade-tenants-→-jobs)
+  - the [MTX Sidecar API](mtxs#upgrade-tenants--jobs)
   - via a [CloudFoundry hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks)
   - via a [CloudFoundry task](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/tasks/)
   - via a [Kubernetes job](https://kubernetes.io/docs/concepts/workloads/controllers/job/)

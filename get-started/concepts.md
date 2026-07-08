@@ -711,7 +711,7 @@ In effect your service implementations stay agnostic to (wire) protocols, which 
 
 ![protocol-adapters.drawio](./assets/concepts/protocol-adapters.drawio.svg)
 
-The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local-remote).
+The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local--remote).
 
 Inbound:
 

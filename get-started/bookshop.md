@@ -686,7 +686,7 @@ While the generic providers serve most CRUD requests out of the box, you can add
 
 - Use [declarative constraints](#declarative-constraints) for most input validation cases, which are enforced by generic runtimes automatically.
 
-- Add [custom event handlers in Node.js](#custom-handlers-in-node-js) or [in Java](#custom-handlers-in-java) to CAP services for more complex programmatic logic, such as modifying response data, or handling [custom actions](#custom-actions).
+- Add [custom event handlers in Node.js](#custom-handlers-in-nodejs) or [in Java](#custom-handlers-in-java) to CAP services for more complex programmatic logic, such as modifying response data, or handling [custom actions](#custom-actions).
 
 > [!note] Choosing between Node.js and Java
 > The latter is the first time in this guide where you need to choose between Node.js and Java as your CAP runtime.
