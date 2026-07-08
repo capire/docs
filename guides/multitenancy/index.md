@@ -894,7 +894,7 @@ To help ensure that the generated SAP HANA tenant UUID is unique within a region
 like `prefix-${org}-${space}` in Cloud Foundry.
 
 :::warning Prefix is mandatory
-The <Config label="hana_tenant_prefix" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant `t0` is created with its own SAP HANA tenant.
+The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant `t0` is created with its own SAP HANA tenant.
 :::
 
 :::warning Length restriction
@@ -913,7 +913,20 @@ For **CAP Java** applications you need to set the same prefix in the <Config jav
     CDS_MULTITENANCY_HANAMTSERVICE_HANATENANTPREFIX: "some-prefix"
 ```
 
-##### Pass the SAP HANA Tenant ID with a Subscription
+##### Assign many tenant containers to a common HANA tenant
+
+To group the tenant containers of many applications or microservices in a common HANA tenant, you need to make sure that the same
+HANA tenant id is used.
+
+![One HANA tenant for many applications or microservices](./assets/hana_tenants_for_many.drawio.svg)
+
+**Option 1: Configure the same `hana_tenant_prefix`**
+###### Option 1: Configure the same `hana_tenant_prefix`
+
+You can configure the same [`hana_tenant_prefix`](#mandatory-specify-a-unique-prefix-for-the-sap-hana-tenant-name) many applications or microservices. With that, the SAP HANA tenant ID is generated in the same way for each subscriber tenant.
+
+**Option 2: Pass the SAP HANA Tenant ID with a Subscription**
+###### Option 2: Pass the SAP HANA Tenant ID with a Subscription
 
 **... in CAP Node.js**
 ###### CAP Node.js
@@ -935,8 +948,6 @@ If you want to control the ID of the SAP HANA tenant ID on your own, you can pas
 ```
 The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
 except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
-
-![One HANA tenant for many applications](./assets/hana_tenants_for_many.drawio.svg)
 
 **... in CAP Java**
 ###### CAP Java
@@ -965,8 +976,6 @@ There are still some limitations with the current client implementation.
 
 - **Database ID is Mandatory**
   As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](./mtxs#deployment-config).
-- [`clusterSize` configuration](./mtxs#saas-provisioning-config) needs to be set to `1` (default is `3`). HANA TMS v2 does not provide a performant way to determine all database IDs,
-so clustering the upgrade by database does not work properly.
 
 
 ## SaaS Dependencies {#saas-dependencies}
