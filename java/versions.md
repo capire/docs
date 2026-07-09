@@ -71,7 +71,7 @@ The following table lists these minimum versions for various common dependencies
 | @sap/cds-dk | 9 | [latest 10.x](https://www.npmjs.com/package/@sap/cds-dk) |
 | @sap/cds-compiler | 6 | [latest 7.x](https://www.npmjs.com/package/@sap/cds-compiler) |
 | Spring Boot | 4.0 | [latest 4.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
-| XSUAA | 4.0 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
+| XSUAA | 4.0 | [latest 4.x](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
 | SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
 | Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
 | Node.js | 22 | 24 |
