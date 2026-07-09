@@ -115,7 +115,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
 Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. The following list shows examples of such changes:
 
 - Renaming entities or fields (instead, add new ones and migrate data)
-- Changing data types in incompatible ways (e.g., from String to Integer)
+- Changing data types in incompatible ways (for example, from String to Integer)
 - Removing entities or fields (instead, consider deprecating them first)
 - Reducing the length of strings or binary fields
 - Reducing the precision of numeric fields
@@ -198,4 +198,4 @@ For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.
 Please be aware that Liquibase [changed its license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
 :::
 
-Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).
+Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-in-cap-java).

@@ -138,7 +138,7 @@ for (let each of m.entities('my.bookshop')) console.log (each.name)
 
 > [!info]
 > Note: In the dictionaries returned by `.entities` there are no entries for [`.texts`](#texts) entities, as these are generated, and hence living in a shadow world. They did show up in former releases, which caused a lot of confusion, and was fixed since cds 9.6.
-> They are always accessible via the main entity's [`.texts`](#texts) property, e.g. `Books.texts`.
+> They are always accessible via the main entity's [`.texts`](#texts) property, for example `Books.texts`.
 
 
 ### each() {#each .method }

@@ -69,6 +69,14 @@ CAP Java 5 uses Spring Boot 4 and Spring Security 7 as the underlying framework.
 
 You must also upgrade the [BTP Security Library](https://github.com/SAP/cloud-security-services-integration-library) to version 4.0.0 or later.
 
+#### Test Code Changes { #spring-boot-4-test-code }
+
+While regular CAP Java application code rarely touches Spring Boot APIs directly, test code typically does. Spring Boot 4 introduces a new module structure for its testing support, which results in package name changes that can break existing test classes. Common examples are the test slice annotations (such as `@AutoConfigureMockMvc`, `@WebMvcTest`, or `@DataJpaTest`) that were relocated as part of this restructuring.
+
+Refer to the [Test Code section of the Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide#test-code) for the complete list of affected packages and classes.
+
+These package renames are already covered by the [OpenRewrite community recipes](https://docs.openrewrite.org/recipes/java/spring/boot4) for Spring Boot 4, so you can apply them automatically together with the [CAP Java OpenRewrite migrations](#automatic-cap-java-migrations-with-openrewrite) above. The same applies to the commercial recipes offered by the [Moderne platform](https://www.moderne.ai/).
+
 ### Minimum Versions
 
 CAP Java 5.0 increased some minimum required versions:
