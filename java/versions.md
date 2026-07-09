@@ -83,8 +83,8 @@ The following table lists these minimum versions for various common dependencies
 | CAP Java | n/a | [latest 4.9.x](https://central.sonatype.com/artifact/com.sap.cds/cds-services-bom/versions) |
 | JDK | 17 | 21 |
 | Maven | 3.8.8 | 3.9.9 |
-| @sap/cds-dk | 8 | [latest 8.x](https://www.npmjs.com/package/@sap/cds-dk) |
-| @sap/cds-compiler | 5 | [latest 5.x](https://www.npmjs.com/package/@sap/cds-compiler) |
+| @sap/cds-dk | 9 | [latest 9.x](https://www.npmjs.com/package/@sap/cds-dk) |
+| @sap/cds-compiler | 6 | [latest 6.x](https://www.npmjs.com/package/@sap/cds-compiler) |
 | Spring Boot | 3.0 | [latest 3.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
 | XSUAA | 3.0 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
 | SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
