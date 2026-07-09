@@ -901,6 +901,13 @@ The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.
 The prefix and subscriber tenant name are each limited to 63 characters maximum.
 :::
 
+:::warning `hana_tenant_prefix` is only used to generate the SAP HANA tenant UUID
+The `hana_tenant_prefix` is only used to generate the SAP HANA tenant UUID to avoid duplicates when creating a
+SAP HANA tenant. Although it is added as `prefix` label to the SAP HANA tenant, it is not reliable and must not
+be used for any query.
+operation.
+:::
+
 
 ##### Mandatory for CAP Java Applications
 For **CAP Java** applications you need to set the same prefix in the <Config java>cds.multitenancy.hanaMtService.hanaTenantPrefix</Config> property. We recommend doing this using the environment variable in the _mta.yaml_:
@@ -922,10 +929,14 @@ To group the tenant containers of many applications or microservices in a common
 **Option 1: Configure the same `hana_tenant_prefix`**
 : You can configure the same [`hana_tenant_prefix`](#mandatory-specify-a-unique-prefix-for-the-sap-hana-tenant-name) many applications or microservices. With that, the SAP HANA tenant ID is generated in the same way for each subscriber tenant.
 
+: If you choose this options, the following preconditions need to be met
+- The subscriber tenant ID (BTP tenant ID) needs to be the same for all applications or microservices.
+- All applciations or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service).
+
 **Option 2: Pass the SAP HANA Tenant ID with a Subscription**
 
 : **... in CAP Node.js**
-  
+
    If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](./mtxs#put-tenant):
    ```jsonc
    {
@@ -943,12 +954,12 @@ To group the tenant containers of many applications or microservices in a common
    }
    ```
   The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides    the prefix settings mentioned earlier,
-  except for the internal tenant `t0`. Also ensure that the ID is unique within a region.   
-  
+  except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
+
 :  **... in CAP Java**
 
   To specify the ID of the SAP HANA tenant in **CAP Java** applications you can register a custom handler for the `before`    phase of the `SUBSCRIBE` event that sets the `hana_tenant_id` within the provisioning parameters:
-  
+
   ```java
   @Before
   public void beforeSubscription(SubscribeEventContext context) {
@@ -956,9 +967,9 @@ To group the tenant containers of many applications or microservices in a common
           Collections.singletonMap("hana_tenant_id", "<ID>"));
   }
   ```
-  
+
   This will affect every new [tenant subscription](../../java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
-  
+
 <div id="tmscmk" />
 
 
