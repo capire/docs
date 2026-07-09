@@ -1,39 +1,19 @@
----
-impl-variants: true
----
 
 # Using PostgreSQL
 
-<div class="impl node">
-
 This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite).
-
-*Learn about migrating from the former `cds-pg` in the [Migration](#migration) chapter.*{.learn-more}
-
-</div>
-
-<div class="impl java">
 
 CAP Java 3 is tested on [PostgreSQL](https://www.postgresql.org/) 16 and most CAP features are supported on PostgreSQL.
 
-[Learn more about features and limitations of using CAP with PostgreSQL](../../java/cqn-services/persistence-services#postgresql){.learn-more}
 
-</div>
+*Learn about migrating from the former `cds-pg` in the [Migration](#migration-from-cds-pg-in-node-js) chapter.*{.learn-more}
+[Learn more about features and limitations of using CAP Java with PostgreSQL.](../../java/cqn-services/persistence-services#postgresql){.learn-more}
 
-<ImplVariantsHint />
 
 [[toc]]
 
 
 ## Setup & Configuration
-
-<div class="impl node">
-
-Run this to use [PostgreSQL](https://www.postgresql.org/) for production:
-
-</div>
-
-<div class="impl java">
 
 To run CAP Java on PostgreSQL, add a Maven dependency to the PostgreSQL feature in `srv/pom.xml`:
 
@@ -45,21 +25,16 @@ To run CAP Java on PostgreSQL, add a Maven dependency to the PostgreSQL feature 
 </dependency>
 ```
 
-In order to use the CDS tooling with PostgreSQL, you also need to install the module `@cap-js/postgres`:
-
-</div>
+For CAP Node.js projects, and for CAP Java in order to use the CDS tooling with PostgreSQL, you also need to install the module `@cap-js/postgres`:
 
 ```sh
 npm add @cap-js/postgres
 ```
 
-<div class="impl java">
+After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#using-liquibase-in-cap-java) for PostgreSQL.
 
-After that, you can use the `cds deploy` command to [deploy](#using-cds-deploy) to a PostgreSQL database or to [create a DDL script](#using-liquibase-java) for PostgreSQL.
 
-</div>
-
-### Auto-Wired Configuration {.node}
+### Auto-Wired Configuration in Node.js
 
 The `@cap-js/postgres` package uses `cds-plugin` technique to auto-configure your application and use a PostgreSQL database for production.
 
@@ -84,7 +59,7 @@ Output:
 To connect to a PostgreSQL offering from the cloud provider in Production, leverage the [PostgreSQL on SAP BTP, hyperscaler option](https://discovery-center.cloud.sap/serviceCatalog/postgresql-hyperscaler-option). For local development and testing convenience, you can run PostgreSQL in a [docker container](#using-docker).
 
 
-<div class="impl java">
+### CAP Java on SAP BTP
 
 To consume a PostgreSQL instance from a CAP Java application running on SAP BTP, consider the following:
 
@@ -112,7 +87,6 @@ modules:
 :::
 
 > `BOOKSHOP-PG-DB` is the real PostgreSQL service instance name in this example.
-</div>
 
 
 ### Using Docker
@@ -141,13 +115,9 @@ You can use Docker to run a PostgreSQL database locally as follows:
    docker-compose -f pg.yml up -d
    ```
 
-<div class="impl java">
-
-::: tip
+::: tip Testcontainer in CAP Java using Spring Boot
 With the introduction of [Testcontainers support](https://spring.io/blog/2023/06/23/improved-testcontainers-support-in-spring-boot-3-1) in Spring Boot 3.1, you can create PostgreSQL containers on the fly for local development or testing purposes.
 :::
-
-</div>
 
 ## Service Bindings
 
@@ -155,13 +125,7 @@ You need a service binding to connect to the PostgreSQL database.
 
 In the cloud, use given techniques to bind a cloud-based instance of PostgreSQL to your application.
 
-<div class="impl node">
-
-For local development provide the credentials using a suitable [`cds env`](../../node.js/cds-env) technique, like one of the following.
-
-</div>
-
-### Configure Connection Data {.java}
+### Configure Connection Data in CAP Java
 
 If a PostgreSQL service binding exists, the corresponding `DataSource` is auto-configured.
 
@@ -181,11 +145,11 @@ spring:
 :::
 To start the application with the new profile `postgres-docker`, the `spring-boot-maven-plugin` can be used: `mvn spring-boot:run -Dspring-boot.run.profiles=postgres-docker`.
 
-[Learn more about the configuration of a PostgreSQL database](../../java/cqn-services/persistence-services#postgresql-1){ .learn-more}
+[Learn more about the configuration of a PostgreSQL database.](../../java/cqn-services/persistence-services#postgresql-1){ .learn-more}
 
-### Service Bindings for CDS Tooling {.java}
+### Service Bindings for CDS Tooling in CAP Java
 
-#### Using Defaults with `[pg]` Profile {.java}
+#### Using Defaults with `[pg]` Profile
 
 `@cds-js/postgres` comes with a set of default credentials under the profile `[pg]` that matches the defaults used in the [docker setup](#using-docker). So, if you stick to these defaults you can skip to deploying your database with:
 
@@ -193,7 +157,7 @@ To start the application with the new profile `postgres-docker`, the `spring-boo
 cds deploy --profile pg
 ```
 
-#### In Your Private `.cdsrc-private.json` {.java}
+#### In Your Private `.cdsrc-private.json`
 
 If you don't use the default credentials and want to use just `cds deploy`, you need to configure the service bindings (connection data) for the CDS tooling. Add the connection data to your private `.cdsrc-private.json`:
 
@@ -214,7 +178,9 @@ If you don't use the default credentials and want to use just `cds deploy`, you 
 }
 ```
 
-### Configure Service Bindings {.node}
+### Configure Service Bindings in Node.js
+
+For local development provide the credentials using a suitable [`cds env`](../../node.js/cds-env) technique, like one of the following.
 
 #### Using Defaults with `[pg]` Profile
 
@@ -515,7 +481,7 @@ to your database!
 :::
 
 
-## Using Liquibase (Java)
+## Using Liquibase in CAP Java
 
 In CAP Java projects you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how database changes are deployed. Liquibase lets you define database changes [in an SQL file](https://docs.liquibase.com/change-types/sql-file.html), use `cds deploy` to quickly generate DDL scripts which can be used by Liquibase.
 
@@ -617,7 +583,7 @@ If the changes in the model could lead to data loss, an error is raised.
 
 :::
 
-## Migration { .node }
+## Migration from cds-pg in Node.js
 
 Thanks to CAP's database-agnostic cds.ql API, we're confident that the new PostgreSQL service comes without breaking changes.
 

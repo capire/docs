@@ -24,8 +24,8 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 | `UInt8`                | Unsigned 8-bit integer, range *[ 0 ... 255 ]*                          | _TINYINT_      |
 | `Decimal`(`p`,`s`)     | Decimal with precision `p` and scale `s`                               | _DECIMAL_      |
 | `Double`               | Floating point with binary mantissa                                    | _DOUBLE_       |
-| `Date`                 | e.g. `2022-12-31`                                                      | _DATE_         |
-| `Time`                 | e.g. `23:59:59`                                                        | _TIME_         |
+| `Date`                 | for example, `2022-12-31`                                                      | _DATE_         |
+| `Time`                 | for example, `23:59:59`                                                        | _TIME_         |
 | `DateTime`             | _sec_ precision                                                        | _TIMESTAMP_    |
 | `Timestamp`            | _µs_ precision, with up to 7 fractional digits                         | _TIMESTAMP_    |
 | `String` (`length`)    | Default *length*: 255; on HANA: 5000                                   | _NVARCHAR_     |

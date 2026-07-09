@@ -188,7 +188,7 @@ Select.from(BOOKS).byParams("title", "author.name");
 
 #### Filtering Map Data <Beta />
 
-You can also filter by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`).
+You can also filter by _content_ of [map data](../cds-data.md#cds-map) (that is, elements of type `cds.Map`).
 
 Let's use this model as an example:
 
@@ -899,7 +899,7 @@ The pagination isn't stateful. If rows are inserted or removed before a subseque
 
 #### Sorting by Map Data <Beta />
 
-You can also sort by _content_ of [map data](../cds-data.md#cds-map) (i.e. elements of type `cds.Map`). Considering this model
+You can also sort by _content_ of [map data](../cds-data.md#cds-map) (that is, elements of type `cds.Map`). Considering this model
 
 ```cds
 entity Product : cuid {

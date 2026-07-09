@@ -20,7 +20,7 @@ For example, a *data model describes the type structure (commonly also called *'
 
 ### Representations
 
-Models can come in different *representations*, which follow different *syntaxes*. For example, we use the *CDL* syntax for *human-readable* representations of CDS models, while CSN is an *object notation*, i.e. a special form of *syntax*, used for *machine-readable* representations of CDS models. 
+Models can come in different *representations*, which follow different *syntaxes*. For example, we use the *CDL* syntax for *human-readable* representations of CDS models, while CSN is an *object notation*, that is a special form of *syntax*, used for *machine-readable* representations of CDS models. 
 
 ::: details On CSN representations... 
 

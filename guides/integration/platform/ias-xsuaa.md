@@ -11,7 +11,7 @@ It allows users to authenticate using various methods, including social logins, 
 
 When integrated with CAP applications, IAS can serve as the primary identity provider, managing user identities and authentication flows. 
 
-To integrate IAS with a CAP application, you typically need to configure the application to trust IAS as an identity provider and set up the necessary SSO protocols (e.g., SAML, OAuth2).
+To integrate IAS with a CAP application, you typically need to configure the application to trust IAS as an identity provider and set up the necessary SSO protocols (for example, SAML, OAuth2).
 For more details on configuring IAS with CAP applications, refer to the [SAP IAS documentation](https://help.sap.com/viewer/product/SAP_IDENTITY_AUTHENTICATION/).
 ## SAP Authorization and Trust Management Service (XSUAA)
 XSUAA is a service that provides authentication and authorization capabilities for applications running on SAP Business Technology Platform (BTP).
