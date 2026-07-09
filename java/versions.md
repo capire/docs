@@ -73,7 +73,7 @@ The following table lists these minimum versions for various common dependencies
 | Spring Boot | 4.0 | [latest 4.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
 | XSUAA | 4.0 | [latest 4.x](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
 | SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
-| Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
+| Java Logging | 3.7 | [latest 4.x](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
 | Node.js | 22 | 24 |
 
 #### Maintenance Version 4.9.x { #dependencies-version-4 }
@@ -88,7 +88,7 @@ The following table lists these minimum versions for various common dependencies
 | Spring Boot | 3.0 | [latest 3.x](https://central.sonatype.com/artifact/org.springframework.boot/spring-boot/versions) |
 | XSUAA | 3.0 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.security/java-bom/versions) |
 | SAP Cloud SDK | 5.9 | [latest](https://central.sonatype.com/artifact/com.sap.cloud.sdk/sdk-modules-bom/versions) |
-| Java Logging | 3.7 | [latest 4.x](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
+| Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
 | Node.js | 20 | 22 |
 
 
