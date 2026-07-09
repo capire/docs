@@ -157,7 +157,7 @@ public class ActuatorSecurityConfig {
 
 In case you want to write your own custom security configuration that acts as a last line of defense and handles any request you need to disable the CAP security configurations by setting <Config java>cds.security.authentication.authConfig.enabled: false</Config>, as Spring Security forbids registering multiple security configurations with an any request security matcher.
 
-If you even want to deactivate OAuth token validation for XSUAA or IAS, e.g. to establish an own authentication strategy, 
+If you even want to deactivate OAuth token validation for XSUAA or IAS, for example, to establish an own authentication strategy, 
 the following properties can be used:
 
 | Configuration Property                               | Description                                             | Default

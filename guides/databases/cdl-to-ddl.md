@@ -735,7 +735,7 @@ CREATE VIEW Bar AS SELECT ... FROM Foo; -- skipped [!code --]
 > All parts of the view definition not relevant for the signature, such as `where`, `group by`, `having`, `order by`, or `limit`, are ignored.
 
 > [!tip] Use Case: Replica Caching Tables
-A common use case for this annotation is to create projections on entities from imported APIs, i.e., so-called _consumption views_, and at the same time use them as replica cache tables.
+A common use case for this annotation is to create projections on entities from imported APIs, so-called _consumption views_, and at the same time use them as replica cache tables.
 
 
 
