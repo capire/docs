@@ -80,7 +80,7 @@ The following table lists these minimum versions for various common dependencies
 
 | Dependency | Minimum Version | Recommended Version |
 | --- | --- | --- |
-| CAP Java | n/a | [latest 3.10.x](https://central.sonatype.com/artifact/com.sap.cds/cds-services-bom/versions) |
+| CAP Java | n/a | [latest 4.9.x](https://central.sonatype.com/artifact/com.sap.cds/cds-services-bom/versions) |
 | JDK | 17 | 21 |
 | Maven | 3.8.8 | 3.9.9 |
 | @sap/cds-dk | 8 | [latest 8.x](https://www.npmjs.com/package/@sap/cds-dk) |
