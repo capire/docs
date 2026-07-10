@@ -930,7 +930,7 @@ To group the tenant containers of many applications or microservices in a common
 
 : If you choose this options, the following preconditions need to be met
 - The subscriber tenant ID (BTP tenant ID) needs to be the same for all applications or microservices.
-- All applciations or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service).
+- All applications or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service).
 
 **Option 2: Pass the SAP HANA Tenant ID with a Subscription**
 
