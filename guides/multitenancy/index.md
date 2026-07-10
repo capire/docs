@@ -901,7 +901,7 @@ The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.
 The prefix and subscriber tenant name are each limited to 63 characters maximum.
 :::
 
-:::warning `hana_tenant_prefix` is only used to generate the SAP HANA tenant UUID
+:::warning Do not use `hana_tenant_prefix` in queries
 The `hana_tenant_prefix` is only used to generate the SAP HANA tenant UUID to avoid duplicates when creating a
 SAP HANA tenant. Although it is added as `prefix` label to the SAP HANA tenant, it is not reliable and must not
 be used for any query.
