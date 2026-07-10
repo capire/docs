@@ -93,27 +93,46 @@ npm i @sap/cds        #> if necessary
 
 #### 3. Cloud MTA Build Tool {#mbt}
 
-- Run `mbt` in a terminal to check whether you've installed it.
-- If not, install it according to the [MTA Build Tool's documentation](https://sap.github.io/cloud-mta-build-tool/download).
-- For macOS/Linux machines, it's best to install using `npm`:
+Run `mbt` in a terminal to check whether you've installed it, otherwise install it as follows:
 
-  ```sh
-  npm i -g mbt
-  ```
+::: code-group
+```sh [macOS/Linux]
+npm i -g mbt
+```
+```PowerShell [Windows]
+npm i -g mbt
 
-- For Windows, [please also install `GNU Make`](https://sap.github.io/cloud-mta-build-tool/makefile/).
+# The MTA Build Tool requires GNU Make on Windows
+choco install make    # using Chocolatey
+```
+:::
+
+> On Windows, [`GNU Make` is required in addition](https://sap.github.io/cloud-mta-build-tool/makefile/). If you don't use [Chocolatey](https://chocolatey.org), follow the linked instructions to install it manually.
+
+[See the MTA Build Tool's documentation for details.](https://sap.github.io/cloud-mta-build-tool/download){.learn-more}
 
 #### 4. Cloud Foundry CLI w/ MTA Plugins {#cf-cli}
 
-- Run `cf -v` in a terminal to check whether you've installed version **8** or higher.
-- If not, install or update it according to the [Cloud Foundry CLI documentation](https://github.com/cloudfoundry/cli#downloads).
-- In addition, ensure to have the [MTA plugin for the Cloud Foundry CLI](https://github.com/cloudfoundry-incubator/multiapps-cli-plugin/tree/master/README.md) installed.
+Run `cf -v` in a terminal to check whether you've installed version **8** or higher. If not, install or update it as follows:
 
-   ```sh
-   cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
-   cf install-plugin -f multiapps
-   cf install-plugin -f html5-plugin
-   ```
+::: code-group
+```sh [macOS/Linux]
+brew install cloudfoundry/tap/cf-cli@8
+```
+```PowerShell [Windows]
+choco install cloudfoundry-cli    # using Chocolatey
+```
+:::
+
+[See the Cloud Foundry CLI documentation for details](https://github.com/cloudfoundry/cli#downloads){.learn-more}
+
+In addition, ensure to have the [MTA plugin for the Cloud Foundry CLI](https://github.com/cloudfoundry-incubator/multiapps-cli-plugin/tree/master/README.md) installed:
+
+```sh
+cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
+cf install-plugin -f multiapps
+cf install-plugin -f html5-plugin
+```
 
 ## Prepare for Production
 
