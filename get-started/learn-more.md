@@ -174,6 +174,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Workshop exercise content
 
 - [Service integration with SAP Cloud Application Programming Model](https://github.com/SAP-samples/cap-service-integration-codejam)
+- [A hands-on tour of CAP](https://github.com/SAP-samples/cap-tour-hands-on/)
 - [Stay cool, stay local: CAP local development workshop](https://github.com/SAP-samples/cap-local-development-workshop)
 - [Hands-on with CAP CDS](https://github.com/SAP-samples/cap-cds-hands-on)
 
