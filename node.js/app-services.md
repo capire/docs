@@ -164,11 +164,11 @@ When CAP's generic handlers run a CRUD operation, the result follows a consisten
 | Operation             | Return value                                                                                  |
 |-----------------------|-----------------------------------------------------------------------------------------------|
 | `READ`                | Array of matching records, or a single record / `null` when read by key                       |
-| `CREATE`              | Array with `.affected` (rows written); populated with rows from a `RETURNING` clause          |
+| `CREATE`              | Array with `.affected` (rows written); iterate to access the created rows' generated keys     |
 | `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
 | `DELETE`              | Array with `.affected` (rows deleted); reserved for rows from a `RETURNING` clause             |
 
-For `CREATE`, the array is populated with rows from a SQL `RETURNING` clause. As `RETURNING` is not yet supported, the result falls back to a lazy array that computes the created rows' generated primary keys on demand: iterating it (`[...result]`, `for…of`, `JSON.stringify`) populates those keys, avoiding the cost when you don't need them.
+For `CREATE`, the array will be populated with rows from a SQL `RETURNING` clause once that is supported. Until then, the result is a lazy array that computes the created rows' generated primary keys on demand: iterating it (`[...result]`, `for…of`, `JSON.stringify`) populates those keys, avoiding the cost when you don't need them.
 
 > [!warning] Iterate before indexing
 > Direct index access (`result[0]`) returns `undefined` until the array has been iterated at least once. Spread or loop over the result first.
