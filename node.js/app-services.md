@@ -113,7 +113,7 @@ This method is adding request handlers for handling managed data, as documented 
 
 ### _static_ handle_paging() {.method}
 
-This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination-sorting).
+This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination--sorting).
 
 
 

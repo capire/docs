@@ -25,7 +25,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 
 
-- [Keywords & Identifiers](#keywords-identifiers)
+- [Keywords & Identifiers](#keywords--identifiers)
 - [Built-in Types](#built-in-types)
 - [Literals](#literals)
 - [Model Imports](#model-imports)
@@ -696,7 +696,7 @@ entity Orders {
 }
 ```
 
-To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assert-range).
+To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assertrange).
 For localization of enum values, model them as [code list](./common#adding-own-code-lists).
 
 <br>
@@ -858,7 +858,7 @@ Result result = service.run(Select.from("UsingView"), params);
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cdspersistenceskip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 

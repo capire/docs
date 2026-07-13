@@ -455,7 +455,7 @@ const { Books } = require('../@cds-models/sap/capire/bookshop')
 const { Books } = require('#cds-models/sap/capire/bookshop')
 ```
 
-These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.js/cds-reflect#entities) during runtime, but offer you code completion and type hinting at design time:
+These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.js/cds-reflect#-entities) during runtime, but offer you code completion and type hinting at design time:
 
 ```js twoslash
 // @noErrors
