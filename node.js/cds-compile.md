@@ -102,7 +102,7 @@ let csn = cds.compile ({
 
 
 
-### Additional [Options](#additional-options)
+### Additional Options
 
 You can pass additional options like so:
 
