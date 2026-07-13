@@ -165,7 +165,8 @@ When CAP's generic handlers run a CRUD operation, the result follows a consisten
 |-----------------------|-----------------------------------------------------------------------------------------------|
 | `READ`                | Array of matching records, or a single record / `null` when read by key                       |
 | `CREATE`              | Array with `.affected` (rows written); iterate to access the created rows' generated keys     |
-| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
+| `UPDATE`              | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
+| `UPSERT`              | Array with `.affected` (rows written); reserved for rows from a `RETURNING` clause             |
 | `DELETE`              | Array with `.affected` (rows deleted); reserved for rows from a `RETURNING` clause             |
 
 For `CREATE`, the array will be populated with rows from a SQL `RETURNING` clause once that is supported. Until then, the result is a lazy array that computes the created rows' generated primary keys on demand: iterating it (`[...result]`, `for…of`, `JSON.stringify`) populates those keys, avoiding the cost when you don't need them.
