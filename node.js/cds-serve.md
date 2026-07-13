@@ -337,7 +337,7 @@ cds.middlewares.before = [
 ]
 ```
 
-[Learn more about Feature Vector Providers.](../guides/extensibility/feature-toggles#feature-vector-providers){.learn-more}
+[Learn more about Feature Vector Providers.](../guides/extensibility/feature-toggles#feature-vector-providers-in-nodejs){.learn-more}
 
 
 ### Current Limitations
