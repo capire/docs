@@ -178,7 +178,6 @@ For `CREATE`, the array will be populated with rows from a SQL `RETURNING` claus
 const created = await srv.create(Books).entries({title:'Catweazle'})
 created.affected            // 1
 const [row] = [...created]  // iterate first — row holds the generated key
-created[0]                  // same row (populated by the iteration above)
 ```
 
 For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause. Unlike `CREATE`, there are no generated keys to synthesize client-side, so — with `RETURNING` not yet supported — the array is currently always empty:
