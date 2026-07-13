@@ -161,7 +161,7 @@ In effect of this, for the user `carol` the feature `isbn` is enabled, for `erin
 ### In Production
 
 ::: warning Bring your own toggle provider for production
-Note that the previous sample is only for demonstration purposes. As user and tenant management is outside of CAP's scope, there's no out-of-the-box feature toggles provider for production yet. → Learn more about that in the following section [*Feature Vector Providers*](#feature-vector-providers-in-node-js).
+Note that the previous sample is only for demonstration purposes. As user and tenant management is outside of CAP's scope, there's no out-of-the-box feature toggles provider for production yet. → Learn more about that in the following section [*Feature Vector Providers*](#feature-vector-providers-in-nodejs).
 :::
 
 <div id="toggle-production-node-end" />

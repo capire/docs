@@ -23,7 +23,7 @@ cds build --production
 Build tasks are derived from the CDS configuration and project context. By default, CDS models are resolved from these sources:
 
 - _db/_, _srv/_, _app/_ — default root folders of a CAP project
-- _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles-in-node-js)
+- _fts/_ and its subfolders when using [feature toggles](../extensibility/feature-toggles#enable-feature-toggles-in-nodejs)
 - CDS model folders and files defined by [required services](../../node.js/cds-env#services)
   - Built-in examples: [Event Queues](../../node.js/event-queues#configuration) or [MTX-related services](../multitenancy/mtxs#mtx-services-reference)
 - Explicit `src` folder configured in the build task
