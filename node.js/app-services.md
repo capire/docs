@@ -164,7 +164,7 @@ When CAP's generic handlers run a CRUD operation, the result follows a consisten
 | Operation             | Return value                                                                                  |
 |-----------------------|-----------------------------------------------------------------------------------------------|
 | `READ`                | Array of matching records, or a single record / `null` when read by key                       |
-| `CREATE`              | Array with `.affected` (rows written); iterate to access the created rows' generated keys     |
+| `CREATE`              | Array with `.affected` (rows created); iterate to access the created rows' generated keys     |
 | `UPDATE`              | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
 | `UPSERT`              | Array with `.affected` (rows written); reserved for rows from a `RETURNING` clause             |
 | `DELETE`              | Array with `.affected` (rows deleted); reserved for rows from a `RETURNING` clause             |
