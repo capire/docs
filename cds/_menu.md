@@ -1,10 +1,10 @@
 
 # [Definition Language (CDL)](cdl)
 
-  ## [Keywords & Identifiers](cdl#keywords-identifiers)
+  ## [Keywords & Identifiers](cdl#keywords--identifiers)
   ## [Built-in Types & Literals](cdl#built-in-types)
-  ## [Entities & Type Definitions](cdl#entities-type-definitions)
-  ## [Views & Projections](cdl#views-projections)
+  ## [Entities & Type Definitions](cdl#entities--type-definitions)
+  ## [Views & Projections](cdl#views--projections)
   ## [Associations](cdl#associations)
   ## [Annotations](cdl#annotations)
   ## [Aspects](cdl#aspects)

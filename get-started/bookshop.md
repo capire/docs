@@ -135,7 +135,7 @@ entity Genres : sap.common.CodeList {
 
 ###### Focus on Domain
 > [!tip] Primary Focus on Domain
-> Strive to keep your domain models simple, concise and comprehensible, focused on the core concepts of your domain, i.e., [_“Keep it simple, stupid!”_](https://en.wikipedia.org/wiki/kiss_principle). Factor out secondary concerns into separate sources, which _extend_ and _annotate_ the core models.\
+> Strive to keep your domain models simple, concise and comprehensible, focused on the core concepts of your domain, that is, [_“Keep it simple, stupid!”_](https://en.wikipedia.org/wiki/kiss_principle). Factor out secondary concerns into separate sources, which _extend_ and _annotate_ the core models.\
 > See also: [_Separation of Concerns_](#separation-of-concerns).
 
 [Learn more about _Domain Modeling_.](../guides/domain/index){ .learn-more}
@@ -597,7 +597,7 @@ We can also send such OData requests programmatically, for example, doing the ve
     await cds.service.bindings
     ```
     ::: details About _cds.service.bindings_ ...
-    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, e.g., within `cds repl`.
+    The `cds.service.bindings` command fetches the service bindings from a running CAP server instance in another process, and makes them available in the current process, for example, within `cds repl`.
     ```js
     [cds] - using bindings from: { registry: '~/.cds-services.json' }
     Bindings {
@@ -686,7 +686,7 @@ While the generic providers serve most CRUD requests out of the box, you can add
 
 - Use [declarative constraints](#declarative-constraints) for most input validation cases, which are enforced by generic runtimes automatically.
 
-- Add [custom event handlers in Node.js](#custom-handlers-in-node-js) or [in Java](#custom-handlers-in-java) to CAP services for more complex programmatic logic, such as modifying response data, or handling [custom actions](#custom-actions).
+- Add [custom event handlers in Node.js](#custom-handlers-in-nodejs) or [in Java](#custom-handlers-in-java) to CAP services for more complex programmatic logic, such as modifying response data, or handling [custom actions](#custom-actions).
 
 > [!note] Choosing between Node.js and Java
 > The latter is the first time in this guide where you need to choose between Node.js and Java as your CAP runtime.
