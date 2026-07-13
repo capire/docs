@@ -2,8 +2,8 @@
 
 # [cds. compile()](cds-compile)
 
-  ## [cds. compile()](cds-compile#cds-compile)
-  ## [cds. compile.to ...](cds-compile#cds-compile-to)
+  ## [cds. compile()](cds-compile#cds-compile-)
+  ## [cds. compile.to ...](cds-compile#cds-compile-to-)
   ## [cds. load()](cds-compile#cds-load)
   ## [cds. parse()](cds-compile#cds-parse)
   ## [cds. minify()](cds-compile#cds-minify)

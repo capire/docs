@@ -58,7 +58,7 @@ const db2 = await cds.connect.to ({
 
 ### cds. services {#cds-connect-caching .property}
 
-When connecting to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve) are registered with [`cds.services`](cds-facade#cds-services) as well, a connect finds and returns them as local service connections.
+When connecting to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve-) are registered with [`cds.services`](cds-facade#cds-services) as well, a connect finds and returns them as local service connections.
 
 You can also access cached service instance like this:
 

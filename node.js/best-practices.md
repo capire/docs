@@ -251,7 +251,7 @@ Handling CSRF at the _App Router_ level ensures consistency across instances. Th
 
 With _Cross-Origin Resource Sharing_ (CORS) the server that hosts the UI can tell the browser about servers it trusts to provide resources. In addition, so-called "preflight" requests tell the browser if the cross-origin server will process a request with a specific method and a specific origin.
 
-If not running in production, CAP's [built-in server.js](cds-server#built-in-server-js) allows all origins.
+If not running in production, CAP's [built-in server.js](cds-server#built-in-serverjs) allows all origins.
 
 #### Custom CORS Implementation
 
@@ -368,7 +368,7 @@ The following articles might be of interest:
 
 ## Timestamps
 
-When using [timestamps](events#timestamp) (for example for managed dates) the Node.js runtime offers a way to easily deal with that without knowing the format of the time string. The `req` object contains a property `timestamp` that holds the current time (specifically `new Date()`, which is comparable to `CURRENT_TIMESTAMP` in SQL). It also stays the same until the request finished, so if it is used in multiple places in the same transaction or request it will always be the same.
+When using [timestamps](events#-timestamp) (for example for managed dates) the Node.js runtime offers a way to easily deal with that without knowing the format of the time string. The `req` object contains a property `timestamp` that holds the current time (specifically `new Date()`, which is comparable to `CURRENT_TIMESTAMP` in SQL). It also stays the same until the request finished, so if it is used in multiple places in the same transaction or request it will always be the same.
 
 Example:
 
@@ -379,7 +379,7 @@ srv.before("UPDATE", "EntityName", (req) => {
 });
 ```
 
-Internally the [timestamp](events#timestamp) is a JavaScript `Date` object, that is converted to the right format, when sent to the database. So if in any case a date string is needed, the best solution would be to initialize a Date object, that is then translated to the correct UTC String for the database.
+Internally the [timestamp](events#-timestamp) is a JavaScript `Date` object, that is converted to the right format, when sent to the database. So if in any case a date string is needed, the best solution would be to initialize a Date object, that is then translated to the correct UTC String for the database.
 
 
 ## Decimals and Int64 as Strings { #decimals-int64 }

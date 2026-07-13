@@ -137,8 +137,8 @@ for (let each of m.entities('my.bookshop')) console.log (each.name)
 ```
 
 > [!info]
-> Note: In the dictionaries returned by `.entities` there are no entries for [`.texts`](#texts) entities, as these are generated, and hence living in a shadow world. They did show up in former releases, which caused a lot of confusion, and was fixed since cds 9.6.
-> They are always accessible via the main entity's [`.texts`](#texts) property, for example `Books.texts`.
+> Note: In the dictionaries returned by `.entities` there are no entries for [`.texts`](#-texts) entities, as these are generated, and hence living in a shadow world. They did show up in former releases, which caused a lot of confusion, and was fixed since cds 9.6.
+> They are always accessible via the main entity's [`.texts`](#-texts) property, for example `Books.texts`.
 
 
 ### each() {#each .method }
@@ -254,11 +254,11 @@ All objects of a linked model containing CSN definitions are instances of this c
 
 For example, that applies to:
 
-- *`cds.model` [.definitions](#definitions), [.services](#services), [.entities](#entities)*
-- *`cds.service` [.entities](#entities-1), [.events](#events), [.actions](#actions-1)*
-- *`cds.entity`  [.keys](#keys), [.associations](#associations), [.compositions](#compositions), [.actions](#actions)*
-- *`cds.struct` [.elements](#elements)* (hence also *`cds.entity` .elements*)
-- *`cds.Association` [.foreignKeys](#foreignkeys)*
+- *`cds.model` [.definitions](#-definitions), [.services](#-services), [.entities](#-entities)*
+- *`cds.service` [.entities](#-entities-1), [.events](#-events), [.actions](#-actions-1)*
+- *`cds.entity`  [.keys](#-keys), [.associations](#-associations), [.compositions](#-compositions), [.actions](#-actions)*
+- *`cds.struct` [.elements](#-elements)* (hence also *`cds.entity` .elements*)
+- *`cds.Association` [.foreignKeys](#-foreignkeys)*
 
 Instances of `LinkedDefinitions` allow both, object-style access, as well as array-like access.
 For example:

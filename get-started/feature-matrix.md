@@ -168,7 +168,7 @@ Following is an index of the features currently covered by CAP, with status and 
 
 | Outbound Protocol Support                                        | CDS <sup>1</sup> | Node.js | Java |
 |------------------------------------------------------------------|:----------------:|:-------:|:----:|
-| [REST/OpenAPI](../tools/apis/cds-import#cds-import-from-openapi) |       <X/>       |  <X/>   | <X/> |
+| [REST/OpenAPI](../tools/apis/cds-import#cdsimportfromopenapi) |       <X/>       |  <X/>   | <X/> |
 | OData V2                                                         |       <X/>       |  <X/>   | <X/> |
 | OData V4                                                         |       <X/>       |  <X/>   | <X/> |
 | GraphQL<sup>2</sup>                                              |       <C/>       |  <C/>   | <C/> |
