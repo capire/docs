@@ -164,20 +164,23 @@ When CAP's generic handlers run a CRUD operation, the result follows a consisten
 | Operation             | Return value                                                                                  |
 |-----------------------|-----------------------------------------------------------------------------------------------|
 | `READ`                | Array of matching records, or a single record / `null` when read by key                       |
-| `CREATE`              | Array with `.affected` (rows written); populated with rows from a `RETURNING` clause, else lazily materializes the created rows' primary keys |
-| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); populated with rows from a `RETURNING` clause          |
-| `DELETE`              | Array with `.affected` (rows deleted); populated with rows from a `RETURNING` clause          |
+| `CREATE`              | Array with `.affected` (rows written); populated with rows from a `RETURNING` clause          |
+| `UPDATE` / `UPSERT`   | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
+| `DELETE`              | Array with `.affected` (rows deleted); reserved for rows from a `RETURNING` clause             |
 
-For `CREATE`, the array is populated with rows from a SQL `RETURNING` clause. As `RETURNING` is not yet supported, the result falls back to a lazy array: iterating it (`[...result]`, `for…of`, `JSON.stringify`) materializes the generated primary keys of the created rows. Direct index access works after the first iteration.
+For `CREATE`, the array is populated with rows from a SQL `RETURNING` clause. As `RETURNING` is not yet supported, the result falls back to a lazy array that computes the created rows' generated primary keys on demand: iterating it (`[...result]`, `for…of`, `JSON.stringify`) populates those keys, avoiding the cost when you don't need them.
+
+> [!warning] Iterate before indexing
+> Direct index access (`result[0]`) returns `undefined` until the array has been iterated at least once. Spread or loop over the result first.
 
 ```js
 const created = await srv.create(Books).entries({title:'Catweazle'})
 created.affected            // 1
-const [row] = [...created]  // materializes — row holds the generated key
-created[0]                  // same row (materialized above)
+const [row] = [...created]  // iterate first — row holds the generated key
+created[0]                  // same row (populated by the iteration above)
 ```
 
-For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause. But `RETURNING` is not yet supported, so the array currently is always empty:
+For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by a SQL `RETURNING` clause. Unlike `CREATE`, there are no generated keys to synthesize client-side, so — with `RETURNING` not yet supported — the array is currently always empty:
 
 ```js
 const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
