@@ -462,7 +462,7 @@ This is the right place to, for example, add custom elements required at runtime
 
 ### compile.to.dbx {.event}
 
-Emitted every time before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
+Emitted every time before database-specific artifacts, that is, SQL DDL scripts, are generated from the model.
 This is the right place to, for example, add custom elements required in your persistence.
 
 

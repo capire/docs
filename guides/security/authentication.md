@@ -1252,7 +1252,7 @@ For these scenarios, the CAP Node.js runtime allows to specify an implementation
 
 :::warning
 Be **very** careful when creating your own `auth` implementation.
-This should be a last resort for when every other possible solution (e.g. through [modelling](./authorization.md#restrictions) or by [configuration](#pluggable-authentication)) has been investigated and dismissed.
+This should be a last resort for when every other possible solution (for example through [modelling](./authorization.md#restrictions) or by [configuration](#pluggable-authentication)) has been investigated and dismissed.
 :::
 
 Like any other [custom middleware](../../node.js/cds-serve.md#custom-middlewares), the auth middleware you create needs to accept express's `req`, `res` and `next` and end up by sending a response, throwing an error or calling `next()`.

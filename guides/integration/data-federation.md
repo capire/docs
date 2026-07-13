@@ -102,7 +102,7 @@ npm install
 
 ## Federated Consumption Views
 
-Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, i.e. in close access locally. For example, we did so in our consumption view for entities imported from XFlights as well as for the S/4 Business Partners entity:
+Tag [consumption views](calesi#consumption-views) with the `@federated` annotation, to express your intent to have that data federated, that is, in close access locally. For example, we did so in our consumption view for entities imported from XFlights as well as for the S/4 Business Partners entity:
 
 ::: code-group
 
@@ -183,7 +183,7 @@ Let's have a closer look at this code, which handles these main tasks:
 3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29. 
 
 > [!tip] CAP-level Querying -> agnostic to databases & protocols
-> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, i.e., it works for **_any_** remote service that supports OData, or HCQL.
+> We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, that is, it works for **_any_** remote service that supports OData, or HCQL.
 
 
 ## Test Drive Locally

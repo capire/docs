@@ -167,7 +167,7 @@ In case of actions and functions SAP Fiori also requires the message target to b
 
 When creating a message target, the correct parameter needs to be selected to specify what the relative message target path refers to.
 By default a message target always refers to the CQN statement of the event. In case of CRUD events this is the targeted entity. In case of bound actions and functions this is the entity that the action or function was bound to.
-As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
+As CRUD event handlers are often called from within bound actions or functions (for example, `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
 When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../guides/uis/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.

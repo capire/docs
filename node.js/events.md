@@ -545,7 +545,7 @@ All errors are collected in property `req.errors`, which is initially `undefined
 if (req.errors) ... //> errors occurred
 ```
 
-After each phase of request processing, i.e. _before_ / _on_ / _after_, the framework checks whether errors got recorded in `req.errors`. If so, it automatically [rejects](#req-reject) the request with an aggregate error containing all recorded errors, and the request is not processed further. So, in essence, the above ends up in the equivalent of:
+After each phase of request processing, that is, _before_ / _on_ / _after_, the framework checks whether errors got recorded in `req.errors`. If so, it automatically [rejects](#req-reject) the request with an aggregate error containing all recorded errors, and the request is not processed further. So, in essence, the above ends up in the equivalent of:
 
 ```js
 return req.reject ({
@@ -570,7 +570,7 @@ req.info ('Some information message')
 req.warn ('Some warning message')
 ```
 
-The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (e.g. `sap-messages`), instead of the response body.
+The methods are similar to [`req.error()`](#req-error), also accepting the [same arguments](#req-reject), but the messages are collected in `req.messages` instead of `req.errors`, not decorated with stack traces, and returned in a HTTP response header (for example, `sap-messages`), instead of the response body.
 
 ::: warning User Input & Injection Vulnerabilities
 Ensure proper validation of the message text if it contains values ​​from user input.

@@ -503,9 +503,11 @@ The command generates the API client package into a new folder _apis/data-servic
 ![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The `service.csn` contains only the interface defined in the service, removing the query part of the entities and all the underlying model.
-In addition, there are i18n bundles with the localized metadata relevant
-for the interface, and a _data_ folder with test data
-that exactly matches the structure of the entities in the API.
+In addition (and as shown in the screenshot):
+
+- with the `--texts` option, i18n bundles are included with the localized metadata relevant for the interface
+- with the `--data` option, initial data that exactly matches the structure of the entities in the API is included
+- with the `--plugin` option, a `cds-plugin.js` entrypoint file is included for plug & play
 
 `cds export` also adds a _package.json_. The package name combines the application name (from the main _package.json_) with the file name of the data service. In our example, this results in `@capire/xflights-data-service`.
 You can change this name as appropriate.

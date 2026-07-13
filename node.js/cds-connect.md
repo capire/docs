@@ -25,7 +25,7 @@ Use `cds.connect.to()` to connect to services configured in a project's `cds.req
 const ReviewsService = await cds.connect.to('ReviewsService')
 ```
 
-The method returns a _Promise_ resolving to a _[Service](../cds/cdl#services)_ instance which acts as a client proxy to the service's API, allowing you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, e.g.:
+The method returns a _Promise_ resolving to a _[Service](../cds/cdl#services)_ instance which acts as a client proxy to the service's API, allowing you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, for example:
 
 ```js
 let reviews = await ReviewsService.read ('Reviews')
