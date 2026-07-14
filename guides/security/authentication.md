@@ -4,7 +4,6 @@ label: Authentication
 synopsis: >
   This guide explains how to authenticate CAP services.
 status: released
-impl-variants: true
 ---
 
 <script setup>
@@ -21,8 +20,6 @@ impl-variants: true
 
 
 # Authentication { #authentication }
-
-<ImplVariantsHint />
 
 This guide explains how to authenticate CAP services to resolve CAP users.
 
@@ -55,64 +52,51 @@ As this authentication strategy is a built-in feature which does not require any
 
 Setup and start a simple sample application:
 
-<div class="impl java">
+::: code-group
 
-```sh
+```sh [Java]
 cds init bookshop --java --add sample && cd ./bookshop
 mvn spring-boot:run
 ```
 
-::: tip
-CAP Java requires certain [Maven dependencies](../../java/security#maven-dependencies) to enable authentication middleware support.
-Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
-:::
-
-</div>
-
-
-<div class="impl node">
-
-```sh
+```sh [Node.js]
 cds init bookshop --nodejs --add sample && cd ./bookshop
 cds watch
 ```
 
-</div>
+:::
+
+::: tip CAP Java Dependencies
+CAP Java requires certain [Maven dependencies](../../java/security#maven-dependencies) to enable authentication middleware support.
+Platform starter bundles `cds-starter-cf` and `cds-starter-k8s` ensure all required dependencies out of the box.
+:::
 
 In the application startup trace you can find a log message indicating mock user configuration is active:
 
-<div class="impl java">
+::: code-group
 
-```sh
+```sh [Java]
 MockUsersSecurityConfig  : *  Security configuration based on mock users found in active profile.  *
 ```
 
-</div>
-
-<div class="impl node">
-
-```sh
+```sh [Node.js]
 [cds] - using auth strategy {
   kind: 'mocked',
   …
 }
 ```
 
-</div>
+:::
 
-<div class="impl java">
-
-Also notice that the application log contains information about all registered mock users:
+Also notice that the application log in Java contains information about all registered mock users:
 ```sh
 MockUsersSecurityConfig  :  Added mock user {"name":"admin","password":"admin", ...}
 ```
 
-</div>
-
 **You should not manually configure authentication for endpoints.**
 As the mock user authentication is active, all (CAP) endpoints are [authenticated automatically](#model-auth).
 
-<div class="impl java">
+#### Java
 
 ::: tip
 To simplify the development scenario, you can set <Config java>cds.security.authentication.mode = "model-relaxed"</Config> to deactivate authentication of endpoints derived from unrestricted CDS services.
@@ -132,9 +116,7 @@ Mock users require **basic authentication**, hence sending the same request on b
 curl http://admin:admin@localhost:8080/odata/v4/CatalogService/Books
 ```
 
-</div>
-
-<div class="impl node">
+#### Node.js
 
 ::: tip
 In non-production profile, endpoints derived from unrestricted CDS services are not authenticated to simplify the development scenario.
@@ -156,24 +138,12 @@ curl http://alice:@localhost:4004/odata/v4/admin/Books
 ```
 
 
-</div>
-
-
 ::: info
 Mock users are deactivated in production profile by default ❗
 :::
 
-<div class="impl java">
-
-[Learn more about advanced authentication options.](../../java/security#spring-boot){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about advanced authentication options.](../../node.js/authentication#strategies){.learn-more}
-
-</div>
+[Learn more about advanced authentication options in Java.](../../java/security#spring-boot){.learn-more}
+[Learn more about advanced authentication options in Node.js.](../../node.js/authentication#strategies){.learn-more}
 
 
 
@@ -183,20 +153,11 @@ Mock users are deactivated in production profile by default ❗
 For convenience, the runtime creates default mock users to cover typical test scenarios, such as privileged users passing all security checks or users that pass authentication but don't have additional claims.
 The runtime adds the predefined users to [custom mock users](#custom-mock-users) you define in the application.
 
-You can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>. { .java }
+In Java, you can opt out the preconfigured mock users by setting <Config java>`cds.security.mock.defaultUsers = false`</Config>.
 
 
-<div class="impl java">
-
-[Learn more about predefined mock users.](../../java/security#preconfigured-mock-users){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about predefined mock users.](../../node.js/authentication#mock-users){.learn-more}
-
-</div>
+[Learn more about predefined mock users in Java.](../../java/security#preconfigured-mock-users){.learn-more}
+[Learn more about predefined mock users in Node.js.](../../node.js/authentication#mock-users){.learn-more}
 
 
 ### Customization { #custom-mock-users }
@@ -205,9 +166,9 @@ You can define custom mock users to simulate any type of end users that will int
 Internally, mock users are represented as [CAP users](cap-users#claims) as well.
 Hence, you can use the mock users, to test your authorization settings or custom handlers, fully decoupled from the actual execution environment.
 
-<div class="impl java">
+::: code-group
 
-```yaml [srv/src/main/resources/application.yaml]
+```yaml [Java – srv/src/main/resources/application.yaml]
 spring:
   config.activate.on-profile: default
 cds:
@@ -224,11 +185,7 @@ cds:
             - park
 ```
 
-</div>
-
-<div class="impl node">
-
-```yaml [package.json]
+```yaml [Node.js – package.json]
 "cds": {
   "requires": {
     "auth": {
@@ -252,7 +209,7 @@ cds:
 }
 ```
 
-</div>
+:::
 
 In the mock user configuration you can specify:
 - name (mandatory) and tenant
@@ -268,34 +225,27 @@ Define the mock users in development profile only.
 To verify the user properties, activate [user tracing](./cap-users#user-tracing) and send a request using the mock user (such as `viewer-user`).
 In the application log you will find information about the resolved user after successful authentication:
 
-<div class="impl java">
+::: code-group
 
-```sh
+```sh [Java]
 MockedUserInfoProvider: Resolved MockedUserInfo [id='mock/viewer-user', name='viewer-user', roles='[Viewer]', attributes='{Country=[GER, FR], tenant=[CrazyCars]}'
 ```
 
-[Learn more about custom mock users.](../../java/security#custom-mock-users){.learn-more}
-
-</div>
-
-<div class="impl node">
-
-```
+```sh [Node.js]
 [basic] - authenticated: { user: 'viewer-user', tenant: 'CrazyCars', features: [ 'cruise', 'park' ] }
 ```
 
-[Learn more about custom mock users.](../../node.js/authentication#mocked){.learn-more}
+:::
 
-</div>
+[Learn more about custom mock users in Java.](../../java/security#custom-mock-users){.learn-more}
+[Learn more about custom mock users in Node.js.](../../node.js/authentication#mocked){.learn-more}
 
 ### Automated Testing { #mock-user-testing }
 
 Mock users provide an excellent foundation for automated **unit tests, which are essential for ensuring application security**.
 The flexibility in defining various types of mock users and the seamless integration into testing code significantly reduces the burden of covering all relevant test combinations.
 
-<div class="impl java">
-
-::: details How to leverage Spring-MVC to use CAP mock users
+::: details How to leverage Spring-MVC in Java to use CAP mock users
 ```java [srv/src/test/java/customer/bookshop/handlers/CatalogServiceTest.java]
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -320,25 +270,14 @@ public class BookServiceOrdersTest {
 ```
 :::
 
-</div>
-
 ::: tip
 Integration tests running in production profile should verify that unauthenticated users cannot access any application endpoints❗
 :::
 
 
-<div class="impl java">
-
-[Learn more about unit testing.](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more .node}
-
-</div>
-
-<div class="impl node">
-
-[Learn more about testing with authenticated endpoints.](../../node.js/cds-test#authentication){.learn-more}
-[Learn more about testing.](../../node.js/cds-test#testing-with-cdstest){.learn-more}
-
-</div>
+[Learn more about unit testing in Java.](../../java/developing-applications/testing#testing-cap-java-applications){.learn-more}
+[Learn more about testing with authenticated endpoints in Node.js.](../../node.js/cds-test#authentication){.learn-more}
+[Learn more about testing in Node.js.](../../node.js/cds-test#testing-with-cdstest){.learn-more}
 
 
 
@@ -379,13 +318,9 @@ You can continue with the sample [already created](#mock-user-authentication). I
 cds add mta
 ```
 
-<div class="impl java">
-
-::: info
+::: info Java project gets all required dependencies for security
 Command `add mta` will enhance the project with `cds-starter-cloudfoundry` and therefore all [dependencies required](../../java/security#maven-dependencies) for security are added transitively.
 :::
-
-</div>
 
 You also need to configure database support:
 
@@ -429,13 +364,9 @@ resources:
 ```
 :::
 
-<div class="impl java">
-
-::: info
+::: info Java
 The [binding](../../java/security#bindings) to service instance of type `identity` is the trigger to automatically enforce IAS authentication at runtime ❗
 :::
-
-</div>
 
 The binding provides access to the identity services on behalf of a concrete client.
 **CAP applications can have at most one binding to an IAS instance.** Conversely, multiple CAP applications can share the same IAS instance.
@@ -465,24 +396,20 @@ You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternati
 
 The startup log should confirm the activated IAS authentication:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 ... : Loaded feature 'IdentityUserInfoProvider' (IAS: bookshop-ias, XSUAA: <none>)
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 [cds] - using auth strategy {
     kind: 'ias',
     impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/ias-auth.js'
 }
 ```
 
-</div>
+:::
 
 ::: tip
 The local setup is still runnable on basis of mock users as there is no IAS binding in the environment.
@@ -532,23 +459,19 @@ Due to CAP's autoconfiguration, all CAP endpoints are authenticated and expect v
 
 The following request as anonymous user without a token results in a `401 Unauthorized`:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
             /odata/v4/CatalogService/Books --verbose
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
              /odata/v4/catalog/Books --verbose
 ```
 
-</div>
+:::
 
 This is expected. Now let's fetch a token as basis for a fully authenticated test request.
 For doing so, you need to interact with IAS service which requires an authenticated client itself.
@@ -643,25 +566,21 @@ The request returns with a valid IAS token which is suitable for authentication 
 
 The final test request needs to provide the **client certificate and the token** being send to the application's route with `cert.*`-domain:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.cert.<landscape-domain> \
          /odata/v4/CatalogService/Books
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 curl --cert cert.pem --key key.pem -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.cert.<landscape-domain> \
          /odata/v4/catalog/Books
 ```
 
-</div>
+:::
 
 The response should contain the queried books accordingly (HTTP response code `200`).
 
@@ -792,21 +711,17 @@ Command `add mta` enhances the project with `cds-starter-cloudfoundry` and there
 
 Enhance your [sample application](#mock-user-authentication) with XSUAA-support:
 
-<div class="impl java">
+::: code-group
 
-```sh
+```sh [Java]
 cds add xsuaa
 ```
 
-</div>
-
-<div class="impl node">
-
-```sh
+```sh [Node.js]
 cds add xsuaa --for production
 ```
 
-</div>
+:::
 
 
 The command automatically adds a service instance named `bookshop-auth` of type `xsuaa` (plan: `application`) and binds the CAP application to it:
@@ -835,23 +750,15 @@ resources:
               - '$XSAPPNAME.admin'
 ```
 
-<div class="impl java">
-
-::: info
+::: info Java
 Command `cds add xsuaa` enhances the project with [required binding](../../java/security#bindings) to service instance identity and therefore activates XSUAA authentication automatically.
 :::
 
-</div>
-
 **CAP applications should have at most one binding to an XSUAA instance.** Conversely, multiple CAP applications can share the same XSUAA instance.
 
-<div class="impl java">
-
-::: tip
+::: tip Java
 In case your application has multiple XSUAA bindings you need to [pin the binding](../../java/security#bindings).
 :::
-
-</div>
 
 There are some mandatory configuration parameters:
 
@@ -932,43 +839,35 @@ If you modify the _xs-security.json_ manually, make sure that the scope names in
 
 Now let's pack and deploy the application:
 
-<div class="impl node">
+::: code-group
 
-```sh
+```sh [Java]
+cds up
+```
+
+```sh [Node.js]
 npm install
 cds up
 ```
 
-</div>
-
-<div class="impl java">
-
-```sh
-cds up
-```
-
-</div>
+:::
 
 and wait until the application is up and running.
 You can test the status with `cf apps` on CLI level or in BTP Cockpit, alternatively.
 
 Run `cf logs bookshop-srv --recent` to confirm the activated XSUAA authentication:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 ... : Loaded feature 'IdentityUserInfoProvider' (IAS: <none>, XSUAA: bookshop-auth)
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 ... : "using auth strategy { kind: 'xsuaa' … }
 ```
 
-</div>
+:::
 
 
 ::: tip
@@ -983,23 +882,19 @@ Due to CAP's autoconfiguration, all CAP endpoints are [authenticated automatical
 
 The following request as anonymous user without a token results in a `401 Unauthorized`:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
              /odata/v4/CatalogService/Books --verbose
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 curl https://<org>-<space>-bookshop-srv.<landscape-domain> \
              /odata/v4/catalog/Books --verbose
 ```
 
-</div>
+:::
 
 This is expected. Now let's fetch an XSUAA token to prepare an authenticated test request.
 Here, you need to interact with XSUAA service which requires a valid authentication as well.
@@ -1070,50 +965,42 @@ The request returns with a valid XSUAA token which is suitable to pass authentic
 
 With the token for the technical user, you should be able to access endpoints that have no specific role requirements:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain> \
          /odata/v4/CatalogService/Books
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain> \
         /odata/v4/catalog/Books
 ```
 
-</div>
+:::
 
 If you also want to access the `AdminService` that requires the role `admin`,
 you need to fetch the token for the named user instead. That is the user to whom you assigned the `admin (bookshop <org>-<space>)` role collection.
 
 With the token for the named user, the following request should succeed:
 
-<div class="java">
+::: code-group
 
-```sh
+```sh [Java]
 curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain> \
          /odata/v4/AdminService/Books
 ```
 
-</div>
-
-<div class="node">
-
-```sh
+```sh [Node.js]
 curl -H "Authorization: Bearer <access_token>" \
   https://<org>-<space>-bookshop-srv.<landscape-domain> \
          /odata/v4/admin/Books
 ```
 
-</div>
+:::
 
 ::: tip
 Try out sending a request to the `admin` endpoint with the technical user token to see the expected `403 Forbidden` response:
@@ -1219,7 +1106,7 @@ will come soon
 
 ## Custom Authentication { #custom-auth }
 
-<div class="java">
+#### Java
 
 There are multiple reasons why customization might be required:
 1. Endpoints for non-business requests often require specific authentication methods (for example, health check, technical services).
@@ -1242,9 +1129,7 @@ There are multiple reasons why customization might be required:
 This is the safe baseline on which minor customization steps can be applied on top.
 :::
 
-</div>
-
-<div class="node">
+#### Node.js
 
 Ideally, all authentication use-cases should be covered by the generic implementations CAP provides.
 However, your application's specific requirements may make it necessary to customize authentication.
@@ -1293,8 +1178,6 @@ module.exports = function custom_auth (req, res, next) {
 In case you want to customize the `cds.context.user`, check out [this example](../../node.js/cds-serve#customization-of-cdscontextuser).
 :::
 
-</div>
-
 
 ### Automatic Authentication { #model-auth }
 
@@ -1324,21 +1207,17 @@ In multitenant applications, anonymous requests to public endpoints are missing 
 
 By default, if a CAP service `MyService` is authenticated, also `/MyService/$metadata` is authenticated.
 
-<div class="java">
+#### Java
 
 With `cds.security.authentication.authenticateMetadataEndpoints: false` you can switch off this behaviour on a global level.
 
 [Learn more about authentication options.](../../java/security#spring-boot){.learn-more}
 
-</div>
-
-<div class="node">
+#### Node.js
 
 Automatic authentication enforcement can be disabled via feature flag <Config>cds.requires.auth.restrict_all_services: false</Config>, or by using [mocked authentication](#mock-user-authentication) explicitly in production.
 
-</div>
-
-### Overrule Partially { #partially-auth .java }
+### Overrule Partially in Java { #partially-auth }
 
 If you want to explicitly define the authentication for specific endpoints, **you can add an _additional_ Spring security configuration on top** overriding the default configuration given by CAP:
 
@@ -1385,19 +1264,10 @@ This will make standard CAP authorization work properly.
 If you switch off CAP authentication, make sure that the internal communication channels are secured by the given infrastructure.
 :::
 
-<div class="java">
-In such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
+In Java, in such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
 
 [Learn more about how to switch off authentication.](../../java/security#custom-spring-security-alone){.learn-more}
 
-</div>
-<!--
-<div class="node">
-
-TODO
-
-</div>
--->
 
 ## Pitfalls
 - **Don't miss to configure security middleware.**
