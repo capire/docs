@@ -87,7 +87,7 @@ Additionally, the `resolve` goal from the CDS Maven Plugin needs to be added, to
 :::
 
 ::: details Scope of the Reuse Package
-Usually you would declare the dependency to the reuse package in the `srv` module of your CAP Java project. Since CAP Java 4.4.0 this makes the reuse models available to all CDS files in the CAP project. The models are extracted to the root `target/cds` folder. In case you want to make the reuse models only available within the Maven module that declared the dependency (e.g. `srv`) set the configuration `to` of the `resolve` goal to `${project.build.directory}`. In earlier versions of CAP Java reuse models where only available within CDS files placed in the Maven module that declared the dependency by default.
+Usually you would declare the dependency to the reuse package in the `srv` module of your CAP Java project. Since CAP Java 4.4.0 this makes the reuse models available to all CDS files in the CAP project. The models are extracted to the root `target/cds` folder. In case you want to make the reuse models only available within the Maven module that declared the dependency (for example, `srv`) set the configuration `to` of the `resolve` goal to `${project.build.directory}`. In earlier versions of CAP Java reuse models where only available within CDS files placed in the Maven module that declared the dependency by default.
 :::
 
 When your Maven build is set up correctly, you can use the reuse models in your CDS files using the standard `using` directive:

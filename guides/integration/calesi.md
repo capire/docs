@@ -55,7 +55,7 @@ The graphic below illustrates what happened here:
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
 ](assets/remoting.drawio.svg)
 
-Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – i.e., **_as if they were local_**. `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
+Remote CAP services can be consumed using the same high-level, uniform APIs as for local services – that is, **_as if they were local_**. `cds.connect` automatically constructs remote proxies, which translate all local requests into protocol-specific ones, sent to remote services. Thereby also taking care of all connectivity, remote communication, principal propagation, as well as generic resilience.
 
 > [!note] Model Free
 >
@@ -459,7 +459,7 @@ This allows us to update imported APIs later on using standard commands like `np
 
 You can also `cds import` APIs from other sources, such as OData APIs for customer data from SAP S/4 HANA systems:
 
-1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, e.g., from [*SAP Business Accelerator Hub*](https://api.sap.com):
+1. Get an [_OData EDMX_](https://api.sap.com/api/API_BUSINESS_PARTNER/overview) source, for example, from [*SAP Business Accelerator Hub*](https://api.sap.com):
 
    ::: details Detailed steps through SAP Business Accelerator Hub ...
       - Open https://api.sap.com in your browser
@@ -630,7 +630,7 @@ namespace sap.capire.s4;
 
 The noteworthy aspects here are:
 
-- We map names to match our domain, e.g., `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
+- We map names to match our domain, for example, `A_Business_Partner` -> `Customers`, and choose simpler names for the elements we want to use.
 
 - For entity `Flights` we flatten data from associations directly into the consumption view. This is another [denormalization](#using-denormalized-views) to make life easier for us in the xtravels app.
 
@@ -860,9 +860,9 @@ const xflights = await cds.connect.to ('sap.capire.flights.data')
 
 The `cds.connect.to(<service>)` function used here is the single common way to address service instances. It's used for and works the same way for both, local as well as remote services:
 
-- for **local** services, it returns the local service providers – i.e., instances of [`cds.ApplicationService`](../../node.js/app-services), or your application-specific subclases thereof.
+- for **local** services, it returns the local service providers – that is, instances of [`cds.ApplicationService`](../../node.js/app-services), or your application-specific subclasses thereof.
 
-- for **remote** services, it returns a remote service proxy – i.e., instances of [`cds.RemoteService`](../../node.js/remote-services), generically constructed by the client libs.
+- for **remote** services, it returns a remote service proxy – that is, instances of [`cds.RemoteService`](../../node.js/remote-services), generically constructed by the client libs.
 
 ![Diagram illustrating CAP-level service integration showing two scenarios: Local services where Consumer connects to Service via CQL, and Remote services where Consumer connects to Proxy via CQL, Proxy connects to Protocol Adapter via OData, and Protocol Adapter connects to Service via CQL.
 ](assets/remoting.drawio.svg)
@@ -1080,7 +1080,7 @@ await s4.run (q2)
 > Modifying queries prior to forwarding them to remote services is a powerful technique to implement advanced integration scenarios. For example, you can adapt queries to the capabilities of target services, implement custom filtering, paging, or sorting logic, or even split and merge queries across multiple services.
 
 ::: details First-Class Query Objects
-On a side note: We leverage key principles of [_first-class objects_](https://google.com/search?q=first+class+objects+programming) here, as known from functional programming and dynamic languages: As queries are represented as first-class CQN objects, we can construct and manipulate them programmatically at runtime, pass them as arguments, and return them from functions. And, not the least, this opens the doors for things like higher-order queries, query delegation – e.g. push down to databases –, and late materialization.
+On a side note: We leverage key principles of [_first-class objects_](https://google.com/search?q=first+class+objects+programming) here, as known from functional programming and dynamic languages: As queries are represented as first-class CQN objects, we can construct and manipulate them programmatically at runtime, pass them as arguments, and return them from functions. And, not the least, this opens the doors for things like higher-order queries, query delegation – for example push down to databases –, and late materialization.
 :::
 
 > [!warning] Always Clone Before Modifying
@@ -1200,7 +1200,7 @@ Note that for the handler above, incoming requests always refer to:
 
 In effect, we are delegating a query to the S/4 service, which refers to an entity actually not known to that remote service. How could that work at all?
 
-It works because we fuelled the CAP runtime with CDS models, so the generic handlers detect such situations, and automatically translate delegated queries into valid queries targeted to underlying remote entities – i.e. `A_BusinessPartner` in our example. When doing so, all column references in select clauses, where clauses, etc., are translated and delegated as well, and the results' structure transformed back to that of the original target – i.e., `TravelService.Customers` above.
+It works because we fuelled the CAP runtime with CDS models, so the generic handlers detect such situations, and automatically translate delegated queries into valid queries targeted to underlying remote entities – that is, `A_BusinessPartner` in our example. When doing so, all column references in select clauses, where clauses, etc., are translated and delegated as well, and the results' structure transformed back to that of the original target – that is, `TravelService.Customers` above.
 
 
 
@@ -1238,7 +1238,7 @@ await SELECT.from (Bookings) .where`Flight.ID in ${flightIDs}`
 :::
 
 > [!tip] What is 'Navigation'?
-> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – e.g., `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
+> The term 'navigation' commonly refers to traversing associations between entities in queries. In CAP, this is typically expressed using [path expressions](../../cds/cql#path-expressions) along (chains of) associations – for example, `flight.origin.name` –, which can show up in all query clauses (_select_, _from_, _where_, _order by_, and _group by_).
 
 
 ### Expands
