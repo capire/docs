@@ -123,7 +123,7 @@ Open the _cap/samples/xflights_ folder in Visual Studio Code, and have a look at
 ::: code-group
 ```cds :line-numbers [cap/samples/xflights/srv/data-service.cds]
 using sap.capire.flights as x from '../db/schema';
-@odata @hcql service sap.capire.flights.data {
+@odata @hcql service FlightsService {
   @readonly entity Flights as projection on x.Flights {flights.*,*};
   @readonly entity Airlines as projection on x.Airlines;
   @readonly entity Airports as projection on x.Airports;
@@ -131,7 +131,7 @@ using sap.capire.flights as x from '../db/schema';
 ```
 :::
 
-This declares a CAP service named `sap.capire.flights.data`, served over _OData_ and _HCQL_ protocols, which exposes _Flights_, _Airlines_, and _Airports_ as readonly projections on underlying domain model entities, with _Flights_ as a denormalized view.
+This declares a CAP service named `FlightsService`, served over _OData_ and _HCQL_ protocols, which exposes _Flights_, _Airlines_, and _Airports_ as readonly projections on underlying domain model entities, with _Flights_ as a denormalized view.
 
 
 #### Using Denormalized Views
@@ -189,12 +189,12 @@ cds export srv/data-service.cds --dry
 ```zsh
  Kept: 6
 
-   • sap.capire.flights.data
-   • sap.capire.flights.data.Flights
-   • sap.capire.flights.data.Airlines
-   • sap.capire.flights.data.Airports
-   • sap.capire.flights.data.Supplements
-   • sap.capire.flights.data.SupplementTypes
+   • FlightsService
+   • FlightsService.Flights
+   • FlightsService.Airlines
+   • FlightsService.Airports
+   • FlightsService.Supplements
+   • FlightsService.SupplementTypes
 
  Skipped: 31
 
@@ -227,8 +227,8 @@ cds export srv/data-service.cds --dry
    - sap.common.Countries.texts
    - sap.common.Currencies.texts
    - sap.common.Timezones.texts
-   - sap.capire.flights.data.Supplements.texts
-   - sap.capire.flights.data.SupplementTypes.texts
+   - FlightsService.Supplements.texts
+   - FlightsService.SupplementTypes.texts
 
  Total: 37
 ```
@@ -247,12 +247,12 @@ This opens a diff view in VSCode, which would display these differences:
 Kept: 26 # [!code --]
 Kept: 6 # [!code ++]
 
-   • sap.capire.flights.data
-   • sap.capire.flights.data.Flights
-   •• sap.capire.flights.data.Airlines
-   •• sap.capire.flights.data.Airports
-   • sap.capire.flights.data.Supplements
-   •• sap.capire.flights.data.SupplementTypes
+   • FlightsService
+   • FlightsService.Flights
+   •• FlightsService.Airlines
+   •• FlightsService.Airports
+   • FlightsService.Supplements
+   •• FlightsService.SupplementTypes
    •• sap.capire.flights.Flights # [!code --]
    ••• sap.capire.flights.FlightConnections # [!code --]
    •••• sap.capire.flights.Airlines # [!code --]
@@ -271,8 +271,8 @@ Kept: 6 # [!code ++]
    ••• sap.capire.flights.SupplementTypes # [!code --]
    •••• sap.capire.flights.SupplementTypes.texts # [!code --]
    ••• sap.capire.flights.Supplements.texts # [!code --]
-   ••• sap.capire.flights.data.SupplementTypes.texts # [!code --]
-   •• sap.capire.flights.data.Supplements.texts # [!code --]
+   ••• FlightsService.SupplementTypes.texts # [!code --]
+   •• FlightsService.Supplements.texts # [!code --]
 
 Skipped: 11 # [!code --]
 Skipped: 31 # [!code ++]
@@ -332,10 +332,10 @@ cds export srv/data-service.cds --data
 ```
 
 ```log
-  > apis/data-service/data/sap.capire.flights.data.Flights.csv
-  > apis/data-service/data/sap.capire.flights.data.Airlines.csv
-  > apis/data-service/data/sap.capire.flights.data.Airports.csv
-  > apis/data-service/data/sap.capire.flights.data.Supplements.csv
+  > apis/data-service/data/FlightsService.Flights.csv
+  > apis/data-service/data/FlightsService.Airlines.csv
+  > apis/data-service/data/FlightsService.Airports.csv
+  > apis/data-service/data/FlightsService.Supplements.csv
 ```
 
 The `.csv` data comes from the source application's initial data, filtered and transformed for the exposed entities, including denormalizations and calculated fields. The application actually reads it via an instance of that service.
@@ -364,7 +364,7 @@ This would add this to the generated output:
   "version": "0.1.13",
   "cds": { // [!code focus]
     "requires": { // [!code focus]
-      "sap.capire.flights.data": true // [!code focus]
+      "FlightsService": true // [!code focus]
     } // [!code focus]
   } // [!code focus]
 }
@@ -599,7 +599,7 @@ Create two new files `apis/capire/xflights.cds` and `apis/capire/s4.cds`:
 
 ::: code-group
 ```cds :line-numbers [apis/capire/xflights.cds]
-using { sap.capire.flights.data as x } from '@capire/xflights-data';
+using { FlightsService as x } from '@capire/xflights-data';
 namespace sap.capire.xflights;
 
 @federated entity Flights as projection on x.Flights {
@@ -782,7 +782,7 @@ With mashed up models in place, we can run applications in _'airplane mode'_ wit
     }
     ```
     ```zsh
-    [cds] - mocking sap.capire.flights.data {
+    [cds] - mocking FlightsService {
       at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
       decl: 'xflights/apis/data-service/services.csn:3'
     }
@@ -825,7 +825,7 @@ While everything just works nicely when mocked in-process and with a shared in-m
     }
     ```
     ```zsh
-    [cds] - connect to sap.capire.flights.data > hcql {
+    [cds] - connect to FlightsService > hcql {
       url: 'http://localhost:54475/hcql/data'
     }
     ```
@@ -853,7 +853,7 @@ It all starts with connecting to remote services, which we do like that in the x
 
 ```js :line-numbers=21 [srv/travel-service.js]
 const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
-const xflights = await cds.connect.to ('sap.capire.flights.data')
+const xflights = await cds.connect.to ('FlightsService')
 ```
 
 :::
@@ -926,7 +926,7 @@ Within the REPL, connect to local and remote services:
 
 ```js
 const TravelService = await cds.connect.to ('TravelService')
-const xflights = await cds.connect.to ('sap.capire.flights.data')
+const xflights = await cds.connect.to ('FlightsService')
 const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
 ```
 
@@ -1110,7 +1110,7 @@ annotate x.Flights with @cds.persistence.table;
 2. Implement logic to replicate updated data, for example like that:
 
 ```js [srv/data-replication.js]
-const xflight = await cds.connect.to ('sap.capire.flights.data')
+const xflight = await cds.connect.to ('FlightsService')
 const {Flights} = cds.entities ('sap.capire.xflights')
 let {latest} = await SELECT.one`max(modifiedAt) as latest`.from (Flights)
 let touched = await xflight.read (Flights).where`modifiedAt > ${latest||0}`

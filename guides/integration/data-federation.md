@@ -12,12 +12,12 @@ CAP applications can integrate and federate data from multiple external data sou
 
 You should be familiar with the content in the [_CAP-level Service Integration_](calesi.md) guide, as we build upon that foundation here. In particular, you should have read and understood these sections:
 
-- [*Overview* of *CAP-level Service Integration*](calesi.md#overview) 
+- [*Overview* of *CAP-level Service Integration*](calesi.md#overview)
 - [_Providing & Exporting APIs_](calesi.md#providing-cap-level-apis)
 - [_Importing APIs_](calesi.md#importing-apis)
 - [_Consumption Views_](calesi.md#consumption-views)
 
-In addition, you should have read the introduction to [the _XTravels_ sample](calesi.md#the-xtravels-sample) application, which we continue to use as our running example. 
+In addition, you should have read the introduction to [the _XTravels_ sample](calesi.md#the-xtravels-sample) application, which we continue to use as our running example.
 
 
 
@@ -80,7 +80,7 @@ We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as
 ```sh :line-numbers
 mkdir -p cap/samples
 cd cap/samples
-git clone https://github.com/capire/xtravels 
+git clone https://github.com/capire/xtravels
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
 ```
@@ -95,8 +95,8 @@ npm install
 ```
 
 > [!note]
-> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces` to optimize the `npm install` locally. 
-> We'll learn more about that in the [_Inner Loop Development guide_](inner-loops.md). 
+> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces` to optimize the `npm install` locally.
+> We'll learn more about that in the [_Inner Loop Development guide_](inner-loops.md).
 
 
 
@@ -125,7 +125,7 @@ Tag [consumption views](calesi#consumption-views) with the `@federated` annotati
 :::
 
 > [!tip] Stay Intentional -> <i>What, not how!</i> -> Minimal Assumptions
-> 
+>
 > By tagging entities with `@federated` we stay _intentional_ about **_what_** we want to achieve, and avoid any premature assumptions about **_how_** things are actually implemented. => This allows CAP runtimes – or your own _generic_ solutions, as in this case – to choose the best possible implementation strategies for the given environment and use case, which may differ between development, testing, and production environments, or might need to evolve over time.
 
 
@@ -151,7 +151,7 @@ PROD || cds.on ('loaded', csn => {
     }
   }
 })
-  
+
 // Setup and schedule replications for all collected entities
 PROD || cds.once ('served', () => Promise.all (feed.map (async each => {
   const srv = await cds.connect.to (each.remote)
@@ -160,11 +160,11 @@ PROD || cds.once ('served', () => Promise.all (feed.map (async each => {
 })))
 
 // Event handler for replicating single entities
-async function replicate (req) { 
+async function replicate (req) {
   let { entity } = req.data, remote = this
   let { latest } = await SELECT.one `max(modifiedAt) as latest` .from (entity)
   let rows = await remote.run (
-    SELECT.from (entity) .where `modifiedAt > ${latest}` 
+    SELECT.from (entity) .where `modifiedAt > ${latest}`
   )
   if (rows.length) await UPSERT (rows) .into (entity); else return
   console.log ('Replicated', rows.length, 'entries', { for: entity, via: this.kind })
@@ -180,7 +180,7 @@ Let's have a closer look at this code, which handles these main tasks:
 
 1. **Prepare Persistence** – When the model is `loaded`, before it's deployed to the database, we collect all to be `@federated` entities, check whether their respective services are remote, and if so, turn them into tables for local replicas (line 11).
 2. **Setup Replication** – Later when all services are `served`, we connect to each remote one (line 20), register a handler for replication (line 21), and schedule it to be invoked repeatedly (line 22).
-3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29. 
+3. **Replicate Data** – Finally, the `replicate` handler implements a simple polling-based data federation strategy, based on `modifiedAt` timestamps (lines 28-32), with the actual call to remote happening on line 29.
 
 > [!tip] CAP-level Querying -> agnostic to databases & protocols
 > We work with **database-agnostic** and **protocol-agnostic** [CQL queries](../../cds/cql) both for interacting with the local database as well as for querying remote services. In effect, we got a fully generic solution for replication, that is, it works for **_any_** remote service that supports OData, or HCQL.
@@ -230,7 +230,7 @@ While the xflights service in terminal 2 shows its incoming HCQL requests like t
 ```zsh
 [hcql] - GET /hcql/data/ {
   SELECT: {
-    from: { ref: [ 'sap.capire.flights.data.Flights' ] },
+    from: { ref: [ 'FlightsService.Flights' ] },
     columns: [
       { ref: [ 'ID' ], as: 'ID' },
       { ref: [ 'date' ], as: 'date' },
@@ -260,12 +260,12 @@ Finally, open the Fiori UI in the browser again, and see that customer data from
 
 
 <!--
-## Service-level Replication 
-### Initial Loads 
-### Delta Loads 
-### On-Demand Replication 
-### Event-driven Updates 
-## HANA Virtual Tables 
-## HANA Synonyms 
-## HANA Data Products 
+## Service-level Replication
+### Initial Loads
+### Delta Loads
+### On-Demand Replication
+### Event-driven Updates
+## HANA Virtual Tables
+## HANA Synonyms
+## HANA Data Products
 -->
