@@ -266,7 +266,7 @@ entity TravelService.Travels.drafts : TravelService.Travels { ... }
 ```
 :::
 
-You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
+You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#-drafts) reference as a shortcut to access the draft entity:
 
 ```js
 const { Travels } = this.entities
@@ -401,7 +401,7 @@ Select.from(FOO).where(o -> o.ID().eq(201) .and( //> reads draft data
 );
 ```
 
-In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#drafts) references to access draft data:
+In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#-drafts) references to access draft data:
 
 ```js {3}
 const { Foo } = this.entities
@@ -409,7 +409,7 @@ SELECT.from (Foo, 201)          // reads active data only
 SELECT.from (Foo.drafts, 201)  // reads draft data, if exists
 ```
 
-Even better, use [`req.subject`](../../node.js/events#subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
+Even better, use [`req.subject`](../../node.js/events#-subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
 
 ```js
 this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
@@ -634,7 +634,7 @@ The Cache Control feature is currently supported only on the Java runtime.
 
 In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are cases where you want to hide certain UI elements for specific users. You can do this using annotations such as `@UI.Hidden` or `@UI.CreateHidden` together with `$edmJson` pointing to a singleton.
 
-First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artifact is created:
+First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cdspersistenceskip) so that no database artifact is created:
 
 ```cds
 @odata.singleton @cds.persistence.skip

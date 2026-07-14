@@ -6,7 +6,7 @@ This guide focuses on the new PostgreSQL Service provided through *[@cap-js/post
 CAP Java 3 is tested on [PostgreSQL](https://www.postgresql.org/) 16 and most CAP features are supported on PostgreSQL.
 
 
-*Learn about migrating from the former `cds-pg` in the [Migration](#migration-from-cds-pg-in-node-js) chapter.*{.learn-more}
+*Learn about migrating from the former `cds-pg` in the [Migration](#migration-from-cds-pg-in-nodejs) chapter.*{.learn-more}
 [Learn more about features and limitations of using CAP Java with PostgreSQL.](../../java/cqn-services/persistence-services#postgresql){.learn-more}
 
 

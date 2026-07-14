@@ -62,10 +62,10 @@ You can test CAP's built-in support for co-located services in practice by modif
 - **Java**: [`xflights-java`](https://github.com/capire/xflights-java/tree/main) and [`xtravels-java`](https://github.com/capire/xtravels-java/tree/main)
 - **Node.js**: [`xflights`](https://github.com/capire/xflights/tree/main) and [`xtravels`](https://github.com/capire/xtravels/tree/main)
 
-`xflights` acts as a master data provider exposing basic flight data in service `sap.capire.flights.data` via different protocols.
+`xflights` acts as a master data provider exposing basic flight data in service `FlightsService` via different protocols.
 On the client side, `xtravels` imports this service as a CAP remote service and fetches data for federation.
 
-::: tip CAP offers 
+::: tip CAP offers
 A simplified co-located service setup by leveraging remote services that require:
 - Shared identity instance
 - URL for the destination
@@ -85,7 +85,7 @@ Make sure that you've prepared a [local environment for CF deployments](../deplo
 
 #### 2. Prepare and Deploy the Consumer Application { #co-located-consumer }
 
-As client, `xtravels` first needs a valid configuration for the remote service `sap.capire.flights.data`:
+As client, `xtravels` first needs a valid configuration for the remote service `FlightsService`:
 
 ::: code-group
 ```yaml [Java: application.yaml]
@@ -96,7 +96,7 @@ cds:
   remote.services:
     xflights:
       type: hcql
-      model: sap.capire.flights.data
+      model: FlightsService
       http:
         suffix: /hcql
       binding:
@@ -109,7 +109,7 @@ cds:
 {
   "cds": {
     "requires": {
-      "sap.capire.flights.data": {
+      "FlightsService": {
         "kind": "hcql",
         "[production]": {
           "credentials": {
@@ -128,7 +128,7 @@ cds:
 
 The `type` property activates the protocol for exchanging business data and must be offered by the provider [CDS service](https://github.com/capire/xflights-java/blob/6fc7c665c63bb6d73e28c11b391b1ba965b8772c/srv/data-service.cds#L24).
 The `model` property needs to match the fully qualified name of the CDS service from the imported model.
-You can find CDS service definition of `sap.capire.flights.data` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
+You can find CDS service definition of `FlightsService` in file `target/cds/capire/xflight-data/service.cds` resolved during CDS build step.
 The `binding.name` needs to point to the shared identity instance and `options.url` together with `http.suffix` provides the required location of the remote service endpoint.
 Finally, `onBehalfOf: systemUser` specifies that the remote call is invoked on behalf of a technical user in context of the tenant.
 
@@ -171,12 +171,12 @@ For production deployment, we recommend combining both services with the shared 
 
 #### 3. Prepare and Deploy the Provider Application { #co-located-provider }
 
-As server, `xflights` needs to restrict service `sap.capire.flights.data` to the technical client calling from the same application.
+As server, `xflights` needs to restrict service `FlightsService` to the technical client calling from the same application.
 This can be done by adding pseudo-role [`internal-user`](./cap-users#pseudo-roles) to the service:
 
 ::: code-group
 ```cds [xflights/srv/authorization.cds]
-using { sap.capire.flights.data as data } from './data-service';
+using { FlightsService as data } from './data-service';
 
 annotate data with @(requires: 'internal-user');
 ```
@@ -297,7 +297,7 @@ CAP offers App-2-App setup by leveraging remote services that require:
 
 Assuming the same local CF environment setup as [here](#prepare), clone the sample application ([`xflights-java`](https://github.com/capire/xflights-java/tree/main) or [`xflights`](https://github.com/capire/xflights/tree/main) for Node.js), or if already cloned and modified locally, reset to the remote branch.
 
-Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `sap.capire.flights.data` to technical clients.
+Similar to the [co-located](#co-located-provider) variant, `xflights` needs to expose service `FlightsService` to technical clients.
 The difference is that the consumers are not known a priori and are not part of the same application deployment.
 
 To expose service APIs for consumption, you can enhance the identity instance of the provider by defining API identifiers that are listed in property `provided-apis`:
@@ -321,7 +321,7 @@ resources:
 ```
 :::
 
-The entry with name `data-consumer` represents the consumption of service `sap.capire.flights.data` and is exposed as IAS API.
+The entry with name `data-consumer` represents the consumption of service `FlightsService` and is exposed as IAS API.
 The description helps administrators to configure the consumer application with the proper provider API if done on UI level.
 
 [Detailed description about identity instance parameters for `provided-apis`](https://github.wdf.sap.corp/pages/CPSecurity/sci-dev-guide/docs/BTP/identity-broker#service-instance-parameters){.learn-more} <!-- INTERNAL -->
@@ -333,7 +333,7 @@ Therefore, you can protect the corresponding CDS service by CAP role `data-consu
 
 ::: code-group
 ```cds [/srv/authorization.cds]
-using { sap.capire.flights.data as data } from './data-service';
+using { FlightsService as data } from './data-service';
 
 annotate data with @(requires: 'data-consumer');
 ```
@@ -398,7 +398,7 @@ cds:
   remote.services:
     xflights:
       type: hcql
-      model: sap.capire.flights.data
+      model: FlightsService
       http:
         suffix: /hcql
       binding:
@@ -418,7 +418,7 @@ cds:
           "kind": "ias"
         }
       },
-      "sap.capire.flights.data": {
+      "FlightsService": {
         "kind": "hcql",
         "[production]": {
           "credentials": {
@@ -596,5 +596,3 @@ Instead, rely on the shared connectivity component, which ensures centralized an
 
 - **Don't treat co-located services as external services**.
 This introduces unnecessary communication overhead and increases total cost of ownership.
-
-

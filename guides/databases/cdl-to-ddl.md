@@ -465,7 +465,7 @@ CREATE TABLE BadNames (
 However, even though CAP allows this, and handles all accesses correctly, it is strongly discouraged to use such names in your CDS models, as that may lead to unexpected issues in several scenarios, not in control of CAP, such as native SQL queries, third-party tools, or integration with non-CAP applications.
 
 > [!warning]  DON'T use Database-Invalid Names!
-> It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords-identifiers) in CDS models in the first place, as that impacts readability of your models.
+> It's **strongly discouraged** to use names that contain non-ASCII characters, or conflict with database reserved words. Even more avoid [delimited names](../../cds/cdl#keywords--identifiers) in CDS models in the first place, as that impacts readability of your models.
 
 ###### reserved-words
 > [!tip] Lists of Reserved Words
@@ -611,7 +611,7 @@ CREATE TABLE Books ( ...
 :::
 
 > [!tip] Consider using <code>@assert.target</code> instead
-> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#assert-target) for application-level input validation, which is more tuned for typical application scenarios, with error messages tailored for end users.
+> Database constraints are meant to protect against data corruption due to programming errors. Prefer using the [`@assert.target`](../services/constraints#asserttarget) for application-level input validation, which is more tuned for typical application scenarios, with error messages tailored for end users.
 
 #### `ON DELETE CASCADE`
 

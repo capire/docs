@@ -146,7 +146,7 @@ This adds the API in CDS format to the _srv/external_ folder and also copies the
 
 <div class="impl node">
 
-Further, it adds the API as an external service to your _package.json_. You use this declaration later to connect to the remote service [using a destination](#use-destinations-with-node-js).
+Further, it adds the API as an external service to your _package.json_. You use this declaration later to connect to the remote service [using a destination](#use-destinations-with-nodejs).
 
 ```json
 "cds": {
@@ -1501,7 +1501,7 @@ You can change the destination lookup behavior as follows:
 ```
 
 
-Setting the [`selectionStrategy`](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destination#multi-tenancy) property for the [destination options](#use-destinations-with-node-js) to `alwaysProvider`, you can ensure that the destination is always read from your provider subaccount. With that you ensure that a subscriber cannot overwrite your destination.
+Setting the [`selectionStrategy`](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destination#multi-tenancy) property for the [destination options](#use-destinations-with-nodejs) to `alwaysProvider`, you can ensure that the destination is always read from your provider subaccount. With that you ensure that a subscriber cannot overwrite your destination.
 
 Set the destination option `jwt` to `null`, if you don't want to pass the request's JWT to SAP Cloud SDK. Passing the request's JWT to SAP Cloud SDK has implications on, amongst others, the effective defaults for selection strategy and isolation level. In rare cases, these defaults are not suitable, for example when the request to the upstream server does not depend on the current user. Please see [Authentication and JSON Web Token (JWT) Retrieval](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#authentication-and-json-web-token-jwt-retrieval) for more details.
 
