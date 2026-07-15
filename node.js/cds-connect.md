@@ -25,7 +25,7 @@ Use `cds.connect.to()` to connect to services configured in a project's `cds.req
 const ReviewsService = await cds.connect.to('ReviewsService')
 ```
 
-The method returns a _Promise_ resolving to a _[Service](../cds/cdl#services)_ instance which acts as a client proxy to the service's API, allowing you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, e.g.:
+The method returns a _Promise_ resolving to a _[Service](../cds/cdl#services)_ instance which acts as a client proxy to the service's API, allowing you to call its methods and access its data using common [`cds.Service`](core-services#consuming-services) methods, for example:
 
 ```js
 let reviews = await ReviewsService.read ('Reviews')
@@ -58,7 +58,7 @@ const db2 = await cds.connect.to ({
 
 ### cds. services {#cds-connect-caching .property}
 
-When connecting to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve) are registered with [`cds.services`](cds-facade#cds-services) as well, a connect finds and returns them as local service connections.
+When connecting to a service using `cds.connect.to()`, the service instance is cached in [`cds.services`](cds-facade#cds-services) under the service name. This means that subsequent calls to `cds.connect.to()` with the same service name will all return the same instance. As services constructed by [`cds.serve`](cds-serve#cds-serve-) are registered with [`cds.services`](cds-facade#cds-services) as well, a connect finds and returns them as local service connections.
 
 You can also access cached service instance like this:
 

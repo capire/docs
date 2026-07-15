@@ -2,12 +2,12 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
-import { dirname, join, resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import playground from './lib/cds-playground/index.js'
 import languages from './languages'
+import playground from './lib/cds-playground/index.js'
 import { Menu } from './menu.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -43,6 +43,13 @@ const config = defineConfig({
     languages,
     toc: {
       level: [2,3]
+    },
+    anchor: {
+      // VS Code-compatible GitHub-style slugifier (mirrors markdown-language-features/src/slugify.ts)
+      slugify: (str) => str
+        .trim().toLowerCase()
+        .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
+        .replace(/\s/g, '-'),
     },
     container: { // Doesn't seem to work yet
       infoLabel: 'Info',
@@ -203,10 +210,10 @@ config.themeConfig.search = {
 
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
-import * as MdAttrsPropagate from './lib/md-attrs-propagate'
-import * as MdTypedModels from './lib/md-typed-models'
 import * as MdLiveCode from './lib/cds-playground/md-live-code'
+import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdDiagramSvg from './lib/md-diagram-svg'
+import * as MdTypedModels from './lib/md-typed-models'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)

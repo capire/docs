@@ -1308,6 +1308,11 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
   - `clusterSize` — max number of database clusters, running `workerSize` jobs each
   - `queueSize` — max number of jobs waiting to run in the job queue
 
+:::warning clusterSize configuration is not available with HANA TMS v2
+When using [HANA TMS v2](../multitenancy/index.md#sap-hana-tms-v2), the <Config label="`clusterSize` configuration" keyDelim="/" keyOnly>cds/requires/cds.xt.SaasProvisioningService/jobs/clusterSize</Config> is automatically set to `1`. HANA TMS v2 currently does not
+ provide a performant way to determine all database IDs, so clustering the upgrade by database does not work properly.
+:::
+
 #### HTTP Request Options
 
 | Request Header        |  Example Value                                         | Description  |

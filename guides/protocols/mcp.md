@@ -13,7 +13,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 
 > [!note]
 >
-> This guide is about the *MCP Adapter* – e.g. as provided through the [*@cap-js/mcp*](https://github.com/cap-js/mcp) plugin – which powers domain-specific application use cases, for example, to respond to questions for CAP-based applications like *"List all overstocked books"*.
+> This guide is about the *MCP Adapter* – for example, as provided through the [*@cap-js/mcp*](https://github.com/cap-js/mcp) plugin – which powers domain-specific application use cases, for example, to respond to questions for CAP-based applications like *"List all overstocked books"*.
 >
 > In parallel, there's also the *MCP Server* plugin ([*@cap-js/mcp-server*](https://github.com/cap-js/mcp-server)), which serves a different purpose, though, that is: AI-assisted *development* of CAP projects.
 
@@ -106,7 +106,7 @@ INFO com.sap.cds.adapter.mcp.McpServlet : MCP Server initialized at endpoint '/m
 ```
 :::
 
-You can also specify an alternative path under which the MCP server should be served, e.g. like that:
+You can also specify an alternative path under which the MCP server should be served as follows:
 
 ```cds
 annotate CatalogService with @mcp:'books'
@@ -374,7 +374,7 @@ During startup, the generated MCP servers and their URL are added to the client-
 When the application stops, the added configuration is removed. This is only intended for local development.
 
 > [!warning] For Development Only
-> The autowiring is only enabled during development (i.e., when running `cds watch` or `mvn cds:watch`) and not meant for production use cases.
+> The autowiring is only enabled during development (that is, when running `cds watch` or `mvn cds:watch`) and not meant for production use cases.
 
 #### Mock Authentication
 
@@ -458,7 +458,7 @@ npx @modelcontextprotocol/inspector
 The inspector should automatically open in your browser.
 
 1. Select _Streamable HTTP_ as Transport Type.
-2. Enter the URL of your service (e.g., `http://localhost:4004/mcp/browse`).
+2. Enter the URL of your service - for example, `http://localhost:4004/mcp/browse`.
 3. Select `Via Proxy` as connection type and select _Connect_.
 4. Go to the _Tools_ tab and select _List Tools_.
 5. To get data, select the _query_ tool.
@@ -492,4 +492,4 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 
 > [!caution]
 > The MCP adapter does not perform any input validation or output validation regarding prompt injections.
-> Hence, for production use cases ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
+> Hence, for production use cases ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (for example, Joule).

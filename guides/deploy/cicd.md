@@ -103,13 +103,13 @@ For the actual release we want to override org-wide sandbox variables to deploy 
 
 Go to **Settings** → **Environments** → **New environment** → enter "Production".
 
-Now override org-wide variables (e.g. `CF_ORG` and `CF_SPACE` in Cloud Foundry) to use a dedicated subaccount you created for the release deployment.
+Now override org-wide variables (for example `CF_ORG` and `CF_SPACE` in Cloud Foundry) to use a dedicated subaccount you created for the release deployment.
 
 #### Publish the release
 
 On your repository front page go to `Releases` → `Draft a new release` → `Select tag`.
 
-Now enter a tag name, e.g. `v1.0.0` and select `Create new tag: v1.0.0 on publish`.
+Now enter a tag name, for example, `v1.0.0` and select `Create new tag: v1.0.0 on publish`.
 
 You can optionally add a release title and release notes. Hit **Publish release** once you're ready.
 
