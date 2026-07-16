@@ -1620,7 +1620,7 @@ Each startup checks if `t0` needs redeployment. If the schema is up-to-date, no 
 
 ##### Special constraints for `t0`
 
-- Never uses `hana_tenant_id` from subscription parameters for [SAP HANA TMS v2](#sap-hana-tms-v2)
+- Never uses `hana_tenant_id` from subscription parameters for [SAP HANA TMS v2](./index#sap-hana-tms-v2)
 - Never applies `dataEncryption`
 - Never applies the application's `cdsc` compiler options
 

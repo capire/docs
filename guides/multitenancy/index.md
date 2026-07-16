@@ -316,7 +316,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - serving cds.xt.JobsService { path: '/-/cds/jobs' }
    ```
 
-   In addition, we can see a [`t0` tenant](#about-technical-tenant-t0) being deployed, which is used by the MTX services for book-keeping tasks.
+   In addition, we can see a [`t0` tenant]./mtxs#about-technical-tenant-t0) being deployed, which is used by the MTX services for book-keeping tasks.
 
    ```log
    [cds] - loaded model from 1 file(s):
