@@ -928,9 +928,9 @@ To group the tenant containers of many applications or microservices in a common
 **Option 1: Configure the same `hana_tenant_prefix`**
 : You can configure the same [`hana_tenant_prefix`](#mandatory-specify-a-unique-prefix-for-the-sap-hana-tenant-name) many applications or microservices. With that, the SAP HANA tenant ID is generated in the same way for each subscriber tenant.
 
-: If you choose this options, the following preconditions need to be met
+: If you choose this option, the following preconditions need to be met
 - The subscriber tenant ID (BTP tenant ID) needs to be the same for all applications or microservices.
-- All applications or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service).
+- All applications or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service) for the same subscriber tenant.
 
 **Option 2: Pass the SAP HANA Tenant ID with a Subscription**
 
