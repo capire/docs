@@ -9,8 +9,8 @@ hero:
 
   tagline:
     Build enterprise-grade cloud applications
-    with maximized productivity, 
-    fueled by proven best practices, 
+    with maximized productivity,
+    fueled by proven best practices,
     served out of the box.
 
   actions:
@@ -18,7 +18,7 @@ hero:
     - text: Get Started
       link: /get-started/
       theme: alt
-      
+
     - text: Develop
       link: /guides/
       theme: alt
@@ -69,9 +69,3 @@ features:
   linkText: Intrinsic Cloud Qualities
 
 ---
-
-<style>
-.VPFeature .details li {
-  white-space: nowrap;
-}
-</style>

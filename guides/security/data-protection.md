@@ -576,7 +576,7 @@ Design your CDS services exposed to web adapters on need-to-know basis. Be espec
 #### CAP Service Runtime
 
 Open transactions are expensive as they bind many resources such as a database connection as well as memory buffers.
-To minimize the amount of time a transaction must be kept open, the CAP runtime offers an [Outbox Service](../../java/outbox) that allows to schedule asynchronous remote calls in the business transaction.
+To minimize the amount of time a transaction must be kept open, the CAP runtime offers an [Outbox Service](../../java/event-queues) that allows you to schedule asynchronous remote calls in the business transaction.
 Hence, the request time to process a business query, which requires a remote call (such as to an audit log server or messaging broker), is minimized and independent from the response time of the remote service.
 
 ::: tip
@@ -637,7 +637,7 @@ The adapters also transform the HTTP requests into a corresponding CQN statement
 Access control is performed on basis of CQN level according to the CDS model and hence HTTP Verb Tampering attacks are avoided. Also HTTP method override, using `X-Http-Method-Override` or `X-Http-Method` header, is not accepted by the runtime.
 
 The OData protocol allows to encode field values in query parameters of the request URL or in the response headers. This is, for example, used to specify:
-- [Pagination (implicit sort order)](../services/served-ootb#pagination-sorting)
+- [Pagination (implicit sort order)](../services/served-ootb#pagination--sorting)
 - [Searching Data](../services/served-ootb#searching-data)
 - Filtering
 

@@ -10,7 +10,7 @@ status: released
 
 
 
-CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-server-js), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-server-js) in your project.
+CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-serverjs), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-server-js) in your project.
 
 
 
@@ -45,6 +45,7 @@ The built-in `server.js` constructs an [express.js app](cds-facade#cds-app), and
 Its implementation essentially is as follows:
 
 ```js twoslash
+
 const cds = require('@sap/cds')
 module.exports = async function cds_server(options) {
 
@@ -84,8 +85,8 @@ module.exports = async function cds_server(options) {
 ### cds. server() {.method}
 
 This is essentially a shortcut getter to `require('@sap/cds/server')`, that is, it loads and returns
-the [built-in `server.js`](#built-in-server-js) implementation.
-You'd mainly use this in [custom `server.js`](#custom-server-js) to delegate to the default implementation, [as shown below](#override-cds-server).
+the [built-in `server.js`](#built-in-serverjs) implementation.
+You'd mainly use this in [custom `server.js`](#custom-server-js) to delegate to the default implementation, [as shown below](#override-cdsserver).
 
 
 
@@ -96,6 +97,7 @@ The express.js `app` constructed by the server implementation.
 
 
 ##   Custom `server.js`
+<div id="custom-server-js"></div>
 
 The CLI command `cds serve` optionally bootstraps from project-local `./server.js` or  `./srv/server.js`.
 
@@ -263,7 +265,7 @@ The built-in CORS middleware can be enabled explicitly with <Config>cds.server.c
 
 The default generic _index.html_ page is not served if `NODE_ENV` is set to `production`. Set <Config>cds.server.index: true</Config> to activate explicitly also in production-like test environments, for example for deployed PoCs. You must not do this in real production environments!
 
-[See the **Generic *index.html*** page in action.](../get-started/bookshop#generic-index-html) {.learn-more}
+[See the **Generic *index.html*** page in action.](../get-started/bookshop#generic-indexhtml) {.learn-more}
 
 
 

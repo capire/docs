@@ -44,7 +44,7 @@ The major building blocks are as follows:
 
 - [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
 
-- [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
+- [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adapters for REST, OData, GraphQL, ...
 
 - [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
 
@@ -150,7 +150,7 @@ INNER JOIN Countries as country ON country.code = author.country_code
 -- the actual filter condition:
 WHERE country.code = 'GB';
 ```
-Path expressions in *infix filters*  become *SEMI JOINs*, e.g.using `IN`:
+Path expressions in *infix filters*  become *SEMI JOINs*, for example, using `IN`:
 ```sql
 CREATE VIEW EnglishBooks AS SELECT * FROM Books
 -- for Association Books:author:
@@ -702,16 +702,19 @@ Your application models are your services, also served automatically by generic 
 
 ### Protocol Adapters
 
-Behind the scenes, i.e., in the **outer hexagon** containing stuff, you as an application developer should not see, the CAP runtime employs Protocol Adapters, which translate requests from (and to) low-level protocols like HTTP, REST, OData, GraphQL, ... to protocol-agnostic CAP requests and queries.
+Behind the scene - that is, in the **outer hexagon** containing stuff, you as an application developer should not see - the CAP runtime employs Protocol Adapters, which translate requests from (and to) low-level protocols like HTTP, REST, OData, GraphQL, ... to protocol-agnostic CAP requests and queries for inbound and outbound communication.
 
-- for ***inbound*** communication → i.e., requests your application *receives*, as well as as...
-- for ***outbound*** communication → i.e., requests your application *sends* to other services.
+--> ***Inbound*** Communication 
+: Requests your application *receives*.
 
-In effect your service implementations stay agnostic to (wire) protocols, which allows us to exchange protocols, replace targets by mocks, do fast inner loop development in airplane mode, ... even change topologies from a monolith to micro services and vice versa late in time.
+--> ***Outbound*** Communication
+: Requests your application *sends* to other services.
+
+In effect your service implementations stay agnostic to (wire) protocols, which allows you to exchange protocols, replace targets by mocks, do fast inner loop development in airplane mode, ... even change topologies from a monolith to micro services and vice versa late in time.
 
 ![protocol-adapters.drawio](./assets/concepts/protocol-adapters.drawio.svg)
 
-The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local-remote).
+The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local--remote).
 
 Inbound:
 

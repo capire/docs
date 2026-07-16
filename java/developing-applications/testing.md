@@ -15,7 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 This section describes some best practices and recommendations for testing CAP Java applications.
 
-As described in [Modular Architecture](building#starter-bundles#modular_architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
+As described in [Modular Architecture](building#modular-architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
 
 Typical areas that require testing are the [services](../cqn-services/#cdsservices) that dispatch events to [event handlers](../event-handlers/), the event handlers themselves that implement the behaviour of the services, and finally the APIs that the application services define and that are exposed to clients through [OData](../cqn-services/application-services#odata-requests).
 
@@ -267,6 +267,10 @@ Check out the version in our [CAP Java bookshop sample project](https://github.c
 
   H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (assuming default port `8080`).
 
+::: warning Use the latest `2.3.x` version of H2
+Even though there are newer versions available, we cannot recommend using them for now. Therefore we only support until version 2.3.x of H2. This recommendation is subject to change. If our test results allow to recommend newer versions we will do so.
+:::
+
 ### Setup & Configuration
 
 #### Using the Maven Archetype
@@ -324,7 +328,7 @@ The section [Hybrid Testing](../../tools/cds-bind#run-cap-java-apps-with-service
 
 Most CAP Java projects use Spring Boot. To speed up the edit-compile-verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
 
-The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows: 
+The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows:
 
 ::: code-group
 ```yml [srv/src/main/resources/application.yaml]

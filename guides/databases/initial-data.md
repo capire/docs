@@ -138,7 +138,7 @@ cds:
 ```
 :::
 
-Use `cds env` to check which configuration is active in your current profile, e.g.:
+Use `cds env` to check which configuration is active in your current profile, for example:
 ```shell
 cds env requires.db.data --profile development
 ```

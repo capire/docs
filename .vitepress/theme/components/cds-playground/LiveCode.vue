@@ -2,7 +2,7 @@
   <div class="interactive-query">
     <div class="editor-row">
       <div class="editor" :hidden="loaded">
-        <div class="language-sh vp-adaptive-theme">
+        <div class="language-sh">
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
           <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
@@ -30,7 +30,7 @@
       </button>
     </div>
 
-    <div v-if="queryResult" :class="`vp-code-group vp-adaptive-theme ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
+    <div v-if="queryResult" :class="`vp-code-group ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
         <template v-for="tab in tabs" :key="tab.key">
           <input
@@ -45,7 +45,7 @@
 
       <div class="blocks">
         <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === tab.key"
-            :class="`language-${tab.kind} vp-adaptive-theme ${selectedTab === tab.key ? 'active' : ''}`" >
+            :class="`language-${tab.kind} ${selectedTab === tab.key ? 'active' : ''}`" >
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ tab.kind }}</span>
           <span v-html="format?.(tab, isDark)"></span>

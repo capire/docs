@@ -14,9 +14,9 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 One of the key [CAP design principles](../../get-started/features#open-and-opinionated) is to be an opinionated but yet open framework.
 Giving a clear guidance for cutting-edge technologies on the one hand and still keeping the door wide open for custom choice on the other hand, demands a highly flexible CAP Java runtime stack.
-The [modular architecture](#modular_architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack_configuration) based on standard or custom modules.
+The [modular architecture](#modular-architecture) reflects this requirement, allowing a fine-grained and flexible [configuration](#stack-configuration) based on standard or custom modules.
 
-## Modular Stack Architecture { #modular_architecture}
+## Modular Stack Architecture { #modular-architecture}
 
 ### Overview
 
@@ -124,9 +124,9 @@ CAP Java makes use of the plugin technique itself to offer optional functionalit
 Examples are [SAP Event Mesh](../messaging) and [Audit logging](../auditlog) integration.
 Find a full list of standard plugins in [Standard Modules](#standard-modules).
 
-## Stack Configuration { #stack_configuration}
+## Stack Configuration { #stack-configuration}
 
- As outlined in section [Modular Stack Architecture](#modular_architecture), the CAP Java runtime is highly flexible.
+ As outlined in section [Modular Stack Architecture](#modular-architecture), the CAP Java runtime is highly flexible.
  You can choose among modules prepared for different environments and in addition also include plugins which are optional extensions.
  Which set of modules and plugins is active at runtime is a matter of compile time and runtime configuration.
 
@@ -145,7 +145,7 @@ It basically helps to control the dependency versions of the artifacts and shoul
 
 ```xml
 <properties>
-	<cds.services.version>2.6.0</cds.services.version>
+	<cds.services.version>5.0.0</cds.services.version>
 </properties>
 
 <dependencyManagement>
@@ -258,7 +258,6 @@ CAP Java comes with a rich set of prepared modules for all different layers of t
 * `cds-feature-jdbc`: Consuming JDBC persistences using the CDS4j JDBC runtime.
 * `cds-feature-hana`:  Makes your application aware of SAP HANA data sources.
 * `cds-feature-postgresql`: Makes your application aware of PostgreSQL data sources.
-* `cds-feature-xsuaa`:  Adds [XSUAA](https://github.com/SAP/cloud-security-xsuaa-integration)-based authentication to your application.
 * `cds-feature-identity`: Adds [Identity Services](https://github.com/SAP/cloud-security-xsuaa-integration) integration covering IAS to your application.
 * `cds-feature-mt`:  Makes your application multitenant aware.
 * `cds-feature-enterprise-messaging`:  Connects your application to SAP Event Mesh.
@@ -337,7 +336,7 @@ It supports the following command-line options:
 | `-DodataVersion=[v2\|v4]` | Specify which protocol adapter is activated by default. Defaults to `v4`|
 | `-DtargetPlatform=cloudfoundry` | Adds CloudFoundry target platform support to the project. |
 | `-DinMemoryDatabase=[h2\|sqlite]` | Specify which in-memory database is used for local testing. If not specified, the default value is `h2`. |
-| `-DjdkVersion=[17\|21\|25]` | Specifies the target JDK version. Defaults to `21`. |
+| `-DjdkVersion=[21\|25]` | Specifies the target JDK version. Defaults to `25`. |
 | `-Dpersistence=[true\|false]` | Specify whether persistence is enabled (`true`) or disabled (`false`). Defaults to `true`. |
 | `-DcdsdkVersion=<a valid cds-dk version>` | Sets the provided cds-dk version in the project. If not specified, the default of CAP Java is used. |
 
@@ -574,6 +573,15 @@ Other options in this goal enable or disable certain features that change the wa
 - [`cqnServiceGetters`](../assets/cds-maven-plugin-site/generate-mojo.html#cqnServiceGetters)
 
   The method `getService()` in generated [event-specific Event Context interfaces](../event-handlers/#eventcontext) is overridden to return the typed service interface instead of the generic `Service` type.
+
+- [`generateClasses`](../assets/cds-maven-plugin-site/generate-mojo.html#generateClasses)
+
+  Generates static class-based implementations for interfaces, replacing dynamic proxies at runtime.
+  This significantly improves performance and removes the limit on the number of methods an accessor interface may declare.
+
+  The generated classes are internal — do not reference them directly from application code.
+
+  Hand-written [accessor interfaces](../cds-data#typed-access), for which no implementation class is generated, are still supported via [proxy](../cds-data#cds-data) fallback.
 
 :::warning Check migration guides!
 In major releases of CAP Java, some of these switches can be made the new default and some other switches might be removed. This might introduce compile errors

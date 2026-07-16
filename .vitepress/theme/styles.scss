@@ -285,6 +285,7 @@ main .vp-doc {
 
 // Tables styling
 main .vp-doc table {
+  width: 100%;
   tr, th, td {
     background-color: var(--vp-c-bg);
   }
@@ -445,8 +446,12 @@ footer {
     z-index: 1; position: relative; // draw over outline
   }
   :not(.no-wide) > table:hover,
-  :not(.no-wide) > table:focus {
+  :not(.no-wide) > table:focus,
+  :not(.no-wide) > table {
+    width: auto;
     min-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
   }
   :not(.no-wide) > tr {
     z-index: 1; position: relative;  // draw wide rows over outline

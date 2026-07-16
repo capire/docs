@@ -2,12 +2,12 @@
 const base =  process.env.GH_BASE || '/docs/'
 
 // Construct vitepress config object...
-import { dirname, join, resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import playground from './lib/cds-playground/index.js'
 import languages from './languages'
+import playground from './lib/cds-playground/index.js'
 import { Menu } from './menu.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -43,6 +43,13 @@ const config = defineConfig({
     languages,
     toc: {
       level: [2,3]
+    },
+    anchor: {
+      // VS Code-compatible GitHub-style slugifier (mirrors markdown-language-features/src/slugify.ts)
+      slugify: (str) => str
+        .trim().toLowerCase()
+        .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
+        .replace(/\s/g, '-'),
     },
     container: { // Doesn't seem to work yet
       infoLabel: 'Info',
@@ -132,8 +139,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '4.9.0',
-    java_cds4j: '4.9.0',
+    java_services: '5.0.0',
+    java_cds4j: '5.0.0',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
@@ -201,18 +208,12 @@ config.themeConfig.search = {
   }
 }
 
-// Add twoslash transformer to the markdown config (if requested as it slows down builds)
-import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
-if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
-  config.markdown.codeTransformers = [ transformerTwoslash() ]
-}
-
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
-import * as MdAttrsPropagate from './lib/md-attrs-propagate'
-import * as MdTypedModels from './lib/md-typed-models'
 import * as MdLiveCode from './lib/cds-playground/md-live-code'
+import * as MdAttrsPropagate from './lib/md-attrs-propagate'
 import * as MdDiagramSvg from './lib/md-diagram-svg'
+import * as MdTypedModels from './lib/md-typed-models'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -220,6 +221,15 @@ config.markdown.config = md => {
   MdLiveCode.install(md)
   MdDiagramSvg.install(md)
   md.use(dl)
+}
+
+// Add twoslash transformer to the markdown config (if requested as it slows down builds)
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
+  config.markdown.codeTransformers = [transformerTwoslash({
+    twoslashOptions: { compilerOptions: { paths: { "@sap/cds": [MdTypedModels.cdsTypesPath()] } } }
+  })],
+  config.markdown.languages.push('js', 'jsx', 'ts', 'tsx')
 }
 
 // Add custom buildEnd hook
