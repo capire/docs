@@ -483,7 +483,7 @@ could look like this:
 using { sap.capire.flights as my } from '../db/schema';
 
 @hcql @rest @odata
-service sap.capire.flights.data {
+service FlightsService {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
   @readonly entity Airports as projection on my.Airports;
