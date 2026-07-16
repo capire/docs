@@ -258,7 +258,7 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - `author.ID` refers to a key from the _...Authors.json_ file that is created at the same time.  If the _Authors_ entity is excluded, though, no such foreign key would be created, which cuts the association off.
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
-- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
+- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assertformat) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
 - Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/constraints) are respected as well, in a best effort way.
 :::
 
@@ -397,7 +397,7 @@ Compiles the specified models to [CSN](../cds/csn) or other formats.
 
 [See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
-[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
+[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to-).{.learn-more}
 
 
 In addition, the following formats are available:
@@ -483,7 +483,7 @@ could look like this:
 using { sap.capire.flights as my } from '../db/schema';
 
 @hcql @rest @odata
-service sap.capire.flights.data {
+service FlightsService {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
   @readonly entity Airports as projection on my.Airports;

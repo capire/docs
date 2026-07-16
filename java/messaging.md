@@ -470,7 +470,7 @@ Example:
 }
 ```
 
-[Learn more about _default-env.json_.](../node.js/cds-env#in-default-env-json){.learn-more}
+[Learn more about _default-env.json_.](../node.js/cds-env#in-default-envjson){.learn-more}
 
 
 #### VCAP_SERVICES Template for SAP Event Mesh

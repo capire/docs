@@ -88,7 +88,7 @@ this.on ('*', req => {
 ```
 
 Keep in mind that multiple requests (that is, instances of `cds.Request`) may share the same incoming HTTP request and outgoing HTTP response (for example, in case of an OData batch request).
-See sections [`req`](#req) and [`res`](#res) of `cds.Request` to learn more about accessing the request and response objects of individual requests within an incoming batch request.
+See sections [`req`](#-req) and [`res`](#-res) of `cds.Request` to learn more about accessing the request and response objects of individual requests within an incoming batch request.
 
 
 
@@ -155,7 +155,7 @@ On the other hand, setting `req.user` in a custom authentication middleware is d
 
 
 
-Class [`cds.Event`] represents event messages in [asynchronous messaging](messaging), providing access to the [event](#event) name, payload [data](#data), and optional [headers](#headers). It also serves as **the base class for [`cds.Request`](#cds-request)** and hence for all synchronous interactions.
+Class [`cds.Event`] represents event messages in [asynchronous messaging](messaging), providing access to the [event](#-event) name, payload [data](#-data), and optional [headers](#-headers). It also serves as **the base class for [`cds.Request`](#cds-request)** and hence for all synchronous interactions.
 
 
 
@@ -242,7 +242,7 @@ Additional note about OData: For requests that are part of a changeset, the even
 
 
 
-Class `cds.Request` extends [`cds.Event`] with additional features to represent and deal with synchronous requests to services in [event handlers](./core-services#srv-handle-event), such as the [query](#query), additional [request parameters](#params), the [authenticated user](#user), and [methods to send responses](#req-reply-results).
+Class `cds.Request` extends [`cds.Event`] with additional features to represent and deal with synchronous requests to services in [event handlers](./core-services#srv-handle-event), such as the [query](#-query), additional [request parameters](#-params), the [authenticated user](#-user), and [methods to send responses](#req-reply-results).
 
 
 [Router]: https://expressjs.com/en/4x/api.html#router
@@ -254,13 +254,13 @@ Class `cds.Request` extends [`cds.Event`] with additional features to represent 
 
 ### . req {.property}
 
-Provides access to the express request object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same request object as [`req.http.req`](#http).
+Provides access to the express request object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same request object as [`req.http.req`](#-http).
 
 
 
 ### . res {.property}
 
-Provides access to the express response object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same response object as [`req.http.res`](#http).
+Provides access to the express response object of individual requests within an incoming batch request. For convenience, in the case of non-batch requests, it points to the same response object as [`req.http.res`](#-http).
 
 
 
@@ -294,7 +294,7 @@ For example:
 
 {style="font-style:italic;width:80%;"}
 
-[See also `req.path` to learn how to access full navigation paths.](#path){.learn-more}
+[See also `req.path` to learn how to access full navigation paths.](#-path){.learn-more}
 [See _Entity Definitions_ in the CSN reference.](../cds/csn#entity-definitions){.learn-more}
 [Learn more about linked models and definitions.](cds-reflect){.learn-more}
 
@@ -303,7 +303,7 @@ For example:
 ### . path {.property}
 
 Captures the full canonicalized path information of incoming requests with navigation.
-For requests without navigation, `req.path` is identical to [`req.target.name`](#target) (or [`req.entity`](#entity), which is a shortcut for that).
+For requests without navigation, `req.path` is identical to [`req.target.name`](#-target) (or [`req.entity`](#-entity), which is a shortcut for that).
 
 Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/bookshop/blob/main/srv/admin-service.cds):
 
@@ -314,14 +314,14 @@ Examples based on [cap/samples/bookshop AdminService](https://github.com/capire/
 | Books(201)/author | AdminService.Books/author | AdminService.Authors |
 {style="font-style:italic"}
 
-[See also `req.target`](#target){.learn-more}
+[See also `req.target`](#-target){.learn-more}
 
 
 
 
 ### . entity {.property}
 
-This is a convenience shortcut to [`msg.target.name`](#target).
+This is a convenience shortcut to [`msg.target.name`](#-target).
 
 
 
