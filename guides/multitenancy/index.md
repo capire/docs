@@ -316,7 +316,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - serving cds.xt.JobsService { path: '/-/cds/jobs' }
    ```
 
-   In addition, we can see a `t0` tenant being deployed, which is used by the MTX services for book-keeping tasks.
+   In addition, we can see a [`t0` tenant]./mtxs#about-technical-tenant-t0) being deployed, which is used by the MTX services for book-keeping tasks.
 
    ```log
    [cds] - loaded model from 1 file(s):
@@ -894,7 +894,7 @@ To help ensure that the generated SAP HANA tenant UUID is unique within a region
 like `prefix-${org}-${space}` in Cloud Foundry.
 
 :::warning Prefix is mandatory
-The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant `t0` is created with its own SAP HANA tenant.
+The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant [`t0`](./mtxs#about-technical-tenant-t0) is created with its own SAP HANA tenant.
 :::
 
 :::warning Length restriction
@@ -952,8 +952,8 @@ To group the tenant containers of many applications or microservices in a common
      }
    }
    ```
-  The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides    the prefix settings mentioned earlier,
-  except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
+  The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
+  except for [the internal tenant t0](./mtxs#about-technical-tenant-t0). Also ensure that the ID is unique within a region.
 
 :  **... in CAP Java**
 
