@@ -630,19 +630,6 @@ elapsed times (trace 4a1f7b2c...):
      2.10 →   23.80 =   21.70 ms        CQN SELECT CatalogService.Books
 ```
 
-Each line shows:
-
-| Column | Meaning |
-|--------|---------|
-| `0.00` | Start time relative to trace start (ms) |
-| `26.34` | End time relative to trace start (ms) |
-| `26.34 ms` | Duration of the span |
-| Indentation | Parent → child nesting |
-| Name | CAP service, event, or CQN operation |
-| `[tenant=...]` | Tenant context (if available) |
-| `[entity=...]` | Target entity (if available) |
-| `[ERROR]` | Appears on failed spans |
-
 ##### Configuration
 
 The feature is controlled by `cds.telemetry.dev-output.enabled`:
