@@ -120,7 +120,7 @@
 
     pkgStr.value = JSON.stringify(pkg, null, 2)
     rcJsonStr.value = JSON.stringify(pkg.cds??{}, null, 2)
-    rcJsStr.value = 'exports.' + Object.keys(pkg.cds??{})[0] + ' = ' + JSON.stringify(Object.values(pkg.cds??{})[0], null, 2).replaceAll('"', '')
+    rcJsStr.value = 'exports.' + Object.keys(pkg.cds??{})[0] + ' = ' + JSON.stringify(Object.values(pkg.cds??{})[0], null, 2).replace(/"([^"]+)":/g, '$1:')
     rcYmlStr.value = yaml.stringify(pkg.cds)
 
     let envKey = fqn.replaceAll('_', '__').replaceAll(keyDel, '_')
