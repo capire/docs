@@ -197,3 +197,7 @@ SQLite only has limited support for concurrent database access due to its very c
 :::
 
 Having said this, there can indeed be scenarios where SQLite might also be used in production, not as the primary database of a business application, but for edge cases, such as using SQLite as in-memory caches. → [Learn more on the _sqlite.org_ website](https://www.sqlite.org/whentouse.html).
+
+::: tip
+For in-memory SQLite in production configure <Config>cds.features.in_memory_db: true</Config> in addition to <Config>cds.requires.db.credentials.url: :memory:</Config>.
+:::
