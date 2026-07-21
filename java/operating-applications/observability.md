@@ -632,7 +632,7 @@ elapsed times (trace 4a1f7b2c...):
 
 ##### Configuration
 
-The feature is controlled by `cds.telemetry.dev-output.enabled`:
+The feature is controlled by <Config java>cds.telemetry.dev-output.enabled</Config>:
 
 | Value | Behavior |
 |-------|----------|
