@@ -657,7 +657,7 @@ The dev trace output and the [OpenTelemetry Java Agent](#agent-extension) serve 
 | **Span level** | CAP services, handlers, CQN | JVM frameworks (Spring MVC, JDBC) |
 | **Output** | Console log | Jaeger, Dynatrace, Cloud Logging |
 
-When the OpenTelemetry Java Agent is detected at startup, the dev trace output automatically backs off to avoid conflicts.
+When the OpenTelemetry Java Agent is detected at startup, the dev trace output is automatically disabled to avoid conflicts.
 
 
 ### Dynatrace { #dynatrace }
