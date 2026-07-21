@@ -1597,6 +1597,53 @@ The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` a
 
 <span id="sms-provisioning-service" />
 
+## About technical Tenant `t0`
+
+`t0` is a technical tenant used by `@sap/cds-mtxs`. It is a dedicated database container that stores operational metadata. The application's domain model is **not** deployed to `t0`.
+
+#### What `t0` stores
+
+| Entity | Purpose |
+|--------|---------|
+| `cds.xt.Tenants` | Registry of all subscribed tenants with their metadata, schema info, and version |
+| `cds.xt.Jobs` | Async job state for operations like `subscribe`, `upgrade`, `extend` |
+| `cds.xt.Tasks` | Individual tasks within a job (one per tenant per operation) |
+
+
+#### Lifecycle of `t0`
+
+The `t0` tenant is automatically created or updated at startup of the MTX sidecar.
+
+##### Schema evolution
+
+Each startup checks if `t0` needs redeployment. If the schema is up-to-date, no action is taken.
+
+##### Special constraints for `t0`
+
+- Never uses `hana_tenant_id` from subscription parameters for [SAP HANA TMS v2](./index#sap-hana-tms-v2)
+- Never applies `dataEncryption`
+- Never applies the application's `cdsc` compiler options
+
+
+#### Configuring a different Tenant Name for `t0`
+
+The default tenant name is `'t0'`. It can be customized via configuration <Config label="cds.env.requires.multitenancy.t0" keyDelim="/">cds/requires/multitenancy/t0</Config> or environment variable `CDS_REQUIRES_MULTITENANCY_T0=my-custom-t0`.
+
+This is useful for scenarios where the `'t0'` name must vary per deployment (e.g., when multiple apps share the same Service Manager instance and need distinct `t0` containers).
+
+#### Default `database_id` and `lazyT0`
+
+By default, `t0` is created on server startup without an explicit `database_id`. This means it uses the Service Manager's default (primary) HANA database associated with the service instance or the database that is configured for the <Config label="DeploymentService" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config>
+
+[Learn more about DeploymentService configuration.](./mtxs.md#deployment-config){.learn-more}
+
+##### `lazyT0` configuration
+
+The creation of the `t0` tenant can be deferred using configuration <Config label="lazyT0" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/lazyT0</Config>.
+
+With that, the `t0` tenant is only created together with the first subscription. Before the first tenant is subscribed, `t0` is created with the same onboarding parameters (including `database_id`) as the subscribing tenant. This can be useful if the `database_id` is not known when deploying the MTX sidecar.
+
+
 ## [Old MTX Reference](old-mtx-apis) {.toc-redirect}
 
 [See Reference docs for former 'old' MTX Services.](old-mtx-apis){.learn-more}
