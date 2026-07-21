@@ -629,7 +629,7 @@ Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the co
 </div>
 
 
-### Checking Input Data (Java only) { #input-data-auth }
+### Checking Input Data { #input-data-auth .java}
 
 Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
 Invalid input that does not meet the condition is rejected with response code `400`.
@@ -648,12 +648,13 @@ Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
-### Simple Static Checks (Node.js only) { #simple-static-checks }
+### Simple Static Checks { #simple-static-checks .node}
 
 TODO
 
 
-### Rejected Entity Selection { #reject-403 } //> TODO: Node.js?
+//> TODO: Node.js?
+### Rejected Entity Selection { #reject-403 .java}
 
 Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
 are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
