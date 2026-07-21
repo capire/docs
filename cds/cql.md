@@ -354,10 +354,9 @@ If an infix filter effectively reduces the cardinality of a *to-many* associatio
 SELECT name, books[1: favorite=true].title from Authors
 ```
 
-::: warning Limitations of Compositions of one
+::: warning `:1` has no effect on result set
 The `:1` syntax in the filter has no effect on the result. It is only an information by the developer
-that the specified condition reduces the result to a single entry. If the condition doesn't reduce
-the result set to one entry, you must not add `:1`.
+that the specified condition reduces the result to a single entry.
 :::
 
 ### Exists Predicate
