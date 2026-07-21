@@ -9,7 +9,7 @@ status: released
 
 ## Class `cds.ApplicationService`
 
-Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/providing-services), [Localized Data](../guides/localized-data.md) and [Temporal Data](../guides/temporal-data.md).
+Class `cds.ApplicationService` is the default service provider implementation, adding generic handlers as introduced in the Cookbook guides on [Providing Services](../guides/services/providing-services), [Localized Data](../guides/uis/localized-data.md) and [Temporal Data](../guides/domain/temporal-data.md).
 
 Take this service definition for example:
 
@@ -80,52 +80,52 @@ This method is adding request handlers for initial authorization checks, as docu
 
 ### _static_ handle_etags() {.method}
 
-This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/providing-services#concurrency-control).
+This method is adding request handlers for out-of-the-box concurrency control using ETags, as documented in the [Providing Services guide](../guides/services/served-ootb#concurrency-control).
 
 
 
 ### _static_ handle_validations() {.method}
 
-This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/providing-services#input-validation).
+This method is adding request handlers for input validation based in `@assert` annotations, and other, as documented in the [Providing Services guide](../guides/services/constraints).
 
 
 
 
 ### _static_ handle_temporal_data() {.method}
 
-This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/temporal-data.md).
+This method is adding request handlers for handling temporal data, as documented in the [Temporal Data guide](../guides/domain/temporal-data.md).
 
 
 
 
 ### _static_ handle_localized_data() {.method}
 
-This method is adding request handlers for handling localized data, as documented in the [Localized Data guide](../guides/localized-data.md).
+This method is adding request handlers for handling localized data, as documented in the [Localized Data guide](../guides/uis/localized-data.md).
 
 
 
 
 ### _static_ handle_managed_data() {.method}
 
-This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain-modeling#managed-data).
+This method is adding request handlers for handling managed data, as documented in the [Providing Services guide](../guides/domain/index#managed-data).
 
 
 
 ### _static_ handle_paging() {.method}
 
-This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/providing-services#pagination-sorting).
+This method is adding request handlers for paging & implicit sorting, as documented in the [Providing Services guide](../guides/services/served-ootb#pagination--sorting).
 
 
 
 ### _static_ handle_fiori() {.method}
 
-This method is adding request handlers for handling Fiori Drafts and other Fiori-specifics, as documented in the [Serving Fiori guide](../advanced/fiori.md).
+This method is adding request handlers for handling Fiori Drafts and other Fiori-specifics, as documented in the [Serving Fiori guide](../guides/uis/fiori.md).
 
 
 
 ### _static_ handle_crud() {.method}
 
-This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/providing-services#generic-providers).
+This method is adding request handlers for all CRUD operations including *deep* CRUD, as documented in the [Providing Services guide](../guides/services/served-ootb).
 
 
 
@@ -155,3 +155,41 @@ cds.ApplicationService.handle_log_events = cds.service.impl (function(){
   this.on('*', req => console.log(req.event))
 })
 ```
+
+
+## Results of Generic CRUD Handlers
+
+When CAP's generic handlers run a CRUD operation, the result follows a consistent shape (custom `.on` handlers may return any value):
+
+| Operation             | Return value                                                                                  |
+|-----------------------|-----------------------------------------------------------------------------------------------|
+| `READ`                | Array of matching records, or a single record / `null` when read by key                       |
+| `CREATE`              | Array with `.affected` (rows created); iterate to access the created rows' generated keys     |
+| `UPDATE`              | Array with `.affected` (rows changed); reserved for rows from a `RETURNING` clause             |
+| `UPSERT`              | Array with `.affected` (rows written); reserved for rows from a `RETURNING` clause             |
+| `DELETE`              | Array with `.affected` (rows deleted); reserved for rows from a `RETURNING` clause             |
+
+For `CREATE`, the array will be populated with rows from an SQL `RETURNING` clause once that is supported. Until then, the result is a lazy array that computes the created rows' generated primary keys on demand: iterating it (`[...result]`, `for…of`, `JSON.stringify`) populates those keys, avoiding the cost when you don't need them.
+
+> [!warning] Iterate before indexing
+> Direct index access (`result[0]`) returns `undefined` until the array has been iterated at least once. Spread or loop over the result first.
+
+```js
+const created = await srv.create(Books).entries({title:'Catweazle'})
+created.affected            // 1
+const [row] = [...created]  // iterate first — row holds the generated key
+```
+
+For `UPDATE`, `UPSERT`, and `DELETE`, the array is reserved for rows returned by an SQL `RETURNING` clause. Unlike `CREATE`, there are no generated keys to synthesize client-side, so — with `RETURNING` not yet supported — the array is currently always empty:
+
+```js
+const updated = await srv.update(Books).set({discount:'10%'}).where({stock:{'>':111}})
+updated.affected             // number of rows updated
+```
+
+When a write targets a single row by key (for example, `srv.update(Books, 201)` or `srv.delete(Books, '1')`) and no row matches, the handler throws a 404 error. A `where` clause that matches zero rows returns an array with `affected: 0` without throwing.
+
+> [!tip] Consistent Results Across Local and Remote Services
+> This shape was introduced in cds 10 so that local services, HCQL-proxied remote services, and database services return the same thing. To restore the previous behavior, set <Config>cds.features.legacy_srv_results: true</Config>.
+
+[See the migration guide for opt-out options.](../releases/migration/cds10#fixed-service-results){.learn-more}

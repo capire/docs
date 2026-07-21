@@ -1,57 +1,11 @@
 ---
-status: released
 synopsis: >
-  About supported development environments (IDEs) and features of the CDS language editor.
+  Supported development environments (IDEs) and features of the CDS language editor.
 ---
 
 # CDS Editors and IDEs
 
 [[toc]]
-
-## SAP Business Application Studio {#bas}
-
-[SAP Business Application Studio](https://help.sap.com/docs/bas/sap-business-application-studio/what-is-sap-business-application-studio) offers a modern development environment tailored for efficient development of business applications for the SAP Intelligent Enterprise.
-
-#### Setup in BTP
-
-If not already done, [set up SAP Business Application Studio](https://developers.sap.com/tutorials/appstudio-onboarding.html) on SAP BTP.
-
-
-#### Set Up a Dev Space
-
-1. Open the [SAP BTP cockpit](https://account.hanatrial.ondemand.com/) and choose *SAP Business Application Studio* from the _Quick Tool Access_ section.
-
-1. Choose *Create Dev Space*.
-
-1. Provide a name for your dev space.
-
-1. Choose *Full Stack Cloud Application* as the application type.
-
-   By selecting *Full Stack Cloud Application*, your dev space comes with several extensions out of the box that you need to develop CAP applications. For example, CAP Tools, Java Tools, and MTA Tools are built in to save setup time.
-   See [Developer Guide](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/84be8d91b3804ab5b0581551d99ed24c.html) for SAP Business Application Studio for more details.
-
-1. Choose *Create Dev Space*.
-
-   The creation of the dev space takes a while. You see that the status for your dev space changes from *STARTING* to *RUNNING*. See [Dev Space Types](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/4142f786f3d345699c3d5fbebda5ded6.html) for more details.
-
-1. Once the dev space is running, choose the dev space by clicking on the dev space name.
-
-   >In the trial version, any dev space that hasn't been running for 30 days will be deleted. See the full list of [restrictions](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9d1db9835307451daa8c930fbd9ab264/a45742a719704bdea179b4c4f9afa07f.html).
-
-See [Developing a CAP Application in SAP Business Application Studio](https://help.sap.com/docs/SAP%20Business%20Application%20Studio/9c36fdb911ae4cadab467a314d9e331f/8a648174036a458688391c3ad7ee7cd5.html) {.learn-more}
-
-
-#### Tutorials
-
-+ [Combine CAP with SAP HANA Cloud to Create Full-Stack Applications](https://developers.sap.com/mission.hana-cloud-cap.html)
-+ [Set Up SAP Business Application Studio for Development](https://developers.sap.com/tutorials/appstudio-onboarding.html)
-
-+ Video showing [SAP Business Application Studio Productivity Tools](https://www.youtube.com/watch?v=KE6DKU1P9ic)
-
-
-
-
-
 
 ## Visual Studio Code {#vscode}
 
@@ -116,12 +70,13 @@ Restart the server when you did changes to your code using the *Debug* views res
 
 ## IntelliJ
 
-The [CAP CDS Language Support](https://github.com/cap-js/cds-intellij) plugin for IntelliJ IDEs provides syntax highlighting, code completion, formatting, and more.
-It supports commercial IntelliJ IDEs including IntelliJ IDEA Ultimate and WebStorm.
+[SAP CDS Language Support](https://plugins.jetbrains.com/plugin/25209-sap-cds-language-support) for IntelliJ provides syntax highlighting, code completion, formatting, navigation, hover documentation, workspace symbol search, and more.
+
+The plugin supports free and commercial IntelliJ IDEs including IntelliJ IDEA Community, IDEA Ultimate and WebStorm.
 
 ![Screenshot showing an example of code completion in IntelliJ.](https://raw.githubusercontent.com/cap-js/cds-intellij/9dab0d1984e79b74074a820fe97ee6f9fb53cab7/.assets/code_completion.png){ .ignore-dark style="width:450px"}
 
-See the [detailed feature list](https://github.com/cap-js/cds-intellij/blob/main/FEATURES.md) and the [installation instructions](https://github.com/cap-js/cds-intellij#requirements) for how to get started.
+See the [detailed feature list](https://github.com/cap-js/cds-intellij/blob/main/docs/features.md) and the [installation instructions](https://github.com/cap-js/cds-intellij#requirements) for how to get started.
 
 [Report issues and provide feedback](https://github.com/cap-js/cds-intellij/issues).
 
@@ -346,14 +301,6 @@ Keeps track of the active editor in focus. Only changes there are immediately va
 The *ActiveEditorOnly* mode is especially useful in situations when navigating through a large model, that is, having multiple files open (even if they are not shown as tabs)
 and editing a file that the others directly or indirectly depend on.
 
-::: warning Large models can lead to **high CPU and memory load**
-If switched to *OpenEditorsAndDirectSources*, all model files on every change, for example typed character, are recompiled.
-
-If switched to _OpenEditorsOnly_, all open files, for example split tabs, are recompiled.
-
-The high resource consumption might impact the editor's responsiveness.
-:::
-
 ##### Cds > Contributions > [Enablement: Odata](vscode://settings/cds.contributions.enablement.odata)
 
 Default: *on*
@@ -406,7 +353,7 @@ You want to create a preview of a specific _.cds_ file in your project. You can 
 
 ##### Visualize CDS file dependencies
 
-Use the command from the context menu on a folder or CDS file.
+Use the command from the context menu on a folder or CDS file, or from within the popup when hovering over an _import_ path at the end of a _using_ statement.
 
 A selection popup appears to choose one of three modes:
 
@@ -446,7 +393,7 @@ Until a further change, reference calculation is reasonably fast.
 - Changing settings in _CDS_ section will currently perform a complete workspace invalidation, that is, required indexes will lead to recompilations on demand as described above.
 - Changing certain `cds.env` settings, for example folder configurations, will invalidate the workspace as well.
 
-### CDS Source Formatter <Beta /> { #cds-formatter}
+### CDS Source Formatter { #cds-formatter}
 
 The CDS code formatter provides a command line interface. Use it as a pre-commit hook or within your CI/CD pipeline to ensure consistent formatting.
 
@@ -514,23 +461,41 @@ entity Books {};
 ```
 
 
-## CAP Notebooks { #cap-vscode-notebook }
+## CAP Project Explorer
 
-A **CAP Notebook** is a [Custom Notebook in Visual Studio Code](https://code.visualstudio.com/blogs/2021/11/08/custom-notebooks) that serves you as a guide on how to create, navigate, and monitor CAP projects. With this approach, we want to encourage the CAP community to work with CAP in the same explorative manner that scientists work with their data, namely by:
+CAP Project Explorer is a sidebar view for exploring your CAP projects directly within VS Code. It gives you access to your project's structure and symbols. To get started, just select the CAP Project Explorer icon in the *VS Code activity bar* (left sidebar).
 
-- Visually interacting with their code
-- Playing with REPL-type inputs (notebook input cells)
-- Storing persistent code (notebook output cells)
+![CAP Project Explorer sidebar view showing a structured tree of CDS artifacts](./assets/vscode/project-explorer.png){.ignore-dark width="300px"}
 
-The cell inputs/outputs are especially useful at later points in time when the project's details have long been forgotten. In addition, notebooks are a good way to share, compare, and also reproduce projects.
+##### Getting Started
 
-* To see which features are available in a CAP Notebook, open our [CAP Notebook page](#cap-notebooks-page): <kbd>F1</kbd> → *CDS: Open CAP Notebooks Page*
+1. Select the **CAP Project Explorer** icon in the VS Code activity bar (left sidebar).
+2. Open the explorer view.
+3. Browse the tree or use search to filter artifacts.
+4. Right-click on items for context actions such as **Find References** or **Go to Definition**.
 
-* Magics, or magic commands, known from [IPython](https://ipython.readthedocs.io/en/stable/interactive/magics.html) are convenient functions to solve common problems. To see which line- and cell-magics can be used within a CAP Notebook, run a code cell with `%quickref`.
+##### Configuration
 
-* Start an empty CAP Notebook by creating a _*.capnb_ file.
+You can configure the CAP Project Explorer in your VS Code settings:
 
-> Provided that the [**CDS Editor**](#cds-editor) is installed, the CAP Notebook will be rendered automatically as the file is selected.
+- [`cds.explorer.enabled`](vscode://settings/cds.explorer.enabled): controls whether the CAP Project Explorer is active (default: `true`)
+
+**Note:** A window reload is required after changing the `enabled` setting.
+
+##### Available Commands
+
+The following commands are available in the Command Palette (Cmd+Shift+P or Ctrl+Shift+P):
+
+- **CDS Explorer: Search**: search for artifacts in your project
+
+##### Benefits
+
+The CAP Project Explorer helps you:
+
+- Reduce navigation time with quick access to project artifacts
+- Understand code structure through organized views
+- Filter large projects to focus on relevant parts
+- Switch between file-based and symbol-based perspectives on your codebase
 
 
 ## Using Docker { #docker }

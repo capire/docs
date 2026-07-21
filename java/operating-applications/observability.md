@@ -99,6 +99,11 @@ logging.level.my.loggers.order.Consolidation: INFO
 
 # Turn off all loggers matching org.springframework.*:
 logging.level.org.springframework: OFF
+
+# Turn on debug logging for sql statements and messaging:
+logging.level:
+  com.sap.cds.persistence.sql: DEBUG
+  com.sap.cds.messaging: DEBUG
 ```
 :::
 
@@ -158,12 +163,41 @@ CAP Java SDK has useful built-in loggers that help to track runtime behavior:
 | `com.sap.cds.remote.odata`            | Logs request handling for remote OData calls                                                         |
 | `com.sap.cds.remote.wire`             | Logs communication of remote OData calls                                                             |
 | `com.sap.cds.auditlog`                | Logs audit log events                                                                                |
+| `com.sap.cds.outbox`                  | Logs activity of the transactional outbox                                                                                |
 | `com.sap.cds.properties`              | Logs CDS properties with a non-default value on application startup                                  |
 
 Most of the loggers are used on DEBUG level by default as they produce quite some log output. It's convenient to control loggers on package level, for example, `com.sap.cds.security` covers all loggers that belong to this package (namely `com.sap.cds.security.authentication` and `com.sap.cds.security.authorization`).
 
 ::: tip
 Spring comes with its own [standard logger groups](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/html/boot-features-logging.html#boot-features-custom-log-groups). For instance, `web` is useful to track HTTP requests. However, HTTP access logs gathered by the Cloud Foundry platform router are also available in the application log.
+:::
+
+#### Log CDS Configuration
+
+Upon start-up, you can get an overview of the configured CDS properties. Use this feature to:
+- list all accepted CDS properties and double-check the running configuration
+- check for warnings of usage of deprecated properties
+- check for warnings of usage of undocumented properties
+
+Please note that secrets are masked.
+
+Turn it on by setting the log level <Config Java>com.sap.cds.properties = DEBUG</Config>.
+
+
+::: details Sample output:
+
+```sh
+... DEBUG ... com.sap.cds.properties : 'cds.dataSource.autoConfig.enabled': 'false' (default: 'true')
+... DEBUG ... com.sap.cds.properties : 'cds.dataSource.embedded': 'true' (default: 'false')
+...  WARN ... com.sap.cds.properties : 'cds.security.authorization.emptyAttributeValuesAreRestricted': 'false' (default: 'true', deprecated, not documented)
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.name': 'admin'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.password': '***' (sensitive)
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.roles[0]': 'admin'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.roles[1]': 'cds.Developer'
+... DEBUG ... com.sap.cds.properties : 'cds.security.mock.users.admin.attributes.businessPartner[0]': '10401010'
+... DEBUG ... com.sap.cds.properties : 'cds.odataV4.endpoint.path': '/api' (default: '/odata/v4')
+... DEBUG ... com.sap.cds.properties : 'cds.errors.defaultTranslations.enabled': 'true' (default: 'false')
+```
 :::
 
 ### Logging Service { #logging-service}
@@ -213,7 +247,7 @@ In case you've configured `cf-java-logging-support` as described in [Logging Ser
 
 - Generation of IDs in non-HTTP contexts
 - Thread propagation through [Request Contexts](../event-handlers/request-contexts#threading-requestcontext)
-- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy-classic#mtx-sidecar-server))
+- Propagation to remote services when called via CloudSDK (for instance [Remote Services](../cqn-services/remote-services) or [MTX sidecar](../multitenancy#setup-overview))
 
 By default, the ID is accepted and forwarded via HTTP header `X-CorrelationID`. If you want to accept `X-Correlation-Id` header in incoming requests alternatively,
 follow the instructions given in the guide [Instrumenting Servlets](https://github.com/SAP/cf-java-logging-support/wiki/Instrumenting-Servlets#correlation-id).
@@ -630,7 +664,7 @@ CAP Java SDK plugs a CDS-specific actuator `cds`. This actuator provides informa
 - The version and commit ID of the currently used `cds-services` library
 - All services registered in the service catalog
 - Security configuration (authentication type and so on)
-- Loaded features such as `cds-feature-xsuaa`
+- Loaded features such as `cds-feature-identity`
 - Database pool statistics (requires `registerMbeans: true` in [Hikari pool configuration](../cqn-services/persistence-services#datasource-configuration))
 
 
@@ -701,7 +735,7 @@ The example configuration makes Spring exposing only the health endpoint with he
 For multitenancy scenarios, CAP Java replaces the default `db` indicator with an implementation that includes the status of all tenant databases.
 :::
 
-In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](/java/reflection-api#the-model-provider-service).
+In addition CAP Java offers a health indicator `modelProvider`. This health indicator allows to include the status of the MTX sidecar serving the [Model Provider Service](../reflection-api#the-model-provider-service).
 
 ```yaml
 management:

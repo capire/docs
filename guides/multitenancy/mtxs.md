@@ -1,11 +1,8 @@
 ---
 
 label: MTX Reference
-# layout: reference-doc
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - MTX Reference
+synopsis: >
+  API reference for multitenancy and extensibility.
 status: released
 ---
 
@@ -151,7 +148,7 @@ cds watch --profile local-multitenancy
 
 ### Testing With Minimal Setup
 
-When designing test suites that run frequently in CI/CD pipelines, you can shorten runtimes and reduce costs. First run a set of functional tests which use MTX in minimized setups – that is, with local servers and in-memory databases as introduced in the [_Multitenancy_ guide](../multitenancy/#test-locally).
+When designing test suites that run frequently in CI/CD pipelines, you can shorten runtimes and reduce costs. First run a set of functional tests which use MTX in minimized setups – that is, with local servers and in-memory databases as introduced in the [_Multitenancy_ guide](../multitenancy/index#test-drive-locally).
 
 Only in the second and third phases, you would then run the more advanced hybrid tests. These hybrid tests could include testing tenant subscriptions with SAP HANA, or integration tests with the full set of required cloud services.
 
@@ -174,14 +171,13 @@ An MTX sidecar is a standard, yet minimal Node.js CAP project. By default it's a
 {
   "name": "bookshop-mtx", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^7",
-    "@sap/cds-hana": "^2",
-    "@sap/cds-mtxs": "^1",
+    "@sap/cds": "^10",
+    "@cap-js/hana": "^3",
+    "@sap/cds-mtxs": "^4",
     "@sap/xssec": "^4",
-    "express": "^4"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^1"
+    "@cap-js/sqlite": "^3"
   },
   "scripts": {
     "start": "cds-serve"
@@ -610,6 +606,31 @@ cds.on('served', ()=>{
 For CLI usage via `cds subscribe|upgrade|unsubscribe` you can create a `mtx/sidecar/cli.js` file, which works analogously to a `server.js`.
 :::
 
+#### Example handler for SaasProvisioningService
+
+A common usecase is the specification of an individual database ID per subscription.
+```js
+cds.on('served', async () => {
+  const {
+    'cds.xt.SaasProvisioningService': provisioning,
+  } = cds.services
+
+  await provisioning.prepend(() => {
+    provisioning.on('UPDATE', 'tenant', async (req, next) => {
+      req.data = cds.utils.merge(req?.data, {
+        _: {
+          hdi: {
+            create: {
+              database_id: '<database_id>',
+            }
+          }
+        }
+      })
+      return next()
+    })
+  })
+})
+```
 ## Consumption
 
 ### Via Programmatic APIs
@@ -809,6 +830,8 @@ See the [list of possible `kind` values](../../cds/csn#def-properties).{.learn-m
 - `new-fields` specifies the maximum number of fields that can be added.
 - `fields` lists the fields that are allowed to be extended. If the list is omitted, all fields can be extended.
 - `new-entities` specifies the maximum number of entities that can be added to a service.
+
+[Check Extension Restrictions for more details.](#extension-restrictions){.learn-more}
 
 ### GET `Extensions/<ID>` _→ [{ ID, csn, timestamp }]_ {#get-extensions}
 
@@ -1044,6 +1067,142 @@ The response is similar to the following:
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
 
+### Extension Restrictions
+
+You can restrict what parts of the application model can be extended by the SaaS customer.
+This section lists the restrictions that you can define via the `extension-allowlist`.
+
+> If an `extension-allowlist` is defined, only extensions in that list are allowed.
+
+Using `"for": ["*"]` allows to apply rules to all entities and services.
+
+:::info Most checks happen at design time
+`cds push` automatically builds the extension project, checking most restrictions locally.
+Some checks can only be performed at runtime, for example extension limit violations across multiple projects.
+:::
+
+#### Restrict Service Extensions
+
+By adding services to the `extension-allowlist`, services are enabled for extensions by Saas customers.
+In addition, you can restrict the number of bound entities by setting a limit for "new-entites".
+
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 2 new entities in CatalogService
+      "for": ["CatalogService"],
+      "new-entities": 2
+    }
+  ]
+```
+
+#### Restrict Entities and Fields
+
+Entities can be extended with additional fields and also modifications of existing fields. Both kinds of extensions
+can be restricted.
+- `new-fields` specifies the maximum number of fields that can be added.
+- `fields` lists existing fields that are allowed to be extended. If the list is omitted, all fields can be extended.
+
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 2 new fields in entities from the my.bookshop namespace
+      "for": ["my.bookshop"],
+      "new-fields": 2,
+      // allow extensions for field "description" only
+      "fields": ["description"]
+    },
+    {
+      // at most 1 new fields in my.bookshop.Authors
+      "for": ["my.bookshop.Authors"],
+      "new-fields": 1
+    }
+  ]
+}
+```
+This restriction allows two new fields for all entities in namespace `my.bookshop` but only one new field
+in entity `my.bookshop.Authors`.
+
+The `field` restriction allows
+```cds
+extend my.bookshop.Books:description with (length: 2000);
+```
+but not, for example
+```cds
+extend my.bookshop.Books:title with (length: 200);
+```
+
+#### Restrict / Enable Annotations
+
+The following annotations are blocked by default because they affect the persistence or security.
+```txt
+@restrict
+@requires
+@readonly
+@mandatory
+@assert.*
+@cds.persistence.*
+@sql.append
+@sql.prepend
+@path
+@impl
+@cds.autoexpose
+@cds.api.ignore
+@odata.etag
+@cds.query.limit
+@cds.localized
+@cds.valid.*
+@cds.search
+```
+
+You can, at your own risk, add exceptions for annotations.
+```jsonc
+"cds.xt.ExtensibilityService": {
+      "extension-allowlist": [
+        {
+          "for": ["my.bookshop.Books"],
+          "annotations": ["@mandatory", "@cds.api.ignore"]
+        },
+        {
+          "for": ["my.bookshop.Authors:placeOfBirth"],
+          "annotations": ["@mandatory"]
+        }
+      ]
+  }
+```
+> Exception: `@cds.persistence.journal` cannot be applied as an extension to base entities.
+
+#### Restrict Unbound Entities
+
+You can also restrict unbound entities via their namespace.
+
+For example
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // at most 1 new entities for namepace my.new
+      "for": ["my.new"],
+      "new-entities": 1
+    }
+  ]
+```
+only allows one unbound entity with namespace `my.new`.
+
+As a special case, you can also block any unbound entities:
+```jsonc
+"cds.xt.ExtensibilityService": {
+  "extension-allowlist": [
+    {
+      // no new entities for all namespaces
+      "for": ["*"],
+      "new-entities": 0
+    }
+  ]
+```
+
 ## DeploymentService
 
 The _DeploymentService_ handles `subscribe`, `unsubscribe`, and `upgrade` events for single tenants and single apps or micro services. Actual implementation is provided through internal plugins, for example, for SAP HANA and SQLite.
@@ -1093,6 +1252,14 @@ Received when a new tenant subscribes.
 
 The implementations create and initialize required resources, that is, creating and initializing tenant-specific HDI containers in case of SAP HANA, or tenant-specific databases in case of SQLite.
 
+::: tip `subscribe` can be triggered multiple times
+
+In SAP BTP scenarios, the SaaS registry uses the same endpoint for both initial subscription and later updates. MTX forwards the original SaaS registry payload to `DeploymentService` as the `metadata` parameter.
+
+Custom handlers for `subscribe` must therefore be **idempotent** and able to handle multiple calls for the same tenant.
+
+:::
+
 ### `upgrade` _(tenant)_
 
 Used to upgrade a subscribed tenant.
@@ -1129,7 +1296,7 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 "cds.xt.SaasProvisioningService": {
   "jobs": {
     "queueSize": 5, // default: 100
-    "workerSize": 5, // default: 1
+    "workerSize": 5, // default: 4
     "clusterSize": 5, // default: 1
   }
 }
@@ -1140,7 +1307,11 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
   - `workerSize` — max number of parallel asynchronous jobs per database
   - `clusterSize` — max number of database clusters, running `workerSize` jobs each
   - `queueSize` — max number of jobs waiting to run in the job queue
-- `dependencies` — SAP BTP SaaS Provisioning service dependencies
+
+:::warning clusterSize configuration is not available with HANA TMS v2
+When using [HANA TMS v2](../multitenancy/index.md#sap-hana-tms-v2), the <Config label="`clusterSize` configuration" keyDelim="/" keyOnly>cds/requires/cds.xt.SaasProvisioningService/jobs/clusterSize</Config> is automatically set to `1`. HANA TMS v2 currently does not
+ provide a performant way to determine all database IDs, so clustering the upgrade by database does not work properly.
+:::
 
 #### HTTP Request Options
 
@@ -1154,7 +1325,38 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
 Requests are implicitly asynchronous when `status_callback` is set.
 :::
 
+##### Passing tenant-specific deployment parameters
+
+Using the `"_"` section of the payload, you can pass deployment parameters for an individual tenant. The syntax is identical with the [static deployment configuration of `cds.xt.DeploymentService`](#deployment-config).
+
+In most cases, the requests are received from a third party, so the deployment parameters need to be added in [a handler implementation](#adding-custom-lifecycle-event-handlers) for `cds.xt.SaasProvisioningService`.
+
 ##### Example Usage
+
+<br>
+
+##### Subscription
+
+A subscription for a tenant `t1` with a specific database ID:
+
+```http
+PUT /-/cds/saas-provisioning/tenant/t1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "subscribedTenantId": "t1",
+  "eventType": "CREATE",
+  "_": {
+    "hdi": {
+      "create": {
+        "database_id": "<SAP HANA Cloud instance ID>"
+      }
+    }
+  }
+}
+```
+
+##### Upgrade
 
 With `@sap/hdi-deploy` [parameters](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/deployment-options-in-hdi) `trace` and `version`:
 
@@ -1168,8 +1370,8 @@ Content-Type: application/json
         "_": {
             "hdi": {
                 "deploy": {
-                    "trace": "true",
-                    "version": "true"
+                    "trace": true,
+                    "version": true
                 }
             }
         }
@@ -1269,7 +1471,12 @@ Content-Type: application/json
 {
   "subscribedTenantId": "t1",
   "subscribedSubdomain": "subdomain1",
-  "eventType": "CREATE"
+  "eventType": "CREATE",
+  "_": {
+    "hdi": {
+      ...
+    }
+  }
 }
 ```
 
@@ -1315,8 +1522,8 @@ Prefer: respond-async
       "_": {
           "hdi": {
               "deploy": {
-                  "trace": "true",
-                  "version": "true"
+                  "trace": true,
+                  "version": true
               }
           }
       }
@@ -1389,6 +1596,53 @@ The response is similar to the following:
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
 
 <span id="sms-provisioning-service" />
+
+## About technical Tenant `t0`
+
+`t0` is a technical tenant used by `@sap/cds-mtxs`. It is a dedicated database container that stores operational metadata. The application's domain model is **not** deployed to `t0`.
+
+#### What `t0` stores
+
+| Entity | Purpose |
+|--------|---------|
+| `cds.xt.Tenants` | Registry of all subscribed tenants with their metadata, schema info, and version |
+| `cds.xt.Jobs` | Async job state for operations like `subscribe`, `upgrade`, `extend` |
+| `cds.xt.Tasks` | Individual tasks within a job (one per tenant per operation) |
+
+
+#### Lifecycle of `t0`
+
+The `t0` tenant is automatically created or updated at startup of the MTX sidecar.
+
+##### Schema evolution
+
+Each startup checks if `t0` needs redeployment. If the schema is up-to-date, no action is taken.
+
+##### Special constraints for `t0`
+
+- Never uses `hana_tenant_id` from subscription parameters for [SAP HANA TMS v2](./index#sap-hana-tms-v2)
+- Never applies `dataEncryption`
+- Never applies the application's `cdsc` compiler options
+
+
+#### Configuring a different Tenant Name for `t0`
+
+The default tenant name is `'t0'`. It can be customized via configuration <Config label="cds.env.requires.multitenancy.t0" keyDelim="/">cds/requires/multitenancy/t0</Config> or environment variable `CDS_REQUIRES_MULTITENANCY_T0=my-custom-t0`.
+
+This is useful for scenarios where the `'t0'` name must vary per deployment (e.g., when multiple apps share the same Service Manager instance and need distinct `t0` containers).
+
+#### Default `database_id` and `lazyT0`
+
+By default, `t0` is created on server startup without an explicit `database_id`. This means it uses the Service Manager's default (primary) HANA database associated with the service instance or the database that is configured for the <Config label="DeploymentService" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config>
+
+[Learn more about DeploymentService configuration.](./mtxs.md#deployment-config){.learn-more}
+
+##### `lazyT0` configuration
+
+The creation of the `t0` tenant can be deferred using configuration <Config label="lazyT0" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/lazyT0</Config>.
+
+With that, the `t0` tenant is only created together with the first subscription. Before the first tenant is subscribed, `t0` is created with the same onboarding parameters (including `database_id`) as the subscribing tenant. This can be useful if the `database_id` is not known when deploying the MTX sidecar.
+
 
 ## [Old MTX Reference](old-mtx-apis) {.toc-redirect}
 

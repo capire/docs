@@ -2,18 +2,15 @@
 <pre class="log">
 > cds version
 
-<em>@cap-js/asyncapi</em>: 1.0.3
-<em>@cap-js/cds-types</em>: 0.9.0
-<em>@cap-js/db-service</em>: 1.19.1
-<em>@cap-js/openapi</em>: 1.2.1
-<em>@cap-js/sqlite</em>: 1.10.0
-<em>@sap/cds</em>: 8.9.0
-<em>@sap/cds-compiler</em>: 5.9.0
-<em>@sap/cds-dk (global)</em>: 8.9.0
-<em>@sap/cds-fiori</em>: 1.4.0
-<em>@sap/cds-foss</em>: 5.0.1
-<em>@sap/cds-mtxs</em>: 2.7.0
-<em>@sap/eslint-plugin-cds</em>: 3.2.0
-<em>Node.js</em>: v20.19.0
-<em>your-project</em>: 1.0.0
+ <em> @sap/cds-dk (global) </em><em> 10.0.4  </em><i> .../node_modules/@sap/cds-dk </i>
+ <em> @sap/cds             </em><em> 10.0.3  </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> @sap/cds-compiler    </em><em> 7.0.1   </em><i> .../node_modules/@sap/cds-compiler                                   </i>
+ <em> @sap/cds-fiori       </em><em> 2.3.0   </em><i> .../node_modules/@sap/cds-fiori                                      </i>
+ <em> @cap-js/db-service   </em><em> 3.0.1   </em><i> .../node_modules/@cap-js/db-service                                  </i>
+ <em> @cap-js/sqlite       </em><em> 3.0.2   </em><i> .../node_modules/@cap-js/sqlite                                      </i>
+ <em> cds.home             </em><em>         </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> cds.root             </em><em>         </em><i> .../your-project                                                  </i>
+ <em> npm root -l          </em><em>         </em><i> .../node_modules                                                     </i>
+ <em> npm root -g          </em><em>         </em><i> .../node_modules             </i>
+ <em> Node.js              </em><em> 24.18.0 </em><i> .../bin/node                     </i>
 </pre>

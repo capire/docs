@@ -183,7 +183,26 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 ### cds. entities {.property}
 
-Is a shortcut to `cds.db.entities`. Used as a function, you can [specify a namespace](/node.js/cds-reflect#entities).
+Convenience shortcut to [`cds.model.entities`](cds-reflect#-entities).
+Returns an iterable dictionary of entity definitions in the model, which can be used like this:
+
+- Accessing named entities directly:
+```js
+const { Books, Authors } = cds.entities
+//> `Books` and `Authors` are linked CSN definitions of entities
+```
+
+- Iterating _all_ entities in the model:
+```js
+for (let each of cds.entities)
+//> `each` is a linked CSN definition of an entity
+```
+- Iterating entities in a given namespace:
+```js
+for (let each of cds.entities ('sap.capire.bookshop'))
+//> `each` is a linked CSN definition of an entity
+```
+
 
 ### cds. env {.property}
 
@@ -291,7 +310,8 @@ Provides access to common event context properties like `tenant`, `user`, `local
 The effective [CDS model](../cds/csn) loaded during bootstrapping, which contains all service and entity definitions, including required services. Many framework operations use that as a default where models are required. It is loaded in built-in `server.js` like so:
 
 ```js
-cds.model = await cds.load('*')
+const csn = await cds.load('*')
+cds.model = cds.compile.for.nodejs(csn)
 ```
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
@@ -301,11 +321,29 @@ cds.model = await cds.load('*')
 
 ### cds. app {.property}
 
-The [express.js Application object](https://expressjs.com/de/4x/api.html#app) constructed during bootstrapping. Several framework operations use that to add express handlers or middlewares. It is initialised in built-in `server.js` like so:
+Bootstrapping constructs the [express.js Application object](https://expressjs.com/en/api.html#app). Several framework operations use it to add express handlers or middlewares. The built-in `server.js` file initializes it:
 
 ```js
 cds.app = require('express')()
 ```
+
+Starting from version 9.7.0, CAP Node.js supports version 5 of [`express`](https://expressjs.com/) in addition to version 4.
+
+With `express^5` support, `express` became a standard dependency (instead of an [_optional peer dependency_](https://docs.npmjs.com/cli/v11/configuring-npm/package-json#peerdependencies)) with an open range for both major versions 4 and 5 (that is, `^4 || ^5`).
+If you don't require a specific version (for example, due to custom middleware), you can remove your own `express` dependency and automatically receive the latest version of `express` that is compatible with all your (transitive) dependencies.
+
+:::tip Verify installed version of `express`
+With CLI command `npm ls express`, you can verify the installed version(s) of `express`.
+
+```bash
+xtravels % npm ls express
+@capire/xtravels@1.0.0
+└─┬ @sap/cds@9.7.0
+  └── express@5.2.1
+```
+:::
+
+For more information, refer to the [`express`](https://expressjs.com/) [_Moving to Express 5_](https://expressjs.com/en/guide/migrating-5) migration guide and the [LTS Timeline](https://expressjs.com/2025/03/31/v5-1-latest-release.html).
 
 [Learn more about bootstrapping in `cds.server`.](./cds-serve){.learn-more}
 
@@ -333,12 +371,11 @@ cds.db = await cds.connect.to('db')
 
 ## Methods
 
-
-
 ### cds. error() {.method}
 
 ```ts
 function cds.error (
+  status?  : number
   message  : string | object,
   details? : object
   caller?  : function

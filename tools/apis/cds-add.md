@@ -82,15 +82,15 @@ Our `cds add postgres` will:
 
 1. Register with `cds-dk`
 2. Add a Dockerfile to start a PostgreSQL instance for development
-3. Integrate with `cds add mta` for [Cloud Foundry](../../guides/deployment/to-cf) deployment
-4. Integrate with `cds add helm` for [Kyma](../../guides/deployment/to-kyma) deployment
+3. Integrate with `cds add mta` for [Cloud Foundry](../../guides/deploy/to-cf) deployment
+4. Integrate with `cds add kyma` for [Kyma](../../guides/deploy/to-kyma) deployment
 5. Integrate with `cds help`
 
 Starting with <span class="list-item">1</span>, register the plugin:
 
 ::: code-group
 ```js [cds-plugin.js]
-cds.add?.register?.('postgres', require('lib/add')) // ...or inline:
+cds.add?.register?.('postgres', require('./lib/add')) // ...or inline:
 cds.add?.register?.('postgres', class extends cds.add.Plugin {})
 :::
 
@@ -208,7 +208,7 @@ resources: # [!code ++]
 ```
 :::
 
-Step <span class="list-item">4</span> integrates with `cds add helm`:
+Step <span class="list-item">4</span> integrates with `cds add kyma`:
 
 ::: code-group
 ```js [lib/add.js]
@@ -255,7 +255,7 @@ postgres: # [!code ++]
 :::
 
 ::: tip Common integrations
-Typically integrations are for deployment descriptors (`cds add mta` and `cds add helm`), security descriptors (`cds add xsuaa`), or changes that might impact your plugin configuration (`cds add multitenancy`).
+Typically integrations are for deployment descriptors (`cds add mta` and `cds add kyma`), security descriptors (`cds add xsuaa`), or changes that might impact your plugin configuration (`cds add multitenancy`).
 :::
 
 For step <span class="list-item">5</span> we'll add some command-specific options to let users override the output path for the `pg.yaml` file when running `cds add postgres --out <dir>`:
@@ -299,7 +299,7 @@ cds add my-facet -p @cap-js-community/example
 
 ::: details Install directly from your GitHub branch
 
- For example, if your plugin's code is in `https://github.com/cap-js-community/example` on branch `cds-add` and registers the  command `cds add my-facet`, then doing an integration test of your plugin with `@sap/cds-dk` in a single command:
+ For example, assume your plugin's code is in `https://github.com/cap-js-community/example` on branch `cds-add` and registers the command `cds add my-facet`. You could then do a real-world test of your `cds add` plugin in a single command:
 
 ```sh
 cds add my-facet -p @cap-js-community/example@git+https://github.com/cap-js-community/example#cds-add

@@ -9,7 +9,7 @@ status: released
 If you are already using SAP HANA Cloud, there is no SAP HANA CDS.
 :::
 
-The deployment format `hdbcds` for SAP HANA together with the function [`to.hdbcds`](../../node.js/cds-compile#hdbcds) have been deprecated with `@sap/cds-compiler@5` and `@sap/cds@8`. Users are advised to switch to the default format `hdbtable`. This guide provides step-by-step instructions for making the switch, including potential issues and work-arounds, such as handling annotations `@sql.prepend/append` and dealing with associations.
+The deployment format `hdbcds` for SAP HANA together with the function `to.hdbcds` have been deprecated with `@sap/cds-compiler@5` and `@sap/cds@8`. Users are advised to switch to the default format `hdbtable`. This guide provides step-by-step instructions for making the switch, including potential issues and work-arounds, such as handling annotations `@sql.prepend/append` and dealing with associations.
 
 New CDS features will not be available for `hdbcds` format, and will be removed in a major release.
 
@@ -69,7 +69,7 @@ If the table doesn't contain much data, this process won't significantly impact 
 
 ## Annotations
 
-Annotations [`@sql.append/prepend`](../../guides/databases#sql-prepend-append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
+Annotations [`@sql.append/prepend`](../../guides/databases/cdl-to-ddl#sqlprepend--append) are used to generate native SQL clauses to the _.hdbtable_ files, or add native SAP HANA CDS clauses to the _.hdbcds_ files.
 
 If you have used these annotations in your model, a simple switchover from `hdbcds` to `hdbtable` is unlikely as such an annotation written for `hdbcds` in general is not valid for `hdbtable`. You'll have to adapt your model before the migration.
 
@@ -120,7 +120,7 @@ In contrast to the `hdbtable` plugin, the `hdbcds` plugin is able to handle remo
 
 ## Multiline Doc Comments
 
-This is only relevant if you have switched on [Doc Comments](../../cds/cdl#doc-comment)
+This is only relevant if you have switched on [Doc Comments](../../cds/cdl#doc-comments)
 and if you have enabled translation of doc comments to the `COMMENT` feature in the database.
 
 Doc comments can span across multiple lines:
@@ -161,7 +161,6 @@ Then run a new build and deploy the newly generated _.hdbcds_ files. The `@Comme
 
 ## Temporal Data With Time Slice IDs <Concept />
 
-<!-- TODO add link back, currently in internal fragment: [Time Slice IDs](/guides/temporal-data#adding-time-slice-ids) -->
 Temporal Data with Time Slice IDs is a conceptual feature, thus it shouldn't occur in productive applications. Nevertheless, we mention it here for completeness.
 
 Example:

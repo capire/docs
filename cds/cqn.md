@@ -41,7 +41,7 @@ let results = await cds.run (query)
 ```
 
 Following is a detailed specification of the CQN as [TypeScript declarations](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html), including all query types and their properties,
-as well as the fundamental expression types. Find the [full CQN type definitions in the appendix below](#full-cqn-d-ts-file).
+as well as the fundamental expression types. Find the [full CQN type definitions in the appendix below](#full-cqndts-file).
 
 
 ## SELECT
@@ -243,7 +243,7 @@ let q = {INSERT:{ into: { ref: ['Books'] }, entries: [
 ```
 ```js
 let q = {INSERT:{ into: { ref: ['Authors'] }, entries: [
-  { ID:150, name:'Edgar Allen Poe', books: [
+  { ID:150, name:'Edgar Allan Poe', books: [
     { ID:251, title:'The Raven' },
     { ID:252, title:'Eleonora' }
   ]}

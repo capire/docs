@@ -10,7 +10,7 @@ status: released
 
 
 
-CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-server-js), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-server-js) in your project.
+CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-serverjs), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-server-js) in your project.
 
 
 
@@ -45,6 +45,7 @@ The built-in `server.js` constructs an [express.js app](cds-facade#cds-app), and
 Its implementation essentially is as follows:
 
 ```js twoslash
+
 const cds = require('@sap/cds')
 module.exports = async function cds_server(options) {
 
@@ -84,8 +85,8 @@ module.exports = async function cds_server(options) {
 ### cds. server() {.method}
 
 This is essentially a shortcut getter to `require('@sap/cds/server')`, that is, it loads and returns
-the [built-in `server.js`](#built-in-server-js) implementation.
-You'd mainly use this in [custom `server.js`](#custom-server-js) to delegate to the default implementation, [as shown below](#override-cds-server).
+the [built-in `server.js`](#built-in-serverjs) implementation.
+You'd mainly use this in [custom `server.js`](#custom-server-js) to delegate to the default implementation, [as shown below](#override-cdsserver).
 
 
 
@@ -96,6 +97,7 @@ The express.js `app` constructed by the server implementation.
 
 
 ##   Custom `server.js`
+<div id="custom-server-js"></div>
 
 The CLI command `cds serve` optionally bootstraps from project-local `./server.js` or  `./srv/server.js`.
 
@@ -178,19 +180,32 @@ cds.on('bootstrap', app => {
 
 Emitted whenever a CDS model got loaded using `cds.load()`
 
+```js twoslash
+// @noErrors
+const cds = require('@sap/cds')
+cds.on('loaded', model => { /* ... */ })
+```
 
 
 ### connect {.event}
 
 Emitted for each service constructed through [`cds.connect`](cds-connect).
 
-
+```js twoslash
+// @noErrors
+const cds = require('@sap/cds')
+cds.on('connect', service => { /* ... */ })
+```
 
 ### serving {.event}
 
 Emitted for each service constructed by [`cds.serve`](cds-serve).
 
-
+```js twoslash
+// @noErrors
+const cds = require('@sap/cds')
+cds.on('serving', service => { /* ... */ })
+```
 
 ### served {.event}
 
@@ -199,7 +214,7 @@ A one-time event, emitted when all services have been bootstrapped and added to 
 ```js twoslash
 // @noErrors
 const cds = require('@sap/cds')
-cds.on('served', (services)=>{
+cds.on('served', async (services) => {
   // We can savely access service instances through the provided argument:
   const { CatalogService, db } = services
   // ...
@@ -213,6 +228,11 @@ This event supports _asynchronous_ event handlers.
 
 A one-time event, emitted when the server has been started and is listening to incoming requests.
 
+```js twoslash
+// @noErrors
+const cds = require('@sap/cds')
+cds.on('listening', ({ server, url }) => { /* ... */ })
+```
 
 
 ### shutdown {.event}
@@ -221,6 +241,11 @@ A one-time event, emitted when the server is closed and/or the process finishes.
 
 This event supports _asynchronous_ event handlers.
 
+```js twoslash
+// @noErrors
+const cds = require('@sap/cds')
+cds.on('shutdown', async () => { /* ... */ })
+```
 
 
 
@@ -238,9 +263,9 @@ The built-in CORS middleware can be enabled explicitly with <Config>cds.server.c
 
 ### Toggle Generic Index Page
 
-The default generic _index.html_ page is not served if `NODE_ENV` is set to `production`. Set <Config>cds.server.index: true</Config> to restore the generic index page in production.
+The default generic _index.html_ page is not served if `NODE_ENV` is set to `production`. Set <Config>cds.server.index: true</Config> to activate explicitly also in production-like test environments, for example for deployed PoCs. You must not do this in real production environments!
 
-[See the **Generic *index.html*** page in action.](../get-started/in-a-nutshell.md#generic-index-html) {.learn-more}
+[See the **Generic *index.html*** page in action.](../get-started/bookshop#generic-indexhtml) {.learn-more}
 
 
 

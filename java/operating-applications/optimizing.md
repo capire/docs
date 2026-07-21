@@ -2,7 +2,6 @@
 synopsis: >
   This section describes how to optimize resource consumption of productive CAP Java applications.
 
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -17,7 +16,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 To minimize overhead at runtime, [monitoring](observability#monitoring) information is gathered rather on a global application level and hence might not be sufficient to troubleshoot specific issues.
 In such a situation, the use of more focused profiling tools can be an option.
-Typically, such tools are capable of focusing on a specific aspect of an application (for instance CPU or Memory management), but they come with an additional overhead and should only be enabled when needed. Hence, they need to meet the following requirements:
+Typically, such tools can focus on a specific aspect of an application (for instance CPU or Memory management), but they come with an additional overhead and should only be enabled when needed. Hence, they need to meet the following requirements:
 
 * Switchable at runtime
 * Use a communication channel not exposed to unauthorized users
@@ -28,20 +27,13 @@ How can dedicated Java tools access the running services in a secure manner? The
 ![This screenshot is explained in the accompanying text.](./assets/remote-tracing.png){width="600px"}
 
 As an authorized operator, you can access the container and start tools [locally](#profiling-local) in a CLI session running with the same user as the target process. Depending on the protocol, the JVM supports on-demand connections, for example, JVM diagnostic tools such as `jcmd`. Alternatively, additional JVM configuration is required as a prerequisite (JMX).
-A bunch of tools also support [remote](#profiling-remote) connections in a secure way. Instead of running the tool locally, a remote daemon is started as a proxy in the container, which connects the JVM with a remote profiling tool via an ssh tunnel.
 
 ### Local Tools { #profiling-local}
 
 Various CLI-based tools for JVMs are delivered with the SDK. Popular examples are [diagnostic tools](https://docs.oracle.com/javase/8/docs/technotes/guides/troubleshoot/toc.html) such as `jcmd`, `jinfo`, `jstack`, and `jmap`, which help to fetch basic information about the JVM process regarding all relevant aspects. You can take stack traces, heap dumps, fetch garbage collection events and read Java properties and so on.
 The SAP JVM comes with additional handy profiling tools: `jvmmon` and `jvmprof`. The latter, for instance,  provides a helpful set of traces that allow a deep insight into JVM resource consumption. The collected data is stored within a `prf`-file and can be analyzed offline in the [SAP JVM Profiler frontend](https://wiki.scn.sap.com/wiki/display/ASJAVA/Features+and+Benefits).
 
-### Remote Tools { #profiling-remote}
-
-It's even more convenient to interact with the JVM with a frontend client running on a local machine. As already mentioned, a remote daemon as the endpoint of an ssh tunnel is required. Some representative tools are:
-
-- [SAP JVM Profiler](https://wiki.scn.sap.com/wiki/display/ASJAVA/Features+and+Benefits) for SAP JVM with [Memory Analyzer](https://www.eclipse.org/mat/) integration. Find a detailed documentation how to set up a secure remote connection on [Profiling an Application Running on SAP JVM](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e7097737709842b7bb1c3b9bf3d688b6.html).
-
-- [JProfiler](https://www.ej-technologies.com/products/jprofiler/overview.html) is a popular Java profiler available for different platforms and IDEs.
+<span id="cfclijava" />
 
 ### Remote JMX-Based Tools { #profiling-jmx}
 
@@ -147,4 +139,3 @@ If you want to try out CAP's Native Image support you can use the [SFlight sampl
 Note, that SFlight's native executable is built and configured to use SAP HANA and XSUAA by default. You therefore need to run it with the `cloud` profile and supply an SAP HANA and XSUAA service binding.
 Alternatively you can make corresponding adaptations in `native-build-env.json` and `srv/pom.xml` to build the native executable for a different set of service bindings and profile.
 :::
-

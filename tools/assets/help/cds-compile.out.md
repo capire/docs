@@ -18,7 +18,7 @@
 
     - json, yml
     - edm, edmx, edmx-v2, edmx-v4, edmx-w4, edmx-x4
-    - sql, hdbcds, hdbtable, hana
+    - sql, hana, hdbtable
     - cdl
     - xsuaa
     - openapi
@@ -126,5 +126,5 @@
    <em>cds</em> compile model.cds
    <em>cds</em> c model.json --to sql
    <em>cds</em> srv -s all -l all -2 edmx -o [4mout
-   <em>cds</em> compile srv -s sap.sample.TestService -2 asyncapi -o [0mout
+   <em>cds</em> compile srv -s sap.sample.TestService -2 asyncapi -o out
 </pre>

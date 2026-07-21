@@ -1,7 +1,6 @@
 ---
 synopsis: >
   ChangeSet Contexts are an abstraction around transactions. This chapter describes how ChangeSets are related to transactions and how to manage them with the CAP Java SDK.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -28,7 +27,7 @@ context.getChangeSetContext();
 
 ## Defining ChangeSet Contexts { #defining-changeset-contexts}
 
-When [events](../../about/best-practices#events) are processed on [services](../services) the CAP Java SDK ensures that a ChangeSet Context is opened.
+When [events](../../get-started/concepts#events) are processed on [services](../services) the CAP Java SDK ensures that a ChangeSet Context is opened.
 If no ChangeSet Context is active the processing of an event ensures to open a new ChangeSet Context. This has the effect, that by default a ChangeSet Context is opened around the outermost event that was triggered on any service.
 This ensures that every top-level event is executed with its own transactional boundaries.
 
@@ -174,11 +173,11 @@ public class SessionContextHandler implements EventHandler {
 CAP ensures that every interaction with a service is inside of a ChangeSet Context. However transactions are not started at that point in time yet.
 By default, any kind of first interaction with the Persistence Service will begin the transaction. Once a transaction has been started, a connection for that transaction is reserved from the connection pool. This connection is only returned to the connection pool on commit or rollback of the transaction.
 
-However, `READ` events which run simple Select queries don't actually require transactions in most cases. When setting the property `cds.persistence.changeSet.enforceTransactional` to `false` most Select queries do not cause a transaction to be started any longer. A connection for these queries is obtained from the connection pool and returned immediately after executing the queries on the database. This can increase throughput of an application, by making connections available for concurrent requests faster. As soon as a modifying statement is executed on the Persistence Service, a transaction is started. All subsequent Select queries will participate in that transaction. Note, that this behaviour is only transparent when using the default transaction isolation level "Read Committed".
+However, `READ` events which run simple Select queries don't actually require transactions in most cases. As the property `cds.persistence.changeSet.enforceTransactional` is `false` by default, most Select queries do not cause a transaction to be started any longer. A connection for these queries is obtained from the connection pool and returned immediately after executing the queries on the database. This can increase throughput of an application, by making connections available for concurrent requests faster. As soon as a modifying statement is executed on the Persistence Service, a transaction is started. All subsequent Select queries will participate in that transaction. Note, that this behaviour is only transparent when using the default transaction isolation level "Read Committed".
 
 A ChangeSet Context can always be marked as requiring a transaction, by calling the `markTransactional` on the `ChangeSetContext` or `ChangeSetContextRunner`. The next interaction with the Persistence Service will guarantee to start a transaction in that case. Alternatively, Spring Boot annotations `@Transactional` can be used to eagerly start a transaction.
 
 Some Select queries will still require a transaction:
 
 - Select queries with a lock: These are treated like a modifying statement and will start a transaction.
-- Select queries reading streamed media data: These are currently not automatically detected. The surrounding ChangeSet Context needs to be marked as transactional explicitly. If not done, `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.
+- Select queries reading streamed media data: For these a transaction is started to avoid that `InputStream`s might be corrupted or closed when trying to read them after the connection was returned to the connection pool already.

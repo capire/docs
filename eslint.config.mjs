@@ -1,5 +1,5 @@
 import cds from '@sap/cds/eslint.config.mjs'
-import vue from 'eslint-plugin-vue'
+import globals from 'globals'
 
 export default [
   {
@@ -10,17 +10,15 @@ export default [
     ],
   },
   ...cds.recommended,
-  ...vue.configs['flat/essential'],
   {
-    files: ['*.vue', '**/*.vue'],
+    files: ['**/*.js'],
     languageOptions: {
       parserOptions: {
         parser: '@typescript-eslint/parser'
       },
-    },
-    rules: {
-      'vue/multi-word-component-names': 0,
-      'vue/no-v-text-v-html-on-component': 0
+      globals: {
+        ...globals.browser
+      }
     }
   }
 ]

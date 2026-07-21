@@ -68,11 +68,11 @@ With the availability of a messaging service, you can now use it to send message
 MessagingService messagingService;
 
 // Sending via the technical API of the messaging service
-messagingService.emit("My/Destination/Messaging/Topic", "raw message payload");
+messagingService.emit("My/Topic", Map.of("message", "hello world"));
 
 // Sending by emitting a context via CAP service API
-TopicMessageEventContext context = TopicMessageEventContext.create("My/Destination/Messaging/Topic");
-context.setData("raw message payload");
+TopicMessageEventContext context = TopicMessageEventContext.create("My/Topic");
+context.setDataMap(Map.of("message", "hello world"));
 messagingService.emit(context);
 ```
 
@@ -85,10 +85,10 @@ As shown in the example, there are two flavors of sending messages with the mess
 In section [CDS-Declared Events](#cds-declared-events), we show how to declare events in CDS models and by this let CAP generate EventContext interfaces especially tailored for the defined payload, that allows type safe access to the payload.
 
 ::: tip Using an outbox
-The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
+The messages are sent once the transaction is successful. By default, an in-memory outbox is used, but there's also support for a [persistent outbox](./event-queues#default-outbox-services).
 
-You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/messaging/#using-multiple-channels).
+You can configure a [custom outbox](./event-queues#custom-outbox-services) for a messaging service by setting the property
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This is especially useful when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
@@ -99,11 +99,11 @@ To receive messages matching a desired topic from a message broker, you just nee
 Example:
 
 ```java
-@On(service = "messaging-name", event = "My/Destination/Messaging/Topic")
+@On(service = "messaging-name", event = "My/Topic")
 public void receiveMyTopic(TopicMessageEventContext context) {
   // get ID and payload of message
   String msgId = context.getMessageId();
-  String payload = context.getData();
+  Map<String, Object> payload = context.getDataMap();
   // ...
 }
 ```
@@ -116,7 +116,7 @@ As you can see in the example, the event context not only provides access to the
 For messaging services, the `@On` handlers don't need to be completed by the `context.setCompleted()` method. The reason for that is because CAP wants to support the parallel handling of the messaging events and completes the context automatically. There could be numerous use cases where different components of the CAP application want to be notified by messaging events. Even more, you should not complete the context in the handler manually. Otherwise, not all registered handlers can be notified.
 :::
 
-::: warning _❗ Warning_
+::: warning
 If any exceptions occur in the handler, the messaging service will not acknowledge the message as successfully processed to the broker. In consequence, the broker will deliver this message again.
 :::
 
@@ -303,7 +303,27 @@ cds:
 ```
 :::
 
-Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/#event-hub).
+Support for SAP Cloud Application Event Hub is provided via [plugin](../plugins/index#event-hub).
+
+#### Configuring SAP Integration Suite, Advanced Event Mesh Support <Beta />: { #configuring-advanced-event-mesh-support}
+
+::: code-group
+```xml [srv/pom.xml]
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-feature-advanced-event-mesh</artifactId>
+  <version>${version}</version>
+</dependency>
+```
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  messaging.services:
+  - name: "messaging-name"
+    kind: "aem"
+```
+:::
+
+[Support for SAP Integration Suite, advanced event mesh is provided via plugin.](../plugins/index#advanced-event-mesh){.learn-more}
 
 <span id="beforeredispubsub" />
 
@@ -450,7 +470,7 @@ Example:
 }
 ```
 
-[Learn more about _default-env.json_.](../node.js/cds-env#in-default-env-json){.learn-more}
+[Learn more about _default-env.json_.](../node.js/cds-env#in-default-envjson){.learn-more}
 
 
 #### VCAP_SERVICES Template for SAP Event Mesh
@@ -483,26 +503,32 @@ cds:
     routes:
       - service: "em-instance-01"
         events:
-          - "My/Destination/Messaging/A"
+          - "My/Topic/A"
       - service: "em-instance-02"
         events:
-          - "My/Destination/Messaging/B"
-          - "My/Destination/Messaging/C*"
+          - "My/Topic/B"
+          - "My/Topic/C*"
 ```
 :::
 
-To use such a configuration, you need to use the composite messaging service for message handling. You can get hold of an instance of such a service in your code, by using the qualifier `MessagingService.COMPOSITE_NAME` when autowiring the messaging service – as shown in the following example:
+To use such a configuration, you need to use the composite messaging service for message handling. In the route definitions, you can use glob patterns to match topics:
+
+- **`**`** for any number of any character
+- **`*`** for any number of any character except `/`
+- **`.`**, **`?`** for a single character.
+
+When autowiring the messaging service, you can use the qualifier `MessagingService.COMPOSITE_NAME` to get an instance of the service:
 
 ```java
 @Autowired
 @Qualifier(MessagingService.COMPOSITE_NAME)
 MessagingService messagingService;
 
-messagingService.emit("My/Destination/Messaging/A", "raw message payload to em-instance-01");
-messagingService.emit("My/Destination/Messaging/B", "raw message payload to em-instance-02");
+messagingService.emit("My/Topic/A", Map.of("hello", "instance 01"));
+messagingService.emit("My/Topic/B", Map.of("hello", "instance 02"));
 ```
 
-As you can see in the configuration, the usage and routing of two messaging services is defined (`em-instance-01`, and `em-instance-02`), each with different topics that should be routed via the service (for example, topic `My/Destination/Messaging/A` will be sent/received via `em-instance-01`, and topic `My/Destination/Messaging/B` will be sent/received via `em-instance-02`). The composite service uses the routing configuration in order to dispatch messages as well as subscriptions to the appropriate messaging service. As shown in the sample code, you can simply use the composite message service and submit messages to topics as desired. The messages will be routed to according messaging services as defined in the configuration automatically. To change the routing of messages you can simply change the configuration, without the need of changing your code.
+As you can see in the configuration, the usage and routing of two messaging services is defined (`em-instance-01`, and `em-instance-02`), each with different topics that should be routed via the service (for example, topic `My/Topic/A` will be sent/received via `em-instance-01`, and topic `My/Topic/B` will be sent/received via `em-instance-02`). The composite service uses the routing configuration in order to dispatch messages as well as subscriptions to the appropriate messaging service. As shown in the sample code, you can simply use the composite message service and submit messages to topics as desired. The messages will be routed to according messaging services as defined in the configuration automatically. To change the routing of messages you can simply change the configuration, without the need of changing your code.
 
 ::: tip
 If you emit messages with a topic to the composite messaging service that isn't defined in its routing configuration, then the delivery will fail. Consider careful review of your configuration, when you start sending/receiving messages from/to new topics.
@@ -511,12 +537,12 @@ If you emit messages with a topic to the composite messaging service that isn't 
 Example for receiving messages with a given topic via the composite messaging service:
 
 ```java
-@On(service = MessagingService.COMPOSITE_NAME, event = "My/Destination/Messaging/A")
+@On(service = MessagingService.COMPOSITE_NAME, event = "My/Topic/A")
 public void receiveA(TopicMessageEventContext context) {
   ...
 }
 
-@On(service = MessagingService.COMPOSITE_NAME, event = "My/Destination/Messaging/B")
+@On(service = MessagingService.COMPOSITE_NAME, event = "My/Topic/B")
 public void receiveB(TopicMessageEventContext context) {
   ...
 }
@@ -616,7 +642,7 @@ cds:
 @On(service = "messaging-name", event = "my-custom-queue")
 public void receiveMyCustomQueueMessage(TopicMessageEventContext context) {
   // access the message as usual
-  String payload = context.getData();
+  Map<String, Object> payload = context.getDataMap();
 }
 ```
 
@@ -638,7 +664,7 @@ cds:
 @On(service = "messaging-name")
 public void receiveMyCustomQueueAllMessages(TopicMessageEventContext context) {
   // access the message as usual
-  String payload = context.getData();
+  Map<String, Object> payload = context.getDataMap();
   // ...
 }
 ```
@@ -691,8 +717,9 @@ private void handleError(MessagingErrorEventContext ctx) {
 
       // how to access the event context of the raised exception:
       // ctx.getException().getEventContexts().stream().findFirst().ifPresent(e -> {
+      //    TopicMessageEventContext errorContext = e.as(TopicMessageEventContext.class);
       //    String event = e.getEvent());
-      //    String payload = e.get("data"));
+      //    Map<String, Object> payload = errorContext.getDataMap();
       // });
 
       ctx.setResult(true); // acknowledge
@@ -700,7 +727,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-In a multi-tenant setup with several microservices, messages of a tenant not yet subscribed to the own microservice would be already received from the message queue. In this case, the message cannot be processed for the tenant because the tenant context is not yet available. By default, the standard error handler still acknowledges the message to prevent it from getting stuck in the message sequence. To change this behavior, the custom error handler from the example above can be extended by checking the exception type of the unknown tenant. 
+In a multitenant setup with several microservices, messages of a tenant not yet subscribed to the own microservice would be already received from the message queue. In this case, the message cannot be processed for the tenant because the tenant context is not yet available. By default, the standard error handler still acknowledges the message to prevent it from getting stuck in the message sequence. To change this behavior, the custom error handler from the example above can be extended by checking the exception type of the unknown tenant.
 
 
 ```java
@@ -712,15 +739,15 @@ private void handleError(MessagingErrorEventContext ctx) {
       errorCode.equals(CdsErrorStatuses.INVALID_DATA_FORMAT.getCodeString())) {
       // error handling for infrastructure error
       ctx.setResult(false); // no acknowledgement
-    
+
     } else if (errorCode.equals(CdsErrorStatuses.TENANT_NOT_EXISTS.getCodeString())) {
       // error handling for unknown tenant context
-      
+
        // tenant of the received message
       String tenant = ctx.getTenant();
 
       // received message
-      Map<String, Object> headers = ctx.getMessageHeaders(); 
+      Map<String, Object> headers = ctx.getMessageHeaders();
       Map<String, Object> message = ctx.getMessageData();
 
       ctx.setResult(true); // acknowledge
@@ -729,8 +756,9 @@ private void handleError(MessagingErrorEventContext ctx) {
 
       // how to access the event context of the raised exception:
       // ctx.getException().getEventContexts().stream().findFirst().ifPresent(e -> {
+      //    TopicMessageEventContext errorContext = e.as(TopicMessageEventContext.class);
       //    String event = e.getEvent());
-      //    String payload = e.get("data"));
+      //    Map<String, Object> payload = errorContext.getDataMap();
       // });
 
       ctx.setResult(true); // acknowledge
@@ -738,7 +766,7 @@ private void handleError(MessagingErrorEventContext ctx) {
 }
 ```
 
-::: warning _❗ Warning_
+::: warning
 The way how unsuccessfully delivered messages are treated, fully depends on the messaging broker. Please check in section [Acknowledgement Support](#acknowledgement-support)  whether the messaging broker you are using is suitable for your error handler implementation.
 :::
 
@@ -768,7 +796,7 @@ If you want to consume the message purely locally, and prevent the message from 
 You can register your handler with a higher priority than the default handler like this:
 
 ```java
-@On(service = "messaging-name", event = "My/Destination/Messaging/Topic")
+@On(service = "messaging-name", event = "My/Topic")
 @HandlerOrder(HandlerOrder.EARLY)
 public void receiveMyTopic(TopicMessageEventContext context) {
 	// Check if message is outgoing to message broker, or incoming from message broker
@@ -808,99 +836,19 @@ When using SAP Event Mesh, the placeholder `$namespace` can be used to dynamical
 Besides these kinds of topic manipulations, additional topic manipulations might occur, depending on the used message broker or the chosen format of the event message.
 
 
-### Enhanced Messages Representation
+### Messages Representation {#messages-representation}
 
-The configuration property `structured` determines if messages are represented as a plain String (`false`) or always structured as two separate maps, representing data and headers (`true`). Setting this property enables handling of message headers, like `cloudevents` headers, separately from the message itself. This works for all messaging brokers supported by CAP. If using a message broker that supports native headers, for example Kafka, the headers are separated from the business data. On incoming messages the flag determines the internal representation of the message either as a plain string or two maps of message data and message headers. Having header data separated, avoids adding extra information or metadata as part of the business data when sending them to the message broker. Additionally the header data is clearly separated on the consumer side, because they provided by different data and headers maps.
+Messages are provided as two separate `Map` objects, representing data and headers. This enables handling of message headers, like `cloudevents` headers, separately from the message data itself. If using a message broker that supports native headers, for example Kafka, the headers are separated from the business data in the message broker. For message brokers that don't natively support headers, headers and data are merged into a combined structure by following the rule `{...headers, data: data}`.
 
-The default value for the configuration property `structured` is `true`.
-
-Configuration example:
-::: code-group
-```yaml [srv/src/main/resources/application.yaml]
-cds:
-  messaging.services:
-  - name: "messaging-name"
-    kind: "enterprise-messaging"
-    structured: true
-```
-:::
-#### Emitting Events
-
-The interface `MessagingService` provides a new method for emitting events with a data map and a headers map:
-
-```java
-void emit(String topic, Map<String, Object> data, Map<String, Object> headers);
-```
-
-This method takes a (`cloudevents`) message, separated into data and headers and sends it to the specified topic of this message broker. It produces the same final message, regardless of the structured flag. Usually data and headers are combined into a final JSON string message following the rule: `{...headers, data: data}`. Brokers that natively support headers, for example Kafka, are able to separate headers from data, when using this method.
-
-```java
-String topic;
-MessagingService messagingService;
-
-messagingService.emit(topic, Map.of("firstname", "John", "lastname", "Doe"), Map.of("timestamp", Instant.now()));
-```
-
-The semantics of the method `MessagingService.emit(String topic, String message)` has been changed depending on the structured flag: If the service is not configured with the structured flag (default), the message is sent to the specified topic of this message broker as is. If the service is configured with the structured flag, the message string is converted into a map following the rule: `{message: message}`. The map is then interpreted as data map and passed to `MessagingService.emit(String topic, Map<String, Object> dataMap)`. Usually this results in a final message like: `{data: {message: message}}`.
-
-Example:
-
-```java
-String topic;
-MessagingService messagingService;
-
-messagingService.emit(topic, "hello world");
-```
-
-If the service is not configured with the structured flag, the message is sent as is and on the consumer side `TopicMessageEventContext.getData()` returns:
-
-```txt
-hello world
-```
-
-If the service is configured with the structured flag, the message is converted to a map and on the consumer side `TopicMessageEventContext.getData()` returns:
-
-```json
-{"data": {"message": "hello world"}}
-```
-
-#### Handling events
-
-The structured flag of the consumer determines how the event payload is provided by the event context.
-
-If set to `false`, the event payload can be accessed using `getData()` as a string; `getDataMap()` and `getHeadersMap()` return `null`:
-
-```java
-@On(event = "myEvent")
-public void handleMyEvent(EventContext context) {
-  TopicMessageEventContext ctx = context.as(TopicMessageEventContext.class);
-  String data = ctx.getData();
-
-  // ...
-}
-```
-
-If set to `true`, the event payload can be accessed using `getDataMap()` and `getHeadersMap()`; `getData()` returns null:
-
-```java
-@On(event = "myEvent")
-public void handleMyEvent(EventContext context) {
-  TopicMessageEventContext ctx = context.as(TopicMessageEventContext.class);
-  Map<String, Object> data = ctx.getDataMap();
-  Map<String, Object> headers = ctx.getHeadersMap();
-
-  // ...
-}
-```
+Message data is always structured and when sent to message brokers serialized to JSON. In case a message data is received, that is not a JSON string and can't be parsed as a `Map`, the plain message data is wrapped into a `Map` structure with key `message`.
 
 ::: tip
-Handling of CDS-defined events is independent of value of the `structured` property.
+[Events declared in the CDS model](#cds-declared-events) always result in a structured message data.
 :::
-
 
 ### CloudEvents
 
-CAP is able to produce event messages compatible with the [CloudEvents](https://cloudevents.io/) standard in JSON format. To enable this feature, set the configuration parameter `format` of the messaging service to `cloudevents`, for example, like:
+CAP is able to produce event messages compatible with the [CloudEvents](https://cloudevents.io/) standard. To enable this feature, set the configuration parameter `format` of the messaging service to `cloudevents`, for example, like:
 
 Excerpt from _application.yaml_:
 ::: code-group
@@ -913,11 +861,11 @@ cds:
         format: "cloudevents"
 ```
 :::
-With this setting, basic header fields (like `type`, `source`, `id`, `datacontenttype`, `specversion`, `time`) of the JSON-based message format will be populated with sensible data (if they have not been set manually before). The event name will be used as-is (without prefixing or any other modifications) as `type` and set in the according CloudEvents header field.
+With this setting, basic header fields (like `type`, `source`, `id`, `datacontenttype`, `specversion`, `time`) will be populated with sensible data (if they have not been set manually before). The event name will be used as-is (without prefixing or any other modifications) as `type` and set in the according CloudEvents header field.
 
 When using CloudEvents format with SAP Event Mesh, the following default prefixing of topics will be applied (if not manually declared differently): Default for `publishPrefix` is set to `$namespace/ce/` and default for `subscribePrefix` is set to `+/+/+/ce/`. Make sure that these prefixes are allowed topic prefixes in your SAP Event Mesh service configuration (especially its topic rules section).
 
-When using a CAP service that has [events declared in its CDS model](#cds-declared-events), then the event's payload structure will automatically be embedded in the `data` attribute of a valid JSON-based CloudEvents message.
+The message data will automatically be embedded in the `data` attribute of the CloudEvents message.
 
 ::: tip
 Headers of the CloudEvents message can be accessed using the EventContext generated for this event by using its generic `get(String)` API.
@@ -935,8 +883,6 @@ private void ratingChanged(ReviewedContext context) {
 }
 ```
 
-When using a CAP messaging service directly to emit the raw message payload as a String, please make sure to emit a valid JSON object representation in this String that has the message payload embedded in the `data` attribute (for example `messagingService.emit("sap.cap.reviews.v1.ReviewService.changed.v1", "{"data":{"subject":"4711","rating":3.6}}");`). Then all missing header fields that are required for a valid CloudEvents message will be extended. If you emit a String that is not a valid JSON, then the message cannot be extended and the String will be emitted as-is as the event message content.
-
-[Learn more about **CloudEvents**.](../guides/messaging/#cloudevents){.learn-more}
+[Learn more about **CloudEvents**.](../guides/events/messaging#cloudevents){.learn-more}
 
 <span id="aftercloudevents" />

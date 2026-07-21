@@ -10,8 +10,6 @@
 <strong>COMMANDS</strong>
     <em>i</em> | <em>init</em>        jump-start cds-based projects
     <em>a</em> | <em>add</em>         add a feature to an existing project
-    <em> </em> | <em>gen</em>         generate models/data using a descriptive prompt [beta]
-    <em>y</em> | <em>bind</em>        bind application to remote services
     <em>m</em> | <em>import</em>      add models from external sources
     <em>c</em> | <em>compile</em>     compile cds models to different outputs
     <em>p</em> | <em>parse</em>       parses given cds models
@@ -21,17 +19,20 @@
     <em>r</em> | <em>repl</em>        read-eval-event loop
     <em>e</em> | <em>env</em>         inspect effective configuration
     <em>b</em> | <em>build</em>       prepare for deployment
-    <em>d</em> | <em>deploy</em>      deploy to databases or cloud
+    <em>d</em> | <em>deploy</em>      deploy to databases
+    <em> </em> | <em>up</em>          build and deploy your application to the cloud
+    <em>y</em> | <em>bind</em>        bind application to remote services
+    <em> </em> | <em>debug</em>       debug your application
     <em> </em> | <em>subscribe</em>   subscribe a tenant to a multitenant SaaS app
     <em> </em> | <em>unsubscribe</em> unsubscribe a tenant from a multitenant SaaS app
     <em>l</em> | <em>login</em>       login to extensible multitenant SaaS app
     <em> </em> | <em>logout</em>      logout from extensible multitenant SaaS app
     <em> </em> | <em>pull</em>        pull base model of extensible SaaS app
     <em> </em> | <em>push</em>        push extension to extensible SaaS app
-    <em>t</em> | <em>lint</em>        run linter for env or model checks
+    <em> </em> | <em>lint</em>        run linter for env or model checks
     <em>v</em> | <em>version</em>     get detailed version information
     <em> </em> | <em>completion</em>  add/remove cli completion for cds commands
-    <em>?</em> | <em>help</em>        get detailed usage information
+    <em>h</em> | <em>help</em>        get detailed usage information
 
   Learn more about each command using:
   <em>cds help</em> &lt;command&gt; or

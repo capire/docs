@@ -1,14 +1,8 @@
 ---
-shorty: Old MTX
 synopsis: >
   API reference documentation for MTX Services.
-breadcrumbs:
-  - Cookbook
-  - Multitenancy
-  - Old MTX
-# layout: cookbook
-status: released
 search: false
+sitemap: false
 ---
 
 
@@ -150,7 +144,7 @@ The `extension` element must be a JSON array of arrays. Each first-level array e
 
 If the `undeployExtension` flag is set, all extensions are undeployed from the database that are no longer part of the extensions in the current activation call.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 `undeployExtension` has to be used with care as it potentially removes tables and their content from the database.
 :::
 
@@ -198,7 +192,7 @@ Request body (example):
 
 Use this API to deactivate extension. To activate and deactivate an extension in one call, use `activate` with `undeployExtension: true`.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 The API has to be used with care as it removes tables and their content from the database.
 :::
 
@@ -218,7 +212,7 @@ Request body (example):
 
 Use this API to remove all extensions.
 
-::: warning _❗ Warning_ <!--  -->
+::: warning _
 The API has to be used with care as it removes tables and their content from the database.
 :::
 <!-- Calling `deactivate` requires scope `ExtendCDSDelete`. -->
@@ -373,7 +367,7 @@ Returns information about a tenant's HDI container.
 > ---
 
 `cds-mtx` APIs are implemented as CDS services. Therefore, service implementations can be overridden using [CDS event handlers](../../node.js/core-services#srv-on-before-after).
-For `cds-mtx` APIs, custom handlers have to be registered on the `mtx` event in a [custom `server.js`](../../node.js/cds-serve#custom-server-js):
+For `cds-mtx` APIs, custom handlers have to be registered on the `mtx` event in a [custom `server.js`](../../node.js/cds-server#custom-server-js):
 
 ```js
 const cds = require('@sap/cds')
@@ -506,9 +500,6 @@ Configure your App Router as follows.
 
 <div id="shared-service-manager" />
 
-## [Old SaaS Extensibility Guide](../extensibility/assets/customization-old) {.toc-redirect}
-
-[See the old guide for Extending and Customizing SaaS Solutions.](../extensibility/assets/customization-old)
 
 ## Further Readings
 

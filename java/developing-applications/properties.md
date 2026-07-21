@@ -32,9 +32,11 @@ In property files `<index>` should be replaced with a number and `<key>` with an
   </thead>
   <tr v-for="p in properties" :key="p.name" :id="p.anchor">
     <td class="anchor"><a :href="'#'+p.anchor" class="header-anchor"></a></td>
-    <td class="prop"      v-html="p.name" :class="{ group: p.header }"></td>
-    <td class="java-type" v-html="p.type"></td>
-    <td class="default" v-html="p.defaultValue"></td>
+    <td class="prop"      :class="{ group: p.header }">
+      <Config :label="p.nameHTML" java>{{p.name}}={{ Array.isArray(p.defaultValue) ? `${JSON.stringify(p.defaultValue)}` : p.defaultValue }}</Config>
+    </td>
+    <td class="java-type" v-html="p.type" :title="p.typeFull"></td>
+    <td class="default" v-html="p.defaultValueHTML"></td>
     <td class="descr"   v-html="p.description"></td>
   </tr>
 </table>
@@ -45,15 +47,66 @@ In property files `<index>` should be replaced with a number and `<key>` with an
     content: "Java"; display: block; font-size: 60%; margin: 0 0 .2em;
   }
 
-  tr:hover .header-anchor, tr .header-anchor:focus { opacity: 1; margin-top: -11px; }
+  tr:hover .header-anchor, tr .header-anchor:focus { opacity: 1; }
+  td.anchor { position: relative; }
+  td.anchor .header-anchor {
+    top: 50% !important;
+    left: 50% !important;
+    margin-left: 0;
+    transform: translate(-50%, -50%);
+  }
+
   td.group { font-weight:600; }
-  th.anchor, td.anchor { border-right:none; }
+  th.anchor, td.anchor {
+    width: 0;
+    border-right:none;
+  }
   th.prop,   td.prop { border-left:none; padding-left:0px;}
+  thead {
+    position: sticky;
+    top: calc(var(--vp-nav-height, 44px) + var(--vp-layout-top-height, 0px));
+    z-index: 4;
+  }
+  thead th {
+    position: sticky;
+    top: calc(var(--vp-nav-height, 44px) + var(--vp-layout-top-height, 0px));
+    z-index: 5;
+    background: var(--vp-c-bg);
+  }
+  table {
+    display: table;
+    width: max-content;
+    min-width: 100%;
+    overflow-x: visible;
+  }
+  th.java-type, td.java-type { white-space: nowrap; }
+  th.default, td.default {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 12ch;
+  }
+  td.default :deep(code) {
+    display: inline-block;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 12ch;
+    max-width: 100%;
+  }
 
   /* expand this extra wide table on big screens */
   @media screen and (min-width: 1600px) {
-    table {
-      min-width: fit-content;
+    th.prop, td.prop {
+      width: 36ch;
+      max-width: 36ch;
     }
+    th.default, td.default {
+      min-width: 24ch;
+      width: 34ch;
+      max-width: 34ch;
+    }
+    th.descr, td.descr { min-width: 64ch; }
+    tr { position: initial; } /* for anchor to appear */
   }
 </style>

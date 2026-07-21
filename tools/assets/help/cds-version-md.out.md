@@ -2,19 +2,17 @@
 <pre class="log">
 > cds version --markdown
 
-| your-project           | &lt;Add your repository here&gt;              |
-| ---------------------- | --------------------------------------- |
-| @cap-js/asyncapi       | 1.0.3                                   |
-| @cap-js/cds-types      | 0.9.0                                   |
-| @cap-js/db-service     | 1.19.1                                  |
-| @cap-js/openapi        | 1.2.1                                   |
-| @cap-js/sqlite         | 1.10.0                                  |
-| @sap/cds               | 8.9.0                                   |
-| @sap/cds-compiler      | 5.9.0                                   |
-| @sap/cds-dk (global)   | 8.9.0                                   |
-| @sap/cds-fiori         | 1.4.0                                   |
-| @sap/cds-foss          | 5.0.1                                   |
-| @sap/cds-mtxs          | 2.7.0                                   |
-| @sap/eslint-plugin-cds | 3.2.0                                   |
-| Node.js                | v20.19.0                                |
+ | Package              | Version | Location                                                           |
+ | -------------------- | ------- | ------------------------------------------------------------------ |
+ |<em> @sap/cds-dk (global) </em>|<em> 10.0.4  </em>|<i> .../node_modules/@sap/cds-dk </i>|
+ |<em> @sap/cds             </em>|<em> 10.0.3  </em>|<i> .../node_modules/@sap/cds                                            </i>|
+ |<em> @sap/cds-compiler    </em>|<em> 7.0.1   </em>|<i> .../node_modules/@sap/cds-compiler                                   </i>|
+ |<em> @sap/cds-fiori       </em>|<em> 2.3.0   </em>|<i> .../node_modules/@sap/cds-fiori                                      </i>|
+ |<em> @cap-js/db-service   </em>|<em> 3.0.1   </em>|<i> .../node_modules/@cap-js/db-service                                  </i>|
+ |<em> @cap-js/sqlite       </em>|<em> 3.0.2   </em>|<i> .../node_modules/@cap-js/sqlite                                      </i>|
+ |<em> cds.home             </em>|<em>         </em>|<i> .../node_modules/@sap/cds                                            </i>|
+ |<em> cds.root             </em>|<em>         </em>|<i> .../your-project                                                  </i>|
+ |<em> npm root -l          </em>|<em>         </em>|<i> .../node_modules                                                     </i>|
+ |<em> npm root -g          </em>|<em>         </em>|<i> .../node_modules             </i>|
+ |<em> Node.js              </em>|<em> 24.18.0 </em>|<i> .../bin/node                     </i>|
 </pre>

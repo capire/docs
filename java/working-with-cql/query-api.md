@@ -1,7 +1,6 @@
 ---
 synopsis: >
   API to fluently build CQL statements in Java.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -94,7 +93,7 @@ The CQL query accesses the `name` element of the `Authors` entity, which is reac
 
 ### Target Entity Sets {#target-entity-sets}
 
-All [CDS Query Language (CQL)](/cds/cql) statements operate on a _target entity set_, which is specified via the `from`, `into`, and `entity` methods of `Select`/`Delete`, `Insert`/`Upsert`, and `Update` statements.
+All [CDS Query Language (CQL)](../../cds/cql) statements operate on a _target entity set_, which is specified via the `from`, `into`, and `entity` methods of `Select`/`Delete`, `Insert`/`Upsert`, and `Update` statements.
 
 In the simplest case, the target entity set identifies a complete CDS entity set:
 
@@ -126,7 +125,7 @@ Select.from(ORDERS, o -> o.filter(o.id().eq(3)).items())
 
 The _target entity set_ in the query is defined by the entity reference in the from clause. The reference targets the `items` of the `Order` with ID 3 via an _infix filter_. From this target entity set (of type `OrderItems`), the query selects the `quantity` and the `title` of the `book`. Infix filters can be defined on any path segment using the `filter` method, which overwrites any existing filter on the path segment. Defining an infix filter on the last path segment is equivalent to adding the filter via the statement's `where` method. However, inside infix filters, path expressions are not supported.
 
-In the [CDS Query Language (CQL)](/cds/cql) builder, the lambda expression `o -> o.filter(o.id().eq(3)).items()` is evaluated relative to the root entity `Orders` (o). All lambda expressions that occur in the other clauses of the query are relative to the target entity set `OrderItems`, for example, `i -> i.quantity()` accesses the element `quantity` of `OrderItems`.
+In the [CDS Query Language (CQL)](../../cds/cql) builder, the lambda expression `o -> o.filter(o.id().eq(3)).items()` is evaluated relative to the root entity `Orders` (o). All lambda expressions that occur in the other clauses of the query are relative to the target entity set `OrderItems`, for example, `i -> i.quantity()` accesses the element `quantity` of `OrderItems`.
 ::: tip
 To target components of a structured document, we recommend using path expressions with infix filters.
 :::
@@ -165,7 +164,7 @@ The `byId` method isn't supported for entities with compound keys.
 
 ```java
 Map<String, Object> filter = new HashMap<>();
-filter.put("author.name", "Edgar Allen Poe");
+filter.put("author.name", "Edgar Allan Poe");
 filter.put("stock", 0);
 
 Select.from("bookshop.Books").matching(filter);
@@ -186,6 +185,32 @@ Select.from(BOOKS)
 // using byParams
 Select.from(BOOKS).byParams("title", "author.name");
 ```
+
+#### Filtering Map Data <Beta />
+
+You can also filter by _content_ of [map data](../cds-data.md#cds-map) (that is, elements of type `cds.Map`).
+
+Let's use this model as an example:
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+The following query selects all products of category "tech" where the `details` map contains a sub-element `brand` with value "ACME":
+
+```java
+Select.from(PRODUCTS)
+      .where(p -> p.category().eq("tech").and(
+                  p.details().get("brand").eq("ACME")));
+```
+
+::: warning Expensive for large datasets
+Depending on the database, filtering by content of a map element can be expensive when applied on large datasets. Use additional filters on non-map elements to reduce the dataset.
+:::
 
 ### Parameters
 
@@ -386,7 +411,7 @@ Select.from(AUTHORS)
              a -> a.books()
                    .filter(b -> b.year().eq(1897))
                    .expand(b -> b.title()))
-    .where(a -> name().in("Bram Stroker", "Edgar Allen Poe"));
+    .where(a -> name().in("Bram Stroker", "Edgar Allan Poe"));
 ```
 
 This query expands only books that were written in 1897:
@@ -398,7 +423,7 @@ This query expands only books that were written in 1897:
     "books" : [ { "title" : "Dracula" } ]
   },
   {
-    "name" : "Edgar Allen Poe",
+    "name" : "Edgar Allan Poe",
     "books" : [ ]
   }
 ]
@@ -451,7 +476,7 @@ The `distinct` clause removes duplicate rows from the root entity and effectivel
 :::
 
 ::: tip Resolving duplicates in to-many expands
-Duplicates in to-many expands can occur on associations that are mapped as many-to-many without using a [link entity](../../guides/domain-modeling#many-to-many-associations) and don't correctly define the source cardinality. This can be resolved by adding the cardinality in the CDS model: `Association [*,*] to Entity`.
+Duplicates in to-many expands can occur on associations that are mapped as many-to-many without using a [link entity](../../guides/domain/index#many-to-many-associations) and don't correctly define the source cardinality. This can be resolved by adding the cardinality in the CDS model: `Association [*,*] to Entity`.
 :::
 
 ##### Optimized Expand Execution {#expand-optimization}
@@ -533,9 +558,39 @@ Object authorId = book.get("author.Id"); // path access
 ```
 
 ::: tip
-Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases#database-constraints) on the database.
+Only to-one associations that are mapped via the primary key elements of the target entity are supported on the select list. The execution is optimized and gives no guarantee that the target entity exists, if this is required use expand or enable [integrity constraints](../../guides/databases/cdl-to-ddl#database-constraints) on the database.
 :::
 
+#### Selecting Map Data
+
+You can also use elements of type [cds.Map](../cds-data.md#cds-map) on the select list.
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+Considering the previous model, the following query selects the product's ID along with the details, which are returned as a `CdsData` map.
+
+```java
+Select.from(PRODUCTS).columns(p -> p.ID(), p.details());
+```
+
+##### Selecting Sub-Elements of Map Data <Beta />
+
+You can also select sub-elements of a `cds.Map` via path expressions:
+
+```java
+Select.from(PRODUCTS)
+      .columns(p-> p.ID(), 
+               p-> p.details().get("brand"))
+      .where(p -> p.category().eq("tech"));
+```      
+
+This query selects the sub-element `brand` of the `details` map element for all products of category "tech".
 
 ### Filtering and Searching { #filtering}
 
@@ -545,7 +600,7 @@ The `search` method adds a predicate to the query that filters out all entities 
 
 1. Define searchable elements {#searchable-elements}
 
-By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/providing-services#searching-data).
+By default all elements of type `cds.String` of an entity are searchable. However, using the `@cds.search` annotation the set of elements to be searched can be defined. You can extend the search also to associated entities. For more information on `@cds.search`, refer to [Search Capabilities](../../guides/services/served-ootb#searching-data).
 
 Consider following CDS Entity. There are two elements, `title` and `name`, of type String, making them both searchable by default.
 
@@ -556,6 +611,7 @@ entity Book {
   title  : String;
 }
 ```
+
 In the following example, element `title` is included in `@cds.search`. Only this particular element is searchable then.
 
 ```cds
@@ -584,21 +640,21 @@ entity Book {
 
 * Use search terms {#search-term}
 
-The following Select statement shows how to search for an entity containing the single _search term_ "Allen".
+The following Select statement shows how to search for an entity containing the single _search term_ "Allan".
 
 ```java
 // Book record - (ID, title, name) VALUES (1, "The greatest works of James Allen", "Unwin")
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search("Allen");
+        .search("Allan");
 ```
 
 > The element `title` is [searchable](#searchable-elements), even though `title` isn't selected.
 
 * Use search expressions {#search-expression}
 
-It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allen" or "Heights".
+It's also possible to create a more complex _search expression_ using `AND`, `OR`, and `NOT` operators. Following examples show how you can search for entities containing either term "Allan" or "Heights".
 
 ```java
 // Book records -
@@ -607,13 +663,37 @@ It's also possible to create a more complex _search expression_ using `AND`, `OR
 
 Select.from("bookshop.Books")
         .columns("id", "name")
-        .search(term -> term.has("Allen").or(term.has("Heights")));
+        .search(term -> term.has("Allan").or(term.has("Heights")));
 ```
 
+#### Search in Sub-Elements of Map Data <Beta />
+
+You can search for values in sub-elements of a [cds.Map](../cds-data#cds-map) element by adding a path to the sub-element in the search scope:
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+For example to search for products in the "tech" category having "ACME" within the `brand` sub-element of the `details` map:
+```Java
+Select.from(PRODUCT)
+   .search("ACME", List.of("details.brand"))
+   .where(p -> p.category().eq("tech"));
+```
+
+::: warning Expensive for large datasets
+Searching within map element content can be expensive on large datasets. Use additional filters on non-map elements to reduce the dataset size.
+
+Including the entire map element in the search scope triggers a full-text search on its JSON representation, matching both sub-element names and values. This behavior can yield unexpected results.
+:::
 
 #### Using `where` Clause {#where-clause}
 
-In a where clause, leverage the full power of [CDS Query Language (CQL)](/cds/cql) [expressions](#expressions) to compose the query's filter:
+In a where clause, leverage the full power of [CDS Query Language (CQL)](../../cds/cql) [expressions](#expressions) to compose the query's filter:
 
 ```java
 Select.from("bookshop.Books")
@@ -621,7 +701,22 @@ Select.from("bookshop.Books")
               b.get("title").startsWith("Wuth")));
 ```
 
-### Grouping
+
+### Aggregating Data { #aggregating }
+
+You can aggregate data in two ways:
+
+- **Aggregate the current entity:** Use [aggregate functions](#aggregation-functions) like `sum` in the columns clause of your `Select` statement, usually together with [groupBy](#group-by), to summarize or group data.
+
+- **Aggregate associated entities:** Use dedicated aggregation methods to calculate values over to-many associations directly in your queries. See [Aggregating over Associations](#aggregating-associations).
+
+
+#### Aggregation Functions { #aggregation-functions }
+
+Use [aggregation functions](../../guides/databases/cap-level-dbs#aggregate-functions) to calculate minimums, maximums, totals, averages, and counts of values. You can use them in *columns* of `Select` statements to include the aggregated values in the result set, or in the [having](#having) clause to filter based on aggregated values.
+
+
+#### Grouping { #grouping }
 
 The Query Builder API offers a way to group the results into summarized rows (in most cases these are aggregate functions) and apply certain criteria on it.
 
@@ -635,7 +730,7 @@ Let's assume the following dataset for our examples:
 |103 |Hugo  |
 |104 |Smith |
 
-#### Group By
+##### Group By { #group-by }
 
 The `groupBy` clause groups by one or more elements and usually involves aggregate [functions](query-api#scalar-functions), such as `count`, `countDistinct`, `sum`, `max`, `avg`, and so on. It returns one row for each group.
 
@@ -658,7 +753,7 @@ If we execute the query on our dataset, we get the following result:
 |Hugo  |1    |
 
 
-#### Having
+##### Having { #having }
 
 To filter the [grouped](#group-by) result, `having` is used. Both, `having` and `where`, filter the result before `group by` is applied and can be used in the same query.
 
@@ -676,6 +771,65 @@ If we execute the query on our dataset, we get the following result:
 |name  |count|
 |------|-----|
 |Smith |3    |
+
+
+#### Aggregating over Associations <Beta /> { #aggregating-associations }
+
+Use the aggregation methods `min`, `max`, `sum`, and `count` to calculate minimums, maximums, totals, and counts of values of associated entities directly in your CQL queries. You can use these aggregation methods in *columns* to include the aggregated values in the result set, or in the *where* clause to filter the result set based on aggregated values.
+
+::: tip
+Use [infix filters](../../cds/cql#with-infix-filters) to aggregate only a subset of a (to-many) association.
+:::
+
+##### min
+
+Find the minimum value of an element in a collection.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items()
+       .filter(i -> i.amount().gt(0)) // optional filter
+       .min(i -> i.amount()).as("minAmount")
+);
+```
+
+This query selects each order’s id and the minimum item amount greater than 0 as "minAmount".
+
+##### max
+
+Find the maximum value of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().max(i -> i.amount()).gt(100));
+```
+
+This query selects all orders where the maximum item amount is greater than 100.
+
+##### sum
+
+Calculate the total of a numeric element across related entities.
+
+```java
+Select.from(ORDERS).columns(
+    o -> o.id(),
+    o -> o.items().sum(i -> i.amount().times(i.price())).as("orderTotal")
+);
+```
+
+This query selects each order's id and the total order amount (sum of amount times price) as "orderTotal".
+
+##### count
+
+Count non-null values of an element in a collection.
+
+```java
+Select.from(ORDERS)
+    .where(o -> o.items().count(i -> i.discount()).gt(0));
+```
+
+This query selects all orders where at least one item has a discount.
 
 
 ### Ordering and Pagination
@@ -743,9 +897,34 @@ In this example, it's assumed that the total number of books is more or equal to
 The pagination isn't stateful. If rows are inserted or removed before a subsequent page is requested, the next page could contain rows that were already contained in a previous page or rows could be skipped.
 :::
 
+#### Sorting by Map Data <Beta />
+
+You can also sort by _content_ of [map data](../cds-data.md#cds-map) (that is, elements of type `cds.Map`). Considering this model
+
+```cds
+entity Product : cuid {
+  name     : String;
+  category : String;
+  details  : Map;
+}
+```
+
+This following query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
+
+```java
+Select.from(PRODUCTS)
+      .where(p -> p.category().eq("tech"))
+      .orderBy(p -> p.category().asc(), 
+               p.to("details").get("brand").asc());
+```
+
+::: warning Expensive for large datasets
+Depending on the database, sorting by content of map data is expensive and can lead to poor performance when applied to large result sets.
+:::
+
 ### Pessimistic Locking { #write-lock}
 
-Use the `lock()` method to enforce [Pessimistic Locking](../../guides/providing-services#select-for-update).
+Use the `lock()` method to enforce [Pessimistic Locking](../../guides/services/served-ootb#select-for-update).
 
 The following example shows how to build a select query with an _exclusive_ (write) lock. The query tries to acquire a lock for a maximum of 5 seconds, as specified by an optional parameter `timeout`:
 
@@ -762,6 +941,54 @@ import static com.sap.cds.ql.cqn.CqnLock.Mode.SHARED;
 
 Select.from("bookshop.Books").byId(1).lock(SHARED);
 ```
+
+#### Wait Strategies
+
+If the selected rows are already locked by another transaction, by default, the query waits until the lock is released. You can specify a [wait strategy](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/cqn/CqnLock.Wait.Strategy.html) to control whether and how long the query execution waits.
+
+- `DEFAULT` - wait until the lock is released:
+
+  By default, if the selected rows are locked by another transaction, the query waits, and if the lock isn't released within the database's predefined timeout a `CdsLockTimeoutException` is thrown:
+  ```java
+  Select.from("bookshop.Books").byId(1).lock();
+  ```
+- `WAIT` - wait unless given timeout expires:
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+
+  // wait max 10s  
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, 10);
+  ```
+
+- `NOWAIT` — fail _immediately_ if the rows are already locked:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.NOWAIT;
+
+  Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, NOWAIT);
+  ```
+  If any target row is locked, a `CdsLockTimeoutException` is thrown without waiting.
+
+- `SKIP LOCKED` — skip locked rows and return only unlocked rows:
+
+  ```java
+  import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
+  import static com.sap.cds.ql.cqn.CqnLock.Wait.SKIP_LOCKED;
+
+  Select.from("bookshop.Books")
+      .where(b -> b.get("stock").gt(0))
+      .lock(EXCLUSIVE, SKIP_LOCKED);
+  ```
+
+  ::: warning
+  Rows that are currently locked by other transactions are silently excluded from the result.
+  :::
+  ::: tip
+  This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
+  :::
+  
+#### Restrictions
 
 Not every entity exposed via a CDS entity can be locked with the `lock()` clause. To use the `lock()` clause, databases require that the target of such statements is represented by one of the following:
 - a single table
@@ -935,7 +1162,7 @@ Bulk upserts with entries updating/inserting the same set of elements can be exe
 
 ### Deep Upsert { #deep-upsert}
 
-Upsert can operate on deep [document structures](../cds-data#nested-structures-and-associations) modeled via [compositions](../../guides/domain-modeling#compositions), such as an `Order` with many `OrderItems`.
+Upsert can operate on deep [document structures](../cds-data#nested-structures-and-associations) modeled via [compositions](../../guides/domain/index#compositions), such as an `Order` with many `OrderItems`.
 Such a _Deep Upsert_ is similar to [Deep Update](#deep-update), but it creates the root entity if it doesn't exist and comes with some [limitations](#upsert) as already mentioned.
 
 The [full set](#deep-update-full-set) and [delta](#deep-update-delta) representation for to-many compositions are supported as well.
@@ -1011,9 +1238,9 @@ Update.entity(BOOKS).where(b -> b.stock().eq(0))
 
 ### Deep Update { #deep-update}
 
-Use deep updates to update _document structures_. A document structure comprises a single root entity and one or multiple related entities that are linked via compositions into a [contained-in-relationship](../../guides/domain-modeling#compositions). Linked entities can have compositions to other entities, which become also part of the document structure.
+Use deep updates to update _document structures_. A document structure comprises a single root entity and one or multiple related entities that are linked via compositions into a [contained-in-relationship](../../guides/domain/index#compositions). Linked entities can have compositions to other entities, which become also part of the document structure.
 
-By default, only target entities of [compositions](../../guides/domain-modeling#compositions) are updated in deep updates. Nested data for managed to-one associations is used only to [set the reference](../cds-data#setting-managed-associations-to-existing-target-entities) to the given target entity. This can be changed via the [@cascade](query-execution#cascading-over-associations) annotation.
+By default, only target entities of [compositions](../../guides/domain/index#compositions) are updated in deep updates. Nested data for managed to-one associations is used only to [set the reference](../cds-data#setting-managed-associations-to-existing-target-entities) to the given target entity. This can be changed via the [@cascade](query-execution#cascading-over-associations) annotation.
 
 For to-many compositions there are two ways to represent changes in the nested entities of a structured document: *full set* and *delta*.  In contrast to *full set* representation which describes the target state of the entities explicitly, a change request with *delta* payload describes only the differences that need to be applied to the structured document to match the target state. For instance, in deltas, entities that are not included remain untouched, whereas in full set representation they are deleted.
 
@@ -1240,15 +1467,15 @@ Entity references specify entity sets. They can be used to define the target ent
 ```java
 import com.sap.cds.ql.CQL;
 
-// bookshop.Books[year = 2020].author // [!code focus]
-Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code focus]
+// bookshop.Books[year = 2020].author // [!code highlight]
+Authors_ authors = CQL.entity(Books_.class).filter(b -> b.year().eq(2020)).author(); // [!code highlight]
 
 // or as untyped entity ref
 StructuredType<?> authors =
    CQL.entity("bookshop.Books").filter(b -> b.get("year").eq(2020)).to("author");
 
-// SELECT from bookshop.Books[year = 2020]:author { name } // [!code focus]
-Select.from(authors).columns("name"); // [!code focus]
+// SELECT from bookshop.Books[year = 2020]:author { name } // [!code highlight]
+Select.from(authors).columns("name"); // [!code highlight]
 ```
 
 You can also get [entity references](query-execution#entity-refs) from the result of a CDS QL statement to address an entity via its key values in other statements.
@@ -1349,65 +1576,175 @@ When using named parameters, `Update` and `Delete` statements can be executed as
 
 Scalar functions are values that are calculated from other values. This calculation can be executing a function on the underlying data store or applying an operation, like an addition, to its parameters. The Query Builder API supports the generic `func` function, as well as a number of build-in functions.
 
-* Generic Scalar Function
+##### Generic Scalar Function
 
-    The generic function `func`, creates a scalar function call that is executed by the underlying data store. The first argument, being the native query language function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the native query language `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
+The method `func` creates a scalar function call that is executed by the underlying data store. The first argument being the native query language's (CQN) function name, and the remaining arguments are passed on as arguments of the specified function. In the following example, the CQN `count` function is called on the `name` element. This function returns the count of number of elements with name `Monika`.
 
-    ```java
-    import static com.sap.cds.ql.CQL.func;
-    Select.from(EMPLOYEE)
-      .columns(e -> e.name(), e -> func("COUNT", e.name()).as("count"))
-      .where(e -> e.name().eq("Monika"));
-    ```
+```java
+import static com.sap.cds.ql.CQL.func;
+Select.from(EMPLOYEE)
+  .columns(e -> e.name(), e -> func("COUNT", e.name()).as("count"))
+  .where(e -> e.name().eq("Monika"));
+```
 
-* To Lower
+##### `toLower`
 
-    The `toLower` function is a built-in string function for converting a given string value to lower case using the rules of the underlying data store.
+The `toLower` function is a built-in string function for converting a given string value to lower case using the rules of the underlying data store.
 
-    ```java
-    import static com.sap.cds.ql.CQL.toLower;
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().endsWith(toLower("IKA")));
-    ```
+```java
+import static com.sap.cds.ql.CQL.toLower;
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().endsWith(toLower("IKA")));
+```
 
-    In the following example, the `toLower` function is applied on the `name` element before applying the equals predicate.
+In the following example, the `toLower` function is applied on the `name` element before applying the equals predicate.
 
-    ```java
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().toLower().eq("monika"));
-    ```
+```java
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().toLower().eq("monika"));
+```
 
-* To Upper
+##### `toUpper`
 
-    The `toUpper` function is a built-in string function for converting a given string value to upper case using the rules of the underlying data store.
+The `toUpper` function is a built-in string function for converting a given string value to upper case using the rules of the underlying data store.
 
-    ```java
-    import static com.sap.cds.ql.CQL.toUpper;
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().endsWith(toUpper("ika")));
-    ```
+```java
+import static com.sap.cds.ql.CQL.toUpper;
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().endsWith(toUpper("ika")));
+```
 
-    In the following example, the `toUpper` function is applied on the `name` element before applying the equals predicate.
+In the following example, the `toUpper` function is applied on the `name` element before applying the equals predicate.
 
-    ```java
-    Select.from(EMPLOYEE).columns(e -> e.name())
-      .where(e -> e.name().toUpper().eq("MONIKA"));
-    ```
+```java
+Select.from(EMPLOYEE).columns(e -> e.name())
+  .where(e -> e.name().toUpper().eq("MONIKA"));
+```
 
-* Substring
+##### `substring`
 
-    The `substring` method creates an expression for substring extraction from a string value. Extract a substring from a specified starting position of either a given length or to the end of the string. The first position is zero.
+The `substring` method creates an expression for substring extraction from a string value. Specify the starting position and optionally the length of the substring. Specifying only the starting position gets you all the characters to the end of the string. Note, the first character's position is zero!
 
-    ```java
-    Select.from("bookshop.Authors")
-      .columns(a -> a.get("name").substring(0,2).as("shortname"))
-    ```
-    In the following example, the `substring` function is applied as part of a predicate to test whether a subset of characters matches a given string.
+```java
+Select.from("bookshop.Authors")
+  .columns(a -> a.get("name").substring(0,2).as("shortname"));
+```
+In the following example, the `substring` function is applied as part of a predicate to test whether a subset of characters matches a given string.
 
-    ```java
-    Select.from("bookshop.Authors")
-      .where(e -> e.get("name").substring(2).eq("ter"));
-    ```
+```java
+Select.from("bookshop.Authors")
+  .where(e -> e.get("name").substring(2).eq("ter"));
+```
+
+##### `concat`
+
+See [`Concat Expression`](#concat-expression).
+
+#### Date/Time functions
+
+You can use date/time functions to extract components from date/time values and to compute the difference between timestamps:
+
+##### Extraction Functions
+
+| method | return CDS | return Java | example |
+| --- | --- | --- | --- |
+| year | Int32 | Integer | `date.year()` | 
+| month | Int32 | Integer | `CQL.year(date)` |
+| day | Int32 | Integer | `date.day()` |
+| hour | Int32 | Integer | `CQL.hour(time)` |
+| minute | Int32 | Integer | `time.minute()` |
+| second | Int32 | Integer | `time.second()` |
+| date | Date | LocalDate | `timestamp.date()` |
+| time | Time | LocalTime | `timestamp.time()` |
+
+You can also use the `extract` function to extract a _given_ chrono field (date/time component):
+
+```java
+date.extract(ChronoField.DAY_OF_MONTH)
+```
+
+##### Difference Computation Functions
+
+These methods allow you to compute the difference between timestamps:
+
+| method | return CDS | return Java | example |
+| --- | --- | --- | --- |
+| yearsBetween | Int32 | Integer | `start.yearsBetween(end)` | 
+| monthsBetween | Int32 | Integer | `start.monthsBetween(end)` |
+| daysBetween | Int32 | Integer | `CQL.daysBetween(start, end)` |
+| secondsBetween | Int64 | Integer | `start.secondsBetween(end)` |
+| nano100Between | Int64 | Integer | `start.nano100Between(end)` |
+
+
+
+#### Vector Functions
+
+Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
+
+::: warning Not supported with local MTXS on SQLite
+Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite isn't supported.
+:::
+
+##### Computing Vector Embeddings in SAP HANA <Beta />
+
+CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
+
+To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
+
+```cds
+extend Incidents with {
+  @cds.api.ignore
+  embedding : Vector = vector_embedding(
+       'title: ' || title || ', summary: ' || summary,
+       'DOCUMENT', 'SAP_GXY.20250407') stored;
+}
+```
+
+In Java queries, use the `CQL.vectorEmbedding` function to compute vector embeddings:
+
+```java
+var userQuery = CQL.val("""
+        Have we seen incidents with solar inverters this month,
+        and how were they resolved?
+        """);
+var v = CQL.vectorEmbedding(userQuery, TextType.QUERY, "SAP_GXY.20250407");
+```
+
+On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use local [ONNX](https://onnx.ai) embedding models, which can be added for local testing via [LangChain4j embeddings](https://github.com/langchain4j/langchain4j/tree/main/embeddings):
+
+```xml
+<dependency>
+   <groupId>dev.langchain4j</groupId>
+   <artifactId>langchain4j-embeddings-all-minilm-l6-v2-q</artifactId>
+   <scope>runtime</scope>
+</dependency>
+```
+
+##### Computing Vector Similarity and Distance
+
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+
+```Java
+CqnVector vec = CQL.vector(embedding);
+
+var similarIncidents = db.run(Select.from(INCIDENTS).where(i ->
+  CQL.cosineSimilarity(i.embedding(), vec).gt(0.75))
+);
+```
+
+You can also use parameters for vectors in queries:
+
+```Java
+var similarity = CQL.cosineSimilarity(
+     CQL.get(Incidents.EMBEDDING), CQL.param(0).type(VECTOR));
+
+var query = Select.from(INCIDENTS)
+  .columns(i -> i.title(), i -> similarity.times(100).as("similarity"))
+  .where(i -> similarity.gt(0.75))
+  .orderBy(i -> i.get("similarity").desc());
+
+Result similarIncidents = db.run(query, CdsVector.of(embedding));
+```
 
 #### Case-When-Then Expressions
 
@@ -1420,48 +1757,59 @@ Select.from(BOOKS).columns(
         .when(b.stock().gt(100)).then("high")
         .orElse("medium").as("stockLevel").type(CdsBaseType.STRING));
 ```
+#### Concat Expression
+###### String Expressions
+
+The function `concat` creates a string expression to concatenate a specified value to this value.
+
+```java
+// SELECT from Author {name || ' - the Author' as author_name : String}
+Select.from(AUTHOR)
+  .columns(a -> a.name().concat(" - the Author").as("author_name"));
+```
 
 #### Arithmetic Expressions
 
 Arithmetic Expressions are captured by scalar functions as well:
 
-* Plus
+##### `plus`
 
-    Function `plus` creates an arithmetic expression to add a specified value to this value.
+The function `plus` creates an arithmetic expression to add a specified value to this value.
 
-    ```java
-    // SELECT from Author {id + 2 as x : Integer}
-    Select.from(AUTHOR)
-      .columns(a -> a.id().plus(2).as("x"));
-    ```
+```java
+// SELECT from Author {id + 2 as x : Integer}
+Select.from(AUTHOR)
+  .columns(a -> a.id().plus(2).as("x"));
+```
 
-* Minus
-    Function `minus` creates an arithmetic expression to subtract a specified value with this value.
+##### `minus`
 
-    ```java
-    Select.from("bookshop.Authors")
-      .columns("name")
-      .limit(a -> literal(3).minus(1));
-    ```
+The function `minus` creates an arithmetic expression to subtract a specified value with this value.
 
-* Times
+```java
+Select.from("bookshop.Authors")
+  .columns("name")
+  .limit(a -> literal(3).minus(1));
+```
 
-    Function `times` creates an arithmetic expression to multiply a specified value with this value. In the following example, `p` is an Integer parameter value passed when executing the query.
+##### `times`
 
-    ```java
-    Parameter<Integer> p = param("p");
-    Select.from(AUTHOR)
-      .where(a -> a.id().between(10, p.times(30)));
-    ```
+The function `times` creates an arithmetic expression to multiply a specified value with this value. In the following example, `p` is an Integer parameter value passed when executing the query.
 
-* Divided By
+```java
+Parameter<Integer> p = param("p");
+Select.from(AUTHOR)
+  .where(a -> a.id().between(10, p.times(30)));
+```
 
-    Function `dividedBy` creates an arithmetic expression to divide this value with the specified value.
+##### `dividedBy`
 
-    ```java
-    Select.from(AUTHOR)
-      .where(a -> a.id().between(10, literal(30).dividedBy(2)));
-    ```
+The function `dividedBy` creates an arithmetic expression to divide this value with the specified value.
+
+```java
+Select.from(AUTHOR)
+  .where(a -> a.id().between(10, literal(30).dividedBy(2)));
+```
 
 ### Predicates
 
@@ -1474,10 +1822,16 @@ These comparison operators are supported:
 <table>
 <thead>
 <tr>
+<th colspan="2" align=center>Operator</th><th/><th/>
+</tr>
+<tr>
 <th>
-    Predicate
+    CAP Java
 </th>
-<th width="400">
+<th>
+    CDL
+</th>
+<th width="500">
     Description
 </th>
 <th>
@@ -1488,127 +1842,87 @@ These comparison operators are supported:
 
 <tbody>
 <tr>
+<td>EQ</td><td>=</td>
 <td>
-EQ
-</td>
-<td>
-    Test if this value equals a given value. NULL values might be treated as unknown resulting in a three-valued logic as in SQL.
+    Test if this value equals a given value. NULL values might be treated as unknown resulting in a <i>three-valued logic</i> as in SQL.
 </td>
 <td align="left">
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">eq</span>(15));</code>
+<code>CQL.get("stock").eq(15)</code>
 </td>
 </tr>
 
 <tr>
+<td>NE</td><td>&lt;&gt;</td>
 <td>
-NE
+    Test if this value is NOT equal to a given value. NULL values might be treated as unknown resulting in a <i>three-valued logic</i> as in SQL.
 </td>
 <td>
-    Test if this value is NOT equal to a given value. NULL values might be treated as unknown resulting in a three-valued logic as in SQL.
-</td>
-<td>
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">ne</span>(25));</code>
-</td>
+<code>CQL.get("stock").ne(15)</code></td>
 </tr>
 
 <tr>
+<td>IS</td><td>==</td>
 <td>
-IS
+    Test if this value equals a given value. NULL values are treated as any other value (<i>Boolean logic</i>).
 </td>
 <td>
-    Test if this value equals a given value. NULL values are treated as any other value.
-</td>
-<td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">is</span>(15));</code>
-
-</td>
+<code>CQL.get("stock").is(15)</code></td>
 </tr>
 
 <tr>
+<td>IS NOT</td><td>!=</td>
 <td>
-IS NOT
+    Test if this value is NOT equal to a given value. NULL values are treated as any other value (<i>Boolean logic</i>).
 </td>
 <td>
-    Test if this value is NOT equal to a given value. NULL values are treated as any other value.
-</td>
-<td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">isNot</span>(25));</code>
-
-</td>
+<code>CQL.get("stock").isNot(15)</code></td>
 </tr>
 
 <tr>
-<td>
-GT
-</td>
+<td>GT</td><td>&gt;</td>
 <td>
     Test if this value is greater than a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">gt</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").gt(15)</code></td>
 </tr>
 
 <tr>
+<td>GE</td><td>&gt;=</td>
 <td>
-LT
+    Test if this value is greater than or equal to a given value.
 </td>
+<td>
+<code>CQL.get("stock").ge(15)</code></td>
+</tr>
+
+<tr>
+<td>LT</td><td>&lt;</td>
 <td>
     Test if this value is less than a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">lt</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").lt(15)</code></td>
 </tr>
 
 <tr>
-<td>
-LE
-</td>
+<td>LE</td><td>&lt;=</td>
 <td>
     Test if this value is less than or equal to a given value.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">le</span>(5));</code>
-
-</td>
+<code>CQL.get("stock").le(15)</code></td>
 </tr>
 
 <tr>
-<td>
+<td colspan="2">
 BETWEEN
 </td>
 <td>
     Test if this value is between<sup>1</sup> a range of values.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("stock")
-  .<span class="na">between</span>(5, 10));</code>
-
-</td>
+<code>CQL.get("stock").between(5, 10)</code></td>
 </tr>
 </tbody>
 </table>
@@ -1617,7 +1931,7 @@ BETWEEN
 
 #### `IN` Predicate
 
-The `IN` predicate tests if a value is equal to any value in a given list. 
+The `IN` predicate tests if a value is equal to any value in a given list.
 
 The following example, filters for books written by Poe or Hemingway:
 
@@ -1717,12 +2031,7 @@ AND
     Returns a predicate that represents a logical AND of this predicate and another.
 </td>
 <td>
-
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  a.get("name").eq("Peter)
-   .<span class="na">and</span>(a.get("Id").eq(1)));</code>
-
+<code>name().eq("Peter).and(ID().eq(1));</code>
 </td>
 </tr>
 
@@ -1735,11 +2044,7 @@ OR
 </td>
 <td>
 
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  a.get("name").eq("Peter)
-   .<span class="na">or</span>(a.get("Id").eq(1)));</code>
-
+<code>name().eq("Peter).or(ID().eq(1));</code>
 </td>
 </tr>
 
@@ -1751,11 +2056,8 @@ NOT
     Returns a predicate that represents the logical negation of this predicate.
 </td>
 <td>
-
-<code>Select.from("bookshop.Authors")
-.where(a ->
-  <span class="na">not</span>(a.get("Id").eq(3)));</code>
-
+<code>name().eq("Peter).not()</code><br>  or<br>
+<code>CQL.not(name().eq("Peter))</code>
 </td>
 </tr>
 </tbody>
@@ -1764,6 +2066,8 @@ NOT
 #### `Predicate Functions` {#predicate-functions}
 
 These boolean-valued functions can be used in filters:
+
+##### Containment Test 
 
 <table>
 <thead>
@@ -1789,11 +2093,7 @@ CONTAINS
     Test if this string value contains a given substring.
 </td>
 <td>
-
-<code>Select.from(EMPLOYEE)
-  .where(e -> e.name()
-  .<span class="na">contains</span>("oni"));</code>
-
+<code>name().contains("oni")</code>
 </td>
 </tr>
 
@@ -1805,11 +2105,7 @@ STARTS WITH
     Test if this string value starts with a given prefix.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("title")
-  .<span class="na">startsWith</span>("The"));</code>
-
+<code>title().startsWith("The")</code>
 </td>
 </tr>
 
@@ -1821,17 +2117,13 @@ ENDS WITH
     Test if this string value ends with a given suffix.
 </td>
 <td>
-
-<code>Select.from("bookshop.Books")
-  .where(b -> b.get("title")
-  .<span class="na">endsWith</span>("Raven"));</code>
-
+<code>title().endsWith("Raven")</code>
 </td>
 </tr>
 </tbody>
 </table>
 
-#### `matchesPattern` Predicate {#matches-pattern}
+##### Regular Expressions (`matchesPattern`) {#matches-pattern}
 
 The `matchesPattern` predicate is applied to a String value and tests if it matches a given regular expression.
 
@@ -1858,10 +2150,15 @@ The behavior of the regular expression can be customized with the options that c
 For example, the following code matches that the title of the book begins with the word "CAP" while ignoring the case of the letters:
 
 ```java
-Select.from("bookshop.Books").where(t -> t.get("title").matchesPattern(CQL.val("^CAP.+$"), CQL.val("i")));
+Select.from("bookshop.Books")
+  .where(t -> t.get("title")
+               .matchesPattern(CQL.val("^CAP.+$"), CQL.val("i")));
 ```
+#### Filter by Associated Data
 
-#### `anyMatch/allMatch` Predicate {#any-match}
+These function allow to filter data based on a condition on associated entities:
+
+##### Using `anyMatch/allMatch` {#any-match}
 
 The `anyMatch` and `allMatch` predicates are applied to an association and test if _any_ instance/_all_ instances of the associated entity set match a given filter condition. They are supported in filter conditions of [Select](#select), [Update](#update) and [Delete](#delete) statements.
 
@@ -1901,7 +2198,7 @@ Select.from(AUTHORS).where(a -> a.books().anyMatch(
         p.text().contains("unicorn"))));
 ```
 
-#### `EXISTS` Subquery {#exists-subquery}
+##### Using an `EXISTS` Subquery {#exists-subquery}
 
 An `exists` subquery is used to test if a subquery returns any records. Typically a subquery is correlated with the enclosing _outer_ query.
 You construct an `exists` subquery with the [`exists`](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/ql/StructuredType.html#exists-java.util.function.Function-) method, which takes a [function](#lambda-expressions) that creates the subquery from a reference to the _outer_ query. To access elements of the outer query from within the subquery, this _outer_ reference must be used:

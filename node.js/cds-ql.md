@@ -82,7 +82,7 @@ const { Books } = cds.entities
 let q1 = SELECT.from (Books) .where `ID=${201}`
 ```
 
-[Learn more about using reflected definitions from a service's model](core-services#entities){.learn-more}
+[Learn more about using reflected definitions from a service's model](core-services#-entities){.learn-more}
 
 ####  Not Locked in to SQL
 
@@ -112,9 +112,9 @@ const cats = await cds.connect.to ('CatalogService')
 let books = await cats.run (query)
 ```
 
-> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via http.
+> `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
-The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
+The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), for example:
 
 ```js
 const db = cds.db
@@ -205,7 +205,7 @@ let input = 201 //> might be entered by end users
 let books = await SELECT.from `Books` .where ('ID='+input)
 let bookz = await SELECT.from `Books` .where (`ID=${input}`)
 ```
-> **Note** also that tagged template strings never have surrounding parentheses! I.e., the third line above does the very same string concatenation as the second line.
+> **Note** also that tagged template strings never have surrounding parentheses! That means, the third line above does the very same string concatenation as the second line.
 
 
 A malicious user might enter some SQL code fragment like that:
@@ -281,7 +281,7 @@ cds.ql {
 You can also test-drive the query by executing it with a running application:
 
 ```sh
-cds repl -u ql -r cap/samples/bookshpop
+cds repl -u ql -r cap/samples/bookshop
 ```
 ```js
 await cds.ql`SELECT from Authors {
@@ -295,7 +295,7 @@ await cds.ql`SELECT from Authors {
 [
   {
     ID: 150,
-    name: 'Edgar Allen Poe',
+    name: 'Edgar Allan Poe',
     books: [
       { ID: 251, title: 'The Raven', genre: 'Mystery' },
       { ID: 252, title: 'Eleonora', genre: 'Romance' }
@@ -308,9 +308,85 @@ await cds.ql`SELECT from Authors {
 > Using `cds repl` as shown above is likely the best way to learn how to construct queries in detail.
 > When doing so, ensure to use the `cds.ql` functions with full queries in CQL syntax, as shown in the example above, as that is the most reliable way to ensure correctness.
 
+[An article by DJ Adams exploring `cds repl`.](https://qmacro.org/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/){.learn-more}
+
+## cds.ql() {.method}
+
+Use the `cds.ql()` method to construct instances of [`cds.Query`](#class-cds-ql-query) from these inputs:
+
+- tagged template strings (SELECT only)
+- normal strings (SELECT only)
+- plain CQN objects
+
+For example:
+
+```js
+let q = cds.ql ({ SELECT: { from: {ref:[ Books.name ]} }})
+let q = cds.ql (`SELECT from Books { ID, title }`)
+let q = cds.ql `SELECT from ${Books} { ID, title }`
+q instanceof cds.ql.Query //> true
+```
+
+If the input is already a `cds.Query` instance, it is returned unchanged:
+
+```js
+let q1 = cds.ql `SELECT from Books`
+let q2 = cds.ql (q1)
+q1 === q2 //> true
+```
+
+
+## cds.ql.clone() {.method}
+###### cds-ql-clone
+
+Use the `cds.ql.clone()` method to create clones of given queries, which can be plain CQN objects, or instances of `cds.Query` themselves. This is useful to avoid side effects when modifying queries prior to execution. The returned clone is always an instance of [`cds.Query`](#class-cds-ql-query).
+
+For example, given this original query, which would be captured in CQN as shown below:
+
+```js
+q1 = SELECT.from`Books` .where`title like 'Wu%'`.orderBy`genre.name`
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'title' ] }, 'like', { val: 'Wu%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] } ]
+  }
+}
+```
+
+We can create a clone and modify it like this:
+```js
+q2 = cds.ql.clone (q1)
+```
+We can then modify `q2` without changing `q1`, for example like this:
+```js
+// Override where clause 
+q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
+```
+```js
+// Append an additional order by clause
+q2.orderBy`title asc`
+```
+
+We can use the `.flat()` method to see the effective modified query:
+```js
+q2.flat()
+```
+```zsh
+=> cds.ql {
+  SELECT: {
+    from: { ref: [ 'Books' ] },
+    where: [ { ref: [ 'author', 'name' ] }, '=', { val: 'Emily%' } ],
+    orderBy: [ { ref: [ 'genre', 'name' ] }, { ref: [ 'title' ], sort: 'asc' } ]
+  }
+}
+```
 
 
 ## cds.ql. Query {#class-cds-ql-query .class}
+###### class-cds-ql-query
 
 Instances of `cds.Query` capture queries at runtime. Subclasses provide [fluent APIs](#constructing-queries) to construct queries as highlighted below.
 
@@ -383,6 +459,7 @@ This allows constructing [CQN](../cds/cqn) query objects using [CQL](../cds/cql)
 
 
 ### .one {.property}
+###### select-one
 
 
 Start constructing a query with `SELECT.one` to indicate we're interested in only the first row. At runtime, a single entry, if any, is returned instead of an array:
@@ -400,6 +477,7 @@ const [one] = await SELECT.from (Authors)
 
 
 ### .elements {.property}
+###### select-elements
 
 
 The CSN outline of the selected elements as an object. Key is the selected element or alias, value is the CSN definition:
@@ -429,6 +507,7 @@ This is useful for custom implementations that act on the selection of specific 
 
 
 ### .distinct {.property}
+###### select-distinct
 
 Start the query with `SELECT.distinct` to skip duplicates as in SQL:
 
@@ -439,6 +518,7 @@ SELECT.distinct.from (Authors)
 
 
 ### columns() {.method}
+###### select-columns
 
 ```tsx
 function SELECT.columns ( projection : function )
@@ -502,6 +582,7 @@ Projection functions use these mechanisms:
 
 
 ### from() {.method #select-from}
+###### select-from
 
 ```tsx
 function SELECT.from (
@@ -528,11 +609,11 @@ SELECT.one.from (Books) .where ({ID:201})
 .columns (b => { b.ID, b.title })
 ```
 
-> NOTE: Specifying a `key` argument automatically [enables `SELECT.one`](#one).
+> NOTE: Specifying a `key` argument automatically [enables `SELECT.one`](#select-one).
 
 
 
-Argument `key` can be a single string or number value, or a [query-by-example](#where) object:
+Argument `key` can be a single string or number value, or a [query-by-example](#select-where) object:
 
 ```js
 SELECT.from (Books,201) //> shortcut for {ID:201}
@@ -540,7 +621,7 @@ SELECT.from (Books, {ID:201})
 SELECT.from (Books.texts, {ID:201, locale:'de'})
 ```
 
-Argument `cols` is a projection [as accepted by `.columns (cols)`](#columns)
+Argument `cols` is a projection [as accepted by `.columns (cols)`](#select-columns)
 
 
 
@@ -557,8 +638,10 @@ SELECT.from ('Authors').alias('a').where({
 
 
 ### where(){.method alt="The following documentation on having also applies to where"}
+###### select-where
 
 ### having() {.method}
+###### select-having
 
 These two methods fill in corresponding  [CQL](../cds/cql) clauses with predicate  expressions.
 
@@ -607,6 +690,7 @@ The provided expression is consistently accounted for by wrapping the existing w
 
 
 ### groupBy() {.method}
+###### select-group-by
 
 Fills in SQL `group by` clauses. Arguments are a single tagged template string, or column expression strings or [CXN](../cds/cxn.md) objects, like that:
 
@@ -619,6 +703,7 @@ SELECT ... .groupBy ({ref:['a','name']}, {ref:['b']})
 
 
 ### orderBy() {.method}
+###### select-order-by
 
 Fills in SQL `order by` clauses. Arguments are a single tagged template string, or column expression strings, optionally followed by `asc` or `desc`, or [CXN](../cds/cxn.md) objects, like that:
 
@@ -631,6 +716,7 @@ SELECT ... .orderBy ({ref:['a','name']}, {ref:['b'],sort:'desc'})
 
 
 ### limit() {.method}
+###### select-limit
 
 Equivalent of the standard SQL `limit` and `offset` clauses.
 Arguments can be standard numbers or [CXN](../cds/cxn.md) expression objects.
@@ -643,7 +729,7 @@ SELECT ... .limit (25,100)  //> fifth page
 
 
 ### forUpdate() {.method}
-
+###### select-for-update
 
 Exclusively locks the selected rows for subsequent updates in the current transaction, thereby preventing concurrent updates by other parallel transactions.
 
@@ -678,7 +764,6 @@ If a queried record is already exclusively locked by another transaction, the `.
 
 Passes hints to the database query optimizer that can influence the execution plan. The hints can be passed as individual arguments or as an array.
 
-
 ```js
 SELECT ... .hints ('IGNORE_PLAN_CACHE')
 SELECT ... .hints ('IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)')
@@ -686,10 +771,48 @@ SELECT ... .hints (['IGNORE_PLAN_CACHE', 'MAX_CONCURRENCY(1)'])
 ```
 
 
+### pipeline() {.method}
+
+Pipes the data from the database into the given writable stream.
+
+```js
+SELECT ... .pipeline (cds.context.http.res)
+```
+
+> Please note that the after handlers don't have effect if this stream is piped to the HTTP response.
+
+
+### stream() {.method}
+
+Returns the data from the database as a raw stream.
+
+```js
+SELECT ... .stream ()
+```
+
+
+### foreach() {.method}
+
+Creates an object stream and calls the provided callback for each object.
+
+```js
+await SELECT.from(Books).foreach ((book) => { ... })
+```
+
+Since the SELECT query implements the async iterator protocol, you can also use it with `for await`.
+
+```js
+for await (const book of SELECT.from(Books)) { ... }
+```
+
+:::warning Streaming APIs only implemented by Database Services
+As of now, `SELECT.foreach()` and `SELECT.pipeline()` are only supported by `cds.DatabaseService`. `cds.RemoteService` does not support the streaming APIs yet.
+:::
 
 
 
 ## INSERT {.class}
+###### insert
 
 Fluent API to construct [CQN INSERT](../cds/cqn#insert) query objects in a [CQL](../cds/cql)/SQL-like style. In contrast to SQL, though, the clauses can be arrayed in arbitrary order.
 
@@ -709,6 +832,7 @@ INSERT (books) .into (Books)
 
 
 ### into() {.method}
+###### insert-into
 
 ```tsx
 function INSERT.into (
@@ -741,6 +865,7 @@ INSERT.into (Books, [
 
 
 ### entries() {.method #insert-entries}
+###### insert-entries
 
 ```tsx
 function INSERT.entries (records : object[] | Query | Readable)
@@ -828,6 +953,12 @@ INSERT.into (Books) .columns (
    [ 252, 'Eleonora', 150, 234 ]
 )
 ```
+
+::: tip In Essence:
+
+[Managed fields](../guides/domain/index#managed-data) and [UUIDs](../guides/domain/index#prefer-uuids-for-keys) are automatically filled with `INSERT.entries()`, but not when using `INSERT.columns().values()` or `INSERT.columns().rows()`.
+:::
+
 ### from() {.method #from}
 
 
@@ -835,12 +966,10 @@ Constructs a _INSERT into SELECT_ statement.
 ```js
 INSERT.into('Bar') .from (SELECT.from('Foo'))
 ```
-### as() {.method}
-
-The use of _.as()_ method is deprecated. Please use [_.from()_](#from) method instead.
 
 
 ## UPSERT {.class}
+###### upsert
 
 Fluent API to construct [CQN UPSERT](../cds/cqn#upsert) query objects in a [CQL](../cds/cql)/SQL-like style. In contrast to SQL, though, the clauses can be arrayed in arbitrary order.
 
@@ -857,7 +986,7 @@ const books = [
 UPSERT (books) .into (Books)
 ```
 
-### into() {.method #upsert-entries}
+### into() {.method}
 
 ```tsx
 function UPSERT.into (
@@ -889,7 +1018,7 @@ UPSERT.into (Books, [
 
 
 ### entries() {.method}
-
+###### upsert-entries
 
 Allows upserting multiple rows with one statement where each row
 is a record with named values, for example, as could be read from a JSON
@@ -909,6 +1038,7 @@ The entries can be specified as individual method parameters of type object — 
 [Learn more about limitations when using it with databases.](databases#databaseservice-upsert){.learn-more}
 
 ## UPDATE {.class}
+###### update
 
 Fluent API to construct [CQN UPDATE](../cds/cqn#update) query objects in a [CQL](../cds/cql)/SQL-like style. In contrast to SQL, though, the clauses can be arrayed in arbitrary order.
 
@@ -938,7 +1068,7 @@ UPDATE (Books,201)...
 UPDATE (Books) .where ({ID:201}) ...
 ```
 
-Argument `key` can be a single string or number value, or a [query-by-example](#where) object:
+Argument `key` can be a single string or number value, or a [query-by-example](#select-where) object:
 
 ```js
 UPDATE (Books,201) ... //> shortcut for {ID:201}
@@ -961,7 +1091,7 @@ let [ ID, quantity ] = [ 201, 1 ]
 UPDATE `Books` .set `stock = stock - ${quantity}` .where `ID=${ID}`
 ```
 
-2. As an object with keys being element names of the target entity and values being simple values, [query-by-example](#where) expressions,  or [CQN](../cds/cqn.md) expressions:
+2. As an object with keys being element names of the target entity and values being simple values, [query-by-example](#select-where) expressions,  or [CQN](../cds/cqn.md) expressions:
 ```js
 let [ ID, quantity ] = [ 201, 1 ]
 UPDATE (Books,ID) .with ({
@@ -977,13 +1107,14 @@ UPDATE (Books,ID) .with ({
 
 ### where() {.method}
 
-[As in SELECT.where](#where) {.learn-more}
+[As in SELECT.where](#select-where) {.learn-more}
 
 
 
 
 
 ## DELETE {.class}
+###### delete
 
 Fluent API to construct [CQN DELETE](../cds/cqn#delete) query objects in a [CQL](../cds/cql)/SQL-like style. In contrast to SQL, though, the clauses can be arrayed in arbitrary order.
 
@@ -1008,7 +1139,7 @@ function DELETE.from (
 
 ### where() {.method}
 
-[As in SELECT.where](#where) {.learn-more}
+[As in SELECT.where](#select-where) {.learn-more}
 
 
 
@@ -1020,6 +1151,7 @@ The following methods facilitate constructing CXN objects manually.
 > Many sections below are still under construction. We are working on it... Please refer to the [CXL](../cds/cxn) documentation for more information on the CXN syntax for the time being.
 
 ### expr() {.method}
+###### expr
 
 Constructs a CXN expression object from given input.
 Same as [`xpr`](#xpr), but if the result contains only single
@@ -1035,6 +1167,7 @@ expr`11`                     //> {val:11}
 ```
 
 ### ref() {.method}
+###### ref
 
 Constructs a CXN `{ref}` object from given input, which can be one of:
 
@@ -1057,6 +1190,7 @@ Note that only simple paths are supported, that is, without infix filters or fun
 
 
 ### val() {.method}
+###### val
 
 Constructs CXN `{val}` object from given input, which can be one of:
 - a single `string`, `number`, `boolean`, or `null`
@@ -1071,6 +1205,7 @@ val(11)    //> {val:11}
 ```
 
 ### xpr() {.method}
+###### xpr
 
 Constructs a CXN `xpr` object from given input, which can be one of:
 - multiple CXN `expr` objects, or strings representing keywords or operators

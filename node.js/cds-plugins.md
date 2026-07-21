@@ -128,4 +128,4 @@ Currently, the following schema contribution points are supported:
 
 #### Usage In a CAP Project
 
-<video src="../node.js/assets/schema-usage_compressed.mp4" autoplay loop muted webkit-playsinline playsinline />{.ignore-dark style="width: 688px"}
+<video src="./assets/schema-usage_compressed.mp4" autoplay loop muted webkit-playsinline playsinline />{.ignore-dark style="width: 688px"}

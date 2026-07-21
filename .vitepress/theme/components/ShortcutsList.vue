@@ -6,7 +6,7 @@
           <span class="modal-close" title="Close dialog" @click="visible = false">&times;</span>
           <h5 class="no-anchor">Keyboard Shortcuts</h5>
         </div>
-        <div id="shortcuts-list" class="modal-body">
+        <div id="shortcuts-list" class="modal-body no-wide">
           <table>
             <tr v-for="cmd in activeCommands" :key="cmd.name">
               <td>{{ cmd.name }}</td>
@@ -48,14 +48,15 @@ const querySelectorSearchInput = 'input[class=search-input]'
 const showHiddenCommands = ref(false)
 const commands = computed(() => [
   DOMCommand('Search', 'local-search', keyStrokesSearch, false, ()=>{}), // VP search has the actual logic
-  DOMCommand('Toggle dark/light mode', 'VPSwitchAppearance', ['.']),
+  DOMCommand('Toggle dark/light mode', 'VPSwitchAppearance', ['#']),
   DOMCommand('Toggle Node.js or Java', 'SwitchImplVariant', ['v']),
-  DOMCommand('Next page', '.pager-link.next', ['n']),
-  DOMCommand('Previous page', '.pager-link.prev', ['p']),
+  DOMCommand('Previous page', '.pager-link.prev', ['p',',']),
+  DOMCommand('Next page', '.pager-link.next', ['n','.']),
+  DOMCommand('Scroll to top', '.scroll-to-top', ['t']),
   DOMCommand('Edit on GitHub', '.edit-link-button', ['e']),
   DOMCommand('Edit Secondary File on Github', 'secondary-file', ['E'], true, openSecondaryEditLink ),
   ...commandsFromConfig(),
-  { name:'Show keyboard shortcuts', keys:[ref('?')], run: () => { visible.value = !visible.value } },
+  { name:'Show keyboard shortcuts', keys:[ref('h'),ref('?')], run: () => { visible.value = !visible.value } },
   { name:'Close dialog', keys:[ref('Escape')], hidden:true, run: () => visible.value = false },
 ])
 
@@ -187,35 +188,43 @@ td, th {
   max-width: unset;
   max-height: unset;
   border-style: unset;
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
 }
 
 /* Modal Content */
 .modal-content {
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   resize: both;
-  background-color: var(--vp-c-bg);
+  box-sizing: border-box;
+  background-color: var(--vp-c-bg-soft);
   margin: 10% auto;
-  padding: 0;
   border: 1px solid var(--vp-c-divider);
-  width: 450px;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  padding: 30px 40px;
+  width: 400px;
+  box-shadow: 0 0 44px 44px rgba(0, 0, 0, 0.2);
   animation-name: fadeIn;
   animation-duration: 0.3s
 }
 
 /* Modal Header */
 .modal-header {
-  padding: 2px 16px;
   background-color: var(--vp-c-bg-soft);
 }
 
-.modal-header h5 { margin: 5px auto; text-align: center;}
+.modal-header h5 {
+  font-weight: 600;
+  margin-bottom: 20px;
+  /* text-align: center; */
+}
 
 /* Modal Body */
 .modal-body {
-  padding: 2px 16px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   font-size: 14px;
 }
 
@@ -225,7 +234,7 @@ td, th {
   float: right;
   font-size: 20px;
   font-weight: bold;
-  margin: 5px auto;
+  margin: auto;
 }
 
 .modal-close:hover,

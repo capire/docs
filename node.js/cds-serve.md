@@ -97,7 +97,7 @@ This uses these defaults for all options:
 
 Alternatively you can construct services individually, also from other models, and also mount them yourself, as document in the subsequent sections on individual fluent API options.
 
-If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](#cds-server).
+If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](cds-server#custom-server-js).
 
 
 
@@ -252,8 +252,11 @@ It adds the currently active model to the continuation. It's required for all ap
 ### .add(mw, pos?) {.method}
 
 Registers additional middlewares at the specified position.
-`mw` must be a function that returns an express middleware.
-`pos` specified the index or a relative position within the middleware chain. If not specified, the middleware is added to the end.
+`mw` can be either of:
+- a function that returns an express middleware
+- an express middleware with the common _req_, _res_, _next_ arguments
+- an array of express middlewares
+`pos` specifies the index or a relative position within the middleware chain. If not specified, the middleware is added to the end.
 
 ```js
 cds.middlewares.add (mw, {at:0}) // to the front
@@ -268,7 +271,7 @@ cds.middlewares.add (mw) // to the end
 
 ### Custom Middlewares
 
-The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-serve#custom-server-js).
+The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-server#custom-server-js).
 
 The framework exports the default middlewares itself and the list of middlewares which run before the protocol adapter starts processing the request.
 
@@ -399,6 +402,25 @@ service CatalogService {}
 ```
 
 Be aware that using an absolute path will disallow serving the service at multiple protocols.
+
+### PATCH vs. PUT vs. Replace
+
+The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
+`PUT`, on the other hand, is meant for ensuring a resource exists
+, that is, if it doesn't yet exists, it gets created.
+If it does exist, it gets updated to reflect the request's content.
+
+This content, however, may be incomplete.
+By default, the values for not listed keys are not touched.
+The rationale being that default values are known and clients have the option to send full representations, if necessary.
+
+The following table shows the Node.js runtime's configuration options and their respective default value:
+
+| Flag                                         | Behavior                                 | Default |
+|----------------------------------------------|------------------------------------------|---------|
+| <Config keyOnly>cds.runtime.patch_as_upsert </Config> | Create resource if it does not yet exist   | false   |
+| <Config keyOnly>cds.runtime.put_as_upsert</Config>     | Create resource if it does not yet exist    | true    |
+| <Config keyOnly>cds.runtime.put_as_replace</Config>   | Payload is enriched with default values  | false   |
 
 ### Custom Protocol Adapter
 
