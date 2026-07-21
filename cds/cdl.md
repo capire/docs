@@ -1164,6 +1164,13 @@ entity P_Employees as projection on Employees {
 }
 ```
 
+::: warning Limitations of Compositions of one
+The `:1` syntax in the filter has no effect on the result. It is only an information by the developer
+that the specified condition reduces the result to a single entry. If the condition doesn't reduce
+the result set to one entry, you must not add `:1`.
+:::
+
+
 Filters usually are provided only for to-many associations, which usually are unmanaged.
 Thus publishing with a filter is almost exclusively used for unmanaged associations.
 Nevertheless you can also publish a managed association with a filter. This will automatically
