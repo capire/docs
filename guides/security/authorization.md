@@ -650,7 +650,16 @@ It can be disabled by setting <Config java>cds.security.authorization.instanceBa
 
 ### Simple Static Checks { #simple-static-checks .node}
 
-TODO
+Most instance-based [`@restrict.where`](#restrict-annotation) conditions reference business data (for example, `where: 'createdBy = $user'`) and can only be enforced against persisted data — pushed into the query for `READ`, or verified with a `COUNT` for `UPDATE`/`DELETE`.
+
+Some conditions, though, reduce to a plain comparison of literals once [user attributes](#user-attrs) are resolved:
+
+```cds
+entity Reviews @(restrict: [
+  { grant: 'CREATE', where: '$user.level >= 2' } ]);
+```
+
+For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`) and to unbound actions and functions, where there's no persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
 
 
 //> TODO: Node.js?
