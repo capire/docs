@@ -448,11 +448,19 @@ This means that, the condition applies to following standard CDS events only:
 - `UPDATE` (as reject condition)
 - `DELETE` (as reject condition)
 
-The Java runtime additionally [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
+<div class="impl java">
+
+In addition, the Java runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
 - `CREATE` (input filter)
 - `UPDATE` (input filer)
 
-The Node.js runtime, on the other hand, supports simple static expressions that *don't have any reference to the model* (e.g., `where: $user.level = 2`) for `CREATE` as well as unbound actions and functions.
+</div>
+
+<div class="impl node">
+
+In addition, for `CREATE` as well as unbound actions and functions, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+
+</div>
 
 You can define filter conditions in the `where`-clause of restrictions based on [CQL](/cds/cql)-predicates, declared as [compiler expressions](../../cds/cdl#expressions-as-annotation-values):
 
