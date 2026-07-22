@@ -358,6 +358,22 @@ img, video.bright {
   white-space: nowrap;
 }
 
+// Safari may render the invisible Unicode marker used by VitePress as tofu blocks.
+// Apply this workaround only to Safari-capable engines.
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  .vp-external-link-icon::after,
+  .external-link-icon-enabled :is(.vp-doc a[href*='://'], .vp-doc a[target='_blank']):not(:is(.no-icon, svg a, :has(img, svg)))::after {
+    content: '';
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    padding-left: 0;
+    margin-left: 4px;
+    line-height: 1;
+    vertical-align: text-top;
+  }
+}
+
 
 
 

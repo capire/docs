@@ -1154,7 +1154,7 @@ entity P_Authors as projection on Authors {
 In this example, in addition to `books` projection `P_Authors` has a new association `availableBooks`
 that points only to those books where `stock > 0`.
 
-If the filter condition effectively reduces the cardinality of the association
+If the filter condition effectively reduces the cardinality of the association (or composition)
 to one, you should make this explicit in the filter by adding a `1:` before the condition:
 
 ```cds
@@ -1163,6 +1163,12 @@ entity P_Employees as projection on Employees {
   addresses[1: kind='home'] as homeAddress  // homeAddress is to-one
 }
 ```
+
+::: warning `:1` doesn't itself reduce the cardinality
+The `:1` syntax itself has no effect on the cardinality. It is only an information by the developer
+that the specified condition reduces the cardinality of the association or composition to one.
+:::
+
 
 Filters usually are provided only for to-many associations, which usually are unmanaged.
 Thus publishing with a filter is almost exclusively used for unmanaged associations.
