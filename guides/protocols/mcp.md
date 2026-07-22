@@ -22,7 +22,6 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 > The [SAP API Policy](https://api.sap.com/api-policy) remains applicable even when exposing data via MCP. Before exposing any SAP service or data through an MCP endpoint, ensure your use case complies with the SAP API Policy and any applicable licensing terms.
 
 
-
 ## Preliminaries
 
 Following are one-time preparatory setup tasks. Basically, you need to ensure that you have access to LLM(s) to use with your MCP clients in local test-drives.
@@ -73,10 +72,6 @@ Add this to the *srv/pom.xml*:
   </dependency>
 </dependencies>
 ```
-
-Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
-
-
 
 
 ## Serving MCP
