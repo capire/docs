@@ -1,6 +1,6 @@
 {
   "name": "@capire/docs",
-  "version": "2026.6.0",
+  "version": "2026.6.1",
   "description": "Capire on VitePress",
   "type": "module",
   "scripts": {
@@ -28,15 +28,14 @@
     "@types/adm-zip": ">=0.5.0",
     "@types/express": "latest",
     "@typescript-eslint/parser": "^8.0.0",
-    "adm-zip": "^0.5.10",
+    "adm-zip": "^0.6.0",
     "express": "^5",
     "fflate": "^0.8.2",
     "globals": "^17.4.0",
     "htmlparser2": "^12",
     "monaco-editor": "^0.55.1",
     "sass": "^1.62.1",
-    "vite": "^8",
     "vite-plugin-cds": "^0.3.1",
-    "vitepress": "2.0.0-alpha.17"
+    "vitepress": "2.0.0-alpha.18"
   }
 }

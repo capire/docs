@@ -610,6 +610,56 @@ class CatalogServiceHandler implements EventHandler {
 ```
 
 
+#### Dev Trace Output { #dev-trace-output }
+
+In non-production profiles, CAP Java automatically logs completed request traces as indented timing trees to the console. This gives immediate visibility into which services, handlers, and database queries contribute to request latency — without any external tooling or agent setup.
+
+::: tip
+This feature is auto-enabled in development and disabled when the OpenTelemetry Java Agent is detected or in production profiles. No dependencies or JVM flags are required.
+:::
+
+##### Example Output
+
+A request to `GET /odata/v4/CatalogService/Books` produces:
+
+```log
+elapsed times (trace 4a1f7b2c...):
+     0.00 →   26.34 =   26.34 ms  RequestContext 1  [tenant=t1]
+     0.12 →   25.89 =   25.77 ms    CatalogService (READ)  [entity=Books]
+     1.45 →   24.20 =   22.75 ms      PersistenceService (READ)
+     2.10 →   23.80 =   21.70 ms        CQN SELECT CatalogService.Books
+```
+
+##### Configuration
+
+The feature is controlled by <Config java>cds.telemetry.dev-output.enabled</Config>:
+
+| Value | Behavior |
+|-------|----------|
+| _not set_ | Auto-enabled in non-production when no OTel agent is detected |
+| `true` | Enabled (unless OTel agent is present) |
+| `false` | Disabled |
+
+To suppress the trace output via log level instead:
+
+```properties
+logging.level.com.sap.cds.telemetry=WARN
+```
+
+##### Relationship to the OpenTelemetry Java Agent
+
+The dev trace output and the [OpenTelemetry Java Agent](#agent-extension) serve complementary purposes:
+
+| | Dev Trace Output | OpenTelemetry Java Agent |
+|---|---|---|
+| **Use case** | Local development | Production observability |
+| **Setup** | Zero config | Agent JAR + exporter config |
+| **Span level** | CAP services, handlers, CQN | JVM frameworks (Spring MVC, JDBC) |
+| **Output** | Console log | Jaeger, Dynatrace, Cloud Logging |
+
+When the OpenTelemetry Java Agent is detected at startup, the dev trace output is automatically disabled to avoid conflicts.
+
+
 ### Dynatrace { #dynatrace }
 
 [Dynatrace](https://www.dynatrace.com/support/help) is a comprehensive platform that delivers analytics and automation based on monitoring events sent by the backend services.
