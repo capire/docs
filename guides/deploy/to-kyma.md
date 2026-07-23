@@ -77,13 +77,30 @@ The following diagram illustrates the deployment workflow:
 + Use a Kyma-enabled [Trial Account](https://account.hanatrial.ondemand.com/) or purchase a Kyma cluster from SAP
 + You need a [Container Image Registry](#get-access-to-a-container-registry)
 + Get the required SAP BTP service entitlements
++ Make sure your SAP HANA Cloud is [mapped to your namespace](https://community.sap.com/t5/technology-blogs-by-sap/consuming-sap-hana-cloud-from-the-kyma-environment/ba-p/13552718#toc-hId-569025164)
++ Ensure SAP HANA Cloud is accessible from your Kyma cluster by [configuring trusted source IPs](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/0610e4440c7643b48d869a6376ccaecd.html)
 + Install [Docker Desktop or Docker for Linux](https://docs.docker.com/get-docker/)
 + Download and install the following command line tools:
   + [`kubectl` command line client](https://kubernetes.io/docs/tasks/tools/) for Kubernetes
   + [`pack` command line tool](https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/)
   + [`helm` command line tool](https://helm.sh/docs/intro/install/)
-+ Make sure your SAP HANA Cloud is [mapped to your namespace](https://community.sap.com/t5/technology-blogs-by-sap/consuming-sap-hana-cloud-from-the-kyma-environment/ba-p/13552718#toc-hId-569025164)
-+ Ensure SAP HANA Cloud is accessible from your Kyma cluster by [configuring trusted source IPs](https://help.sap.com/docs/HANA_CLOUD/9ae9104a46f74a6583ce5182e7fb20cb/0610e4440c7643b48d869a6376ccaecd.html)
+
+::: code-group
+```sh [macOS/Linux]
+brew install kubernetes-cli        # kubectl
+brew install buildpacks/tap/pack   # pack
+brew install helm                  # helm
+```
+```PowerShell [Windows]
+winget install --silent Kubernetes.kubectl   # kubectl
+winget install --silent Helm.Helm            # helm
+choco install buildpacks                     # pack (via Chocolatey)
+
+# Reload PATH from registry to access newly installed tools
+$env:PATH = [Environment]::GetEnvironmentVariable("PATH","Machine") `
+    + ";" + [Environment]::GetEnvironmentVariable("PATH","User")
+```
+:::
 
 #### Configure Kubernetes
 
