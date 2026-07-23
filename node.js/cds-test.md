@@ -163,6 +163,16 @@ cds test
 
 The last one, `cds test` is a thin wrapper around [Node's built-in test runner](https://nodejs.org/api/test.html), which makes it easier to fetch tests and provides a cleaner output.
 
+#### Testing with Cloud Services
+
+To run integration tests against cloud services (for example, SAP HANA), wrap the test execution with `cds bind --exec`:
+
+```sh
+cds bind --exec -- node --test
+```
+
+[Learn more about hybrid testing with `cds bind`.](../tools/cds-bind#integration-tests){.learn-more}
+
 ::: tip Writing runner-agnostic tests
 To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`, in particular via [`cds.test.expect`](#expect), which are designed to work across different runners. This way, you can easily switch between different test runners as shown above without having to change your test code. -> Learn more in section [Runner-Agnostic Tests](#runner-agnostic-tests) below.
 :::
