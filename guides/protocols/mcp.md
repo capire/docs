@@ -74,6 +74,8 @@ Add this to the *srv/pom.xml*:
 ```
 
 
+Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
+
 ## Serving MCP
 
 ### Annotate services with `@mcp`
