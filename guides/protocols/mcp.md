@@ -116,9 +116,9 @@ annotate CatalogService with @mcp:'books'
 > From the perspective of a developer in a CAP-based project, `@mcp` is just another protocol for your services, similar to `@odata`, `@graphql`, `@rest`, or `@hcql`. The adapter takes care of the rest, with all the standard CAP features you know working out of the box also with MCP, including annotations like `@cds.query.limit`, etc.
 
 
-### Using Specific MCP Services
+### Tailored services for MCP use
 
-In case you want to serve tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+In case you want to tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
 
 ::: code-group
 ```cds [srv/books-service.cds]
