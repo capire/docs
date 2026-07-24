@@ -257,14 +257,22 @@ Here, users can read and write orders they've created, and `Auditor` users can r
 
 Restrictions can be defined on different types of CDS resources, but there are some limitations with regards to supported privileges:
 
-| CDS Resource    | `grant` | `to` |      `where`      | Remark        |
-|-----------------|:-------:|:----:|:-----------------:|---------------|
-| service         |  <Na/>  | <Y/> |       <Na/>       | = `@requires` |
-| entity          |  <Y/>   | <Y/> | <Y/><sup>1</sup>  |               |
-| action/function |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
+| CDS Resource          | `grant` | `to` |      `where`      | Remark        |
+|-----------------------|:-------:|:----:|:-----------------:|---------------|
+| service               |  <Na/>  | <Y/> |       <Na/>       | = `@requires` |
+| entity                |  <Y/>   | <Y/> |       <Y/>        |               |
+| bound action/function |  <Na/>  | <Y/> | <Na/><sup>1</sup> | = `@requires` |
+| action/function       |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
 
-> <sup>1</sup>For bound actions and functions that are not bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
-> <sup>2</sup> For unbound actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>1</sup> For [bound actions and functions](../../cds/cdl#bound-actions) that *are not bound to a collection of instances*, Node.js supports instance-based authorization.
+> Example:
+> ```cds
+> entity Orders @(restrict: [
+>     { grant: 'cancel', where: (CreatedBy = $user) },
+>   ]) {/*...*/}
+> ```
+
+> <sup>2</sup> For (unbound) actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
@@ -314,7 +322,7 @@ The resulting authorizations are illustrated in the following access matrix:
 | `CustomerService.Orders` (*)         |   <X/>   | <Y/><sup>1</sup> |         <X/>         | <X/>              |
 | `CustomerService.monthlyBalance`     |   <Y/>   |       <X/>       |         <X/>         | <X/>              |
 
-> <sup>1</sup> A `Vendor` user can only access the instances that they created. <br>
+> <sup>1</sup> A `Customer` user can only access the instances that they created. <br>
 
 The example models access rules for different roles in the same service. In general, this is _not recommended_ due to the high complexity. See [best practices](#dedicated-services) for information about how to avoid this.
 
@@ -442,9 +450,15 @@ This means that, the condition applies to following standard CDS events only:
 
 <div class="impl java">
 
-In addition, the runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
+In addition, the Java runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
 - `CREATE` (input filter)
 - `UPDATE` (input filer)
+
+</div>
+
+<div class="impl node">
+
+In addition, for `CREATE` as well as unbound actions and functions, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 </div>
 
@@ -609,6 +623,7 @@ Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the co
 
 <div class="impl java">
 
+// TODO: Node.js does not support his?
 <div id="exists-subquery" />
 
 </div>
@@ -633,6 +648,21 @@ Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
+### Simple Static Checks { #simple-static-checks .node}
+
+Most instance-based [`@restrict.where`](#restrict-annotation) conditions reference business data (for example, `where: 'createdBy = $user'`) and can only be enforced against persisted data — pushed into the query for `READ`, or verified with a `COUNT` for `UPDATE`/`DELETE`.
+
+Some conditions, though, reduce to a plain comparison of literals once [user attributes](#user-attrs) are resolved:
+
+```cds
+entity Reviews @(restrict: [
+  { grant: 'CREATE', where: '$user.level >= 2' } ]);
+```
+
+For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`) and to unbound actions and functions, where there's no persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
+
+
+//> TODO: Node.js?
 ### Rejected Entity Selection { #reject-403 .java}
 
 Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
