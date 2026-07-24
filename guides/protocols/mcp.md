@@ -323,7 +323,7 @@ INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 
 
 Whenever you start your application, the MCP adapter automatically registers all MCP endpoints with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
 
-During startup, the generated MCP servers and their URL are added to the client-specific configuration files like that:
+During startup, information about the MCP endpoints is added to the client-specific configuration files like that:
 
 ::: code-group
 ```json [~/.claude.json]
