@@ -3,7 +3,7 @@ synopsis: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# MCP Protocol Adapter <Beta />
+# Model Context Protocol Adapter <Beta />
 
 
 
