@@ -321,9 +321,12 @@ INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 
 
 ### Autowired MCP Clients
 
-Whenever you start your application, the MCP adapter automatically registers all MCP endpoints with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
+Whenever you start your application, the MCP adapter automatically registers all MCP servers with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
 
-During startup, information about the MCP endpoints is added to the client-specific configuration files like that:
+> [!tip] MCP servers
+> Note the distinction between the CAP server that listens on a certain port, and MCP servers which are just endpoints provided and served by the CAP server. We use the term "MCP server" despite this, to align with the MCP protocol terminology.
+
+During startup, information about the MCP server endpoints is added to the client-specific configuration files like that:
 
 ::: code-group
 ```json [~/.claude.json]
