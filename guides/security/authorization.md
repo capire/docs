@@ -623,7 +623,6 @@ Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the co
 
 <div class="impl java">
 
-// TODO: Node.js does not support his?
 <div id="exists-subquery" />
 
 </div>
