@@ -662,8 +662,7 @@ entity Reviews @(restrict: [
 For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`) and to unbound actions and functions, where there's no persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
 
 
-//> TODO: Node.js?
-### Rejected Entity Selection { #reject-403 .java}
+### Rejected Entity Selection { #reject-403 }
 
 Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
 are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
