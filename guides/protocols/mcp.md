@@ -3,7 +3,7 @@ synopsis: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# MCP Protocol Adapter <Beta />
+# Model Context Protocol Adapter <Beta />
 
 
 
@@ -116,9 +116,9 @@ annotate CatalogService with @mcp:'books'
 > From the perspective of a developer in a CAP-based project, `@mcp` is just another protocol for your services, similar to `@odata`, `@graphql`, `@rest`, or `@hcql`. The adapter takes care of the rest, with all the standard CAP features you know working out of the box also with MCP, including annotations like `@cds.query.limit`, etc.
 
 
-### Using Specific MCP Services
+### Tailored services for MCP use
 
-In case you want to serve tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+In case you want to tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
 
 ::: code-group
 ```cds [srv/books-service.cds]
@@ -321,9 +321,12 @@ INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 
 
 ### Autowired MCP Clients
 
-Whenever you start your application, the MCP adapter automatically registers all MCP endpoints with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
+Whenever you start your application, the MCP adapter automatically registers all MCP servers with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
 
-During startup, the generated MCP servers and their URL are added to the client-specific configuration files like that:
+> [!tip] MCP servers
+> Note the distinction between the CAP server that listens on a certain port, and MCP servers which are just endpoints provided and served by the CAP server. We use the term "MCP server" despite this, to align with MCP terminology.
+
+During startup, information about the MCP server endpoints is added to the client-specific configuration files like that:
 
 ::: code-group
 ```json [~/.claude.json]
