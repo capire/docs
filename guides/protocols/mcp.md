@@ -3,17 +3,21 @@ synopsis: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# Model Context Protocol Adapter <Beta />
-
-> [!warning]
-> The CAP MCP adapter is in **Beta** status and is **not intended for production use**.
-> 
-> The CAP MCP adapter is designed exclusively to expose custom CAP application services via MCP.
-> It is not an endorsed pathway for exposing or proxying SAP Application APIs directly via MCP to agents. For endorsed architectures covering agentic access to SAP APIs, please refer to the reference architectures published on the **[SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0)**.
+# Model Context Protocol Adapter
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-source standard that enables direct integration between large language model (LLM) applications and external data sources. Any CAP service can be turned into an MCP server, allowing AI agents and LLM-powered tools to interact with the service without additional implementation work. All that is required is annotating it with [ `@mcp`](#serving-mcp). From CAP perspective MCP is just another protocol which we serve similar to _OData_, _GraphQL_, _REST_, or _HCQL_.
 
+
+> [!caution] SAP API Policy Applies!
+> When exposing CAP services through MCP, ensure your use cases comply with the [SAP API Policy](https://help.sap.com/doc/sap-api-policy) and any applicable licensing terms.
+> In particular, the CAP MCP adapter, as documented herein, is designed exclusively to expose _custom_ CAP application services via MCP.
+> It is not an endorsed pathway for exposing or proxying _SAP Application APIs_ directly via MCP.
+> For endorsed architectures covering agentic access to SAP APIs, please refer to the reference architectures published on the
+> **[SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0)**.
+
+
 [[toc]]
+
 
 > [!note]
 >
@@ -21,9 +25,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 >
 > In parallel, there's also the *MCP Server* plugin ([*@cap-js/mcp-server*](https://github.com/cap-js/mcp-server)), which serves a different purpose, though, that is: AI-assisted *development* of CAP projects.
 
-> [!warning] SAP API Policy Applies
->
-> The [SAP API Policy](https://help.sap.com/doc/sap-api-policy) remains applicable even when exposing data via MCP. Before exposing any SAP service or data through an MCP endpoint, ensure your use case complies with the SAP API Policy and any applicable licensing terms.
+
 
 
 ## Preliminaries
@@ -498,12 +500,13 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 ### Prompt Injection Attacks
 
 > [!caution]
-> The MCP adapter does not perform any input or output validation regarding prompt injection attacks.
+> The MCP adapter does not perform any input validation or output validation to prevent prompt injection attacks.
 > Agents can potentially be manipulated by data returned from the service to execute unintended actions. For any deployment ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
 
 ### Missing Governance Controls
 
 > [!caution]
-> The adapter provides no built-in governance features: there is no rate limiting, no audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
->
-> In particular, the CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs, as doing so bypasses the governance, authentication, and compliance controls those APIs require. Any use of SAP Application APIs must be in accordance with the [SAP API Policy](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For endorsed patterns on agentic access to SAP Application APIs, consult the [SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.
+> The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
+
+> [!caution]
+> The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs, as doing so bypasses the governance, authentication, and compliance controls those APIs require. Any use of SAP Application APIs must be in accordance with the [SAP API Policy](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For endorsed patterns on agentic access to SAP Application APIs, consult the [SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.
