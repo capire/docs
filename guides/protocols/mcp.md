@@ -17,7 +17,9 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 >
 > In parallel, there's also the *MCP Server* plugin ([*@cap-js/mcp-server*](https://github.com/cap-js/mcp-server)), which serves a different purpose, though, that is: AI-assisted *development* of CAP projects.
 
-
+> [!warning] SAP API Policy Applies
+>
+> The [SAP API Policy](https://help.sap.com/doc/sap-api-policy) remains applicable even when exposing data via MCP. Before exposing any SAP service or data through an MCP endpoint, ensure your use case complies with the SAP API Policy and any applicable licensing terms.
 
 
 ## Preliminaries
@@ -71,10 +73,8 @@ Add this to the *srv/pom.xml*:
 </dependencies>
 ```
 
+
 Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
-
-
-
 
 ## Serving MCP
 
