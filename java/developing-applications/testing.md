@@ -217,9 +217,11 @@ For a more extensive version of the previous `CatalogServiceTest` snippets, have
 
 Integration tests enable us to verify the behavior of a custom event handler execution doing a roundtrip starting at the protocol adapter layer and going through the whole CAP architecture until it reaches the service and event handler layer and then back again through the protocol adapter.
 
-As the services defined in our `CDS model` are exposed as `OData` endpoints, by using [MockMvc](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html) we can simply invoke a specific `OData` request and assert the response from the addressed service.
+As the services defined in our `CDS model` are exposed as `OData` endpoints, we can simply invoke a specific `OData` request and assert the response from the addressed service. Spring provides two clients for this purpose: [MockMvc](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html) and, since Spring Framework 7.0, the [RestTestClient](https://docs.spring.io/spring-framework/reference/testing/resttestclient.html). Both approaches perform an equivalent server-side roundtrip through the whole CAP architecture without starting a servlet container, so you can pick whichever fits your style &mdash; there's no preference.
 
-The following demonstrates this by invoking a `GET` request to the `OData` endpoint of our `Books` entity, which triggers the execution of the `discountBooks` method of the `CatalogServiceHandler` in our example:
+The following demonstrates this by invoking a `GET` request to the `OData` endpoint of our `Books` entity, which triggers the execution of the `discountBooks` method of the `CatalogServiceHandler` in our example.
+
+#### Using MockMvc
 
 ```java
 @SpringBootTest
@@ -245,6 +247,54 @@ public class CatalogServiceITest {
             .andExpect(jsonPath("$.value[0].title").value(not(containsString("11% discount"))));
     }
 }
+```
+
+#### Using RestTestClient
+
+The same test can be written with `RestTestClient`, which offers a fluent, [WebTestClient](https://docs.spring.io/spring-framework/reference/testing/webtestclient.html)-style API:
+
+```java
+@SpringBootTest
+@AutoConfigureRestTestClient
+public class CatalogServiceITest {
+
+    private static final String booksURI = "/api/browse/Books";
+
+    @Autowired
+    private RestTestClient client;
+
+    @Test
+    public void discountApplied() {
+        client.get().uri(booksURI + "?$filter=stock gt 200&top=1")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.value[0].title")
+            .value(String.class, title -> assertThat(title).contains("11% discount"));
+    }
+
+    @Test
+    public void discountNotApplied() {
+        client.get().uri(booksURI + "?$filter=stock lt 100&top=1")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.value[0].title")
+            .value(String.class, title -> assertThat(title).doesNotContain("11% discount"));
+    }
+}
+```
+
+The relevant imports for the `RestTestClient` variant are:
+
+```java
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.client.RestTestClient;
 ```
 
 ::: tip
