@@ -79,7 +79,7 @@ srv.on('EDIT', MyEntity, /*...*/)
 The `EDIT` event is triggered when the user starts editing an active entity.
 As a result, a new entry to `MyEntity.drafts` is created.
 
-For logical reasons handlers for the `EDIT` event are registered on the active entity, i.e. `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
+For logical reasons handlers for the `EDIT` event are registered on the active entity, that is, `MyEntity` in the code above, not on the `MyEntity.drafts` entity.
 
 
 ### `PATCH`
@@ -105,7 +105,7 @@ srv.on('SAVE', MyEntity.drafts, /*...*/)
 The `SAVE` event is triggered when the user saves / activates a draft. This results in either a CREATE or an UPDATE on the active entity depending on whether the draft was created via `NEW` or `EDIT`.
 
 > [!note]
-> The `SAVE` event is also available for non-draft, i.e. active entities. In that case it acts as an convenience shortcut for registering handlers for the combination of `CREATE` and `UPDATE` events. In contrast to that, the `SAVE` event on draft entities is a distinct event that is only triggered when **activating** a draft.
+> The `SAVE` event is also available for non-draft, that is, active entities. In that case it acts as an convenience shortcut for registering handlers for the combination of `CREATE` and `UPDATE` events. In contrast to that, the `SAVE` event on draft entities is a distinct event that is only triggered when **activating** a draft.
 
 
 

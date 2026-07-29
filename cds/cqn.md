@@ -41,7 +41,7 @@ let results = await cds.run (query)
 ```
 
 Following is a detailed specification of the CQN as [TypeScript declarations](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html), including all query types and their properties,
-as well as the fundamental expression types. Find the [full CQN type definitions in the appendix below](#full-cqn-d-ts-file).
+as well as the fundamental expression types. Find the [full CQN type definitions in the appendix below](#full-cqndts-file).
 
 
 ## SELECT

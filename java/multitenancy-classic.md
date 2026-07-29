@@ -34,7 +34,7 @@ To implement multitenancy support, the CAP Java SDK integrates with the multiten
 
 ## Maven Dependencies
 
-Multitenancy support is available as a so called optional [application feature](developing-applications/building#starter-bundles#application-features) of the CAP Java SDK. It's already included when you use the `cds-starter-cloudfoundry` dependency. Otherwise, you can add the following Maven dependency to apply the feature:
+Multitenancy support is available as a so called optional [application feature](developing-applications/building#application-features) of the CAP Java SDK. It's already included when you use the `cds-starter-cloudfoundry` dependency. Otherwise, you can add the following Maven dependency to apply the feature:
 
 ```xml
 <dependency>
@@ -284,7 +284,7 @@ In this example, the `grant-as-authority-to-apps` section is used to grant the `
 
 It isn't necessary to have the security configuration in a separate file. It can also be added to the *mta.yaml* file directly.
 
-::: warning 
+::: warning
 The `mtcallback` and `mtdeployment` scopes **must not be exposed** to any business user, for example, using a role template. Else a malicious user could update or even delete the artifacts of arbitrary tenants. In addition, if you implement a service broker in order to expose your service API for (technical) users of SaaS tenants, you must ensure that both scopes **cannot be consumed as authorities** in cloned service instances created by clients. To achieve that, set  `authorities-inheritance: false`. It is **strongly recommended** to explicitly enumerate all authorities that should be exposed in the the broker configuration (allow-list).
 :::
 
@@ -681,7 +681,7 @@ The following sections describe how to trigger the database schema upgrade for t
 
 When multitenancy is configured, the CAP Java SDK exposes a REST endpoint to update database schemata.
 
-::: warning 
+::: warning
 You must use the scope `mtdeployment` for the following requests!
 :::
 
@@ -854,7 +854,7 @@ The configuration of mock users is described in section [Security](./security). 
 
 If you want to authenticate using the XSUAA, just copy the XSUAA service binding into the *default-env.json*. You then need to have a valid token for the tenant to authenticate. This can be obtained through client-credential-flow, for example, using Postman.
 
-::: warning 
+::: warning
 Requests without user information fail!
 :::
 
@@ -882,7 +882,7 @@ tenants.forEach(tenant -> {
 });
 ```
 
-::: warning 
+::: warning
 If an application overrides the default behavior of the CAP Java SDK this way, it's responsible of ensuring data privacy and isolation!
 :::
 
@@ -913,7 +913,7 @@ upon incoming requests.
 
 In order to activate the combined pool approach set the property `cds.multiTenancy.datasource.combinePools.enabled = true`.
 
-::: warning 
+::: warning
 Since the pool is shared among all tenants, one tenant could eat up all available connections, either intentionally or by accident. Applications using combined pools need to take adequate measures to mitigate this risk, for example by introducing rate-limiting.
 :::
 
@@ -944,6 +944,6 @@ See section [Multitenancy Configuration Properties](#mtx-properties) for more de
 
 ## Multitenancy Configuration Properties { #mtx-properties }
 
-A number of multitenancy settings can be configured through application configuration properties. See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details. All properties can be found in the [properties overview](./developing-applications/properties#cds-multiTenancy). The prefix for multitenancy-related settings is `cds.multitenancy`.
+A number of multitenancy settings can be configured through application configuration properties. See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details. All properties can be found in the [properties overview](./developing-applications/properties#cds-multitenancy). The prefix for multitenancy-related settings is `cds.multitenancy`.
 
 <span id="aftermtxpropertis" />

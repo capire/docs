@@ -250,9 +250,8 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@sap/cds-mtxs": "^3",
-    "express": "^4"
+    "@sap/cds": "^10",
+    "@sap/cds-mtxs": "^4",
   },
   "cds": {
     "profile": "mtx-sidecar"
@@ -273,9 +272,8 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@sap/cds-mtxs": "^3",
-    "express": "^4"
+    "@sap/cds": "^10",
+    "@sap/cds-mtxs": "^4",
   },
   "cds": {
     "profiles": [

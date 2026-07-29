@@ -266,7 +266,7 @@ entity TravelService.Travels.drafts : TravelService.Travels { ... }
 ```
 :::
 
-You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#drafts) reference as a shortcut to access the draft entity:
+You can access this entity definition from the model at runtime, for example, to add custom handlers to draft events or to access draft data. In a CAP Node.js service implementation, use the [`.drafts`](../../node.js/cds-reflect#-drafts) reference as a shortcut to access the draft entity:
 
 ```js
 const { Travels } = this.entities
@@ -359,6 +359,9 @@ While this was always possible in CAP Java before, it's available for CAP Node.j
 > Directly updating an active entity does **not** bypass [draft locks](#draft-locks).
 > If an existing draft locks the entity, direct updates are blocked to prevent lost update situations.
 
+> [!warning] Ensure validation for all entry points
+> Requests to active data also features partial CREATE/UPDATE requests to the root entity and its composition children. Ensure that the validations and determinations are run in all situations, not only on the root.
+
 #### Draft-agnostic Requests
 
 Taking this further, through <Config>cds.fiori.draft_new_action: true</Config> `IsActiveEntity=true` is assumed by default, so clients that are unaware of drafts or don't need to handle them can ignore all draft-specific requests and parameters:
@@ -398,7 +401,7 @@ Select.from(FOO).where(o -> o.ID().eq(201) .and( //> reads draft data
 );
 ```
 
-In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#drafts) references to access draft data:
+In CAP Node.js, use the [`Foo.drafts`](../../node.js/cds-reflect#-drafts) references to access draft data:
 
 ```js {3}
 const { Foo } = this.entities
@@ -406,7 +409,7 @@ SELECT.from (Foo, 201)          // reads active data only
 SELECT.from (Foo.drafts, 201)  // reads draft data, if exists
 ```
 
-Even better, use [`req.subject`](../../node.js/events#subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
+Even better, use [`req.subject`](../../node.js/events#-subject), which automatically resolves to the correct entity instance - active or draft - based on the current request context. For example, in custom action handlers triggered for both active and draft data:
 
 ```js
 this.on ('approveTravel', req => UPDATE (req.subject) .with ({ status: 'A' }))
@@ -484,12 +487,12 @@ annotate sap.capire.bookshop.Books with @fiori.draft.enabled;
 
 :::info Background
 SAP Fiori drafts require single keys of type `UUID`, which is not the case for [`.texts`](./localized-data#behind-the-scenes) entities, that are generated for localized data. The `@fiori.draft.enabled` annotation tells the compiler to add an additional technical primary key element named `ID_texts`.
+[Learn how to add initial data for such draft-enabled localized entities.](localized-data#adding-initial-data){.learn-more}
 :::
 
 ![An SAP Fiori UI showing how a book is edited in the bookshop sample and that the translations tab is used for non-standard languages.](draft-for-localized-data.png){style="margin:0"}
 
 [See it live in **capire/bookstore**.](https://github.com/capire/bookstore/blob/main/app/admin-books/fiori-service.cds#L78){.learn-more}
-
 
 
 ## Fiori Tree Views
@@ -566,6 +569,11 @@ extend AdminService.Genres with @(
 
 :::
 
+::: tip Build hierarchies with aggregations in CAP Java
+
+Annotate a `virtual` element with `@cds.java.descendants.aggregate` and specify the aggregation expression to build hierarchy views using calculation of aggregates.
+
+:::
 
 ### UI5 manifest Configuration
 
@@ -626,7 +634,7 @@ The Cache Control feature is currently supported only on the Java runtime.
 
 In addition to adding [restrictions on services, entities, and actions/functions](../security/authorization#restrictions), there are cases where you want to hide certain UI elements for specific users. You can do this using annotations such as `@UI.Hidden` or `@UI.CreateHidden` together with `$edmJson` pointing to a singleton.
 
-First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cds-persistence-skip) so that no database artifact is created:
+First, define the [singleton](../protocols/odata#singletons) in your service and annotate it with [`@cds.persistence.skip`](../databases/cdl-to-ddl#cdspersistenceskip) so that no database artifact is created:
 
 ```cds
 @odata.singleton @cds.persistence.skip

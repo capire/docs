@@ -140,7 +140,7 @@ throw new ServiceException(ErrorStatuses.BAD_REQUEST, "my.message.key", paramNum
 CAP Java provides out-of-the-box translation for error messages that originate from input validation annotations such as `@assert...` or `@mandatory` and security annotations `@requires` and `@restrict`.
 
 The error messages are optimized for UI scenarios and avoid any technical references to entity names or element names. Message targets are used where appropriate to allow the UI to show the error message next to the affected UI element.
-You can disable these translated error messages by setting [<Config java>cds.errors.defaultTranslations.enabled: false</Config>](../developing-applications/properties#cds-errors-defaultTranslations-enabled).
+You can disable these translated error messages by setting [<Config java>cds.errors.defaultTranslations.enabled: false</Config>](../developing-applications/properties#cds-errors-defaulttranslations-enabled).
 
 ### Provide custom error messages
 
@@ -167,7 +167,7 @@ In case of actions and functions SAP Fiori also requires the message target to b
 
 When creating a message target, the correct parameter needs to be selected to specify what the relative message target path refers to.
 By default a message target always refers to the CQN statement of the event. In case of CRUD events this is the targeted entity. In case of bound actions and functions this is the entity that the action or function was bound to.
-As CRUD event handlers are often called from within bound actions or functions (e.g. `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
+As CRUD event handlers are often called from within bound actions or functions (for example, `draftActivate`), CAP's OData adapter adds a parameter prefix to a message target referring to the `cqn` parameter only when required.
 
 ::: info
 When using the `target(String)` API, which specifies the full target as a `String`, no additional parameter prefixes are added by CAP's OData adapter. When using this API, [draft state messages](../../guides/uis/fiori#validating-drafts) can't be invalidated automatically on `PATCH`.

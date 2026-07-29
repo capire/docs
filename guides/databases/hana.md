@@ -51,7 +51,7 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 ::: tip Prefer `cds add`
 
-... as documented in the [deployment guide](../deploy/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
+... as documented in the [deployment guide](../deploy/to-cf#1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
 
 :::
 
@@ -477,7 +477,7 @@ If this is not desired, annotate these generated entities with `@cds.persistence
 
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
-Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
+Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sqlprepend--append). In this section, we're focusing on schema evolution specific details.
 
 Schema evolution requires that any changes are applied by corresponding ALTER statements. See [ALTER TABLE statement reference](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alter-table-statement-data-definition?version=2024_1_QRC) for more information. A new migration version is generated whenever an `@sql.append` or `@sql.prepend` annotation is added, changed, or removed. ALTER statements define the individual changes that create the final database schema. This schema has to match the schema defined by the TABLE statement in the _.hdbmigrationtable_ artifact.
 Please note that the compiler doesn't evaluate or process these SQL snippets. Any snippet is taken as is and inserted into the TABLE statement and the corresponding ALTER statement. The deployment fails in case of syntax errors.

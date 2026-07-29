@@ -180,7 +180,7 @@ annotate ShopService.ReplicationAction with @(requires: 'system-user');
 
 In this example, the `BrowseBooksService` service is open for authenticated but not for anonymous users. A user who has the `Vendor` _or_ `ProcurementManager` role is allowed to access the `ShopService.Books` entity. Unbound action `ShopService.ReplicationAction` can only be triggered by a technical user.
 ::: tip
-When restricting service access through `@requires`, the service's metadata endpoints (that is, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#add-mw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
+When restricting service access through `@requires`, the service's metadata endpoints (that is, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#addmw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
 :::
 
 

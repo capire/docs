@@ -164,6 +164,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 - [Shift left with CAP](https://qmacro.org/blog/posts/2026/02/09/shift-left-with-cap/)
 - [Five reasons to use CAP](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/)
+- [CAP service authentication at design time and in production](https://qmacro.org/blog/posts/2026/06/19/cap-service-authentication-at-design-time-and-in-production/)
 - [Flattening the hierarchy with mixins](https://qmacro.org/blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/)
 - [A reCAP intro to the cds REPL](https://qmacro.org/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)
 - [A deep dive into OData and CDS annotations](https://qmacro.org/blog/posts/2023/03/10/a-deep-dive-into-odata-and-cds-annotations/)
@@ -174,6 +175,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Workshop exercise content
 
 - [Service integration with SAP Cloud Application Programming Model](https://github.com/SAP-samples/cap-service-integration-codejam)
+- [A hands-on tour of CAP](https://github.com/SAP-samples/cap-tour-hands-on/)
 - [Stay cool, stay local: CAP local development workshop](https://github.com/SAP-samples/cap-local-development-workshop)
 - [Hands-on with CAP CDS](https://github.com/SAP-samples/cap-cds-hands-on)
 

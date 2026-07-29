@@ -94,10 +94,7 @@ The property `cds.security.authentication.mode` controls the strategy used for a
 | `model-strict` | Authentication is derived from the authorization annotations `@requires` and `@restrict`. If no such annotation is available, the endpoint is authenticated. An explicit `@requires: 'any'` makes the endpoint public (Default).
 | `always` | All endpoints require authentication.
 
-By default the authentication mode is set to `model-strict` to comply with secure-by-default.
-In that case you can use the annotation `@requires: 'any'` on service-level to make the service and its entities public again.
-You can only make an endpoint public if the full endpoint path is also considered public.
-For example you can only make an entity public, if the service that contains it is also considered public.
+By default the authentication mode is set to `model-relaxed`.
 
 ::: tip
 The authentication mode has no impact on the *authorization* behaviour.
@@ -160,7 +157,7 @@ public class ActuatorSecurityConfig {
 
 In case you want to write your own custom security configuration that acts as a last line of defense and handles any request you need to disable the CAP security configurations by setting <Config java>cds.security.authentication.authConfig.enabled: false</Config>, as Spring Security forbids registering multiple security configurations with an any request security matcher.
 
-If you even want to deactivate OAuth token validation for XSUAA or IAS, e.g. to establish an own authentication strategy, 
+If you even want to deactivate OAuth token validation for XSUAA or IAS, for example, to establish an own authentication strategy, 
 the following properties can be used:
 
 | Configuration Property                               | Description                                             | Default

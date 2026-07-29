@@ -514,17 +514,21 @@ Learn how to do hybrid testing using the XSUAA or IAS + AMS service(s) in the [C
 
 `cds bind` can be handy for testing with real cloud services in your CI/CD pipeline.
 
-Configure your required bindings for testing and save them to your project's _package.json_ file for your tests' profile:
+#### Local: `cds bind --exec`
+
+For local hybrid testing, the simplest approach is to wrap your test command with `cds bind --exec`, which resolves bindings and provides them via `VCAP_SERVICES`:
 
 ```sh
-cds bind -2 integration-test-hana -o package.json -4 integration-test
+cds bind -2 integration-test-hana --profile integration-test --exec -- npm run integration-test
 ```
 
-No credentials are saved!
+No credentials are written to disk.
 
-In your CI/CD pipeline you can resolve the bindings and inject them into the test commands:
+#### CI/CD Pipelines: Export Resolved Bindings
 
-```sh
+For CI/CD environments where you want explicit control, export the resolved credentials before running tests:
+
+```sh :line-numbers
 # Login
 cf auth $USER $PASSWORD
 # Optional if your bindings have org and space removed to be agnostic
@@ -540,10 +544,10 @@ export cds_requires="$(cds env get requires --resolve-bindings)"  # [!code highl
 npm run integration-test  # [!code highlight]
 ```
 
-Some comments to the previous snippet:
-- With `CDS_ENV` you specify the [configuration profile](../node.js/cds-env#profiles) for the test, where you previously put the service binding configuration.
-- [`cds env get requires`](../node.js/cds-env#services) prints the `requires` section of the configuration as a JSON string. Through `--resolve-bindings`, it includes the credentials of the service bindings from the cloud. To make the credentials available for all subsequent `cds` commands and the tests, the `requires` JSON string is put into the `cds_requires` script variable.
-- In `npm run integration-test` any test code can run, for example, [`cds.test`](../node.js/cds-test).
+The following notes explain the highlighted lines:
+- Line 7: With `CDS_ENV`, you specify the [configuration profile](../node.js/cds-env#profiles) for the test, where you previously put the service binding configuration. Note that setting the profile alone does not resolve any credentials yet.
+- Line 10: `cds env get requires --resolve-bindings` prints the `requires` section of the configuration and resolves the credentials of the service bindings from the cloud. The script puts it into the `cds_requires` environment variable that is translated back to the [`cds.requires` configuration](../node.js/cds-env#services) by all subsequent `cds` commands and the tests.
+- Line 13: In `npm run integration-test`, any test code can run, for example, `node --test` or `vitest` using [`cds.test`](../node.js/cds-test).
 
 
 <!-- TODO: "cds deploy" should take the existing bindings for hana -->

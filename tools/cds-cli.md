@@ -120,8 +120,8 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 | `mta`                         |       <X/>       |       <X/>       |
 | `cf-manifest`                 |       <X/>       |       <X/>       |
 | `helm`                        |       <X/>       |       <X/>       |
-| `helm-unified-runtime`        |       <X/>       |       <X/>       |
 | `containerize`                |       <X/>       |       <X/>       |
+| `kyma`                        |         <X/>       |       <X/>          |
 | `multitenancy`                |       <X/>       |       <X/>       |
 | `toggles`                     |       <X/>       |       <X/>       |
 | `extensibility`               |       <X/>       |       <X/>       |
@@ -258,7 +258,7 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - `author.ID` refers to a key from the _...Authors.json_ file that is created at the same time.  If the _Authors_ entity is excluded, though, no such foreign key would be created, which cuts the association off.
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
-- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
+- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assertformat) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
 - Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/constraints) are respected as well, in a best effort way.
 :::
 
@@ -397,7 +397,7 @@ Compiles the specified models to [CSN](../cds/csn) or other formats.
 
 [See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
-[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
+[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to-).{.learn-more}
 
 
 In addition, the following formats are available:
@@ -466,7 +466,7 @@ To customize the diagram layout, use these settings in the _Cds > Preview_ categ
 - [Diagram: Queries](vscode://settings/cds.preview.diagram.queries)
 
 
-## cds export <Beta />
+## cds export
 
 With `cds export` you create an API client package to be used
 for data exchange via CAP-level Service integration ("Calesi").
@@ -482,8 +482,8 @@ could look like this:
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
 
-@data.product @hcql @rest @odata
-service sap.capire.flights.data {
+@hcql @rest @odata
+service FlightsService {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
   @readonly entity Airports as projection on my.Airports;
@@ -503,9 +503,11 @@ The command generates the API client package into a new folder _apis/data-servic
 ![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The `service.csn` contains only the interface defined in the service, removing the query part of the entities and all the underlying model.
-In addition, there are i18n bundles with the localized metadata relevant
-for the interface, and a _data_ folder with test data
-that exactly matches the structure of the entities in the API.
+In addition (and as shown in the screenshot):
+
+- with the `--texts` option, i18n bundles are included with the localized metadata relevant for the interface
+- with the `--data` option, initial data that exactly matches the structure of the entities in the API is included
+- with the `--plugin` option, a `cds-plugin.js` entrypoint file is included for plug & play
 
 `cds export` also adds a _package.json_. The package name combines the application name (from the main _package.json_) with the file name of the data service. In our example, this results in `@capire/xflights-data-service`.
 You can change this name as appropriate.
@@ -770,3 +772,32 @@ If you do this in VS Code's integrated terminal with the 'Auto Attach' feature e
 For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
+
+## cds upgrade <Beta/>
+
+Use `cds upgrade` to assist you in upgrading your project to new/latest CDS versions.
+Run it like that in your project's root directory with a globally installed `@sap/cds-dk` version 10:
+
+```sh
+cds upgrade
+```
+
+::: details Run without a global installation ...
+```sh
+npx -p @sap/cds-dk@10 cds upgrade
+```
+:::
+
+That will:
+
+- Run preflight checks: Node.js version, clean working tree, installed dependencies.
+- Upgrade your project dependencies to the latest cds10 versions.
+- Scan your project for whether you're affected by breaking changes.
+
+See also:
+
+- [Migration Guide for cds10](/releases/migration/cds10) — complete list of breaking changes
+- [Java Migration Guide](/java/migration) — migration steps for CAP Java projects
+
+> [!warning] Limitations
+> Scans for breaking changes is pattern-based, likely includes false positives; require detailed investigation and manual review.  Some breaking changes are not detectable automatically, for example, semantic-only issues or changes in behavior that do not affect the code structure.

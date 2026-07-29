@@ -17,7 +17,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 [user]: #cds-user
 [`cds.context.user`]: #cds-user
 
-Represents the currently logged-in user as filled into [`cds.context.user`](events#user) by authentication middlewares.
+Represents the currently logged-in user as filled into [`cds.context.user`](events#-user) by authentication middlewares.
 Simply create instances of `cds.User` or of subclasses thereof in custom middlewares.
 For example:
 
@@ -429,7 +429,7 @@ export default function custom_auth(req: Req, res: Response, next: NextFunction)
 }
 ```
 
-[Learn more about customizing the user ID in this example.](cds-serve#customization-of-cds-context-user){.learn-more}
+[Learn more about customizing the user ID in this example.](cds-serve#customization-of-cdscontextuser){.learn-more}
 
 
 ## Authentication in Production

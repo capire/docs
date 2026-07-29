@@ -97,7 +97,7 @@ This uses these defaults for all options:
 
 Alternatively you can construct services individually, also from other models, and also mount them yourself, as document in the subsequent sections on individual fluent API options.
 
-If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](#cds-server).
+If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](cds-server#custom-server-js).
 
 
 
@@ -271,7 +271,7 @@ cds.middlewares.add (mw) // to the end
 
 ### Custom Middlewares
 
-The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-serve#custom-server-js).
+The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-server#custom-server-js).
 
 The framework exports the default middlewares itself and the list of middlewares which run before the protocol adapter starts processing the request.
 

@@ -258,7 +258,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions--functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -353,7 +353,7 @@ function constructor (
 )
 ```
 
->  *Arguments fill in equally named properties [`name`](#name), [`model`](#model), [`options`](#options).*
+>  *Arguments fill in equally named properties [`name`](#-name), [`model`](#-model), [`options`](#-options).*
 
 **Don't override the constructor** in subclasses, rather override [`srv.init()`](#srv-init).
 
@@ -420,7 +420,7 @@ for (let d of this.entities) //... d is a CSN definition
 
 #### Similarity _and_ difference to `cds.entities`
 
-These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#entities). However, note this difference:
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#-entities). However, note this difference:
 
 While both of these work with [`cds.entities`](cds-facade#cds-entities):
 ```js
@@ -520,9 +520,11 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
+|Method | Description | Example
+| --- | --- | --- |
+| `.on`| handlers _fulfill_ requests | reading/writing data from/to databases |
+| `.before` | handlers run before the `.on` handlers | validating inbound data |
+| `.after` | handlers run after the `.on` handlers | enrich outbound data |
 
 **Argument `event`** can be one of:
 
@@ -535,9 +537,9 @@ class BooksService extends cds.ApplicationService {
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `CSN definition` of an entity served by this service → from [`this.entities`](#-entities)
 - A `string` corresponding to the _name_ of an entity served by this service
-- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
+- A `path`  navigating from a served entity to associated ones, e.g., `Books/author`
 
 **Multiple `events` or `entities`** – for both parameters, you can also specify:
 
@@ -616,7 +618,7 @@ function srv.after (event, entity?, handler: (
 
 Use this method to register handlers to run *after* the `.on` handlers, frequently used to enrich outbound data. The handlers receive two arguments:
 
-- `results` — the outcomes of the `.on` handler which ran before
+- `results` — the outcomes of the `.on` handler which ran before; see [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the shape returned by the built-in handler
 - `req` — an instance of [`cds.Request`](./events.md#cds-request)
 
 ::: warning
@@ -691,9 +693,9 @@ Books.data = {
 
 ::: details Noteworthy in these examples...
 
-- The `READ` handler is using the [`req.target`](./events.md#target) property which points to the CSN definition of the entity addressed by the incoming request → matching one of `Books` or `Authors` we obtained from [`this.entities`](#entities) above.
+- The `READ` handler is using the [`req.target`](./events.md#-target) property which points to the CSN definition of the entity addressed by the incoming request → matching one of `Books` or `Authors` we obtained from [`this.entities`](#-entities) above.
 
-- The `UPDATE` handler is using the [`req.params`](./events.md#params) property which provides access to passed in entity keys.
+- The `UPDATE` handler is using the [`req.params`](./events.md#-params) property which provides access to passed in entity keys.
 
 :::
 
@@ -820,7 +822,7 @@ Use this method to send synchronous requests to a service for execution.
 -  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
 
-To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions--functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 
@@ -1035,7 +1037,7 @@ async function srv.handle (
 return : result of executed .on handlers
 ```
 
-This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
+This is the internal method called by [`this.dispatch()`](#srv-dispatch-event) to actually process requests or events by executing registered event handlers. See [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the return value shape of the built-in handler. Argument `event` is expected to be an instance of [`cds.Event`](./events.md#cds-event) or [`cds.Request`](./events.md#cds-request).
 
 The implementation basically works like that:
 
@@ -1156,7 +1158,7 @@ srv.update('Books',...)...       --> UPDATE.entity ('Books',...)...
 srv.delete('Books',...)...       --> DELETE.from ('Books',...)...
 ```
 
-You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. Here are some examples:
+You can further construct the queries using the `cds.ql` fluent APIs, and then `await` them for execution thru `this.run()`. See [Results of Generic CRUD Handlers](app-services#results-of-generic-crud-handlers) for the return value shape. Here are some examples:
 
 ```js
 await srv.read(Books,201)

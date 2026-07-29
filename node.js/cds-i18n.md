@@ -60,7 +60,7 @@ ORDER_EXCEEDS_STOCK = The order of {quantity} books exceeds available stock {sto
 
 ### Direct Usage
 
-In addition, you can use both standard bundles directly in your code, with [`<bundle>.at(key)`](#at-key) the central method to obtain localized texts:
+In addition, you can use both standard bundles directly in your code, with [`<bundle>.at(key)`](#at-key-) the central method to obtain localized texts:
 
 ```js
 [dev] cds repl
@@ -137,7 +137,7 @@ function cds.i18n.bundle4 (file : string, options?)
 function cds.i18n.bundle4 (model : CSN, options?)
 ```
 
-Factory method to create instances of  [`I18nBundle`](#i18nbundle). The first argument is either a string used as the bundle's [`file`/`basename`](#–-file-basename), or a CDS model.
+Factory method to create instances of  [`I18nBundle`](#i18nbundle). The first argument is either a string used as the bundle's [`file`/`basename`](#-file--basename), or a CDS model.
 
 ```js
 const b1 = cds.i18n.bundle4('foo')
@@ -278,7 +278,7 @@ You can alternatively pass in a CSN definition instead of an i18n key to look up
 
 ### `key4 (csn)` {.method}
 
-This method is used by [`bundle.at()`](#at-key) to determine an i18n key for a CSN definition. In essence, the implementation works like that:
+This method is used by [`bundle.at()`](#at-key-) to determine an i18n key for a CSN definition. In essence, the implementation works like that:
 
 ```js
 const a = csn['@title']
@@ -299,7 +299,7 @@ return a.match(/{i18n>(.+)}/)[1]
 function texts4 (locale: string) => Texts
 ```
 
-This method is used by [`bundle.at()`](#at-key) to obtain the set of translated texts for a specific locale.
+This method is used by [`bundle.at()`](#at-key-) to obtain the set of translated texts for a specific locale.
 For example, try this in `cds repl`: {.indent}
 
 ```js
@@ -417,8 +417,8 @@ An array of root directories up to which to recurse up the filesystem hierarchy 
 
 ### – `leafs` {.property}
 
-The leafs of the filesystem hierarchy to start fetch i18n folders recursively. Determined by `model?.$sources.map(path.dirname)`  if a [`model`](#–-model) (or [`cds.model`](cds-facade#cds-model)) is given.  <br/>
-*Default*: [`roots`](#–-roots). {.indent}
+The leafs of the filesystem hierarchy to start fetch i18n folders recursively. Determined by `model?.$sources.map(path.dirname)`  if a [`model`](#-model) (or [`cds.model`](cds-facade#cds-model)) is given.  <br/>
+*Default*: [`roots`](#-roots). {.indent}
 
 ### – `folders` {.property}
 

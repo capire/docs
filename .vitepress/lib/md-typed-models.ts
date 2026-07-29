@@ -1,5 +1,6 @@
 import { MarkdownRenderer } from 'vitepress'
 import { execSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { dirname, join, relative, resolve } from 'node:path'
 import { existsSync } from 'node:fs'
 
@@ -22,6 +23,7 @@ export function install(md: MarkdownRenderer) {
     const typedModels = env.frontmatter.typedModels as Record<string,string>|undefined
     if (typedModels) {
       const mdDir = dirname(env.realPath ?? env.path) // realPath is only set if Vitepress path rewrites are in place
+      const cdsPath = cdsTypesPath()
       for (const modelKey in typedModels) {
         const modelPath = typedModels[modelKey]
 
@@ -32,12 +34,19 @@ export function install(md: MarkdownRenderer) {
 
         const resPath = resolvedImportPath(srcDir, modelOut)
         // console.log(`📚 ${modelPath} -> ${resPath}`)
-        tokens[idx].content = tokens[idx].content.replaceAll(`%typedModels:${modelKey}:resolved%`, resPath)
+        tokens[idx].content = tokens[idx].content
+          .replaceAll(`%typedModels:${modelKey}:resolved%`, resPath)
+          .replaceAll(`%sap_cds:resolved%`, cdsPath)
       }
     }
 
     return fence!(tokens, idx, options, env, ...args)
   }
+}
+
+export function cdsTypesPath() {
+  const path = fileURLToPath(import.meta.resolve!('@cap-js/cds-types/package.json'))
+  return resolve(path, '..').replace(/\\/g, '/')
 }
 
 function resolvedImportPath(srcDir: string, modelOut: string) {

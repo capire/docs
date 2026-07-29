@@ -248,7 +248,7 @@ const doc = cds.compile.to.asyncapi(csn_file)
 ## cds. load (files) {.method #cds-load }
 
 Loads and parses a model from one or more files into a single effective model.
-It's essentially a [shortcut to `cds.compile ([...])`](#cds-compile). In addition emits event `cds 'loaded'`.
+It's essentially a [shortcut to `cds.compile ([...])`](#cds-compile-). In addition emits event `cds 'loaded'`.
 
 Declaration:
 
@@ -287,7 +287,7 @@ The three main methods are offered as classic functions, as well as [tagged temp
 ### cds. parse. cdl() {.method #parse-cdl }
 
 Parses a source string in _[CDL](../cds/cdl)_ syntax and returns it as a parsed model according to the [_CSN spec_](../cds/csn). Supports tagged template strings as well as plain string arguments.
-It's essentially a [shortcut to `cds.compile (..., {flavor:'parsed'})`](#cds-compile).
+It's essentially a [shortcut to `cds.compile (..., {flavor:'parsed'})`](#cds-compile-).
 
 Examples:
 ```js
@@ -462,7 +462,7 @@ This is the right place to, for example, add custom elements required at runtime
 
 ### compile.to.dbx {.event}
 
-Emitted every time before database-specific artifacts, i.e. SQL DDL scripts, are generated from the model.
+Emitted every time before database-specific artifacts, that is, SQL DDL scripts, are generated from the model.
 This is the right place to, for example, add custom elements required in your persistence.
 
 

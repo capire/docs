@@ -762,7 +762,7 @@ If not done yet, prepare your project Cloud deployment as [explained before](./a
 
 Policies can be automatically deployed to the AMS server during deployment of the application by means of AMS deployer provided by module `@sap/ams`.
 
-Enhancing the project by `cds add ams` automatically adds task e.g. in the MTA for AMS policy deployment.
+Enhancing the project by `cds add ams` automatically adds task for example in the MTA for AMS policy deployment.
 
 <div class="impl java">
 
@@ -1191,7 +1191,7 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 | User Property | UserInfo Getter                         | XSUAA JWT Property          | IAS JWT Property          | `@restrict`-annotation |
 |---------------|-----------------------------------------|-----------------------------|---------------------------|------------------------|
 | _Logon name_  | `getName()`                             | `user_name`                 | `sub`                     | `$user`                |
-| _Tenant_      | `getTenant()`                           | `zid`                       | `app_tid`                 | `$user.tenant`         |
+| _Tenant_      | `getTenant()`                           | `zid`                       | `app_tid`                 | `$tenant`         |
 | _Attributes_  | `getAttributeValues(String attr)`       | `xs.user.attributes.<attr>` | _All non-meta attributes_ | `$user.<attr>`         |
 | _Roles_       | `getRoles()` and `hasRole(String role)` | `scopes`                    | _n/a - injected via AMS_  | _String in `to`-clause_  |
 
@@ -1206,7 +1206,7 @@ In addition, there are getters to retrieve information about [pseudo-roles](#pse
 | `isAuthenticated()` | _True if the current user has been authenticated._                                                                   | `authenticated-user` |
 | `isSystemUser()`    | _Indicates whether the current user has pseudo-role `system-user`._                                                  | `system-user`        |
 | `isInternalUser()`  | _Indicates whether the current user has pseudo-role `internal-user`._                                                | `internal-user`      |
-| `isPrivileged()`    | _Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), i.e. is unrestricted._ | -                    |
+| `isPrivileged()`    | _Returns `true` if the current user runs in [privileged mode](#switching-to-privileged-user), that is is unrestricted._ | -                    |
 
 </div>
 
@@ -1242,7 +1242,7 @@ Depending on the configured [authentication](./authentication) strategy, CAP der
 | User Property | UserInfo Getter                     | XSUAA JWT Property          | IAS JWT Property        | `@restrict`-annotation |
 |---------------|-------------------------------------|-----------------------------|-------------------------|------------------------|
 | _Logon name_  | `user.id`                           | `user_name`                 | `sub`                   | `$user`                |
-| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$user.tenant`         |
+| _Tenant_      | `req.tenant` / `cds.context.tenant` | `zid`                       | `app_tid`               | `$tenant`         |
 | _Attributes_  | `attr(attr)`                        | `xs.user.attributes.<attr>` | All non-meta attributes | `$user.<attr>`         |
 | _Roles_       | `is(role)`                          | `scopes`                    | n/a - injected via AMS  | String in `to`-clause  |
 

@@ -183,7 +183,7 @@ Known values for `cds.cli.command` are `add`, `build`, `compile`, `deploy`, `imp
 
 ### cds. entities {.property}
 
-Convenience shortcut to [`cds.model.entities`](cds-reflect#entities).
+Convenience shortcut to [`cds.model.entities`](cds-reflect#-entities).
 Returns an iterable dictionary of entity definitions in the model, which can be used like this:
 
 - Accessing named entities directly:

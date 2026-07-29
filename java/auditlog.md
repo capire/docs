@@ -30,7 +30,7 @@ The following events can be emitted with the [AuditLogService](https://javadoc.i
 - [Configuration changes](#config-change)
 - [Security events](#security-event)
 
-AuditLog events typically are bound to business transactions. In order to handle the events transactionally and also to decouple the request from outbound calls to a consumer, for example a central audit log service, the AuditLog service leverages the [outbox](./outbox) service internally which allows [deferred](#deferred) sending of events.
+AuditLog events are typically bound to business transactions. To handle them transactionally and decouple the request from outbound calls to a consumer (for example, a central audit log service), the AuditLog service uses the [outbox](./event-queues) service internally, which enables [deferred](#deferred) sending of events.
 
 ### Use AuditLogService
 
@@ -102,15 +102,13 @@ auditLogService.logSecurityEvent(action, data);
 
 ### Deferred AuditLog Events { #deferred}
 
-Instead of processing the audit log events synchronously in the [audit log handler](#auditlog-handlers), the `AuditLogService` can store the event in the [outbox](./outbox). This is done in the *same* transaction of the business request. Hence, a cancelled business transaction will not send any audit log events that are bound to it. To gain fine-grained control, for example to isolate a specific event from the current transaction, you may refine the transaction scope. See [ChangeSetContext API](./event-handlers/changeset-contexts#defining-changeset-contexts) for more information.
+Instead of processing audit log events synchronously in the [audit log handler](#auditlog-handlers), the `AuditLogService` stores the event in the [outbox](./event-queues) within the *same* transaction as the business request. If the business transaction is cancelled, no bound audit log events are sent. To gain fine-grained control, for example to isolate a specific event from the current transaction, you may refine the transaction scope. See [ChangeSetContext API](./event-handlers/changeset-contexts#defining-changeset-contexts) for more information.
 
 As the stored events are processed asynchronously, the business request is also decoupled from the audit log handler which typically sends the events synchronously to a central audit log service. This improves resilience and performance.
 
-By default, the outbox comes in an [in-memory](./outbox#in-memory) flavour which has the drawback that it can't guarantee that the all events are processed after the transaction has been successfully closed.
+The audit-log service uses the [`DefaultOutboxUnordered`](./event-queues#default-outbox-services) outbox by default.
 
-To close this gap, a sophisticated [persistent outbox](./outbox#persistent) service can be configured.
-
-By default, not all events are send asynchronously via (persistent) outbox.
+By default, not all events are sent asynchronously via (persistent) outbox.
 * [Security events](#security-event) are always send synchronously.
 * All other events are stored to persistent outbox, if available. The in-memory outbox acts as a fallback otherwise.
 
@@ -155,7 +153,7 @@ Also a service binding to the AuditLog v2 service has to be added to the CAP Jav
 
 <div id="handler-service-plans"/>
 
-If it's required to disable the AuditLog v2 handler for some reason, this can be achieved by setting the CDS property [`cds.auditLog.v2.enabled`](../java/developing-applications/properties#cds-auditLog-v2-enabled) to `false` in _application.yaml_:
+If it's required to disable the AuditLog v2 handler for some reason, this can be achieved by setting the CDS property [`cds.auditLog.v2.enabled`](../java/developing-applications/properties#cds-auditlog-v2-enabled) to `false` in _application.yaml_:
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]

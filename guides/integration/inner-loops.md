@@ -12,11 +12,11 @@ CAP promotes fast inner-loop development by allowing us to easily swap productio
 
 ### What is Inner Loop?
 
-![inner-loop-turntable](assets/inner-loop-turntable.png){.ignore-dark style="width:50%; border-radius: 22px; float: right; margin-top: -3em"} 
+![inner-loop-turntable](assets/inner-loop-turntable.png){.ignore-dark style="width:50%; border-radius: 22px; float: right; margin-top: -3em"}
 
-Many of us likely remember that turntable thing in the playgrounds: stay close to the center – the inner loop –, and it rotates at ultimate speed, lean out and it slows down. 
+Many of us likely remember that turntable thing in the playgrounds: stay close to the center – the inner loop –, and it rotates at ultimate speed, lean out and it slows down.
 
-We see similar effects when running through full *code - build - deploy - start* cycles to see the effects of incremental changes in overly cloud-based development models. And it's not only the turnaround times for individual developers, it's also the runtime for tests, the operating costs induced by both, the impact on support (local setups allow to reproduce things, complex setups don't), up to severe resilience issues (whenever a cloud service isn't available development stops for whole teams). 
+We see similar effects when running through full *code - build - deploy - start* cycles to see the effects of incremental changes in overly cloud-based development models. And it's not only the turnaround times for individual developers, it's also the runtime for tests, the operating costs induced by both, the impact on support (local setups allow to reproduce things, complex setups don't), up to severe resilience issues (whenever a cloud service isn't available development stops for whole teams).
 
 Here's a very rough comparison from a real world example:
 
@@ -37,7 +37,7 @@ We'll use the same [XTravels sample](calesi.md#the-xtravels-sample) and setup as
 ```sh :line-numbers
 mkdir -p cap/samples
 cd cap/samples
-git clone https://github.com/capire/xtravels 
+git clone https://github.com/capire/xtravels
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
 ```
@@ -53,7 +53,7 @@ npm install
 
 > [!note]
 >
-> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces`. For the time being this simply optimizes the `npm install`. We'll revisit that in chapter [*Using `npm` Workspaces*](#using-npm-workspaces) below. 
+> Line 6 above turns the `cap/samples` folder into a root for `npm workspaces`. For the time being this simply optimizes the `npm install`. We'll revisit that in chapter [*Using `npm` Workspaces*](#using-npm-workspaces) below.
 
 #### Activate Generic Data Federation
 
@@ -69,7 +69,7 @@ process.env.NODE_ENV || require ('./data-federation')
 
 ## Mocked Out of the Box
 
-Within the context of application service integration and microservice architecture, we'd need to mock remote services in a consuming app to reach an inner loop. CAP handles this automatically for us, based on: 
+Within the context of application service integration and microservice architecture, we'd need to mock remote services in a consuming app to reach an inner loop. CAP handles this automatically for us, based on:
 
 - A CDS service definition is all we need to serve a fully functional OData service
 - APIs imported via `cds export` and `cds import` are CDS service definition
@@ -97,7 +97,7 @@ With mashed up models in place, we can run applications in _'airplane mode'_ wit
    ```
 
    ```zsh
-   [cds] - mocking sap.capire.flights.data {
+   [cds] - mocking FlightsService {
      at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
      decl: 'xflights/apis/data-service/services.csn:3'
    }
@@ -133,7 +133,7 @@ We can also use `cds mock` to mock remote services in separate processes, which 
     }
     ```
     ```zsh
-    [cds] - connect to sap.capire.flights.data > hcql {
+    [cds] - connect to FlightsService > hcql {
      url: 'http://localhost:54475/hcql/data'
     }
     ```
@@ -159,15 +159,15 @@ We can also use `cds mock` to mock remote services in separate processes, which 
 
 
 
-### Providing Mock Data 
+### Providing Mock Data
 
 There are different options to provide initial data, test data, and mock data:
 
-- In case of `@capire/xflights-data`, we generated the package content using `cds export --data` option, which added `.csv` files next to the `.cds` files. 
-- In case of `@capire/s4`, we explicitly added `.csv` files next to the `.cds` files. 
+- In case of `@capire/xflights-data`, we generated the package content using `cds export --data` option, which added `.csv` files next to the `.cds` files.
+- In case of `@capire/s4`, we explicitly added `.csv` files next to the `.cds` files.
 - In addition, we could add `.csv` files for imported entities in the consuming apps `db/data` or `test/data` folders.
 
-In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.  
+In all cases, the `.csv` files are placed next to the `.cds` files, and hence they are automatically detected and loaded into the in-memory database.
 
 For Java, make sure to add the `--with-mocks` option to the `cds deploy` command used to generate the `schema.sql` in `srv/pom.xml`. This ensures that tables for the mocked remote entities are created in the database.
 
@@ -177,9 +177,9 @@ For Java, make sure to add the `--with-mocks` option to the `cds deploy` command
 
 
 
-## Run with Real Services 
+## Run with Real Services
 
-Instead of mocking required services by the imported APIs [using `cds mock` as shown above](#cds-mock), we can also run the real *xflights* and *s4* services from their respective home folders which we [cloned already in the beginning](#the-xtravels-sample). 
+Instead of mocking required services by the imported APIs [using `cds mock` as shown above](#cds-mock), we can also run the real *xflights* and *s4* services from their respective home folders which we [cloned already in the beginning](#the-xtravels-sample).
 
 Do so by running the following commands from within the `cap/samples` root folder in separate terminals, and in that order:
 
@@ -200,7 +200,7 @@ In the log output of the xtravels server we should see that it _connects_ to the
 }
 ```
 ```zsh
-[cds] - connect to sap.capire.flights.data > hcql {
+[cds] - connect to FlightsService > hcql {
  url: 'http://localhost:54475/hcql/data'
 }
 ```
@@ -231,7 +231,7 @@ Within the REPL, connect to local and remote services:
 
 ```js
 const TravelService = await cds.connect.to ('TravelService')
-const xflights = await cds.connect.to ('sap.capire.flights.data')
+const xflights = await cds.connect.to ('FlightsService')
 const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
 ```
 
@@ -323,7 +323,7 @@ await s4.delete (Customers,'123')
 await s4.delete (Customers) .where`ID = ${'456'}`
 ```
 
-Go on like that and try out similar requests with the other services, that is, `TravelService` and `xflights`. For the latter you might run into `401` errors, in that case run the following once in the REPL to run in privileged mode: 
+Go on like that and try out similar requests with the other services, that is, `TravelService` and `xflights`. For the latter you might run into `401` errors, in that case run the following once in the REPL to run in privileged mode:
 
 ```js
 cds.User.default = cds.User.privileged
@@ -336,7 +336,7 @@ cds.User.default = cds.User.privileged
 
 ## Using `npm` Workspaces
 
-So far we assumed we mainly worked within the *xtravels* project, and we consumed the API from xflights via `npm publish` / `npm install`. There might be situations where we would want to shortcut this process. For example, we might want to consume a very latest version of the xflights API, which is not yet published to the *npm* registry. Or we might even want to work on both projects simultaneously, and test our latest changes to *xflights* in *xtravels* in close loops. 
+So far we assumed we mainly worked within the *xtravels* project, and we consumed the API from xflights via `npm publish` / `npm install`. There might be situations where we would want to shortcut this process. For example, we might want to consume a very latest version of the xflights API, which is not yet published to the *npm* registry. Or we might even want to work on both projects simultaneously, and test our latest changes to *xflights* in *xtravels* in close loops.
 
 So, in essence, instead of exercising a workflow like that again and again:
 
@@ -347,7 +347,7 @@ So, in essence, instead of exercising a workflow like that again and again:
 ```sh :line-numbers
 mkdir -p cap/samples
 cd cap/samples
-git clone https://github.com/capire/xtravels 
+git clone https://github.com/capire/xtravels
 git clone https://github.com/capire/xflights
 git clone https://github.com/capire/s4
 ```
@@ -375,7 +375,7 @@ samples@ ~/cap/samples
   └── @capire/xflights-data@0.1.11 deduped -> ./xflights/apis/data-service
 ```
 
-Start the xtravels application → and note the sources loaded from *./xflights/apis/data-service*, and the information further below about the `sap.capire.flights.data` service mocked automatically:
+Start the xtravels application → and note the sources loaded from *./xflights/apis/data-service*, and the information further below about the `FlightsService` service mocked automatically:
 
 ```shell
 cds watch xtravels
@@ -393,7 +393,7 @@ cds watch xtravels
 ```
 
 ```zsh
-[cds] - mocking sap.capire.flights.data {
+[cds] - mocking FlightsService {
   at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
   decl: 'xflights/apis/data-service/services.csn:3',
 }
@@ -480,7 +480,7 @@ samples@ ~/cap/samples
   └── @capire/xflights-data@ deduped -> ./xflights-api-shortcut≤
 ```
 
-Start the *xtravels* application → and note the sources loaded from *./xflights-api-shortcut*, and the information further below about the `sap.capire.flights.data` service now being _served_, not _mocked_ anymore:
+Start the *xtravels* application → and note the sources loaded from *./xflights-api-shortcut*, and the information further below about the `FlightsService` service now being _served_, not _mocked_ anymore:
 
 ```shell
 cds watch xtravels
@@ -494,12 +494,12 @@ cds watch xtravels
   xtravels/db/xflights.cds
   xflights-api-shortcut/index.cds
   xflights/srv/data-service.cds
-  xflights/db/schema.cds  
+  xflights/db/schema.cds
   ...
 ```
 
 ```zsh
-[cds] - serving sap.capire.flights.data {
+[cds] - serving FlightsService {
   at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
   decl: 'xflights/apis/data-service/services.csn:3',
 }

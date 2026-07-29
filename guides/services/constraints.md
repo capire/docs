@@ -20,7 +20,7 @@ Use annotations like `@assert` and `@mandatory` to declaratively add constraints
 
 ### Constraints Annotations
 
-Following is an excerpt from the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample:
+Following is an excerpt from the [`@capire/xtravels`](https://github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample:
 
 ::: code-group
 
@@ -73,7 +73,7 @@ annotate TravelService.Travels with {
 
 The constraints are enforced automatically by the CAP runtimes on any input, and if failures occur, the request is ultimately rejected and the transaction rolled back.
 
-Some of the checks, e.g. the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
+Some of the checks, for example, the static `@mandatory` checks, are validated directly on the input data, while the ones specified with `@assert:(\<constraint\>)` are collected into a query and **pushed down to the database** for execution. This in turn means, that first the respective `INSERT`s and `UPDATE`s are sent to the database, followed by the validation query.
 
 
 
@@ -211,7 +211,7 @@ annotate TravelService.Travels with {
 }
 ```
 
-We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from anoter annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https:/github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association:
+We can also use **path expressions** to compare with data from **associated** entities. For example, this one is from another annotation on `TravelService.Bookings` in the [`@capire/xtravels`](https://github.com/capire/xtravels/tree/main/srv/travel-constraints.cds) sample, that checks if all currencies specified in the list of bookings match the currency chosen in the travel header, refered to by the `Travel` association:
 
 ```cds
 annotate TravelService.Bookings with {
@@ -454,7 +454,7 @@ entity Person : cuid {
 
 ### Localized Messages
 
-Whenever you specify an error message with the annotations above, i.e., in the `then` part of an `@assert: (<constraints>)` or in `@mandatory.message`,  `@assert.format.message`, or  `@assert.range.message`, you can either specify a plain text, or a [I18n text bundle key](../uis/i18n#externalizing-texts-bundles).
+Whenever you specify an error message with the annotations above, that is, in the `then` part of an `@assert: (<constraints>)` or in `@mandatory.message`,  `@assert.format.message`, or  `@assert.range.message`, you can either specify a plain text, or a [I18n text bundle key](../uis/i18n#externalizing-texts-bundles).
 
 Actually, we saw this already in the [sample in the introduction](#introduction):
 
@@ -499,7 +499,7 @@ If you use a message key, the message is automatically looked up in the message 
 
 ## Field Control
 
-Declarative constraints can also be used to do field control in Fiori UIs, i.e. to add visual indicators to mandatory or readonly fields, or to hide fields. In particular, CAP automatically adds respective OData annotations to generated EDMX $metadata documents for the CDS listed below.
+Declarative constraints can also be used to do field control in Fiori UIs, that is, to add visual indicators to mandatory or readonly fields, or to hide fields. In particular, CAP automatically adds respective OData annotations to generated EDMX $metadata documents for the CDS listed below.
 
 
 ### `@mandatory`

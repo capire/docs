@@ -42,6 +42,7 @@
 - [guides/using-services](guides/integration/calesi)
 - [guides/databases-hana](guides/databases/hana)
 - [guides/databases-postgres](guides/databases/postgres)
+- [guides/databases-sqlite](guides/databases/sqlite)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
@@ -88,6 +89,7 @@
 - [java/indicating-errors](java/event-handlers/indicating-errors)
 - [java/messaging-foundation](java/messaging)
 - [java/observability](java/operating-applications/observability)
+- [java/outbox](java/event-queues)
 - [java/overview](java/getting-started)
 - [java/persistence-services](java/cqn-services/persistence-services)
 - [java/provisioning-api](java/event-handlers)
@@ -104,7 +106,8 @@
 
 - [node.js/cds-dk](tools/apis/cds-import)
 - [node.js/middlewares](node.js/cds-serve)
-- [node.js/outbox](node.js/queue)
+- [node.js/outbox](node.js/event-queues)
+- [node.js/queue](node.js/event-queues)
 - [node.js/protocols](node.js/cds-serve)
 - [node.js/requests](node.js/events)
 - [node.js/services](node.js/core-services)

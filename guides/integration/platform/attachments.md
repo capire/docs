@@ -41,7 +41,7 @@
     }
     ```
  
- 5. **Implement Attachment Logic**: In your service implementation file (e.g., `srv/your-service.js`), implement the logic to handle attachment operations such as upload, download, and delete.
+ 5. **Implement Attachment Logic**: In your service implementation file (for example, `srv/your-service.js`), implement the logic to handle attachment operations such as upload, download, and delete.
  
  6. **Test Your Application**: Run your CAP application and test the attachment functionality to ensure everything is working as expected.
  

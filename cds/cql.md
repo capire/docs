@@ -354,6 +354,11 @@ If an infix filter effectively reduces the cardinality of a *to-many* associatio
 SELECT name, books[1: favorite=true].title from Authors
 ```
 
+::: warning `:1` has no effect on result set
+The `:1` syntax in the filter has no effect on the result. It is only an information by the developer
+that the specified condition reduces the result to a single entry.
+:::
+
 ### Exists Predicate
 
 Use a filtered path expression to test if any element of the associated collection matches the given filter:
