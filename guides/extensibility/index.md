@@ -1,5 +1,4 @@
 ---
-index: 77
 synopsis: >
   Learn here about intrinsic capabilities to extend your applications in verticalization
   and customization scenarios.
