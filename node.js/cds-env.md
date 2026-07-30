@@ -1,5 +1,4 @@
 ---
-label: Configuration
 synopsis: >
   Learn here about using cds.env to specify and access configuration options for the Node.js runtimes as well as the @sap/cds-dk CLI commands.
 ---

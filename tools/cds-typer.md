@@ -1,5 +1,4 @@
 ---
-label: cds-typer
 synopsis: >
   This page explains the package cds-typer in depth.
 typedModels:

@@ -1,5 +1,4 @@
 ---
-label: Authentication
 synopsis: >
   This guide explains how to authenticate CAP services.
 impl-variants: true

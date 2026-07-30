@@ -1,5 +1,4 @@
 ---
-label: cds-add
 synopsis: >
   Learn how to create a <code>cds add</code> plugin.
 ---

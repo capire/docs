@@ -1,5 +1,6 @@
 ---
-label: Vector Embeddings
+synopsis: >
+  How to store and generate vector embeddings in CDS models to enable semantic search and other generative AI features.
 ---
 # Vector Embeddings
 
@@ -34,10 +35,10 @@ To generate vector embeddings on write in SAP HANA, you can use the [vector_embe
 ```cds
 extend Incidents with {
   @cds.api.ignore
-  embedding : Vector = vector_embedding( 
-    'Title: ' || title || ', Summary: ' || summary, 
+  embedding : Vector = vector_embedding(
+    'Title: ' || title || ', Summary: ' || summary,
     'DOCUMENT', 'SAP_GXY.20250407'
-  ) stored; 
+  ) stored;
 }
 ```
 
@@ -92,7 +93,7 @@ var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
 
 // Find Incidents related to user question ordered by relevance
 Select.from(INCIDENTS)
-   .columns(i -> similarity.times(100).as("relevance"), 
+   .columns(i -> similarity.times(100).as("relevance"),
             i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
    .where(i -> similarity.gt(0.75))
    .orderBy(i -> i.get("relevance").desc());

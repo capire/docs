@@ -1,5 +1,4 @@
 ---
-label: Hybrid Testing
 synopsis: >
   How to locally test your application with real cloud services.
 permalink: advanced/hybrid-testing

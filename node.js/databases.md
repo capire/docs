@@ -1,5 +1,4 @@
 ---
-label: Databases
 synopsis: >
   Class <code>cds.DatabaseService</code> and subclasses thereof are technical services representing persistent storage.
 ---
@@ -89,7 +88,7 @@ Pool configuration can be adjusted by setting the `pool` option as shown in the 
 }
 ```
 
-::: warning 
+::: warning
 The parameters are very specific to the current technical setup, such as the application environment and database location.
 Even though we provide a default pool configuration, we expect that each application provides its own configuration based on its specific needs.
 :::

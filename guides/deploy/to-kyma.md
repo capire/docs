@@ -1,5 +1,4 @@
 ---
-label: Deploy to Kyma/K8s
 synopsis: >
   A step-by-step guide on how to deploy a CAP (Cloud Application Programming Model) application to Kyma Runtime of SAP Business Technology Platform.
 impl-variants: true

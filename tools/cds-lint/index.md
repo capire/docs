@@ -1,5 +1,4 @@
 ---
-label: cds-lint
 synopsis: >
   This page explains the ESLint plugin for CDS in depth.
 ---
