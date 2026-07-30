@@ -1,5 +1,4 @@
 ---
-# shorty: Definition Language
 synopsis: >
   Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/

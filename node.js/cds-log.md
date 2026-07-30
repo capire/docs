@@ -1,5 +1,4 @@
 ---
-shorty: cds.log
 subtocs: false
 ---
 

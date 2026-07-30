@@ -1,6 +1,3 @@
----
-shorty: cds.connect
----
 
 # Connecting to Required Services
 

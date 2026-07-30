@@ -1,5 +1,4 @@
 ---
-shorty: Built-in Types
 synopsis: >
   Find here a brief overview of the predefined types shipped with CDS.
 ---

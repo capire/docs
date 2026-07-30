@@ -1,5 +1,4 @@
 ---
-shorty: cds.reflect
 synopsis: >
   Find here information about reflecting parsed CDS models in CSN representation.
 ---

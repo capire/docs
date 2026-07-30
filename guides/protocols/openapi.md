@@ -1,5 +1,4 @@
 ---
-shorty: OpenAPI
 synopsis: >
   About how to publish service APIs in OpenAPI format.
 ---

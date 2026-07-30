@@ -1,6 +1,5 @@
 ---
 section: Tools
-shorty: Tools
 ---
 
 # Choose Your Preferred Tools

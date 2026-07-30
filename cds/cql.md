@@ -1,5 +1,4 @@
 ---
-shorty: Query Language
 synopsis: >
   Specification of the CDS Query Language (aka CQL) which is an extension of the standard SQL SELECT statement.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html

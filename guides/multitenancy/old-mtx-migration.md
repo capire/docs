@@ -1,5 +1,4 @@
 ---
-shorty: MTX Migration
 synopsis: >
   Explains how to migrate from <code>@sap/cds-mtx</code> (aka Old MTX) to 'streamlined' <code>@sap/cds-mtxs</code>.
 sitemap: false
