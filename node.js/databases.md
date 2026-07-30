@@ -1,11 +1,11 @@
 ---
-synopsis: >
+description: >
   Class <code>cds.DatabaseService</code> and subclasses thereof are technical services representing persistent storage.
 ---
 
 # Database Services
 
-<div v-html="$frontmatter?.synopsis" />
+<div v-html="$frontmatter?.description" />
 
 [[toc]]
 

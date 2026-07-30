@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Find here a brief overview of the predefined types shipped with CDS.
 ---
 

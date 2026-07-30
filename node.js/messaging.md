@@ -1,11 +1,11 @@
 ---
-synopsis: >
+description: >
   Learn details about using messaging services and outbox for asynchronous communications.
 ---
 
 # Messaging
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 [[toc]]
 
@@ -14,10 +14,10 @@ synopsis: >
 
 ## Overview
 
-Messaging enables decoupled communication between services using events. 
+Messaging enables decoupled communication between services using events.
 CAP distinguishes between the logical and technical messaging layers, separating business concerns from technical infrastructure.
 
-The **logical layer** consists of three primary components: 
+The **logical layer** consists of three primary components:
 
 **Modeled Events**: Events are defined in CDS models with typed schemas, providing compile-time validation and IDE support. These events represent business occurrences like `'orderProcessed'`, or `'stockUpdated'`.
 
@@ -42,7 +42,7 @@ The message flow follows a clear path through both layers:
 
 ### Summary Table
 
- 
+
 | CDS Event Declaration         | Emitting via `srv.emit` | Emitting via `messaging.emit` | Broker Topic         | Receiving via `srv.on` | Receiving via `messaging.on` |
 |------------------------------|-------------------------|-------------------------------|----------------------|------------------------|------------------------------|
 | No `@topic`                  | `'reviewed'`           | `'OrderSrv.reviewed'`         | `OrderSrv.reviewed`  | `'reviewed'`           | `'OrderSrv.reviewed'`        |
@@ -369,7 +369,7 @@ Example:
 }
 ```
 
-::: warning 
+::: warning
 When using `enterprise-messaging-shared` in a multitenant scenario, only the provider account will have an event bus. There is no tenant isolation.
 :::
 

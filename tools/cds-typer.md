@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This page explains the package cds-typer in depth.
 typedModels:
   bookshop: assets/bookshop

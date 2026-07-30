@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Introduces CQN Services, the core services of CAP that deal with CDS data, providing a uniform query API based on CQN statements.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   About how to convert events in CDS models to AsyncAPI documentation.
 ---
 

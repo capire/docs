@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section shows how CAP Java is smoothly integrated with Spring Boot.
 ---
 
@@ -10,7 +10,7 @@ synopsis: >
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 <!-- ## [CDS Properties](properties/) {.toc-redirect} -->
 

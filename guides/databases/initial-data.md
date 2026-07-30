@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to add `.csv` files to fill your database with initial and test data, automatically loaded by the CAP runtime.
 ---
 

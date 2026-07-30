@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of serving UIs from CAP applications, including localization, localized data, SAP Fiori UIs, and other UI frameworks.
 ---
 

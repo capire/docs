@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How the `cds-plugin` technique lets packages provide auto-configured extensions loaded automatically by CAP Node.js servers.
 ---
 

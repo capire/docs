@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to use streaming in CAP Node.js applications to process large datasets with minimal memory usage.
 ---
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference for `cds.utils`, a module of common utility functions such as UUID generation and file access.
 ---
 

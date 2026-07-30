@@ -1,6 +1,6 @@
 ---
 embed: link
-synopsis: >
+description: >
   Reference of all configuration properties available for configuring CAP Java applications via `application.yml`.
 ---
 

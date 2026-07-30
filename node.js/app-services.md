@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference for class `cds.ApplicationService`, the default service provider implementation adding CAP's generic handlers.
 ---
 

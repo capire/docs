@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Introduction to the basics of domain modeling with CDS, complemented with recommended best practices for capturing the essential objects of your domain.
 ---
 

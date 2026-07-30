@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to define and implement custom, domain-specific actions and functions in addition to standard CRUD operations.
 ---
 

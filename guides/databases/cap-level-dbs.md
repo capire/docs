@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference of portable CQL functions and operators that the CDS compiler translates to database-specific native SQL equivalents.
 ---
 

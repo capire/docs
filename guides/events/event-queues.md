@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Transactional Event Queues let you persist events and scheduled tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
 ---
 
@@ -153,7 +153,7 @@ CqnService xflights = OutboxService.unboxed(outboxedXFlights);
 
 
 ### By Configuration
-  
+
   > [!note] Node.js only
   > Outboxing required services by configuration is available in Node.js only.
 

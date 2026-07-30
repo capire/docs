@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to declaratively model status-transition flows so they're validated and executed reliably without extensive custom coding.
 ---
 

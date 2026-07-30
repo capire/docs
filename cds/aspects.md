@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Discusses the differences of the mixin-based approach of Aspects to inheritance as known from languages like Java.
 ---
 

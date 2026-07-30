@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Introduces the 'Calesi' pattern for integrating remote services as CAP services, consumed as if they were local and mocked out of the box.
 ---
 

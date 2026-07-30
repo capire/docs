@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Explains how CDS models are compiled to database-specific DDL artifacts like SQL `CREATE TABLE` statements.
 ---
 

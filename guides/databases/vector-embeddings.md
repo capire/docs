@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to store and generate vector embeddings in CDS models to enable semantic search and other generative AI features.
 ---
 # Vector Embeddings

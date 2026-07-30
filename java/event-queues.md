@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, scheduling, custom outbox services, error handling, and event versioning.
 ---
 

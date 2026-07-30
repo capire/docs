@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Find here information about the AuditLog service in CAP Java.
 ---
 
@@ -10,7 +10,7 @@ synopsis: >
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 
 <!-- #### Content

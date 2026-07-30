@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to serve and stream media and binary data from CAP services using OData V4's media resource support.
 ---
 

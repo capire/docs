@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Core concepts and techniques for federating and integrating data from multiple external data sources in CAP applications.
 ---
 

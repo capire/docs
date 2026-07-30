@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Introduces the fundamental principles of CDS models.
 ---
 
 
 # On The Nature of Models
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 
 ## Metaphysics of Languages
@@ -18,17 +18,17 @@ For example, a *data model describes the type structure (commonly also called *'
 
 ### Representations
 
-Models can come in different *representations*, which follow different *syntaxes*. For example, we use the *CDL* syntax for *human-readable* representations of CDS models, while CSN is an *object notation*, that is a special form of *syntax*, used for *machine-readable* representations of CDS models. 
+Models can come in different *representations*, which follow different *syntaxes*. For example, we use the *CDL* syntax for *human-readable* representations of CDS models, while CSN is an *object notation*, that is a special form of *syntax*, used for *machine-readable* representations of CDS models.
 
-::: details On CSN representations... 
+::: details On CSN representations...
 
-We can go one meta-level further and distinguish between different representations of CSN representations: in a Node.js process at runtime they are just native in-memory JavaScript objects, when shared they are serialized to JSON format, which can in turn be translated to YAML, and so forth. When we create CSN objects at runtime, they could be plain JavaScript code. 
+We can go one meta-level further and distinguish between different representations of CSN representations: in a Node.js process at runtime they are just native in-memory JavaScript objects, when shared they are serialized to JSON format, which can in turn be translated to YAML, and so forth. When we create CSN objects at runtime, they could be plain JavaScript code.
 
 :::
 
 ### Reflections
 
-CDS models can be compiled to other languages, that play in the same fields, yet not covering the same information, but rather with some loss of information — we call these '*reflections*'. 
+CDS models can be compiled to other languages, that play in the same fields, yet not covering the same information, but rather with some loss of information — we call these '*reflections*'.
 
 Examples are:
 

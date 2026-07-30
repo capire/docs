@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   How to enable data aggregation for OData V2 services to support analytical queries.
 ---
 
 
 # Analytics in OData V2
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 

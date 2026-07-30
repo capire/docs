@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to integrate the SAP Business Technology Platform notification service to send notifications from CAP applications.
 ---
 

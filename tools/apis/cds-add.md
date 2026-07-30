@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Learn how to create a <code>cds add</code> plugin.
 ---
 

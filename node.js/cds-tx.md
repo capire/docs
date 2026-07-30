@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How CAP automatically manages database transactions, principal propagation, and tenant isolation for service requests.
 ---
 

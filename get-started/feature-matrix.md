@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   An index of CAP features, with their status and availability across Node.js and Java, including what's planned or in development.
 ---
 

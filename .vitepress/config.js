@@ -164,7 +164,7 @@ config.themeConfig.search = {
         tokenize: text => text.split( /[\n\r #%*,=/:;?[\]{}()&]+/u ), // simplified charset: removed [-_.@] and non-english chars (diacritics etc.)
         processTerm: (term, fieldName) => {
           term = term.trim().toLowerCase().replace(/^\.+/, '').replace(/\.+$/, '')
-          const stopWords = ['frontmatter', '$frontmatter.synopsis', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
+          const stopWords = ['frontmatter', '$frontmatter.description', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
           if (term.length < 2 || stopWords.includes(term))  return false
 
           if (fieldName === 'text') {

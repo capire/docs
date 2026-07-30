@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of CAP's built-in protocol adapters (OData, OpenAPI, AsyncAPI, CDS APIs) and how to create custom ones.
 ---
 

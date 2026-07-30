@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How CAP runtimes use service bindings to connect to required services at runtime, based on declared configuration and injected credentials.
 ---
 

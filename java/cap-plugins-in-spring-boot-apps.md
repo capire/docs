@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This guide shows how Spring Boot applications that run without a CDS model can integrate with service offerings on SAP BTP by using CAP plugins without a full migration to CAP Java.
 ---
 
@@ -17,7 +17,7 @@ synopsis: >
   const { versions } = theme.value.capire
 </script>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 CAP Java offers a [variety of plugins that integrate with SAP BTP services](../plugins/) and keep your application free of hard-coded service dependencies. In the CAP ecosystem, this approach is called [Calesi (CAP level service integration)](../get-started/concepts#the-calesi-pattern). Most Calesi plugins expose a CAP service that you can inject as a Spring Boot component. As the CAP runtime can run alongside a Spring Boot application without a CDS model, this lets you use proven service integration through CAP plugins with a growing set of SAP BTP services.
 

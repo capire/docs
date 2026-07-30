@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Specification of the Core Expression Notation (CXN) used to capture expressions as plain JavaScript objects.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
@@ -135,10 +135,10 @@ Examples:
 
 ```js
 [dev] cds repl
-> cds.parse.expr(`x<9`)  == 
+> cds.parse.expr(`x<9`)  ==
 {xpr:[ {ref:['x']}, '<', {val:9} ]}
 
-> cds.parse.expr(`x<9 and (y=1 or z=2)`)  == 
+> cds.parse.expr(`x<9 and (y=1 or z=2)`)  ==
 {xpr:[
   {ref:['x']}, '<', {val:9}, 'and', {xpr:[
     {ref:['y']}, '=', {val:1}, 'or', {ref:['z']}, '=', {val:2}

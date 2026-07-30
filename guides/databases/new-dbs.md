@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Instructions on how to set up and use databases with CAP applications, with out-of-the-box support for SAP HANA, SQLite, H2, and PostgreSQL.
 ---
 

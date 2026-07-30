@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Programmatically use <code>cds.import</code>.
 ---
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   A curated list of CAP plugins that integrate with SAP BTP services and other SAP products.
 ---
 

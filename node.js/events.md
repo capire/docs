@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference for accessing the current event context, such as tenant, user, and locale, via `cds.context`.
 ---
 

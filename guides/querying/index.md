@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Learn about CAP's intrinsic querying capabilities, which allows
   clients to request the exact data they need, and are key enablers for
   serving requests automatically.
@@ -8,7 +8,7 @@ search: false
 
 # Querying and View Building
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 

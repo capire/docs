@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to interact with CDS-modeled data programmatically using CAP's native Core Data Service APIs for CRUD, queries, and transactions.
 ---
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to enable and use TypeScript in a CAP Node.js project.
 ---
 

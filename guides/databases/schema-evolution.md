@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How CAP's built-in schema evolution support updates database schemas to reflect changes in CDS models without losing existing data.
 ---
 

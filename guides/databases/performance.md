@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Considerations and advice for CDS modeling with a focus on database query performance, such as avoiding UNION statements.
 ---
 

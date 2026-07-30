@@ -1,9 +1,9 @@
 ---
-synopsis: >
+description: >
   Using SAP Cloud Application Event Hub service on SAP Business Technology Platform (BTP) as a messaging channel in CAP applications.
 ---
 
-# Messaging via SAP Cloud Application Event Hub 
+# Messaging via SAP Cloud Application Event Hub
 
 [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker) is the new default offering for messaging in SAP Business Technology Platform (SAP BTP).
 CAP provides out-of-the-box support for SAP Cloud Application Event Hub, and automatically handles many things behind the scenes, so that application coding stays agnostic and focused on conceptual messaging.
@@ -191,7 +191,7 @@ modules:
     provides:
       - name: incidents-srv-api
         properties:
-          url: ${default-url} 
+          url: ${default-url}
     requires: #[!code focus:10]
       - name: incidents-ias #[!code ++]
         parameters: #[!code ++]

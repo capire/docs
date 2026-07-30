@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of the service protocols supported by CAP, such as OData, OpenAPI, AsyncAPI, and MCP, and how to use them.
 ---
 

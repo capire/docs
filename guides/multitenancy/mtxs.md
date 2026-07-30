@@ -1,11 +1,11 @@
 ---
-synopsis: >
+description: >
   API reference for multitenancy and extensibility.
 ---
 
 # MTX Services Reference
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <style scoped lang="scss">
   h3 code + em { color: #666; font-weight: normal; }

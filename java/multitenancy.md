@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   How CAP Java applications run as software as a service (SaaS) for multiple isolated subscriber tenants, who may optionally extend their served CDS models.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # Multitenancy
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Setup Overview
 

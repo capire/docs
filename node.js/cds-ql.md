@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference for `cds.ql`, the module for constructing CQN queries in Node.js using fluent API and tagged template literal styles.
 ---
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to set up and configure SAP HANA Cloud as the productive database for CAP applications.
 ---
 

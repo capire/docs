@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This page lists the rules contained in the ESLint plugin for CDS in depth.
 ---
 

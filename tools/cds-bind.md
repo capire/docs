@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to locally test your application with real cloud services.
 permalink: advanced/hybrid-testing
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html and https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html

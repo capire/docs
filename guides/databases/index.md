@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of how CAP handles database integration generically, from CDS-model compilation to deployment and runtime querying, across supported databases.
 ---
 

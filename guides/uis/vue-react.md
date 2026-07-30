@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to set up a minimal CAP project with a Vue.js or React frontend.
 ---
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   An overview of learning resources for CAP, including the capire documentation, samples, tutorials, and podcasts.
 ---
 

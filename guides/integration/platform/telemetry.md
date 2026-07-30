@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to set up telemetry in CAP applications to collect, export, and monitor performance and usage data on SAP Business Technology Platform.
 ---
 

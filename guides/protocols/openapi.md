@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   About how to publish service APIs in OpenAPI format.
 ---
 

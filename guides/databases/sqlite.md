@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to set up and use SQLite as the recommended in-memory database for fast CAP development and testing.
 ---
 

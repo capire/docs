@@ -1,6 +1,6 @@
 ---
 subtocs: false
-synopsis: >
+description: >
   Reference for `cds.log`, CAP's minimalistic logging facade for obtaining and configuring loggers.
 ---
 

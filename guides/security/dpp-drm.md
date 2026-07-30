@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Placeholder for the upcoming Data Retention Management (DRM) guide, which will cover concepts and implementation details for managing the retention and deletion of personal data in compliance with data privacy regulations.
 ---
 

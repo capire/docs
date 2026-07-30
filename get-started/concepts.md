@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   An overview of CAP's primary building blocks and core concepts, such as domain-driven modeling, service-centric runtimes, and querying.
 ---
 

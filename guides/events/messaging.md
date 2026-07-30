@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   How CAP's Messaging Services connect to message brokers to exchange event messages with remote services, complementing CAP's intrinsic event support.
 ---
 
 # CAP-level Messaging
 
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 

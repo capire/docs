@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Core Data Services (CDS) is CAP's modeling language for declaratively capturing service definitions, data models, queries, and expressions.
 ---
 

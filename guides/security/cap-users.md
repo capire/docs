@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This guide introduces CAP user abstraction and role assignments.
 impl-variants: true
 ---

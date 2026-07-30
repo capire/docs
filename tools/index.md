@@ -1,10 +1,10 @@
 ---
-synopsis: >
+description: >
   Overview of the command-line and IDE tools available for developing CAP applications.
 ---
 
 # Choose Your Preferred Tools
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 
 <script setup>

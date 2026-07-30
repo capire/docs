@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to identify entities and elements holding personal data using `@PersonalData` annotations, to automate audit logging, personal data management, and data retention management.
 ---
 

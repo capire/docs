@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to integrate CAP applications with the SAP Audit Logging Service to record security-relevant events.
 ---
 

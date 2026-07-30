@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to add custom event handlers and service implementations for logic that goes beyond CAP's generic runtime capabilities.
 ---
 

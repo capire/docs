@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   A step-by-step walkthrough building a simple bookshop application to gain hands-on experience with core CAP concepts and best practices.
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---

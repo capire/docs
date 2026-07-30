@@ -1,9 +1,9 @@
 ---
-synopsis: >
+description: >
   Using SAP Event Mesh service on SAP Business Technology Platform (BTP) as a messaging channel in CAP applications.
 ---
 
-# Messaging via SAP Event Mesh 
+# Messaging via SAP Event Mesh
 
 CAP provides out-of-the-box support for [SAP Event Mesh](https://help.sap.com/docs/event-mesh), and automatically handles many things behind the scenes, so that application coding stays agnostic and focused on conceptual messaging.
 

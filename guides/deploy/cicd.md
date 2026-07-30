@@ -1,10 +1,10 @@
 ---
-synopsis: >
+description: >
   A comprehensive guide to implementing continuous integration and continuous deployment (CI/CD) for CAP projects using best practices, tools, and services.
 ---
 
 # Deploy using CI/CD Pipelines
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 

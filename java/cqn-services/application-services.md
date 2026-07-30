@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How to add business logic to Application Services — the APIs a CAP application exposes to its clients, for example through OData — by extending CRUD events and implementing actions and functions.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Handling CRUD Events { #crudevents}
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference for `cds.test`, CAP's testing utility for writing and running tests against CAP services.
 ---
 

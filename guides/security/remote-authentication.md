@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This guide explains how to authenticate when calling remote services.
 ---
 

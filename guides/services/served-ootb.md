@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of CAP's generic service providers that automatically serve CRUD requests, search, pagination, and input validation out of the box.
 ---
 

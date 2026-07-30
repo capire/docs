@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   How CAP applications can be configured to use SAP Identity Authentication Service (IAS) and/or SAP XSUAA for authentication and authorization.
 ---
 

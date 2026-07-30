@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   A collection of different mechanisms that can be used to build plugins for CAP Java.
 ---
 
@@ -11,7 +11,7 @@ synopsis: >
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 Especially, when working with larger projects that may consist of many individual CAP Java applications or when building platform services that need to be integrated with CAP applications there's the requirement to extend CAP Java with custom, yet reusable code.
 

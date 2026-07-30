@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Feature coverage and usage details for serving OData APIs from CAP services, including supported system query options.
 ---
 

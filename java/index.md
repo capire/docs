@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Reference documentation for the CAP Service SDK for Java.
 ---
 

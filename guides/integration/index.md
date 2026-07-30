@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Overview of CAP-level service integration, data federation, and platform integration patterns available to CAP projects.
 ---
 
