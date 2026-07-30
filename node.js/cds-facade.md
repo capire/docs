@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Reference for the `cds` façade object, the single entry point providing access to all CAP Node.js APIs.
+---
 
 
 

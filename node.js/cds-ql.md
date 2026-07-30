@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Reference for `cds.ql`, the module for constructing CQN queries in Node.js using fluent API and tagged template literal styles.
+---
 
 
 # Querying in JavaScript
@@ -359,7 +363,7 @@ q2 = cds.ql.clone (q1)
 ```
 We can then modify `q2` without changing `q1`, for example like this:
 ```js
-// Override where clause 
+// Override where clause
 q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
 ```
 ```js

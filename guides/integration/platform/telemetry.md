@@ -1,10 +1,15 @@
+---
+synopsis: >
+  How to set up telemetry in CAP applications to collect, export, and monitor performance and usage data on SAP Business Technology Platform.
+---
+
 # Telemetry Integration in SAP Business Technology Platform
 Telemetry in SAP Business Technology Platform (BTP) allows you to collect, analyze, and visualize performance and usage data from your applications. In CAP, you can integrate telemetry services to monitor your application's health and performance effectively.
 {.abstract}
 ## Setting Up Telemetry in CAP
 To set up telemetry in your CAP application, follow these steps:
 1. **Enable Telemetry Service**: In your SAP BTP cockpit, enable the telemetry service for your subaccount.
-2. **Bind the Service to Your Application**: Update your `mta.yaml` or `manifest.yml` file to include the service binding for the telemetry service.  
+2. **Bind the Service to Your Application**: Update your `mta.yaml` or `manifest.yml` file to include the service binding for the telemetry service.
 3. **Install Required Dependencies**: Ensure that your CAP application has the necessary dependencies to interact with the telemetry service. You may need to install specific npm packages or Java libraries depending on your runtime.
 ## Collecting Telemetry Data
 Once you have set up the telemetry service, you can start collecting telemetry data in your CAP application. Here are some common practices:

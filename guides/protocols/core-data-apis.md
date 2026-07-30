@@ -1,3 +1,8 @@
+---
+synopsis: >
+  How to interact with CDS-modeled data programmatically using CAP's native Core Data Service APIs for CRUD, queries, and transactions.
+---
+
 # CAP-Native Core Data Service APIs
 
 CAP provides native Core Data Service (CDS) APIs that allow you to interact with your data models programmatically. These APIs are designed to work seamlessly with CAP applications, enabling you to perform CRUD operations, queries, and transactions on your data entities.
@@ -9,7 +14,7 @@ CAP provides native Core Data Service (CDS) APIs that allow you to interact with
 - **Batch Operations**: Execute batch operations to improve performance when dealing with large data sets.
 ## Using CAP Core Data APIs
 To use the CAP Core Data APIs in your application, follow these general steps:
-1. **Import the CAP Module**: Ensure that you have the necessary CAP modules imported in     
+1. **Import the CAP Module**: Ensure that you have the necessary CAP modules imported in
    your application code.
 2. **Access the Service Context**: Obtain the service context to interact with your data models.
 3. **Perform Operations**: Use the provided API methods to perform CRUD operations, queries, and transactions on your entities.

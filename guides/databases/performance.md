@@ -1,7 +1,11 @@
+---
+synopsis: >
+  Considerations and advice for CDS modeling with a focus on database query performance, such as avoiding UNION statements.
+---
 
 # Performance Considerations for CDS Modeling
 
- Find here some considerations and advice for CDS modeling with performance focus. 
+ Find here some considerations and advice for CDS modeling with performance focus.
  {.abstract}
 
 
@@ -117,7 +121,7 @@ Polymorphism done right, also results in simplified view building. Assume you wa
 Using the (de-) normalized version:
 
 ```cds
-view FruitsByVendor as select from Fruit { 
+view FruitsByVendor as select from Fruit {
   ID, description, vendor
 } where vendor.description = 'TopFruitCompany';
 ```
@@ -200,7 +204,7 @@ GET http://localhost/odata/OrderItemsViewAssoc?$expand=Items&$select=OrderNo,Ite
 First sort on the `OrdersItems` and then join back to the `OrdersHeaders` with the help of an association:
 
 ```cds
-view SortedOrdersAssoc as select {*, Header.OrderNo, Header.buyer, Header.currency } as Flatten 
+view SortedOrdersAssoc as select {*, Header.OrderNo, Header.buyer, Header.currency } as Flatten
 from (
   select from OrdersItems {*} order by OrdersItems.title
 );

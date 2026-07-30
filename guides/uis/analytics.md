@@ -1,4 +1,6 @@
 ---
+synopsis: >
+  How to enable data aggregation for OData V2 services to support analytical queries.
 ---
 
 

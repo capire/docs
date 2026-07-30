@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Reference for `cds.utils`, a module of common utility functions such as UUID generation and file access.
+---
 
 # Common Utility Functions
 

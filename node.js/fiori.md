@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Reference for SAP Fiori draft support in CAP, including draft-enabled entities.
+---
 
 
 # Fiori Support

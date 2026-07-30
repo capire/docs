@@ -1,3 +1,8 @@
+---
+synopsis: >
+  Overview of serving UIs from CAP applications, including localization, localized data, SAP Fiori UIs, and other UI frameworks.
+---
+
 # Serving UIs from CAP Applications
 
 CAP does not have its own UI technology, but can be used from a frontend built with any UI framework.

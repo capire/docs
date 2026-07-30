@@ -1,3 +1,8 @@
+---
+synopsis: >
+  Explains how CDS models are compiled to database-specific DDL artifacts like SQL `CREATE TABLE` statements.
+---
+
 # CDL Compilation to Database-Specific DDLs
 
 Databases are deployed based on the entity definitions in your CDS models. This guide explains how that works under the hood, focusing on the compilation of CDS models to database-specific artifacts like SQL `CREATE TABLE` statements for relational databases.

@@ -1,3 +1,8 @@
+---
+synopsis: >
+  How to integrate the SAP Business Technology Platform notification service to send notifications from CAP applications.
+---
+
 # Notifications in SAP Business Technology Platform
 SAP Business Technology Platform (BTP) provides a notification service that allows you to send notifications to users through various channels, such as email, SMS, or push notifications. In CAP, you can integrate with the notification service to enhance user engagement and communication.{.abstract}
 ## Setting Up the Notification Service
@@ -22,7 +27,7 @@ module.exports = async function sendEmailNotification(userEmail, subject, messag
     body: message,
     type: 'email'
   };
-  
+
   try {
     await sendNotification(notification);
     console.log('Notification sent successfully');

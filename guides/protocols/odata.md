@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Feature coverage and usage details for serving OData APIs from CAP services, including supported system query options.
+---
 
 <script setup>
   import { h } from 'vue'
@@ -924,7 +928,7 @@ For the following example, simply write `@UI.Hidden: (status <> 'visible')`.
 :::
 
 In case you want to have an expression as value for an OData annotation that cannot be
-written as a [CDS expression ](#expression-annotations), 
+written as a [CDS expression ](#expression-annotations),
 you can use the "edm-json inline mechanism" by providing an [EDM JSON expression](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html#_Toc38466479) as defined
 in the [JSON representation of the OData Common Schema Language](https://docs.oasis-open.org/odata/odata-csdl-json/v4.01/odata-csdl-json-v4.01.html) enclosed in `{ $edmJson: { ... }}`.
 
@@ -1147,7 +1151,7 @@ This query groups the 500 most expensive books by author name and determines the
 | `average`          | average of values                |  <X/>   | <X/>  |
 | `countdistinct`    | count of distinct values         |  <X/>   | <X/>  |
 | custom method      | custom aggregation method        |  <Na/>  | <Na/> |
-| custom aggregate   | predefined custom aggregate      |  <X/>   | <X/>  | 
+| custom aggregate   | predefined custom aggregate      |  <X/>   | <X/>  |
 | `$count`           | number of instances in input set |  <X/>   | <X/>  |
 
 

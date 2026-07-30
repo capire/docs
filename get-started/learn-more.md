@@ -1,3 +1,7 @@
+---
+synopsis: >
+  An overview of learning resources for CAP, including the capire documentation, samples, tutorials, and podcasts.
+---
 
 # Learning Sources
 Capire, Samples, Tutorials, Podcasts, ... {.subtitle}
@@ -21,8 +25,8 @@ It's organized as follows:
 
 <table>
    <thead>
-      <tr> 
-         <th>Section</th> <th>Description</th> 
+      <tr>
+         <th>Section</th> <th>Description</th>
       </tr>
    </thead>
    <tbody>
@@ -33,7 +37,7 @@ It's organized as follows:
             <li> <a href="../guides/deploy/"> Deploy </a> </li>
          </ul></td>
          <td><ul>
-            Guides that walk you through the most common tasks 
+            Guides that walk you through the most common tasks
             in CAP-based development and deployment.
          </ul></td>
       </tr>
@@ -66,7 +70,7 @@ It's organized as follows:
 
 #### Callouts and Alerts
 
-We use [GitHub-flavored alerts](https://vitepress.dev/guide/markdown#github-flavored-alerts) to highlight important information in our documentation. 
+We use [GitHub-flavored alerts](https://vitepress.dev/guide/markdown#github-flavored-alerts) to highlight important information in our documentation.
 Here are the different types of alerts or callouts you may encounter:
 
 > [!info]
@@ -76,7 +80,7 @@ Here are the different types of alerts or callouts you may encounter:
 > Useful information that users should know even when skimming content.
 
 > [!tip]
-> Helpful advice for doing things better or more easily. 
+> Helpful advice for doing things better or more easily.
 
 > [!important]
 > Key information users need to know to achieve their goal.

@@ -1,3 +1,8 @@
+---
+synopsis: >
+  Overview of how to define, provide, and consume CAP services, covering generic providers, status flows, constraints, custom code, and media data.
+---
+
 # Providing and Consuming Services
 
 [Defining Provided Services](providing-services.md)

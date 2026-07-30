@@ -1,3 +1,7 @@
+---
+synopsis: >
+  How to use declarative constraint annotations to express and enforce domain-specific input validation rules.
+---
 
 # Declarative Constraints
 

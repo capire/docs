@@ -1,3 +1,8 @@
+---
+synopsis: >
+  How to add `.csv` files to fill your database with initial and test data, automatically loaded by the CAP runtime.
+---
+
 # Adding Initial Data
 
 You can add `.csv` files to fill your database with initial data and test data. The runtime automatically loads these files whenever you bootstrap a database, run `cds watch` in development, or deploy and upgrade for production.

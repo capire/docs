@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Set up your local development environment with Node.js, cds-dk, and optional tools like Java and Visual Studio Code to start building CAP applications.
+---
 
 # Getting Started
 Jumpstart & Grow as You Go... {.subtitle}

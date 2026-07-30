@@ -1,3 +1,7 @@
+---
+synopsis: >
+  How CAP Node.js servers are bootstrapped via the built-in `server.js` module and `cds serve` CLI command, including custom bootstrapping.
+---
 
 
 

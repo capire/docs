@@ -1,3 +1,8 @@
+---
+synopsis: >
+  Overview of CAP-level service integration, data federation, and platform integration patterns available to CAP projects.
+---
+
 # Services & Platform Integration
 
 CAP applications integrate at multiple levels — from reusing services and data within your application, to connecting with external microservices, to leveraging platform services for identity, storage, and observability. The guides in this section covers the various CAP-level service integration and data federation patterns, as well as platform capabilities available to your CAP projects.

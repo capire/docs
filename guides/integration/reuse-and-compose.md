@@ -1,3 +1,7 @@
+---
+synopsis: >
+  How to reuse and compose solutions from modular CAP projects, adapting imported content with solution-specific projections and extensions.
+---
 
 # CAP Service Composition
 

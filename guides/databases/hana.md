@@ -1,3 +1,7 @@
+---
+synopsis: >
+  How to set up and configure SAP HANA Cloud as the productive database for CAP applications.
+---
 
 # Using SAP HANA Cloud for Production
 

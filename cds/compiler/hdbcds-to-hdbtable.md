@@ -1,3 +1,7 @@
+---
+synopsis: >
+  Step-by-step instructions for migrating SAP HANA database deployments from the deprecated `hdbcds` format to `hdbtable`.
+---
 
 # Moving From _.hdbcds_ To _.hdbtable_
 
