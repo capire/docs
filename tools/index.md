@@ -1,5 +1,6 @@
 ---
-section: Tools
+synopsis: >
+  Overview of the command-line and IDE tools available for developing CAP applications.
 ---
 
 # Choose Your Preferred Tools
