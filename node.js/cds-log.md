@@ -2,7 +2,6 @@
 shorty: cds.log
 # layout: node-js
 subtocs: false
-status: released
 ---
 
 # Minimalistic Logging Facade

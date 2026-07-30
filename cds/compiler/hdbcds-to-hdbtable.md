@@ -1,6 +1,5 @@
 ---
 # layout: cds-ref
-status: released
 ---
 
 # Moving From _.hdbcds_ To _.hdbtable_

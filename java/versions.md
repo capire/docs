@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Learn in this chapter about CAP Java versions and their dependencies.
-status: released
 ---
 
 # Versions & Dependencies

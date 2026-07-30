@@ -3,7 +3,6 @@
 label: CAP Users
 synopsis: >
   This guide introduces CAP user abstraction and role assignments.
-status: released
 impl-variants: true
 ---
 

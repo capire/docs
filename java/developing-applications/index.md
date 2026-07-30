@@ -2,7 +2,6 @@
 synopsis: >
   Learn here about developing a CAP Java application.
 
-status: released
 ---
 
 # Developing CAP Java Applications

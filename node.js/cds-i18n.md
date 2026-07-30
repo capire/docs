@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Localization / i18n
 

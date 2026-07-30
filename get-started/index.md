@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Getting Started
 Jumpstart & Grow as You Go... {.subtitle}

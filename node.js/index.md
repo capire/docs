@@ -1,6 +1,5 @@
 ---
 section: Node.js
-status: released
 ---
 
 # CAP Service SDK for Node.js

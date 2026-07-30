@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This guide shows how Spring Boot applications that run without a CDS model can integrate with service offerings on SAP BTP by using CAP plugins without a full migration to CAP Java.
-status: released
 ---
 
 # Use CAP Plugins in Spring Boot Applications without a CDS Model

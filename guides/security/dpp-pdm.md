@@ -1,7 +1,6 @@
 ---
 synopsis: >
   The Personal Data Management (PDM) guide explains how to integrate your CAP application with the SAP Personal Data Manager service to respond to data subject requests about their personal data stored in your application.
-status: released
 ---
 
 

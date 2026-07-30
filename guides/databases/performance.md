@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Performance Considerations for CDS Modeling
 

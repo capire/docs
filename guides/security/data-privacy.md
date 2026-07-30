@@ -1,7 +1,6 @@
 ---
 synopsis: >
     This guide discusses how CAP helps applications to comply with data privacy regulations imposed by various laws and standards.
-status: released
 ---
 
 

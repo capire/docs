@@ -3,7 +3,6 @@
 label: Authentication
 synopsis: >
   This guide explains how to authenticate CAP services.
-status: released
 impl-variants: true
 ---
 

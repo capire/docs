@@ -1,6 +1,3 @@
----
-status: released
----
 # Providing and Consuming Services
 
 [Defining Provided Services](providing-services.md)

@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Transactional Event Queues let you persist events and scheduled tasks in the same database transaction as your business data, then process them asynchronously with retries and a dead letter queue.
-status: released
 ---
 
 # Transactional Event Queues

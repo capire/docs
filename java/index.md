@@ -1,6 +1,5 @@
 ---
 section: Java
-status: released
 ---
 
 <style scoped>

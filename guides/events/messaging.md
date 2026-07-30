@@ -2,7 +2,6 @@
 synopsis: >
   CAP provides intrinsic support for emitting and receiving events.
   This is complemented by Messaging Services connecting to message brokers to exchange event messages across remote services.
-status: released
 ---
 
 # CAP-level Messaging

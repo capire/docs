@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Find here information about the change tracking feature in CAP Java.
-status: released
 ---
 
 # Change Tracking

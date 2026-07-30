@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Testing with `cds.test`
 

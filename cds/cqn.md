@@ -3,7 +3,6 @@
 shorty: Query Notation
 synopsis: >
   Specification of the Core Query Notation (CQN) format that is used to capture queries as plain JavaScript objects.
-status: released
 ---
 
 # Query Notation (CQN)

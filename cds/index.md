@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Core Data Services (CDS)
 Language Reference Documentation

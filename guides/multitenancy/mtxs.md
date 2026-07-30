@@ -3,7 +3,6 @@
 label: MTX Reference
 synopsis: >
   API reference for multitenancy and extensibility.
-status: released
 ---
 
 # MTX Services Reference

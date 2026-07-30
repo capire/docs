@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section shows how CAP Java is smoothly integrated with Spring Boot.
-status: released
 ---
 
 # Spring Boot Integration

@@ -1,6 +1,5 @@
 ---
 embed: link
-status: released
 ---
 
 <script setup>

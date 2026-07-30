@@ -1,6 +1,3 @@
----
-status: released
----
 
 <script setup>
   import { h } from 'vue'

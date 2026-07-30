@@ -2,7 +2,6 @@
 shorty: AsyncAPI
 synopsis: >
   About how to convert events in CDS models to AsyncAPI documentation.
-status: released
 ---
 
 <style scoped>

@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Introduction to CAP
 

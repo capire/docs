@@ -6,7 +6,6 @@ typedModels:
   bookshop: assets/bookshop
   farm: assets/animal-farm
   incidents: assets/incidents
-status: released
 ---
 
 # CDS Typer {#cds-typer}

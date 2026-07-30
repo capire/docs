@@ -2,7 +2,6 @@
 synopsis: >
   Learn here about operating a CAP Java application.
 
-status: released
 ---
 
 # Operating CAP Java Applications

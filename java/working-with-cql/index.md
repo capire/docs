@@ -2,7 +2,6 @@
 synopsis: >
   Learn here about working with CDS CQL.
 
-status: released
 ---
 
 # Working with CDS CQL

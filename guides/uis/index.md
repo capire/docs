@@ -1,6 +1,3 @@
----
-status: released
----
 # Serving UIs from CAP Applications
 
 CAP does not have its own UI technology, but can be used from a frontend built with any UI framework.

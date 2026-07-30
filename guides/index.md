@@ -1,6 +1,3 @@
----
-status: released
----
 # The CAP Cookbook
 Recipes for CAP Development { .subtitle}
 

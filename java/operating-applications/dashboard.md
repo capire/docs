@@ -1,7 +1,6 @@
 ---
 synopsis: >
   This section describes how the CAP Developer Dashboard can be set up in both the local and cloud development environment to improve the developer experience.
-status: released
 ---
 
 # Developer Dashboard

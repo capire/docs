@@ -1,7 +1,6 @@
 ---
 synopsis: >
   CAP provides out-of-the-box support for SAP Integration Suite, advanced event mesh, via CAP plugins for Node.js and Java.
-status: released
 ---
 
 # Messaging via SAP Integration Suite, Advanced Event Mesh

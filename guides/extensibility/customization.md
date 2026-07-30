@@ -3,12 +3,6 @@
 shorty: Extend SaaS Apps
 synopsis: >
   This guide explains how subscribers of SaaS applications can extend these on tenant level, thereby customizing them for their specific needs.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Extending SaaS Apps
-#notebook: true
-status: released
 ---
 
 # Extending SaaS Applications

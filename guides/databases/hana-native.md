@@ -2,7 +2,6 @@
 label: Native SAP HANA
 synopsis: >
   Create or use an existing database object (table, view, table function, calculation view) and make use of it in your CDS model, for instance for exposing it in an OData service.
-status: released
 ---
 
 # Using Native SAP HANA Artifacts

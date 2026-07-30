@@ -2,7 +2,6 @@
 synopsis: >
   Most projects start with capturing the essential objects of their domain in a respective domain model.
   Find here an introduction to the basics of domain modeling with CDS, complemented with recommended best practices.
-status: released
 ---
 
 # Domain Modeling

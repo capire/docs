@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Serving Media Data
 

@@ -2,7 +2,6 @@
 title: Core Eventing in CAP
 synopsis: >
   This guides introduces CAP's intrinsic support for emitting and receiving events in the very core of the runtimes' processing models.
-status: released
 ---
 
 # Core Eventing in CAP

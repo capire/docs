@@ -1,7 +1,3 @@
----
-status: released
-
----
 
 # Learning Sources
 Capire, Samples, Tutorials, Podcasts, ... {.subtitle}

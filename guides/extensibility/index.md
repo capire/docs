@@ -1,8 +1,5 @@
 ---
 index: 77
-breadcrumbs:
-  - Cookbook
-  - Extensibility
 synopsis: >
   Learn here about intrinsic capabilities to extend your applications in verticalization
   and customization scenarios.

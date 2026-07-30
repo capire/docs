@@ -1,6 +1,3 @@
----
-status: released
----
 
 # Core Concepts of CAP
 Cloud Scale by Design  {.subtitle}

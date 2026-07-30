@@ -1,7 +1,6 @@
 ---
 synopsis: >
   The Audit Logging plugin provides out-of-the box support for automatic audit logging of data privacy-related events, in particular changes to personal data and reads of sensitive data.
-status: released
 ---
 
 

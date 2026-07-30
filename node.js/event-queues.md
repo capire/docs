@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Node.js APIs and configuration for CAP's Transactional Event Queues — `cds.queued`, `cds.unqueued`, `srv.schedule`, `cds.flush`, callbacks, and queue configuration.
-status: released
 ---
 
 # Event Queues in Node.js

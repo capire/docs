@@ -1,7 +1,6 @@
 ---
 synopsis: >
   A collection of different mechanisms that can be used to build plugins for CAP Java.
-status: released
 ---
 
 # Building Plugins

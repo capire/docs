@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Find here information about the AuditLog service in CAP Java.
-status: released
 ---
 
 # Audit Logging

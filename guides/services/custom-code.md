@@ -1,6 +1,3 @@
----
-status: released
----
 
 
 # Custom Event Handlers

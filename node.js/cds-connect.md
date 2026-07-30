@@ -1,7 +1,6 @@
 ---
 shorty: cds.connect
 # layout: node-js
-status: released
 ---
 
 # Connecting to Required Services

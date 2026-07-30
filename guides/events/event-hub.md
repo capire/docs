@@ -1,7 +1,6 @@
 ---
 synopsis: >
   Using SAP Cloud Application Event Hub service on SAP Business Technology Platform (BTP) as a messaging channel in CAP applications.
-status: released
 ---
 
 # Messaging via SAP Cloud Application Event Hub 
