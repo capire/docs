@@ -1,7 +1,6 @@
 ---
 synopsis: >
-  CAP provides intrinsic support for emitting and receiving events.
-  This is complemented by Messaging Services connecting to message brokers to exchange event messages across remote services.
+  Introduces CAP's intrinsic support for emitting and receiving events, complemented by Messaging Services that connect to message brokers to exchange event messages with remote services.
 ---
 
 # Events and Messaging

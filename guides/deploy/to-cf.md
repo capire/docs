@@ -1,6 +1,6 @@
 ---
 synopsis: >
-  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP)  to SAP BTP Cloud Foundry environment.
+  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP) to SAP BTP Cloud Foundry environment.
 ---
 
 # Deploy to Cloud Foundry
