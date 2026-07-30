@@ -1,5 +1,4 @@
 ---
-# layout: node-js
 label: Transactions
 ---
 

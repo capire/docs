@@ -1,6 +1,3 @@
----
-# layout: node-js
----
 
 # Using TypeScript
 

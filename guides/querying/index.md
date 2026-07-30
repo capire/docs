@@ -3,7 +3,6 @@ synopsis: >
   Learn about CAP's intrinsic querying capabilities, which allows
   clients to request the exact data they need, and are key enablers for
   serving requests automatically.
-#status: released (add link in /guides/databases/index#db-agnostic-queries to this guide when released)
 search: false
 ---
 

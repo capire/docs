@@ -1,6 +1,5 @@
 ---
 shorty: cds.log
-# layout: node-js
 subtocs: false
 ---
 

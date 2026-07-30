@@ -1,5 +1,4 @@
 ---
-# layout: cds-ref
 synopsis: >
   Introduces the fundamental principles of CDS models.
 ---

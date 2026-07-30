@@ -2,7 +2,6 @@
 label: Remote Services
 synopsis: >
   Class `cds.RemoteService` is a service proxy class to consume remote services via different [protocols](cds-serve#cds-protocols), like OData or plain REST.
-# layout: node-js
 ---
 
 # Remote Services <Concept />

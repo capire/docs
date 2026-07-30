@@ -1,5 +1,4 @@
 ---
-# layout: cookbook
 label: Outbound Authentication
 synopsis: >
   This guide explains how to authenticate when calling remote services.

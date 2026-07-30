@@ -1,5 +1,4 @@
 ---
-# layout: cds-ref
 shorty: Annotations
 synopsis: >
   Find here a reference and glossary of common annotations intrinsically supported by the CDS compiler and runtimes.

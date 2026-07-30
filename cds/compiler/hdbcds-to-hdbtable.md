@@ -1,6 +1,3 @@
----
-# layout: cds-ref
----
 
 # Moving From _.hdbcds_ To _.hdbtable_
 

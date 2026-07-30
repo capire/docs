@@ -1,5 +1,4 @@
 ---
-# layout: cookbook
 label: CAP Users
 synopsis: >
   This guide introduces CAP user abstraction and role assignments.

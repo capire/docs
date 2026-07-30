@@ -1,6 +1,5 @@
 ---
 shorty: cds.connect
-# layout: node-js
 ---
 
 # Connecting to Required Services
