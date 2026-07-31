@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Available commands of the <code>cds</code> command line client.
 ---
 

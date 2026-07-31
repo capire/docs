@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  How to use streaming in CAP Node.js applications to process large datasets with minimal memory usage.
 ---
 
 # Streaming
@@ -50,7 +51,7 @@ let count = 0
 for await(const row of generator()) {
   if(count > 1000) break
   // ...
-} 
+}
 ```
 
 This principle applies at every step of the `pipeline`. For example you can limit how much data can be uploaded to your application:

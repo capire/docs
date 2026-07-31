@@ -1,3 +1,7 @@
+---
+description: >
+  How swapping production-grade services with local mocks enables fast inner-loop development and decoupled parallel work across teams.
+---
 
 # Inner-Loop Development
 

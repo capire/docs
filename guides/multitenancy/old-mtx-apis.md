@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   API reference documentation for MTX Services.
 search: false
 sitemap: false
@@ -9,7 +9,7 @@ sitemap: false
 
 # Old MTX Reference
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 All APIs receive and respond with JSON payloads. Application-specific logic (for example, scope checks) can be added using [Event Handlers](#event-handlers-for-cds-mtx-apis).
 

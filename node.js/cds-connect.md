@@ -1,7 +1,6 @@
 ---
-shorty: cds.connect
-# layout: node-js
-status: released
+description: >
+  Reference for `cds.connect.to()`, used to connect to local or external required services configured in `cds.requires`.
 ---
 
 # Connecting to Required Services

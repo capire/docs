@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 
 # Feature Toggles
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <ImplVariantsHint />
 

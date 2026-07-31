@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
 impl-variants: true
 ---
 
 # Deploy Multitenant SaaS Applications
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
