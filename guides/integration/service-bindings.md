@@ -1,3 +1,8 @@
+---
+description: >
+  How CAP runtimes use service bindings to connect to required services at runtime, based on declared configuration and injected credentials.
+---
+
 # Service Bindings
 
 Service bindings configure connectivity to required services. CAP runtimes use them to connect to these services at runtime, using credentials injected from the binding environment, such as `url`, and authentication details.

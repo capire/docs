@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Specification of the CDS Expression Language (CXL) used to capture expressions in CDS.
 ---
 
@@ -121,7 +121,7 @@ This syntax diagram describes the possible expressions:
 > [Operators](#xpr),
 > [Literals](#val),
 > [Functions](#func),
-> 
+>
 > Used in:
 > [Calculated Elements](#in-calculated-elements),
 > [Annotations](#in-annotations),
@@ -249,8 +249,8 @@ Compared to the previous example, we now use the expression directly in the quer
 to calculate the total value of all books in stock.
 
 
-## Path Expressions (`ref`) 
-###### ref 
+## Path Expressions (`ref`)
+###### ref
 
 A `ref` (short for reference) is used to refer to an element within the model.
 It can be used to navigate along path segments. Such a navigation is often
@@ -260,7 +260,7 @@ referred to as a **path expression**.
 
 > Using:
 > [Infix Filters](#infix-filters)
-> 
+>
 > Used in:
 > [Expressions](#expr)
 
@@ -400,7 +400,7 @@ This allows you to specify conditions on subsets of associated entities, enablin
 
 An infix in linguistics refers to a letter or group of letters that are added in the middle of a word to make a new word.
 
-If we apply this terminology to path expressions, an infix filter condition is an expression 
+If we apply this terminology to path expressions, an infix filter condition is an expression
 that is applied to a path segment of a path expression.
 This allows you to filter the target of an association based on certain criteria.
 
@@ -408,7 +408,7 @@ This allows you to filter the target of an association based on certain criteria
 
 > Using:
 > [Expressions](#expr)
-> 
+>
 > Used in:
 > [Path Expressions](#ref)
 
@@ -554,7 +554,7 @@ As depicted in below excerpt of the syntax diagram for `expr`, CXL supports all 
 
 > Using:
 > [Expressions](#expr)
-> 
+>
 > Used in:
 > [Expressions](#expr)
 
@@ -578,7 +578,7 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 > [!tip] Bivalent `==` and `!=` Operators
 > In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent--and--operators) section of the databases documentation.
 
-> [!tip] Ternary `?:` Operator 
+> [!tip] Ternary `?:` Operator
 > In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary--operator) section of the databases documentation.
 
 
@@ -590,7 +590,7 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 
 > Using:
 > [Expressions](#expr)
-> 
+>
 > Used in:
 > [Expressions](#expr)
 

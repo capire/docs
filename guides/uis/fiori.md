@@ -1,3 +1,8 @@
+---
+description: >
+  How to add SAP Fiori elements apps to a CAP project and annotate service definitions to drive their UIs.
+---
+
 
 # Serving SAP Fiori UIs
 

@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for accessing the current event context, such as tenant, user, and locale, via `cds.context`.
 ---
 
 # Events and Requests
@@ -372,7 +373,7 @@ AdminService.update(Books,201).with({...})
 AdminService.delete(Books,201)
 ```
 
-... `req.subject` would always look like that: 
+... `req.subject` would always look like that:
 
 ```js
 req.subject //> ...
@@ -390,7 +391,7 @@ UPDATE(req.subject)...    //> updates the single target row
 DELETE.from(req.subject)   //> deletes the single target row
 ```
 
-> [!warning] 
+> [!warning]
 > You can use `req.subject` in custom handlers for inbound `READ`, `UPDATE` and `DELETE` requests, as well as in _bound_ actions, addressing **_single rows_**.
 > **You can't use it** reasonably in custom handlers for `INSERT` requests or other requests addressing **_multiple rows_**.
 

@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
 impl-variants: true
@@ -30,7 +30,7 @@ This guide explains how to restrict access to data by adding respective declarat
 ## Declarative Access Control { #restrictions}
 
 In essence, [authentication](./authentication#authentication) verifies the user's identity and the presented claims. Briefly, authentication reveals _who_ is using the service.
-In contrast, **authorization controls _how_ the user may interact with the application's resources**. 
+In contrast, **authorization controls _how_ the user may interact with the application's resources**.
 As access control depends on user information, authentication is a prerequisite for authorization.
 
 ![Authorization with CAP](./assets/authorization.drawio.svg){width="450px"}
@@ -56,7 +56,7 @@ Finally, according to the key concept [Customizable Security](./overview#key-con
 
 ### Internal Services
 
-CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters. 
+CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters.
 To prevent access from *any* external clients, annotate those services with `@protocol: 'none'`:
 
 ```cds
@@ -149,7 +149,7 @@ CodeLists such as `Languages`, `Currencies`, and `Countries` from `sap.common` a
 
 ## Role-Based Access Control { #role-based-access-control }
 
-To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations. 
+To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations.
 
 Restrictions can be defined on *different CDS resources*:
 
@@ -157,9 +157,9 @@ Restrictions can be defined on *different CDS resources*:
 - Entities
 - (Un)bound actions and functions
 
-You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model. 
-For instance, a restriction on the service level applies to all entities in the service. 
-Additional restrictions on entities or actions can further limit authorized requests. 
+You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model.
+For instance, a restriction on the service level applies to all entities in the service.
+Additional restrictions on entities or actions can further limit authorized requests.
 See [combined restrictions](#combined-restrictions) for more details.
 
 Beside the scope, restrictions can limit access to resources with regards to *different dimensions*:
@@ -409,8 +409,8 @@ So, the authorization for the requests in the example is delegated as follows:
 
 ## Instance-Based Access Control { #instance-based-auth }
 
-The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. 
-In addition, you can define a `where`-condition that further limits the set of accessible instances. 
+The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles.
+In addition, you can define a `where`-condition that further limits the set of accessible instances.
 This condition, that acts like a filter, establishes *instance-based authorization*.
 
 ### Filter Conditions
@@ -433,8 +433,8 @@ annotate Articles with @(restrict: [
 Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
 :::
 
-The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
-Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
+The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims).
+Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*.
 This means that, the condition applies to following standard CDS events only:
 - `READ` (as result filter)
 - `UPDATE` (as reject condition)
@@ -653,8 +653,8 @@ It can be disabled by setting <Config java>cds.security.authorization.instance-b
 
 ## Limitations {.node}
 
-Currently, the security annotations **are only evaluated on the target entity of the request**. 
-Restrictions on associated entities touched by the operation are not regarded. 
+Currently, the security annotations **are only evaluated on the target entity of the request**.
+Restrictions on associated entities touched by the operation are not regarded.
 This has the following implications:
 - Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
 - Deep inserts and updates are checked on the root entity only.
@@ -698,7 +698,7 @@ Select.from(Orders_.class,
 ```
 
 For modification statements with associated entities used in infix filters or where clauses,
-role-based authorizations are checked as well. 
+role-based authorizations are checked as well.
 Associated entities require `READ` authorization, in contrast to the target of the statement itself.
 
 The following statement requires `UPDATE` authorization on `Orders` and `READ` authorization on `Books`

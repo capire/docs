@@ -1,3 +1,8 @@
+---
+description: >
+  Overview of the service protocols supported by CAP, such as OData, OpenAPI, AsyncAPI, and MCP, and how to use them.
+---
+
 # Service Protocols in CAP
 
 CAP supports multiple service protocols to expose your application data and functionality. This guide provides an overview of the available protocols and how to use them in your CAP applications.

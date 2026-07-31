@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Learn how to use uniform APIs to consume local or remote services.
 impl-variants: true
 ---
