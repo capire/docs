@@ -45,8 +45,8 @@ extend Incidents with {
 If the database calculates vector embeddings on write it automatically regenerates the embedding if the input data changes.
 :::
 
-::: info Local Testing with H2, SQLite, and PostgreSQL
-On H2, SQLite, and PostgreSQL the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. The implementation generates deterministic 384-dimensional vectors suitable for testing, but does not capture semantic meaning. For production use, generate embeddings programmatically using real AI models.
+::: info Local Testing with SQLite and PostgreSQL
+SAP HANA supports all vector functions including the `vector_embedding` function with real AI models. PostgreSQL supports vector functions when the pgvector extension is created, but does not support the `vector_embedding` function natively. A hash-based `vector_embedding` function is provided for both SQLite and PostgreSQL to avoid issues and crashes during development, but it is strongly recommended to override this function with a reasonable custom or third-party implementation for production use.
 :::
 
 > [!warning] Java only and <Beta/>
@@ -136,6 +136,7 @@ Normalizes a vector to unit length.
 ### vector_embedding
 ```
 vector_embedding(text, text_type, model_name) → vector
+vector_embedding(text, text_type, model_name, remote_source) → vector
 ```
 Generates vector embeddings from text.
 
@@ -143,6 +144,7 @@ Generates vector embeddings from text.
 - `text` - Input text to embed
 - `text_type` - `'DOCUMENT'` (for storing content) or `'QUERY'` (for search queries)
 - `model_name` - Model identifier (database-specific)
+- `remote_source` (optional) - Remote source configuration for external embedding services (SAP HANA only)
 
 **Database Implementation:**
 - **HANA:** Uses real AI models (SAP built-in models or external remote sources)
