@@ -13,8 +13,15 @@ async function setupMonaco() {
 
   self.MonacoEnvironment = {
     getWorker(_, label) {
+      const getWorkerModule = (moduleUrl, label) => {
+        return new Worker(self.MonacoEnvironment.getWorkerUrl(moduleUrl), {
+          name: label,
+          type: 'module'
+        });
+      };
+
       if (label === 'typescript' || label === 'javascript') return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker?worker', label)
-      return new editorWorker.default()
+      return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker?worker', label);
     }
   }
 
