@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 

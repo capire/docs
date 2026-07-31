@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   API to fluently build CQL statements in Java.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -585,10 +585,10 @@ You can also select sub-elements of a `cds.Map` via path expressions:
 
 ```java
 Select.from(PRODUCTS)
-      .columns(p-> p.ID(), 
+      .columns(p-> p.ID(),
                p-> p.details().get("brand"))
       .where(p -> p.category().eq("tech"));
-```      
+```
 
 This query selects the sub-element `brand` of the `details` map element for all products of category "tech".
 
@@ -909,12 +909,12 @@ entity Product : cuid {
 }
 ```
 
-This following query sorts products by category and additionally by the sub-element `brand` of the map element `details`. 
+This following query sorts products by category and additionally by the sub-element `brand` of the map element `details`.
 
 ```java
 Select.from(PRODUCTS)
       .where(p -> p.category().eq("tech"))
-      .orderBy(p -> p.category().asc(), 
+      .orderBy(p -> p.category().asc(),
                p.to("details").get("brand").asc());
 ```
 
@@ -956,7 +956,7 @@ If the selected rows are already locked by another transaction, by default, the 
   ```java
   import static com.sap.cds.ql.cqn.CqnLock.Mode.EXCLUSIVE;
 
-  // wait max 10s  
+  // wait max 10s
   Select.from("bookshop.Books").byId(1).lock(EXCLUSIVE, 10);
   ```
 
@@ -987,7 +987,7 @@ If the selected rows are already locked by another transaction, by default, the 
   ::: tip
   This is useful for queue-like processing where multiple workers consume available items concurrently without blocking each other.
   :::
-  
+
 #### Restrictions
 
 Not every entity exposed via a CDS entity can be locked with the `lock()` clause. To use the `lock()` clause, databases require that the target of such statements is represented by one of the following:
@@ -1648,7 +1648,7 @@ You can use date/time functions to extract components from date/time values and 
 
 | method | return CDS | return Java | example |
 | --- | --- | --- | --- |
-| year | Int32 | Integer | `date.year()` | 
+| year | Int32 | Integer | `date.year()` |
 | month | Int32 | Integer | `CQL.year(date)` |
 | day | Int32 | Integer | `date.day()` |
 | hour | Int32 | Integer | `CQL.hour(time)` |
@@ -1669,7 +1669,7 @@ These methods allow you to compute the difference between timestamps:
 
 | method | return CDS | return Java | example |
 | --- | --- | --- | --- |
-| yearsBetween | Int32 | Integer | `start.yearsBetween(end)` | 
+| yearsBetween | Int32 | Integer | `start.yearsBetween(end)` |
 | monthsBetween | Int32 | Integer | `start.monthsBetween(end)` |
 | daysBetween | Int32 | Integer | `CQL.daysBetween(start, end)` |
 | secondsBetween | Int64 | Integer | `start.secondsBetween(end)` |
@@ -2067,7 +2067,7 @@ NOT
 
 These boolean-valued functions can be used in filters:
 
-##### Containment Test 
+##### Containment Test
 
 <table>
 <thead>

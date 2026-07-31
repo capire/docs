@@ -1,12 +1,10 @@
 ---
-label: cds-typer
-synopsis: >
+description: >
   This page explains the package cds-typer in depth.
 typedModels:
   bookshop: assets/bookshop
   farm: assets/animal-farm
   incidents: assets/incidents
-status: released
 ---
 
 # CDS Typer {#cds-typer}

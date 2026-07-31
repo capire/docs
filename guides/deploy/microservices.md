@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   A guide on deploying SAP Cloud Application Programming Model (CAP) applications as microservices to the SAP BTP Cloud Foundry environment.
-status: released
 ---
 
 # Microservices with CAP
