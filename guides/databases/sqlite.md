@@ -201,3 +201,13 @@ SQLite only has limited support for concurrent database access due to its very c
 :::
 
 Having said this, there can indeed be scenarios where SQLite might also be used in production, not as the primary database of a business application, but for edge cases, such as using SQLite as in-memory caches. → [Learn more on the _sqlite.org_ website](https://www.sqlite.org/whentouse.html).
+
+<Since version="10.1.0" package="@sap/cds" /> For such cases, configure the `sqlite:memory` preset, which runs an in-memory SQLite database in all profiles, including production:
+
+::: code-group
+```json [package.json]
+{ "cds": { "requires": {
+   "db": "sqlite:memory" // [!code focus]
+}}}
+```
+:::
