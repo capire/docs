@@ -24,11 +24,11 @@ Essentially this is doing the following:
 - For CAP Java projects, it adds a Maven dependency for the SQLite JDBC driver.
 - If MTA deployment is used, it adds an SQLite service to the `mta.yaml` file.
 
-> [!tip] 
+> [!tip]
 > Using `cds add sqlite` is the recommended way to set up SQLite in your CAP projects, as it covers both CAP Node.js and CAP Java projects in one step, as well as requisite additions for MTA deployment, if applicable.
 
 
-### Manual Setup for Node.js 
+### Manual Setup for Node.js
 
 Run this if you want to manually set up SQLite for CAP Node.js projects, instead of using `cds add sqlite`:
 
@@ -80,12 +80,12 @@ Using in-memory databases is the most recommended option for local inner-loop de
 Node.js projects don't require any build steps to prepare SQLite usage. Instead all necessary artifacts are created on-the-fly when running `cds watch`, indicated by the log output like this:
 
 ```log
-[cds] - connect to db > sqlite { url: ':memory:' } 
+[cds] - connect to db > sqlite { url: ':memory:' }
   > init from db/data/sap.capire.bookshop-Authors.csv
   > init from db/data/sap.capire.bookshop-Books.csv
   > init from db/data/sap.capire.bookshop-Books.texts.csv
   > init from db/data/sap.capire.bookshop-Genres.csv
-/> successfully deployed to in-memory database. 
+/> successfully deployed to in-memory database.
 ```
 
 ### In CAP Java Projects
@@ -139,7 +139,7 @@ spring:
 
 ## Using Persistent Databases
 
-You can also use persistent SQLite databases. In this case, the database is deployed and initialized by `cds deploy` and not by the CAP runtimes. 
+You can also use persistent SQLite databases. In this case, the database is deployed and initialized by `cds deploy` and not by the CAP runtimes.
 
 Follow these steps to use a file-based SQLite database:
 
@@ -198,7 +198,7 @@ SQLite only has limited support for concurrent database access due to its very c
 
 Having said this, there can indeed be scenarios where SQLite might also be used in production, not as the primary database of a business application, but for edge cases, such as using SQLite as in-memory caches. → [Learn more on the _sqlite.org_ website](https://www.sqlite.org/whentouse.html).
 
-For such cases, configure the `sqlite:memory` preset, which runs an in-memory SQLite database in all profiles, including production:
+<Since version="10.1.0" package="@sap/cds" /> For such cases, configure the `sqlite:memory` preset, which runs an in-memory SQLite database in all profiles, including production:
 
 ::: code-group
 ```json [package.json]
