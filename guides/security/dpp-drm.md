@@ -366,7 +366,7 @@ You can extend the `sap.ilm.RetentionService` yourself and manually expose entit
 The plugin checks which entities are already exposed and then won't expose them another time. Extending the retention service can be useful. For example if the data controller ID is not stored directly on the entity itself it can still be added to the service interface without migrating the base tables.
 
 ```cds
-using {sap.ilm.RetentionService} from '@sap/cds-dpi';
+using {sap.ilm.RetentionService} from '@cap-js/data-privacy';
 using {sap.capire.bookshop as db} from '../db/schema';
 
 extend service RetentionService with {

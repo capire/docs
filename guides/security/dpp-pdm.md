@@ -88,7 +88,7 @@ You can extend the `sap.dpp.InformationService` yourself and manually expose ent
 The plugin checks which entities are already exposed and then won't expose them another time.
 
 ```cds
-using {sap.dpp.InformationService} from '@sap/cds-dpi';
+using {sap.dpp.InformationService} from '@cap-js/data-privacy';
 using {sap.capire.incidents as db} from '../db/schema';
 
 extend service InformationService with {
