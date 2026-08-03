@@ -481,6 +481,7 @@ could look like this:
 
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
+namespace sap.capire.flights;
 
 @hcql @rest @odata
 service FlightsService {
