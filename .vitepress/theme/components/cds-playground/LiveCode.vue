@@ -28,6 +28,14 @@
         </svg>
         <div v-else v-html="play"></div>
       </button>
+      <button v-if="modelTabs.length" class="icon-button model-toggle-btn" @click="toggleModel"
+          :title="modelVisible ? 'Hide CDS model' : 'Show CDS model'" :aria-pressed="modelVisible">
+        <svg class="model-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <ellipse cx="12" cy="5" rx="8" ry="3" />
+          <path d="M4 5v6a8 3 0 0 0 16 0V5" />
+          <path d="M4 11v6a8 3 0 0 0 16 0v-6" />
+        </svg>
+      </button>
     </div>
 
     <div v-if="queryResult" :class="`vp-code-group ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
@@ -56,15 +64,40 @@
       </div>
     </div>
   </div>
+
+  <div v-if="modelVisible" class="vp-code-group model-group">
+    <div class="tabs">
+      <template v-for="tab in modelTabs" :key="tab.key">
+        <input
+          type="radio"
+          :id="tab.key"
+          :checked="selectedModelTabKey === tab.key"
+          @click.prevent="toggleModelTab(tab.key)"
+        >
+        <label :for="tab.key" @click.prevent="toggleModelTab(tab.key)">{{ tab.name }}</label>
+      </template>
+    </div>
+
+    <div class="blocks">
+      <div v-for="tab in modelTabs" :key="tab.key" v-show="selectedModelTabKey === tab.key"
+          :class="`language-${tab.kind} ${selectedModelTabKey === tab.key ? 'active' : ''}`">
+        <button title="Copy Code" class="copy" @click="copyCode($event, tab.value)"></button>
+        <span class="lang">{{ tab.kind }}</span>
+        <span v-html="format(tab, isDark)"></span>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
-import { onMounted, ref, useId } from 'vue'
+import { computed, onMounted, ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
 import { runners } from './runners'
 import highlighter from './highlighter'
+import templates from 'virtual:templates'
 
 const uid = useId()
 
@@ -97,6 +130,22 @@ const queryText = ref(props.initialQuery)
 const queryResult = ref(null)
 const evalStatus = ref(null)
 
+// the model the query runs against, shown on demand so it doesn't clutter the snippet
+const modelVisible = ref(false)
+const selectedModelTab = ref(null)
+const modelTabs = computed(() => (templates.bookshop ?? [])
+  .filter(file => file.path.endsWith('.cds'))
+  .sort((f1, f2) => f1.path.localeCompare(f2.path))
+  .map(file => ({ key: `${uid}-model-${file.path}`, kind: 'cds', name: file.path, value: file.content })))
+const selectedModelTabKey = computed(() => selectedModelTab.value ?? modelTabs.value[0]?.key)
+
+function toggleModel() {
+  modelVisible.value = !modelVisible.value
+}
+
+function toggleModelTab(key) {
+  selectedModelTab.value = key
+}
 
 function format({ value, kind }, dark) {
   if (!highlighter.getLoadedLanguages().includes(kind)) {
@@ -135,10 +184,10 @@ function toggleTab(key) {
 // monaco inserts non-breaking spaces
 // so we override vitepress's default copy behavior
 const timeoutIdMap = new WeakMap()
-async function copyCode(event) {
+async function copyCode(event, text = queryText.value) {
   const el = event.target
   event.stopPropagation()
-  await navigator.clipboard.writeText(queryText.value)
+  await navigator.clipboard.writeText(text)
 
   el.classList.add('copied')
   clearTimeout(timeoutIdMap.get(el))
@@ -339,6 +388,37 @@ onMounted(() => { metaKey.value = /(Mac|iPhone|iPad)/i.test(navigator?.userAgent
 
 .editor-row .icon-button {
   margin-top: 8px;
+}
+
+/* Model disclosure toggle: same .icon-button base, muted until active/hover */
+.model-toggle-btn {
+  background-color: transparent;
+  color: var(--vp-c-text-2);
+}
+
+.model-toggle-btn:hover, .model-toggle-btn[aria-pressed="true"] {
+  background-color: var(--vp-c-default-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.model-toggle-btn .model-icon {
+  width: 1.4em;
+  height: 1.4em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Sits directly below the query/results area, so drop the default vp-code-group top margin */
+.model-group {
+  margin-top: 0;
+}
+
+/* .interactive-query's own bottom margin would otherwise leave a gap before it */
+.interactive-query:has(+ .model-group) {
+  margin-bottom: 0;
 }
 
 
