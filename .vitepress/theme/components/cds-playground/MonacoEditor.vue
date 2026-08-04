@@ -26,6 +26,10 @@ const props = defineProps({
   rows: {
     type: Number,
     default: 3
+  },
+  highlightLines: {
+    type: String,
+    default: ''
   }
 })
 
@@ -85,6 +89,17 @@ async function createEditor() { try {
 
   const contentSizeDispose = editor.onDidContentSizeChange(() => updateHeight())
   updateHeight()
+
+  if (props.highlightLines) {
+    const lines = props.highlightLines.replace(/^\{|\}$/g, '').split(',').flatMap(part => {
+      const [a, b] = part.trim().split('-').map(Number)
+      return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a]
+    })
+    editor.createDecorationsCollection(lines.map(line => ({
+      range: new monaco.Range(line, 1, line, 1),
+      options: { isWholeLine: true, className: 'live-code-highlighted-line' }
+    })))
+  }
 
   // Emit evaluate on Cmd/Ctrl+Enter
   editor.addAction({
@@ -154,5 +169,9 @@ watch(() => isDark.value, (dark) => {
 .monaco-editor, .monaco-editor .margin, .monaco-editor-background {
     background-color: var(--vp-code-block-bg) !important;
     font-family: var(--vp-font-family-mono) !important;
+}
+
+.live-code-highlighted-line {
+  background-color: var(--vp-code-line-highlight-color) !important;
 }
 </style>

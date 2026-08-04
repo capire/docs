@@ -54,7 +54,7 @@ let csn = await cds.compile ('file:db')
 > The given filenames are resolved to effective absolute filenames using [`cds.resolve`](#cds-resolve).
 
 > [!TIP] Use <code>cds compile</code> as CLI equivalent
-> The [`cds compile` CLI](../tools/cds-cli#cds-compile) is available as entry point to the functions described here.  For example, `cds compile --to hana` maps to `cds.compile.to.hana` etc.
+> The [`cds compile` CLI](../tools/cds-cli#cds-compile) is available as entry point to the functions described here.  For example, `cds compile --to hana` maps to [`cds.compile.to.hana`](#hana) etc.
 
 
 
@@ -62,33 +62,34 @@ let csn = await cds.compile ('file:db')
 
 If a single string, not starting with `file:`  is passed as first argument, it is interpreted as a CDL source string and compiled to CSN synchronously:
 
-```js
+```js live
 let csn = cds.compile (`
-  using {cuid} from '@sap/cds/common';
-  entity Foo : cuid { foo:String }
+  entity Foo { foo:String }
   entity Bar as projection on Foo;
   extend Foo with { bar:String }
 `)
 ```
 
-> Note: `using from` clauses are not resolved in this usage.
-
+> [!note] `using from` clauses are not resolved in this usage.
+> In this example, there is an error at the line where [`cuid`](../cds/common#aspect-cuid) gets used:
+>
+> ```js live
+> let csn = cds.compile (`
+>   using { cuid } from '@sap/cds/common';
+>   entity Foo : cuid { foo:String }
+> `)
+> ```
 
 
 ### Multiple in-memory sources
 
-Finally, you can pass an object with multiple named CDL or CSN sources, which allows to also resolve `using from` clauses:
+Finally, you can pass an object with multiple named CDL or CSN sources, which allows to also resolve [`using from` clauses](../cds/cdl#model-imports):
 
-```js
+```js live {3,6}
 let csn = cds.compile ({
   'db/schema.cds': `
-    using {cuid} from '@sap/cds/common';
+    using { cuid } from '@sap/cds/common';
     entity Foo : cuid { foo:String }
-  `,
-  'srv/services.cds': `
-    using {Foo} from '../db/schema';
-    entity Bar as projection on Foo;
-    extend Foo with { bar:String }
   `,
   '@sap/cds/common.csn': `
     {"definitions":{
@@ -100,19 +101,29 @@ let csn = cds.compile ({
 })
 ```
 
-
-
+> [!tip] Reference imported models with canonic names
+> In the example, note that the `@sap/cds/common.csn` source is referenced through the canonic `@sap/cds/common` name.
+> From the usage perspective, it should not matter if imported definitions are defined as [CDL](../cds/cdl) or [CSN](../cds/csn) and what their technical (file) name is.
+>
+> [Learn more on CDS model resolution.](../cds/cdl#model-resolution){.learn-more}
 
 
 ### Additional Options
 
 You can pass additional options like so:
 
-```js
-let csn = await cds.compile('*',{ min:true, docs:true })
+```js live
+let messages = []
+let csn = cds.compile(`
+    /** A comment about */
+    /** entity Foo */
+    entity Foo { foo:String }
+    entity Bar as projection on Foo;
+    type T { e:String }
+  `,
+  { min:true, flavor:'parsed', docs:true, locations:true, messages }
+)
 ```
-
-
 
 | Option      | Description                                                  |
 | ----------- | ------------------------------------------------------------ |
@@ -122,15 +133,22 @@ let csn = await cds.compile('*',{ min:true, docs:true })
 | `locations` | Specify `true` to have the all `$location` properties preserved in serialized CSN. |
 | `messages`  | Pass an empty array to get all compiler messages collected in there. |
 
-
+Run the example. See that:
+- `messages` is filled with a compiler warning about the double comment,
+- `docs:true` leads to a `doc` field in the CSN for entity `Foo`,
+- `min:true` discards the unused type `T`,
+- `flavor:'parsed'` does not resolve `Bar`'s elements from `Foo`.
 
 
 ## cds. compile .to ... {.property}
 
 Following are a collection of model processors which take a CSN as input and compile it to a target output. They can be used in two API flavors:
 
-```js
+```js live
+let csn = {definitions:{}}
 let sql = cds.compile(csn).to.sql ({dialect:'sqlite'}) //> fluent
+```
+```js live
 let sql = cds.compile.to.sql (csn,{dialect:'sqlite'}) //> direct
 ```
 
@@ -189,6 +207,7 @@ for (let [edm,{file,suffix}] of all)
 Use [`cds.compile.to.hana`](#hana) instead.
 
 ### .hana() <Since version="8.0.0" package="@sap/cds" /> {.method}
+###### hana
 
 Generates `hdbtable/hdbview` output.
 

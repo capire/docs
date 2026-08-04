@@ -27,7 +27,7 @@ function injectLogger(sqlite) {
   return sqlLog;
 }
 
-
+/** @returns {Promise<import('@sap/cds')>} */
 async function initialize() {
   const cds = (await import('@sap/cds')).default;
   const express = (await import('express')).default;
@@ -61,6 +61,7 @@ async function initialize() {
   return cds;
 }
 
+/** @type {ReturnType<typeof initialize>} */
 let initialized;
 if (!import.meta.env.SSR) {
   // runs only in the browser
@@ -68,15 +69,40 @@ if (!import.meta.env.SSR) {
 }
 
 const AsyncFunction = async function () {}.constructor;
-async function evalJS(code) {
-  await initialized;
-  const fn = new AsyncFunction(code);
-  const { result, formatted } = await sql.trace(fn);
+async function evalJS(code, isAsync) {
+  const cds = await initialized;
+  const source = compile(code);
+
+  function resultTabs(result, kind) {
+    if (kind === 'json') {
+      let yaml
+      try { yaml = cds.compile.to.yaml(result) } catch {}
+      if (yaml) return [
+        { value: yaml, kind: 'yaml', name: 'Result (as yaml)' },
+        { value: JSON.stringify(result, null, 2), kind: 'json', name: 'Result (raw)' },
+      ]
+    }
+    return [{ value: result ? typeof result !== 'string' ? JSON.stringify(result, null, 2) : result : "success", kind, name: 'Result' }]
+  }
+
+  if (isAsync) {
+    let fn;
+    try { fn = new AsyncFunction(source) }
+    catch (e) { fn = new AsyncFunction(code) } // rewrite had a syntax error -> run the code unmodified
+    const { result, formatted } = await sql.trace(fn);
+    const kind = result? 'json' : 'plaintext'
+    return [
+      ...resultTabs(result, kind),
+      { value: formatted, kind: 'sql', name: 'SQL'}
+    ];
+  }
+
+  let fn;
+  try { fn = new Function(source) }
+  catch (e) { fn = new Function(code) } // rewrite had a syntax error -> run the code unmodified
+  const result = fn();
   const kind = result? 'json' : 'plaintext'
-  return [
-    { value: result ? typeof result !== 'string' ? JSON.stringify(result, null, 2) : result : "success", kind, name: 'Result' },
-    { value: formatted, kind: 'sql', name: 'SQL'}
-  ];
+  return resultTabs(result, kind);
 }
 
 async function cdsQL(query) {
@@ -137,4 +163,104 @@ export const runners = {
   js: evalJS,
   cql: cdsQL,
   cds: cdsQL,
+}
+
+function compile(code) {
+  const stmts = splitTopLevelStatements(code)
+  if (!stmts.length) return code
+  const last = stmts[stmts.length - 1]
+
+  // last statement already returns, or is a control-flow/declaration keyword -> leave the code as is
+  if (/^(return|throw|if|for|while|function|class|import|export)\b/.test(last.text)) return code
+
+  // anchored right after the keyword so we don't match "=" occurring inside the initializer, e.g. in a template literal
+  const declRe = /^(?:let|const|var)\s+([A-Za-z_$][\w$]*)\s*=/
+  if (declRe.test(last.text)) {
+    // last statement declares a variable, e.g. "let result = 1+1" -> collect all top-level declarations in the
+    // snippet so earlier ones aren't silently dropped, e.g. comparing "let q = ...; let p = ..." side by side
+    const names = stmts.map(s => s.text.match(declRe)?.[1]).filter(Boolean)
+    return names.length > 1
+      ? `${code}\nreturn { ${names.join(', ')} };`
+      : `${code}\nreturn ${names[0]};`
+  }
+
+  // last statement isn't a declaration -> treat it (possibly spanning multiple lines) as the expression to return
+  return `${code.slice(0, last.start)}\nreturn (\n${last.text.replace(/;\s*$/, '')}\n);`
+}
+
+
+// splits code into its top-level statements (ignoring newlines/semicolons nested inside brackets, strings,
+// template literals or comments), so multi-line statements like object literals are kept intact as one unit
+function splitTopLevelStatements(code) {
+  const scrubbed = blankComments(code) // same length as code, but with comments replaced by spaces
+  const stmts = []
+  let start = 0, depth = 0, i = 0
+  while (i < scrubbed.length) {
+    const c = scrubbed[i]
+    if (c === '"' || c === "'") { i = skipString(scrubbed, i, c); continue }
+    if (c === '`') { i = skipTemplate(scrubbed, i); continue }
+    if (c === '(' || c === '{' || c === '[') { depth++; i++; continue }
+    if (c === ')' || c === '}' || c === ']') { depth--; i++; continue }
+    if (depth <= 0 && (c === ';' || c === '\n')) {
+      const text = scrubbed.slice(start, i).trim()
+      if (text) stmts.push({ text, start })
+      i++; start = i; continue
+    }
+    i++
+  }
+  const text = scrubbed.slice(start).trim()
+  if (text) stmts.push({ text, start })
+  return stmts
+}
+
+// replaces line and block comments with spaces of the same length, so a trailing comment (e.g. after the last
+// statement, or commented-out code on its own line) is never mistaken for code, while offsets stay unchanged
+function blankComments(code) {
+  let out = ''
+  let i = 0
+  while (i < code.length) {
+    const c = code[i]
+    if (c === '/' && code[i + 1] === '/') { while (i < code.length && code[i] !== '\n') { out += ' '; i++ }; continue }
+    if (c === '/' && code[i + 1] === '*') {
+      while (i < code.length && !(code[i] === '*' && code[i + 1] === '/')) { out += code[i] === '\n' ? '\n' : ' '; i++ }
+      out += '  '; i += 2; continue
+    }
+    if (c === '"' || c === "'") { const j = skipString(code, i, c); out += code.slice(i, j); i = j; continue }
+    if (c === '`') { const j = skipTemplate(code, i); out += code.slice(i, j); i = j; continue }
+    out += c; i++
+  }
+  return out
+}
+
+// skips a single- or double-quoted string starting at code[i], returning the index right after the closing quote
+function skipString(code, i, quote) {
+  i++
+  while (i < code.length && code[i] !== quote) { if (code[i] === '\\') i++; i++ }
+  return i + 1
+}
+
+// skips a template literal starting at code[i] (the opening backtick), diving into ${...} interpolations
+function skipTemplate(code, i) {
+  i++
+  while (i < code.length) {
+    if (code[i] === '\\') { i += 2; continue }
+    if (code[i] === '`') return i + 1
+    if (code[i] === '$' && code[i + 1] === '{') { i = skipBraces(code, i + 2); continue }
+    i++
+  }
+  return i
+}
+
+// skips forward to the '}' balancing the '${' whose contents start at code[i]
+function skipBraces(code, i) {
+  let depth = 1
+  while (i < code.length && depth > 0) {
+    const c = code[i]
+    if (c === '"' || c === "'") { i = skipString(code, i, c); continue }
+    else if (c === '`') { i = skipTemplate(code, i); continue }
+    else if (c === '{') depth++
+    else if (c === '}') depth--
+    i++
+  }
+  return i
 }

@@ -115,11 +115,15 @@ export function install(md: MarkdownRenderer) {
     }
 
     const { info } = tokens[idx]
-    const [language, live, ...rest] = info.split(' ')
+    const hlMatch = info.match(/\{[\d,\-]+\}/)
+    const highlightSpec = hlMatch?.[0] ?? ''
+    const infoNormalized = info.replace(/\s*\{[\d,\-]+\}/, '')
+    const [language, live, ...rawRest] = infoNormalized.split(' ')
 
     // Suppress named CSV data blocks marked hidden — content is captured in the pre-pass and shown as a model tab.
     if (language === 'csv' && live === 'hidden' && /\[[^\]]+:[^\]]+\]/.test(info)) return ''
 
+    const rest = rawRest.map(flag => flag.replace(/^\[|\]$/g, '')) // e.g. "[async]" -> "async"
     if (live === 'live') {
       const mdDir = dirname(env.realPath ?? env.path)
       const filePath = './' + relative(mdDir, join(__dirname, '../../theme/components/cds-playground/LiveCode.vue'))
@@ -131,7 +135,7 @@ export function install(md: MarkdownRenderer) {
         return idx > -1 ? [key, rest.splice(idx+1, 1)[0]] : [];
       }))
 
-      const modelArg = rest.find((p: string) => MODEL_ARG_RE.test(p))
+      const modelArg = rawRest.find((p: string) => MODEL_ARG_RE.test(p))
       const modelName = modelArg ? modelArg.slice(1, -1) : null
       const modelDef: ModelDef | undefined = modelName ? (env as any)._modelMap[modelName] : undefined
 
@@ -140,8 +144,9 @@ export function install(md: MarkdownRenderer) {
       }
       if (modelDef?.source) props.modelSource = md.utils.escapeHtml(modelDef.source)
       if (modelDef?.csvs) props.modelData = md.utils.escapeHtml(JSON.stringify(modelDef.csvs))
+      if (highlightSpec) props.highlightLines = highlightSpec
 
-      const flags = ['readonly'].filter(k => rest.includes(k))
+      const flags = ['readonly', 'async'].filter(k => rest.includes(k))
 
       const content = tokens[idx].content.trim()
       return `<LiveCode initialQuery="${md.utils.escapeHtml(content)}" ${Object.entries(props).map(([k, v]) => `${k}="${v}"`).join(' ')} ${flags.join(' ')}></LiveCode>`

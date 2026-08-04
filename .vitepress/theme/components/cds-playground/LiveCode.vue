@@ -5,7 +5,7 @@
         <div class="language-sh">
           <button title="Copy Code" class="copy"></button>
           <span class="lang">{{ props.language === 'cds'? 'cql' : props.language }}</span>
-          <span v-html="format?.({value: queryText, kind: props.language}, isDark)"></span>
+          <span v-html="format?.({value: queryText, kind: props.language}, isDark, props.highlightLines)"></span>
         </div>
       </div>
       <div class="editor language-sh" :hidden="!loaded" v-if="!readonly">
@@ -14,6 +14,7 @@
         <MonacoEditor
           v-model="queryText"
           :language="props.language"
+          :highlightLines="props.highlightLines"
           @loaded="loaded = true"
           @evaluate="evaluate"
         />
@@ -77,6 +78,7 @@ import play from '/icons/play.svg?url&raw'
 import { runners, runWithModel } from './runners'
 import highlighter from './highlighter'
 import templates from 'virtual:templates'
+import { transformerMetaHighlight } from '@shikijs/transformers'
 
 const uid = useId()
 
@@ -91,6 +93,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  async: {
+    type: Boolean,
+    default: false
+  },
   language: {
     type: String,
     default: 'js'
@@ -100,6 +106,10 @@ const props = defineProps({
     default: ''
   },
   modelData: {
+    type: String,
+    default: ''
+  },
+  highlightLines: {
     type: String,
     default: ''
   },
@@ -156,14 +166,18 @@ function toggleModel() {
   }
 }
 
-function format({ value, kind }, dark) {
+function format({ value, kind }, dark, highlightSpec = '') {
   if (!highlighter.getLoadedLanguages().includes(kind)) {
     kind = 'plaintext'
   }
-  const html = highlighter.codeToHtml(
+  const opts = { lang: kind, theme: dark ? 'github-dark' : 'github-light', transformers: [], meta: undefined }
+  if (highlightSpec) {
+    opts.meta = { __raw: highlightSpec }
+    opts.transformers = [transformerMetaHighlight()]
+  }
+  return highlighter.codeToHtml(
     typeof value === 'string' ? value : JSON.stringify(value, null, 2),
-    { lang: kind, theme: dark ? 'github-dark' : 'github-light' })
-  return html
+    opts)
 }
 
 function formatTabs(result) {
@@ -220,7 +234,7 @@ async function evaluate() {
     const exec = props.onEvaluate
       ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource, props.modelData ? JSON.parse(props.modelData) : undefined) : runners[props.language])
     if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
-    const result = await exec(queryText.value)
+    const result = await exec(queryText.value, props.async)
     tabs.value = formatTabs(result).filter(({ value }) => value)
 
     if (!tabs.value.map(tab => tab.key).includes(selectedTab.value)) selectedTab.value = tabs.value[0].key
