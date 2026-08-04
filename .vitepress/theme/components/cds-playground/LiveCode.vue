@@ -158,23 +158,22 @@ function format({ value, kind }, dark) {
 }
 
 function formatTabs(result) {
-    if (result && result.kind && result.value) {
-      const { kind, name = 'Result', value } = result
-      return [
-        { key: `${uid}-${name}`, kind, name, value }
-      ]
-    }
-    else if (Array.isArray(result) && result[0] && result[0].kind && result[0].value) {
-      return result.map(r => {
-        const { kind, name = kind, value } = r
-        return { key: `${uid}-${name}`, kind, name, value }
-      })
-    } else {
-      return [
-        { key: `${uid}-Result`, name: 'Result', value: result }
-      ]
-    }
-
+  if (result && result.kind && result.value) {
+    const { kind, name = 'Result', value } = result
+    return [
+      { key: `${uid}-${name}`, kind, name, value }
+    ]
+  }
+  else if (Array.isArray(result) && result[0] && result[0].kind && result[0].value) {
+    return result.map(r => {
+      const { kind, name = kind, value } = r
+      return { key: `${uid}-${name}`, kind, name, value }
+    })
+  } else {
+    return [
+      { key: `${uid}-Result`, name: 'Result', value: result }
+    ]
+  }
 }
 
 function toggleTab(key) {

@@ -190,7 +190,7 @@ SELECT from Books { * } excluding { author }
 The effect is about **late materialization** of signatures and staying open to late extensions.
 For example, assume the following definitions:
 
-```cds [FooBar]
+```cds
 entity Foo { foo : String; bar : String; car : String; }
 entity Bar as select from Foo excluding { bar };
 entity Boo as select from Foo { foo, car };
@@ -198,25 +198,21 @@ entity Boo as select from Foo { foo, car };
 
 A `SELECT * from Bar` would result into the same as a query of `Boo`:
 
-```cds live [FooBar]
+```cds
 SELECT * from Bar //> { foo, car }
-```
-```cds live [FooBar]
 SELECT * from Boo //> { foo, car }
 ```
 
 Now, assume a consumer of that package extends the definitions as follows:
 
-```cds [FooBarBoo]
+```cds
 extend Foo with { boo : String; }
 ```
 
 With that, queries on `Bar` and `Boo` would return different results:
 
-```cds live [FooBarBoo]
+```cds
 SELECT * from Bar //> { foo, car, boo }
-```
-```cds live [FooBarBoo]
 SELECT * from Boo //> { foo, car }
 ```
 
@@ -455,7 +451,7 @@ entity OpenOrder as projection on Order {
 
 Use the `mixin...into` clause to logically add unmanaged associations to the source of the query, which you can use and propagate in the query's projection. This is only supported in postfix notation.
 
-```sql
+```cds
 SELECT from Books mixin {
   localized : Association to LocalizedBooks on localized.ID = ID;
 } into {
