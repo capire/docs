@@ -3,7 +3,7 @@ description: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# Model Context Protocol Adapter
+# Model Context Protocol Adapter <Beta />
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-source standard that enables direct integration between large language model (LLM) applications and external data sources. Any CAP service can be turned into an MCP server, allowing AI agents and LLM-powered tools to interact with the service without additional implementation work. All that is required is annotating it with [ `@mcp`](#serving-mcp). From CAP perspective MCP is just another protocol which we serve similar to _OData_, _GraphQL_, _REST_, or _HCQL_.
 
@@ -67,9 +67,10 @@ npm add @cap-js/mcp
 ```
 ### In CAP Java Projects
 
-Add this to the *srv/pom.xml*:
+Add this to the *srv/pom.xml* file:
 
-```xml [Java]
+::: code-group
+```xml [srv/pom.xml]
 <dependencies>
   <dependency>
     <groupId>com.sap.cds</groupId>
@@ -78,9 +79,12 @@ Add this to the *srv/pom.xml*:
   </dependency>
 </dependencies>
 ```
+:::
 
-
-Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
+> [!note] Not yet public
+> The feature is not yet released publicly.  Stay tuned.
+>
+> <Internal /> Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
 ## Serving MCP
 
