@@ -102,12 +102,7 @@ IAS trust is configured per subaccount, and the admin emails entered during `cds
 ### Apply
 
 ```sh
- export BTP_PASSWORD=...
- export CF_PASSWORD=...
- export TF_VAR_hana_system_password=...
-
 cd .terraform
-terraform init
 terraform plan
 terraform apply
 ```
