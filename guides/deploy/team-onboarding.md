@@ -103,6 +103,7 @@ IAS trust is configured per subaccount, and the admin emails entered during `cds
 
 ```sh
 cd .terraform
+terraform init
 terraform plan
 terraform apply
 ```
