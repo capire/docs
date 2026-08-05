@@ -47,8 +47,7 @@ Make sure the basic CAP tools are installed. In addition, you'll need [Terraform
 Use the bundled Terraform template to provision a consistent _Sandbox + Staging + Production_ landscape in one shot:
 
 ```sh
-mkdir bookshop && cd bookshop
-cds init
+cds init bookshop && cd bookshop
 cds add terraform
 ```
 
