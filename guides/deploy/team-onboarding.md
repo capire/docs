@@ -58,12 +58,11 @@ You'll be prompted for:
 | `globalAccountId`       | Subdomain of your global account                        |
 | `region`                | Region label for all subaccounts                        |
 | `idp_origin_key`        | IAS origin key (defaults to `sap.custom`)               |
-| BTP username + password | BTP Terraform provider auth                             |
-| CF username + password  | Cloud Foundry Terraform provider auth                   |
+| BTP username            | BTP Terraform provider auth                             |
+| CF username             | Cloud Foundry Terraform provider auth                   |
 | admin emails            | Comma-separated; assigned the admin role collection in all three subaccounts |
-| HANA SYSTEM password    | Initial HANA Cloud SYSTEM user password                 |
 
-Four files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`, and a `terraform.tfvars` (mode `0600`) holding the values you just entered. The whole `.terraform/` directory is already gitignored.
+Four files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`, and a `terraform.tfvars` with the non-secret config. Passwords are never written to disk — set them as environment variables before applying:
 
 The result:
 
@@ -103,6 +102,9 @@ IAS trust is configured per subaccount, and the admin emails entered during `cds
 ### Apply
 
 ```sh
+export BTP_PASSWORD=...
+export CF_PASSWORD=...
+export TF_VAR_hana_system_password=...
 cd .terraform
 terraform init
 terraform plan
