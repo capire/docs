@@ -62,6 +62,7 @@ You'll be prompted for:
 | `idp_origin_key`        | IAS origin key (defaults to `sap.custom`)               |
 | BTP username + password | BTP Terraform provider auth                             |
 | CF username + password  | Cloud Foundry Terraform provider auth                   |
+| admin emails            | Comma-separated; assigned the admin role collection in all three subaccounts |
 | HANA SYSTEM password    | Initial HANA Cloud SYSTEM user password                 |
 
 Four files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`, and a `terraform.tfvars` (mode `0600`) holding the values you just entered. The whole `.terraform/` directory is already gitignored.
@@ -97,7 +98,7 @@ The split matches the CI/CD flow created by `cds add github-actions`:
 | `alert-notification` | `standard`    | Operational alerts               |
 | `application-logs`   | `lite`        | Log aggregation                  |
 
-IAS trust is configured per subaccount, and admins listed in `sandbox_admin_emails` / `staging_admin_emails` / `production_admin_emails` are assigned the admin role collection.
+IAS trust is configured per subaccount, and the admin emails entered during `cds add terraform` are assigned the admin role collection in all three subaccounts.
 
 :::
 
@@ -113,14 +114,6 @@ terraform apply
 HANA Cloud provisioning takes 20–30 minutes per instance, so expect this `terraform apply` to run for a while.
 
 ::: details Customizing variables
-
-Create a `terraform.tfvars` next to `main.tf` to assign admins:
-
-```hcl
-sandbox_admin_emails    = ["alice@example.com"]
-staging_admin_emails    = ["alice@example.com"]
-production_admin_emails = ["alice@example.com"]
-```
 
 Other overrides (region, subdomains, role collection name, HANA memory, IP allowlist) are documented in `variables.tf`.
 
