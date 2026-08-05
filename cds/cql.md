@@ -198,7 +198,7 @@ entity Boo as select from Foo { foo, car };
 
 A `SELECT * from Bar` would result into the same as a query of `Boo`:
 
-```cds
+```cql
 SELECT * from Bar //> { foo, car }
 SELECT * from Boo //> { foo, car }
 ```
@@ -211,7 +211,7 @@ extend Foo with { boo : String; }
 
 With that, queries on `Bar` and `Boo` would return different results:
 
-```cds
+```cql
 SELECT * from Bar //> { foo, car, boo }
 SELECT * from Boo //> { foo, car }
 ```
