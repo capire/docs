@@ -36,8 +36,9 @@ let editor
 let monaco
 let unmountActions = []
 const lineHeight = 24  // matching the css line-height for other code blocks
-const editorPaddingTop = 4
-const editorPaddingBottom = 4
+// matches the height of a plain (non-live) single-line code box in this repo
+const editorPaddingTop = 12
+const editorPaddingBottom = 12
 
 async function createEditor() { try {
   if (typeof window === 'undefined' || editor) return
