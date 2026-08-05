@@ -58,9 +58,7 @@ You'll be prompted for:
 | `globalAccountId`       | Subdomain of your global account                        |
 | `region`                | Region label for all subaccounts                        |
 | `idp_origin_key`        | IAS origin key (defaults to `sap.custom`)               |
-| BTP username            | BTP Terraform provider auth                             |
-| CF username             | Cloud Foundry Terraform provider auth                   |
-| admin emails            | Comma-separated; assigned the admin role collection in all three subaccounts |
+| email(s)                | BTP + CF username (first); admin role in all subaccounts (all) |
 
 Four files are written to `.terraform/`: `main.tf`, `provider.tf`, `variables.tf`, and a `terraform.tfvars` with the non-secret config. Passwords are never written to disk — set them as environment variables before applying:
 
