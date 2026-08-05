@@ -1,21 +1,21 @@
 ---
 description: >
-  Use Terraform to provision SAP BTP subaccounts, entitlements, HANA Cloud instances, and CF environments for your CAP application.
+  Use Terraform to provision the SAP BTP subaccounts, entitlements, HANA Cloud instances, and Cloud Foundry environments your CAP project needs.
 ---
 
-# Deploy with Terraform
+# BTP Account Setup with Terraform
 
-[Terraform](https://www.terraform.io/) lets you declare your BTP infrastructure as code and provision it reproducibly. `cds add terraform` generates a ready-to-run Terraform configuration that creates three subaccounts (Sandbox, Staging, Production) with all the services a typical CAP app needs.
+Before you deploy a CAP application to Cloud Foundry or Kyma, you need SAP BTP subaccounts with the right entitlements and services in place. `cds add terraform` generates a ready-to-run Terraform configuration that does exactly that — it provisions three environments (Sandbox, Staging, Production) as code so the setup is repeatable and version-controlled.
 
 [[toc]]
 
 ## Prerequisites
 
 - [Terraform CLI](https://developer.hashicorp.com/terraform/install) installed
-- An SAP BTP global account with entitlements for: HANA Cloud, XSUAA, Destination, SaaS Registry, Alert Notification, Application Logging
-- BTP and CF credentials (user + password)
+- An SAP BTP global account with quota for: HANA Cloud, XSUAA, Destination, SaaS Registry, Alert Notification, Application Logging
+- BTP and Cloud Foundry credentials (user + password)
 
-## Setup
+## Generate the Configuration
 
 Run in your CAP project root:
 
@@ -37,15 +37,15 @@ You will be prompted for:
 | `CF password` | *(hidden)* |
 | `HANA SYSTEM password` | *(hidden)* |
 
-The **admin emails** (comma-separated) are assigned the *Subaccount Administrator* role collection in all three subaccounts. Leave blank to skip role assignments.
+The **admin emails** (comma-separated) receive the *Subaccount Administrator* role collection in all three subaccounts. Leave blank to skip role assignments.
 
-This writes the following files:
+The command writes:
 
 ```
 .terraform/
-  main.tf            # subaccounts, entitlements, HANA, CF, role assignments
+  main.tf            # subaccounts, entitlements, HANA Cloud, CF spaces, role assignments
   provider.tf        # SAP BTP + Cloud Foundry provider config
-  variables.tf       # variable declarations
+  variables.tf       # variable declarations with defaults
   terraform.tfvars   # your credentials — DO NOT commit this file
 ```
 
@@ -53,31 +53,33 @@ This writes the following files:
 It is written with mode `0600`. Add `.terraform/terraform.tfvars` to your `.gitignore`.
 :::
 
-## Run
+## Provision
 
 ```sh
 cd .terraform
 terraform init
-terraform plan   # preview what will be created
-terraform apply  # provision the infrastructure
+terraform plan    # preview what will be created
+terraform apply   # provision
 ```
 
-## What Gets Provisioned
+## What Gets Created
 
-For each environment (Sandbox, Staging, Production):
+For each of the three environments (Sandbox, Staging, Production):
 
-- A BTP **subaccount** in the given region
-- **Entitlements**: XSUAA, Destination, HANA Cloud (hana), HANA HDI (hdi-shared), SaaS Registry, Alert Notification, Application Logging
+- A BTP **subaccount** in the configured region
+- **Entitlements**: XSUAA, Destination, HANA Cloud, HANA HDI (hdi-shared), SaaS Registry, Alert Notification, Application Logging
 - A **Cloud Foundry environment** instance and space
-- A **HANA Cloud** service instance (default: 30 GB memory)
+- A **HANA Cloud** service instance (default: 30 GB)
 - An **IAS trust** configuration (if `idp_origin_key` is set)
 - **Subaccount Administrator** role assignments for the given admin emails
 
+Once provisioned, continue with [Deploy to Cloud Foundry](to-cf) or [Deploy to Kyma/K8s](to-kyma) to deploy your application.
+
 ## Customization
 
-After running `cds add terraform`, edit the generated files directly:
+Edit the generated files to fit your landscape:
 
-- Change `hana_memory_gb` in `variables.tf` to resize HANA instances
-- Add more entitlements or services to `main.tf`
-- Adjust `cf_landscape_label` if your region uses a non-default label (e.g. `cf-us10-001`)
-- Set per-environment `*_subdomain` variables for custom subaccount subdomains
+- `hana_memory_gb` in `variables.tf` — resize HANA instances
+- `cf_landscape_label` — change if your region uses a non-default CF landscape (e.g. `cf-us10-001`)
+- `*_subdomain` variables — set custom subaccount subdomains
+- `main.tf` — add further entitlements or service instances
