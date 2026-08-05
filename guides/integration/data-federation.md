@@ -1,3 +1,8 @@
+---
+description: >
+  Core concepts and techniques for federating and integrating data from multiple external data sources in CAP applications.
+---
+
 # CAP-level Data Federation
 
 CAP applications can integrate and federate data from multiple external data sources, enabling close access to distributed data. This guide provides an overview of the core concepts and techniques for implementing data federation in CAP applications, and how CAP helps solving this generically, and thus serving data federation out of the box.
@@ -230,7 +235,7 @@ While the xflights service in terminal 2 shows its incoming HCQL requests like t
 ```zsh
 [hcql] - GET /hcql/data/ {
   SELECT: {
-    from: { ref: [ 'FlightsService.Flights' ] },
+    from: { ref: [ 'sap.capire.flights.FlightsService.Flights' ] },
     columns: [
       { ref: [ 'ID' ], as: 'ID' },
       { ref: [ 'date' ], as: 'date' },

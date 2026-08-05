@@ -1,9 +1,6 @@
 ---
-# layout: cookbook
-label: Outbound Authentication
-synopsis: >
+description: >
   This guide explains how to authenticate when calling remote services.
-status: released
 ---
 
 <script setup>
@@ -176,7 +173,7 @@ This can be done by adding pseudo-role [`internal-user`](./cap-users#pseudo-role
 
 ::: code-group
 ```cds [xflights/srv/authorization.cds]
-using { FlightsService as data } from './data-service';
+using { sap.capire.flights.FlightsService as data } from './data-service';
 
 annotate data with @(requires: 'internal-user');
 ```
@@ -333,7 +330,7 @@ Therefore, you can protect the corresponding CDS service by CAP role `data-consu
 
 ::: code-group
 ```cds [/srv/authorization.cds]
-using { FlightsService as data } from './data-service';
+using { sap.capire.flights.FlightsService as data } from './data-service';
 
 annotate data with @(requires: 'data-consumer');
 ```
@@ -418,7 +415,7 @@ cds:
           "kind": "ias"
         }
       },
-      "FlightsService": {
+      "sap.capire.flights.FlightsService": {
         "kind": "hcql",
         "[production]": {
           "credentials": {

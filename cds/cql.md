@@ -1,7 +1,5 @@
 ---
-# layout: cds-ref
-shorty: Query Language
-synopsis: >
+description: >
   Specification of the CDS Query Language (aka CQL) which is an extension of the standard SQL SELECT statement.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
@@ -354,6 +352,11 @@ If an infix filter effectively reduces the cardinality of a *to-many* associatio
 SELECT name, books[1: favorite=true].title from Authors
 ```
 
+::: warning `:1` has no effect on result set
+The `:1` syntax in the filter has no effect on the result. It is only an information by the developer
+that the specified condition reduces the result to a single entry.
+:::
+
 ### Exists Predicate
 
 Use a filtered path expression to test if any element of the associated collection matches the given filter:
@@ -417,14 +420,14 @@ where the corresponding type can be deduced:
 type Status : String enum { open; closed; in_progress; };
 
 entity OpenOrder as projection on Order {
-  
+
   case status when #open        then 0
               when #in_progress then 1 end
     as status_int : Integer,
 
   (status = #in_progress ? 'is in progress' : 'is open')
-    as status_txt : String,  
-    
+    as status_txt : String,
+
 } where status = #open or status = #in_progress;
 ```
 

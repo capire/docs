@@ -1,4 +1,6 @@
 ---
+description: >
+  Support channels and troubleshooting FAQs for getting help with CAP, including how to ask questions, report issues, and file feature requests.
 outline: 2
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d2ee648522044ea19d3b5126c29692b5.html
 ---

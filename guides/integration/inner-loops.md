@@ -1,3 +1,7 @@
+---
+description: >
+  How swapping production-grade services with local mocks enables fast inner-loop development and decoupled parallel work across teams.
+---
 
 # Inner-Loop Development
 
@@ -97,7 +101,7 @@ With mashed up models in place, we can run applications in _'airplane mode'_ wit
    ```
 
    ```zsh
-   [cds] - mocking FlightsService {
+   [cds] - mocking sap.capire.flights.FlightsService {
      at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
      decl: 'xflights/apis/data-service/services.csn:3'
    }
@@ -133,7 +137,7 @@ We can also use `cds mock` to mock remote services in separate processes, which 
     }
     ```
     ```zsh
-    [cds] - connect to FlightsService > hcql {
+    [cds] - connect to sap.capire.flights.FlightsService > hcql {
      url: 'http://localhost:54475/hcql/data'
     }
     ```
@@ -200,7 +204,7 @@ In the log output of the xtravels server we should see that it _connects_ to the
 }
 ```
 ```zsh
-[cds] - connect to FlightsService > hcql {
+[cds] - connect to sap.capire.flights.FlightsService > hcql {
  url: 'http://localhost:54475/hcql/data'
 }
 ```
@@ -231,7 +235,7 @@ Within the REPL, connect to local and remote services:
 
 ```js
 const TravelService = await cds.connect.to ('TravelService')
-const xflights = await cds.connect.to ('FlightsService')
+const xflights = await cds.connect.to ('sap.capire.flights.FlightsService')
 const s4 = await cds.connect.to ('sap.capire.s4.business-partner')
 ```
 
@@ -393,7 +397,7 @@ cds watch xtravels
 ```
 
 ```zsh
-[cds] - mocking FlightsService {
+[cds] - mocking sap.capire.flights.FlightsService {
   at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
   decl: 'xflights/apis/data-service/services.csn:3',
 }
@@ -499,7 +503,7 @@ cds watch xtravels
 ```
 
 ```zsh
-[cds] - serving FlightsService {
+[cds] - serving sap.capire.flights.FlightsService {
   at: [ '/odata/v4/data', '/rest/data', '/hcql/data' ],
   decl: 'xflights/apis/data-service/services.csn:3',
 }

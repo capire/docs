@@ -1,15 +1,12 @@
 ---
-# layout: cds-ref
-shorty: Annotations
-synopsis: >
+description: >
   Find here a reference and glossary of common annotations intrinsically supported by the CDS compiler and runtimes.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
 # Common Annotations
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [Learn more about the syntax of annotations.](./cdl#annotations){.learn-more}
 

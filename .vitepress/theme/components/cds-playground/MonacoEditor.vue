@@ -10,7 +10,6 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import 'monaco-editor/min/vs/editor/editor.main.css'
 import { useData } from 'vitepress'
 
 const { isDark } = useData()

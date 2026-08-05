@@ -1,13 +1,11 @@
 ---
-shorty: cds.reflect
-synopsis: >
+description: >
   Find here information about reflecting parsed CDS models in CSN representation.
-status: released
 ---
 
 # Reflecting CDS Models
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <!--- % assign m = '<span style="color:grey"> m</span>' %} -->
 <!--- % include links-for-node.md %} -->

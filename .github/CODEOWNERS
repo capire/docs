@@ -2,11 +2,11 @@
 # We start with defining ownership globally and later on can get more granular.
 
 # General content
-* @renejeglinsky @danjoa
+* @smahati @danjoa
 
-node.js/ @smahati @renejeglinsky @danjoa
-java/    @smahati @renejeglinsky @danjoa
-tools/   @chgeo @swaldmann @renejeglinsky
+node.js/ @smahati @danjoa
+java/    @smahati @danjoa
+tools/   @chgeo @swaldmann @smahati
 
 # Infra
 .github/    @chgeo @swaldmann

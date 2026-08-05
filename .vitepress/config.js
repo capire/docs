@@ -97,11 +97,6 @@ const config = defineConfig({
 
   vite: {
     plugins: [...playground.plugins()],
-    esbuild: {
-      supported: {
-        'top-level-await': true //browsers can handle top-level-await features in special cases
-      },
-    },
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
@@ -139,8 +134,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '5.0.0',
-    java_cds4j: '5.0.0',
+    java_services: '5.0.2',
+    java_cds4j: '5.0.2',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
@@ -169,7 +164,7 @@ config.themeConfig.search = {
         tokenize: text => text.split( /[\n\r #%*,=/:;?[\]{}()&]+/u ), // simplified charset: removed [-_.@] and non-english chars (diacritics etc.)
         processTerm: (term, fieldName) => {
           term = term.trim().toLowerCase().replace(/^\.+/, '').replace(/\.+$/, '')
-          const stopWords = ['frontmatter', '$frontmatter.synopsis', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
+          const stopWords = ['frontmatter', '$frontmatter.description', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
           if (term.length < 2 || stopWords.includes(term))  return false
 
           if (fieldName === 'text') {
