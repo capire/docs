@@ -47,9 +47,8 @@ Make sure the basic CAP tools are installed. In addition, you'll need [Terraform
 Use the bundled Terraform template to provision a consistent _Sandbox + Staging + Production_ landscape in one shot:
 
 ```sh
-mkdir <your-project-name>
-cd <your-project-name>
-cds init
+mkdir infra && cd infra
+npm init -y
 cds add terraform
 ```
 
