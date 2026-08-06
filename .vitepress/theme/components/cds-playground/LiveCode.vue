@@ -40,9 +40,9 @@
       </div>
     </div>
 
-    <div v-if="queryResult" :class="`vp-code-group ${tabs?.some(tab => tab.error) ? 'error' : ''}`">
+    <div v-if="combinedTabs.length" :class="`vp-code-group ${combinedTabs.some(tab => tab.error) ? 'error' : ''}`">
       <div class="tabs">
-        <template v-for="tab in tabs" :key="tab.key">
+        <template v-for="tab in combinedTabs" :key="tab.key">
           <input
             type="radio"
             :id="tab.key"
@@ -54,38 +54,15 @@
       </div>
 
       <div class="blocks">
-        <div v-for="tab in tabs" :key="tab.key" v-show="selectedTab === tab.key"
+        <div v-for="tab in combinedTabs" :key="tab.key" v-show="selectedTab === tab.key"
             :class="`language-${tab.kind} ${selectedTab === tab.key ? 'active' : ''}`" >
-          <button title="Copy Code" class="copy"></button>
+          <button title="Copy Code" class="copy" @click="copyCode($event, tab.value)"></button>
           <span class="lang">{{ tab.kind }}</span>
           <span v-html="format?.(tab, isDark)"></span>
           <div v-if="tab.hint" class="hint">
             💡 {{ tab.hint }}
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <div v-if="modelVisible" class="vp-code-group model-group">
-    <div class="tabs">
-      <template v-for="tab in modelTabs" :key="tab.key">
-        <input
-          type="radio"
-          :id="tab.key"
-          :checked="selectedModelTabKey === tab.key"
-          @click.prevent="toggleModelTab(tab.key)"
-        >
-        <label :for="tab.key" @click.prevent="toggleModelTab(tab.key)">{{ tab.name }}</label>
-      </template>
-    </div>
-
-    <div class="blocks">
-      <div v-for="tab in modelTabs" :key="tab.key" v-show="selectedModelTabKey === tab.key"
-          :class="`language-${tab.kind} ${selectedModelTabKey === tab.key ? 'active' : ''}`">
-        <button title="Copy Code" class="copy" @click="copyCode($event, tab.value)"></button>
-        <span class="lang">{{ tab.kind }}</span>
-        <span v-html="format(tab, isDark)"></span>
       </div>
     </div>
   </div>
@@ -134,19 +111,26 @@ const evalStatus = ref(null)
 
 // the model the query runs against, shown on demand so it doesn't clutter the snippet
 const modelVisible = ref(false)
-const selectedModelTab = ref(null)
 const modelTabs = computed(() => (templates.bookshop ?? [])
   .filter(file => file.path.endsWith('.cds'))
   .sort((f1, f2) => f1.path.localeCompare(f2.path))
   .map(file => ({ key: `${uid}-model-${file.path}`, kind: 'cds', name: file.path, value: file.content })))
-const selectedModelTabKey = computed(() => selectedModelTab.value ?? modelTabs.value[0]?.key)
+
+// eval tabs (if any) come first, model tabs are appended at the end
+const combinedTabs = computed(() => [
+  ...(queryResult.value ? tabs.value : []),
+  ...(modelVisible.value ? modelTabs.value : [])
+])
 
 function toggleModel() {
   modelVisible.value = !modelVisible.value
-}
-
-function toggleModelTab(key) {
-  selectedModelTab.value = key
+  if (modelVisible.value) {
+    // draw attention to the newly appended model tabs, whether or not eval tabs are shown
+    selectedTab.value = modelTabs.value[0]?.key
+  } else if (modelTabs.value.some(tab => tab.key === selectedTab.value)) {
+    // was showing a model tab that just got hidden: fall back to an eval tab if there is one
+    selectedTab.value = tabs.value[0]?.key ?? null
+  }
 }
 
 function format({ value, kind }, dark) {
@@ -459,17 +443,6 @@ onMounted(() => { metaKey.value = /(Mac|iPhone|iPad)/i.test(navigator?.userAgent
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
-/* Sits directly below the query/results area, so drop the default vp-code-group top margin */
-.model-group {
-  margin-top: 0;
-}
-
-/* .interactive-query's own bottom margin would otherwise leave a gap before it */
-.interactive-query:has(+ .model-group) {
-  margin-bottom: 0;
-}
-
 
 .vp-code-group.error {
   border: 1px solid var(--vp-c-danger-2);
