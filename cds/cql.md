@@ -190,7 +190,7 @@ SELECT from Books { * } excluding { author }
 The effect is about **late materialization** of signatures and staying open to late extensions.
 For example, assume the following definitions:
 
-```cds
+```cds [FooBar]
 entity Foo { foo : String; bar : String; car : String; }
 entity Bar as select from Foo excluding { bar };
 entity Boo as select from Foo { foo, car };
@@ -198,21 +198,25 @@ entity Boo as select from Foo { foo, car };
 
 A `SELECT * from Bar` would result into the same as a query of `Boo`:
 
-```cql
+```cds live [FooBar]
 SELECT * from Bar //> { foo, car }
+```
+```cds live [FooBar]
 SELECT * from Boo //> { foo, car }
 ```
 
 Now, assume a consumer of that package extends the definitions as follows:
 
-```cds
+```cds [FooBarBoo: FooBar]
 extend Foo with { boo : String; }
 ```
 
 With that, queries on `Bar` and `Boo` would return different results:
 
-```cql
+```cds live [FooBarBoo]
 SELECT * from Bar //> { foo, car, boo }
+```
+```cds live [FooBar]
 SELECT * from Boo //> { foo, car }
 ```
 
