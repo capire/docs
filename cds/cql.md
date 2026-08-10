@@ -190,7 +190,7 @@ SELECT from Books { * } excluding { author }
 The effect is about **late materialization** of signatures and staying open to late extensions.
 For example, assume the following definitions:
 
-```cds [FooBar]
+```cds [FooBar, data: {'data/Foo.csv': 'foo,bar,car\nFoo,Bar,Car'}]
 entity Foo { foo : String; bar : String; car : String; }
 entity Bar as select from Foo excluding { bar };
 entity Boo as select from Foo { foo, car };
@@ -216,7 +216,7 @@ With that, queries on `Bar` and `Boo` would return different results:
 ```cds live [FooBarBoo]
 SELECT * from Bar //> { foo, car, boo }
 ```
-```cds live [FooBar]
+```cds live [FooBarBoo]
 SELECT * from Boo //> { foo, car }
 ```
 

@@ -91,9 +91,44 @@ async function cdsQL(query) {
   ];
 }
 
+// Worker pool: one worker per model source string, shared across all LiveCode instances
+const workerPool = new Map();
+
+function getOrCreateWorker(modelSource) {
+  if (workerPool.has(modelSource)) return workerPool.get(modelSource);
+  const worker = new Worker(new URL('./cds-worker.js', import.meta.url), { type: 'module' });
+  const initPromise = new Promise((resolve, reject) => {
+    worker.addEventListener('message', function once(e) {
+      if (e.data.type !== 'ready' && e.data.type !== 'error') return;
+      worker.removeEventListener('message', once);
+      e.data.type === 'ready' ? resolve() : reject(new Error(e.data.error));
+    });
+    worker.postMessage({ type: 'init', payload: { modelSource } });
+  });
+  const entry = { worker, initPromise };
+  workerPool.set(modelSource, entry);
+  return entry;
+}
+
+async function runWithModel(query, modelSource) {
+  const { worker, initPromise } = getOrCreateWorker(modelSource);
+  await initPromise;
+  return new Promise((resolve, reject) => {
+    const id = crypto.randomUUID();
+    function handler(e) {
+      if (e.data.id !== id) return;
+      worker.removeEventListener('message', handler);
+      e.data.type === 'error' ? reject(new Error(e.data.error)) : resolve(e.data.result);
+    }
+    worker.addEventListener('message', handler);
+    worker.postMessage({ type: 'query', id, payload: { query } });
+  });
+}
+
 export {
     evalJS,
     cdsQL,
+    runWithModel,
 }
 
 export const runners = {

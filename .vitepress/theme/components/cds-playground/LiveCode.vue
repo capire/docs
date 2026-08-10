@@ -74,7 +74,7 @@ import { computed, onMounted, ref, useId } from 'vue'
 import MonacoEditor from './MonacoEditor.vue'
 import { useData } from 'vitepress'
 import play from '/icons/play.svg?url&raw'
-import { runners } from './runners'
+import { runners, runWithModel } from './runners'
 import highlighter from './highlighter'
 import templates from 'virtual:templates'
 
@@ -95,6 +95,10 @@ const props = defineProps({
     type: String,
     default: 'js'
   },
+  modelSource: {
+    type: String,
+    default: ''
+  },
   onEvaluate: {
     type: Function
   }
@@ -111,10 +115,15 @@ const evalStatus = ref(null)
 
 // the model the query runs against, shown on demand so it doesn't clutter the snippet
 const modelVisible = ref(false)
-const modelTabs = computed(() => (templates.bookshop ?? [])
-  .filter(file => file.path.endsWith('.cds'))
-  .sort((f1, f2) => f1.path.localeCompare(f2.path))
-  .map(file => ({ key: `${uid}-model-${file.path}`, kind: 'cds', name: file.path, value: file.content })))
+const modelTabs = computed(() => {
+  if (props.modelSource) {
+    return [{ key: `${uid}-model-custom`, kind: 'cds', name: 'model', value: props.modelSource }]
+  }
+  return (templates.bookshop ?? [])
+    .filter(file => file.path.endsWith('.cds'))
+    .sort((f1, f2) => f1.path.localeCompare(f2.path))
+    .map(file => ({ key: `${uid}-model-${file.path}`, kind: 'cds', name: file.path, value: file.content }))
+})
 
 // eval tabs (if any) come first, model tabs are appended at the end
 const combinedTabs = computed(() => [
@@ -194,7 +203,8 @@ async function evaluate() {
   }
   queryResult.value = null
   try {
-    const exec = props.onEvaluate ?? runners[props.language]
+    const exec = props.onEvaluate
+      ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource) : runners[props.language])
     if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
     const result = await exec(queryText.value)
     tabs.value = formatTabs(result).filter(({ value }) => value)
