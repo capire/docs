@@ -98,7 +98,7 @@ const config = defineConfig({
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
     },
-    // cds.worker.js is constructed with `type: 'module'`; match that at build time so its
+    // cds-worker.js is constructed with `type: 'module'`; match that at build time so its
     // dynamic import('@sap/cds') is emitted as native ESM instead of an iife require() shim
     worker: {
       format: 'es',

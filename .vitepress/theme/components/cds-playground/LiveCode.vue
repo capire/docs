@@ -30,7 +30,7 @@
           <div v-else v-html="play"></div>
         </button>
         <button v-if="modelTabs.length" class="icon-button model-toggle-btn" @click="toggleModel"
-            :title="modelVisible ? 'Hide CDS model' : 'Show CDS model'" :aria-pressed="modelVisible">
+            :title="modelVisible ? 'Hide CDS model and sample data' : 'Show CDS model and sample data'" :aria-pressed="modelVisible">
           <svg class="model-icon" viewBox="0 0 24 24" aria-hidden="true">
             <ellipse cx="12" cy="5" rx="8" ry="3" />
             <path d="M4 5v6a8 3 0 0 0 16 0V5" />
@@ -99,6 +99,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  modelData: {
+    type: String,
+    default: ''
+  },
   onEvaluate: {
     type: Function
   }
@@ -117,12 +121,22 @@ const evalStatus = ref(null)
 const modelVisible = ref(false)
 const modelTabs = computed(() => {
   if (props.modelSource) {
-    return [{ key: `${uid}-model-custom`, kind: 'cds', name: 'model', value: props.modelSource }]
+    const tabs = [{ key: `${uid}-model-custom`, kind: 'cds', name: 'schema.cds', value: props.modelSource }]
+    if (props.modelData) {
+      const csvs = JSON.parse(props.modelData)
+      for (const [path, content] of Object.entries(csvs)) {
+        tabs.push({ key: `${uid}-data-${path}`, kind: 'csv', name: path, value: content })
+      }
+    }
+    return tabs
   }
   return (templates.bookshop ?? [])
-    .filter(file => file.path.endsWith('.cds'))
-    .sort((f1, f2) => f1.path.localeCompare(f2.path))
-    .map(file => ({ key: `${uid}-model-${file.path}`, kind: 'cds', name: file.path, value: file.content }))
+    .filter(file => file.path.endsWith('.cds') || file.path.endsWith('.csv'))
+    .sort((f1, f2) => {
+      const kindOrder = (f) => f.path.endsWith('.csv') ? 1 : 0
+      return kindOrder(f1) - kindOrder(f2) || f1.path.localeCompare(f2.path)
+    })
+    .map(file => ({ key: `${uid}-model-${file.path}`, kind: file.path.endsWith('.csv') ? 'csv' : 'cds', name: file.path, value: file.content }))
 })
 
 // eval tabs (if any) come first, model tabs are appended at the end
@@ -204,7 +218,7 @@ async function evaluate() {
   queryResult.value = null
   try {
     const exec = props.onEvaluate
-      ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource) : runners[props.language])
+      ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource, props.modelData ? JSON.parse(props.modelData) : undefined) : runners[props.language])
     if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
     const result = await exec(queryText.value)
     tabs.value = formatTabs(result).filter(({ value }) => value)
@@ -452,6 +466,10 @@ onMounted(() => { metaKey.value = /(Mac|iPhone|iPad)/i.test(navigator?.userAgent
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.interactive-query :deep(.vp-code-group .tabs) {
+  overflow-x: auto;
 }
 
 .vp-code-group.error {

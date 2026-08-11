@@ -94,8 +94,9 @@ async function cdsQL(query) {
 // Worker pool: one worker per model source string, shared across all LiveCode instances
 const workerPool = new Map();
 
-function getOrCreateWorker(modelSource) {
-  if (workerPool.has(modelSource)) return workerPool.get(modelSource);
+function getOrCreateWorker(modelSource, csvs) {
+  const key = csvs ? `${modelSource}\0${JSON.stringify(csvs)}` : modelSource;
+  if (workerPool.has(key)) return workerPool.get(key);
   const worker = new Worker(new URL('./cds-worker.js', import.meta.url), { type: 'module' });
   const initPromise = new Promise((resolve, reject) => {
     worker.addEventListener('message', function once(e) {
@@ -103,15 +104,15 @@ function getOrCreateWorker(modelSource) {
       worker.removeEventListener('message', once);
       e.data.type === 'ready' ? resolve() : reject(new Error(e.data.error));
     });
-    worker.postMessage({ type: 'init', payload: { modelSource } });
+    worker.postMessage({ type: 'init', payload: { modelSource, csvs } });
   });
   const entry = { worker, initPromise };
-  workerPool.set(modelSource, entry);
+  workerPool.set(key, entry);
   return entry;
 }
 
-async function runWithModel(query, modelSource) {
-  const { worker, initPromise } = getOrCreateWorker(modelSource);
+async function runWithModel(query, modelSource, csvs) {
+  const { worker, initPromise } = getOrCreateWorker(modelSource, csvs);
   await initPromise;
   return new Promise((resolve, reject) => {
     const id = crypto.randomUUID();

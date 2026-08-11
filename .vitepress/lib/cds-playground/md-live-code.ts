@@ -26,12 +26,54 @@ import { enabled } from '.'
  * Named model definitions (static, non-live):
  * - ```cds [FooBar]  — defines a named model; rendered as a plain code block
  * - ```cds [FooBarBoo: FooBar]  — extends FooBar; combined source is resolved at render time
+ * - ```cds [FooBar, data: FooData]  — attaches a named CSV data set to the model
+ *
+ * Named CSV data sets (static, non-live):
+ * - ```csv [FooData: data/Foo.csv]  — defines a named data set; rendered as a plain code block
+ * - ```csv hidden [FooData: data/Foo.csv]  — same, but suppressed from output (not rendered)
+ *
+ * CSV and model blocks may appear anywhere on the page — they are collected in a full token pass
+ * before any fence is rendered, so forward references work.
  */
 
 const MODEL_ARG_RE = /^\[.+\]$/
 
-function buildModelMap(tokens: any[]): Record<string, string> {
-  const raw: Record<string, { source: string; base?: string }> = {}
+interface ModelDef { source: string; csvs?: Record<string, string> }
+
+function parseBracketKV(inner: string): { name: string; base?: string; data?: string } {
+  const commaIdx = inner.indexOf(',')
+  const namePart = commaIdx === -1 ? inner.trim() : inner.slice(0, commaIdx).trim()
+  const colonIdx = namePart.indexOf(':')
+  const name = colonIdx === -1 ? namePart : namePart.slice(0, colonIdx).trim()
+  const base = colonIdx === -1 ? undefined : namePart.slice(colonIdx + 1).trim()
+  let data: string | undefined
+  if (commaIdx !== -1) {
+    const dataMatch = inner.slice(commaIdx + 1).match(/\bdata\s*:\s*(\S+)/)
+    if (dataMatch) data = dataMatch[1]
+  }
+  return { name, base, data }
+}
+
+function buildDataMap(tokens: any[]): Record<string, Record<string, string>> {
+  const result: Record<string, Record<string, string>> = {}
+  for (const token of tokens) {
+    if (token.type !== 'fence') continue
+    const bracketMatch = token.info.match(/\[([^\]]+)\]/)
+    if (!bracketMatch) continue
+    const [lang] = token.info.slice(0, bracketMatch.index).trim().split(/\s+/)
+    if (lang !== 'csv') continue
+    const inner = bracketMatch[1]
+    const colonIdx = inner.indexOf(':')
+    if (colonIdx === -1) continue
+    const name = inner.slice(0, colonIdx).trim()
+    const path = inner.slice(colonIdx + 1).trim()
+    result[name] = { [path]: token.content.trim() }
+  }
+  return result
+}
+
+function buildModelMap(tokens: any[], dataMap: Record<string, Record<string, string>>): Record<string, ModelDef> {
+  const raw: Record<string, { source: string; base?: string; csvs?: Record<string, string> }> = {}
   for (const token of tokens) {
     if (token.type !== 'fence') continue
     // Match the bracket first since its content may contain spaces (e.g. "[Foo: Bar]"),
@@ -43,19 +85,18 @@ function buildModelMap(tokens: any[]): Record<string, string> {
     if (lang !== 'cds') continue
     // Only pick up non-live model definition blocks
     if (before.includes('live')) continue
-    const inner = bracketMatch[1]
-    const colonIdx = inner.indexOf(':')
-    const name = colonIdx === -1 ? inner.trim() : inner.slice(0, colonIdx).trim()
-    const base = colonIdx === -1 ? undefined : inner.slice(colonIdx + 1).trim()
-    raw[name] = { source: token.content.trim(), base }
+    const { name, base, data } = parseBracketKV(bracketMatch[1])
+    raw[name] = { source: token.content.trim(), base, csvs: data ? dataMap[data] : undefined }
   }
-  const resolved: Record<string, string> = {}
-  function resolve(name: string): string {
+  const resolved: Record<string, ModelDef> = {}
+  function resolve(name: string): ModelDef {
     if (name in resolved) return resolved[name]
     const def = raw[name]
-    if (!def) return ''
-    const baseSource = def.base ? resolve(def.base) : ''
-    return (resolved[name] = baseSource ? `${baseSource}\n${def.source}` : def.source)
+    if (!def) return { source: '' }
+    const baseDef = def.base ? resolve(def.base) : null
+    const source = baseDef ? `${baseDef.source}\n${def.source}` : def.source
+    const csvs = def.csvs ?? baseDef?.csvs
+    return (resolved[name] = { source, csvs })
   }
   Object.keys(raw).forEach(resolve)
   return resolved
@@ -69,11 +110,16 @@ export function install(md: MarkdownRenderer) {
     // strips "[...]" from token.info as a side effect of rendering (for code-group tab
     // titles), so scanning tokens lazily would miss brackets on already-rendered fences.
     if (!(env as any)._modelMap) {
-      (env as any)._modelMap = buildModelMap(tokens)
+      const dataMap = buildDataMap(tokens)
+      ;(env as any)._modelMap = buildModelMap(tokens, dataMap)
     }
 
     const { info } = tokens[idx]
     const [language, live, ...rest] = info.split(' ')
+
+    // Suppress named CSV data blocks marked hidden — content is captured in the pre-pass and shown as a model tab.
+    if (language === 'csv' && live === 'hidden' && /\[[^\]]+:[^\]]+\]/.test(info)) return ''
+
     if (live === 'live') {
       const mdDir = dirname(env.realPath ?? env.path)
       const filePath = './' + relative(mdDir, join(__dirname, '../../theme/components/cds-playground/LiveCode.vue'))
@@ -87,15 +133,13 @@ export function install(md: MarkdownRenderer) {
 
       const modelArg = rest.find((p: string) => MODEL_ARG_RE.test(p))
       const modelName = modelArg ? modelArg.slice(1, -1) : null
-      let modelSource = ''
-      if (modelName) {
-        modelSource = (env as any)._modelMap[modelName] ?? ''
-      }
+      const modelDef: ModelDef | undefined = modelName ? (env as any)._modelMap[modelName] : undefined
 
       const props: Record<string, string> = {
         language: opts.as ?? language,
       }
-      if (modelSource) props.modelSource = md.utils.escapeHtml(modelSource)
+      if (modelDef?.source) props.modelSource = md.utils.escapeHtml(modelDef.source)
+      if (modelDef?.csvs) props.modelData = md.utils.escapeHtml(JSON.stringify(modelDef.csvs))
 
       const flags = ['readonly'].filter(k => rest.includes(k))
 

@@ -21,7 +21,7 @@ function injectLogger(sqlite) {
 let cds;
 let initialized = false;
 
-async function init(modelSource) {
+async function init(modelSource, csvs) {
   cds = (await import('@sap/cds')).default;
   const sqlite = (await import('better-sqlite3')).default;
 
@@ -33,15 +33,14 @@ async function init(modelSource) {
 
   cds.db = await cds.connect.to('db');
 
-  const csvs = {}
-  await cds.deploy(csn, null, csvs).to(cds.db);
+  await cds.deploy(csn, null, csvs ?? {}).to(cds.db);
   initialized = true;
 }
 
 self.onmessage = async ({ data: { type, id, payload } }) => {
   try {
     if (type === 'init') {
-      await init(payload.modelSource);
+      await init(payload.modelSource, payload.csvs);
       self.postMessage({ type: 'ready' });
     } else if (type === 'query') {
       if (!initialized) throw new Error('Worker not initialized');
