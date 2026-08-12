@@ -7,47 +7,57 @@ function simpleSqlFormat(sql) {
     .trim();
 }
 
-const sqlLog = [];
+// Store all mutable state on self (the worker's persistent global scope) rather than
+// module-level variables. The Vite bundle creates a circular ESM import:
+//   cds-worker.js (worker entry, exports Rollup helpers)
+//   └─ dynamically imports lib-yVvVtPSy.js
+//      └─ statically imports helpers from cds-worker.js  ← circular
+// Safari re-evaluates the worker entry module when this circular import is resolved,
+// resetting any module-level variables. self properties survive that re-evaluation.
+if (!self._cds) {
+  self._cds = { cds: null, initPromise: null, sqlLog: [] };
+}
+const state = self._cds;
 
 function injectLogger(sqlite) {
+  if (state.loggerInjected) return;
+  state.loggerInjected = true;
   const { prototype } = sqlite().constructor;
   const { prepare: original } = prototype;
   prototype.prepare = function prepare(sql) {
-    sqlLog.push(sql);
+    state.sqlLog.push(sql);
     return original.call(this, sql);
   }
 }
 
-let cds;
-let initialized = false;
-
 async function init(modelSource, csvs) {
-  cds = (await import('@sap/cds')).default;
+  state.cds = (await import('@sap/cds')).default;
   const sqlite = (await import('better-sqlite3')).default;
 
   await sqlite.initialized;
   injectLogger(sqlite);
 
-  const csn = cds.compile({ 'model.cds': modelSource });
-  cds.model = csn;
+  const csn = state.cds.compile({ 'model.cds': modelSource });
+  state.cds.model = csn;
 
-  cds.db = await cds.connect.to('db');
+  state.cds.db = await state.cds.connect.to('db');
 
-  await cds.deploy(csn, null, csvs ?? {}).to(cds.db);
-  initialized = true;
+  await state.cds.deploy(csn, null, csvs ?? {}).to(state.cds.db);
 }
 
 self.onmessage = async ({ data: { type, id, payload } }) => {
   try {
     if (type === 'init') {
-      await init(payload.modelSource, payload.csvs);
+      state.initPromise = init(payload.modelSource, payload.csvs);
+      await state.initPromise;
       self.postMessage({ type: 'ready' });
     } else if (type === 'query') {
-      if (!initialized) throw new Error('Worker not initialized');
-      sqlLog.length = 0;
-      const cqn = cds.ql(payload.query);
-      const result = await cds.db.run(cqn);
-      const formatted = sqlLog.map(simpleSqlFormat).join('\n\n-------\n');
+      if (!state.initPromise) throw new Error('Worker not initialized');
+      await state.initPromise;
+      state.sqlLog.length = 0;
+      const cqn = state.cds.ql(payload.query);
+      const result = await state.cds.db.run(cqn);
+      const formatted = state.sqlLog.map(simpleSqlFormat).join('\n\n-------\n');
       self.postMessage({ type: 'result', id, result: [
         { value: result, kind: 'json', name: 'Result' },
         { value: formatted, kind: 'sql', name: 'SQL' },

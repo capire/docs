@@ -104,6 +104,7 @@ function getOrCreateWorker(modelSource, csvs) {
       worker.removeEventListener('message', once);
       e.data.type === 'ready' ? resolve() : reject(new Error(e.data.error));
     });
+    worker.addEventListener('error', (e) => reject(e.error ?? new Error(e.message)), { once: true });
     worker.postMessage({ type: 'init', payload: { modelSource, csvs } });
   });
   const entry = { worker, initPromise };
