@@ -150,7 +150,7 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
 - Vectors stored in native `vector` type
-- `vector_embedding()` SQL function uses hash-based algorithm for testing. Override the SQL function to use real embedding services in production.
+- `vector_embedding()` function must be defined by application developers for both testing and production use.
 - For Node.js, the `pgvector` npm package is only required when you need to read vector columns from query results. If you only pass vectors as parameters (for example, in WHERE clauses or function arguments), the package is not needed: `npm install pgvector`
 
 ### SAP HANA
