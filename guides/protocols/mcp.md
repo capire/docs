@@ -3,16 +3,16 @@ description: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# Model Context Protocol Adapter
+# Model Context Protocol Adapter <Beta />
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-source standard that enables direct integration between large language model (LLM) applications and external data sources. Any CAP service can be turned into an MCP server, allowing AI agents and LLM-powered tools to interact with the service without additional implementation work. All that is required is annotating it with [ `@mcp`](#serving-mcp). From CAP perspective MCP is just another protocol which we serve similar to _OData_, _GraphQL_, _REST_, or _HCQL_.
 
 
 > [!caution] SAP API Policy Applies!
-> When exposing CAP services through MCP, ensure your use cases comply with the [SAP API Policy](https://help.sap.com/doc/sap-api-policy) and any applicable licensing terms.
-> In particular, the CAP MCP adapter, as documented herein, is designed exclusively to expose _custom_ CAP application services via MCP.
-> It is not an endorsed pathway for exposing or proxying _SAP Application APIs_ directly via MCP.
-> For endorsed architectures covering agentic access to SAP APIs, please refer to the reference architectures published on the
+> The CAP MCP adapter, as documented herein, is designed exclusively to expose _custom_ CAP application services via MCP.
+> It is **not an SAP-endorsed architecture**, data service, or service-specific pathway for purposes of section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), and should not be relied upon as a basis for compliance with any exception described in that section.
+> In particular, it is not an endorsed pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ via MCP.
+> For SAP-endorsed architectures covering agentic access to SAP APIs, refer to the reference architectures published on the
 > **[SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0)**.
 
 
@@ -67,9 +67,10 @@ npm add @cap-js/mcp
 ```
 ### In CAP Java Projects
 
-Add this to the *srv/pom.xml*:
+Add this to the *srv/pom.xml* file:
 
-```xml [Java]
+::: code-group
+```xml [srv/pom.xml]
 <dependencies>
   <dependency>
     <groupId>com.sap.cds</groupId>
@@ -78,9 +79,12 @@ Add this to the *srv/pom.xml*:
   </dependency>
 </dependencies>
 ```
+:::
 
-
-Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
+> [!note] Not yet public
+> The feature is not yet released publicly.  Stay tuned.
+>
+> <Internal /> Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
 ## Serving MCP
 
@@ -509,4 +513,5 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 > The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
 
 > [!caution]
-> The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs, as doing so bypasses the governance, authentication, and compliance controls those APIs require. Any use of SAP Application APIs must be in accordance with the [SAP API Policy](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For endorsed patterns on agentic access to SAP Application APIs, consult the [SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.
+> The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs. The adapter is not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
+> Any use of SAP Application APIs must be in accordance with the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For SAP-endorsed patterns on agentic access to SAP Application APIs, consult the [_SAP Architecture Center_](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.

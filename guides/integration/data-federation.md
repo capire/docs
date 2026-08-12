@@ -235,7 +235,7 @@ While the xflights service in terminal 2 shows its incoming HCQL requests like t
 ```zsh
 [hcql] - GET /hcql/data/ {
   SELECT: {
-    from: { ref: [ 'FlightsService.Flights' ] },
+    from: { ref: [ 'sap.capire.flights.FlightsService.Flights' ] },
     columns: [
       { ref: [ 'ID' ], as: 'ID' },
       { ref: [ 'date' ], as: 'date' },

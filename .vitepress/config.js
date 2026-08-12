@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import languages from './languages'
 import playground from './lib/cds-playground/index.js'
+import { slugify } from './lib/slugify.ts'
 import { Menu } from './menu.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -46,10 +47,7 @@ const config = defineConfig({
     },
     anchor: {
       // VS Code-compatible GitHub-style slugifier (mirrors markdown-language-features/src/slugify.ts)
-      slugify: (str) => str
-        .trim().toLowerCase()
-        .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
-        .replace(/\s/g, '-'),
+      slugify,
     },
     container: { // Doesn't seem to work yet
       infoLabel: 'Info',
@@ -134,8 +132,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '5.0.1',
-    java_cds4j: '5.0.1',
+    java_services: '5.0.2',
+    java_cds4j: '5.0.2',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],

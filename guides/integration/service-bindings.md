@@ -60,7 +60,7 @@ You can inspect the effective configurations of declared required services using
 cds env requires
 ```
 ```zsh
-'FlightsService': {
+'sap.capire.flights.FlightsService': {
   kind: '*'
 },
 ```
@@ -84,7 +84,7 @@ cds mock apis/capire/s4.cds
 cds env requires -b
 ```
 ```zsh
-'FlightsService': {
+'sap.capire.flights.FlightsService': {
   kind: 'hcql',
   impl: '@sap/cds/srv/remote-service.js',
   credentials: { url: 'http://localhost:51441/hcql/data' }
