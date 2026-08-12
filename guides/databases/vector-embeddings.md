@@ -116,38 +116,26 @@ let similarIncidents = await SELECT.from('Incidents')
 
 CAP provides equivalent implementations of vector functions for all supported databases based on the function signatures as defined in SAP HANA:
 
-[Learn more about SAP HANA Vector Functions](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-functions) {.learn-more}
-
-### cosine_similarity
+### [cosine_similarity](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector)
 ```
 cosine_similarity(vector1, vector2) → number
 ```
-Measures vector similarity (range: -1 to 1). Returns 1 for identical vectors, 0 for orthogonal vectors, -1 for opposite vectors.
 
-### l2distance
+### [l2distance](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector)
 ```
 l2distance(vector1, vector2) → number
 ```
-Calculates Euclidean distance between two vectors. Returns 0 for identical vectors.
 
-### l2normalize
+### [l2normalize](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/normalize-function-vector)
 ```
 l2normalize(vector) → vector
 ```
-Normalizes a vector to a standard length of 1 by scaling all components proportionally.
 
-### vector_embedding
+### [vector_embedding](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector)
 ```
 vector_embedding(text, text_type, model_name) → vector
 vector_embedding(text, text_type, model_name, remote_source) → vector
 ```
-Generates vector embeddings from text.
-
-**Parameters:**
-- `text` - Input text to embed
-- `text_type` - `'DOCUMENT'` (for storing content) or `'QUERY'` (for search queries)
-- `model_name` - Model identifier (database-specific)
-- `remote_source` (optional) - Remote source configuration for external embedding services (SAP HANA only)
 
 **Database Implementation:**
 - **HANA:** Uses real AI models (SAP built-in models or external remote sources)
