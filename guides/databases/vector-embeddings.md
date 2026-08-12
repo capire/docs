@@ -151,7 +151,7 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
   ```
 - Vectors stored in native `vector` type
 - `vector_embedding()` function must be defined by application developers for both testing and production use.
-- For Node.js, the `pgvector` npm package is only required when you need to read vector columns from query results. If you only pass vectors as parameters (for example, in WHERE clauses or function arguments), the package is not needed: `npm install pgvector`
+- For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
 
 ### SAP HANA
 - Native vector engine with built-in support
