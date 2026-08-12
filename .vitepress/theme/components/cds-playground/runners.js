@@ -76,7 +76,7 @@ async function evalJS(code, isAsync) {
   function resultTabs(result, kind) {
     if (kind === 'json') {
       let yaml
-      try { yaml = cds.compile.to.yaml(result) } catch {}
+      try { yaml = cds.compile.to.yaml(result) } catch {/* ignore */}
       if (yaml) return [
         { value: yaml, kind: 'yaml', name: 'Result (as yaml)' },
         { value: JSON.stringify(result, null, 2), kind: 'json', name: 'Result (raw)' },
@@ -88,7 +88,7 @@ async function evalJS(code, isAsync) {
   if (isAsync) {
     let fn;
     try { fn = new AsyncFunction(source) }
-    catch (e) { fn = new AsyncFunction(code) } // rewrite had a syntax error -> run the code unmodified
+    catch { fn = new AsyncFunction(code) } // rewrite had a syntax error -> run the code unmodified
     const { result, formatted } = await sql.trace(fn);
     const kind = result? 'json' : 'plaintext'
     return [
@@ -99,7 +99,7 @@ async function evalJS(code, isAsync) {
 
   let fn;
   try { fn = new Function(source) }
-  catch (e) { fn = new Function(code) } // rewrite had a syntax error -> run the code unmodified
+  catch { fn = new Function(code) } // rewrite had a syntax error -> run the code unmodified
   const result = fn();
   const kind = result? 'json' : 'plaintext'
   return resultTabs(result, kind);
