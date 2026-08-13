@@ -22,6 +22,8 @@ import { enabled } from '.'
  *   example: ```cds live readonly
  * - [ModelName]: run query against a named model defined elsewhere on the page
  *   example: ```cds live [FooBar]
+ * - [result:<lang>]: format the result as the given language (e.g. sql) instead of JSON
+ *   example: ```js live [result:sql]
  *
  * Named model definitions (static, non-live):
  * - ```cds [FooBar]  — defines a named model; rendered as a plain code block
@@ -37,6 +39,7 @@ import { enabled } from '.'
  */
 
 const MODEL_ARG_RE = /^\[.+\]$/
+const RESULT_KIND_RE = /^\[result:(\w+)\]$/
 
 interface ModelDef { source: string; csvs?: Record<string, string> }
 
@@ -135,9 +138,12 @@ export function install(md: MarkdownRenderer) {
         return idx > -1 ? [key, rest.splice(idx+1, 1)[0]] : [];
       }))
 
-      const modelArg = rawRest.find((p: string) => MODEL_ARG_RE.test(p))
+      const modelArg = rawRest.find((p: string) => MODEL_ARG_RE.test(p) && !RESULT_KIND_RE.test(p))
       const modelName = modelArg ? modelArg.slice(1, -1) : null
       const modelDef: ModelDef | undefined = modelName ? (env as any)._modelMap[modelName] : undefined
+
+      const resultArg = rawRest.find((p: string) => RESULT_KIND_RE.test(p))
+      const resultKind = resultArg ? RESULT_KIND_RE.exec(resultArg)![1] : null
 
       const props: Record<string, string> = {
         language: opts.as ?? language,
@@ -145,6 +151,7 @@ export function install(md: MarkdownRenderer) {
       if (modelDef?.source) props.modelSource = md.utils.escapeHtml(modelDef.source)
       if (modelDef?.csvs) props.modelData = md.utils.escapeHtml(JSON.stringify(modelDef.csvs))
       if (highlightSpec) props.highlightLines = highlightSpec
+      if (resultKind) props.resultKind = resultKind
 
       const flags = ['readonly', 'async'].filter(k => rest.includes(k))
 

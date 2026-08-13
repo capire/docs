@@ -113,6 +113,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  resultKind: {
+    type: String,
+    default: ''
+  },
   onEvaluate: {
     type: Function
   }
@@ -181,6 +185,17 @@ function format({ value, kind }, dark, highlightSpec = '') {
 }
 
 function formatTabs(result) {
+  if (props.resultKind) {
+    // evalJS wraps results in tab objects with a possibly JSON-stringified value; unwrap first.
+    // When resultTabs produces yaml+json tabs, take the json tab (not the yaml one at [0]).
+    const raw = Array.isArray(result) && result[0]?.kind !== undefined
+      ? (result.find(t => t.kind === 'json') ?? result[0]).value
+      : result
+    let data = raw
+    if (typeof raw === 'string') try { data = JSON.parse(raw) } catch {}
+    const value = Array.isArray(data) ? data.join(';\n') : typeof data === 'string' ? data : JSON.stringify(data, null, 2)
+    return [{ key: `${uid}-Result`, kind: props.resultKind, name: `Result (as ${props.resultKind.toUpperCase()})`, value }]
+  }
   if (result && result.kind && result.value) {
     const { kind, name = 'Result', value } = result
     return [

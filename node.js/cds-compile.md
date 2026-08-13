@@ -144,12 +144,20 @@ Run the example. See that:
 
 Following are a collection of model processors which take a CSN as input and compile it to a target output. They can be used in two API flavors:
 
-```js live
-let csn = {definitions:{}}
-let sql = cds.compile(csn).to.sql ({dialect:'sqlite'}) //> fluent
+```js live [result:sql] {5}
+let csn = cds.parse(`
+  entity Foo { foo:String }
+  entity Bar as projection on Foo;
+`)
+cds.compile(csn).to.sql ({dialect:'sqlite'}) //> fluent
 ```
-```js live
-let sql = cds.compile.to.sql (csn,{dialect:'sqlite'}) //> direct
+
+```js live [result:sql] {5}
+let csn = cds.parse(`
+  entity Foo { foo:String }
+  entity Bar as projection on Foo;
+`)
+cds.compile.to.sql (csn, {dialect:'sqlite'}) //> direct
 ```
 
 
@@ -190,16 +198,24 @@ Accepted `options` are the same [as documented for `cds.compile`](#additional-op
 In case of the latter, a generator is returned that yields `[ edm, {file, suffix} ]` for each service.
 For example, use it as follows:
 
-```js
+```js live {8}
+let csn = cds.parse(`
+  entity Foo { key foo:String }
+  service CatalogService { entity Bar as projection on Foo; }
+`)
 // for one service
-let edm = cds.compile.to.edm (csn, {service:'Catalog'})
-console.log (edm)
+cds.compile.to.edm (csn, {service:'CatalogService'})
 ```
-```js
+```js live {7-8}
+let csn = cds.parse(`
+  service CatalogService { entity Foo { key foo:String } }
+  service AdminService   { entity Bar { key bar:String } }
+`)
+let result = []
 // for all services
 let all = cds.compile.to.edm (csn, {service:'all'})
-for (let [edm,{file,suffix}] of all)
-  console.log (file,suffix,edm)
+for (let [edm,{file,suffix}] of all)  result.push ({file,suffix,edm})
+return result
 ```
 
 ### .hdbtable() {.method .deprecated}
@@ -215,11 +231,15 @@ Returns a generator function that produces `[ content, {file} ]` for each artifa
 
 For example, use it as follows:
 
-```js
+```js live {6-7}
+let csn = cds.parse(`
+  entity Foo { key foo:String }
+  service CatalogService { entity Bar as projection on Foo; }
+`)
+let result = []
 const all = cds.compile.to.hana(csn);
-for (const [content, { file }] of all) {
-  console.log(file, content);
-}
+for (const [content, { file }] of all)  result.push({file,content})
+return result
 ```
 
 Additional data for `.hdbmigrationtable` files is calculated if a `beforeImage` parameter is passed in. This is only relevant for build tools to determine the actual migration table changes.
@@ -232,24 +252,41 @@ The default returns an array with the generated statements.
 
 Accepted `options` are:
 
-- `dialect`: _'plain' \| 'sqlite' \| 'postgres' \| 'h2'_ &rarr; chooses the dialect to generate
+- `dialect`: _'plain' \| 'sqlite' \| 'postgres' \| 'hana' \| 'h2'_ &rarr; chooses the dialect to generate
 - `names`: _'plain' \| 'quoted'_ &rarr; allows to generate DDL using quoted names
 - `as`: _'str'_ &rarr; returns a string with concatenated DDL statements.
 
-Examples:
-```js
-let ddls1 = cds.compile(csn).to.sql()
-let ddls2 = cds.compile(csn).to.sql({dialect:'plain'})
-let script = cds.compile(csn).to.sql({as:'str'})
+#### Examples
+
+Default mode:
+```js live {5}
+let csn = cds.parse(`
+  entity Foo { key foo:String; date:Date }
+  service CatalogService { entity Bar as projection on Foo; }
+`)
+cds.compile(csn).to.sql()
 ```
 
+Dialect `hana` with quoted names returning a plain string:
+```js live [result:sql] {5}
+let csn = cds.parse(`
+  entity Foo { key foo:String; date:Date }
+  service CatalogService { entity Bar as projection on Foo; }
+`)
+cds.compile(csn).to.sql({dialect:'hana', names:'quoted', as:'str'})
+```
 
 
 ### .cdl() {.method}
 
 Reconstructs [CDL](../cds/cdl.md) source code for the given csn model.
 
-
+```js live [result:cds] {6}
+let csn = { definitions: {
+  Foo: { kind: 'entity', elements: { foo: { type: 'cds.String' }}}
+}}
+cds.compile(csn).to.cdl()
+```
 
 ### .asyncapi() {.method}
 
@@ -257,12 +294,10 @@ Reconstructs [CDL](../cds/cdl.md) source code for the given csn model.
 Convert the CSN file into an AsyncAPI document:
 
 ```js
-const doc = cds.compile.to.asyncapi(csn_file)
+const doc = cds.compile.to.asyncapi(csn)
 ```
 
-
-
-
+The `asyncapi` function is only available through the [designtime package `@sap/cds-dk`](../tools/apis/).
 
 
 
@@ -311,10 +346,10 @@ Parses a source string in _[CDL](../cds/cdl)_ syntax and returns it as a parsed 
 It's essentially a [shortcut to `cds.compile (..., {flavor:'parsed'})`](#cds-compile-).
 
 Examples:
-```js
-let csn = cds.parse.cdl (`entity Foo{}`)
-let csn = cds.parse.cdl `entity Foo{}`
-let csn = cds.parse `entity Foo{}`  //> shortcut to the above
+```js live
+let csn1 = cds.parse.cdl (`entity Foo{}`)
+let csn2 = cds.parse.cdl `entity Foo{}`
+let csn3 = cds.parse `entity Foo{}`  //> shortcut to the above
 ```
 
 
@@ -324,9 +359,9 @@ let csn = cds.parse `entity Foo{}`  //> shortcut to the above
 Parses a source string in _[CQL](../cds/cql)_ syntax and returns it as a parsed query according to the [_CQN spec_](../cds/cqn). Supports tagged template strings as well as plain string arguments.
 
 Examples:
-```js
-let cqn = cds.parse.cql (`SELECT * from Foo`)
-let cqn = cds.parse.cql `SELECT * from Foo`
+```js live
+let cqn1 = cds.parse.cql (`SELECT * from Foo`)
+let cqn2 = cds.parse.cql `SELECT * from Foo`
 ```
 
 
@@ -336,13 +371,10 @@ let cqn = cds.parse.cql `SELECT * from Foo`
 Parses a source string in CQL expression syntax and returns it as a parsed expression according to the [_CQN Expressions spec_](../cds/cxn#operators). Supports tagged template strings as well as plain string arguments.
 
 Examples:
-```js
-[dev] cds repl
-> let cxn = cds.parse.expr (`foo.bar > 9`)
-> let cxn = cds.parse.expr `foo.bar > 9` //> both return:
-{xpr:[ {ref:['foo', 'bar']}, '>', {val:9} ] }
+```js live
+let cxn1 = cds.parse.expr (`foo.bar > 9`)
+let cxn2 = cds.parse.expr `foo.bar > 9`
 ```
-
 
 
 ### cds. parse. xpr() {.method}
@@ -350,10 +382,8 @@ Examples:
 Convenience shortcut to `cds.parse.expr(x).xpr`
 
 Example:
-```js
-[dev] cds repl
-> let xpr = cds.parse.xpr (`foo.bar > 9`) // [!code focus]
-[ {ref:['foo', 'bar']}, '>', {val:9} ]
+```js live
+let xpr = cds.parse.xpr (`foo.bar > 9`)
 ```
 
 
@@ -363,15 +393,9 @@ Example:
 Convenience shortcut to `cds.parse.expr(x).ref`
 
 Example:
-```js
-[dev] cds repl
-> let ref = cds.parse.ref (`foo.bar`) // [!code focus]
-['foo', 'bar']
+```js live
+let ref = cds.parse.ref (`foo.bar`)
 ```
-
-
-
-
 
 
 
