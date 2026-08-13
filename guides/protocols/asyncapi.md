@@ -45,7 +45,7 @@ Use `cds import` to convert an AsyncAPI document into a CDS service definition:
 cds import --asyncapi ~/Downloads/BookStore_AsyncAPI.json
 ```
 
-[Learn more about `cds.import`](../../tools/apis/cds-import#cds-import-from-asyncapi){.learn-more}
+[Learn more about `cds.import`](../../tools/apis/cds-import#from-asyncapi){.learn-more}
 
 ## Programmatic Usage { #programmatic}
 
