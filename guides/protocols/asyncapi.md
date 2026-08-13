@@ -37,6 +37,16 @@ If you want to generate one AsyncAPI document for all the services, you can use 
 cds compile srv --service all -o docs --to asyncapi --asyncapi:merged
 ```
 
+## Importing AsyncAPI { #import}
+
+Use `cds import` to convert an AsyncAPI document into a CDS service definition:
+
+```sh
+cds import --asyncapi ~/Downloads/BookStore_AsyncAPI.json
+```
+
+[Learn more about `cds.import`](../../tools/apis/cds-import#cds-import-from-asyncapi){.learn-more}
+
 ## Programmatic Usage { #programmatic}
 
 ```js
