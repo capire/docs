@@ -296,7 +296,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm-ci # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: bookstore-api # [!code focus]
         properties:
@@ -314,7 +314,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm-ci # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: orders-api # [!code focus]
         properties:
@@ -332,7 +332,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm-ci # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: reviews-api # [!code focus]
         properties:
@@ -356,23 +356,18 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build ./shared-db --for hana --production
-        - npx cds build ./orders --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./orders --for nodejs --production # [!code ++]
         - npx cds build ./reviews --for nodejs --production # [!code ++]
-        - npx cds build ./bookstore --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./bookstore --for nodejs --production # [!code ++]
 ```
 :::
-
-::: info --ws-pack
-Note that we use the *--ws-pack* option for some modules. It's important for node modules referencing other repository-local node modules.
-:::
-
 
 ### Authentication
 
 Add [security configuration](../security/authentication) using the command:
 
-```shell
-cds add xsuaa --for production
+```sh
+cds add xsuaa
 ```
 
 Add the admin role
