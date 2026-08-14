@@ -1,15 +1,23 @@
 ---
-synopsis: >
+description: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# MCP Protocol Adapter <Beta />
-
-
+# Model Context Protocol Adapter <Beta />
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-source standard that enables direct integration between large language model (LLM) applications and external data sources. Any CAP service can be turned into an MCP server, allowing AI agents and LLM-powered tools to interact with the service without additional implementation work. All that is required is annotating it with [ `@mcp`](#serving-mcp). From CAP perspective MCP is just another protocol which we serve similar to _OData_, _GraphQL_, _REST_, or _HCQL_.
 
+
+> [!caution] SAP API Policy Applies!
+> The CAP MCP adapter, as documented herein, is designed exclusively to expose _custom_ CAP application services via MCP.
+> It is **not an SAP-endorsed architecture**, data service, or service-specific pathway for purposes of section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), and should not be relied upon as a basis for compliance with any exception described in that section.
+> In particular, it is not an endorsed pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ via MCP.
+> For SAP-endorsed architectures covering agentic access to SAP APIs, refer to the reference architectures published on the
+> **[SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0)**.
+
+
 [[toc]]
+
 
 > [!note]
 >
@@ -59,9 +67,10 @@ npm add @cap-js/mcp
 ```
 ### In CAP Java Projects
 
-Add this to the *srv/pom.xml*:
+Add this to the *srv/pom.xml* file:
 
-```xml [Java]
+::: code-group
+```xml [srv/pom.xml]
 <dependencies>
   <dependency>
     <groupId>com.sap.cds</groupId>
@@ -70,11 +79,12 @@ Add this to the *srv/pom.xml*:
   </dependency>
 </dependencies>
 ```
+:::
 
-Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
-
-
-
+> [!note] Not yet public
+> The feature is not yet released publicly.  Stay tuned.
+>
+> <Internal /> Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
 ## Serving MCP
 
@@ -116,9 +126,9 @@ annotate CatalogService with @mcp:'books'
 > From the perspective of a developer in a CAP-based project, `@mcp` is just another protocol for your services, similar to `@odata`, `@graphql`, `@rest`, or `@hcql`. The adapter takes care of the rest, with all the standard CAP features you know working out of the box also with MCP, including annotations like `@cds.query.limit`, etc.
 
 
-### Using Specific MCP Services
+### Tailored services for MCP use
 
-In case you want to serve tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+In case you want to tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
 
 ::: code-group
 ```cds [srv/books-service.cds]
@@ -321,9 +331,12 @@ INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 
 
 ### Autowired MCP Clients
 
-Whenever you start your application, the MCP adapter automatically registers all MCP endpoints with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
+Whenever you start your application, the MCP adapter automatically registers all MCP servers with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
 
-During startup, the generated MCP servers and their URL are added to the client-specific configuration files like that:
+> [!tip] MCP servers
+> Note the distinction between the CAP server that listens on a certain port, and MCP servers which are just endpoints provided and served by the CAP server. We use the term "MCP server" despite this, to align with MCP terminology.
+
+During startup, information about the MCP server endpoints is added to the client-specific configuration files like that:
 
 ::: code-group
 ```json [~/.claude.json]
@@ -491,5 +504,14 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 ### Prompt Injection Attacks
 
 > [!caution]
-> The MCP adapter does not perform any input validation or output validation regarding prompt injections.
-> Hence, for production use cases ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (for example, Joule).
+> The MCP adapter does not perform any input validation or output validation to prevent prompt injection attacks.
+> Agents can potentially be manipulated by data returned from the service to execute unintended actions. For any deployment ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
+
+### Missing Governance Controls
+
+> [!caution]
+> The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
+
+> [!caution]
+> The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs. The adapter is not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
+> Any use of SAP Application APIs must be in accordance with the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For SAP-endorsed patterns on agentic access to SAP Application APIs, consult the [_SAP Architecture Center_](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.

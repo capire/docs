@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   The guide provides an overview of custom build processes for CAP projects, explaining how to tailor the standard build process to specific project requirements.
-status: released
 ---
 
 # Implement Build Plugins <Since version="7.5.0" package="@sap/cds-dk" />

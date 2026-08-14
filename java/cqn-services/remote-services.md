@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Remote Services are CQN-based clients to remote APIs that a CAP application consumes. This section describes how to configure and use these services.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 The CAP Java SDK supports _Remote Services_ for OData V2 and V4 APIs out of the box.
 The CQN query APIs enable [late-cut microservices](../../get-started/features#late-cut-microservices) with simplified mocking capabilities. Regarding multitenant applications, these APIs keep you extensible, even towards remote APIs. In addition, they free developers from having to map CQN to OData themselves.

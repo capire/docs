@@ -1,7 +1,5 @@
 ---
-# layout: cookbook
-label: Authentication
-synopsis: >
+description: >
   This guide explains how to authenticate CAP services.
 status: released
 ---

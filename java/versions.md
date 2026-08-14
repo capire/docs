@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   Learn in this chapter about CAP Java versions and their dependencies.
-status: released
 ---
 
 # Versions & Dependencies
@@ -11,7 +10,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 <!-- ## [CDS Properties](properties/) {.toc-redirect} -->
 

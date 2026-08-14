@@ -1,8 +1,6 @@
 ---
-synopsis: >
-  CAP Messaging provides support for publish-subscribe-based messaging, which is an asynchronous communication pattern well suited for scenarios where a sender wants to send out information to one or many receivers that are potentially unknown and/or unavailable at the time of sending.
-
-status: released
+description: >
+  How CAP's publish-subscribe-based Messaging support enables asynchronous communication with one or many receivers that may be unknown or unavailable at the time of sending.
 ---
 
 <script setup>
@@ -25,7 +23,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 In contrast, the nature of synchronous communication between services can be disadvantageous depending on the desired information flow, for example, sender and receiver need to be available at the time of the request. The sender needs to know the receiver and how to call it, and that communication per request is usually point-to-point only.
 

@@ -1,9 +1,6 @@
 ---
-# layout: cds-ref
-shorty: Built-in Types
-synopsis: >
+description: >
   Find here a brief overview of the predefined types shipped with CDS.
-status: released
 ---
 
 

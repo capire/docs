@@ -1,3 +1,8 @@
+---
+description: >
+  How CAP runtimes use service bindings to connect to required services at runtime, based on declared configuration and injected credentials.
+---
+
 # Service Bindings
 
 Service bindings configure connectivity to required services. CAP runtimes use them to connect to these services at runtime, using credentials injected from the binding environment, such as `url`, and authentication details.
@@ -55,7 +60,7 @@ You can inspect the effective configurations of declared required services using
 cds env requires
 ```
 ```zsh
-'FlightsService': {
+'sap.capire.flights.FlightsService': {
   kind: '*'
 },
 ```
@@ -79,7 +84,7 @@ cds mock apis/capire/s4.cds
 cds env requires -b
 ```
 ```zsh
-'FlightsService': {
+'sap.capire.flights.FlightsService': {
   kind: 'hcql',
   impl: '@sap/cds/srv/remote-service.js',
   credentials: { url: 'http://localhost:51441/hcql/data' }

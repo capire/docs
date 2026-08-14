@@ -1,3 +1,7 @@
+---
+description: >
+  How to set up and use PostgreSQL as a database for CAP applications via the `@cap-js/postgres` service.
+---
 
 # Using PostgreSQL
 
