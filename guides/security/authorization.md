@@ -272,7 +272,7 @@ Restrictions can be defined on different types of CDS resources, but there are s
 >   ]) {/*...*/}
 > ```
 
-> <sup>2</sup> For (unbound) actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>2</sup> For (unbound) actions and functions — as well as actions and functions bound to a *collection* of instances — Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
@@ -458,7 +458,7 @@ In addition, the Java runtime [checks the filter condition of the input data](#i
 
 <div class="impl node">
 
-In addition, for `CREATE` as well as unbound actions and functions, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+In addition, for `CREATE` as well as unbound actions and functions and actions and functions bound to a *collection* of instances, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 </div>
 
@@ -658,24 +658,28 @@ entity Reviews @(restrict: [
   { grant: 'CREATE', where: '$user.level >= 2' } ]);
 ```
 
-For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`) and to unbound actions and functions, where there's no persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
+For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`), to unbound actions and functions, and to actions and functions bound to a *collection* of instances — everywhere there's no single persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
 
 
 ### Rejected Entity Selection { #reject-403 }
 
 Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
-are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
+are guarded by the runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
 Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
 
-To allow the UI to distinguish between *not found* and *forbidden*, CAP Java can detect this situation and rejects `UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
+To allow the UI to distinguish between *not found* and *forbidden*, the runtime detects this situation and rejects `UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
 The additional authorization check might affect performance.
 
 ::: warning Avoid enumerable keys
 To avoid disclosure of the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable or add custom code to overrule the default behavior otherwise.
 :::
 
+<div class="impl java">
+
 Starting with CAP Java `4.0`, the reject behaviour is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
+
+</div>
 
 
 
