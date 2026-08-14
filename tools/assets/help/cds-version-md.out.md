@@ -4,7 +4,7 @@
 
  | Package              | Version | Location                                                           |
  | -------------------- | ------- | ------------------------------------------------------------------ |
- |<em> @sap/cds-dk (global) </em>|<em> 10.0.6  </em>|<i> .../node_modules/@sap/cds-dk </i>|
+ |<em> @sap/cds-dk (global) </em>|<em> 10.0.7  </em>|<i> .../node_modules/@sap/cds-dk </i>|
  |<em> @sap/cds             </em>|<em> 10.0.5  </em>|<i> .../node_modules/@sap/cds                                            </i>|
  |<em> @sap/cds-compiler    </em>|<em> 7.0.3   </em>|<i> .../node_modules/@sap/cds-compiler                                   </i>|
  |<em> @sap/cds-fiori       </em>|<em> 2.3.0   </em>|<i> .../node_modules/@sap/cds-fiori                                      </i>|

@@ -47,7 +47,7 @@ If the database calculates vector embeddings on write it automatically regenerat
 :::
 
 ::: info Local Testing with H2 and SQLite
-On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing.
+On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
 :::
 
 > [!warning] Java only and <Beta/>
@@ -111,4 +111,53 @@ let similarIncidents = await SELECT.from('Incidents')
   .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.75`;
 ```
 :::
+
+## Vector Functions
+
+CAP provides equivalent implementations of vector functions for all supported databases based on the function signatures as defined in SAP HANA:
+
+### [cosine_similarity](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector)
+```
+cosine_similarity(vector1, vector2) → number
+```
+
+### [l2distance](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector)
+```
+l2distance(vector1, vector2) → number
+```
+
+### [l2normalize](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/normalize-function-vector)
+```
+l2normalize(vector) → vector
+```
+
+### [vector_embedding](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector)
+```
+vector_embedding(text, text_type, model_name) → vector
+vector_embedding(text, text_type, model_name, remote_source) → vector
+```
+
+**Database Implementation:**
+- **HANA:** Uses real AI models (SAP built-in models or external remote sources)
+- **SQLite & H2:** Hash-based deterministic implementation for testing. Can be overridden by application developers to use external embedding services.
+- **PostgreSQL:** No default implementation. Application developers must define their own `vector_embedding` function.
+
+## Database-Specific Considerations
+
+### PostgreSQL
+- Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
+  ```sql
+  CREATE EXTENSION IF NOT EXISTS vector;
+  ```
+- Vectors stored in native `vector` type
+- `vector_embedding()` function must be defined by application developers for both testing and production use.
+- For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
+
+### SAP HANA
+- Native vector engine with built-in support
+- Type mapping: `cds.Vector` → `REAL_VECTOR`
+- `vector_embedding()` supports built-in SAP models and external remote sources (such as Azure OpenAI, SAP AI Core)
+
+[Learn more about HANA Vector Engine](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide) {.learn-more}
+
 
