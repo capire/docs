@@ -272,7 +272,7 @@ Restrictions can be defined on different types of CDS resources, but there are s
 >   ]) {/*...*/}
 > ```
 
-> <sup>2</sup> For (unbound) actions and functions — as well as actions and functions bound to a *collection* of instances — Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>2</sup> For actions and functions that are either unbound or bound to a *collection* of instances, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
