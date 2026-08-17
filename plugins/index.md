@@ -387,7 +387,7 @@ Features:
 - Batch notifications — emit multiple notifications in a single call
 - i18n support and dynamic priority for notification types
 - Console logging in development — no external service needed
-- Transactional outbox — maximised scalability and resilience
+- Transactional outbox — maximized scalability and resilience
 - Automatic registration and lifecycle management of notification types on startup
 
 
