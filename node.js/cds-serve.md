@@ -406,10 +406,9 @@ Be aware that using an absolute path will disallow serving the service at multip
 
 ### PATCH vs. PUT vs. Replace
 
-The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
-`PUT`, on the other hand, is meant for ensuring a resource exists
-, that is, if it doesn't yet exists, it gets created.
-If it does exist, it gets updated to reflect the request's content.
+The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
+`PUT`, on the other hand, ensures a resource exists: a missing resource gets created,
+while an existing one gets updated with the request’s content.
 
 This content, however, may be incomplete.
 By default, the values for not listed keys are not touched.
