@@ -408,7 +408,7 @@ Be aware that using an absolute path will disallow serving the service at multip
 
 The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
 `PUT`, on the other hand, ensures a resource exists: a missing resource gets created,
-while an existing one gets updated with the request’s content.
+while an existing one gets updated with the request's content.
 
 This content, however, may be incomplete.
 By default, the values for not listed keys are not touched.
