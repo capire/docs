@@ -1,6 +1,7 @@
 ---
 embed: link
-status: released
+description: >
+  Reference of all configuration properties available for configuring CAP Java applications via `application.yml`.
 ---
 
 <script setup>

@@ -1,13 +1,12 @@
 ---
-synopsis: >
-  CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
-  This section explains how to configure multitenancy for the CAP Java.
+description: >
+  How to configure the classic multitenancy setup for CAP Java applications run as software as a service (SaaS), serving multiple isolated subscriber tenants.
 # uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # Multitenancy (Classic) { #multitenancy-classic}
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ::: warning
 The multitenancy services (`@sap/cds-mtx`) described in this chapter are in maintenance mode and only supported until CAP Java 2.x.

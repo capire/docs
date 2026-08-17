@@ -1,8 +1,6 @@
 ---
-label: cds-add
-synopsis: >
+description: >
   Learn how to create a <code>cds add</code> plugin.
-status: released
 ---
 
 <style scoped lang="scss">

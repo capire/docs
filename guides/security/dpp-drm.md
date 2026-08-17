@@ -1,7 +1,6 @@
 ---
-synopsis: >
-  The Data Retention Management (DRM) guide is under construction. It will cover concepts and implementation details for managing the retention and deletion of personal data in compliance with data privacy regulations.
-# status: released
+description: >
+  Placeholder for the upcoming Data Retention Management (DRM) guide, which will cover concepts and implementation details for managing the retention and deletion of personal data in compliance with data privacy regulations.
 ---
 
 

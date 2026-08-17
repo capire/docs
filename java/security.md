@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   Describes authentication and authorization specific for CAP Java.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -22,12 +21,12 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 { #security}
 
 ::: info
-This chapter appends CAP Java sepcifc information only. 
+This chapter appends CAP Java sepcifc information only.
 Consult the comprehensive [Security Guide](../guides/security/) first to learn about CAP Security features in general.
 :::
 
@@ -57,7 +56,7 @@ Both can be active for the local scenario.
 
 #### Service Bindings { #bindings }
 
-Additionally, your application must be bound to corresponding service instances depending on your scenario.  
+Additionally, your application must be bound to corresponding service instances depending on your scenario.
 The following list describes which service must be bound depending on the tokens your application should accept:
    * only accept tokens issued by XSUAA --> bind your application to an [XSUAA service instance](../guides/security/authentication#xsuaa-auth)
    * only accept tokens issued by IAS --> bind your application to an [IAS service instance](../guides/security/authentication#ias-auth)
@@ -157,7 +156,7 @@ public class ActuatorSecurityConfig {
 
 In case you want to write your own custom security configuration that acts as a last line of defense and handles any request you need to disable the CAP security configurations by setting <Config java>cds.security.authentication.authConfig.enabled: false</Config>, as Spring Security forbids registering multiple security configurations with an any request security matcher.
 
-If you even want to deactivate OAuth token validation for XSUAA or IAS, for example, to establish an own authentication strategy, 
+If you even want to deactivate OAuth token validation for XSUAA or IAS, for example, to establish an own authentication strategy,
 the following properties can be used:
 
 | Configuration Property                               | Description                                             | Default
@@ -169,7 +168,7 @@ the following properties can be used:
 
 ## CAP Users { #custom-authentication}
 
-CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA or IAS; it runs requests based on a [user abstraction](../guides/security/cap-users#claims). 
+CAP is not bound to any specific authentication method or user representation such as those introduced with XSUAA or IAS; it runs requests based on a [user abstraction](../guides/security/cap-users#claims).
 The CAP user of a request is represented by a [UserInfo](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/UserInfo.html) object that can be retrieved from the [RequestContext](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/request/RequestContext.html) as explained in the [authentication guide](../guides/security/cap-users#developing-with-users).
 
 ### Mock Users { #mock-users}
@@ -184,7 +183,7 @@ Mock users are only initialized if the `org.springframework.boot:spring-boot-sta
 
 #### Preconfigured Mock Users { #preconfigured-mock-users}
 
-For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/cap-users#pseudo-roles): 
+For convenience, the runtime creates default mock users reflecting the [pseudo roles](../guides/security/cap-users#pseudo-roles):
 
 | Name                               | Role                                             | Password
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------
@@ -193,8 +192,8 @@ For convenience, the runtime creates default mock users reflecting the [pseudo r
 | `privileged`  | privileged mode | _empty_
 
 
-For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`. 
-The privileged user will pass any authorization checks. 
+For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`.
+The privileged user will pass any authorization checks.
 
 There are several properties to control behavioud of mock users:
 

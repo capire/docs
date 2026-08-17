@@ -1,8 +1,6 @@
 ---
-label: cds-lint-rules
-synopsis: >
+description: >
   This page lists the rules contained in the ESLint plugin for CDS in depth.
-status: released
 ---
 
 <script setup>

@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for the `cds.i18n` module, used for localizing UIs and runtime error messages, and directly in custom code.
 ---
 
 # Localization / i18n

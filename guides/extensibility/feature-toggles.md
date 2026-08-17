@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 
 # Feature Toggles
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <ImplVariantsHint />
 
@@ -387,10 +387,10 @@ So, to add support for a specific feature toggles management you can add a simpl
 
 ```js
 const cds = require ('@sap/cds')
-cds.on('bootstrap', app => app.use ((req,res,next) => {
+cds.middlewares.add((req,res,next) => {
   req.features = req.headers.features || 'isbn'
   next()
-}))
+}, { before: 'ctx_model' })
 ```
 
 ## Feature-Toggled Custom Logic
