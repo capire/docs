@@ -190,43 +190,43 @@ SELECT from Books { * } excluding { author }
 The effect is about **late materialization** of signatures and staying open to late extensions.
 For example, assume the following definitions:
 
-```cds [FooBar, data: FooBarData]
+```cds model=FooBar data=FooBarData
 entity Foo { foo : String; bar : String; car : String; }
 entity Bar as select from Foo excluding { bar };
 entity Boo as select from Foo { foo, car };
 ```
 
-```csv hidden [FooBarData: data/Foo.csv]
+```csv hidden data=FooBarData:data/Foo.csv
 foo,bar,car
 foo1,bar1,car1
 ```
 
 A `SELECT * from Bar` would result into the same as a query of `Boo`:
 
-```cds live [FooBar]
+```cds live model=FooBar
 SELECT * from Bar //> { foo, car }
 ```
-```cds live [FooBar]
+```cds live model=FooBar
 SELECT * from Boo //> { foo, car }
 ```
 
 Now, assume a consumer of that package extends the definitions as follows:
 
-```cds [FooBarBoo: FooBar, data: FooBarBooData]
+```cds model=FooBarBoo:FooBar data=FooBarBooData
 extend Foo with { boo : String; }
 ```
 
-```csv hidden [FooBarBooData: data/Foo.csv]
+```csv hidden data=FooBarBooData:data/Foo.csv
 foo,bar,car,boo
 foo1,bar1,car1,boo1
 ```
 
 With that, queries on `Bar` and `Boo` would return different results:
 
-```cds live [FooBarBoo]
+```cds live model=FooBarBoo
 SELECT * from Bar //> { foo, car, boo }
 ```
-```cds live [FooBarBoo]
+```cds live model=FooBarBoo
 SELECT * from Boo //> { foo, car }
 ```
 

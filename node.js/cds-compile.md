@@ -144,7 +144,7 @@ Run the example. See that:
 
 Following are a collection of model processors which take a CSN as input and compile it to a target output. They can be used in two API flavors:
 
-```js live [result:sql] {5}
+```js live result=sql {5}
 let csn = cds.parse(`
   entity Foo { foo:String }
   entity Bar as projection on Foo;
@@ -152,7 +152,7 @@ let csn = cds.parse(`
 cds.compile(csn).to.sql ({dialect:'sqlite'}) //> fluent
 ```
 
-```js live [result:sql] {5}
+```js live result=sql {5}
 let csn = cds.parse(`
   entity Foo { foo:String }
   entity Bar as projection on Foo;
@@ -268,7 +268,7 @@ cds.compile(csn).to.sql()
 ```
 
 Dialect `hana` with quoted names returning a plain string:
-```js live [result:sql] {5}
+```js live result=sql {5}
 let csn = cds.parse(`
   entity Foo { key foo:String; date:Date }
   service CatalogService { entity Bar as projection on Foo; }
@@ -281,7 +281,7 @@ cds.compile(csn).to.sql({dialect:'hana', names:'quoted', as:'str'})
 
 Reconstructs [CDL](../cds/cdl.md) source code for the given csn model.
 
-```js live [result:cds] {6}
+```js live result=cds {6}
 let csn = { definitions: {
   Foo: { kind: 'entity', elements: { foo: { type: 'cds.String' }}}
 }}
