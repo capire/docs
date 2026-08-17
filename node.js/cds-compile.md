@@ -232,15 +232,6 @@ Reconstructs [CDL](../cds/cdl.md) source code for the given csn model.
 
 
 
-### .asyncapi() {.method}
-
-
-Convert the CSN file into an AsyncAPI document:
-
-```js
-const doc = cds.compile.to.asyncapi(csn_file)
-```
-
 
 
 
