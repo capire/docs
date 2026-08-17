@@ -316,12 +316,10 @@ The Notifications plugin provides support for publishing business notifications 
 
 ```cds
 @notification: {
-  template: {
-    title        : 'New incident: {{title}}',
-    publicTitle  : 'New Incident',
-    subtitle     : 'Created by {{customer}}',
-    groupedTitle : 'Incident Updates'
-  }
+  title        : 'New incident: {{title}}',
+  publicTitle  : 'New Incident',
+  subtitle     : 'Created by {{customer}}',
+  groupedTitle : 'Incident Updates'
 }
 event IncidentCreated {
   title      : String;
