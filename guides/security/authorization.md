@@ -257,14 +257,13 @@ Here, users can read and write orders they've created, and `Auditor` users can r
 
 Restrictions can be defined on different types of CDS resources, but there are some limitations with regards to supported privileges:
 
-| CDS Resource          | `grant` | `to` |      `where`      | Remark        |
-|-----------------------|:-------:|:----:|:-----------------:|---------------|
-| service               |  <Na/>  | <Y/> |       <Na/>       | = `@requires` |
-| entity                |  <Y/>   | <Y/> |       <Y/>        |               |
-| bound action/function |  <Na/>  | <Y/> | <Na/><sup>1</sup> | = `@requires` |
-| action/function       |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
+| CDS Resource          | `grant` | `to` |       `where`       | Remark        |
+|-----------------------|:-------:|:----:|:-------------------:|---------------|
+| service               |  <Na/>  | <Y/> |        <Na/>        | = `@requires` |
+| entity                |  <Y/>   | <Y/> |        <Y/>         |               |
+| action/function       |  <Na/>  | <Y/> | <Na/><sup>1,2</sup> | = `@requires` |
 
-> <sup>1</sup> For [bound actions and functions](../../cds/cdl#bound-actions) that *are not bound to a collection of instances*, Node.js supports instance-based authorization.
+> <sup>1</sup> For [bound actions and functions](../../cds/cdl#bound-actions) that are <u>not</u> *bound to a collection of instances*, Node.js supports instance-based authorization.
 > Example:
 > ```cds
 > entity Orders @(restrict: [
@@ -272,7 +271,7 @@ Restrictions can be defined on different types of CDS resources, but there are s
 >   ]) {/*...*/}
 > ```
 
-> <sup>2</sup> For actions and functions that are either unbound or bound to a *collection* of instances, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>2</sup> For actions and functions that are either *unbound* or *bound to a collection of instances*, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
