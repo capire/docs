@@ -288,17 +288,6 @@ let csn = { definitions: {
 cds.compile(csn).to.cdl()
 ```
 
-### .asyncapi() {.method}
-
-
-Convert the CSN file into an AsyncAPI document:
-
-```js
-const doc = cds.compile.to.asyncapi(csn)
-```
-
-The `asyncapi` function is only available through the [designtime package `@sap/cds-dk`](../tools/apis/).
-
 
 
 ## cds. load (files) {.method #cds-load }
