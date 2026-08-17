@@ -2,7 +2,6 @@
 description: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
-impl-variants: true
 ---
 
 <script setup>
@@ -19,8 +18,6 @@ impl-variants: true
 
 
 # CAP-level Authorization { #authorization }
-
-<ImplVariantsHint />
 
 This guide explains how to restrict access to data by adding respective declarations to CDS models, that are then enforced by CAP's generic service providers.
 
@@ -447,19 +444,15 @@ This means that, the condition applies to following standard CDS events only:
 - `UPDATE` (as reject condition)
 - `DELETE` (as reject condition)
 
-<div class="impl java">
-
+::: tip Java
 In addition, the Java runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
 - `CREATE` (input filter)
 - `UPDATE` (input filer)
+:::
 
-</div>
-
-<div class="impl node">
-
+::: tip Node.js
 In addition, for `CREATE` as well as unbound actions and functions and actions and functions bound to a *collection* of instances, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
-
-</div>
+:::
 
 You can define filter conditions in the `where`-clause of restrictions based on [CQL](/cds/cql)-predicates, declared as [compiler expressions](../../cds/cdl#expressions-as-annotation-values):
 
@@ -467,12 +460,7 @@ You can define filter conditions in the `where`-clause of restrictions based on 
 * Combining predicates to expressions with `and` and `or` logical operators.
 * Value references to constants, [user attributes](#user-attrs), and entity data (elements including [association paths](#association-paths))
 * [Exists predicate](#exists-predicate) based on subselects.
-
-<div class="impl java">
-
-* [Exists with a subquery](#exists-subquery) for access to ACL like entities.
-
-</div>
+* [Exists with a subquery](#exists-subquery) for access to ACL like entities. _(Java only)_
 
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
@@ -620,14 +608,9 @@ service SalesOrderService @(requires: 'authenticated-user') {
 Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the condition selects at most one associated instance_ (`exists` semantic).
 
 
-<div class="impl java">
+<div id="exists-subquery"></div>
 
-<div id="exists-subquery" />
-
-</div>
-
-
-### Checking Input Data { #input-data-auth .java}
+### Checking Input Data { #input-data-auth }
 
 Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
 Invalid input that does not meet the condition is rejected with response code `400`.
@@ -646,7 +629,7 @@ Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
-### Simple Static Checks { #simple-static-checks .node}
+### Simple Static Checks { #simple-static-checks }
 
 Most instance-based [`@restrict.where`](#restrict-annotation) conditions reference business data (for example, `where: 'createdBy = $user'`) and can only be enforced against persisted data — pushed into the query for `READ`, or verified with a `COUNT` for `UPDATE`/`DELETE`.
 
@@ -673,16 +656,14 @@ The additional authorization check might affect performance.
 To avoid disclosure of the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable or add custom code to overrule the default behavior otherwise.
 :::
 
-<div class="impl java">
-
+::: tip Java
 Starting with CAP Java `4.0`, the reject behaviour is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
-
-</div>
-
+:::
 
 
-## Limitations {.node}
+
+## Limitations
 
 Currently, the security annotations **are only evaluated on the target entity of the request**.
 Restrictions on associated entities touched by the operation are not regarded.
@@ -693,7 +674,7 @@ This has the following implications:
 See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.
 
 
-## Deep Authorizations { #deep-auth .java}
+## Deep Authorizations { #deep-auth }
 
 ### Associations
 
