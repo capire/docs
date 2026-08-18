@@ -39,7 +39,7 @@ The following example shows a correct CSV file header that matches the column na
 This example shows a typo in the header of the CSV file. The column name `title` is misspelled as `tile`, so the rule reports a warning:
 
 ::: code-group
-<<< incorrect/db/data/sap.capire.bookshop-Books.csv{csv:line-numbers{1}} [db/data/sap.capire.bookshop-Books.csv]
+<<< incorrect/db/data/sap.capire.bookshop-Books.csv{csv:line-numbers} [db/data/sap.capire.bookshop-Books.csv]
 :::
 <PlaygroundBadge
   name="valid-csv-header"
