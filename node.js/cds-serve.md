@@ -411,7 +411,7 @@ The HTTP method `PATCH` is meant for partial modification of an _existing reso
 while an existing one gets updated with the request's content.
 
 This content, however, may be incomplete.
-By default, the values for not listed keys are not touched.
+By default, the values for not listed fields are not touched.
 The rationale being that default values are known and clients have the option to send full representations, if necessary.
 
 The following table shows the Node.js runtime's configuration options and their respective default value:
