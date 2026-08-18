@@ -329,6 +329,8 @@ event IncidentCreated {
 }
 ```
 
+Then implement the notification handling:
+
 ::: code-group
 
 ```js [Node.js]
