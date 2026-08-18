@@ -21,7 +21,7 @@ Unsupported privilege properties are ignored by the runtime. For bound or unboun
 Let's consider the following example with the `CatalogService` where the function `getViewsCount()` is restricted to the *Admin* role, granting all CDS events:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-restrict-grant-service"
@@ -35,7 +35,7 @@ Let's consider the following example with the `CatalogService` where the functio
 If you modify the above example and use `grant: ['WRITE']` in the privilege of the function, the rule would be triggered to inform you that the value of `grant` is limited to `'*'`:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-restrict-grant-service"
