@@ -723,7 +723,7 @@ See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.m
 
 ### Why does my tenant URL fail or is truncated?
 
-DNS host labels are limited to 63 characters. The tenant-specific hostname (`<subdomain><separator><appName>`) can exceed this limit with long names.
+DNS host labels are limited to 63 characters. The tenant-specific hostname can exceed this limit with long names.
 
 **Solution:** Use shorter component names or configure an explicit short route using the `routes` parameter in your `mta.yaml`.
 

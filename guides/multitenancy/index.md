@@ -1191,7 +1191,7 @@ https://<subaccount subdomain><CDS_MULTITENANCY_APPUI_TENANTSEPARATOR><CDS_MULTI
 
 > [!tip] Keep hostnames short
 > The resulting hostname must stay within the 63-character DNS host label limit.
-> Choose short values for separator, and app URL components.
+> Choose short values for separator and app URL components.
 
 
 ::: tip Use MTA extensions for landscape-specific configuration
