@@ -721,11 +721,13 @@ Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as an
 
 See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
 
-#### Why does my tenant URL fail or are truncated? {#hostname-exceeds-63-characters}
+### Why does my tenant URL fail or is truncated?
 
 DNS host labels are limited to 63 characters. The tenant-specific hostname (`<subdomain><separator><appName>`) can exceed this limit with long names.
 
-**Solution:** Use shorter component names or set an explicit short route using the `routes` parameter in your `mta.yaml`.
+**Solution:** Use shorter component names or configure an explicit short route using the `routes` parameter in your `mta.yaml`.
+
+[Learn more about routes in the Multitenancy guide.](../guides/multitenancy/index.md#cloud-foundry){.learn-more}
 
 ## BTP
 

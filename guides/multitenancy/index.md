@@ -637,10 +637,10 @@ cf map-route bookshop cfapps.us10.hana.ondemand.com --hostname subscriber1-myOrg
 ```
 
 > [!warning] DNS host label limit
->The hostname must not exceed 63 characters. 
+>The hostname must not exceed 63 characters.
 >
->If `<subscriberSubdomain>-<saasAppName>` is too long, the route will fail.
->Use shorter app names or configure an explicit short route via the `routes` parameter in your `mta.yaml`.
+> If `<subscriberSubdomain>-<saasAppName>` is too long, the route will fail.
+> Use shorter app names or configure an explicit short route via the `routes` parameter in your `mta.yaml`.
 
 
 ::: details Learn how to do this in the BTP cockpit instead…
@@ -1190,8 +1190,8 @@ https://<subaccount subdomain><CDS_MULTITENANCY_APPUI_TENANTSEPARATOR><CDS_MULTI
 ```
 
 > [!tip] Keep hostnames short
->The resulting hostname must stay within the 63-character DNS host label limit.
->Choose short values for subdomain, separator, and app URL components.
+> The resulting hostname must stay within the 63-character DNS host label limit.
+> Choose short values for separator, and app URL components.
 
 
 ::: tip Use MTA extensions for landscape-specific configuration
