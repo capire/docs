@@ -23,7 +23,7 @@ function getOrCreateWorker(key, initPayload) {
 
 // Lazily initialize (on first call) the worker for `key`, then run one snippet against it. Every call
 // gets a unique id so concurrent evaluations on the same page don't cross-talk.
-function runOnWorker(key, initPayload, query, language, isAsync) {
+function runOnWorker(key, initPayload, query, language) {
   const { worker, initPromise } = getOrCreateWorker(key, initPayload);
   return initPromise.then(() => new Promise((resolve, reject) => {
     const id = crypto.randomUUID();
@@ -35,14 +35,14 @@ function runOnWorker(key, initPayload, query, language, isAsync) {
         : resolve(e.data.result);
     }
     worker.addEventListener('message', handler);
-    worker.postMessage({ type: 'run', id, payload: { query, language, isAsync } });
+    worker.postMessage({ type: 'run', id, payload: { query, language } });
   }));
 }
 
 // Runs a snippet against a named model (```cds live model=FooBar```), each isolated in its own worker.
-function runWithModel(query, modelSource, csvs, language = 'cds', isAsync = false) {
+function runWithModel(query, modelSource, csvs, language = 'cds') {
   const key = csvs ? `${modelSource}\0${JSON.stringify(csvs)}` : modelSource;
-  return runOnWorker(key, { model: modelSource, csvs }, query, language, isAsync);
+  return runOnWorker(key, { model: modelSource, csvs }, query, language);
 }
 
 // The default bookshop model, built once from the bundled templates and shared by all default snippets.
@@ -59,8 +59,8 @@ function bookshopPayload() {
   return (bookshopInitPayload = { model, csvs, namespace: 'sap.capire.bookshop', serve: true })
 }
 
-function runBookshop(query, language, isAsync) {
-  return runOnWorker('bookshop', bookshopPayload(), query, language, isAsync);
+function runBookshop(query, language) {
+  return runOnWorker('bookshop', bookshopPayload(), query, language);
 }
 
 export {
@@ -69,7 +69,7 @@ export {
 }
 
 export const runners = {
-  js: (code, isAsync) => runBookshop(code, 'js', isAsync),
+  js: (code) => runBookshop(code, 'js'),
   cql: (query) => runBookshop(query, 'cql'),
   cds: (query) => runBookshop(query, 'cds'),
 }

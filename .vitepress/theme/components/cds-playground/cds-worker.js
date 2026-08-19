@@ -50,7 +50,7 @@ async function init({ model, csvs, namespace, serve }) {
   // unify single-file (named models) and multi-file map (bookshop)
   const csn = state.cds.compile(typeof model === 'string' ? { 'model.cds': model } : model);
   if (namespace) csn.namespace = namespace;
-  state.cds.model = cds.compile.for.nodejs(csn);
+  state.cds.model = state.cds.compile.for.nodejs(csn);
 
   state.cds.db = await state.cds.connect.to('db');
   await state.cds.deploy(csn, null, csvs ?? {}).to(state.cds.db);
@@ -71,7 +71,7 @@ const AsyncFunction = async function () {}.constructor;
 // Runs a ```js live``` snippet: rewrites it to return its last expression (compile), then evaluates
 // it in the worker's global scope so `cds`, `SELECT`, `INSERT`, … resolve. Async snippets are traced
 // for SQL; sync ones return without a SQL tab (matching the pre-worker main-thread behavior).
-async function evalJS(code, isAsync) {
+async function evalJS(code) {
   const cds = state.cds;
   const source = compile(code);
 
@@ -124,7 +124,7 @@ self.onmessage = async ({ data: { type, id, payload } }) => {
       if (!state.initPromise) throw new Error('Worker not initialized');
       await state.initPromise;
       const result = payload.language === 'js'
-        ? await evalJS(payload.query, payload.isAsync)
+        ? await evalJS(payload.query)
         : await runQuery(payload.query);
       self.postMessage({ type: 'result', id, result });
     }
