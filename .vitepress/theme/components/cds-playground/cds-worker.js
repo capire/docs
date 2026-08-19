@@ -151,7 +151,7 @@ function compile(code) {
     const names = stmts.map(s => s.text.match(declRe)?.[1]).filter(Boolean)
     return names.length > 1
       ? `${code}\nreturn { ${names.join(', ')} };`
-      : `${code}\nreturn ${names[0]};`
+      : `${code}\nreturn { __return: (${names[0]}) };`
   }
 
   // last statement isn't a declaration -> treat it (possibly spanning multiple lines) as the expression to return
