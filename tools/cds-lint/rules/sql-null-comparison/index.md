@@ -20,7 +20,7 @@ Comparing values against `null` in views is a common pitfall in SQL. This rule h
 In the following example, the rule is satisfied because `null` comparison is valid:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="sql-null-comparison"
@@ -34,7 +34,7 @@ In the following example, the rule is satisfied because `null` comparison is val
 This example shows the rule reporting a warning because the comparison `= null` is not correct:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="sql-null-comparison"

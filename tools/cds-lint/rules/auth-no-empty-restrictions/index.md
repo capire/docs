@@ -19,7 +19,7 @@ The [`@requires` annotation](../../../../guides/security/authorization#requires)
 In the following example, the `AdminService` is correctly setup with `@requires` given the `admin` role:
 
 ::: code-group
-<<< correct/srv/admin-service.cds#snippet{cds:line-numbers} [srv/admin-service.cds]
+<<< correct/srv/admin-service.cds{cds:line-numbers} [srv/admin-service.cds]
 :::
 <PlaygroundBadge
   name="auth-no-empty-restrictions"
@@ -33,7 +33,7 @@ In the following example, the `AdminService` is correctly setup with `@requires`
 If you replace the `admin` role with an empty string or provide an empty role array as shown in the next example, you now have unrestricted access to that service, which the rule makes you aware of:
 
 ::: code-group
-<<< incorrect/srv/admin-service.cds#snippet{cds:line-numbers} [srv/admin-service.cds]
+<<< incorrect/srv/admin-service.cds{cds:line-numbers} [srv/admin-service.cds]
 :::
 <PlaygroundBadge
   name="auth-no-empty-restrictions"
