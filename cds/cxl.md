@@ -41,8 +41,8 @@ You can also edit the query, making this your personal playground.
 :::info Application Context
 The cds model initialized on this page is a slightly modified version of the [capire/bookshop](https://github.com/capire/bookshop).
 
-All samples run on a single browser-local `cds` instance, you can access it via the dev tools
-or run statements in the following code block:
+All samples run on a shared, browser-local `cds` instance. Edit and run statements in the
+following code block to try it out:
 
 ```js live async
 await INSERT.into('Books').entries(

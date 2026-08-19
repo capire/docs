@@ -247,7 +247,7 @@ async function evaluate() {
   queryResult.value = null
   try {
     const exec = props.onEvaluate
-      ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource, props.modelData ? JSON.parse(props.modelData) : undefined) : runners[props.language])
+      ?? (props.modelSource ? (q) => runWithModel(q, props.modelSource, props.modelData ? JSON.parse(props.modelData) : undefined, props.language, props.async) : runners[props.language])
     if (!exec) throw new Error(`No runner found for language: ${props.language}. Available runners: ${Object.keys(runners).join(', ')}`)
     const result = await exec(queryText.value, props.async)
     tabs.value = formatTabs(result).filter(({ value }) => value)
