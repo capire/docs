@@ -19,7 +19,7 @@ The `to` property of a `@restrict` privilege defines one or more [user roles](..
 The following example shows a correct usage of the `@restrict.to` annotation, where the `to` property is set to the `Viewer` rule which is a valid value:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-to"
@@ -33,7 +33,7 @@ The following example shows a correct usage of the `@restrict.to` annotation, wh
 This example shows the `@restrict.to` annotation being left empty, which is a violation of this rule and a warning is raised:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-to"

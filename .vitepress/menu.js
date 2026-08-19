@@ -6,6 +6,7 @@
 import { dirname, relative, resolve, join, normalize } from 'node:path'
 import { existsSync, promises as fs } from 'node:fs'
 import rewrites from './rewrites.js'
+import { fileURLToPath } from 'node:url'
 
 const DEBUG = process.env.DEBUG?.match(/\b(menu|all)\b/) ? (...args) => console.debug ('[menu.js] -', ...args) : undefined
 const EXTERNAL = process.env.VITE_CAPIRE_ENV === 'external'
@@ -188,4 +189,4 @@ export class Menu extends MenuItem {
 
 
 // Run the CLI method if invoked from command line
-if (typeof __filename === 'undefined') Menu.exec (process.argv.slice(2))
+if (process.argv[1] === fileURLToPath(import.meta.url)) Menu.exec (process.argv.slice(2))

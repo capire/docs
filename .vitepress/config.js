@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import languages from './languages'
+import languages from './languages/index.ts'
 import playground from './lib/cds-playground/index.js'
 import { slugify } from './lib/slugify.ts'
 import { Menu } from './menu.js'
@@ -125,7 +125,7 @@ export default config
 // -----------------------------------------------------------------------------------------------
 
 // Add rewrites
-import rewrites from './rewrites'
+import rewrites from './rewrites.js'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
@@ -211,10 +211,10 @@ config.themeConfig.search = {
 
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
-import * as MdLiveCode from './lib/cds-playground/md-live-code'
-import * as MdAttrsPropagate from './lib/md-attrs-propagate'
-import * as MdDiagramSvg from './lib/md-diagram-svg'
-import * as MdTypedModels from './lib/md-typed-models'
+import * as MdLiveCode from './lib/cds-playground/md-live-code.ts'
+import * as MdAttrsPropagate from './lib/md-attrs-propagate.ts'
+import * as MdDiagramSvg from './lib/md-diagram-svg.ts'
+import * as MdTypedModels from './lib/md-typed-models.ts'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -235,7 +235,7 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 
 // Add custom buildEnd hook
 import { promises as fs } from 'node:fs'
-import * as cdsMavenSite from './lib/cds-maven-site'
+import * as cdsMavenSite from './lib/cds-maven-site.ts'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = join(sitemapURL.pathname, 'sitemap.xml')

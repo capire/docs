@@ -1,6 +1,9 @@
 import { MarkdownRenderer, MarkdownEnv } from 'vitepress'
 import { dirname, join, relative } from 'path'
-import { enabled } from '.'
+import { fileURLToPath } from 'node:url'
+import { enabled } from './index.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
  * Makes code blocks with "live" in the info string interactive by rendering a <LiveCode /> component.
