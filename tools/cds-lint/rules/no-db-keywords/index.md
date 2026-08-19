@@ -19,7 +19,7 @@ The CDS compiler and CAP runtimes provide smart quoting for reserved words in SQ
 In the following example, none of the reserved SQL keywords are used as identifiers, so the rule doesn't raise any warnings:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-db-keywords"
@@ -34,7 +34,7 @@ In the following example, none of the reserved SQL keywords are used as identifi
 This example shows the reserved SQL keyword `Order` used as an entity name, so the rule will raise a warning:
 <!-- TODO: Remove devDependency as soon as rule fix is released -->
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-db-keywords"
