@@ -6,6 +6,7 @@ description: >
 
 # Core / Built-in Types
 
+<!-- ./cdl.md includes the file from line 11, keep it stable-->
 
 The following table lists the built-in types in CDS, and their most common mapping to
 ANSI SQL types, when deployed to a relational database (concrete mappings to specific databases may differ):
