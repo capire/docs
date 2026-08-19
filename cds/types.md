@@ -42,12 +42,12 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 > The `Vector` type is used for vector embeddings, which are a way to represent data (like text, images, etc.) as high-dimensional vectors. Requires SAP HANA Cloud QRC 1/2024, or later, [`@sap/cds` v9.9+](/releases/2026/apr26), and [CAP Java v4.9+](/releases/2026/apr26) to use with H2 or SQLite.
 
 > [!tip] Use Attachments instead of LargeBinary
-> Consider using _Attachments_, as provided through [the CAP Attachments plugins](../plugins/index#attachments), instead of `LargeBinary` types for user-generated content like documents, images, etc.
+> Consider using _Attachments_, as provided through [the CAP Attachments plugins](/@external/plugins/index#attachments), instead of `LargeBinary` types for user-generated content like documents, images, etc.
 
 See also:
 
 [Additional Reuse Types and Aspects by `@sap/cds/common`](common) {.learn-more}
 
-[Mapping to OData EDM types](../guides/protocols/odata#type-mapping) {.learn-more}
+[Mapping to OData EDM types](/@external/guides/protocols/odata#type-mapping) {.learn-more}
 
-[HANA-native Data Types](../guides/databases/hana-native#hana-types){.learn-more}
+[HANA-native Data Types](/@external/guides/databases/hana-native#hana-types){.learn-more}
