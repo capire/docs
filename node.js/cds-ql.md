@@ -97,19 +97,19 @@ While both [CQL](../cds/cql) / [CQN](../cds/cqn) as well as the fluent API of `c
 
 Queries are executed by passing them to a service's [`srv.run()`](core-services#srv-run-query) method, for example, to the primary database:
 
-```js live async
+```js live
 let query = SELECT `ID,title` .from `Books`
 let books = await cds.db.run (query)
 ```
 
 Alternatively, you can just `await` a constructed query, which by default passes the query to `cds.db.run()`. So, the following is equivalent to the above:
 
-```js live async
+```js live
 let books = await SELECT `ID,title` .from `Books`
 ```
 Instead of a database service, you can also send queries to other services, local or remote ones. For example:
 
-```js live async
+```js live
 const cats = await cds.connect.to ('CatalogService')
 let query = SELECT `ID,title` .from `Books`
 let books = await cats.run (query)
@@ -120,7 +120,7 @@ return {query, books}
 
 The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), for example:
 
-```js live async
+```js live
 const db = cds.db
 await db.read`Books`.where`ID=${201}`.orderBy`title`
 ```
@@ -131,7 +131,7 @@ await db.read`Books`.where`ID=${201}`.orderBy`title`
 
 Constructing queries doesn't execute them immediately, but just captures the given query information. Very much like functions in JavaScript, queries are first-class objects, which can be assigned to variables, modified, passed as arguments, or returned from functions. Let's investigate this somewhat more, given this example:
 
-```js live async
+```js live
 cats = await cds.connect.to('CatalogService')//> connected via OData
 PoesBooks = SELECT.from ('Books') .where `author like '%Poe%'`
 books = await cats.get (PoesBooks)
@@ -153,7 +153,7 @@ This is what happens behind the scenes:
 
 You can also combine queries much like sub selects in SQL to form more complex queries as shown in this example:
 
-```js live async
+```js live
 let input = '%Brontë%'
 let Authors = SELECT `ID` .from `Authors` .where `name like ${ input }`
 let Books = SELECT.from `Books` .where `author_ID in ${ Authors }`
@@ -164,7 +164,7 @@ await cds.run (Books) //> late/no materialization of Authors
 With that we leverage late materialization, offered by SQL databases.
 Compare that to inferior imperative programming:
 
-```js live async
+```js live
 let input = '%Brontë%'
 let Authors = await SELECT `ID` .from `Authors` .where `name like ${ input }`
 // looping over eagerly materialized Auxthors

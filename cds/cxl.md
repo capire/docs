@@ -44,7 +44,7 @@ The cds model initialized on this page is a slightly modified version of the [ca
 All samples run on a shared, browser-local `cds` instance. Edit and run statements in the
 following code block to try it out:
 
-```js live async
+```js live
 await INSERT.into('Books').entries(
   { ID: 2, author_ID: 150, title: 'Eldorado' }
 )

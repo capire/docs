@@ -50,7 +50,7 @@ async function init({ model, csvs, namespace, serve }) {
   // unify single-file (named models) and multi-file map (bookshop)
   const csn = state.cds.compile(typeof model === 'string' ? { 'model.cds': model } : model);
   if (namespace) csn.namespace = namespace;
-  state.cds.model = csn;
+  state.cds.model = cds.compile.for.nodejs(csn);
 
   state.cds.db = await state.cds.connect.to('db');
   await state.cds.deploy(csn, null, csvs ?? {}).to(state.cds.db);
@@ -87,26 +87,18 @@ async function evalJS(code, isAsync) {
     return [{ value: result ? typeof result !== 'string' ? JSON.stringify(result, null, 2) : result : "success", kind, name: 'Result' }]
   }
 
-  if (isAsync) {
-    let fn;
-    try { fn = new AsyncFunction(source) }
-    catch { fn = new AsyncFunction(code) } // rewrite had a syntax error -> run the code unmodified
-    state.sqlLog.length = 0;
-    const result = await fn();
-    const formatted = state.sqlLog.map(simpleSqlFormat).join('\n\n-------\n');
-    const kind = result ? 'json' : 'plaintext'
-    return [
-      ...resultTabs(result, kind),
-      { value: formatted, kind: 'sql', name: 'SQL' }
-    ];
-  }
-
   let fn;
-  try { fn = new Function(source) }
-  catch { fn = new Function(code) } // rewrite had a syntax error -> run the code unmodified
-  const result = fn();
+  try { fn = new AsyncFunction(source) }
+  catch { fn = new AsyncFunction(code) } // rewrite had a syntax error -> run the code unmodified
+  state.sqlLog.length = 0;
+  let result = await fn();
+  if (result?.__return) result = result.__return
+  const formatted = state.sqlLog.map(simpleSqlFormat).join('\n\n-------\n');
   const kind = result ? 'json' : 'plaintext'
-  return resultTabs(result, kind);
+  return [
+    ...resultTabs(result, kind),
+    { value: formatted, kind: 'sql', name: 'SQL' }
+  ];
 }
 
 // Runs a ```cds live``` / ```cql live``` snippet: cds.ql(query) -> cds.db.run, traced for SQL.
@@ -163,7 +155,7 @@ function compile(code) {
   }
 
   // last statement isn't a declaration -> treat it (possibly spanning multiple lines) as the expression to return
-  return `${code.slice(0, last.start)}\nreturn (\n${last.text.replace(/;\s*$/, '')}\n);`
+  return `${code.slice(0, last.start)}\nreturn { __return: (\n${last.text.replace(/;\s*$/, '')}\n) };`
 }
 
 

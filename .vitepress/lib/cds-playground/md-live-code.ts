@@ -27,8 +27,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
  *   example: ```cds live as=cql
  * - readonly: make the code block readonly
  *   example: ```cds live readonly
- * - async: run the query asynchronously
- *   example: ```js live async
  *
  * Named model definitions (static, non-live):
  * - ```cds model=FooBar  — defines a named model; rendered as a plain code block
@@ -140,7 +138,7 @@ export function install(md: MarkdownRenderer) {
     if (highlightSpec) props.highlightLines = highlightSpec
     if (kv.result) props.resultKind = kv.result
 
-    const liveFlags = ['readonly', 'async'].filter(k => flags.has(k))
+    const liveFlags = ['readonly'].filter(k => flags.has(k))
 
     const content = tokens[idx].content.trim()
     return `<LiveCode initialQuery="${md.utils.escapeHtml(content)}" ${Object.entries(props).map(([k, v]) => `${k}="${v}"`).join(' ')} ${liveFlags.join(' ')}></LiveCode>`
