@@ -6,8 +6,9 @@ import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import languages from './languages'
+import languages from './languages/index.ts'
 import playground from './lib/cds-playground/index.js'
+import { slugify } from './lib/slugify.ts'
 import { Menu } from './menu.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -46,10 +47,7 @@ const config = defineConfig({
     },
     anchor: {
       // VS Code-compatible GitHub-style slugifier (mirrors markdown-language-features/src/slugify.ts)
-      slugify: (str) => str
-        .trim().toLowerCase()
-        .replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
-        .replace(/\s/g, '-'),
+      slugify,
     },
     container: { // Doesn't seem to work yet
       infoLabel: 'Info',
@@ -119,7 +117,7 @@ export default config
 // -----------------------------------------------------------------------------------------------
 
 // Add rewrites
-import rewrites from './rewrites'
+import rewrites from './rewrites.js'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
@@ -134,8 +132,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '5.0.1',
-    java_cds4j: '5.0.1',
+    java_services: '5.0.2',
+    java_cds4j: '5.0.2',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
@@ -164,7 +162,7 @@ config.themeConfig.search = {
         tokenize: text => text.split( /[\n\r #%*,=/:;?[\]{}()&]+/u ), // simplified charset: removed [-_.@] and non-english chars (diacritics etc.)
         processTerm: (term, fieldName) => {
           term = term.trim().toLowerCase().replace(/^\.+/, '').replace(/\.+$/, '')
-          const stopWords = ['frontmatter', '$frontmatter.synopsis', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
+          const stopWords = ['frontmatter', '$frontmatter.description', 'and', 'about', 'but', 'now', 'the', 'with', 'you']
           if (term.length < 2 || stopWords.includes(term))  return false
 
           if (fieldName === 'text') {
@@ -205,10 +203,10 @@ config.themeConfig.search = {
 
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
-import * as MdLiveCode from './lib/cds-playground/md-live-code'
-import * as MdAttrsPropagate from './lib/md-attrs-propagate'
-import * as MdDiagramSvg from './lib/md-diagram-svg'
-import * as MdTypedModels from './lib/md-typed-models'
+import * as MdLiveCode from './lib/cds-playground/md-live-code.ts'
+import * as MdAttrsPropagate from './lib/md-attrs-propagate.ts'
+import * as MdDiagramSvg from './lib/md-diagram-svg.ts'
+import * as MdTypedModels from './lib/md-typed-models.ts'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -229,7 +227,7 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 
 // Add custom buildEnd hook
 import { promises as fs } from 'node:fs'
-import * as cdsMavenSite from './lib/cds-maven-site'
+import * as cdsMavenSite from './lib/cds-maven-site.ts'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = join(sitemapURL.pathname, 'sitemap.xml')

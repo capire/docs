@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  An overview of CAP's primary building blocks and core concepts, such as domain-driven modeling, service-centric runtimes, and querying.
 ---
 
 # Core Concepts of CAP
@@ -704,7 +705,7 @@ Your application models are your services, also served automatically by generic 
 
 Behind the scene - that is, in the **outer hexagon** containing stuff, you as an application developer should not see - the CAP runtime employs Protocol Adapters, which translate requests from (and to) low-level protocols like HTTP, REST, OData, GraphQL, ... to protocol-agnostic CAP requests and queries for inbound and outbound communication.
 
---> ***Inbound*** Communication 
+--> ***Inbound*** Communication
 : Requests your application *receives*.
 
 --> ***Outbound*** Communication

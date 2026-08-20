@@ -6,7 +6,7 @@ const version = capire.versions.java_services
 
 export default defineLoader({
   async load() {
-    const props = (await import('./properties.json')).default.properties as unknown as JavaSdkProperties[]
+    const props = (await import('./properties.json', {with:{type:'json'}})).default.properties as unknown as JavaSdkProperties[]
     const properties = massageProperties(props)
     return { properties, version }
   }

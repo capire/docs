@@ -949,6 +949,13 @@
     },
     {
       "header": false,
+      "name": "cds.multiTenancy.useSaasApiV2",
+      "type": "boolean",
+      "default": "false",
+      "doc": "Determines, if TenantProviderService will use V2 API of SaaSRegistry and SubscriptionManager."
+    },
+    {
+      "header": false,
       "name": "cds.multiTenancy.componentScan",
       "type": "String",
       "doc": "Package to be included in the component scan of the Subscribe, Deploy and Unsubscribe main<br>methods."

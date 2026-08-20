@@ -1,6 +1,9 @@
 import { MarkdownRenderer, MarkdownEnv } from 'vitepress'
 import { dirname, join, relative } from 'path'
-import { enabled } from '.'
+import { fileURLToPath } from 'node:url'
+import { enabled } from './index.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
  * Makes code blocks with "live" in the info string interactive by rendering a <LiveCode /> component.
@@ -8,7 +11,7 @@ import { enabled } from '.'
  * ```cds live
  * select from Books { title }
  * ```
- * 
+ *
  * ```js live
  * await INSERT.into('Books').entries(
  *   { ID: 2, author_ID: 150, title: 'Eldorado' }
@@ -51,7 +54,7 @@ export function install(md: MarkdownRenderer) {
 }
 
 function insertScriptSetup(env: MarkdownEnv, imp: string) {
-  const sfcBlocks = env.sfcBlocks! 
+  const sfcBlocks = env.sfcBlocks!
   if (!sfcBlocks.scriptSetup) {
     sfcBlocks.scriptSetup = {
       content: '<script setup>\n</script>',

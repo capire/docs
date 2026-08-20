@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  An introduction to CAP's value propositions, explaining what the framework is and the benefits it brings to enterprise-grade cloud application development.
 ---
 
 # Introduction to CAP

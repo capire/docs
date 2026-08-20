@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -21,7 +17,7 @@ To provide your database with initial data, you can use CSV files. Their filenam
 Let's consider the following model definition:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 
 #### ✅ &nbsp; Correct example
@@ -29,7 +25,7 @@ Let's consider the following model definition:
 The following example shows a correct CSV file header that matches the column names of the entity definition:
 
 ::: code-group
-<<< correct/db/data/sap.capire.bookshop-Books.csv#snippet{csv:line-numbers} [db/data/sap.capire.bookshop-Books.csv]
+<<< correct/db/data/sap.capire.bookshop-Books.csv{csv:line-numbers} [db/data/sap.capire.bookshop-Books.csv]
 :::
 <PlaygroundBadge
   name="valid-csv-header"
@@ -43,7 +39,7 @@ The following example shows a correct CSV file header that matches the column na
 This example shows a typo in the header of the CSV file. The column name `title` is misspelled as `tile`, so the rule reports a warning:
 
 ::: code-group
-<<< incorrect/db/data/sap.capire.bookshop-Books.csv#snippet{csv:line-numbers{1}} [db/data/sap.capire.bookshop-Books.csv]
+<<< incorrect/db/data/sap.capire.bookshop-Books.csv{csv:line-numbers} [db/data/sap.capire.bookshop-Books.csv]
 :::
 <PlaygroundBadge
   name="valid-csv-header"

@@ -1,4 +1,6 @@
 ---
+description: >
+  Support channels and troubleshooting FAQs for getting help with CAP, including how to ask questions, report issues, and file feature requests.
 outline: 2
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/d2ee648522044ea19d3b5126c29692b5.html
 ---
@@ -719,6 +721,13 @@ Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as an
 
 See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
 
+### Why does my tenant URL fail or is truncated?
+
+DNS host labels are limited to 63 characters. The tenant-specific hostname can exceed this limit with long names.
+
+**Solution:** Use shorter component names or configure an explicit short route using the `routes` parameter in your `mta.yaml`.
+
+[Learn more about routes in the Multitenancy guide.](../guides/multitenancy/index.md#cloud-foundry){.learn-more}
 
 ## BTP
 

@@ -1,8 +1,6 @@
 ---
-synopsis: >
+description: >
   How to start a new CAP Java project and how to run it locally.
-#notebook: true
-status: released
 ---
 
 # Getting Started
@@ -13,7 +11,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Introduction
 <!--Used as link target from Help Portal: https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html -->

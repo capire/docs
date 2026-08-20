@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for `cds.serve()`, used to construct and expose service providers from CDS service definitions.
 ---
 
 
