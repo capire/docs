@@ -460,7 +460,7 @@ You can define filter conditions in the `where`-clause of restrictions based on 
 * Combining predicates to expressions with `and` and `or` logical operators.
 * Value references to constants, [user attributes](#user-attrs), and entity data (elements including [association paths](#association-paths))
 * [Exists predicate](#exists-predicate) based on subselects.
-* [Exists with a subquery](#exists-subquery) for access to ACL like entities. _(Java only)_
+* [Exists with a subquery](#exists-subquery) for access to Access Control list like entities. _(Java only)_
 
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
@@ -610,7 +610,7 @@ Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the co
 
 <div id="exists-subquery"></div>
 
-### Checking Input Data { #input-data-auth }
+### Checking Input Data in Java { #input-data-auth }
 
 Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
 Invalid input that does not meet the condition is rejected with response code `400`.
@@ -663,7 +663,7 @@ It can be disabled by setting <Config java>cds.security.authorization.instance-b
 
 
 
-## Limitations
+## Limitations in Node.js
 
 Currently, the security annotations **are only evaluated on the target entity of the request**.
 Restrictions on associated entities touched by the operation are not regarded.
@@ -674,7 +674,7 @@ This has the following implications:
 See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.
 
 
-## Deep Authorizations { #deep-auth }
+## Deep Authorizations in Java { #deep-auth }
 
 ### Associations
 
