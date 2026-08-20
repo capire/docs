@@ -636,6 +636,13 @@ Let's also assume we've deployed to our app to Cloud Foundry org `myOrg` and spa
 cf map-route bookshop cfapps.us10.hana.ondemand.com --hostname subscriber1-myOrg-mySpace-bookshop
 ```
 
+> [!warning] DNS host label limit
+>The hostname must not exceed 63 characters.
+>
+> If `<subscriberSubdomain>-<saasAppName>` is too long, the route will fail.
+> Use shorter app names or configure an explicit short route via the `routes` parameter in your `mta.yaml`.
+
+
 ::: details Learn how to do this in the BTP cockpit instead…
 
 Switch to your **provider account** and go to your space → Routes. Click on _New Route_.
@@ -1181,6 +1188,11 @@ The tenant application requests are separated by the tenant-specific app URL:
 ```http
 https://<subaccount subdomain><CDS_MULTITENANCY_APPUI_TENANTSEPARATOR><CDS_MULTITENANCY_APPUI_URL>
 ```
+
+> [!tip] Keep hostnames short
+> The resulting hostname must stay within the 63-character DNS host label limit.
+> Choose short values for separator and app URL components.
+
 
 ::: tip Use MTA extensions for landscape-specific configuration
 
