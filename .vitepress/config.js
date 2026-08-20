@@ -102,6 +102,7 @@ const config = defineConfig({
     // dynamic import('@sap/cds') is emitted as native ESM instead of an iife require() shim
     worker: {
       format: 'es',
+      rolldownOptions: { output: { keepNames: true, } },
       // Vite doesn't reuse the main `plugins` array for worker bundles; without vite-plugin-cds's
       // node()/cap() here, the worker build misses their Node built-in shims (e.g. lazify's module.require)
       plugins: () => [...playground.plugins()],
