@@ -1,3 +1,8 @@
+---
+description: >
+  Overview of CAP's built-in protocol adapters (OData, OpenAPI, AsyncAPI, CDS APIs) and how to create custom ones.
+---
+
 # Protocol Adapters
 
 CAP supports various protocols to expose and consume services. These protocols are implemented via protocol adapters that translate between the CAP programming model and the respective protocol.

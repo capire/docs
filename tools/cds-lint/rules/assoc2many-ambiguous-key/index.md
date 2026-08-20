@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ An [association/composition to/of `MANY`](../../../../cds/cdl#to-many-associatio
 In the following example, we define a unique association from `Authors` to `Books` with a well-defined `ON` condition and backlink, thus satisfying the rule's conditions:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="assoc2many-ambiguous-key"
@@ -37,7 +33,7 @@ In the following example, we define a unique association from `Authors` to `Book
 If you extend this example by creating a view `AuthorView` with a key `ID` and the element `bookIDs` without an `ON` condition, the rule is triggered because the key is no longer unique and `bookIDs` leads to multiple entries:
 
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="assoc2many-ambiguous-key"

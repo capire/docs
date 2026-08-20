@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Toggled features are pre-built extensions built by the provider of a SaaS application, which can be switched on selectively per subscriber.
 impl-variants: true  # to enable Node.js/Java toggle
 ---
 
 # Feature Toggles
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <ImplVariantsHint />
 
@@ -250,9 +250,8 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@sap/cds-mtxs": "^3",
-    "express": "^4"
+    "@sap/cds": "^10",
+    "@sap/cds-mtxs": "^4",
   },
   "cds": {
     "profile": "mtx-sidecar"
@@ -273,9 +272,8 @@ An MTX sidecar is a standard, yet minimalistic Node.js CAP project. By default i
 {
   "name": "mtx-sidecar", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@sap/cds-mtxs": "^3",
-    "express": "^4"
+    "@sap/cds": "^10",
+    "@sap/cds-mtxs": "^4",
   },
   "cds": {
     "profiles": [
@@ -389,10 +387,10 @@ So, to add support for a specific feature toggles management you can add a simpl
 
 ```js
 const cds = require ('@sap/cds')
-cds.on('bootstrap', app => app.use ((req,res,next) => {
+cds.middlewares.add((req,res,next) => {
   req.features = req.headers.features || 'isbn'
   next()
-}))
+}, { before: 'ctx_model' })
 ```
 
 ## Feature-Toggled Custom Logic

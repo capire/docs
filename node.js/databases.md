@@ -1,13 +1,11 @@
 ---
-label: Databases
-synopsis: >
+description: >
   Class <code>cds.DatabaseService</code> and subclasses thereof are technical services representing persistent storage.
-status: released
 ---
 
 # Database Services
 
-<div v-html="$frontmatter?.synopsis" />
+<div v-html="$frontmatter?.description" />
 
 [[toc]]
 
@@ -51,9 +49,7 @@ This method is called automatically by the framework on the first query, so **yo
 
 ### Pool
 
-Instead of opening and closing a database connection for every request, we use a [`generic-pool`](https://www.npmjs.com/package/generic-pool)-based pool to reuse connections.
-
-The _generic-pool_ has a built-in pool evictor, which inspects idle database connections in the pool and destroys them if they are too old.
+Instead of opening and closing a database connection for every request, we use a pool to reuse connections.
 
 The following parameters are provided in the pool configuration:
 
@@ -92,7 +88,7 @@ Pool configuration can be adjusted by setting the `pool` option as shown in the 
 }
 ```
 
-::: warning 
+::: warning
 The parameters are very specific to the current technical setup, such as the application environment and database location.
 Even though we provide a default pool configuration, we expect that each application provides its own configuration based on its specific needs.
 :::

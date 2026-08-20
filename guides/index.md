@@ -1,6 +1,8 @@
 ---
-status: released
+description: >
+  An index of Cookbook guides covering the most prominent tasks in CAP application development, from domain modeling to deployment.
 ---
+
 # The CAP Cookbook
 Recipes for CAP Development { .subtitle}
 

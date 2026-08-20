@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Available commands of the <code>cds</code> command line client.
 ---
 
@@ -120,8 +120,8 @@ The facets built into `@sap/cds-dk` provide you with a large set of standard fea
 | `mta`                         |       <X/>       |       <X/>       |
 | `cf-manifest`                 |       <X/>       |       <X/>       |
 | `helm`                        |       <X/>       |       <X/>       |
-| `helm-unified-runtime`        |       <X/>       |       <X/>       |
 | `containerize`                |       <X/>       |       <X/>       |
+| `kyma`                        |         <X/>       |       <X/>          |
 | `multitenancy`                |       <X/>       |       <X/>       |
 | `toggles`                     |       <X/>       |       <X/>       |
 | `extensibility`               |       <X/>       |       <X/>       |
@@ -258,7 +258,7 @@ The result could look like this for a typical _Books_ entity from the _Bookshop_
 - `author.ID` refers to a key from the _...Authors.json_ file that is created at the same time.  If the _Authors_ entity is excluded, though, no such foreign key would be created, which cuts the association off.
 - Data for _compositions_, like the `texts` composition to `Books.texts`, is always created.
 - A random unique number for each record, _29894036_ here, is added to each string property, to help you correlate properties more easily.
-- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assert-format) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
+- Data for elements annotated with a regular expression using [`assert.format`](../guides/services/constraints#assertformat) can be generated using the NPM package [randexp](https://www.npmjs.com/package/randexp), which you need to installed manually.
 - Other constraints like [type formats](../cds/types), [enums](../cds/cdl#enums), and [validation constraints](../guides/services/constraints) are respected as well, in a best effort way.
 :::
 
@@ -397,7 +397,7 @@ Compiles the specified models to [CSN](../cds/csn) or other formats.
 
 [See simple examples in the getting started page](../get-started/bookshop).{.learn-more}
 
-[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to).{.learn-more}
+[For the set of built-in compile 'formats', see the `cds.compile.to` API](../node.js/cds-compile#cds-compile-to-).{.learn-more}
 
 
 In addition, the following formats are available:
@@ -481,9 +481,10 @@ could look like this:
 
 ```cds [srv/data-service.cds]
 using { sap.capire.flights as my } from '../db/schema';
+namespace sap.capire.flights;
 
-@data.product @hcql @rest @odata
-service sap.capire.flights.data {
+@hcql @rest @odata
+service FlightsService {
   @readonly entity Flights as projection on my.Flights;
   @readonly entity Airlines as projection on my.Airlines;
   @readonly entity Airports as projection on my.Airports;
@@ -503,9 +504,11 @@ The command generates the API client package into a new folder _apis/data-servic
 ![The screenshot is described in the accompanying text.](assets/cds-export.png) {style="filter: drop-shadow(0 2px 5px rgba(0,0,0,.40));"}
 
 The `service.csn` contains only the interface defined in the service, removing the query part of the entities and all the underlying model.
-In addition, there are i18n bundles with the localized metadata relevant
-for the interface, and a _data_ folder with test data
-that exactly matches the structure of the entities in the API.
+In addition (and as shown in the screenshot):
+
+- with the `--texts` option, i18n bundles are included with the localized metadata relevant for the interface
+- with the `--data` option, initial data that exactly matches the structure of the entities in the API is included
+- with the `--plugin` option, a `cds-plugin.js` entrypoint file is included for plug & play
 
 `cds export` also adds a _package.json_. The package name combines the application name (from the main _package.json_) with the file name of the data service. In our example, this results in `@capire/xflights-data-service`.
 You can change this name as appropriate.
@@ -771,112 +774,31 @@ For example:
 - In VS Code, use the _Debug: Attach to Node Process_ command.
 - In Chrome browser, just open [chrome://inspect](chrome://inspect) and click _Inspect_.
 
-## cds upgrade
+## cds upgrade <Beta/>
 
-`cds upgrade` scans your project for breaking changes in a new CDS major version and reports exactly where you are affected.
-
-The command evaluates migration rules against your project sources, configuration, and dependencies. It reports:
-
-- Which breaking changes affect your project
-- Where exactly in your code (file and line number)
-- What needs to change and how
-
-A typical scan takes seconds and covers about 40 rules for CDS 10.
-
-### Run the Command
+Use `cds upgrade` to assist you in upgrading your project to new/latest CDS versions.
+Run it like that in your project's root directory with a globally installed `@sap/cds-dk` version 10:
 
 ```sh
 cds upgrade
 ```
 
-Without a global installation:
-
+::: details Run without a global installation ...
 ```sh
 npx -p @sap/cds-dk@10 cds upgrade
 ```
+:::
 
+That will:
 
-The following table explains the options:
+- Run preflight checks: Node.js version, clean working tree, installed dependencies.
+- Upgrade your project dependencies to the latest cds10 versions.
+- Scan your project for whether you're affected by breaking changes.
 
-| Flag       | Effect                                                                        |
-|------------|-------------------------------------------------------------------------------|
-| `--fix`    | Apply dependency version rewrites (and OpenRewrite recipes for Java projects) |
-| `--report` | Write `report.md` to `.cds-upgrade/`                                          |
+See also:
 
-
-
-Before running the analysis, the command validates prerequisites: Node.js version, clean working tree, recognized project structure, and installed dependencies. Any issues appear as `[FAIL]` items in the output before the analysis begins.
-
-### Output
-
-#### Console
-
-By default, the command prints a compact summary to the terminal:
-
-```
-Environment Analysis
-
-  Node.js CAP project
-  cds-dk version: v10.0.1 → CDS 10
-  cds version: @sap/cds 9.9.1 (CDS 9)
-
-Code Analysis
-
-  10 rules with potential issues:
-
-    1  Fixed Bulk Inserts via REST
-    1  Fixed `cds.ql.clone()`
-    1  Fixed `srv.entities()` – texts entity access
-    1  Fixed Affinity for Decimals
-    2  Bypass Draft Choreography
-    1  hdbcds compiler backend removed
-    2  Decimals & Int64 as Strings
-    1  Fixed Service Results – legacy_srv_results flag
-    4  cds.requires.scheduling defaults to true — Scheduling Service auto-connects when a database is configured
-    2  Fixed `srv.entities()` – getter methods removed
-    16  matches total
-
-
-Run cds upgrade --fix to update dependency versions.
-Re-run with --report to write .cds-upgrade/report.md listing remaining code changes.
-```
-
-The output lists the match count and rule title for each affected rule.
-
-#### Report Files {#report}
-
-With `--report`, a human-readable report is written to `.cds-upgrade/report.md`. It groups findings by migration topic (matching the structure of the [migration guide](/releases/migration/cds10)). Each finding includes:
-
-- Migration context explaining what changed and how to address it
-- Match locations in `file:line` format
-- A link to the corresponding section on cap.cloud.sap
-
-Rules that cannot be checked automatically appear in a separate **Manual Review** section with guidance on what to look for.
-
-#### Understanding the Report
-
-Open `.cds-upgrade/report.md` and work through it section by section. Each finding includes:
-
-1. **What changed** - the breaking change explained, with examples
-2. **Where** - file and line in your code
-3. **What to do** - fix guidance from the migration guide
-
-Items that the CDS compiler can detect also surface as build errors after you upgrade. The report gives you a head start before the actual version bump.
-
-You can also pass the report to an AI coding agent to interpret findings in context, filter false positives, search for additional occurrences, and apply fixes directly.
-
-### After the Scan
-
-1. Fix the reported issues, guided by the report.
-2. Run `cds build` to confirm that compiler-level issues are resolved.
-3. Run your test suite to verify runtime behavior.
-
-### Limitations
-
-- Detection is structural (pattern-based) — semantic-only issues require manual review or AI assistance.
-- Monorepo support is limited to one project root per invocation.
-
-### Related
-
-- [Migration Guide for CDS 10](/releases/migration/cds10) — complete list of breaking changes
+- [Migration Guide for cds10](/releases/migration/cds10) — complete list of breaking changes
 - [Java Migration Guide](/java/migration) — migration steps for CAP Java projects
+
+> [!warning] Limitations
+> Scans for breaking changes is pattern-based, likely includes false positives; require detailed investigation and manual review.  Some breaking changes are not detectable automatically, for example, semantic-only issues or changes in behavior that do not affect the code structure.

@@ -1,7 +1,6 @@
 ---
-# shorty: Definition Language
-synopsis: >
-  Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
+description: >
+  Specification of the definition language used to model data models and services in an easy, user-centric syntax, including a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
@@ -25,7 +24,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 
 
-- [Keywords & Identifiers](#keywords-identifiers)
+- [Keywords & Identifiers](#keywords--identifiers)
 - [Built-in Types](#built-in-types)
 - [Literals](#literals)
 - [Model Imports](#model-imports)
@@ -285,7 +284,7 @@ CDL supports line-end, block comments, and *doc* comments as in Java and JavaScr
 /** doc comment */
 ```
 
-#### Doc Comments 
+#### Doc Comments
 
 A multi-line comment of the form `/** … */` at an [annotation position](#annotation-targets) is considered a *doc comment*:
 
@@ -451,7 +450,7 @@ type EmailAddress : { kind:String; address:String; }
 
 > Keywords `many` and `array of` are mere syntax variants with identical semantics and implementations.
 
-When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array. 
+When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array.
 With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
@@ -696,7 +695,7 @@ entity Orders {
 }
 ```
 
-To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assert-range).
+To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assertrange).
 For localization of enum values, model them as [code list](./common#adding-own-code-lists).
 
 <br>
@@ -858,7 +857,7 @@ Result result = service.run(Select.from("UsingView"), params);
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cdspersistenceskip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request.
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 
@@ -934,7 +933,7 @@ entity Addresses {
 ```
 
 
-### Managed (To-One) Associations 
+### Managed (To-One) Associations
 ###### managed-associations
 
 For to-one associations, CDS can automatically resolve and add requisite foreign key elements from the target's primary keys and implicitly add respective join conditions.
@@ -1154,7 +1153,7 @@ entity P_Authors as projection on Authors {
 In this example, in addition to `books` projection `P_Authors` has a new association `availableBooks`
 that points only to those books where `stock > 0`.
 
-If the filter condition effectively reduces the cardinality of the association
+If the filter condition effectively reduces the cardinality of the association (or composition)
 to one, you should make this explicit in the filter by adding a `1:` before the condition:
 
 ```cds
@@ -1163,6 +1162,12 @@ entity P_Employees as projection on Employees {
   addresses[1: kind='home'] as homeAddress  // homeAddress is to-one
 }
 ```
+
+::: warning `:1` doesn't itself reduce the cardinality
+The `:1` syntax itself has no effect on the cardinality. It is only an information by the developer
+that the specified condition reduces the cardinality of the association or composition to one.
+:::
+
 
 Filters usually are provided only for to-many associations, which usually are unmanaged.
 Thus publishing with a filter is almost exclusively used for unmanaged associations.

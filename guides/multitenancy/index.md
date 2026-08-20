@@ -1,12 +1,12 @@
 ---
-synopsis: >
+description: >
   Introducing the fundamental concepts of multitenancy, underpinning SaaS solutions in CAP. It describes how to run and test apps in multitenancy mode with minimized setup and overhead.
 impl-variants: true
 ---
 
 # Deploy Multitenant SaaS Applications
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -48,7 +48,7 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
   ```jsonc
   {
     "dependencies": {
-        "@sap/cds-mtxs": "^3"
+        "@sap/cds-mtxs": "^4"
     },
   }
   ```
@@ -77,17 +77,16 @@ In case of **CAP Node.js** projects, the `cds add multitenancy` command...
   {
     "name": "bookshop-mtx",
     "dependencies": {
-      "@cap-js/hana": "^2",
-      "@sap/cds": "^9",
-      "@sap/cds-mtxs": "^3",
+      "@cap-js/hana": "^3",
+      "@sap/cds": "^10",
+      "@sap/cds-mtxs": "^4",
       "@sap/xssec": "^4",
-      "express": "^4"
     },
     "devDependencies": {
-      "@cap-js/sqlite": "^2"
+      "@cap-js/sqlite": "^3"
     },
     "engines": {
-      "node": ">=20"
+      "node": ">=24"
     },
     "scripts": {
       "start": "cds-serve"
@@ -158,16 +157,16 @@ In case of **CAP Java** projects, the `cds add multitenancy` command...
       {
         "name": "bookshop-mtx",
         "dependencies": {
-          "@cap-js/hana": "^2",
-          "@sap/cds": "^9",
-          "@sap/cds-mtxs": "^3",
+          "@cap-js/hana": "^3",
+          "@sap/cds": "^10",
+          "@sap/cds-mtxs": "^4",
           "@sap/xssec": "^4"
         },
         "devDependencies": {
-          "@cap-js/sqlite": "^2"
+          "@cap-js/sqlite": "^3"
         },
         "engines": {
-          "node": ">=20"
+          "node": ">=24"
         },
         "scripts": {
           "start": "cds-serve",
@@ -317,7 +316,7 @@ In a first terminal, start the MTX sidecar process:
    [cds] - serving cds.xt.JobsService { path: '/-/cds/jobs' }
    ```
 
-   In addition, we can see a `t0` tenant being deployed, which is used by the MTX services for book-keeping tasks.
+   In addition, we can see a [`t0` tenant]./mtxs#about-technical-tenant-t0) being deployed, which is used by the MTX services for book-keeping tasks.
 
    ```log
    [cds] - loaded model from 1 file(s):
@@ -637,6 +636,13 @@ Let's also assume we've deployed to our app to Cloud Foundry org `myOrg` and spa
 cf map-route bookshop cfapps.us10.hana.ondemand.com --hostname subscriber1-myOrg-mySpace-bookshop
 ```
 
+> [!warning] DNS host label limit
+>The hostname must not exceed 63 characters.
+>
+> If `<subscriberSubdomain>-<saasAppName>` is too long, the route will fail.
+> Use shorter app names or configure an explicit short route via the `routes` parameter in your `mta.yaml`.
+
+
 ::: details Learn how to do this in the BTP cockpit instead…
 
 Switch to your **provider account** and go to your space → Routes. Click on _New Route_.
@@ -677,7 +683,7 @@ There are several ways to update the database schema of a multitenant applicatio
 * For **CAP Java** applications, schema updates should be done as described in the respective [Java Guide](../../java/multitenancy#database-update).
 * For **CAP Node.js** applications, you can use either of the following as shown in the examples below:
   - the `cds-mtx upgrade` command from a terminal
-  - the [MTX Sidecar API](mtxs#upgrade-tenants-→-jobs)
+  - the [MTX Sidecar API](mtxs#upgrade-tenants--jobs)
   - via a [CloudFoundry hook](https://help.sap.com/docs/btp/sap-business-technology-platform/module-hooks)
   - via a [CloudFoundry task](https://tutorials.cloudfoundry.org/cf4devs/advanced-concepts/tasks/)
   - via a [Kubernetes job](https://kubernetes.io/docs/concepts/workloads/controllers/job/)
@@ -895,11 +901,17 @@ To help ensure that the generated SAP HANA tenant UUID is unique within a region
 like `prefix-${org}-${space}` in Cloud Foundry.
 
 :::warning Prefix is mandatory
-The <Config label="hana_tenant_prefix" keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant `t0` is created with its own SAP HANA tenant.
+The <Config label="hana_tenant_prefix" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/hana_tenant_prefix</Config> configuration is mandatory to ensure that the internal tenant [`t0`](./mtxs#about-technical-tenant-t0) is created with its own SAP HANA tenant.
 :::
 
 :::warning Length restriction
 The prefix and subscriber tenant name are each limited to 63 characters maximum.
+:::
+
+:::warning Do not use `hana_tenant_prefix` in queries
+The `hana_tenant_prefix` is only used to generate the SAP HANA tenant UUID to avoid duplicates when creating an
+SAP HANA tenant. Although it is added as `prefix` label to the SAP HANA tenant, it is not reliable and must not
+be used for any query.
 :::
 
 
@@ -914,44 +926,55 @@ For **CAP Java** applications you need to set the same prefix in the <Config jav
     CDS_MULTITENANCY_HANAMTSERVICE_HANATENANTPREFIX: "some-prefix"
 ```
 
-##### Pass the SAP HANA Tenant ID with a Subscription
+##### Assign Many Tenant Containers to a Common SAP HANA Tenant
 
-**... in CAP Node.js**
-###### CAP Node.js
-If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](./mtxs#put-tenant):
-```jsonc
-{
-  "subscribedTenantId": "t1",
-  "subscribedSubdomain": "subdomain1",
-  "eventType": "CREATE"
-  ...
-  "_": {
-	  "hdi": {
-	    "create": {
-	      "hana_tenant_id": "5b3c0699-1c65-4ec1-9a8e-b7cfc3cc15bc"
-	    }
-	  }
+To group the tenant containers of many applications or microservices in a common HANA tenant, you need to make sure that the same SAP HANA tenant ID is used.
+
+![One HANA tenant for many applications or microservices](./assets/hana_tenants_for_many.drawio.svg)
+
+**Option 1: Configure the same `hana_tenant_prefix`**
+: You can configure the same [`hana_tenant_prefix`](#mandatory-specify-a-unique-prefix-for-the-sap-hana-tenant-name) many applications or microservices. With that, the SAP HANA tenant ID is generated in the same way for each subscriber tenant.
+
+: If you choose this option, the following preconditions need to be met
+- The subscriber tenant ID (BTP tenant ID) needs to be the same for all applications or microservices.
+- All applications or microservices need to use the [same database](#configure-mtxs-for-tenant-management-service) for the same subscriber tenant.
+
+**Option 2: Pass the SAP HANA Tenant ID with a Subscription**
+
+: **... in CAP Node.js**
+
+   If you want to control the ID of the SAP HANA tenant ID on your own, you can pass it as subscription payload as parameters, for example, using a handler for the [`SaasRegistryService`](./mtxs#put-tenant):
+   ```jsonc
+   {
+     "subscribedTenantId": "t1",
+     "subscribedSubdomain": "subdomain1",
+     "eventType": "CREATE"
+     ...
+     "_": {
+   	  "hdi": {
+   	    "create": {
+   	      "hana_tenant_id": "5b3c0699-1c65-4ec1-9a8e-b7cfc3cc15bc"
+   	    }
+   	  }
+     }
+   }
+   ```
+  The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
+  except for [the internal tenant t0](./mtxs#about-technical-tenant-t0). Also ensure that the ID is unique within a region.
+
+:  **... in CAP Java**
+
+  To specify the ID of the SAP HANA tenant in **CAP Java** applications you can register a custom handler for the `before`    phase of the `SUBSCRIBE` event that sets the `hana_tenant_id` within the provisioning parameters:
+
+  ```java
+  @Before
+  public void beforeSubscription(SubscribeEventContext context) {
+      context.getOptions().put("provisioningParameters",
+          Collections.singletonMap("hana_tenant_id", "<ID>"));
   }
-}
-```
-The `hana_tenant_id` must be a valid UUID and must be unique per subscriber tenant. Specifying `hana_tenant_id` overrides the prefix settings mentioned earlier,
-except for the internal tenant `t0`. Also ensure that the ID is unique within a region.
+  ```
 
-![One HANA tenant for many applications](./assets/hana_tenants_for_many.drawio.svg)
-
-**... in CAP Java**
-###### CAP Java
-To specify the ID of the SAP HANA tenant in **CAP Java** applications you can register a custom handler for the `before` phase of the `SUBSCRIBE` event that sets the `hana_tenant_id` within the provisioning parameters:
-
-```java
-@Before
-public void beforeSubscription(SubscribeEventContext context) {
-    context.getOptions().put("provisioningParameters",
-        Collections.singletonMap("hana_tenant_id", "<ID>"));
-}
-```
-
-This will affect every new [tenant subscription](../../java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
+  This will affect every new [tenant subscription](../../java/multitenancy.md#subscribe-tenant) and will set the specified SAP HANA tenant ID.
 
 <div id="tmscmk" />
 
@@ -966,8 +989,6 @@ There are still some limitations with the current client implementation.
 
 - **Database ID is Mandatory**
   As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](./mtxs#deployment-config).
-- [`clusterSize` configuration](./mtxs#saas-provisioning-config) needs to be set to `1` (default is `3`). HANA TMS v2 does not provide a performant way to determine all database IDs,
-so clustering the upgrade by database does not work properly.
 
 
 ## SaaS Dependencies {#saas-dependencies}
@@ -1167,6 +1188,11 @@ The tenant application requests are separated by the tenant-specific app URL:
 ```http
 https://<subaccount subdomain><CDS_MULTITENANCY_APPUI_TENANTSEPARATOR><CDS_MULTITENANCY_APPUI_URL>
 ```
+
+> [!tip] Keep hostnames short
+> The resulting hostname must stay within the 63-character DNS host label limit.
+> Choose short values for separator and app URL components.
+
 
 ::: tip Use MTA extensions for landscape-specific configuration
 

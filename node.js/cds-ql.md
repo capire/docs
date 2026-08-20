@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for `cds.ql`, the module for constructing CQN queries in Node.js using fluent API and tagged template literal styles.
 ---
 
 
@@ -82,7 +83,7 @@ const { Books } = cds.entities
 let q1 = SELECT.from (Books) .where `ID=${201}`
 ```
 
-[Learn more about using reflected definitions from a service's model](core-services#entities){.learn-more}
+[Learn more about using reflected definitions from a service's model](core-services#-entities){.learn-more}
 
 ####  Not Locked in to SQL
 
@@ -114,7 +115,7 @@ let books = await cats.run (query)
 
 > `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
-The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
+The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), for example:
 
 ```js
 const db = cds.db
@@ -205,7 +206,7 @@ let input = 201 //> might be entered by end users
 let books = await SELECT.from `Books` .where ('ID='+input)
 let bookz = await SELECT.from `Books` .where (`ID=${input}`)
 ```
-> **Note** also that tagged template strings never have surrounding parentheses! I.e., the third line above does the very same string concatenation as the second line.
+> **Note** also that tagged template strings never have surrounding parentheses! That means, the third line above does the very same string concatenation as the second line.
 
 
 A malicious user might enter some SQL code fragment like that:
@@ -362,7 +363,7 @@ q2 = cds.ql.clone (q1)
 ```
 We can then modify `q2` without changing `q1`, for example like this:
 ```js
-// Override where clause 
+// Override where clause
 q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
 ```
 ```js

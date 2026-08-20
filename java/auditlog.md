@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   Find here information about the AuditLog service in CAP Java.
-status: released
 ---
 
 # Audit Logging
@@ -11,7 +10,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 
 <!-- #### Content

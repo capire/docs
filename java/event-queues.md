@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   Java APIs and configuration for CAP's Transactional Event Queues — `OutboxService`, `AsyncCqnService`, scheduling, custom outbox services, error handling, and event versioning.
-status: released
 ---
 
 # Event Queues in Java
@@ -524,7 +523,7 @@ A startup log entry shows the configured version:
 2024-12-19T11:21:33.253+01:00 INFO 3420 --- [main] cds.services.impl.utils.BuildInfo : application.deployment.version: 1.0.0-SNAPSHOT
 ```
 
-To bypass the version check for a specific custom outbox, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-<key>-checkVersion).
+To bypass the version check for a specific custom outbox, set [`cds.outbox.services.MyCustomOutbox.checkVersion: false`](./developing-applications/properties#cds-outbox-services-key-checkversion).
 
 
 ## Troubleshooting

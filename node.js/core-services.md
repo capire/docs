@@ -1,4 +1,6 @@
 ---
+description: >
+  How CAP applications provide and consume services, covering service definitions, implementations, and event handlers.
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
@@ -258,7 +260,7 @@ await srv.read ('GET','/Books/206')
 await srv.send ('submitOrder', { book:206, quantity:1 })
 ```
 
-[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions-functions):
+[Using typed APIs for actions and functions](../guides/services/custom-actions#calling-actions--functions):
 
 ```js
 await srv.submitOrder({ book:206, quantity:1 })
@@ -353,7 +355,7 @@ function constructor (
 )
 ```
 
->  *Arguments fill in equally named properties [`name`](#name), [`model`](#model), [`options`](#options).*
+>  *Arguments fill in equally named properties [`name`](#-name), [`model`](#-model), [`options`](#-options).*
 
 **Don't override the constructor** in subclasses, rather override [`srv.init()`](#srv-init).
 
@@ -420,7 +422,7 @@ for (let d of this.entities) //... d is a CSN definition
 
 #### Similarity _and_ difference to `cds.entities`
 
-These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#entities). However, note this difference:
+These properties are very similar in nature and behavior to [`cds.entities`](cds-facade#cds-entities), which is a sortcut to [`cds.model.entities`](cds-reflect#-entities). However, note this difference:
 
 While both of these work with [`cds.entities`](cds-facade#cds-entities):
 ```js
@@ -520,9 +522,11 @@ class BooksService extends cds.ApplicationService {
 
 **Methods `.on`, `.before`, `.after`** refer to corresponding *phases* during request processing:
 
-- **`.on`** handlers _fulfill_ requests, for example, by reading/writing data from/to databases
-- **`.before`** handlers run before the `.on` handlers, e.g., for validating inbound data
-- **`.after`** handlers run after the `.on` handlers, e.g., to enrich outbound data
+|Method | Description | Example
+| --- | --- | --- |
+| `.on`| handlers _fulfill_ requests | reading/writing data from/to databases |
+| `.before` | handlers run before the `.on` handlers | validating inbound data |
+| `.after` | handlers run after the `.on` handlers | enrich outbound data |
 
 **Argument `event`** can be one of:
 
@@ -535,9 +539,9 @@ class BooksService extends cds.ApplicationService {
 
 **Argument `entity`** can be one of:
 
-- A `CSN definition` of an entity served by this service → i.e., from [`this.entities`](#entities)
+- A `CSN definition` of an entity served by this service → from [`this.entities`](#-entities)
 - A `string` corresponding to the _name_ of an entity served by this service
-- A `path`  navigating from a served entity to associated ones → e.g., `Books/author`
+- A `path`  navigating from a served entity to associated ones, e.g., `Books/author`
 
 **Multiple `events` or `entities`** – for both parameters, you can also specify:
 
@@ -691,9 +695,9 @@ Books.data = {
 
 ::: details Noteworthy in these examples...
 
-- The `READ` handler is using the [`req.target`](./events.md#target) property which points to the CSN definition of the entity addressed by the incoming request → matching one of `Books` or `Authors` we obtained from [`this.entities`](#entities) above.
+- The `READ` handler is using the [`req.target`](./events.md#-target) property which points to the CSN definition of the entity addressed by the incoming request → matching one of `Books` or `Authors` we obtained from [`this.entities`](#-entities) above.
 
-- The `UPDATE` handler is using the [`req.params`](./events.md#params) property which provides access to passed in entity keys.
+- The `UPDATE` handler is using the [`req.params`](./events.md#-params) property which provides access to passed in entity keys.
 
 :::
 
@@ -820,7 +824,7 @@ Use this method to send synchronous requests to a service for execution.
 -  `method` is an HTTP method
 -  `path` can be an arbitrary URL, starting with a leading `'/'`, it is passed to a service without any modification as a string
 
-To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions-functions). Basically, use the action or function name instead of the HTTP method.
+To call bound / unbound actions and functions from the service, further variants of `srv.send` are additionally supported, as described in the section [Calling Actions / Functions](../guides/services/custom-actions#calling-actions--functions). Basically, use the action or function name instead of the HTTP method.
 
 Examples:
 

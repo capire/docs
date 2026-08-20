@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   CAP provides several features to ensure data protection that meet industry standards and regulatory requirements.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 impl-variants: true
@@ -7,7 +7,7 @@ impl-variants: true
 
 # Product Security Overview
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 <ImplVariantsHint />
 
@@ -527,16 +527,16 @@ The total number of request of OData batches can be limited by application confi
 
 <div class="impl java">
 
-To limit the _amount of queries_ per OData `$batch`, use <Config java>cds.odataV4.batch.maxRequests</Config> or. <Config java>cds.odataV2.batch.maxRequests</Config> 
+To limit the _amount of queries_ per OData `$batch`, use <Config java>cds.odataV4.batch.maxRequests</Config> or. <Config java>cds.odataV2.batch.maxRequests</Config>
 
-To prevent clients from _requesting too much data_, you can define restrictions on `$expands` for your entities: 
+To prevent clients from _requesting too much data_, you can define restrictions on `$expands` for your entities:
 
 - Prevent any expands from the entity:
-  - `@Capabilities.ExpandRestrictions.Expandable: false` 
+  - `@Capabilities.ExpandRestrictions.Expandable: false`
 - Restrict expands for certain properties:
-  - `@Capabilities.ExpandRestrictions.NonExpandableProperties: [...]` 
+  - `@Capabilities.ExpandRestrictions.NonExpandableProperties: [...]`
 - Set maximum allowed depth of an `$expand` from this entity:
-  - `@Capabilities.ExpandRestrictions.MaxLevels: ...`  
+  - `@Capabilities.ExpandRestrictions.MaxLevels: ...`
   - Or you can set an **application-wide limit** with <Config java>cds.query.restrictions.expand.maxLevels = \<max depth\></Config> that applies to all entities. Value `-1` indicates absence of limit.
 
 :::warning
@@ -637,7 +637,7 @@ The adapters also transform the HTTP requests into a corresponding CQN statement
 Access control is performed on basis of CQN level according to the CDS model and hence HTTP Verb Tampering attacks are avoided. Also HTTP method override, using `X-Http-Method-Override` or `X-Http-Method` header, is not accepted by the runtime.
 
 The OData protocol allows to encode field values in query parameters of the request URL or in the response headers. This is, for example, used to specify:
-- [Pagination (implicit sort order)](../services/served-ootb#pagination-sorting)
+- [Pagination (implicit sort order)](../services/served-ootb#pagination--sorting)
 - [Searching Data](../services/served-ootb#searching-data)
 - Filtering
 
@@ -692,14 +692,14 @@ For instance, this is true for [authorizations](#secure-authorization) or applic
 It's recommended to ensure security settings by automated integration tests.
 :::
 
-CAP provides some features that are suitable for development only such as 
+CAP provides some features that are suitable for development only such as
 - Index Page
 - Mock Users
 - Developer Dashboard (Java only)
 
 These features are deactivated in the production profile by default.
 
-::: warning 
+::: warning
 **Do not manually enable features for production that are disabled by the production profile**, as this could introduce serious security vulnerabilities.
 :::
 

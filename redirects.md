@@ -42,6 +42,7 @@
 - [guides/using-services](guides/integration/calesi)
 - [guides/databases-hana](guides/databases/hana)
 - [guides/databases-postgres](guides/databases/postgres)
+- [guides/databases-sqlite](guides/databases/sqlite)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)

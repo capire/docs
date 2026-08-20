@@ -1,7 +1,6 @@
 ---
-synopsis: >
-  This section describes various options to create a CAP Java project from scratch, to build your application with Maven, and to modify an existing project with the CDS Maven plugin.
-
+description: >
+  How to create a CAP Java project from scratch, build it with Maven, and modify an existing project using the CDS Maven plugin.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -145,7 +144,7 @@ It basically helps to control the dependency versions of the artifacts and shoul
 
 ```xml
 <properties>
-	<cds.services.version>2.6.0</cds.services.version>
+	<cds.services.version>5.0.0</cds.services.version>
 </properties>
 
 <dependencyManagement>
@@ -258,7 +257,6 @@ CAP Java comes with a rich set of prepared modules for all different layers of t
 * `cds-feature-jdbc`: Consuming JDBC persistences using the CDS4j JDBC runtime.
 * `cds-feature-hana`:  Makes your application aware of SAP HANA data sources.
 * `cds-feature-postgresql`: Makes your application aware of PostgreSQL data sources.
-* `cds-feature-xsuaa`:  Adds [XSUAA](https://github.com/SAP/cloud-security-xsuaa-integration)-based authentication to your application.
 * `cds-feature-identity`: Adds [Identity Services](https://github.com/SAP/cloud-security-xsuaa-integration) integration covering IAS to your application.
 * `cds-feature-mt`:  Makes your application multitenant aware.
 * `cds-feature-enterprise-messaging`:  Connects your application to SAP Event Mesh.

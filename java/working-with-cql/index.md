@@ -1,13 +1,12 @@
 ---
-synopsis: >
+description: >
   Learn here about working with CDS CQL.
 
-status: released
 ---
 
 # Working with CDS CQL
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 <script setup>
 import { data as pages } from './index.data.ts'

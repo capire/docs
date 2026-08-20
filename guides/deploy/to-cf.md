@@ -1,12 +1,11 @@
 ---
-synopsis: >
-  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP)  to SAP BTP Cloud Foundry environment.
-impl-variants: true
+description: >
+  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP) to SAP BTP Cloud Foundry environment.
 ---
 
 # Deploy to Cloud Foundry
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -18,43 +17,32 @@ After completing the functional implementation of your CAP application by follow
 
 First, you apply these steps manually in an ad-hoc deployment, as described in this guide. Then, after successful deployment, you automate them using [CI/CD pipelines](cicd).
 
-<ImplVariantsHint />
-
 ## Prerequisites
 
 The following sections are based on a new project that you can create like this:
 
-<div class="impl node">
-
-```sh
+::: code-group
+```sh [Node.js]
 cds init bookshop --nodejs --add sample
 cd bookshop
 ```
-
-::: details Alternatively, download or clone the sample repository
-
-Exercise the following steps in the [`@capire/bookshop` sample](https://github.com/capire/bookshop):
-
-```sh
-git clone https://github.com/capire/bookshop
-cd bookshop
-```
-
-:::
-
-</div>
-
-<div class="impl java">
-
-```sh
+```sh [Java]
 cds init bookshop --java --add sample
 cd bookshop
 ```
+:::
 
-> If you want to use a ready-to-be-deployed sample, see our [java/samples](https://github.com/sap-samples/cloud-cap-samples-java).
-
-[Learn more about Setting Up Local Development.](../../java/getting-started#local){.learn-more}
-</div>
+::: details Alternatively, use the ready-to-deploy sample project
+::: code-group
+```sh [Node.js]
+git clone https://github.com/capire/bookshop
+cd bookshop
+```
+```sh [Java]
+git clone https://github.com/sap-samples/cloud-cap-samples-java
+cd cloud-cap-samples-java
+```
+:::
 
 <br>
 
@@ -80,16 +68,12 @@ npm -g outdated       #> check whether @sap/cds-dk is listed
 npm i -g @sap/cds-dk  #> if necessary
 ```
 
-<div class="impl node">
-
-Likewise, ensure the latest version of `@sap/cds` is installed in your project:
+For Node.js projects, ensure that the latest version of `@sap/cds` is installed in your project:
 
 ```sh
 npm outdated          #> check whether @sap/cds is listed
 npm i @sap/cds        #> if necessary
 ```
-
-</div>
 
 #### 3. Cloud MTA Build Tool {#mbt}
 
@@ -123,17 +107,7 @@ The `cds add <facets>` command ensures required services are configured correctl
 
 ### 1. SAP HANA Database
 
-<div class="impl node">
-
-While you used SQLite as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
-
-</div>
-
-<div class="impl java">
-
-While you used SQLite or H2 as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
-
-</div>
+While you used SQLite (Node.js) or SQLite/H2 (Java) as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
 
 ```sh
 cds add hana
@@ -384,7 +358,7 @@ We recommend setting up [Dependabot](https://docs.github.com/en/code-security/de
 
 
 
-## Upgrade Tenants {.java}
+## Upgrade Tenants in Java
 
 The CAP Java SDK offers `main` methods for Subscribe/Unsubscribe in the classes `com.sap.cds.framework.spring.utils.Subscribe/Unsubscribe` that can be called from the command line. This way, you can run the tenant subscribe/unsubscribe for the specified tenant. This triggers your custom handlers, which is useful for local testing scenarios.
 

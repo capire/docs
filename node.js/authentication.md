@@ -1,14 +1,12 @@
 ---
-label: Authentication
-synopsis: >
+description: >
   This guide is about authenticating users on incoming HTTP requests.
-# layout: node-js
 uacp: This page is linked from the Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/29c25e504fdb4752b0383d3c407f52a6.html
 ---
 
 # Authentication
 
-{{$frontmatter?.synopsis}} This is done by [authentication middlewares](#strategies) setting the [`cds.context.user` property](#cds-user) which is then used in [authorization enforcement](#enforcement) decisions.
+{{$frontmatter?.description}} This is done by [authentication middlewares](#strategies) setting the [`cds.context.user` property](#cds-user) which is then used in [authorization enforcement](#enforcement) decisions.
 
 [[toc]]
 
@@ -17,7 +15,7 @@ uacp: This page is linked from the Help Portal at https://help.sap.com/products/
 [user]: #cds-user
 [`cds.context.user`]: #cds-user
 
-Represents the currently logged-in user as filled into [`cds.context.user`](events#user) by authentication middlewares.
+Represents the currently logged-in user as filled into [`cds.context.user`](events#-user) by authentication middlewares.
 Simply create instances of `cds.User` or of subclasses thereof in custom middlewares.
 For example:
 
@@ -429,7 +427,7 @@ export default function custom_auth(req: Req, res: Response, next: NextFunction)
 }
 ```
 
-[Learn more about customizing the user ID in this example.](cds-serve#customization-of-cds-context-user){.learn-more}
+[Learn more about customizing the user ID in this example.](cds-serve#customization-of-cdscontextuser){.learn-more}
 
 
 ## Authentication in Production

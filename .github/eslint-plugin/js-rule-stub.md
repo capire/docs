@@ -18,7 +18,7 @@ This rule was introduced in `@sap/eslint-plugin-cds x.y.z`.
 DESCRIPTION OF CORRECT EXAMPLE
 
 ::: code-group
-<<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< correct/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="$RULE_NAME"
@@ -31,7 +31,7 @@ DESCRIPTION OF CORRECT EXAMPLE
 DESCRIPTION OF INCORRECT EXAMPLE
 
 ::: code-group
-<<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< incorrect/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="$RULE_NAME"
