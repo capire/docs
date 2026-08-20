@@ -144,6 +144,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 - [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
 - [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
 - [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5) (with Daniel Schlachter)
+- [CAP in the age of AI](https://www.youtube.com/playlist?list=PLTKB1hyt4LXs) (with various CAP team members)
 - [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
 - [Good to know: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9)
@@ -191,7 +192,12 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
    - [SAP BTP Developers Guide](https://help.sap.com/docs/btp/btp-developers-guide/btp-developers-guide)
       - [Tutorials featured in there](https://help.sap.com/docs/btp/btp-developers-guide/tutorials-for-sap-cloud-application-programming-model)
    - [SAP Discovery Center Missions](https://discovery-center.cloud.sap/missionCatalog/?search=cap&product=32)
-
+   - Recently published (Aug 2026) tutorials in the Tutorial Navigator
+      - [Set up a self-contained development environment for CAP Node.js](https://developers.sap.com/tutorials/cap-self-contained-dev-env)
+      - [Use mocking to embrace auth in your domain model from the outset](https://developers.sap.com/tutorials/cap-mocking-auth)
+      - [Explore the declarative power of status-transition flows](https://developers.sap.com/tutorials/cap-status-transition-flows)
+      - [Get an introduction to the cds REPL](https://developers.sap.com/tutorials/cap-intro-to-repl)
+      - [Add MCP capabilities to a CAP service](https://developers.sap.com/tutorials/cap-add-mcp-capabilities)
 
 
 ## Hands-Ons & CodeJams
