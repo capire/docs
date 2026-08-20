@@ -629,7 +629,7 @@ Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
-### Simple Static Checks { #simple-static-checks }
+### Simple Static Checks in Node.js { #simple-static-checks }
 
 Most instance-based [`@restrict.where`](#restrict-annotation) conditions reference business data (for example, `where: 'createdBy = $user'`) and can only be enforced against persisted data — pushed into the query for `READ`, or verified with a `COUNT` for `UPDATE`/`DELETE`.
 
