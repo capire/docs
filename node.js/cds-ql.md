@@ -182,7 +182,7 @@ return books
 ## Avoiding SQL Injection
 All the APIs are designed to avoid [SQL Injection](https://wikipedia.org/wiki/SQL_injection) by default. For example, let's see how the following code would be executed:
 
-```js
+```js live
 let input = 201 //> might be entered by end users
 let books = await SELECT.from `Books` .where `ID=${input}`
 ```
@@ -206,10 +206,10 @@ dbc.run (sql, [201])
 
 The only mistake you could make is to imperatively concatenate user input with CQL or SQL fragments, instead of using the tagged strings or other options promoted by `cds.ql`. For example, assumed you had written the above code sample like that:
 
-```js
+```js live
 let input = 201 //> might be entered by end users
-let books = await SELECT.from `Books` .where ('ID='+input)
-let bookz = await SELECT.from `Books` .where (`ID=${input}`)
+let books = await SELECT.from `Books` .where ('ID='+input)   // BAD
+let bookz = await SELECT.from `Books` .where (`ID=${input}`) // BAD
 ```
 > **Note** also that tagged template strings never have surrounding parentheses! That means, the third line above does the very same string concatenation as the second line.
 
@@ -218,7 +218,6 @@ A malicious user might enter some SQL code fragment like that:
 ```sql
 0; DELETE from Books; -- gotcha!
 ```
-{style="margin: 10px 40px"}
 
 In effect, your generated SQL statements would effectively look like that:
 

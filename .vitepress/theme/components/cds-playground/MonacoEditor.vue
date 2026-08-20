@@ -65,6 +65,7 @@ async function createEditor() { try {
     overviewRulerLanes: 0,
     overviewRulerBorder: false,
     scrollBeyondLastLine: false,
+    tabFocusMode: true,
     scrollbar: {
       vertical: 'hidden',
       horizontal: 'hidden',
