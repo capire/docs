@@ -145,10 +145,17 @@ function compile(code) {
 
   // anchored right after the keyword so we don't match "=" occurring inside the initializer, e.g. in a template literal
   const declRe = /^(?:let|const|var)\s+([A-Za-z_$][\w$]*)\s*=/
-  if (declRe.test(last.text)) {
-    // last statement declares a variable, e.g. "let result = 1+1" -> collect all top-level declarations in the
+  const arrayDeclRe = /^(?:let|const|var)\s+\[([^\]]+)\]\s*=/
+  if (declRe.test(last.text) || arrayDeclRe.test(last.text)) {
+    // last statement declares a variable (simple or array-destructured) -> collect all top-level declarations in the
     // snippet so earlier ones aren't silently dropped, e.g. comparing "let q = ...; let p = ..." side by side
-    const names = stmts.map(s => s.text.match(declRe)?.[1]).filter(Boolean)
+    const names = stmts.flatMap(s => {
+      const m = s.text.match(declRe)
+      if (m) return [m[1]]
+      const ma = s.text.match(arrayDeclRe)
+      if (ma) return ma[1].split(',').map(n => n.trim().split(/[\s=]/)[0]).filter(n => /^[A-Za-z_$][\w$]*$/.test(n))
+      return []
+    })
     return names.length > 1
       ? `${code}\nreturn { ${names.join(', ')} };`
       : `${code}\nreturn { __return: (${names[0]}) };`
