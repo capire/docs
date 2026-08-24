@@ -4,6 +4,7 @@
     "**/CODE_OF_CONDUCT.md": true,
     "**/CONTRIBUTING.md": true,
     "**/LICENSE*": true,
-    "**/node_modules/": true
+    "**/node_modules/": true,
+    "**/.hyperspace/": true
   }
 }
