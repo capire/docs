@@ -637,7 +637,8 @@ Some conditions, though, reduce to a plain comparison of literals once [user att
 
 ```cds
 entity Reviews @(restrict: [
-  { grant: 'CREATE', where: '$user.level >= 2' } ]);
+    { grant: 'CREATE', where: '$user.level >= 2' }
+  ]) {/*...*/}
 ```
 
 For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`), to unbound actions and functions, and to actions and functions bound to a *collection* of instances — everywhere there's no single persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
