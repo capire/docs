@@ -50,9 +50,6 @@ If the database calculates vector embeddings on write it automatically regenerat
 On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
 :::
 
-> [!warning] Java only and <Beta/>
-> The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
-
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
 
 ### Generate Embeddings Programmatically
