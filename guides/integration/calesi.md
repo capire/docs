@@ -52,7 +52,6 @@ With CAP, Service integration is greatly simplified. Consumption of remote servi
      }
    }`
    ```
-:::
 
 The graphic below illustrates what happened here:
 
