@@ -48,6 +48,8 @@ If the database calculates vector embeddings on write it automatically regenerat
 
 ::: info Local Testing with H2 and SQLite
 On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
+
+In CAP Node.js, install the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin and set the database kind to `ai-sqlite` to generate real embeddings locally on SQLite with an [ONNX](https://onnx.ai) model instead of the hash-based emulation. <Beta/>
 :::
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
@@ -136,10 +138,18 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 
 **Database Implementation:**
 - **HANA:** Uses real AI models (SAP built-in models or external remote sources)
-- **SQLite & H2:** Hash-based deterministic implementation for testing. Can be overridden by application developers to use external embedding services.
+- **SQLite & H2:** Hash-based deterministic implementation for testing. Can be overridden by application developers to use external embedding services. In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin with the `ai-sqlite` database kind generates real embeddings locally via an [ONNX](https://onnx.ai) model. <Beta/>
 - **PostgreSQL:** No default implementation. Application developers must define their own `vector_embedding` function.
 
 ## Database-Specific Considerations
+
+### SQLite
+- Hash-based, deterministic `vector_embedding` implementation by default, suitable for local testing.
+- In CAP Node.js, install [`@cap-js/ai`](https://github.com/cap-js/ai) and set the database kind to `ai-sqlite` to generate real embeddings locally with an [ONNX](https://onnx.ai) model, without any external service. <Beta/>
+  ```sh
+  npm add @cap-js/ai onnxruntime-node@1.20.1
+  ```
+  <Config>cds.requires.db: ai-sqlite</Config>
 
 ### PostgreSQL
 - Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
