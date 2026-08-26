@@ -149,6 +149,7 @@ Using directives allow to import definitions from other CDS models. As shown in 
 
 ::: code-group
 
+```cds
 using foo.bar.scoped.Bar from './contexts';
 using foo.bar.scoped.nested from './contexts';
 using foo.bar.scoped.nested as animal from './contexts';

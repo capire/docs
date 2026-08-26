@@ -860,7 +860,7 @@ Aliases of columns have precedence over the element names when `orderBy` is eval
 
 ::: warning
 Aliases may shadow elements names. To avoid shadowing, don't use element names as aliases.
-::::
+:::
 
 On SAP HANA, the user's locale is passed to the database, resulting in locale-specific sorting of string-based columns.
 
@@ -2137,7 +2137,7 @@ Select.from("bookshop.Books").where(t -> t.get("title").matchesPattern("CAP"));
 
 ::: tip
 As a general rule, consider regular expressions as a last resort. They are powerful, but also complex and hard to read. For simple string operations, prefer other simpler functions like `contains`.
-::::
+:::
 
 In the following example, the title of the book must start with the letter `C` and end with the letter `e` and contains any number of letters in between:
 
