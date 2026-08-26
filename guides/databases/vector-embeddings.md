@@ -99,15 +99,13 @@ Select.from(INCIDENTS)
 ```
 
 ```js [Node.js]
-const response = await new AzureOpenAiEmbeddingClient(
- 'text-embedding-3-small'
-).run({
- input: 'Any incidents with solar inverters this month? How were they resolved?'
-});
+const question =
+  'Any incidents with solar inverters this month? How were they resolved?'
 
-const questionEmbedding = response.getEmbedding();
-let similarIncidents = await SELECT.from('Incidents')
-  .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.75`;
+// Compute the question's embedding and find related incidents, all in the database
+const similarIncidents = await SELECT.from('Incidents').where`
+  cosine_similarity(embedding,
+    vector_embedding(${question}, 'QUERY', 'SAP_GXY.20250407')) > 0.75`
 ```
 :::
 
