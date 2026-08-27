@@ -83,7 +83,7 @@ const config = defineConfig({
 
   head: [
     ['meta', { name: 'theme-color', content: '#db8b0b' }],
-    ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'" }],
+    ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:" }],
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
@@ -97,6 +97,15 @@ const config = defineConfig({
     plugins: [...playground.plugins()],
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
+    },
+    // cds-worker.js is constructed with `type: 'module'`; match that at build time so its
+    // dynamic import('@sap/cds') is emitted as native ESM instead of an iife require() shim
+    worker: {
+      format: 'es',
+      rolldownOptions: { output: { keepNames: true, } },
+      // Vite doesn't reuse the main `plugins` array for worker bundles; without vite-plugin-cds's
+      // node()/cap() here, the worker build misses their Node built-in shims (e.g. lazify's module.require)
+      plugins: () => [...playground.plugins()],
     },
     css: {
       preprocessorOptions: {
