@@ -76,7 +76,6 @@ Add this to the *srv/pom.xml* file:
     <groupId>com.sap.cds</groupId>
     <artifactId>cds-adapter-mcp</artifactId>
     <scope>runtime</scope>
-    <version>${cds.services.version}</version>
   </dependency>
 </dependencies>
 ```
@@ -152,13 +151,9 @@ using { AdminService } from './admin-service';
 
 As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#tool-describe) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
-- [Doc comments](../../cds/cdl#doc-comments)
+- [Doc comments](../../cds/cdl#doc-comments) - most recommended
 - `@title`
 - `@description`
-
-> [!note]
-> For CAP Java, you need to enable this using configuration parameter cds.model.includeDocComments: true and in MTX sidecar
-
 
 For example, you can add doc comments to your entities and their elements like that:
 
@@ -178,6 +173,34 @@ entity Authors {
 ```
 
 
+> [!warning] Configuration required
+For CAP Java, you must enable doc comments in the Java application and in the MTX sidecar.
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
+:::
+
+You can also provide service-specific instructions via annotation `@mcp.instructions`. 
+
+::: code-group
+```cds [srv/books-service.cds]
+using { AdminService } from './admin-service';
+@mcp 
+@mcp.instructions: 'Always ask a confirmation before ordering any books'  // [!code focus]
+service BooksService {
+  ...
+}
+```
+:::
+
+These instructions are sent to a client who connects with an MCP server.
 
 ## Test-drive Locally
 
