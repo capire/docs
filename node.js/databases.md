@@ -25,7 +25,6 @@ This method is called automatically by the framework on the first query, so **yo
 
 
 ## cds.DatabaseService — Consumption {#databaseservice-consumption }
-###### databaseservice-consumption
 
 
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->
