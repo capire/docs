@@ -53,7 +53,7 @@ On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-bas
 > [!warning] Java only and <Beta/>
 > The `vector_embedding` function is currently in beta and only supported by the CAP Java runtime.
 
-[Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
+[Learn more about Vector Embeddings in CAP Java](../../java/ai#vector-embeddings) {.learn-more}
 
 ### Generate Embeddings Programmatically
 
