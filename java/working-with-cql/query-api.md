@@ -1679,7 +1679,7 @@ These methods allow you to compute the difference between timestamps:
 
 #### Vector Functions
 
-Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
+Vector functions allow you to compute similarity and distance of [vectors](../ai.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
 
 ::: warning Not supported with local MTXS on SQLite
 Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite isn't supported.
