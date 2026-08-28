@@ -173,8 +173,9 @@ entity Authors {
 ```
 
 
-> [!warning] Configuration required
-For CAP Java, you must enable doc comments in the Java application and in the MTX sidecar.
+::: warning Configuration required for CAP Java
+You must enable doc comments in the Java application and in the MTX sidecar.
+
 ::: code-group
 ```json [.cdsrc.json]
 "cdsc": {
