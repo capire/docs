@@ -56,6 +56,42 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 :::
 
+### SAP HANA Cloud Serverless <Beta /> { #hana-serverless }
+
+Instead of a dedicated database, you can connect to an [SAP HANA Cloud serverless](https://help.sap.com/docs/hana-cloud) instance. The binding carries only an orchestration gateway URL, and the actual HDI container is resolved on demand through the serverless Tenant API.
+
+::: warning Multitenant apps only
+Serverless support currently targets multitenant apps, where one HDI container is provisioned per tenant on subscription. Single-tenant use is not supported yet.
+:::
+
+Set it up with:
+
+```sh
+cds add hana-serverless
+```
+
+This does the following:
+
+- Adds the `@cap-js/hana` dependency and sets `db` to the `hana-serverless` kind under the `[production]` profile in your _package.json_.
+- Provisions a `hana-cloud` managed service on the `serverless` plan in _mta.yaml_, configured for `subscription-manager` auto-subscription so a container is provisioned per tenant on subscription.
+- Lets the app's `identity` binding consume the database instance, reusing an existing IAS identity when present or adding a machine-to-machine one otherwise, so the runtime obtains a single, correctly-scoped token for the Tenant API.
+
+The resulting configuration looks like this:
+
+::: code-group
+```jsonc [package.json]
+{
+  "cds": {
+    "requires": {
+      "[production]": {
+        "db": "hana-serverless"
+      }
+    }
+  }
+}
+```
+:::
+
 ## Running `cds build`
 
 Deployment to SAP HANA is done via the [SAP HANA Deployment Infrastructure (HDI)](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-developer-guide-for-cloud-foundry-multitarget-applications-sap-business-app-studio/sap-hdi-deployer?). Use `cds build` to generate all necessary deployable HDI artifacts. For example, run this in [capire/bookshop](https://github.com/capire/bookshop):
