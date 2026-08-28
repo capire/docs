@@ -34,6 +34,7 @@
     "globals": "^17.4.0",
     "htmlparser2": "^12",
     "monaco-editor": "^0",
+    "patch-package": "^8.0.1",
     "sass": "^1.62.1",
     "vite-plugin-cds": "^0.3.1",
     "vitepress": "2.0.0-alpha.19"
