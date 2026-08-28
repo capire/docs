@@ -70,11 +70,13 @@ Set it up with:
 cds add hana-serverless
 ```
 
-This does the following:
+::: details What `cds add hana-serverless` sets up
 
 - Adds the `@cap-js/hana` dependency and sets `db` to the `hana-serverless` kind under the `[production]` profile in your _package.json_.
 - Provisions a `hana-cloud` managed service on the `serverless` plan in _mta.yaml_, configured for `subscription-manager` auto-subscription so a container is provisioned per tenant on subscription.
 - Lets the app's `identity` binding consume the database instance, reusing an existing IAS identity when present or adding a machine-to-machine one otherwise, so the runtime obtains a single, correctly-scoped token for the Tenant API.
+
+:::
 
 The resulting configuration looks like this:
 
