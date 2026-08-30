@@ -116,6 +116,32 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
 
+## Read-Only Fields in Drafts { #readonly-in-drafts }
+
+By default, `@readonly` and `@Core.Computed` fields are only enforced when a draft is activated, that means during the `CREATE` or `UPDATE` event on the active entity. Until then, such fields can still be changed on the draft, for example through an OData `PATCH` request.
+
+To enforce these annotations on the draft already, during the `DRAFT_NEW` and `DRAFT_PATCH` events, set the [`cds.drafts.enforceReadonly`](./developing-applications/properties#cds-drafts-enforcereadonly) property (default `false`):
+
+```yaml
+cds.drafts.enforceReadonly: true
+```
+
+With this property enabled, values sent for `@readonly` or `@Core.Computed` fields are ignored when a draft is created or patched, so these fields can no longer be modified through OData requests on the draft.
+
+### Writing Read-Only Fields from Custom Code { #readonly-hint }
+
+When `cds.drafts.enforceReadonly` is enabled, the read-only enforcement also applies to `Update` or `Insert` statements that your own event handlers run against the draft entity, for example in a determination. As a result, values for `@readonly` and `@Core.Computed` fields are removed from these statements as well.
+
+To intentionally write such fields from trusted custom code, add the `@readonly` hint with value `false` to the statement. This disables the read-only enforcement for that single statement:
+
+```java
+Update.entity(Books_.class).data(book).hint("@readonly", false);
+```
+
+::: warning Use the hint only for trusted data
+The `@readonly` hint disables the read-only field protection for the affected statement. Only use it in server-side code where the values are computed or validated by your application, never with unvalidated client input. Managed fields (`@cds.on.insert`, `@cds.on.update`) and `@Core.Immutable` fields are always enforced and are not affected by this hint.
+:::
+
 ## Working with Draft-Enabled Entities
 
 When deleting active entities that have a draft, the draft is deleted as well. In this case, a `DELETE` and `DRAFT_CANCEL` event are triggered.
