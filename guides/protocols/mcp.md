@@ -451,7 +451,7 @@ Parameters of `query` requests:
 | where     | Array of [`xpr`](../../cds/cqn#where) objects used as predicates used for filtering                     |
 | limit     | An integer limiting the results to return                                                                    |
 | one       | Return a single record instead of an array. Implies `limit:1`; default: `false`                              |
-| distinct  | Return only unique rows; default: `false` (Node.js only)                                                     |
+| distinct  | Return only unique rows; default: `false`.                                                                   |
 | groupBy   | An array of [`ref`](../../cds/cqn#ref) objects or `strings` to group results.                           |
 | orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
 
