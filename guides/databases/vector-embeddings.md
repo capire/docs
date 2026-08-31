@@ -49,7 +49,7 @@ If the database calculates vector embeddings on write it automatically regenerat
 ::: info Local Testing with H2 and SQLite
 On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
 
-In CAP Node.js, install the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin and set the database kind to `ai-sqlite` to generate real embeddings locally on SQLite with an [ONNX](https://onnx.ai) model instead of the hash-based emulation. <Beta/>
+In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin adds an `ai-sqlite` database kind that generates real embeddings locally on SQLite with an [ONNX](https://onnx.ai) model. It requires a configured embedding model and is experimental, for local development only. <Beta/>
 :::
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
@@ -143,11 +143,23 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 
 ### SQLite
 - Hash-based, deterministic `vector_embedding` implementation by default, suitable for local testing.
-- In CAP Node.js, install [`@cap-js/ai`](https://github.com/cap-js/ai) and set the database kind to `ai-sqlite` to generate real embeddings locally with an [ONNX](https://onnx.ai) model, without any external service. <Beta/>
+- In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin adds an `ai-sqlite` database kind that generates real embeddings locally with an [ONNX](https://onnx.ai) model, without any external service. It is experimental and intended for local development only. <Beta/>
+
+  Install the plugin with its peer dependencies:
   ```sh
-  npm add @cap-js/ai onnxruntime-node@1.20.1
+  npm add -D @cap-js/ai @cap-js/sqlite \
+    @huggingface/hub @huggingface/tokenizers onnxruntime-node@1.20.1
   ```
-  <Config>cds.requires.db: ai-sqlite</Config>
+  Then set the database kind and configure an embedding model (there's no default):
+  ```json
+  {
+    "cds": { "requires": { "db": {
+      "kind": "ai-sqlite",
+      "embedding": { "model": "sentence-transformers/all-MiniLM-L6-v2" }
+    } } }
+  }
+  ```
+  On first start, the model is downloaded to `.cds/models` and reused afterwards. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for the full walkthrough and model selection.
 
 ### PostgreSQL
 - Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
