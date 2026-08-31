@@ -147,8 +147,6 @@ Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`
 
 Using directives allow to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
 
-::: code-group
-
 ```cds
 using foo.bar.scoped.Bar from './contexts';
 using foo.bar.scoped.nested from './contexts';
@@ -158,8 +156,6 @@ entity Car : Bar {}            //> : foo.bar.scoped.Bar
 entity Moo : nested.Zoo {}     //> : foo.bar.scoped.nested.Zoo
 entity Zoo : animal.Zoo {}     //> : foo.bar.scoped.nested.Zoo
 ```
-
-:::
 
 Multiple named imports through ES6-like deconstructors:
 

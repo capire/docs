@@ -17,10 +17,10 @@ CDS Query Language (CQL) is based on standard SQL, which it enhances by...
 
 CQL allows to put projections, that means, the `SELECT` clause, behind the `FROM` clause enclosed in curly braces. For example, the following are equivalent:
 
-```sql
+```cds live
 SELECT name, address.street from Authors
 ```
-```sql
+```cds live
 SELECT from Authors { name, address.street }
 ```
 
@@ -30,7 +30,7 @@ SELECT from Authors { name, address.street }
 Postfix projections can be appended to any column referring to a struct element or an association and hence be nested.
 This allows **expand** results along associations and hence read deeply structured documents:
 
-```sql
+```cds live
 SELECT from Authors {
    name, address { street, town { name, country }}
 };
@@ -67,7 +67,7 @@ Nested Expands following _to-many_ associations are not supported.
 As the name of the struct element or association preceding the postfix projection appears in the result set,
 an alias can be provided for it:
 
-```sql
+```cds live
 SELECT from Authors {
    name, address as residence { street, town as city { name, country }}
 };
@@ -95,7 +95,7 @@ Nested Expands can contain expressions.
 In addition, it's possible to define new structures that aren't present in the data source. In this case
 an alias is mandatory and is placed *behind* the `{…}`:
 
-```sql
+```cds live
 SELECT from Books {
    title,
    author { name, dateOfDeath - dateOfBirth as age },
@@ -125,7 +125,7 @@ results = [
 
 Put a **`"."`** before the opening brace to **inline** the target elements and avoid writing lengthy lists of paths to read several elements from the same target. For example:
 
-```sql
+```cds live
 SELECT from Authors {
    name, address.{ street, town.{ name, country }}
 };
@@ -133,7 +133,7 @@ SELECT from Authors {
 
 … is equivalent to:
 
-```sql
+```cds live
 SELECT from Authors {
   name,
   address.street,
@@ -144,7 +144,7 @@ SELECT from Authors {
 
 Nested Inlines can contain expressions:
 
-```sql
+```cds live
 SELECT from Books {
    title,
    author.{
@@ -156,7 +156,7 @@ SELECT from Books {
 
 The previous example is equivalent to the following:
 
-```sql
+```cds live
 SELECT from Books {
    title,
    author.name,
@@ -172,7 +172,7 @@ Within postfix projections, the `*` operator queries are handled slightly differ
 
 #### Example:
 
-```sql
+```cds live
 SELECT from Books { *, author.name as author }
 ```
 
@@ -183,37 +183,51 @@ Queries like in our example, would result in duplicate element effects for `auth
 
 Use the `excluding` clause in combination with `SELECT *` to select all elements except for the ones listed in the exclude list.
 
-```sql
+```cds live
 SELECT from Books { * } excluding { author }
 ```
 
 The effect is about **late materialization** of signatures and staying open to late extensions.
 For example, assume the following definitions:
 
-```cds
+```cds model=FooBar data=FooBarData
 entity Foo { foo : String; bar : String; car : String; }
 entity Bar as select from Foo excluding { bar };
 entity Boo as select from Foo { foo, car };
 ```
 
+```csv hidden data=FooBarData:data/Foo.csv
+foo,bar,car
+foo1,bar1,car1
+```
+
 A `SELECT * from Bar` would result into the same as a query of `Boo`:
 
-```sql
-SELECT * from Bar --> { foo, car }
-SELECT * from Boo --> { foo, car }
+```cds live model=FooBar
+SELECT * from Bar //> { foo, car }
+```
+```cds live model=FooBar
+SELECT * from Boo //> { foo, car }
 ```
 
 Now, assume a consumer of that package extends the definitions as follows:
 
-```cds
+```cds model=FooBarBoo:FooBar data=FooBarBooData
 extend Foo with { boo : String; }
+```
+
+```csv hidden data=FooBarBooData:data/Foo.csv
+foo,bar,car,boo
+foo1,bar1,car1,boo1
 ```
 
 With that, queries on `Bar` and `Boo` would return different results:
 
-```sql
-SELECT * from Bar --> { foo, car, boo }
-SELECT * from Boo --> { foo, car }
+```cds live model=FooBarBoo
+SELECT * from Bar //> { foo, car, boo }
+```
+```cds live model=FooBarBoo
+SELECT * from Boo //> { foo, car }
 ```
 
 
@@ -222,11 +236,11 @@ SELECT * from Boo --> { foo, car }
 If the `*` selector is used following an association, it selects all elements of the association target.
 For example, the following queries are equivalent:
 
-```sql
+```cds live
 SELECT from Books { title, author { * } }
 ```
-```sql
-SELECT from Books { title, author { ID, name, dateOfBirth, … } }
+```cds live
+SELECT from Books { title, author { ID, name, dateOfBirth, /*…*/ } }
 ```
 
 
@@ -239,7 +253,7 @@ SELECT from Authors { name, struc }
 ```
 
 The `excluding` clause can also be used for Nested Expands:
-```sql
+```cds live
 SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } }
 ```
 
@@ -249,13 +263,15 @@ SELECT from Books { title, author { * } excluding { dateOfDeath, placeOfDeath } 
 
 The expansion of `*` in Nested Inlines is analogous. The following queries are equivalent:
 
-```sql
+```cds live
 SELECT from Books { title, author.{ * } }
-SELECT from Books { title, author.{ ID, name, dateOfBirth, … } }
+```
+```cds live
+SELECT from Books { title, author.{ ID, name, dateOfBirth, /*…*/ } }
 ```
 
 The `excluding` clause can also be used for Nested Inlines:
-```sql
+```cds live
 SELECT from Books { title, author.{ * } excluding { dateOfDeath, placeOfDeath } }
 ```
 
@@ -265,19 +281,23 @@ SELECT from Books { title, author.{ * } excluding { dateOfDeath, placeOfDeath } 
 Use path expressions to navigate along associations and/or struct elements in any of the SQL clauses as follows:
 
 In `from` clauses:
-```sql
+```cds live
 SELECT from Authors[name='Emily Brontë'].books;
-SELECT from Books:authors.towns;
+```
+```cds live
+SELECT from Books:author.address.town;
 ```
 
 In `select` clauses:
-```sql
+```cds live
 SELECT title, author.name from Books;
+```
+```cds live
 SELECT *, author.address.town.name from Books;
 ```
 
 In `where` clauses:
-```sql
+```cds live
 SELECT from Books where author.name='Emily Brontë'
 ```
 
@@ -289,12 +309,14 @@ The same is valid for `group by`, `having`, and `order by`.
 Path expressions in from clauses allow to fetch only those entries from a target entity, which are associated to a parent entity. They unfold to _SEMI JOINS_ in plain SQL queries. For example, the previous mentioned queries would unfold to the following plain SQL counterparts:
 
 ```sql
+-- plain SQL
 SELECT * from Books WHERE EXISTS (
   SELECT 1 from Authors WHERE Authors.ID = Books.author_ID
     AND Authors.name='Emily Brontë'
 );
 ```
 ```sql
+-- plain SQL
 SELECT * from Towns WHERE EXISTS (
   SELECT 1 from Authors WHERE Authors.town_ID = Towns.ID AND EXISTS (
     SELECT 1 from Books WHERE Books.author_ID = Authors.ID
@@ -333,7 +355,7 @@ All column references get qualified &rarr; in contrast to plain SQL joins there'
 
 Append infix filters to associations in path expressions to narrow the resulting joins. For example:
 
-```sql
+```cds live
 SELECT books[genre='Mystery'].title from Authors
  WHERE name='Agatha Christie'
 ```
@@ -348,7 +370,7 @@ WHERE Authors.name='Agatha Christie';
 
 If an infix filter effectively reduces the cardinality of a *to-many* association to *one*, make this explicit with:
 
-```sql
+```cds
 SELECT name, books[1: favorite=true].title from Authors
 ```
 
@@ -361,28 +383,29 @@ that the specified condition reduces the result to a single entry.
 
 Use a filtered path expression to test if any element of the associated collection matches the given filter:
 
-```sql
-SELECT FROM Authors {name} WHERE EXISTS books[year = 2000]
+```cds live
+SELECT FROM Authors {name} WHERE EXISTS books[stock = 11]
 ```
 
 ...unfolds to:
 ```sql
+-- plain SQL
 SELECT name FROM Authors
 WHERE EXISTS (
         SELECT 1 FROM Books
         WHERE Books.author_id = Authors.id
-            AND Books.year = 2000
+            AND   Books.stock = 11
     )
 ```
 
 Exists predicates can be nested:
-```sql
+```cds
 SELECT FROM Authors { name }
     WHERE EXISTS books[year = 2000 and EXISTS pages[wordcount > 1000]]
 ```
 
 A path with several associations is rewritten as nested exists predicates. The previous query is equivalent to the following query.
-```sql
+```cds
 SELECT FROM Authors { name }
     WHERE EXISTS books[year = 2000].pages[wordcount > 1000]
 ```
@@ -397,13 +420,17 @@ Paths *inside* the filter are not yet supported.
 There are two different constructs commonly called casts.
 SQL casts and CDL casts. The former produces SQL casts when rendered into SQL, whereas the latter does not:
 
-```sql
-SELECT cast (foo+1 as Decimal) as bar from Foo;  -- standard SQL
-SELECT from Foo { foo+1 as bar : Decimal };      -- CDL-style
+```cds live
+// standard SQL
+SELECT price, cast (price+1 as Integer) as pr from Books;
+```
+```cds live
+// CDL-style
+SELECT from Books { price, price+1 as pr : Integer };
 ```
 [Learn more about CDL type definitions](./cdl#types){.learn-more}
 
-Use SQL casts when you actually want a cast in SQL. CDL casts are useful for expressions such as `foo+1` as the compiler does not deduce types.
+Use SQL casts when you actually want a cast in SQL. CDL casts are useful for expressions such as `price+1` as the compiler does not deduce types.
 For the OData backend, by specifying a type, the compiler will also assign the correct EDM type in the generated EDM(X) files.
 
 ::: tip
@@ -438,7 +465,7 @@ entity OpenOrder as projection on Order {
 
 Use the `mixin...into` clause to logically add unmanaged associations to the source of the query, which you can use and propagate in the query's projection. This is only supported in postfix notation.
 
-```sql
+```cds
 SELECT from Books mixin {
   localized : Association to LocalizedBooks on localized.ID = ID;
 } into {
