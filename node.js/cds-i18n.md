@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for the `cds.i18n` module, used for localizing UIs and runtime error messages, and directly in custom code.
 ---
 
 # Localization / i18n
@@ -60,7 +61,7 @@ ORDER_EXCEEDS_STOCK = The order of {quantity} books exceeds available stock {sto
 
 ### Direct Usage
 
-In addition, you can use both standard bundles directly in your code, with [`<bundle>.at(key)`](#at-key) the central method to obtain localized texts:
+In addition, you can use both standard bundles directly in your code, with [`<bundle>.at(key)`](#at-key-) the central method to obtain localized texts:
 
 ```js
 [dev] cds repl
@@ -97,7 +98,7 @@ Shortcuts to corresponding i18n [config options](#config). {.indent}
 
 ### `.messages` {.property}
 
-The I18n bundle used for runtime messages, for example, for translated validation errors, such as `ASSERT_RANGE` or `ASSERT_FORMAT`. Translations are loaded from properties with base name `messages`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
+The I18n bundle used for runtime messages, for example, for translated validation errors, such as `ASSERT_RANGE` or `ASSERT_FORMAT`. Translations are loaded from properties with base name `messages`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/app/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/
@@ -114,7 +115,7 @@ cap/samples/bookshop/
 
 ### `.labels` {.property}
 
-The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/uis/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/_i18n): {.indent}
+The I18n bundle used for UI labels, such as `CreatedAt` or `CreatedBy`, referenced from respective [Fiori annotations](../guides/uis/i18n#externalizing-texts-bundles). Translations are loaded from properties with base name `i18n`, like that in the [*bookstore* sample](https://github.com/capire/bookstore/tree/main/app/_i18n): {.indent}
 
 ```zsh
 cap/samples/bookshop/
@@ -137,7 +138,7 @@ function cds.i18n.bundle4 (file : string, options?)
 function cds.i18n.bundle4 (model : CSN, options?)
 ```
 
-Factory method to create instances of  [`I18nBundle`](#i18nbundle). The first argument is either a string used as the bundle's [`file`/`basename`](#–-file-basename), or a CDS model.
+Factory method to create instances of  [`I18nBundle`](#i18nbundle). The first argument is either a string used as the bundle's [`file`/`basename`](#-file--basename), or a CDS model.
 
 ```js
 const b1 = cds.i18n.bundle4('foo')
@@ -278,7 +279,7 @@ You can alternatively pass in a CSN definition instead of an i18n key to look up
 
 ### `key4 (csn)` {.method}
 
-This method is used by [`bundle.at()`](#at-key) to determine an i18n key for a CSN definition. In essence, the implementation works like that:
+This method is used by [`bundle.at()`](#at-key-) to determine an i18n key for a CSN definition. In essence, the implementation works like that:
 
 ```js
 const a = csn['@title']
@@ -299,7 +300,7 @@ return a.match(/{i18n>(.+)}/)[1]
 function texts4 (locale: string) => Texts
 ```
 
-This method is used by [`bundle.at()`](#at-key) to obtain the set of translated texts for a specific locale.
+This method is used by [`bundle.at()`](#at-key-) to obtain the set of translated texts for a specific locale.
 For example, try this in `cds repl`: {.indent}
 
 ```js
@@ -417,8 +418,8 @@ An array of root directories up to which to recurse up the filesystem hierarchy 
 
 ### – `leafs` {.property}
 
-The leafs of the filesystem hierarchy to start fetch i18n folders recursively. Determined by `model?.$sources.map(path.dirname)`  if a [`model`](#–-model) (or [`cds.model`](cds-facade#cds-model)) is given.  <br/>
-*Default*: [`roots`](#–-roots). {.indent}
+The leafs of the filesystem hierarchy to start fetch i18n folders recursively. Determined by `model?.$sources.map(path.dirname)`  if a [`model`](#-model) (or [`cds.model`](cds-facade#cds-model)) is given.  <br/>
+*Default*: [`roots`](#-roots). {.indent}
 
 ### – `folders` {.property}
 
@@ -655,9 +656,9 @@ cds.env.i18n = {
 | `cds.i18n.folders`          | An array of (relative) folder names that will be appended to the source directories in a cross-product fashion of the default `cds.model`  when fetching for existing i18n [`folders`](#folders). <br />*Default:* `["_i18n","i18n"]` |
 | `cds.i18n.default_language` | The locale used for [default translations](#defaults). <br />*Default:* `"en"` |
 
-::: danger
+::: danger Do not switch defaults without proper evaluation
 
-Changing these configurations does not only affect your usage of your i18n bundles, but also all bundles provided by reuse packages you might use, including the ones provided by the CAP framework itself, such as the labels for the `@sap/cds/common` types, or the default messages used by the Node.js runtime.
+Changing these configurations does not only affect your usage of your i18n bundles, but also all bundles provided by reuse packages you might use, including the ones provided by the CAP framework itself, such as the labels for the `@sap/cds/common` types, or the default messages used by the Node.js runtime. It is therefore highly recommended to leave this setting as is and adhere to the default name `_i18n` for your i18n directory.
 
 :::
 

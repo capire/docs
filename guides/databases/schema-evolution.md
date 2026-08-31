@@ -1,3 +1,8 @@
+---
+description: >
+  How CAP's built-in schema evolution support updates database schemas to reflect changes in CDS models without losing existing data.
+---
+
 # Schema Evolution
 
 Schema evolution is the capability of a database to adapt its schema (tables, columns, indexes, constraints, etc.) to changes in the data model over time, without losing existing data. CAP provides built-in support for schema evolution across the supported databases, allowing developers to modify their CDS models and have the underlying database schema updated accordingly.
@@ -19,10 +24,10 @@ You can see this in action when you run `cds deploy`, which generates the necess
 cds deploy --dry
 ```
 ```sql [=> output]
-DROP TABLE IF EXISTS sap_capire_bookshop_Authors; 
-DROP TABLE IF EXISTS sap_capire_bookshop_Books; 
-DROP TABLE IF EXISTS sap_capire_bookshop_Genres; 
-... 
+DROP TABLE IF EXISTS sap_capire_bookshop_Authors;
+DROP TABLE IF EXISTS sap_capire_bookshop_Books;
+DROP TABLE IF EXISTS sap_capire_bookshop_Genres;
+...
 CREATE TABLE sap_capire_bookshop_Authors ...;
 CREATE TABLE sap_capire_bookshop_Books ...;
 CREATE TABLE sap_capire_bookshop_Genres ...;
@@ -37,9 +42,9 @@ In addition to dropping and recreating tables in-place, you can and should also 
 ## Schema Evolution by CAP
 
 
-In production environments, you can't use a drop-create strategy, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that you can review and apply to the database. 
+In production environments, you can't use a drop-create strategy, as it would result in data loss. CAP provides mechanisms to handle schema evolution in a more controlled manner, by generating migration scripts that you can review and apply to the database.
 
-Let's simulate the workflow with the [@capire/bookshop](https://github.com/capire/bookshop) example. 
+Let's simulate the workflow with the [@capire/bookshop](https://github.com/capire/bookshop) example.
 
 1. Capture the current state of the database schema:
    ```shell
@@ -115,7 +120,7 @@ Let's simulate the workflow with the [@capire/bookshop](https://github.com/capir
 Some changes to the CDS model are considered disallowed in the context of schema evolution, as they could lead to data loss or inconsistencies. The following list shows examples of such changes:
 
 - Renaming entities or fields (instead, add new ones and migrate data)
-- Changing data types in incompatible ways (e.g., from String to Integer)
+- Changing data types in incompatible ways (for example, from String to Integer)
 - Removing entities or fields (instead, consider deprecating them first)
 - Reducing the length of strings or binary fields
 - Reducing the precision of numeric fields
@@ -176,13 +181,13 @@ This enables automatic schema migration when you run `cds deploy` in production-
 
 - Before applying any changes, CAP compares the new state of the CDS models with the stored state and translates any differences into appropriate SQL statements to migrate the schema.
 
-> [!important] 
+> [!important]
 > CAP applies only non-lossy changes automatically. If it detects lossy changes, `cds deploy` aborts with respective errors and includes comments in the generated SQL script, similar to the general approach described above.
 
 
 ## Schema Evolution by HDI
 
-When deploying to SAP HANA, the so-called HANA Deployment Infrastructure (HDI) handles schema evolution automatically. 
+When deploying to SAP HANA, the so-called HANA Deployment Infrastructure (HDI) handles schema evolution automatically.
 
 HDI manages the lifecycle of database artifacts and applies necessary schema changes based on the deployed CDS models. This includes creating, altering, or dropping database objects as needed to align with the current CDS model.
 
@@ -192,10 +197,10 @@ Learn more about that in the [SAP HANA](hana.md) guide, section [HDI Schema Evol
 
 ## Liquibase for Java Projects
 
-For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how you deploy database changes. 
+For Java-based CAP projects, you can also use [Liquibase](https://www.liquibase.org/) to control when, where, and how you deploy database changes.
 
 ::: tip Liquibase license change
-Please be aware that Liquibase [changed it's license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
+Please be aware that Liquibase [changed its license to  Functional Source License (FSL)](https://www.liquibase.com/blog/liquibase-community-for-the-future-fsl) with release 5.0. You need to check if this license is compatible with your application.
 :::
 
-Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-java).
+Learn more about that in the [PostgreSQL](postgres.md) guide, section [Using Liquibase (Java)](postgres#using-liquibase-in-cap-java).

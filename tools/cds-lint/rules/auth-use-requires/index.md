@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ Some annotations such as `@requires` or `@readonly` are convenience shortcuts fo
 In the following example, the `CatalogService` action `addRating` correctly uses `@requires: 'Admin'` to indicate granting of unrestricted events to the `Admin` role:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-use-requires"
@@ -37,7 +33,7 @@ In the following example, the `CatalogService` action `addRating` correctly uses
 In the following example, the `CatalogService` uses `@restrict` to assign unrestricted events (`grant: *`) to the `Admin` role (`to: Admin`). This could be written more clearly using `@requires` and so the rule reports a warning:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-use-requires"

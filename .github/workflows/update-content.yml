@@ -62,9 +62,6 @@ jobs:
         run: |
           npm ci
           .github/java-properties/update-properties.js
-        env:
-          MAVEN_HOST: https://common.repositories.cloud.sap/artifactory/build.releases
-          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
 
       - name: Check for changes
         run: |

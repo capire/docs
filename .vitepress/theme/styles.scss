@@ -264,9 +264,10 @@ main .vp-doc {
   .prefer::before { content: 'Prefer: '; color: var(--vp-c-green-1); }
   .avoid::before { content: 'Avoid: '; color: var(--vp-c-red-2); }
 
-  .good, .green { color: var(--vp-c-green-1) };
+  .good, .green { color: var(--vp-c-green-1) }
   .bad, .red { color: var(--vp-c-red-2) }
-  .dimmed { color: var(--vp-c-text-2) };
+  .yellow { color: var(--vp-c-yellow-2) }
+  .dimmed { color: var(--vp-c-text-2) }
 
   .constructor::before { content: 'Constructor: '; color: var(--vp-c-text-2) }
   .annotation::before { content: 'Annotation: '; color: var(--vp-c-text-2) }
@@ -284,6 +285,7 @@ main .vp-doc {
 
 // Tables styling
 main .vp-doc table {
+  width: 100%;
   tr, th, td {
     background-color: var(--vp-c-bg);
   }
@@ -354,6 +356,22 @@ img, video.bright {
   line-height: 1.5em;
   border-radius: 1.5em;
   white-space: nowrap;
+}
+
+// Safari may render the invisible Unicode marker used by VitePress as tofu blocks.
+// Apply this workaround only to Safari-capable engines.
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  .vp-external-link-icon::after,
+  .external-link-icon-enabled :is(.vp-doc a[href*='://'], .vp-doc a[target='_blank']):not(:is(.no-icon, svg a, :has(img, svg)))::after {
+    content: '';
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    padding-left: 0;
+    margin-left: 4px;
+    line-height: 1;
+    vertical-align: text-top;
+  }
 }
 
 
@@ -444,8 +462,12 @@ footer {
     z-index: 1; position: relative; // draw over outline
   }
   :not(.no-wide) > table:hover,
-  :not(.no-wide) > table:focus {
+  :not(.no-wide) > table:focus,
+  :not(.no-wide) > table {
+    width: auto;
     min-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
   }
   :not(.no-wide) > tr {
     z-index: 1; position: relative;  // draw wide rows over outline

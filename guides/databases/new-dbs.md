@@ -1,3 +1,7 @@
+---
+description: >
+  Instructions on how to set up and use databases with CAP applications, with out-of-the-box support for SAP HANA, SQLite, H2, and PostgreSQL.
+---
 
 # Using Databases
 
@@ -44,7 +48,7 @@ npm add @cap-js/hana
 <!-- REVISIT: A bit confusing to prefer the non-copiable variant that doesn't get its own code fence -->
 ::: details Prefer `cds add hana` ...
 
-... which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources as documented in the [deployment guide](../deploy/to-cf#_1-sap-hana-database).
+... which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources as documented in the [deployment guide](../deploy/to-cf#1-sap-hana-database).
 
 :::
 

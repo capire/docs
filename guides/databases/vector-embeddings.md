@@ -1,5 +1,6 @@
 ---
-label: Vector Embeddings
+description: >
+  How to store and generate vector embeddings in CDS models to enable semantic search and other generative AI features.
 ---
 # Vector Embeddings
 
@@ -12,11 +13,11 @@ Choose an embedding model that fits your use case and data (for example English 
 Use the [SAP Generative AI Hub](https://www.sap.com/products/artificial-intelligence/generative-ai-hub.html) for unified consumption of embedding models and LLMs across different vendors and open-source models. Check for available models on the [SAP AI Launchpad](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad-user-guide/models-and-scenarios-in-generative-ai-hub-fef463b24bff4f44a33e98bb1e4f3148#models).
 
 ## Add Embeddings to Your CDS Model
-Use the built-in CDL [Vector type](../../cds/types) in your CDS model to store embeddings. Set the vector dimensions to match the embedding model (for example, 768 for *SAP_GXY.20250407*).
+Use the built-in CDL [Vector type](../../cds/types) to store embeddings. Use `Vector` without specifying a dimension to simplify changing the embedding model. If you specify a vector dimension, make sure it matches the embedding model (for example, 768 for *SAP_GXY.20250407*).
 
 ```cds
 extend Incidents with {
-  embedding : Vector(768);
+  embedding : Vector;
 }
 ```
 
@@ -34,10 +35,10 @@ To generate vector embeddings on write in SAP HANA, you can use the [vector_embe
 ```cds
 extend Incidents with {
   @cds.api.ignore
-  embedding : Vector(768) = vector_embedding( 
-    'Title: ' || title || ', Summary: ' || summary, 
+  embedding : Vector = vector_embedding(
+    'Title: ' || title || ', Summary: ' || summary,
     'DOCUMENT', 'SAP_GXY.20250407'
-  ) stored; 
+  ) stored;
 }
 ```
 
@@ -46,7 +47,7 @@ If the database calculates vector embeddings on write it automatically regenerat
 :::
 
 ::: info Local Testing with H2 and SQLite
-On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing.
+On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
 :::
 
 > [!warning] Java only and <Beta/>
@@ -60,10 +61,14 @@ Alternatively, you can compute vector embeddings in your application layer using
 
 :::details Example using SAP Cloud SDK for AI
 ```Java
-var aiClient = OpenAiClient.forModel(OpenAiModel.TEXT_EMBEDDING_3_SMALL);
-var response = aiClient.embedding(
-   new OpenAiEmbeddingRequest(List.of(book.getDescription())));
-book.setEmbedding(CdsVector.of(response.getEmbeddingVectors().get(0)));
+String question = "Are there patterns with overheating solar inverters?";
+var request = OrchestrationEmbeddingRequest
+                .forModel(TEXT_EMBEDDING_3_SMALL)
+                .forInputs(question).asQuery();
+OrchestrationEmbeddingResponse response = client.embed(request);
+float[] embedding = response.getEmbeddingVectors().get(0);
+
+CdsVector vector = CdsVector.of(embedding);
 ```
 :::
 
@@ -88,7 +93,7 @@ var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
 
 // Find Incidents related to user question ordered by relevance
 Select.from(INCIDENTS)
-   .columns(i -> similarity.times(100).as("relevance"), 
+   .columns(i -> similarity.times(100).as("relevance"),
             i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
    .where(i -> similarity.gt(0.75))
    .orderBy(i -> i.get("relevance").desc());
@@ -106,4 +111,53 @@ let similarIncidents = await SELECT.from('Incidents')
   .where`cosine_similarity(embedding, to_real_vector(${questionEmbedding})) > 0.75`;
 ```
 :::
+
+## Vector Functions
+
+CAP provides equivalent implementations of vector functions for all supported databases based on the function signatures as defined in SAP HANA:
+
+### [cosine_similarity](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector)
+```
+cosine_similarity(vector1, vector2) → number
+```
+
+### [l2distance](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector)
+```
+l2distance(vector1, vector2) → number
+```
+
+### [l2normalize](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/normalize-function-vector)
+```
+l2normalize(vector) → vector
+```
+
+### [vector_embedding](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector)
+```
+vector_embedding(text, text_type, model_name) → vector
+vector_embedding(text, text_type, model_name, remote_source) → vector
+```
+
+**Database Implementation:**
+- **HANA:** Uses real AI models (SAP built-in models or external remote sources)
+- **SQLite & H2:** Hash-based deterministic implementation for testing. Can be overridden by application developers to use external embedding services.
+- **PostgreSQL:** No default implementation. Application developers must define their own `vector_embedding` function.
+
+## Database-Specific Considerations
+
+### PostgreSQL
+- Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
+  ```sql
+  CREATE EXTENSION IF NOT EXISTS vector;
+  ```
+- Vectors stored in native `vector` type
+- `vector_embedding()` function must be defined by application developers for both testing and production use.
+- For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
+
+### SAP HANA
+- Native vector engine with built-in support
+- Type mapping: `cds.Vector` → `REAL_VECTOR`
+- `vector_embedding()` supports built-in SAP models and external remote sources (such as Azure OpenAI, SAP AI Core)
+
+[Learn more about HANA Vector Engine](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide) {.learn-more}
+
 

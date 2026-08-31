@@ -1,13 +1,12 @@
 ---
-synopsis: >
-  CAP applications can be run as software as a service (SaaS). That means, multiple customers (subscriber tenants) can use the application at the same time in an isolated manner.
-  Optionally, subscriber tenants may also extend their CDS models being served.
+description: >
+  How CAP Java applications run as software as a service (SaaS) for multiple isolated subscriber tenants, who may optionally extend their served CDS models.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
-# Multitenancy 
+# Multitenancy
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Setup Overview
 
@@ -159,7 +158,7 @@ public class SubscriptionHandler implements EventHandler {
 		Optional<ServiceBinding> service = cdsRuntime.getEnvironment().
                 getServiceBindings().filter(binding -> binding.getServiceName().
                         get().equals(SERVICE_NAME)).findFirst();
-		
+
 		if (service.isPresent()) {
 			String xsappname = extractXsappname(service.get().getCredentials());
 			dependencies.add(SaasRegistryDependency.create(xsappname));
@@ -314,7 +313,7 @@ runtime.requestContext().systemUser(tenant).run(context -> {
 Note that switching the tenant in the context is a quite expensive operation as CDS model data might need to be fetched from MTX sidecar in case of tenant extensions.
 Hence, avoid setting the context for all subscribed tenants iteratively as this might overload the sidecar and also could flood the local CDS model cache.
 
-::: warning 
+::: warning
 If an application deviates from default behaviour and switches the tenant context internally, it needs to ensure data privacy and proper isolation!
 :::
 
@@ -331,7 +330,7 @@ TenantProviderService tenantProvider;
 List<TenantInfo> tenantInfo = tenantProvider.readTenants();
 ```
 
-::: warning 
+::: warning
 Retrieving the tenants is an expensive operation. It might be a good idea to cache the results if appropriate.
 :::
 
@@ -365,7 +364,7 @@ upon incoming requests.
 
 In order to activate the combined pool approach set the property `cds.multiTenancy.datasource.combinePools.enabled = true`.
 
-::: warning 
+::: warning
 Since the pool is shared among all tenants, one tenant could eat up all available connections, either intentionally or by accident. Applications using combined pools need to take adequate measures to mitigate this risk, for example by introducing rate-limiting.
 :::
 
@@ -406,7 +405,7 @@ The logs can be inspected in the corresponding front ends such as `Kibana`, `Clo
 
 A number of multitenancy settings can be configured through application configuration properties.
 See section [Application Configuration](./developing-applications/configuring#profiles-and-properties) for more details.
-All properties can be found in the [properties overview](./developing-applications/properties#cds-multiTenancy).
+All properties can be found in the [properties overview](./developing-applications/properties#cds-multitenancy).
 The prefix for multitenancy-related settings is `cds.multitenancy`.
 
 <span id="aftermtxpropertis" />

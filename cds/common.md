@@ -1,6 +1,5 @@
 ---
-# layout: cds-ref
-synopsis: >
+description: >
   Introduces <i>@sap/cds/common</i>, a prebuilt CDS model shipped with <i>@sap/cds</i> that provides common types and aspects.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
@@ -34,7 +33,7 @@ It's recommended that all applications use the common types and aspects provided
 * **Proven best practices** captured from real applications
 * **Streamlined** data models with **minimal entry barriers**
 * **Optimized** implementations and runtime performance
-* **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#pre-defined-types-in-sap-cds-common)
+* **Automatic** support for [localized](../guides/uis/localized-data) code lists and [value helps](../guides/uis/fiori#simple-value-helps)
 * **Extensibility** using [Aspects](../guides/domain/index#aspect-oriented-modeling)
 * **Verticalization** through third-party extension packages
 

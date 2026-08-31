@@ -1,6 +1,6 @@
 ---
-status: released
-
+description: >
+  An overview of learning resources for CAP, including the capire documentation, samples, tutorials, and podcasts.
 ---
 
 # Learning Sources
@@ -25,8 +25,8 @@ It's organized as follows:
 
 <table>
    <thead>
-      <tr> 
-         <th>Section</th> <th>Description</th> 
+      <tr>
+         <th>Section</th> <th>Description</th>
       </tr>
    </thead>
    <tbody>
@@ -37,7 +37,7 @@ It's organized as follows:
             <li> <a href="../guides/deploy/"> Deploy </a> </li>
          </ul></td>
          <td><ul>
-            Guides that walk you through the most common tasks 
+            Guides that walk you through the most common tasks
             in CAP-based development and deployment.
          </ul></td>
       </tr>
@@ -70,7 +70,7 @@ It's organized as follows:
 
 #### Callouts and Alerts
 
-We use [GitHub-flavored alerts](https://vitepress.dev/guide/markdown#github-flavored-alerts) to highlight important information in our documentation. 
+We use [GitHub-flavored alerts](https://vitepress.dev/guide/markdown#github-flavored-alerts) to highlight important information in our documentation.
 Here are the different types of alerts or callouts you may encounter:
 
 > [!info]
@@ -80,7 +80,7 @@ Here are the different types of alerts or callouts you may encounter:
 > Useful information that users should know even when skimming content.
 
 > [!tip]
-> Helpful advice for doing things better or more easily. 
+> Helpful advice for doing things better or more easily.
 
 > [!important]
 > Key information users need to know to achieve their goal.
@@ -144,6 +144,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 - [The Art and Science of CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI) (with Daniel Hutzel)
 - [Under the hood: CDS Expressions in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCEU8XcyqnA5wYEZGxMPm6B) (with Patrice Bender)
 - [Expert sessions: Getting started with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDxW_6INTtprrvZ3WiXT8u5) (with Daniel Schlachter)
+- [CAP in the age of AI](https://www.youtube.com/playlist?list=PLTKB1hyt4LXs) (with various CAP team members)
 - [Back to basics: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx)
 - [Back to basics: Managed associations in CAP](https://www.youtube.com/playlist?list=PL6RpkC85SLQCSm1JSRzeBE-BlkygKRAAF)
 - [Good to know: CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9)
@@ -154,6 +155,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Blog post series
 
 - [The Art and Science of CAP](https://qmacro.org/blog/posts/2024/12/06/the-art-and-science-of-cap/)
+- [Local-first dev with CAP Node.js](https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/)
 - [Under the hood: CDS Expressions in CAP](https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/)
 - [Modules, modularity & reuse in CDS models](https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/)
 - [CAP Node.js Plugins](https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/)
@@ -163,6 +165,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 
 - [Shift left with CAP](https://qmacro.org/blog/posts/2026/02/09/shift-left-with-cap/)
 - [Five reasons to use CAP](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/)
+- [CAP service authentication at design time and in production](https://qmacro.org/blog/posts/2026/06/19/cap-service-authentication-at-design-time-and-in-production/)
 - [Flattening the hierarchy with mixins](https://qmacro.org/blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/)
 - [A reCAP intro to the cds REPL](https://qmacro.org/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)
 - [A deep dive into OData and CDS annotations](https://qmacro.org/blog/posts/2023/03/10/a-deep-dive-into-odata-and-cds-annotations/)
@@ -173,6 +176,7 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
 ### Workshop exercise content
 
 - [Service integration with SAP Cloud Application Programming Model](https://github.com/SAP-samples/cap-service-integration-codejam)
+- [A hands-on tour of CAP](https://github.com/SAP-samples/cap-tour-hands-on/)
 - [Stay cool, stay local: CAP local development workshop](https://github.com/SAP-samples/cap-local-development-workshop)
 - [Hands-on with CAP CDS](https://github.com/SAP-samples/cap-cds-hands-on)
 
@@ -188,7 +192,12 @@ SAP Developer Advocate [DJ Adams](https://qmacro.org) has compiled a vast number
    - [SAP BTP Developers Guide](https://help.sap.com/docs/btp/btp-developers-guide/btp-developers-guide)
       - [Tutorials featured in there](https://help.sap.com/docs/btp/btp-developers-guide/tutorials-for-sap-cloud-application-programming-model)
    - [SAP Discovery Center Missions](https://discovery-center.cloud.sap/missionCatalog/?search=cap&product=32)
-
+   - Recently published (Aug 2026) tutorials in the Tutorial Navigator
+      - [Set up a self-contained development environment for CAP Node.js](https://developers.sap.com/tutorials/cap-self-contained-dev-env)
+      - [Use mocking to embrace auth in your domain model from the outset](https://developers.sap.com/tutorials/cap-mocking-auth)
+      - [Explore the declarative power of status-transition flows](https://developers.sap.com/tutorials/cap-status-transition-flows)
+      - [Get an introduction to the cds REPL](https://developers.sap.com/tutorials/cap-intro-to-repl)
+      - [Add MCP capabilities to a CAP service](https://developers.sap.com/tutorials/cap-add-mcp-capabilities)
 
 
 ## Hands-Ons & CodeJams

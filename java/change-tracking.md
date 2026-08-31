@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   Find here information about the change tracking feature in CAP Java.
-status: released
 ---
 
 # Change Tracking
@@ -165,7 +164,7 @@ For example, for a book you can store an author name if you have an association 
 
 For compositions, no special annotations are required. The identifiers of the target entity are used instead.
 
-For example, given the following model: 
+For example, given the following model:
 
 ```cds
 entity Orders : cuid {
@@ -194,11 +193,11 @@ annotate OrderItems with @changelog: [
 ];
 ```
 
-Changes for `Orders` and `OrderItems` will have their own respective target or root identifiers filled. 
+Changes for `Orders` and `OrderItems` will have their own respective target or root identifiers filled.
 
 ### Human-readable values for associations
 
-For associations, the value of the foreign key is stored in the changelog by default. You can change this and store the values of the associated entity instead. 
+For associations, the value of the foreign key is stored in the changelog by default. You can change this and store the values of the associated entity instead.
 This kind of identifier changes the values stored in the changelog, while [entity identifiers](#identifiers-for-entities) annotate changed values.
 
 You annotate your entity like this:
@@ -213,17 +212,17 @@ Elements from the `@changelog` annotation value must always be prefixed by the a
 :::warning Validation required
 If the target of the association is missing, for example, when an entity is updated with the ID for a customer
 that does not exist, the changelog entry is not created. You need to validate
-such cases in the custom code or use annotations, for example, [`@assert.target`](../guides/services/constraints#assert-target).
+such cases in the custom code or use annotations, for example, [`@assert.target`](../guides/services/constraints#asserttarget).
 :::
 
 ### Caveats of Identifiers
 
-Consider the following important points that are relevant for all kinds of identifiers and human-readable values: 
+Consider the following important points that are relevant for all kinds of identifiers and human-readable values:
 
 - When you define the identifier for an entity, keep in mind that the projections of the annotated entity
 inherit the annotation `@changelog`. If you change the structure of the projection,
 for example, exclude or rename the elements that are used in the identifier, you must annotate the projection again
-to provide updated element names in the identifier. This is one additional benefit of annotating the top-most projection for change tracking. 
+to provide updated element names in the identifier. This is one additional benefit of annotating the top-most projection for change tracking.
 
 - The values of the identifier are stored together with the change log as-is. They are not translated and some data types might
 not be formatted per user locale or some requirements, for example, different units of measurement or currencies.
@@ -391,7 +390,7 @@ Changes are correctly referenced to the root if the following conditions are tru
 Avoid Direct modifications of composition items, they aren't supported by change tracking.
 :::
 
-In the following example, the item's updated changelog entry _won't_ be associated with an order: 
+In the following example, the item's updated changelog entry _won't_ be associated with an order:
 
 ```java
 OrderItems item = OrderItems.create("...");
@@ -440,10 +439,10 @@ You can query the change log entries via CQN statements, as usual.
 
 ### Advanced Identifiers for Associated Entities
 
-By default, the identifier is read from the association when the feature captures images of the data. 
+By default, the identifier is read from the association when the feature captures images of the data.
 Additional joins might be expensive or impossible under some circumstances.
 
-:::warning Configuration change required! 
+:::warning Configuration change required!
 Enable [optimization for path expressions](/releases/2025/aug25#optimized-path-expressions).
 :::
 
@@ -463,7 +462,7 @@ entity Entity {
 
 Let's assume that `User` is impossible to join with the standard identifier or requires an identifier depending on the context of the user who reads the change log.
 
-You model the association like this: 
+You model the association like this:
 
 ```cds
 entity Entity {
@@ -474,9 +473,9 @@ entity Entity {
 
 The change log will contain one entry for the field `user` just like the other associations with [human-readable values](#human-readable-values-for-associations), but the identifier will be its primary key.
 
-You need a custom handler to fetch your own custom identifier. 
+You need a custom handler to fetch your own custom identifier.
 
-Here's the sketch for the handler to adapt the change log after read: 
+Here's the sketch for the handler to adapt the change log after read:
 
 ```java
 @Component

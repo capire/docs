@@ -18,7 +18,6 @@ export class Rewrites {
       for (let line of md.split('\n')) {
         let [,from,to] = /^[^[]*\[(.*)\]\((.*)\)/.exec(line) || []
         if (!from || !to) continue
-        if (from.at(-1) === '/') from = from.slice(0,-1)
         entries[from] = to
       }
     } catch {/* ignored */}

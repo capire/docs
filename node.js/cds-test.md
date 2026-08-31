@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for `cds.test`, CAP's testing utility for writing and running tests against CAP services.
 ---
 
 # Testing with `cds.test`
@@ -75,13 +76,13 @@ Let's analyze the highlighted the code above line by line:
 ```js :line-numbers=2
 const ... cds.test... // > loads the cds-test module
 ```
-- By accessing [`cds.test`](#class-cds-test-test) the `cds-test` module is loaded, which ensures that...
+- By accessing [`cds.test`](#class-cdstesttest) the `cds-test` module is loaded, which ensures that...
 - Functions like [`describe`](https://vitest.dev/api/describe.html), [`test`](https://vitest.dev/api/test.html), [`it`](https://vitest.dev/api/test.html), etc. are made available in test scope.
 
 ```js :line-numbers=2
 const { GET, ... } = cds.test ('@capire/bookshop')
 ```
-- Calling the [`cds.test()`](#cds-test) function launches a CAP server for the given CAP project.
+- Calling the [`cds.test()`](#cdstest) function launches a CAP server for the given CAP project.
 
 ```js :line-numbers=3
 defaults.auth = { username: 'alice' }
@@ -163,6 +164,16 @@ cds test
 
 The last one, `cds test` is a thin wrapper around [Node's built-in test runner](https://nodejs.org/api/test.html), which makes it easier to fetch tests and provides a cleaner output.
 
+#### Testing with Cloud Services
+
+To run integration tests against cloud services (for example, SAP HANA), wrap the test execution with `cds bind --exec`:
+
+```sh
+cds bind --exec -- node --test
+```
+
+[Learn more about hybrid testing with `cds bind`.](../tools/cds-bind#integration-tests){.learn-more}
+
 ::: tip Writing runner-agnostic tests
 To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`, in particular via [`cds.test.expect`](#expect), which are designed to work across different runners. This way, you can easily switch between different test runners as shown above without having to change your test code. -> Learn more in section [Runner-Agnostic Tests](#runner-agnostic-tests) below.
 :::
@@ -171,7 +182,7 @@ To keep your tests portable across different test runners, it's recommended to a
 ### Dos and Don'ts
 
 ::: danger Don't load `cds.env` before `cds.test()`
-To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cds-test) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds-test-env-check)
+To ensure [`cds.env`](cds-env), and hence all plugins, are loaded from the test's target folder, the call to [`cds.test()`](#cdstest) is the first thing you do in your tests. Any references to [`cds`](cds-facade) sub modules or any imports of which have to go after.  → See also: [`CDS_TEST_ENV_CHECK`.](#cds_test_env_check)
 :::
 
 ::: warning Keep it simple, stupid!
@@ -181,14 +192,14 @@ Using these bells and whistles might also cause conflicts with generic features 
 :::
 
 ::: tip  Avoid `process.chdir()` -> prefer `cds.test.in()`
-CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cds-test), or use [`cds.test.in()`](#test-in-folder) instead.
+CAP servers need to be launched from a specific project home directory. Don't use `process.chdir()` for this, as that may leave test containers in failed state, leading to failing subsequent tests. -> Specify the target folder in the call to [`cds.test()`](#cdstest), or use [`cds.test.in()`](#test-in-folder-) instead.
 :::
 
 
 
 ## Class `cds.test.Test`
 
-Instances of this class are returned by [`cds.test()`](#cds-test), for example:
+Instances of this class are returned by [`cds.test()`](#cdstest), for example:
 
 ```js
 const test = cds.test()
@@ -207,7 +218,7 @@ test.run().in(_dirname)
 
 ### cds.test() {.method}
 
-This method is the most convenient way to start a test server. It's actually just a convenient shortcut to construct a new instance of class `Test` and call [`test.run()`](#test-run), defined as follows:
+This method is the most convenient way to start a test server. It's actually just a convenient shortcut to construct a new instance of class `Test` and call [`test.run()`](#test-run-), defined as follows:
 
 ```js
 const { Test } = cds.test
@@ -235,7 +246,7 @@ To stay portable across different HTTP clients, it's recommended to only use the
 - `baseURL` as defined in [Axios](https://axios-http.com/docs/req_config#baseurl)
 - `auth` as defined in [Axios](https://axios-http.com/docs/req_config)
 - `headers` as defined in [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers) and [Axios](https://axios-http.com/docs/req_config#headers)
-- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status < 200 && status >= 300`)
+- `validateStatus` as defined in [Axios](https://axios-http.com/docs/handling_errors) (default: `status >= 200 && status < 300`)
 
 In addition, you can use all of the config options understood by the underlying HTTP client, that is, for Fetch API, its [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request) options, and for Axios, its [request config options](https://axios-http.com/docs/req_config) options.
 
@@ -320,7 +331,7 @@ await test.post('/browse/submitOrder',
 ```
 
 > [!tip] Using Fetch API under the hood
-> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/FetchAPI), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
+> Under the hood, these methods use [Fetch API](https://developer.mozilla.org/docs/Web/API/Fetch_API), natively supported through the global [`fetch()`](https://nodejs.org/api/globals.html#fetch) function in Node.js since version 18.
 
 > [!info] Using Axios instead of Fetch API
 > Former versions of `cds.test` used [Axios](https://axios-http.com/) as the HTTP client. With the move to Fetch API, Axios is no longer included as a dependency in `@cap-js/cds-test`. However, you can still use Axios in your tests if you prefer it over Fetch API. Simply add Axios as a dependency to your project, and it will be used automatically by `cds.test` instead of Fetch API.
@@ -391,7 +402,7 @@ The implementation redirects any console operations in a `beforeAll()` hook, cle
 
 ### test. run (...) {.method}
 
-This is the method behind [`cds.test()`](#cds-test) to start a CDS server, that is the following are equivalent:
+This is the method behind [`cds.test()`](#cdstest) to start a CDS server, that is the following are equivalent:
 
 ```js
 cds.test(...)
@@ -412,7 +423,7 @@ cds.test('serve','srv/cat-service.cds')
 cds.test('serve','CatalogService')
 ```
 
-You can optionally add [`test.in(folder)`](#test-in-folder) in fluent style to run the test in a specific folder:
+You can optionally add [`test.in(folder)`](#test-in-folder-) in fluent style to run the test in a specific folder:
 
 ```js
 cds.test('serve','srv/cat-service.cds').in('/cap/samples/bookshop')
@@ -435,7 +446,7 @@ cds.test().in('/cap/samples/bookshop') //> equivalent
 
 ### test. in (folder, ...) {.method}
 
-Safely switches [`cds.root`](cds-facade#cds-root) to the specified target folder. Most frequently you'd use it in combination with starting a server with [`cds.test()`](#cds-test) in fluent style like that:
+Safely switches [`cds.root`](cds-facade#cds-root) to the specified target folder. Most frequently you'd use it in combination with starting a server with [`cds.test()`](#cdstest) in fluent style like that:
 
 ```js
 let test = cds.test(...).in(__dirname)
@@ -460,7 +471,7 @@ cds.test(__dirname)               //> target folder: __dirname
 
 This would result in the test server started from `__dirname`, but erroneously using `cds.env` loaded from `./`.
 
-As these mistakes end up in hard-to-resolve follow up errors, [`test.in()`](#test-in-folder) can detect this if environment variable `CDS_TEST_ENV_CHECK` is set. The previous code will then result into an error like that:
+As these mistakes end up in hard-to-resolve follow up errors, [`test.in()`](#test-in-folder-) can detect this if environment variable `CDS_TEST_ENV_CHECK` is set. The previous code will then result into an error like that:
 
 ```sh
 CDS_TEST_ENV_CHECK=y jest cds.test.test.js

@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   The guide provides an overview of custom build processes for CAP projects, explaining how to tailor the standard build process to specific project requirements.
-status: released
 ---
 
 # Implement Build Plugins <Since version="7.5.0" package="@sap/cds-dk" />
@@ -65,7 +64,7 @@ The CDS build system auto-detects all required build tasks by invoking the stati
 The compiled CSN model can be accessed using the asynchronous methods `model()` or `basemodel()`.
 
 - The method `model()` returns a CSN model for the scope defined by the `options.model` setting. If [feature toggles](../../guides/extensibility/feature-toggles) are enabled, this model also includes any toggled feature enhancements.
-- To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to-xyz), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
+- To get a CSN model without features, use the method `baseModel()` instead. The model can be used as input for further [model processing](../../node.js/cds-compile#cds-compile-to-), like `to.edmx`, `to.hdbtable`, `for.odata`, etc.
 - Use [`cds.reflect`](../../node.js/cds-reflect) to access advanced query and filter functionality on the CDS model.
 
 ## Add build task type to cds schema <Since version="7.6.0" package="@sap/cds-dk" />
@@ -83,7 +82,7 @@ The `cds.build.Plugin` class provides methods for copying or writing contents to
 ```js [postgres/lib/build.js]
 await this.copy(path.join(this.task.src, 'package.json')).to('package.json');
 await this.write({
-  dependencies: { '@sap/cds': '^9', '@cap-js/postgres': '^2' },
+  dependencies: { '@sap/cds': '^10', '@cap-js/postgres': '^3' },
   scripts: { start: 'cds-deploy' }
 }).to('package.json');
 ```
@@ -121,7 +120,7 @@ In the application's _package.json_, add a dependency to your plugin package to 
 
 ```jsonc [package.json]
 "dependencies": {
-  "@cap-js/postgres": "^2"
+  "@cap-js/postgres": "^3"
 }
 ```
 
@@ -147,11 +146,9 @@ Test the application as it runs on the cloud:
 
 ::: code-group
 ```sh [Node.js]
-cd gen/srv && npx cds-serve
-# or:
 cd gen/srv && npm start
-# or:
-npx cds-serve -p gen/srv
+# or
+npm start --prefix gen/srv
 ```
 
 ```sh [Java]

@@ -1,3 +1,8 @@
+---
+description: >
+  How CAP runtimes use service bindings to connect to required services at runtime, based on declared configuration and injected credentials.
+---
+
 # Service Bindings
 
 Service bindings configure connectivity to required services. CAP runtimes use them to connect to these services at runtime, using credentials injected from the binding environment, such as `url`, and authentication details.
@@ -28,7 +33,7 @@ The key names under `cds.requires` (here: `ReviewsService` and `OrdersService`) 
 const ReviewsService = await cds.connect.to ('ReviewsService')
 ```
 
-Configurations for required services can also be provided in a plug & play manner by CAP plugins. For example, the [_@capire/xtravels_](https://github.com/capire/xtravels) sample application automatically requires two services, provided by the CAP plugins [_@capire/s4_](https://github.com/capire/s4) and [_@capire/xflights_](https://github.com/capire/xflights/blob/main/apis/data-service). 
+Configurations for required services can also be provided in a plug & play manner by CAP plugins. For example, the [_@capire/xtravels_](https://github.com/capire/xtravels) sample application automatically requires two services, provided by the CAP plugins [_@capire/s4_](https://github.com/capire/s4) and [_@capire/xflights_](https://github.com/capire/xflights/blob/main/apis/data-service).
 
 [Learn more about that in the _CAP-level Service Integration_ guide.](calesi#packaged-apis) {.learn-more}
 
@@ -55,8 +60,8 @@ You can inspect the effective configurations of declared required services using
 cds env requires
 ```
 ```zsh
-'sap.capire.flights.data': { 
-  kind: '*' 
+'sap.capire.flights.FlightsService': {
+  kind: '*'
 },
 ```
 ```zsh
@@ -79,7 +84,7 @@ cds mock apis/capire/s4.cds
 cds env requires -b
 ```
 ```zsh
-'sap.capire.flights.data': { 
+'sap.capire.flights.FlightsService': {
   kind: 'hcql',
   impl: '@sap/cds/srv/remote-service.js',
   credentials: { url: 'http://localhost:51441/hcql/data' }

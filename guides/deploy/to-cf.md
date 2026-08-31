@@ -1,12 +1,11 @@
 ---
-synopsis: >
-  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP)  to SAP BTP Cloud Foundry environment.
-impl-variants: true
+description: >
+  A comprehensive guide on deploying applications built with SAP Cloud Application Programming Model (CAP) to SAP BTP Cloud Foundry environment.
 ---
 
 # Deploy to Cloud Foundry
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -18,43 +17,32 @@ After completing the functional implementation of your CAP application by follow
 
 First, you apply these steps manually in an ad-hoc deployment, as described in this guide. Then, after successful deployment, you automate them using [CI/CD pipelines](cicd).
 
-<ImplVariantsHint />
-
 ## Prerequisites
 
 The following sections are based on a new project that you can create like this:
 
-<div class="impl node">
-
-```sh
+::: code-group
+```sh [Node.js]
 cds init bookshop --nodejs --add sample
 cd bookshop
 ```
-
-::: details Alternatively, download or clone the sample repository
-
-Exercise the following steps in the [`@capire/bookshop` sample](https://github.com/capire/bookshop):
-
-```sh
-git clone https://github.com/capire/bookshop
-cd bookshop
-```
-
-:::
-
-</div>
-
-<div class="impl java">
-
-```sh
+```sh [Java]
 cds init bookshop --java --add sample
 cd bookshop
 ```
+:::
 
-> If you want to use a ready-to-be-deployed sample, see our [java/samples](https://github.com/sap-samples/cloud-cap-samples-java).
-
-[Learn more about Setting Up Local Development.](../../java/getting-started#local){.learn-more}
-</div>
+::: details Alternatively, use the ready-to-deploy sample project
+::: code-group
+```sh [Node.js]
+git clone https://github.com/capire/bookshop
+cd bookshop
+```
+```sh [Java]
+git clone https://github.com/sap-samples/cloud-cap-samples-java
+cd cloud-cap-samples-java
+```
+:::
 
 <br>
 
@@ -80,16 +68,12 @@ npm -g outdated       #> check whether @sap/cds-dk is listed
 npm i -g @sap/cds-dk  #> if necessary
 ```
 
-<div class="impl node">
-
-Likewise, ensure the latest version of `@sap/cds` is installed in your project:
+For Node.js projects, ensure that the latest version of `@sap/cds` is installed in your project:
 
 ```sh
 npm outdated          #> check whether @sap/cds is listed
 npm i @sap/cds        #> if necessary
 ```
-
-</div>
 
 #### 3. Cloud MTA Build Tool {#mbt}
 
@@ -123,17 +107,7 @@ The `cds add <facets>` command ensures required services are configured correctl
 
 ### 1. SAP HANA Database
 
-<div class="impl node">
-
-While you used SQLite as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
-
-</div>
-
-<div class="impl java">
-
-While you used SQLite or H2 as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
-
-</div>
+While you used SQLite (Node.js) or SQLite/H2 (Java) as a low-cost stand-in during development, you use an SAP HANA Cloud database for production:
 
 ```sh
 cds add hana
@@ -155,7 +129,11 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
-### 3. SAP Cloud SDK {#add-cloud-sdk}
+### 3. Remote Service Consumption {#remote-services}
+
+CAP supports two HTTP clients for remote service calls.
+
+#### SAP Cloud SDK {#add-cloud-sdk}
 
 If you intend to consume remote services in production, for example, via [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/destination-service), add the requisite SAP Cloud SDK packages, like that for Node.js:
 
@@ -166,6 +144,20 @@ npm add @sap-cloud-sdk/resilience
 ```
 
 [Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
+
+#### Native Fetch Client <Beta /> {#native-fetch}
+
+CAP provides a built-in remote client that uses the native Node.js `fetch` API. For limitations, see the warning below. During local development, you don't need SAP Cloud SDK, but you can still use it. For production, you still need SAP Cloud SDK. For example, you use it to resolve named destinations through the SAP BTP Destination service.
+
+CAP selects the native fetch client for each outgoing request according to the following rules:
+
+1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), CAP always uses SAP Cloud SDK.
+2. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
+3. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
+
+::: warning Current limitations
+The native fetch client does not yet support named destinations using the SAP BTP Destination service. It supports only [application-defined destinations](../services/consuming-services#use-application-defined-destinations). In addition, it limits authentication to `NoAuthentication` and `BasicAuthentication`.
+:::
 
 
 ### 4. MTA-Based Deployment {#add-mta-yaml}
@@ -321,7 +313,7 @@ Share the generic App-Router URL with SaaS consumers for logging in as extension
 :::
 
 ::: tip No index page and SAP Fiori preview in the cloud
-The default index page and [SAP Fiori preview](../uis/fiori#sap-fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
+The default index page and [SAP Fiori preview](../uis/fiori#fiori-preview), that you're used to seeing during local development, are meant only for the development profile and aren't available in the cloud. For productive applications, you should add a proper SAP Fiori elements application through one of the [user interface options](#add-ui) outlined before.
 :::
 
 ### Inspect Apps in BTP Cockpit
@@ -333,16 +325,6 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 ::: tip Next up: Assign the _admin_ role
 To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
 :::
-
-
-## Staying Up-to-date { #freeze-dependencies }
-
-Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
-
-It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
-
-We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
-
 
 ### Use MTA Extensions with `cds up`
 
@@ -365,7 +347,18 @@ modules:
       instances: 2
 ```
 
-## Upgrade Tenants {.java}
+
+## Staying Up-to-date { #freeze-dependencies }
+
+Deployed applications should freeze all their dependencies, including transient ones. Therefore, on first execution, `cds up` creates a _package-lock.json_ file for all application modules.
+
+It is **essential to regularly update dependencies** to consume latest bug fixes and improvements. Not doing so will increase the risk of **security vulnerabilities**, expose your application to **known bugs**, and make future upgrades significantly harder and more time-consuming.
+
+We recommend setting up [Dependabot](https://docs.github.com/en/code-security/dependabot), [Renovate](https://docs.renovatebot.com/) or similar automated solutions to update dependencies **one-by-one** to easily identify breaking changes, minimize risks, and ensure continuous compatibility and **stability of your application**.
+
+
+
+## Upgrade Tenants in Java
 
 The CAP Java SDK offers `main` methods for Subscribe/Unsubscribe in the classes `com.sap.cds.framework.spring.utils.Subscribe/Unsubscribe` that can be called from the command line. This way, you can run the tenant subscribe/unsubscribe for the specified tenant. This triggers your custom handlers, which is useful for local testing scenarios.
 

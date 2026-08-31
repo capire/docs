@@ -7,7 +7,7 @@ synopsis: >
 
 # Information Reporting
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 :::warning To follow this cookbook hands-on you need an enterprise account.
 The SAP Data Privacy Integration NG service is currently only available for [enterprise accounts](https://discovery-center.cloud.sap/missiondetail/3019/3297/). An entitlement in trial accounts is not possible.

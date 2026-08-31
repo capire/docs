@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section describes how CDS data is represented and used in CAP Java.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -12,7 +12,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 
 
@@ -330,7 +330,7 @@ Map data can be nested and may contain nested maps and lists, which are serializ
 
 ## Vector Embeddings { #vector-embeddings }
 
-In CDS [vector embeddings](../guides/databases/vector-embeddings) are stored in elements of type `cds.Vector`:
+In CDS [vector embeddings](../guides/databases/vector-embeddings) are stored in elements of type `Vector`:
 
 CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 

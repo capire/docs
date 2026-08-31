@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  How to set up and configure SAP HANA Cloud as the productive database for CAP applications.
 ---
 
 # Using SAP HANA Cloud for Production
@@ -51,8 +52,46 @@ The datasource for SAP HANA is then auto-configured based on available service b
 
 ::: tip Prefer `cds add`
 
-... as documented in the [deployment guide](../deploy/to-cf#_1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
+... as documented in the [deployment guide](../deploy/to-cf#1-sap-hana-database), which also does the equivalent of `npm add @cap-js/hana` but in addition cares for updating `mta.yaml` and other deployment resources.
 
+:::
+
+### SAP HANA Cloud Serverless <Beta /> { #hana-serverless }
+
+Instead of a dedicated database, you can connect to an [SAP HANA Cloud serverless](https://help.sap.com/docs/hana-cloud) instance. The binding carries only an orchestration gateway URL, and the actual HDI container is resolved on demand through the serverless Tenant API.
+
+::: warning Multitenant apps only
+Serverless support currently targets multitenant apps, where one HDI container is provisioned per tenant on subscription. Single-tenant use is not supported yet.
+:::
+
+Set it up with:
+
+```sh
+cds add hana-serverless
+```
+
+::: details What `cds add hana-serverless` sets up
+
+- Adds the `@cap-js/hana` dependency and sets `db` to the `hana-serverless` kind under the `[production]` profile in your _package.json_.
+- Provisions a `hana-cloud` managed service on the `serverless` plan in _mta.yaml_, configured for `subscription-manager` auto-subscription so a container is provisioned per tenant on subscription.
+- Lets the app's `identity` binding consume the database instance, reusing an existing IAS identity when present or adding a machine-to-machine one otherwise, so the runtime obtains a single, correctly-scoped token for the Tenant API.
+
+:::
+
+The resulting configuration looks like this:
+
+::: code-group
+```jsonc [package.json]
+{
+  "cds": {
+    "requires": {
+      "[production]": {
+        "db": "hana-serverless"
+      }
+    }
+  }
+}
+```
 :::
 
 ## Running `cds build`
@@ -477,7 +516,7 @@ If this is not desired, annotate these generated entities with `@cds.persistence
 
 
 ### Native Database Clauses {#schema-evolution-native-db-clauses}
-Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sql-prepend-append). In this section, we're focusing on schema evolution specific details.
+Not all clauses supported by SQL can directly be written in CDL syntax. To use native database clauses also in a CAP CDS model, you can provide arbitrary SQL snippets with the annotations [`@sql.prepend` and `@sql.append`](cdl-to-ddl#sqlprepend--append). In this section, we're focusing on schema evolution specific details.
 
 Schema evolution requires that any changes are applied by corresponding ALTER statements. See [ALTER TABLE statement reference](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/alter-table-statement-data-definition?version=2024_1_QRC) for more information. A new migration version is generated whenever an `@sql.append` or `@sql.prepend` annotation is added, changed, or removed. ALTER statements define the individual changes that create the final database schema. This schema has to match the schema defined by the TABLE statement in the _.hdbmigrationtable_ artifact.
 Please note that the compiler doesn't evaluate or process these SQL snippets. Any snippet is taken as is and inserted into the TABLE statement and the corresponding ALTER statement. The deployment fails in case of syntax errors.

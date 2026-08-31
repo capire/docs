@@ -20,6 +20,13 @@ OPTIONS
     This value must be set in your project configuration.
     Passing it as parameter to the cds-typer CLI has no effect.
 
+  --brandedPrimitiveTypes
+  --branded_primitive_types: &lt;true | false&gt;
+    (default: false)
+
+    If set to true, generated primitive types will be branded to prevent accidental mixing of types with the same underlying primitive.
+    E.g., type CustomerID = string & { __brand: 'CustomerID' }
+
   --cache: &lt;none | blake2s256&gt;
     (default: none)
 
