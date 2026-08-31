@@ -236,7 +236,7 @@ public void createDraft(CreateDraftContext context) {
 
 ## Showing a Custom User Description { #draft-user-description}
 
-By default, the SAP Fiori draft UI displays the technical user ID in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
+By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
 
 **1. Enable the compiler option** in your `.cdsrc.json`:
 
