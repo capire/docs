@@ -248,7 +248,7 @@ By default, the SAP Fiori draft UI displays the unique user name in fields such 
 }
 ```
 
-This adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
+The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
 
 **2. Register a `@Before` handler** on `DRAFT_CREATE` across all draft services to populate the field:
 
