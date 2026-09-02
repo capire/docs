@@ -580,7 +580,6 @@ Features:
 - Programmatic API for direct workflow management
 - Reliable delivery via CAP persistent outbox with retry logic
 - Console mode for local development
-- BTP destinations and Cloud Foundry service bindings (Node.js)
 - API key and webhook authentication (Basic, Header, Bearer)
 
 Available for:
