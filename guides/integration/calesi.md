@@ -1317,6 +1317,7 @@ This creates ultimate resilience, as the events are stored in a local outbox tab
 
 - [Inner Loop Development](inner-loops) – Understand how to develop and test integrated applications efficiently using CAP's inner loop development features.
 
+- [Outbound Authentication](../security/remote-authentication.md) - Find details about authenticating requests to remote services.
 <!--
 - [Service Bindings](service-bindings) – Learn how to configure connections to external services in a declarative way using service bindings.
 -->
