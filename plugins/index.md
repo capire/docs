@@ -533,3 +533,57 @@ Available for:
 
 [![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
 [![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)
+
+## n8n
+
+The n8n plugin enables triggering [n8n](https://n8n.io) workflow automation from CAP applications. Workflows can be triggered declaratively via annotations or programmatically through the n8n service.
+
+Annotations:
+
+```cds
+annotate AdminService.Books with @n8n.process.start: {
+  on: 'CREATE',
+  path: 'book-created'
+};
+```
+
+Programmatically in Node.js:
+
+```js
+this.after('CREATE', 'Books', async (books) => {
+  const n8n = await cds.connect.to('n8n')
+  for (const book of books) {
+    await n8n.trigger({ path: 'book-created', payload: { ID: book.ID} })
+  }
+})
+```
+
+Programmatically in Java:
+
+```java
+@Autowired
+private N8nService n8nService;
+
+@After(event = CqnService.EVENT_CREATE, entity = "AdminService.Books")
+public void afterCreateBook(List<Books> books) {
+    books.forEach(book -> {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("ID", book.getId());
+        n8nService.trigger("book-created", payload);
+    });
+}
+```
+
+Features:
+
+- Annotation-driven triggers on CREATE, UPDATE, DELETE, and custom events
+- Programmatic API for direct workflow management
+- Reliable delivery via CAP persistent outbox with retry logic
+- Console mode for local development — no n8n instance needed
+- BTP destinations and Cloud Foundry service bindings (Node.js)
+- API key and webhook authentication (Basic, Header, Bearer)
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/n8n#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-n8n#readme)
