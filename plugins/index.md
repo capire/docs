@@ -547,9 +547,11 @@ annotate AdminService.Books with @n8n.process.start: {
 };
 ```
 
-Programmatically in Node.js:
+Programmatically:
 
-```js
+::: code-group
+
+```js [Node.js]
 this.after('CREATE', 'Books', async (books) => {
   const n8n = await cds.connect.to('n8n')
   for (const book of books) {
@@ -558,9 +560,7 @@ this.after('CREATE', 'Books', async (books) => {
 })
 ```
 
-Programmatically in Java:
-
-```java
+```java [Java]
 @Autowired
 private N8nService n8nService;
 
@@ -573,6 +573,8 @@ public void afterCreateBook(List<Books> books) {
     });
 }
 ```
+
+:::
 
 Features:
 
