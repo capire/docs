@@ -536,7 +536,7 @@ Available for:
 
 ## n8n
 
-The n8n plugin enables triggering [n8n](https://n8n.io) workflow automation from CAP applications. Workflows can be triggered declaratively via annotations or programmatically through the n8n service.
+The n8n plugin enables [n8n](https://n8n.io) workflow triggering and automation from CAP applications. Workflows can be triggered declaratively via annotations or programmatically through the n8n service.
 
 Annotations:
 
