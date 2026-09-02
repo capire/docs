@@ -20,8 +20,8 @@
    ## [Events & Messaging](guides/events/_menu.md)
    ## [Security & Data Privacy](guides/security/_menu.md)
    ## [Extensibility](guides/extensibility/_menu.md)
+   ## [Deployment](guides/deploy/_menu.md)
 
-# [Deploy](guides/deploy/_menu.md)
 # [CDS](cds/_menu.md)
 # [Node.js](node.js/_menu.md)
 # [Java](java/_menu.md)

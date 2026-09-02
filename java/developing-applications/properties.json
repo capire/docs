@@ -702,7 +702,7 @@
       "name": "cds.mcp.callPerActionTool",
       "type": "boolean",
       "default": "false",
-      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call_action tool."
+      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic call tool."
     },
     {
       "header": false,
