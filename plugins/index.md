@@ -579,7 +579,7 @@ Features:
 - Annotation-driven triggers on CREATE, UPDATE, DELETE, and custom events
 - Programmatic API for direct workflow management
 - Reliable delivery via CAP persistent outbox with retry logic
-- Console mode for local development — no n8n instance needed
+- Console mode for local development
 - BTP destinations and Cloud Foundry service bindings (Node.js)
 - API key and webhook authentication (Basic, Header, Bearer)
 
