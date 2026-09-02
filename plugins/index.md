@@ -576,7 +576,7 @@ public void afterCreateBook(List<Books> books) {
 
 Features:
 
-- Annotation-driven triggers on CREATE, UPDATE, DELETE, and custom events
+- Annotation-driven triggers on CREATE, READ, UPDATE, DELETE, Fiori events and custom events
 - Programmatic API for direct workflow management
 - Reliable delivery via CAP persistent outbox with retry logic
 - Console mode for local development
