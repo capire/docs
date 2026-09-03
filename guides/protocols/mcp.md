@@ -75,16 +75,11 @@ Add this to the *srv/pom.xml* file:
   <dependency>
     <groupId>com.sap.cds</groupId>
     <artifactId>cds-adapter-mcp</artifactId>
-    <version>${cds.services.version}</version>
+    <scope>runtime</scope>
   </dependency>
 </dependencies>
 ```
 :::
-
-> [!note] Not yet public
-> The feature is not yet released publicly.  Stay tuned.
->
-> <Internal /> Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
 ## Serving MCP
 
@@ -112,7 +107,7 @@ Start your server with `cds watch` or `mvn cds:watch` and note that the MCP serv
 }
 ```
 ```shell [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : MCP Server initialized at endpoint '/mcp/browse' for service 'CatalogService'
+c.s.c.f.s.c.adapter.AdapterBeanFactory   : Servlet McpServlet mapped to /mcp
 ```
 :::
 
@@ -156,12 +151,9 @@ using { AdminService } from './admin-service';
 
 As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#tool-describe) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
-- [Doc comments](../../cds/cdl#doc-comments) -> most recommended (Node.js only)
+- [Doc comments](../../cds/cdl#doc-comments) - most recommended
 - `@title`
 - `@description`
-
-> [!note]
-> Doc comments are only supported in Node.js. In Java, use `@title` and `@description` annotations instead.
 
 For example, you can add doc comments to your entities and their elements like that:
 
@@ -181,6 +173,35 @@ entity Authors {
 ```
 
 
+::: warning Configuration required for CAP Java
+You must enable doc comments in the Java application and in the MTX sidecar.
+
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
+:::
+
+You can also provide service-specific instructions via annotation `@mcp.instructions`. 
+
+::: code-group
+```cds [srv/books-service.cds]
+using { AdminService } from './admin-service';
+@mcp 
+@mcp.instructions: 'Always ask a confirmation before ordering any books'  // [!code focus]
+service BooksService {
+  ...
+}
+```
+:::
+
+These instructions are sent to a client who connects with an MCP server.
 
 ## Test-drive Locally
 
@@ -243,9 +264,8 @@ claude "list books with authors and genres"
 ```
 ::: code-group
 ```zsh [=> Output]
-⏺ cds:AdminService - query (MCP)(entity: "Books", select: ["ID","title","author.name","genre.name","stock","price"], limit: 20)
+⏺ cds:CatalogService - query (MCP)(cql: "SELECT ID, title, author, genre FROM Books ORDER BY title")
   ⎿  {
-       "entity": "Books",
        "count": 5,
      … +43 lines (ctrl+o to expand)
 
@@ -279,7 +299,7 @@ opencode run list books with authors and genres
 ```
 ::: code-group
 ```zsh [=> Output]
-⚙ cds_AdminService_query {"entity":"Books","select":["ID","title","stock","price","author.name","genre.name"],"limit":20}
+⚙ cds_CatalogService_query [cql=SELECT ID, title, author, genre, stock, price, currency_code FROM Books]
 
 Here are the books with their authors and genres:
 
@@ -309,20 +329,12 @@ For example, for the above query, you should see log output similar to this:
 ::: code-group
 ```js [Node.js]
 [mcp] - query {
-  service: 'AdminService',
-  entity: 'Books',
-  select: [
-    { ref: [ 'ID' ] },
-    { ref: [ 'title' ] },
-    { ref: [ 'stock' ] },
-    { ref: [ 'price' ] },
-    { ref: [ 'author', 'name' ] },
-    { ref: [ 'genre', 'name' ] }
-  ]
+  service: 'CatalogService',
+  cql: 'SELECT ID, title, author, genre FROM Books ORDER BY title'
 }
 ```
 ```js [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
+MCP tool called: service='CatalogService', tool='query', arguments={cql=SELECT from Books { ID, title, author { ID, name }, genre { ID, name } }}
 ```
 :::
 
@@ -437,10 +449,15 @@ The adapter creates an MCP server per CAP service, hence each CAP application ca
 > They may change in the future based on the needs of LLMs and AI agents. For stable APIs, please use the existing CAP protocols like OData, REST, GraphQL, etc.
 
 #### Tool: `describe`
-This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
+This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entities` restricts the output to a single entity, the optional parameter `actions` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 #### Tool: `query`
-This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
+
+This tool is used to read data from the service. It accepts single parameter `cql` with the CQL statement to execute.
+
+There is also an additional mode for this tool, where it accepts CQN statement. This is controlled by the tool configuration.
+
+In this mode, the only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
 
 Parameters of `query` requests:
 
