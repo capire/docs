@@ -1679,7 +1679,7 @@ These methods allow you to compute the difference between timestamps:
 
 #### Vector Functions
 
-Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
+Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/ai/embeddings) of text data directly in the database.
 
 ::: warning Local MTXS on SQLite
 Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite
@@ -1723,7 +1723,7 @@ On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use l
 
 ##### Computing Vector Similarity and Distance
 
-You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/ai/embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
 CqnVector vec = CQL.vector(embedding);
