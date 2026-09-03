@@ -456,7 +456,7 @@ Parameters of `query` requests:
 | orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
 
 
-#### Tool: `call_action`
+#### Tool: `call`
 
 This tool is used to call unbound actions or functions. The required parameter `action` is an enum that lists all unbound actions and functions exposed by the service. The parameters of the action or function to call can be provided via the optional parameter `parameters`, that must contain all required parameters of the action or function. The tool takes these parameters and calls the action or function on the service.
 
