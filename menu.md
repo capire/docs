@@ -16,6 +16,7 @@
    ## [Databases](guides/databases/_menu.md)
    ## [Querying](guides/querying/_menu.md) <!-- UNRELEASED -->
    ## [Protocols](guides/protocols/_menu.md)
+   ## [Native AI](guides/ai/_menu.md)
    ## [Integration](guides/integration/_menu.md)
    ## [Events & Messaging](guides/events/_menu.md)
    ## [Security & Data Privacy](guides/security/_menu.md)

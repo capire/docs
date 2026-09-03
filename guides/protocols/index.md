@@ -30,7 +30,7 @@ For more detailed information on each protocol and how to implement them in CAP,
 - [OData APIs](odata.md)
 - [OpenAPI](openapi.md)
 - [AsyncAPI](asyncapi.md)
-- [MCP](mcp.md)
+- [MCP Adapter](../ai/mcp.md)
 
 These guides provide step-by-step instructions, examples, and best practices for working with each protocol in your CAP applications.
 
