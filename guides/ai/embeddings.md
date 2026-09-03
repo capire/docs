@@ -47,7 +47,7 @@ If the database calculates vector embeddings on write it automatically regenerat
 :::
 
 ::: info Local Testing with H2 and SQLite
-On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing. Both runtimes support a hash-based mock embedding as well as local [ONNX](https://onnx.ai) embedding models — CAP Java via LangChain4j, CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin (experimental, local development only). <Beta/>
+On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing. Both runtimes support a hash-based mock embedding as well as local [ONNX](https://onnx.ai) embedding models — CAP Java via LangChain4j, CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin (experimental, local development only). <Beta/> See [SQLite](#sqlite) below for the CAP Node.js setup.
 :::
 
 > [!warning] <Beta/> and not supported on PostgreSQL
@@ -137,11 +137,6 @@ vector_embedding(text, text_type, model_name) → vector
 vector_embedding(text, text_type, model_name, remote_source) → vector
 ```
 
-**Database Implementation:**
-- **SAP HANA:** Uses embedding models from the [NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-predictive-analysis-library/natural-language-processing-nlp) extension or an [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core) remote source.
-- **SQLite & H2:** Hash-based mock embedding, or local [ONNX](https://onnx.ai) embedding models — in CAP Java via LangChain4j, in CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin. <Beta/>
-- **PostgreSQL:** Not supported.
-
 ## Database-Specific Considerations
 
 ### SQLite
@@ -167,5 +162,6 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 ### SAP HANA
 - Native vector engine with built-in support
 - Type mapping: `cds.Vector` → [REAL_VECTOR](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide/real-vector-and-half-vector-data-types)
+- `vector_embedding` uses embedding models from the [NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-predictive-analysis-library/natural-language-processing-nlp) extension or an [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core) remote source
 
 [Learn more about HANA Vector Engine](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide) {.learn-more}
