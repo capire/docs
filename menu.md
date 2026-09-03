@@ -8,7 +8,7 @@
    ## [Learn More](get-started/learn-more)
    ## [Get Help](get-started/get-help)
 
-# [Develop](guides/)
+# [Guides](guides/)
 
    ## [Domain Modeling](guides/domain/_menu.md)
    ## [Services & APIs](guides/services/_menu.md)
