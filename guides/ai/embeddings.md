@@ -46,8 +46,8 @@ extend Incidents with {
 If the database calculates vector embeddings on write it automatically regenerates the embedding if the input data changes.
 :::
 
-::: info Local Testing with H2 and SQLite
-On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing. Both runtimes support a hash-based mock embedding as well as local [ONNX](https://onnx.ai) embedding models — CAP Java via LangChain4j, CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin (experimental, local development only). <Beta/> See [SQLite](#sqlite) below for the CAP Node.js setup.
+::: info Local Testing with SQLite and H2
+On SQLite and H2 the `vector_embedding` function is emulated for local testing, with optional local [ONNX](https://onnx.ai) models for semantic embeddings. See [SQLite and H2](#sqlite-and-h2) for setup details.
 :::
 
 > [!warning] <Beta/> and not supported on PostgreSQL
@@ -103,12 +103,18 @@ Select.from(INCIDENTS)
 const question =
   'Any incidents with solar inverters this month? How were they resolved?'
 
-// Compute the question's embedding and find related incidents, all in the database
-const similarIncidents = await SELECT.from('Incidents').where`
-  cosine_similarity(embedding,
+// Compute the question's embedding, then find and rank related incidents — all in the database
+const similarIncidents = await SELECT.from('Incidents')
+  .columns`*, cosine_similarity(embedding,
+    vector_embedding(${question}, 'QUERY', 'SAP_GXY.20250407')) as relevance`
+  .where`cosine_similarity(embedding,
     vector_embedding(${question}, 'QUERY', 'SAP_GXY.20250407')) > 0.75`
+  .orderBy`relevance desc`
 ```
 :::
+
+> [!note]
+> The `vector_embedding(...)` expression is repeated because a `where` clause can't reference a `select`-list alias like `relevance` — only `order by` can. On SQLite this deterministic call is cheap; on SAP HANA, wrap the ranked query in a subquery and filter on the alias to embed the query text only once.
 
 ## Vector Functions
 
@@ -139,16 +145,22 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 
 ## Database-Specific Considerations
 
-### SQLite
-- Hash-based, deterministic `vector_embedding` implementation by default, suitable for local testing.
-- In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin makes the standard `sqlite` database generate real embeddings locally with an [ONNX](https://onnx.ai) model, without any external service. It is experimental and intended for local development only. <Beta/>
+### SQLite and H2
 
-  Install the plugin with its peer dependencies:
-  ```sh
-  npm add -D @cap-js/ai @cap-js/sqlite@^3.1 @huggingface/hub@^2.15.0 \
-    @huggingface/tokenizers@0.1.3 onnxruntime-node@1.20.1
-  ```
-  No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
+On SQLite and H2, the `vector_embedding` function is emulated using lexical subword embeddings by default. To compute semantic embeddings, use local [ONNX](https://onnx.ai) models.
+
+#### ONNX Embeddings <Beta/>
+
+In CAP Java, add a [LangChain4j](https://github.com/langchain4j/langchain4j/tree/main/embeddings) dependency with an ONNX model.
+
+In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin makes the standard `sqlite` database generate semantic embeddings locally, without any external service. It requires `@sap/cds` `^10.1` and `@cap-js/sqlite` `^3.1`, and is experimental and intended for local development only. Install the plugin with its peer dependencies:
+
+```sh
+npm add -D @cap-js/ai @cap-js/sqlite@^3.1 @huggingface/hub@^2.15.0 \
+  @huggingface/tokenizers@0.1.3 onnxruntime-node@1.20.1
+```
+
+No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. Both the on-write calculated element from [Generate Embeddings on the Database](#generate-embeddings-on-the-database) and the query-time `vector_embedding` calls then run locally against that model. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
 
 ### PostgreSQL
 - Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
