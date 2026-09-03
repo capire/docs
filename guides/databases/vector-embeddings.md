@@ -47,10 +47,11 @@ If the database calculates vector embeddings on write it automatically regenerat
 :::
 
 ::: info Local Testing with H2 and SQLite
-On H2 and SQLite the `CQL.vectorEmbedding` function is emulated using a hash-based algorithm to support local testing. For PostgreSQL, customers must define their own `vector_embedding` function for both testing and production use.
-
-In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin makes the standard `sqlite` database generate real embeddings locally with an [ONNX](https://onnx.ai) model. It is experimental and intended for local development only. <Beta/>
+On H2 and SQLite the `CQL.vectorEmbedding` function is emulated to support local testing. Both runtimes support a hash-based mock embedding as well as local [ONNX](https://onnx.ai) embedding models — CAP Java via LangChain4j, CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin (experimental, local development only). <Beta/>
 :::
+
+> [!warning] <Beta/> and not supported on PostgreSQL
+> The `vector_embedding` function is currently in beta and not supported on PostgreSQL.
 
 [Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
 
@@ -111,7 +112,9 @@ const similarIncidents = await SELECT.from('Incidents').where`
 
 ## Vector Functions
 
-CAP provides equivalent implementations of vector functions for all supported databases based on the function signatures as defined in SAP HANA:
+CAP provides equivalent implementations of vector functions for all supported databases based on the function signatures as defined in SAP HANA.
+
+[Learn more about Vector Functions in CAP Java](../../java/working-with-cql/query-api#vector-functions) {.learn-more}
 
 ### [cosine_similarity](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector)
 ```
@@ -135,9 +138,9 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 ```
 
 **Database Implementation:**
-- **HANA:** Uses real AI models (SAP built-in models or external remote sources)
-- **SQLite & H2:** Hash-based deterministic implementation for testing. Can be overridden by application developers to use external embedding services. In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin makes the standard `sqlite` database generate real embeddings locally via an [ONNX](https://onnx.ai) model. <Beta/>
-- **PostgreSQL:** No default implementation. Application developers must define their own `vector_embedding` function.
+- **SAP HANA:** Uses embedding models from the [NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-predictive-analysis-library/natural-language-processing-nlp) extension or an [SAP AI Core](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/what-is-sap-ai-core) remote source.
+- **SQLite & H2:** Hash-based mock embedding, or local [ONNX](https://onnx.ai) embedding models — in CAP Java via LangChain4j, in CAP Node.js via the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin. <Beta/>
+- **PostgreSQL:** Not supported.
 
 ## Database-Specific Considerations
 
@@ -158,13 +161,12 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
 - Vectors stored in native `vector` type
-- `vector_embedding()` function must be defined by application developers for both testing and production use.
+- CAP provides no built-in `vector_embedding` implementation. Compute embeddings in your application layer (see [Generate Embeddings Programmatically](#generate-embeddings-programmatically)) or define your own `vector_embedding` database function.
 - For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
 
 ### SAP HANA
 - Native vector engine with built-in support
-- Type mapping: `cds.Vector` → `REAL_VECTOR`
-- `vector_embedding()` supports built-in SAP models and external remote sources (such as Azure OpenAI, SAP AI Core)
+- Type mapping: `cds.Vector` → [REAL_VECTOR](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide/real-vector-and-half-vector-data-types)
 
 [Learn more about HANA Vector Engine](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide) {.learn-more}
 
