@@ -47,6 +47,7 @@ const urlExcludesBase = [
     /\/releases\/latest/,
     /\/releases\/current/,
     /\/tools\/lint/,
+    /\/ai\//, // TODO Temporary exclusion for AI pages under construction
 ]
 
 // extended set of excludes because public content refers to internal content in some places
