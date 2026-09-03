@@ -159,5 +159,3 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 - `vector_embedding()` supports built-in SAP models and external remote sources (such as Azure OpenAI, SAP AI Core)
 
 [Learn more about HANA Vector Engine](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide) {.learn-more}
-
-

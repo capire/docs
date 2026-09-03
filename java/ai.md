@@ -191,7 +191,7 @@ the box.
 
 ## Vector Embeddings { #vector-embeddings }
 
-In CDS, [vector embeddings](../guides/databases/vector-embeddings) are stored in elements of type `Vector`.
+In CDS, [vector embeddings](../guides/ai/embeddings) are stored in elements of type `Vector`.
 
 CAP Java supports the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 
