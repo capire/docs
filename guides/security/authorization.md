@@ -629,8 +629,11 @@ annotate Orders with @(restrict: [
 A user with accounting areas `[Development, Research]` is not able to send an `UPDATE` request, that changes `accountingArea` from `Research` or `Development` to `CarFleet`, for example.
 Note that the `UPDATE` on instances _not matching the request user's accounting areas_ (for example, `CarFleet`) are rejected by standard instance-based authorization checks.
 
-Starting with CAP Java `4.0`, deep authorization is active by default.
-It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
+::: hint
+Input data is not checked for entities which misses key elements; such entities must be protected at the application model level.
+:::
+
+The feature can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
 ### Rejected Entity Selection { #reject-403 .java}
