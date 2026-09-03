@@ -145,21 +145,12 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 - Hash-based, deterministic `vector_embedding` implementation by default, suitable for local testing.
 - In CAP Node.js, the [`@cap-js/ai`](https://github.com/cap-js/ai) plugin makes the standard `sqlite` database generate real embeddings locally with an [ONNX](https://onnx.ai) model, without any external service. It is experimental and intended for local development only. <Beta/>
 
-  Install the plugin and its peer dependencies as dev dependencies. This requires `@sap/cds` `^10.1` and `@cap-js/sqlite` `^3.1`:
+  Install the plugin with its peer dependencies:
   ```sh
   npm add -D @cap-js/ai @cap-js/sqlite@^3.1 @huggingface/hub@^2.15.0 \
     @huggingface/tokenizers@0.1.3 onnxruntime-node@1.20.1
   ```
-  No special database kind is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database. A default embedding model is used; pin it explicitly to keep your choice stable while the feature is experimental:
-  ```json
-  {
-    "cds": { "requires": { "db": {
-      "kind": "sqlite",
-      "embedding": { "model": "sentence-transformers/all-MiniLM-L6-v2" }
-    } } }
-  }
-  ```
-  On first start, the model is downloaded to `.cds/models` and reused afterwards. In queries, pass `'local'` as the model name to `vector_embedding` to use the configured model. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for the full walkthrough and model selection.
+  No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. In queries, pass `'local'` as the model name to `vector_embedding`. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
 
 ### PostgreSQL
 - Requires that the [pgvector extension](https://github.com/pgvector/pgvector) is installed on your PostgreSQL instance. Then create the extension in your database:
