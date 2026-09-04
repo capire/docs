@@ -313,7 +313,7 @@ Available for:
 ## Notifications
 
 
-The Notifications plugin provides support for publishing business notifications in SAP Build Work Zone. Notification types are defined by annotating CDS events, which the plugin then intercepts and forwards automatically:
+The Notifications plugin provides support for sending emails and publishing business notifications in SAP Build Work Zone. Define notification types declaratively via `@notification` CDS annotations or JSON config — the plugin intercepts annotated events and forwards them automatically:
 
 ```cds
 @notification: {
@@ -362,7 +362,7 @@ public void afterIncidentCreated(Incidents incident) {
 
 :::
 
-Alternatively, for Java you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
+Alternatively, for both Java and Node you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
 
 ```cds [Java]
 service IncidentService {
@@ -382,22 +382,23 @@ service IncidentService {
 Features:
 
 - CAP service-based API — simple, backend-agnostic
-- Notification types defined via CDS @notification annotations
-- Notification types defined via JSON (Node.js only)
+- Notification types defined via CDS `@notification` annotations — `cds build` compiles them to `notification-types.json`
+- Notification types defined via JSON config
 - Auto-emit: annotated CDS events are forwarded to ANS automatically
-- Email delivery via configurable delivery channels
+- **Email delivery** via `@notification.email.subject` and `@notification.email.html` annotations with Mustache syntax
 - Email HTML templates for rich email notifications
-- Batch notifications — emit multiple notifications in a single call
-- i18n support and dynamic priority for notification types
+- **Batch notifications** — send multiple notifications in a single outbox event
+- **i18n support** via `{i18n>key}` syntax in annotations
+- **Dynamic priority** via `@notification.priority` with runtime expressions
 - Console logging in development — no external service needed
 - Transactional outbox — maximized scalability and resilience
 - Automatic registration and lifecycle management of notification types on startup
-
+- Optional database storage for sent notifications with cooldown to prevent duplicate delivery (Java)
 
 Available for:
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
-[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme) <Alpha />
 
 
 ## Telemetry
