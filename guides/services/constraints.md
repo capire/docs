@@ -368,8 +368,11 @@ service Sue {
 }
 ```
 
-::: warning Deep updates not covered
-`@mandatory` validation is **not** applied to nested data in deep update operations. To enforce mandatory values in those cases, use the [`not null` constraint](../../cds/cdl#constraints) instead.
+::: warning Mandatory Values in Compositions
+For insert/update, a mandatory value is **not** enforced when the property is missing from the request.
+However, an explicitly provided `null/''` value is validated and rejected. This rule applies to compositions and cascading compositions.
+For associations, no mandatory-value validation is performed.
+To enforce mandatory values in those cases, use the [`not null` constraint](../../cds/cdl#constraints) instead.
 :::
 
 [Learn more about `@Fieldcontrol` annotation with `@mandatory`.](#mandatory-1){.learn-more}
