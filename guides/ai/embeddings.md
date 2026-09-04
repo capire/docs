@@ -42,8 +42,14 @@ extend Incidents with {
 }
 ```
 
-:::tip Prefer calculated elements for vector embeddings
-If the database calculates vector embeddings on write it automatically regenerates the embedding if the input data changes.
+:::tip Calculated elements for vector embeddings
+If the database calculates vector embeddings [on-write](../../cds/cdl#on-write) it automatically regenerates the embedding if the input data changes, keeping them consistent without extra application code.
+
+Be aware of the trade-off: the embedding is computed synchronously as part of the insert/update, which adds latency to every write. In high-throughput scenarios, computing embeddings asynchronously in a batch job (see [Generate Embeddings Programmatically](#generate-embeddings-programmatically)) can offer better write throughput.
+:::
+
+::: warning Embedding localized elements
+A stored ([on-write](../../cds/cdl#on-write)) calculated element **cannot** reference [localized](../uis/localized-data) elements. Instead, embed the default language and use a **multilingual embedding model** so that queries in other languages still match.
 :::
 
 ::: info Local Testing with H2 and SQLite
