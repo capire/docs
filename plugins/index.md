@@ -536,7 +536,7 @@ Available for:
 
 ## n8n
 
-The n8n plugin enables [n8n](https://n8n.io) workflow triggering and automation from CAP applications. Workflows can be triggered declaratively via annotations or programmatically through the n8n service.
+The n8n plugin lets you trigger and automate [n8n](https://n8n.io) workflows from CAP applications. You can trigger workflows declaratively through annotations or programmatically through the n8n service.
 
 Annotations:
 
@@ -578,9 +578,9 @@ public void afterCreateBook(List<Books> books) {
 
 Features:
 
-- Annotation-driven triggers on CREATE, READ, UPDATE, DELETE, Fiori events and custom events
+- Annotation-driven triggers on CREATE, READ, UPDATE, DELETE, Fiori events, and custom events
 - Programmatic API for direct workflow management
-- Reliable delivery via CAP persistent outbox with retry logic
+- Reliable delivery through the CAP persistent outbox with retry logic
 - Console mode for local development
 - API key and webhook authentication (Basic, Header, Bearer)
 
