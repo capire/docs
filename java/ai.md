@@ -173,8 +173,8 @@ Add the LangChain4j Ollama integration to your `srv/pom.xml`:
 <dependency>
   <groupId>dev.langchain4j</groupId>
   <artifactId>langchain4j-ollama</artifactId>
-  <!-- use same version as shipped with CAP Java -->
-  <version>1.19.0</version>
+  <!-- import langchain4j-bom for version management -->
+  <!-- and use same version as shipped with CAP Java -->
 </dependency>
 ```
 
