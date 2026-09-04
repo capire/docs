@@ -147,7 +147,7 @@ vector_embedding(text, text_type, model_name, remote_source) → vector
 
 ### SQLite and H2
 
-On SQLite and H2, the `vector_embedding` function is emulated using lexical subword embeddings by default. To compute semantic embeddings, use local [ONNX](https://onnx.ai) models.
+On SQLite and H2, the `vector_embedding` function is emulated using lexical character-hash vectors by default. These capture surface (character-n-gram) overlap, not meaning. To compute semantic embeddings, use local [ONNX](https://onnx.ai) models.
 
 #### ONNX Embeddings <Beta/>
 
