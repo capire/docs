@@ -43,9 +43,9 @@ extend Incidents with {
 ```
 
 :::tip Calculated elements for vector embeddings
-If the database calculates vector embeddings [on-write](../../cds/cdl#on-write) it automatically regenerates the embedding if the input data changes, keeping them consistent without extra application code.
+Database-calculated embeddings [on-write](../../cds/cdl#on-write) stay automatically consistent — the database regenerates the embedding whenever the input data changes, with no extra application code.
 
-Be aware of the trade-off: the embedding is computed synchronously as part of the insert/update, which adds latency to every write. In high-throughput scenarios, computing embeddings asynchronously in a batch job (see [Generate Embeddings Programmatically](#generate-embeddings-programmatically)) can offer better write throughput.
+The trade-off is synchronous latency on every write. For SAP HANA native [NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-vector-engine-guide/creating-text-embeddings-with-nlp-51eb170d038d4099a9bbb85c08fda888) models, this overhead is usually acceptable. For remote embedding services, or multitenant applications — computing embeddings asynchronously using the [Transactional Outbox](./events/event-queues) can offer better write throughput — if eventual consistency is acceptable.
 :::
 
 ::: warning Embedding localized elements
