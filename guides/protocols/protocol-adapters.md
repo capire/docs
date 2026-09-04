@@ -35,4 +35,4 @@ In this example, the `cds.serve()` method is used to expose the `my-service` ser
 - [OData](./odata.md)
 - [OpenAPI](./openapi.md)
 - [AsyncAPI](./asyncapi.md)
-- [MCP](mcp.md) <Alpha /> <Internal /> <!-- INTERNAL -->
+- [MCP Adapter](../ai/mcp.md) <Alpha /> <Internal /> <!-- INTERNAL -->
