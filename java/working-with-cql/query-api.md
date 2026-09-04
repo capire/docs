@@ -1683,7 +1683,7 @@ Vector functions allow you to compute similarity and distance of [vectors](../cd
 
 ::: warning Local MTXS on SQLite
 Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite
-calls the custom functions of the CAP Node.js runtime. Using local [ONNX](https://onnx.ai) embedding models is not yet supported.
+calls the custom functions of the CAP Node.js runtime.
 :::
 
 ##### Computing Vector Embeddings in SAP HANA <Beta />
