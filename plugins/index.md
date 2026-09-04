@@ -362,7 +362,7 @@ public void afterIncidentCreated(Incidents incident) {
 
 :::
 
-Alternatively, for Java you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
+Alternatively, you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
 
 ```cds [Java]
 service IncidentService {
