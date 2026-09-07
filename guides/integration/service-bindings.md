@@ -110,5 +110,118 @@ cds env requires -b
 
 ## Destinations
 
+Destinations contain the necessary information to connect to a remote system — essentially an advanced URL with additional metadata such as authentication details.
+
+You can use [SAP BTP Destination Service](#btp-destination-service) destinations or [application-defined destinations](#application-defined-destinations) inline in your CAP configuration.
+
+### BTP Destination Service {#btp-destination-service}
+
+CAP supports resolving named destinations from the SAP BTP Destination Service. Configure the destination name in the `credentials` block of the required service:
+
+```json
+"cds": {
+  "requires": {
+    "API_BUSINESS_PARTNER": {
+      "kind": "odata",
+      "model": "srv/external/API_BUSINESS_PARTNER",
+      "[production]": {
+        "credentials": {
+          "destination": "S4HANA",
+          "path": "/sap/opu/odata/sap/API_BUSINESS_PARTNER"
+        }
+      }
+    }
+  }
+}
+```
+
+Bind the Destination service to your application:
+
+```sh
+cds add destination
+```
+
+#### Native Fetch Client {#native-fetch-destinations}
+
+When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK.
+
+**Supported authentication types:**
+
+| Authentication | Supported |
+|---|:---:|
+| `NoAuthentication` | ✓ |
+| `BasicAuthentication` | ✓ |
+| `OAuth2ClientCredentials` | ✓ |
+| Others | Best-effort via native client |
+
+**Tenant resolution:** CAP reads the tenant from the incoming request JWT (claims `zid`, `app_tid`, or `zone_uuid`), falls back to `cds.context`, and tries the subscriber tenant first before falling back to the provider tenant.
+
+**Caching:** Destination and token responses are cached with TTL derived from the token's `expiresIn` value. Concurrent requests for the same destination are deduplicated automatically.
+
+**Configuration** (`cds.remote`):
+
+| Property | Default | Description |
+|---|---|---|
+| `cache_size` | `0` (disabled) | Max number of cached destination/token entries (LRU) |
+| `cache_expiry_buffer` | `'5min'` | Time subtracted from token TTL before cache expiry |
+| `timeout` | `'10s'` | Timeout for destination service HTTP requests |
+
+```jsonc
+// package.json
+{
+  "cds": {
+    "remote": {
+      "native_fetch": true,
+      "cache_size": 500,
+      "cache_expiry_buffer": "2min"
+    }
+  }
+}
+```
+
+::: warning Proxy type limitation
+Only destinations with proxy type `Internet` are fully supported. On-premise destinations (proxy type `OnPremise`) require SAP Cloud SDK.
+:::
+
+#### SAP Cloud SDK
+
+When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolve BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
+
+```jsonc
+"[production]": {
+  "credentials": { ... },
+  "destinationOptions": {
+    "selectionStrategy": "alwaysSubscriber",
+    "useCache": true
+  }
+}
+```
+
+[Learn more about destinations with SAP Cloud SDK.](../services/consuming-services#use-sap-btp-destinations){.learn-more}
+
+### Application-Defined Destinations {#application-defined-destinations}
+
+If you don't want to use the BTP Destination Service, you can define the URL and authentication details directly in your CAP configuration:
+
+```jsonc
+"cds": {
+  "requires": {
+    "REVIEWS": {
+      "kind": "odata",
+      "[production]": {
+        "credentials": {
+          "url": "https://reviews.ondemand.com/reviews",
+          "authentication": "BasicAuthentication",
+          "username": "<set from env>",
+          "password": "<set from env>"
+        }
+      }
+    }
+  }
+}
+```
+
+[Learn more about application-defined destinations.](../services/consuming-services#use-application-defined-destinations){.learn-more}
+
 ## Service Keys
 ## Using API Keys

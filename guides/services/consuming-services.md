@@ -1010,59 +1010,6 @@ Read [Destination Cache](https://sap.github.io/cloud-sdk/docs/js/features/connec
 
 If you want to configure additional headers for the HTTP request to the system behind the destination, for example an Application Interface Register (AIR) header, you can specify such headers in the destination definition itself using the property [_URL.headers.\<header-key\>_](https://help.sap.com/docs/CP_CONNECTIVITY/cca91383641e40ffbe03bdc78f00f681/4e1d742a3d45472d83b411e141729795.html?q=URL.headers).
 
-> [!tip] Native Fetch Client
-> When using the [native fetch client](../../guides/deploy/to-cf#native-fetch), CAP resolves BTP destinations directly — without SAP Cloud SDK. Bind a Destination service instance to your app (see [Deployment](#deployment)) and CAP handles tenant-aware resolution, token exchange, and caching automatically. The `destinationOptions` block above is Cloud SDK-specific and has no effect with the native client.
-
-[Learn more about native fetch destination support.](#native-fetch-destinations){.learn-more}
-
-##### Native Fetch Client Destination Support {#native-fetch-destinations}
-
-When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK. Bind the Destination service to your application as described in [Deployment](#deployment).
-
-**Supported authentication types:**
-
-| Authentication | Supported |
-|---|:---:|
-| `NoAuthentication` | ✓ |
-| `BasicAuthentication` | ✓ |
-| `OAuth2ClientCredentials` | ✓ |
-| Others | Best-effort via native client |
-
-**Tenant resolution:** CAP reads the tenant from the incoming request JWT (claims `zid`, `app_tid`, or `zone_uuid`), falls back to `cds.context`, and tries the subscriber tenant first before falling back to the provider tenant.
-
-**Caching:** Destination and token responses are cached with TTL derived from the token's `expiresIn` value. Concurrent requests for the same destination are deduplicated automatically.
-
-**Configuration** (`cds.remote`):
-
-| Property | Default | Description |
-|---|---|---|
-| `cache_size` | `0` (disabled) | Max number of cached destination/token entries (LRU) |
-| `cache_expiry_buffer` | `'5min'` | Time subtracted from token TTL before cache expiry |
-| `timeout` | `'10s'` | Timeout for destination service HTTP requests |
-
-```jsonc
-// package.json
-{
-  "cds": {
-    "remote": {
-      "native_fetch": true,
-      "cache_size": 500,
-      "cache_expiry_buffer": "2min"
-    }
-  }
-}
-```
-
-The Destination service binding is picked up automatically from `cds.requires.destinations`. You can bind it using:
-
-```sh
-cds bind -2 my-destination-service-instance
-```
-
-::: warning Proxy type limitation
-Only destinations with proxy type `Internet` are fully supported. On-premise destinations (proxy type `OnPremise`) require SAP Cloud SDK.
-:::
-
 ##### Use Destinations with Java
 
 Destinations are configured in Spring Boot's _application.yaml_ file:
@@ -1732,5 +1679,5 @@ This list specifies the properties for application defined destinations.
 | NoAuthentication        |                                  <Y/>                                   |              <Y/>              |
 | BasicAuthentication     |                                  <Y/>                                   |              <Y/>              |
 | TokenForwarding         |                                  <Y/>                                   | <X/><br>Use `forwardAuthToken` |
-| OAuth2ClientCredentials | [code only](../../java/cqn-services/remote-services#programmatic-destinations) | <Y/><br>(native fetch only) |
+| OAuth2ClientCredentials | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
 | UserTokenAuthentication | [code only](../../java/cqn-services/remote-services#programmatic-destinations) |              <X/>              |
