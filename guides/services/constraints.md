@@ -368,12 +368,11 @@ service Sue {
 }
 ```
 
-::: warning Mandatory Values in Compositions
+#### ... in Compositions
 For insert/update, a mandatory value is **not** enforced when the property is missing from the request.
-However, an explicitly provided `null/''` value is validated and rejected. This rule applies to compositions and cascading compositions.
-For associations, no mandatory-value validation is performed.
-To enforce mandatory values in those cases, use the [`not null` constraint](../../cds/cdl#constraints) instead.
-:::
+However, an explicitly provided `null/''` value is validated and rejected. This rule applies to compositions and cascading compositions. To enforce mandatory values, use the [`not null` constraint](../../cds/cdl#constraints) instead.
+#### ... in Associations
+For insert/update, a mandatory value is **not** enforced when the property is missing from the request. Even an explicitly provided `null/''` value is accepted. To enforce mandatory values, use the [`not null` constraint](../../cds/cdl#constraints) instead.
 
 [Learn more about `@Fieldcontrol` annotation with `@mandatory`.](#mandatory-1){.learn-more}
 
