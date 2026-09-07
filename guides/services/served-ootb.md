@@ -348,7 +348,7 @@ Supported wildcards are '*' matching zero or more characters and '?' matching a 
 :::
 
 ::: tip Enable Fuzzy Search in CAP Java `4.9`
-CAP Java `5.x` comes with fuzzy search enabled by default, in CAP Java `4.9`, you need to run in [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
+CAP Java `5.x` comes with fuzzy search enabled by default, in CAP Java `4.9` it can be enabled by first enabling [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and then setting <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>.
 :::
 
 ::: info Relevance sorting doesn't consider to-many associations
