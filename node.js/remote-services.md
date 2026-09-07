@@ -29,6 +29,33 @@ The `cds.RemoteService` configuration allows you to define various options for c
 
 
 
+### HTTP Client {#http-client}
+
+CAP supports two HTTP clients for outgoing remote service calls.
+
+#### SAP Cloud SDK
+
+By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all BTP Destination Service features including on-premise connectivity.
+
+[Learn more about SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
+
+#### Native Fetch Client <Beta /> {#native-fetch}
+
+CAP provides a built-in remote client that uses the native Node.js `fetch` API, including support for resolving named destinations from the SAP BTP Destination service.
+During local development, you don't need SAP Cloud SDK.
+For production, SAP Cloud SDK is only required if you use authentication types or proxy configurations not yet supported by the native client (see warning below).
+
+CAP selects the native fetch client for each outgoing request according to the following rules:
+
+1. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
+2. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
+
+::: warning Current limitations
+The native fetch client supports only proxy type `Internet` and authentication types `NoAuthentication`, `BasicAuthentication`, and `OAuth2ClientCredentials`. Other authentication types are resolved on a best-effort basis via the native destination client.
+:::
+
+[Learn more about BTP Destination Service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
+
 ### CSRF-Token Handling
 
 If the remote system you want to consume requires it, you can enable the new CSRF-token handling of `@sap-cloud-sdk/core` via configuration options `csrf` and `csrfInBatch`. These options allow to configure CSRF-token handling for each remote service separately.
