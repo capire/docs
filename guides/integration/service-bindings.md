@@ -141,7 +141,7 @@ Bind the Destination service to your application:
 cds add destination
 ```
 
-#### Native Fetch Client {#native-fetch-destinations}
+#### Native Fetch Client <Beta /> {#native-fetch-destinations}
 
 When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK.
 
@@ -153,8 +153,6 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 | `BasicAuthentication` | ✓ |
 | `OAuth2ClientCredentials` | ✓ |
 | Others | Best-effort via native client |
-
-**Tenant resolution:** CAP reads the tenant from the incoming request JWT (claims `zid`, `app_tid`, or `zone_uuid`), falls back to `cds.context`, and tries the subscriber tenant first before falling back to the provider tenant.
 
 **Caching:** Destination and token responses are cached with TTL derived from the token's `expiresIn` value. Concurrent requests for the same destination are deduplicated automatically.
 
