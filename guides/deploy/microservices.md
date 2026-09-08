@@ -197,8 +197,6 @@ The project structure used here is as follows:
 
 The `shared-db` module is simply another CAP project, with only database content. The dependencies are installed via NPM, so it's still possible to install via an NPM registry if used outside of the monorepo setup.
 
-The database model could also be collected on root level instead of creating a separate `shared-db` module. When collecting on root level, the `cds build --ws` option can be used to collect the models of all NPM workspaces.
-
 :::
 
 ## All-in-one Deployment
@@ -256,18 +254,6 @@ build-parameters:
         - npx cds build ./shared-db --for hana --production # [!code ++]
 ```
 :::
-
-
-::: info `cds build --ws`
-If the CDS models of every NPM workspace contained in the monorepo should be considered, then instead of creating this `shared-db` folder, you can also use:
-```shell
-cds build --for hana --production --ws
-```
-The `--ws` aggregates all models in the NPM workspaces.
-
-In this walkthrough, we only include a subset of the CDS models in the deployment.
-:::
-
 
 ::: details Configure each app for cloud readiness
 The preceding steps only added configuration to the workspace root.
