@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for `cds.serve()`, used to construct and expose service providers from CDS service definitions.
 ---
 
 
@@ -97,7 +98,7 @@ This uses these defaults for all options:
 
 Alternatively you can construct services individually, also from other models, and also mount them yourself, as document in the subsequent sections on individual fluent API options.
 
-If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](#cds-server).
+If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](cds-server#custom-server-js).
 
 
 
@@ -271,7 +272,7 @@ cds.middlewares.add (mw) // to the end
 
 ### Custom Middlewares
 
-The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-serve#custom-server-js).
+The configuration of middlewares must be done programmatically before bootstrapping the CDS services, for example, in a [custom server.js](cds-server#custom-server-js).
 
 The framework exports the default middlewares itself and the list of middlewares which run before the protocol adapter starts processing the request.
 
@@ -337,7 +338,7 @@ cds.middlewares.before = [
 ]
 ```
 
-[Learn more about Feature Vector Providers.](../guides/extensibility/feature-toggles#feature-vector-providers){.learn-more}
+[Learn more about Feature Vector Providers.](../guides/extensibility/feature-toggles#feature-vector-providers-in-nodejs){.learn-more}
 
 
 ### Current Limitations
@@ -405,14 +406,13 @@ Be aware that using an absolute path will disallow serving the service at multip
 
 ### PATCH vs. PUT vs. Replace
 
-The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
-`PUT`, on the other hand, is meant for ensuring a resource exists
-, that is, if it doesn't yet exists, it gets created.
-If it does exist, it gets updated to reflect the request's content.
+The HTTP method `PATCH` is meant for partial modification of an _existing resource_.
+`PUT`, on the other hand, ensures a resource exists: a missing resource gets created,
+while an existing one gets updated with the request's content.
 
 This content, however, may be incomplete.
-By default, the values for not listed keys are not touched.
-The rationale being that default values are known and clients have the option to send full representations, if necessary.
+By default, the values for not listed fields are not touched.
+The rationale is that default values are known and clients have the option to send full representations, if necessary.
 
 The following table shows the Node.js runtime's configuration options and their respective default value:
 

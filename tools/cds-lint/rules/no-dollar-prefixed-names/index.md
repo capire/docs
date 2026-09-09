@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ Names must not start with $ to avoid possible shadowing of reserved variables.
 In the following example, all elements names are well defined and do not start with `$`:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-dollar-prefixed-names"
@@ -37,7 +33,7 @@ In the following example, all elements names are well defined and do not start w
 This example shows the element `$pages` that starts with `$` and so the rule will raise an error for this element:
 
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-dollar-prefixed-names"

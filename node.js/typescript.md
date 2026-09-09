@@ -1,11 +1,9 @@
 ---
-# layout: node-js
-status: released
+description: >
+  How to enable and use TypeScript in a CAP Node.js project.
 ---
 
 # Using TypeScript
-
-While CAP itself is written in _JavaScript_, it's possible to use _TypeScript_ within your project as outlined here.
 
 [[toc]]
 

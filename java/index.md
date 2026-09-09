@@ -1,6 +1,6 @@
 ---
-section: Java
-status: released
+description: >
+  Reference documentation for the CAP Service SDK for Java.
 ---
 
 <style scoped>

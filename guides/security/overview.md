@@ -1,13 +1,12 @@
 ---
-synopsis: >
+description: >
   This section provides an overview of the security concepts and architecture of CAP applications on different platforms.
-status: released
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # Overview of Security Concepts and Architecture
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -38,11 +37,11 @@ For example, authentication can be delegated to a [separate ingress component](.
 
 Due to the plugin-based architecture, **you can modify CAP's standard functions as required or, if necessary, completely replace them**.
 This flexibility is crucial for scenarios where the default methods do not fully meet your application's requirements.
-Moreover, this integration helps to easily incorporate non-CAP and even non-BTP services, thereby providing a flexible and interoperable environment. 
+Moreover, this integration helps to easily incorporate non-CAP and even non-BTP services, thereby providing a flexible and interoperable environment.
 
 ![Overview Customizable Components with CAP](./assets/security-customizable.drawio.svg){width="600px" }
 
-For instance, you can define specific endpoints with a [custom authentication strategy](./authentication#custom-auth). 
+For instance, you can define specific endpoints with a [custom authentication strategy](./authentication#custom-auth).
 Likewise, you can override the CAP representation of the request user to match additional, application-specific requirements.
 
 ### Built on Best of Breed { #key-concept-platform-services }
@@ -59,7 +58,7 @@ Likewise, TLS termination is offered by the [platform infrastructure](#platform-
 
 ### Decoupled from Business Logic  { #key-concept-decoupled-coding }
 
-As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change for any security-related adaptations. 
+As security functions are factorized into independent components, **application code is entirely decoupled** and hence is not subject to change for any security-related adaptations.
 This ensures that business logic remains independent of platform services, which are often subject to security-hardening initiatives.
 As a welcome side effect, this also allows testing application security in a **local test or development setup in a self-contained way**.
 

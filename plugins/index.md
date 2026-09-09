@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  A curated list of CAP plugins that integrate with SAP BTP services and other SAP products.
 ---
 
 <script setup>
@@ -169,7 +170,7 @@ Available for:
 ## Attachments
 
 
-The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database. 
+The Attachments plugin enables efficient management of file attachments within your applications. By default, attachments are stored in the SAP HANA database.
 
 For Java, use the package [`cds-feature-attachments`](https://central.sonatype.com/artifact/com.sap.cds/cds-feature-attachments). For Node.js, this is supported by the standard plugin.
 
@@ -274,6 +275,20 @@ Available for:
 Learn more about audit logging in [Node.js](../guides/security/dpp-audit-logging.md) and in [Java](../java/auditlog) {.learn-more}
 
 
+## Data Privacy <Beta />
+
+The Node.js plugin `@cap-js/data-privacy` provides out-of-the-box integration for CAP applications with the [SAP Data Privacy Integration (DPI)](https://help.sap.com/docs/data-privacy-integration) service.
+
+Based on `@PersonalData` and `@ILM` annotations in your data model, the plugin automatically exposes two endpoints that SAP DPI consumes:
+
+- **`/dpp/information`** — returns personal data for display in the _Manage Personal Data_ app
+- **`/dpp/retention`** — handles data blocking and deletion based on retention rules defined in SAP DPI
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy#readme)
+
+
 ## Change Tracking
 
 
@@ -298,29 +313,92 @@ Available for:
 ## Notifications
 
 
-The Notifications plugin provides support for publishing business notifications in SAP Build WorkZone. The client is implemented as a CAP service, which gives us a very simple programmatic API:
+The Notifications plugin provides support for sending emails and publishing business notifications in SAP Build Work Zone. Define notification types declaratively via `@notification` CDS annotations or JSON config — the plugin intercepts annotated events and forwards them automatically:
 
-```js
-let alert = await cds.connect.to ('notifications')
-await alert.notify({
-   recipients: [ ...supporters ],
-   title: `New incident created by ${customer.info}`,
-   description: incident.title
+```cds
+@notification: {
+  title        : 'New incident: {{title}}',
+  publicTitle  : 'New Incident',
+  subtitle     : 'Created by {{customer}}',
+  groupedTitle : 'Incident Updates'
+}
+event IncidentCreated {
+  title      : String;
+  customer   : String;
+  recipients : String;
+}
+```
+
+Then implement the notification handling:
+
+::: code-group
+
+```js [Node.js]
+this.on('CREATE', 'Incidents', async req => {
+  await this.emit('IncidentCreated', {
+    title:      req.data.title,
+    customer:   customer.info,
+    recipients: [ ...supporters ],
+  })
 })
+```
+
+```java [Java]
+@Autowired
+private NotificationService notificationService;
+
+@After(event = CqnService.EVENT_CREATE, entity = Incidents_.CDS_NAME)
+public void afterIncidentCreated(Incidents incident) {
+    IncidentCreated data = IncidentCreated.create();
+    data.setTitle(incident.getTitle());
+    data.setCustomer(incident.getCustomer());
+    data.setRecipients("supporter@example.com");
+
+    IncidentCreatedContext ctx = IncidentCreatedContext.create();
+    ctx.setData(data);
+    notificationService.emit(ctx);
+}
+```
+
+:::
+
+Alternatively, for both Java and Node you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
+
+```cds [Java]
+service IncidentService {
+    @notifications : [{
+        type       : 'IncidentCreated',
+        on         : ['CREATE'],
+        recipients : $self.createdBy,
+        parameters : {
+            title    : $self.title,
+            customer : $self.customer
+        }
+    }]
+    entity Incidents as projection on my.Incidents;
+}
 ```
 
 Features:
 
-- CAP Services-based programmatic client API → simple, backend-agnostic
-- Logging to console in development → fast turnarounds, minimized costs
-- Transactional Outbox → maximised scalability and resilience
-- Notification templates with i18n support
-- Automatic lifecycle management of notification templates
-
+- CAP service-based API — simple, backend-agnostic
+- Notification types defined via CDS `@notification` annotations — `cds build` compiles them to `notification-types.json`
+- Notification types defined via JSON config
+- Auto-emit: annotated CDS events are forwarded to ANS automatically
+- **Email delivery** via `@notification.email.subject` and `@notification.email.html` annotations with Mustache syntax
+- Email HTML templates for rich email notifications
+- **Batch notifications** — send multiple notifications in a single outbox event
+- **i18n support** via `{i18n>key}` syntax in annotations
+- **Dynamic priority** via `@notification.priority` with runtime expressions
+- Console logging in development — no external service needed
+- Transactional outbox — maximized scalability and resilience
+- Automatic registration and lifecycle management of notification types on startup
+- Optional database storage for sent notifications with cooldown to prevent duplicate delivery (Java)
 
 Available for:
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme) <Alpha />
 
 
 ## Telemetry
@@ -424,8 +502,90 @@ Available for:
 
 <div id="planned-plugins" />
 
-## SAP Build Process Automation <Beta />
 
-The `@cap-js/process` plugin lets you interact with the Workflow API of SAP Build Process Automation. It provides annotations and a programmatic API for working with processes. Use it to manage the lifecycle of processes — for example, to start, cancel, suspend, or resume them — and to retrieve information about running and finished processes.
+## Data Inspector {#data-inspector}
 
-[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
+The Node.js plugin `@cap-js/data-inspector` allows you to inspect data from database entities and service definitions in a CAP application in local and production environments. Inspection occurs at the CAP service level. This means all built-in authentication, authorization, and audit logging mechanisms are automatically respected.
+
+Features:
+
+- Seamless integration as a CAP plugin
+- Built on SAP standard reuse UI components
+- Authorization controls with comprehensive audit logging
+- Simple configuration optimized for productivity
+
+Available for:
+
+[![Node.js logo](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-inspector#readme)
+
+## AI
+
+The AI plugin provides out-of-the-box UI field recommendations powered by SAP RPT-1. It automatically detects fields with `@Common.ValueList` or `@cds.odata.valuelist` annotations and provides intelligent recommendations in SAP Fiori draft-enabled UIs without requiring custom handlers.
+
+AI-powered recommendations are then added to your Fiori UIs as shown below.
+
+![Screenshot showing the Recommendations](assets/index/recommendations.png)
+
+Additionally, the AI Plugin embeds SAP AI Core as a standard CAP service following the Calesi pattern, giving you automatic service binding resolution along with tenant-aware access including managed resource groups and deployments.
+
+The Java version of this plugin is currently in alpha.
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
+[![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)
+
+## n8n
+
+The n8n plugin lets you trigger and automate [n8n](https://n8n.io) workflows from CAP applications. You can trigger workflows declaratively through annotations or programmatically through the n8n service.
+
+Annotations:
+
+```cds
+annotate AdminService.Books with @n8n.process.start: {
+  on: 'CREATE',
+  path: 'book-created'
+};
+```
+
+Programmatically:
+
+::: code-group
+
+```js [Node.js]
+this.after('CREATE', 'Books', async (books) => {
+  const n8n = await cds.connect.to('n8n')
+  for (const book of books) {
+    await n8n.trigger({ path: 'book-created', payload: { ID: book.ID} })
+  }
+})
+```
+
+```java [Java]
+@Autowired
+private N8nService n8nService;
+
+@After(event = CqnService.EVENT_CREATE, entity = "AdminService.Books")
+public void afterCreateBook(List<Books> books) {
+    books.forEach(book -> {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("ID", book.getId());
+        n8nService.trigger("book-created", payload);
+    });
+}
+```
+
+:::
+
+Features:
+
+- Annotation-driven triggers on CREATE, READ, UPDATE, DELETE, Fiori events, and custom events
+- Programmatic API for direct workflow management
+- Reliable delivery through the CAP persistent outbox with retry logic
+- Console mode for local development
+- API key and webhook authentication (Basic, Header, Bearer)
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/n8n#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-n8n#readme)

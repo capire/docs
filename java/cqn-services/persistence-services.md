@@ -1,6 +1,6 @@
 ---
-synopsis: >
-  Persistence Services are CQN-based database clients. This section describes which database types are supported, how datasources to these databases are created and how they are turned into Persistence Services.
+description: >
+  How CQN-based Persistence Services are created from datasources to supported database types and used as database clients.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Database Support { #database-support}
 
@@ -38,7 +38,7 @@ entity Books : cuid {
 > When disabling locale-specific handling for a String element, binary comparison is used, which is generally faster but results in *case-sensitive* order (A, B, a, b).
 
 ::: info Disable Collating
-To disable collating for all queries, set [`cds.sql.hana.ignoreLocale`](../developing-applications/properties#cds-sql-hana-ignoreLocale) to `true`.
+To disable collating for all queries, set [`cds.sql.hana.ignoreLocale`](../developing-applications/properties#cds-sql-hana-ignorelocale) to `true`.
 :::
 
 4. SAP HANA supports _Perl Compatible Regular Expressions_ (PCRE) for regular expression matching. If you need to match a string against a regular expression and are not interested in the exact number of the occurrences, consider using lazy (_ungreedy_) quantifiers in the pattern or the option `U`.
@@ -184,7 +184,7 @@ cds add postgres
 ```
 
 ::: warning
-Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases/postgres#using-liquibase-java)
+Automatic schema deployment isn't suitable for productive use. Consider using production-ready tools like Flyway or Liquibase. See more on that in the [Database guide for PostgreSQL](../../guides/databases/postgres#using-liquibase-in-cap-java)
 :::
 
 #### Configure the Connection Data Explicitly { #postgres-connection }
@@ -570,7 +570,7 @@ See [Class JdbcTemplate](https://docs.spring.io/spring-framework/docs/current/ja
 
 The static model and accessor interfaces can be generated using the [CDS Maven Plugin](../developing-applications/building#cds-maven-plugin).
 
-::: warning 
+::: warning
 Currently, the generator doesn't support using reserved [Java keywords](https://docs.oracle.com/javase/specs/jls/se13/html/jls-3.html#jls-3.9) as identifiers in the CDS model. Conflicting element names can be renamed in Java using the [@cds.java.name](../cds-data#renaming-elements-in-java) annotation. For entities it is recommended to use [@cds.java.this.name](../cds-data#renaming-types-in-java).
 :::
 

@@ -1,6 +1,6 @@
 ---
-synopsis: >
-  Request Contexts span the execution of multiple events on (different) services. They provide a common context to these events, by providing user or tenant information or access to headers or query parameter.
+description: >
+  Request Contexts span the execution of multiple events on (different) services. They provide a common context to these events, by providing user or tenant information or access to headers or query parameters.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 
 ## Overview
@@ -127,7 +127,7 @@ public void afterHandler(EventContext context){
 }
 ```
 
-Most important use case is to switch users, for which CAP Java provides [convenience APIs](../../guides/security/cap-users#switching-users). 
+Most important use case is to switch users, for which CAP Java provides [convenience APIs](../../guides/security/cap-users#switching-users).
 
 ## Modifying Request Contexts { #modifying-requestcontext}
 

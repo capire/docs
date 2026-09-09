@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@sap/cds": "^9"
+    "@sap/cds": "latest"
   },
   "devDependencies": {
-    "@sap/eslint-plugin-cds": "^4",
-    "eslint": "^9"
+    "@sap/eslint-plugin-cds": "latest",
+    "eslint": "latest"
   }
 }

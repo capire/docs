@@ -1,14 +1,13 @@
 ---
-synopsis: >
+description: >
   The Personal Data Management (PDM) guide explains how to integrate your CAP application with the SAP Personal Data Manager service to respond to data subject requests about their personal data stored in your application.
-status: released
 ---
 
 
 
 # Personal Data Management
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 :::warning To follow this cookbook hands-on you need an enterprise account.
 The SAP Personal Data Manager service is currently only available for [enterprise accounts](https://discovery-center.cloud.sap/missiondetail/3019/3297/). An entitlement in trial accounts is not possible.

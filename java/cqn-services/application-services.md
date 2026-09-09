@@ -1,6 +1,6 @@
 ---
-synopsis: >
-  Application Services define the APIs that a CAP application exposes to its clients, for example through OData. This section describes how to add business logic to these services, by extending CRUD events and implementing actions and functions.
+description: >
+  How to add business logic to Application Services — the APIs a CAP application exposes to its clients, for example through OData — by extending CRUD events and implementing actions and functions.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Handling CRUD Events { #crudevents}
 
@@ -363,8 +363,8 @@ By default, the CAP Java SDK provides protocol adapters for OData V4 and V2 and 
 
 | Protocol | Default base path | CDS Property                                                                      |
 |----------|-------------------|-----------------------------------------------------------------------------------|
-| OData V4 | `/odata/v4`       | [`cds.odataV4.endpoint.path`](../developing-applications/properties#cds-odataV4-endpoint-path) |
-| OData V2 | `/odata/v2`       | [`cds.odataV2.endpoint.path`](../developing-applications/properties#cds-odataV2-endpoint-path) |
+| OData V4 | `/odata/v4`       | [`cds.odataV4.endpoint.path`](../developing-applications/properties#cds-odatav4-endpoint-path) |
+| OData V2 | `/odata/v2`       | [`cds.odataV2.endpoint.path`](../developing-applications/properties#cds-odatav2-endpoint-path) |
 
 The following example shows, how to deviate from the defaults:
 ::: code-group
@@ -404,14 +404,14 @@ cds.application.services.CatalogService.serve:
 Alternatively to the `@protocol` and `@protocols` annotation you can also use explicit protocol annotations. For example, `@odata` (OData V4), `@odata-v4`, `@odata-v2`, and `@mcp`:
 
 ```cds
-@odata 
+@odata
 service CatalogService { ... }
 ```
 
 You can also specify the path directly in the protocol annotation:
 
 ```cds
-@mcp: 'catalog' 
+@mcp: 'catalog'
 service CatalogService { ... }
 ```
 
@@ -428,7 +428,7 @@ service InternalService {
 Use the property <Config java>cds.protocols.defaults: []</Config> to prevent that a protocol is served accidentally.
 :::
 
-[Learn more about all `cds.application.services.<key>.serve` configuration possibilities.](../developing-applications/properties#cds-application-services-<key>-serve){.learn-more}
+[Learn more about all `cds.application.services.<key>.serve` configuration possibilities.](../developing-applications/properties#cds-application-services-key-serve){.learn-more}
 
 
 ### Configure Endpoints
@@ -459,4 +459,4 @@ cds.application.services.CatalogService.serve.endpoints:
     protocol: 'odata-v2'
 ```
 
-[Learn more about all `cds.application.services.<key>.serve.endpoints` configuration possibilities.](../developing-applications/properties#cds-application-services-<key>-serve-endpoints){.learn-more}
+[Learn more about all `cds.application.services.<key>.serve.endpoints` configuration possibilities.](../developing-applications/properties#cds-application-services-key-serve-endpoints){.learn-more}

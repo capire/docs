@@ -1,30 +1,31 @@
 ---
-status: released
+description: >
+  An overview of CAP's primary building blocks and core concepts, such as domain-driven modeling, service-centric runtimes, and querying.
 ---
 
 # Core Concepts of CAP
 Cloud Scale by Design  {.subtitle}
 
-<!-- 
+<!--
 - Domain-driven Development
 - Service-centric Paradigm
 - Event-driven Runtimes
 - Querying & Pushdown
-- Intrinsic Extensibility 
+- Intrinsic Extensibility
 - The Calesi Pattern
 
 
 Appendix: Common Design Principles
-  - SOLID Principles: 
-    - **S**ingle Responsibility 
-    - **O**pen/Closed 
-    - **L**iskov Substitution 
-    - **I**nterface Segregation 
-    - **D**ependency Inversion 
+  - SOLID Principles:
+    - **S**ingle Responsibility
+    - **O**pen/Closed
+    - **L**iskov Substitution
+    - **I**nterface Segregation
+    - **D**ependency Inversion
   - DRY Principle
   - KISS Principle
-  - YAGNI Principle 
-  
+  - YAGNI Principle
+
   -->
 
 [[toc]]
@@ -43,8 +44,8 @@ The CAP framework features a mix of proven and broadly adopted open-source and S
 The major building blocks are as follows:
 
 - [**Core Data Services** (CDS)](../cds/) — CAP's universal modeling language, and the very backbone of everything; used to capture domain knowledge, generating database schemas, translating to and from various API languages, and most important: fueling generic runtimes to automatically serve request out of the box.
-  
-- [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adaptors for REST, OData, GraphQL, ...
+
+- [**Service Runtimes**](../guides/services/providing-services) for [Node.js](../node.js/) and [Java](../java/) — providing the core frameworks for services, generic providers to serve requests automatically, database support for SAP HANA, SQLite, and PostgreSQL, and protocol adapters for REST, OData, GraphQL, ...
 
 - [**Platform Integrations**](../plugins/) — providing CAP-level service interfaces (*'[Calesi](#the-calesi-pattern)'*) to cloud platform services in platform-agnostic ways, as much as possible. Some of these are provided out of the box, others as plugins.
 
@@ -90,16 +91,16 @@ In a first iteration, it would look like this in CDS, with some fields added:
 
 ::: code-group
 ```cds [Domain Data Model]
-entity Authors { 
+entity Authors {
   name   : String;
   books  : Association to many Books;
 }
-entity Books { 
+entity Books {
   title  : String;
   author : Association to Authors;
   genre  : Association to Genres;
 }
-entity Genres { 
+entity Genres {
   name   : String;
   parent : Association to Genres;
 }
@@ -150,7 +151,7 @@ INNER JOIN Countries as country ON country.code = author.country_code
 -- the actual filter condition:
 WHERE country.code = 'GB';
 ```
-Path expressions in *infix filters*  become *SEMI JOINs*, e.g.using `IN`:
+Path expressions in *infix filters*  become *SEMI JOINs*, for example, using `IN`:
 ```sql
 CREATE VIEW EnglishBooks AS SELECT * FROM Books
 -- for Association Books:author:
@@ -608,24 +609,24 @@ So, in total, and in effect, we learn:
 
 
 
-The *[Hexagonal Architecture](https://alistair.cockburn.us/hexagonal-architecture/)* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). As he introduces it, its intent is to:
+The *[Hexagonal Architecture](https://en.wikipedia.org/wiki/hexagonal_architecture_(software))* (also known as *Ports and Adapters Architecture/Pattern*) as first proposed by Alistair Cockburn in 2005, is quite famous and fancied these days (rightly so). He introduced it back then with the following opening statement and illustration:
 
-*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {.indent style="font-family:serif"}
+*"Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases"* {style="font-family:serif; font-size:115%; padding:0 44px"}
 
-... and he illustrated that like this:
+![Hexagonal Architecture original illustration by Alistair Cockburn](assets/concepts/hexagonal-archritecture-origin.png)
 
-![Hexagonal architecture basic.gif](https://alistair.cockburn.us/hexFig1.png)
-
-In a nutshell, this introduction to the objectives of hexagonal architecture translates to that in our world of cloud-based business applications:
+We can translate that to these objectives in our world of cloud-based business applications:
 
 > [!tip] Objectives of Hexagonal Architecture
 >
 > - Your *Application* (→ the inner hexagon) should stay ***agnostic*** to *"the outside"*
 > - Thereby allowing to replace *"the outside"* met in production by *mocked* variants
 > - To reduce complexity and speed up turnaround times at *development*, and in *tests*
->   <br/>→ [*'Airplane Mode' Development & Tests*](features#fast-inner-loops)
 >
-> **In contrast to that**, if you (think you) are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
+> -> See also: [*Inner-Loop Development & Tests*](features#fast-inner-loops)
+>
+
+In contrast to that, if (you think) you are doing Hexagonal Architecture, but still find yourself trapped in a slow and expensive always-connected development experience, you might have missed a point... → the *Why* and *What*, not *How*.
 
 
 
@@ -702,16 +703,19 @@ Your application models are your services, also served automatically by generic 
 
 ### Protocol Adapters
 
-Behind the scenes, i.e., in the **outer hexagon** containing stuff, you as an application developer should not see, the CAP runtime employs Protocol Adapters, which translate requests from (and to) low-level protocols like HTTP, REST, OData, GraphQL, ... to protocol-agnostic CAP requests and queries.
+Behind the scene - that is, in the **outer hexagon** containing stuff, you as an application developer should not see - the CAP runtime employs Protocol Adapters, which translate requests from (and to) low-level protocols like HTTP, REST, OData, GraphQL, ... to protocol-agnostic CAP requests and queries for inbound and outbound communication.
 
-- for ***inbound*** communication → i.e., requests your application *receives*, as well as as...
-- for ***outbound*** communication → i.e., requests your application *sends* to other services.
+--> ***Inbound*** Communication
+: Requests your application *receives*.
 
-In effect your service implementations stay agnostic to (wire) protocols, which allows us to exchange protocols, replace targets by mocks, do fast inner loop development in airplane mode, ... even change topologies from a monolith to micro services and vice versa late in time.
+--> ***Outbound*** Communication
+: Requests your application *sends* to other services.
+
+In effect your service implementations stay agnostic to (wire) protocols, which allows you to exchange protocols, replace targets by mocks, do fast inner loop development in airplane mode, ... even change topologies from a monolith to micro services and vice versa late in time.
 
 ![protocol-adapters.drawio](./assets/concepts/protocol-adapters.drawio.svg)
 
-The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local-remote).
+The inbound and outbound adapters (and the framework services) effectively provide your inner core with the ***ports*** to the outside world, which always provide the same, hence *agnostic* style of API (indicated by the green arrows used in the previous graphic), as already introduced in [Local  /Remote](#local--remote).
 
 Inbound:
 

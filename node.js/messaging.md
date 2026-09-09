@@ -1,13 +1,11 @@
 ---
-synopsis: >
+description: >
   Learn details about using messaging services and outbox for asynchronous communications.
-# layout: node-js
-status: released
 ---
 
 # Messaging
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 [[toc]]
 
@@ -16,10 +14,10 @@ status: released
 
 ## Overview
 
-Messaging enables decoupled communication between services using events. 
+Messaging enables decoupled communication between services using events.
 CAP distinguishes between the logical and technical messaging layers, separating business concerns from technical infrastructure.
 
-The **logical layer** consists of three primary components: 
+The **logical layer** consists of three primary components:
 
 **Modeled Events**: Events are defined in CDS models with typed schemas, providing compile-time validation and IDE support. These events represent business occurrences like `'orderProcessed'`, or `'stockUpdated'`.
 
@@ -44,7 +42,7 @@ The message flow follows a clear path through both layers:
 
 ### Summary Table
 
- 
+
 | CDS Event Declaration         | Emitting via `srv.emit` | Emitting via `messaging.emit` | Broker Topic         | Receiving via `srv.on` | Receiving via `messaging.on` |
 |------------------------------|-------------------------|-------------------------------|----------------------|------------------------|------------------------------|
 | No `@topic`                  | `'reviewed'`           | `'OrderSrv.reviewed'`         | `OrderSrv.reviewed`  | `'reviewed'`           | `'OrderSrv.reviewed'`        |
@@ -265,7 +263,7 @@ this.after(['CREATE', 'UPDATE', 'DELETE'], 'Reviews', async (_, req) => {
 ```
 ::: tip
 The messages are sent once the transaction is successful.
-Per default, a persistent queue is used. See [Messaging - Queue](./queue) for more information.
+By default, a persistent queue is used. See [Event Queues](./event-queues) for more information.
 :::
 
 ## Receiving Events
@@ -300,7 +298,7 @@ In general, messages don't contain user information but operate with a technical
 
 ### Inbox <Beta />
 
-You can store received messages in an inbox before they're processed. Under the hood, it uses the [task queue](./queue) for reliable asynchronous processing.
+You can store received messages in an inbox before they're processed. Internally, it uses the [task queue](./event-queues) for reliable asynchronous processing.
 Enable it by setting the `inboxed` option to `true`, for example:
 
 ```js
@@ -333,6 +331,7 @@ For local environments, use [`cds bind`](../tools/cds-bind#cds-bind-usage) in a 
 ::: tip
 For local testing use [`kind`: `enterprise-messaging-shared`](#event-mesh-shared) to avoid the complexity of HTTP-based messaging.
 :::
+
 
 ### SAP Event Mesh (Shared) { #event-mesh-shared}
 
@@ -370,7 +369,7 @@ Example:
 }
 ```
 
-::: warning 
+::: warning
 When using `enterprise-messaging-shared` in a multitenant scenario, only the provider account will have an event bus. There is no tenant isolation.
 :::
 
@@ -382,6 +381,7 @@ You need to install the latest version of the npm package `@sap/xb-msg-amqp-v100
 For optimal performance, you should set the correct access type.
 To make sure your server is not flooded with messages, you should set the incoming session window.
 :::
+
 
 ### SAP Event Mesh
 
@@ -472,14 +472,58 @@ If you enable the [cors middleware](https://www.npmjs.com/package/cors), [handsh
 
 <span id="aftereventmesh" />
 
-### SAP Cloud Application Event Hub { #event-broker }
 
-`kind`: `event-broker`
+### Event Mesh in SAP Integration Suite <Beta /> { #integration-suite-event-mesh }
 
-Use this if you want to communicate using [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker).
+[Event Mesh in SAP Integration Suite](https://help.sap.com/docs/integration-suite/sap-integration-suite/event-mesh) is supported via two `kind` entries, mirroring the SAP Event Mesh variants:
 
-The integration with SAP Cloud Application Event Hub is provided using the plugin [`@cap-js/event-broker`](https://github.com/cap-js/event-broker).
-Please see the plugin's [setup guide](https://github.com/cap-js/event-broker/blob/main/README.md#setup) for more details.
+| Kind | Protocol | Equivalent to |
+|------|----------|---------------|
+| `event-mesh` | HTTP + webhooks | `enterprise-messaging` |
+| `event-mesh-shared` | AMQP | `enterprise-messaging-shared` |
+
+::: tip Setup via `cds add`
+Use `cds add event-mesh` or `cds add event-mesh-shared` to automatically configure `package.json`, `mta.yaml`, `event-mesh.json`, and Kyma deployment descriptors. Both support a `--cloudevents` flag.
+:::
+
+#### `event-mesh`
+
+Same as `enterprise-messaging` except it connects to an Event Mesh in SAP Integration Suite service instance (`event-mesh-message-client`).
+
+Example:
+
+```json
+{
+    "requires": {
+        "messaging": {
+            "[production]": { "kind": "event-mesh" }
+        }
+    }
+}
+```
+
+The configuration options are the same as for [`enterprise-messaging`](#sap-event-mesh).
+
+#### `event-mesh-shared`
+
+Same as `enterprise-messaging-shared` but connects to an Event Mesh in SAP Integration Suite service instance. Best suited for local hybrid testing.
+
+Example:
+
+```json
+{
+    "requires": {
+        "messaging": {
+            "[production]": { "kind": "event-mesh" },
+            "[hybrid]": { "kind": "event-mesh-shared" }
+        }
+    }
+}
+```
+
+The configuration options are the same as for [`enterprise-messaging-shared`](#event-mesh-shared).
+
+
 
 ### SAP Integration Suite, Advanced Event Mesh <Beta />  { #advanced-event-mesh }
 
@@ -490,9 +534,22 @@ Use this if you want to communicate using [SAP Integration Suite, advanced event
 The integration with SAP Integration Suite, advanced event mesh is provided using the plugin [`@cap-js/advanced-event-mesh`](https://github.com/cap-js/advanced-event-mesh).
 Please see the plugin's [setup guide](https://github.com/cap-js/advanced-event-mesh/blob/main/README.md#setup) for more details.
 
+
+### SAP Cloud Application Event Hub { #event-broker }
+
+`kind`: `event-broker`
+
+Use this if you want to communicate using [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker).
+
+The integration with SAP Cloud Application Event Hub is provided using the plugin [`@cap-js/event-broker`](https://github.com/cap-js/event-broker).
+Please see the plugin's [setup guide](https://github.com/cap-js/event-broker/blob/main/README.md#setup) for more details.
+
+
 <div id="queuing-sap" />
 
+
 <div id="kafka-sap" />
+
 
 ### Redis PubSub <Beta />
 ::: warning
@@ -550,6 +607,7 @@ When using `file-based-messaging` in a multitenant scenario, only the provider a
 `kind`: `local-messaging`
 
 You can use local messaging to communicate inside one Node.js process. It's especially useful in your automated tests.
+
 
 ### Composite-Messaging
 

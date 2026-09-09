@@ -9,5 +9,3 @@
   ## [cds. add()](apis/cds-add)
   ## [cds. import()](apis/cds-import)
   ## [cds. build()](apis/cds-build)
-
-# [CAP Console](console)

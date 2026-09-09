@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   The Model Reflection API is a set of interfaces, which provide the ability to introspect a CDS model and retrieve details on
   the services, types, entities, and their elements that are defined by the model.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
@@ -12,7 +12,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## The CDS Model
 
@@ -222,7 +222,7 @@ The active feature set can't be changed within an active transaction.
 
 ### Toggling SAP Fiori UI Elements
 
-In an [SAP Fiori elements](https://experience.sap.com/fiori-design-web/smart-templates/) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../guides/uis/fiori#what-are-sap-fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
+In an [SAP Fiori elements](https://www.sap.com/design-system/fiori-design-web/v1-145/discover/frameworks/sap-fiori-elements/smart-templates) application, the UI is captured with annotations in the CDS model. Hence, toggling of [SAP Fiori elements annotations](../guides/uis/fiori#fiori-annotations) is already leveraged by the above concept: To enable toggling of such annotations (and thus UI elements), it's required that the EDMX returned by the `$metadata` respects the feature vector. This is automatically achieved by maintaining different model variants according to activated features as described in the previous section.
 
 ### Features on the Database
 

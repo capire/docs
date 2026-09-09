@@ -1,6 +1,6 @@
 ---
-section: Node.js
-status: released
+description: >
+  Reference documentation for the CAP Service SDK for Node.js, covering how to implement domain-specific custom logic.
 ---
 
 # CAP Service SDK for Node.js

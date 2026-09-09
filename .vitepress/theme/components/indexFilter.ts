@@ -31,7 +31,7 @@ export default (pages:ContentDataCustom[], basePath:string):ContentDataCustom[] 
       url: p.url,
       title: p.title,
       frontmatter: {
-        synopsis: p.frontmatter.synopsis
+        description: p.frontmatter.description
       },
       // this data is inlined in each index page, so omit unnecessary data
       src:undefined, html:undefined, excerpt:undefined

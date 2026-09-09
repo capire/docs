@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   A guide on deploying SAP Cloud Application Programming Model (CAP) applications as microservices to the SAP BTP Cloud Foundry environment.
-status: released
 ---
 
 # Microservices with CAP
@@ -410,15 +409,12 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build ./shared-db --for hana --production
-        - npx cds build ./orders --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./orders --for nodejs --production # [!code ++]
         - npx cds build ./reviews --for nodejs --production # [!code ++]
-        - npx cds build ./bookstore --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./bookstore --for nodejs --production # [!code ++]
 ```
 :::
 
-::: info --ws-pack
-Note that we use the *--ws-pack* option for some modules. It's important for node modules referencing other repository-local node modules.
-:::
 
 ### Authentication
 
@@ -671,7 +667,7 @@ modules:
   - name: bookstore-srv
     ...
     properties: # [!code ++]
-      cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/reviews"} # [!code ++]
+      cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/odata/v4/reviews"} # [!code ++]
       cds_requires_OrdersService_credentials: {"destination": "orders-dest","path": "/odata/v4/orders"} # [!code ++]
 ```
 ```yaml [Java (bookstore/srv/src/main/resources/application.yaml)]
@@ -837,12 +833,7 @@ The _xs-app.json_ file describes how to forward incoming request to the API endp
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
     { // [!code ++]
-      "source": "^/browse/", // [!code ++]
-      "destination": "bookstore-api", // [!code ++]
-      "csrfProtection": true // [!code ++]
-    }, // [!code ++]
-    { // [!code ++]
-      "source": "^/user/", // [!code ++]
+      "source": "^/odata/v4/browse/", // [!code ++]
       "destination": "bookstore-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
@@ -852,7 +843,7 @@ The _xs-app.json_ file describes how to forward incoming request to the API endp
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
     { // [!code ++]
-      "source": "^/reviews/", // [!code ++]
+      "source": "^/odata/v4/reviews/", // [!code ++]
       "destination": "reviews-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     } // [!code ++]
@@ -875,11 +866,6 @@ The _xs-app.json_ file describes how to forward incoming request to the API endp
     }, // [!code ++]
     { // [!code ++]
       "source": "^/browse/", // [!code ++]
-      "destination": "bookstore-api", // [!code ++]
-      "csrfProtection": true // [!code ++]
-    }, // [!code ++]
-    { // [!code ++]
-      "source": "^/user/", // [!code ++]
       "destination": "bookstore-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     }, // [!code ++]

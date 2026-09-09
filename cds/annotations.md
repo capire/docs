@@ -1,15 +1,12 @@
 ---
-# layout: cds-ref
-shorty: Annotations
-synopsis: >
+description: >
   Find here a reference and glossary of common annotations intrinsically supported by the CDS compiler and runtimes.
-status: released
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
 # Common Annotations
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [Learn more about the syntax of annotations.](./cdl#annotations){.learn-more}
 
@@ -38,9 +35,9 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 |------------------|----------------------------------------------------------------------|
 | `@readonly `     | see [Input Validation](../guides/services/constraints#readonly)      |
 | `@mandatory`     | see [Input Validation](../guides/services/constraints#mandatory)     |
-| `@assert.target` | see [Input Validation](../guides/services/constraints#assert-target) |
-| `@assert.format` | see [Input Validation](../guides/services/constraints#assert-format) |
-| `@assert.range`  | see [Input Validation](../guides/services/constraints#assert-range)  |
+| `@assert.target` | see [Input Validation](../guides/services/constraints#asserttarget) |
+| `@assert.format` | see [Input Validation](../guides/services/constraints#assertformat) |
+| `@assert.range`  | see [Input Validation](../guides/services/constraints#assertrange)  |
 
 
 
@@ -56,21 +53,21 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 | `@cds.api.ignore`    | see [OData](../guides/protocols/odata#omitting-elements-from-apis)                      |
 | `@cds.query.limit`   | see [Providing Services](../guides/services/served-ootb#annotation-cds-query-limit)     |
 | `@cds.localized`     | see [Localized Data](../guides/uis/localized-data#read-operations)                      |
-| `@cds.valid.from/to` | see [Temporal Data](../guides/domain/temporal-data#using-annotations-cds-valid-from-to) |
+| `@cds.valid.from/to` | see [Temporal Data](../guides/domain/temporal-data#using-annotations-cdsvalidfromto) |
 | `@cds.search`        | see [Search Capabilities](../guides/services/served-ootb#searching-data)                |
 
 ## Persistence
 
 | Annotation                | Description                                                                  |
 |---------------------------|------------------------------------------------------------------------------|
-| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cds-persistence-exists) |
-| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cds-persistence-table)  |
-| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cds-persistence-skip)   |
+| `@cds.persistence.exists` | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cdspersistenceexists) |
+| `@cds.persistence.table`  | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cdspersistencetable)  |
+| `@cds.persistence.skip`   | see [Generating DDL Files](../guides/databases/cdl-to-ddl#cdspersistenceskip)   |
 | `@cds.persistence.mock`   | `false` excludes this entity from automatic mocking                          |
 | `@cds.on.insert`          | see [Providing Services](../guides/services/providing-services)              |
 | `@cds.on.update`          | see [Providing Services](../guides/services/providing-services)              |
-| `@sql.prepend`            | see [Generating DDL Files](../guides/databases/cdl-to-ddl#sql-prepend-append)     |
-| `@sql.append`             | see [Generating DDL Files](../guides/databases/cdl-to-ddl#sql-prepend-append)     |
+| `@sql.prepend`            | see [Generating DDL Files](../guides/databases/cdl-to-ddl#sqlprepend--append)     |
+| `@sql.append`             | see [Generating DDL Files](../guides/databases/cdl-to-ddl#sqlprepend--append)     |
 
 ## OData
 

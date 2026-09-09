@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section describes how to test CAP Java applications on different level.
 
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
@@ -15,7 +15,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 This section describes some best practices and recommendations for testing CAP Java applications.
 
-As described in [Modular Architecture](building#starter-bundles#modular_architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
+As described in [Modular Architecture](building#modular-architecture), a CAP Java application consists of weakly coupled components, which enables you to define your test scope precisely and focus on parts that need a high test coverage.
 
 Typical areas that require testing are the [services](../cqn-services/#cdsservices) that dispatch events to [event handlers](../event-handlers/), the event handlers themselves that implement the behaviour of the services, and finally the APIs that the application services define and that are exposed to clients through [OData](../cqn-services/application-services#odata-requests).
 
@@ -217,9 +217,11 @@ For a more extensive version of the previous `CatalogServiceTest` snippets, have
 
 Integration tests enable us to verify the behavior of a custom event handler execution doing a roundtrip starting at the protocol adapter layer and going through the whole CAP architecture until it reaches the service and event handler layer and then back again through the protocol adapter.
 
-As the services defined in our `CDS model` are exposed as `OData` endpoints, by using [MockMvc](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html) we can simply invoke a specific `OData` request and assert the response from the addressed service.
+As the services defined in our `CDS model` are exposed as `OData` endpoints, we can simply invoke a specific `OData` request and assert the response from the addressed service. Spring provides two clients for this purpose: [MockMvc](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html) and, since Spring Framework 7.0 (Spring Boot 4.x), the [RestTestClient](https://docs.spring.io/spring-framework/reference/testing/resttestclient.html). Both approaches perform an equivalent server-side roundtrip through the whole CAP architecture without starting a servlet container, so you can pick whichever fits your style &mdash; there's no preference. However, with RestTestClient you can also switch to real HTTP communication for either testing your complete HTTP layer or remote services.
 
-The following demonstrates this by invoking a `GET` request to the `OData` endpoint of our `Books` entity, which triggers the execution of the `discountBooks` method of the `CatalogServiceHandler` in our example:
+The following demonstrates this by invoking a `GET` request to the `OData` endpoint of our `Books` entity, which triggers the execution of the `discountBooks` method of the `CatalogServiceHandler` in our example.
+
+#### Using MockMvc
 
 ```java
 @SpringBootTest
@@ -247,6 +249,42 @@ public class CatalogServiceITest {
 }
 ```
 
+#### Using RestTestClient
+
+The same test can be written with `RestTestClient`, which offers a fluent, [WebTestClient](https://docs.spring.io/spring-framework/reference/testing/webtestclient.html)-style API:
+
+```java
+@SpringBootTest
+@AutoConfigureRestTestClient
+public class CatalogServiceITest {
+
+    private static final String booksURI = "/api/browse/Books";
+
+    @Autowired
+    private RestTestClient client;
+
+    @Test
+    public void discountApplied() {
+        client.get().uri(booksURI + "?$filter=stock gt 200&top=1")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.value[0].title")
+            .value(String.class, title -> assertThat(title).contains("11% discount"));
+    }
+
+    @Test
+    public void discountNotApplied() {
+        client.get().uri(booksURI + "?$filter=stock lt 100&top=1")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.value[0].title")
+            .value(String.class, title -> assertThat(title).doesNotContain("11% discount"));
+    }
+}
+```
+
 ::: tip
 Check out the version in our [CAP Java bookshop sample project](https://github.com/SAP-samples/cloud-cap-samples-java/blob/main/srv/src/test/java/my/bookshop/CatalogServiceITest.java) for additional examples of integration testing.
 :::
@@ -266,6 +304,10 @@ Check out the version in our [CAP Java bookshop sample project](https://github.c
 * **Administrative tools**
 
   H2 includes a built-in web console application, providing a user-friendly interface for database administration, query execution, and data inspection without requiring external tools. CAP Java applications configured with the H2 database expose the administration console under `http://localhost:8080/h2-console` (assuming default port `8080`).
+
+::: warning Use the latest `2.3.x` version of H2
+Even though there are newer versions available, we cannot recommend using them for now. Therefore we only support until version 2.3.x of H2. This recommendation is subject to change. If our test results allow to recommend newer versions we will do so.
+:::
 
 ### Setup & Configuration
 
@@ -324,7 +366,7 @@ The section [Hybrid Testing](../../tools/cds-bind#run-cap-java-apps-with-service
 
 Most CAP Java projects use Spring Boot. To speed up the edit-compile-verify loop, the Spring Boot DevTools dependency is commonly added to the development classpath. DevTools provide automatic restart and LiveReload integration. For more details check the [Spring Dev Tools](https://docs.spring.io/spring-boot/reference/using/devtools.html) reference.
 
-The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows: 
+The automatic restart and LiveReload provided by DevTools can cause an application restart that results in loss of state held by an in-memory H2 database. To avoid losing data between restarts during development, prefer the H2 file-based mode so the database is persisted on disk and survives DevTools restarts. The simplest `application.yaml` configuration would look as follows:
 
 ::: code-group
 ```yml [srv/src/main/resources/application.yaml]

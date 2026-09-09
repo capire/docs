@@ -1,8 +1,6 @@
 ---
-synopsis: >
-  Most projects start with capturing the essential objects of their domain in a respective domain model.
-  Find here an introduction to the basics of domain modeling with CDS, complemented with recommended best practices.
-status: released
+description: >
+  Introduction to the basics of domain modeling with CDS, complemented with recommended best practices for capturing the essential objects of your domain.
 ---
 
 # Domain Modeling
@@ -251,7 +249,7 @@ entity name {
 }
 ```
 
-[Learn more about entity definitions.](../../cds/cdl#entities-type-definitions){.learn-more}
+[Learn more about entity definitions.](../../cds/cdl#entities--type-definitions){.learn-more}
 
 
 
@@ -265,7 +263,7 @@ entity ProjectedEntity as select from BaseEntity {
 };
 ```
 
-[Learn more about views and projections.](../../cds/cdl#views-projections){.learn-more}
+[Learn more about views and projections.](../../cds/cdl#views--projections){.learn-more}
 
 
 
@@ -289,7 +287,7 @@ entity Books {
 ##### Don't: {.bad}
 
 - Don't use binary data as keys!
-- [Don't interpret UUIDs!](#don-t-interpret-uuids)
+- [Don't interpret UUIDs!](#dont-interpret-uuids)
 
 #### Prefer Simple, Technical Keys
 
