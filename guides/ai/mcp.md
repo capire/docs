@@ -3,17 +3,13 @@ description: >
   Expose CAP services via the Model Context Protocol for seamless AI agent integration.
 ---
 
-# Model Context Protocol Adapter <Beta />
+# Model Context Protocol Adapter
 
-The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-source standard that enables direct integration between large language model (LLM) applications and external data sources. Any CAP service can be turned into an MCP server, allowing AI agents and LLM-powered tools to interact with the service without additional implementation work. All that is required is annotating it with [ `@mcp`](#serving-mcp). From CAP perspective MCP is just another protocol which we serve similar to _OData_, _GraphQL_, _REST_, or _HCQL_.
-
+Simply annotate a CAP service with the [`@mcp`](#serving-mcp) annotation to expose it via [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). With that it becomes accessible to AI agents and LLM-powered tools without additional implementation work.
+{.abstract}
 
 > [!caution] SAP API Policy Applies!
-> The CAP MCP adapter, as documented herein, is designed exclusively to expose _custom_ CAP application services via MCP.
-> It is **not an SAP-endorsed architecture**, data service, or service-specific pathway for purposes of section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), and should not be relied upon as a basis for compliance with any exception described in that section.
-> In particular, it is not an endorsed pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ via MCP.
-> For SAP-endorsed architectures covering agentic access to SAP APIs, refer to the reference architectures published on the
-> **[SAP Architecture Center](https://architecture.learning.sap.com/docs/ref-arch/98efa0)**.
+> The CAP MCP adapter is intended only for exposing _custom_ CAP application services. It is **_NOT_**{.red} an SAP-endorsed architecture or pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ as referred to in the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), section 2.2.2. -> Read section [_SAP API Policy_](#sap-api-policy) below!
 
 
 [[toc]]
@@ -27,35 +23,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open-
 
 
 
-
-## Preliminaries
-
-Following are one-time preparatory setup tasks. Basically, you need to ensure that you have access to LLM(s) to use with your MCP clients in local test-drives.
-
-
-<div id="sap-internal"/>
-
-
-### Get Sample
-
-We use the [`@capire/bookshop`](https://github.com/capire/bookshop) as a running sample hereinafter. Clone it and open it in VSCode as follows:
-
-::: code-group
-```shell [Node.js]
-git clone https://github.com/capire/bookshop
-```
-```shell [Java]
-git clone https://github.com/SAP-samples/cloud-cap-samples-java bookshop
-```
-:::
-
-```shell
-code bookshop
-```
-
-
-
-## Adding MCP Plugins
+## Add the MCP Plugin
 
 
 ### In CAP Node.js Projects
@@ -67,30 +35,24 @@ npm add @cap-js/mcp
 ```
 ### In CAP Java Projects
 
-Add this to the *srv/pom.xml* file:
+Add the `cds-adapter-mcp` dependency to your `srv/pom.xml`:
 
 ::: code-group
 ```xml [srv/pom.xml]
-<dependencies>
-  <dependency>
-    <groupId>com.sap.cds</groupId>
-    <artifactId>cds-adapter-mcp</artifactId>
-    <version>${cds.services.version}</version>
-  </dependency>
-</dependencies>
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-adapter-mcp</artifactId>
+  <scope>runtime</scope>
+</dependency>
 ```
 :::
 
-> [!note] Not yet public
-> The feature is not yet released publicly.  Stay tuned.
->
-> <Internal /> Make sure internal artifactory is configured for Maven build as described in [*Java > Getting Started > Setting Up Local Development*](../../java/getting-started.md#local).
 
-## Serving MCP
+## Declare `@mcp` Services
 
 ### Annotate services with `@mcp`
 
-Simply add the `@mcp` annotation to an existing service to expose it via MCP.  For example, add the following to `srv/cat-service.cds`:
+Simply add the `@mcp` annotation to a service definition to expose it via MCP.  For example, add the following to `srv/cat-service.cds`:
 
 
 ::: code-group
@@ -101,22 +63,7 @@ annotate CatalogService with @mcp; // [!code focus]
 ```
 :::
 
-
-Start your server with `cds watch` or `mvn cds:watch` and note that the MCP server starts:
-
-::: code-group
-```shell [Node.js]
-[cds] - serving CatalogService {
-  at: [ ..., '/mcp/browse' ], # [!code ++]
-  ...
-}
-```
-```shell [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : MCP Server initialized at endpoint '/mcp/browse' for service 'CatalogService'
-```
-:::
-
-You can also specify an alternative path under which the MCP server should be served as follows:
+You can also specify an alternative path under which the MCP endpoint should be served as usual with CAP protocol annotations:
 
 ```cds
 annotate CatalogService with @mcp:'books'
@@ -154,7 +101,7 @@ using { AdminService } from './admin-service';
 
 ### Adding Context Information
 
-As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#tool-describe) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
+As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
 - [Doc comments](../../cds/cdl#doc-comments) -> most recommended (Node.js only)
 - `@title`
@@ -184,38 +131,12 @@ entity Authors {
 
 ## Test-drive Locally
 
-With the above setup, your CAP services are exposed via MCP.
-To consume them, you need an MCP client. For local testing, you can use tools like [Claude Code](https://code.claude.com/docs/en/overview) or [Opencode](https://opencode.ai/), which have built-in support for MCP and can be easily configured to connect to your local CAP server.
-
-### Using Claude Code
-
-1. Install [Claude Code](https://code.claude.com/docs/en/overview), for example via Homebrew:
-    ```shell
-    brew install claude-code
-    ```
-
-2. Optionally add [Claude Code for VSCode](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code):
-
-    ```shell
-    code --install-extension anthropic.claude-code
-    ```
-
-<div id="haiclaude" />
-
-### Using OpenCode
-
-1. Install [OpenCode](https://opencode.ai/), for example via npm:
-
-    ```shell
-    npm install -global opencode-ai
-    ```
-
-<div id="haiopencode" />
+As usual, and following the Calesi principles of "convention over configuration", you can run your CAP server locally and interact with it using the MCP protocol from common clients like OpenCode or Claude Code.
 
 
-### Run your CAP server
+### Run the CAP server
 
-With an MCP Client installed locally, (re-)run your CAP server in a terminal and keep it running to serve MCP requests.
+Run your CAP server locally as usual using `cds watch`.
 
 ::: code-group
 ```shell [Node.js]
@@ -226,118 +147,74 @@ mvn cds:watch
 ```
 :::
 
-> [!tip] Using Autowired CAP Services
-> Whenever you start your application, the MCP adapter automatically registers all MCP endpoints with local MCP clients, so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
-Learn more about that in section [*Autowired MCP Clients*](#autowired-mcp-clients) below.
 
+### Using OpenCode, or alike
 
-
-### Running Queries
-
-With one of the above clients, you can now run queries against your local MCP server.
-
-#### With Claude Code CLI:
+Assumed you have [Claude Code](https://code.claude.com/docs/en/overview) or [Opencode](https://opencode.ai/) installed, start either one in a secondary terminal, for example:
 
 ```shell
-claude "list books with authors and genres"
+opencode
 ```
-::: code-group
-```zsh [=> Output]
-⏺ cds:AdminService - query (MCP)(entity: "Books", select: ["ID","title","author.name","genre.name","stock","price"], limit: 20)
-  ⎿  {
-       "entity": "Books",
-       "count": 5,
-     … +43 lines (ctrl+o to expand)
 
-┌─────┬───────────────────┬───────────────────┬─────────┬───────┬────────┐
-│ ID  │       Title       │      Author       │  Genre  │ Stock │ Price  │
-├─────┼───────────────────┼───────────────────┼─────────┼───────┼────────┤
-│ 201 │ Wuthering Heights │ Emily Brontë      │ Drama   │ 12    │ 11.11  │
-├─────┼───────────────────┼───────────────────┼─────────┼───────┼────────┤
-│ 207 │ Jane Eyre         │ Charlotte Brontë  │ Drama   │ 11    │ 12.34  │
-├─────┼───────────────────┼───────────────────┼─────────┼───────┼────────┤
-│ 251 │ The Raven         │ Edgar Allan Poe   │ Mystery │ 333   │ 13.13  │
-├─────┼───────────────────┼───────────────────┼─────────┼───────┼────────┤
-│ 252 │ Eleonora          │ Edgar Allan Poe   │ Romance │ 555   │ 14.00  │
-├─────┼───────────────────┼───────────────────┼─────────┼───────┼────────┤
-│ 271 │ Catweazle         │ Richard Carpenter │ Fantasy │ 22    │ 150.00 │
-└─────┴───────────────────┴───────────────────┴─────────┴───────┴────────┘
+::: details Installing Claude Code or OpenCode ...
 
-5 books total across 4 genres (Drama, Mystery, Romance, Fantasy) and 4 authors.
-```
-:::
-
-Here's the same query ran in Claude Code for VSCode:
-
-![Claude Code interface displaying query results in VSCode editor with a table showing books data, a sidebar with available tools and prompts, and syntax highlighting indicating the integration of MCP tools with the code editor environment](../protocols/assets/mcp/claude-vscode.png){style="width:70%"}
-
-
-#### With Opencode CLI:
-
+Install [OpenCode](https://opencode.ai/), for example via npm:
 ```shell
-opencode run list books with authors and genres
+npm install -global opencode-ai
 ```
-::: code-group
-```zsh [=> Output]
-⚙ cds_AdminService_query {"entity":"Books","select":["ID","title","stock","price","author.name","genre.name"],"limit":20}
 
-Here are the books with their authors and genres:
-
-| ID  | Title             | Author            | Genre   | Stock | Price  |
-|-----|-------------------|-------------------|---------|-------|--------|
-| 201 | Wuthering Heights | Emily Brontë      | Drama   | 12    | 11.11  |
-| 207 | Jane Eyre         | Charlotte Brontë  | Drama   | 11    | 12.34  |
-| 251 | The Raven         | Edgar Allan Poe   | Mystery | 333   | 13.13  |
-| 252 | Eleonora          | Edgar Allan Poe   | Romance | 555   | 14.00  |
-| 271 | Catweazle         | Richard Carpenter | Fantasy | 22    | 150.00 |
-
-5 books total. Edgar Allan Poe has two entries, and Drama is the most common genre.
+Install [Claude Code](https://code.claude.com/docs/en/overview), for example via Homebrew:
+```shell
+brew install claude-code
 ```
+
+Install [Claude Code for VSCode](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code):
+```shell
+code --install-extension anthropic.claude-code
+```
+
 :::
+
+
+![OpenCode started initially](assets/opencode-start-screen.png){.ignore-dark}
+
+
+
+Go ahead and interact with your CAP services using natural language and conversational style via OpenCode, entering prompts like these:
+
+```sh
+list books
+```
+```sh
+order wuthering heights
+```
+
+And answer the questions that OpenCode asks you back.
+
+![List books and ordering books via OpenCode](assets/opencode-list-and-order-books.png){.ignore-dark}
+
 
 
 You can also run `opencode web` to open the OpenCode web interface, which provides a more user-friendly way to interact with your MCP servers, including features like tool inspection and query building. Here's a screenshot of a simple session:
 
 ![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](../protocols/assets/mcp/opencode-web.png){style="width:70%"}
 
-### Inspect Log Output
-
-When you run queries, you can inspect the log output of your CAP server to see the incoming MCP requests and how they are processed. This can be helpful for debugging and understanding the interaction between the MCP client and your CAP services.
-
-For example, for the above query, you should see log output similar to this:
-
-::: code-group
-```js [Node.js]
-[mcp] - query {
-  service: 'AdminService',
-  entity: 'Books',
-  select: [
-    { ref: [ 'ID' ] },
-    { ref: [ 'title' ] },
-    { ref: [ 'stock' ] },
-    { ref: [ 'price' ] },
-    { ref: [ 'author', 'name' ] },
-    { ref: [ 'genre', 'name' ] }
-  ]
-}
-```
-```js [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
-```
-:::
-
-
-## Under the Hood
 
 ### Autowired MCP Clients
 
-Whenever you start your application, the MCP adapter automatically registers all MCP servers with local MCP clients – currently supported for [Claude Code](https://code.claude.com/docs) and [Opencode](https://opencode.ai/) - so you can just go ahead and run queries from your MCP client without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
+When we initially started OpenCode above, it indicated in the bottom line of the interface that there's (at least) one MCP server connected.
 
-> [!tip] MCP servers
-> Note the distinction between the CAP server that listens on a certain port, and MCP servers which are just endpoints provided and served by the CAP server. We use the term "MCP server" despite this, to align with MCP terminology.
+![OpenCode status line showing connected MCP servers](assets/opencode-status-line.png){.ignore-dark}
 
-During startup, information about the MCP server endpoints is added to the client-specific configuration files like that:
+Enter `/status` in the OpenCode interface to see details, which should display the status of the connected MCP servers like this:
 
+![OpenCode listing connected MCP servers](assets/opencode-status.png){.ignore-dark}
+
+> [!tip] Autowired during development
+> Whenever you start your CAP application with `cds watch`, all served MCP endpoints are automatically registered with local MCP clients like [Claude Code](https://code.claude.com/docs) and [OpenCode](https://opencode.ai/), so you can just go ahead and run queries from them without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
+
+
+::: details Click to expand the client-specific configuration files
 ::: code-group
 ```json [~/.claude.json]
 {
@@ -384,62 +261,43 @@ During startup, information about the MCP server endpoints is added to the clien
 ```
 :::
 
-When the application stops, the added configuration is removed. This is only intended for local development.
 
-> [!warning] For Development Only
-> The autowiring is only enabled during development (that is, when running `cds watch` or `mvn cds:watch`) and not meant for production use cases.
 
-#### Mock Authentication
 
-Note that the automatic client configuration adds `Authorization` headers for the mock user `alice` (Node.js) or `privileged` (Java). If your service requires something different, you can customize the credentials via the `cds.mcp.autowire` configuration:
+### Inspect Log Output
 
-```json [package.json]
-{
-  "cds": {
-    "mcp": {
-      "autowire": {
-        "user": "admin",
-        "password": "admin"
-      }
-    }
-  }
+When you run queries, you can inspect the log output of your CAP server to see the incoming MCP requests and how they are processed. This can be helpful for debugging and understanding the interaction between the MCP client and your CAP services.
+
+For example, for the above query, you should see log output similar to this:
+
+::: code-group
+```js [Node.js]
+[mcp] - query {
+  service: 'CatalogService',
+  cql: 'SELECT ID, title, author, genre, stock, price FROM ListOfBooks'
 }
 ```
-
-
-#### Opting out of Autowiring
-
-You can opt out of this by setting the `cds.mcp.autowire` option to `false`, like so in your `package.json`:
-
-```json [package.json]
-{
-  "cds": {
-    "mcp": {
-      "autowire": false
-    }
-  }
-}
+```js [Java]
+INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
 ```
-
-Manually add the MCP server config to your client, for example with Claude Code CLI:
-
-```shell
-claude mcp add --transport http CatalogService http://localhost:4004/mcp/browse
-```
+:::
 
 
-### MCP served out of the box
+## Served out of the box
 
-The adapter creates an MCP server per CAP service, hence each CAP application can expose multiple MCP servers. By default, the adapter creates the following tools for each MCP server, which can be used by LLMs and AI agents to interact with the service.
+The adapter creates an MCP server per CAP service, hence each CAP application can expose multiple MCP servers. By default, the adapter creates three generic tools, [`describe`](#-describe-service), [`query`](#-query-entity), and [`call`](#-call-action), for each MCP server, which can be used by LLMs and AI agents to interact with the service.
+
+the following tools for each MCP server, which can be used by LLMs and AI agents to interact with the service.
 
 > [!warning]
 > Tools are meant to be used by LLMs and AI agents and do not constitute a stable API.
 > They may change in the future based on the needs of LLMs and AI agents. For stable APIs, please use the existing CAP protocols like OData, REST, GraphQL, etc.
 
-#### Tool: `describe` service
+### • `describe` service {.tool}
+
 This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
-#### Tool: `query` entity
+### • `query` entity {.tool}
 This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
 
 Parameters of `query` requests:
@@ -456,7 +314,7 @@ Parameters of `query` requests:
 | orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
 
 
-#### Tool: `call` action
+### • `call` action {.tool}
 
 This tool is used to call unbound actions or functions. The required parameter `action` is an enum that lists all unbound actions and functions exposed by the service. The parameters of the action or function to call can be provided via the optional parameter `parameters`, that must contain all required parameters of the action or function. The tool takes these parameters and calls the action or function on the service.
 
@@ -479,12 +337,172 @@ The inspector should automatically open in your browser.
 7. Scroll down and select _Run Tool_.
 
 
+## The XTravels Sample
+
+The XTravels sample provides a more comprehensive example of how to work with several MCP services. It comprises the following CAP services:
+
+- `EventsService`: to browse and book business or leisure events.
+- `HotelsService`: to browse and book hotel accommodations.
+- `FlightsService`: to browse airports, airlines and flights.
+- `TravelsAgentService`: an MCP service for managing travel agent interactions.
+
+### Workspace Setup
+
+To set up the workspace for the XTravels sample, follow these steps:
+
+1. Create a workspace root directory, e.g. `cap/samples`:
+
+```shell
+mkdir -p cap/samples
+cd cap/samples
+echo '{"workspaces":["*","*/apis/*"]}' > package.json
+```
+
+2. Clone the individual sample repositories:
+
+```shell
+git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xflights
+git clone https://github.com/capire/common
+git clone https://github.com/capire/s4
+```
+
+3. Install the necessary dependencies:
+
+```shell
+npm install
+```
+
+This will install all the dependencies for the cloned sample repositories linked locally within the npm workspace.
+
+
+### Run all-in-one
+
+```shell
+cds watch xtravels
+```
+
+
+### Use in OpenCode
+
+```shell
+opencode
+```
+
+Enter a prompt, such as:
+
+```
+Plan a trip to sapphire 27 for Anne Pratt flying from Frankfurt
+```
+
+You should see something like this:
+
+![OpenCode displays a proposed trip plan.](assets/mcp-opencode1.png){.ignore-dark}
+![OpenCode displays the booked travel.](assets/mcp-opencode2.png){.ignore-dark}
+
+
+### Run as separate services
+
+If you like you can also start the individual services separately in different terminals as shown below – no code or config changes required for that, and also no change to the usage in AI chat clients.
+
+Run each of the lines below in a separate terminal:
+
+```shell
+cds w xtravels/srv/events
+cds w xtravels/srv/hotels
+cds w s4
+cds w xflights
+cds w xtravels
+opencode
+```
+
+![The services running in separate terminals](assets/mcp-run-separately.png){.ignore-dark}
+
+## Configuration
+
+### Tool Name Prefixes
+
+Some MCP clients or harnesses require unique tool names across all MCP servers. You can use the option <Config>cds.mcp.prefix</Config> to specify a prefix for the tool names. For example:
+
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  mcp:
+    prefix: {service.name}-
+```
+```json [package.json]
+{
+  "cds": {
+    "mcp": {
+      "prefix": "{service.name}-"
+    }
+  }
+}
+```
+:::
+
+With this, the tool names generated by the MCP clients will be prefixed with the specified value, with the placeholder `{service.name}` being replaced by the actual service's fully qualified name – e.g., `CatalogService-describe`.
+
+
+### Opting out of Autowiring
+
+You can opt out of [autowired MCP clients](#autowired-mcp-clients) in development by setting the `cds.mcp.autowire` option to `false`, like so in your `package.json`:
+
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  mcp:
+    autowire: false
+```
+```json [package.json]
+{
+  "cds": {
+    "mcp": {
+      "autowire": false
+    }
+  }
+}
+```
+:::
+
+
+### Mock Authentication
+
+[Autowired MCP clients](#autowired-mcp-clients) automatically add `Authorization` headers for the mock user `alice` (Node.js) or `privileged` (Java). If your service requires something different, you can customize the credentials via the `cds.mcp.autowire` configuration:
+
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  mcp:
+    autowire:
+      user: admin
+      password: admin
+```
+```json [package.json]
+{
+  "cds": {
+    "mcp": {
+      "autowire": {
+        "user": "admin",
+        "password": "admin"
+      }
+    }
+  }
+}
+```
+:::
+
 ## Current Limitations
+
+### Authorization with XSUAA
+
+> [!important]
+> We are currently working on providing out-of-the-box support for authorization with XSUAA, with PKCE, but it is not fully implemented yet.
 
 
 ### Query and Actions Only
 
-The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
+The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query-entity) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
 
 For example, action `submitOrder` in the `CatalogService` ultimately creates an Order:
 
@@ -507,7 +525,8 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 > The MCP adapter does not perform any input validation or output validation to prevent prompt injection attacks.
 > Agents can potentially be manipulated by data returned from the service to execute unintended actions. For any deployment ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
 
-### Missing Governance Controls
+
+## SAP API Policy
 
 > [!caution]
 > The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
