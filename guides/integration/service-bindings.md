@@ -161,14 +161,11 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 |---|---|---|
 | `timeout` | `'10s'` | Timeout for BTP Destination Service and token requests |
 
-```jsonc
-// package.json
-{
-  "cds": {
-    "remote": {
-      "native_fetch": true,
-      "timeout": "30s"
-    }
+```json
+"cds": {
+  "remote": {
+    "native_fetch": true,
+    "timeout": "30s"
   }
 }
 ```
@@ -182,11 +179,20 @@ Only destinations with proxy type `Internet` are fully supported. On-premise des
 When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolve BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
 
 ```jsonc
-"[production]": {
-  "credentials": { ... },
-  "destinationOptions": {
-    "selectionStrategy": "alwaysSubscriber",
-    "useCache": true
+"cds": {
+  "requires": {
+    "API_BUSINESS_PARTNER": {
+      /* ... */
+      "[production]": {
+        "credentials": {
+          /* ... */
+        },
+        "destinationOptions": {
+          "selectionStrategy": "alwaysSubscriber",
+          "useCache": true
+        }
+      }
+    }
   }
 }
 ```
@@ -197,17 +203,24 @@ When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolv
 
 If you don't want to use the BTP Destination Service, you can define the URL and authentication details directly in your CAP configuration:
 
-```jsonc
+```json
 "cds": {
   "requires": {
     "REVIEWS": {
       "kind": "odata",
+      "model": "srv/external/REVIEWS",
       "[production]": {
         "credentials": {
           "url": "https://reviews.ondemand.com/reviews",
           "authentication": "BasicAuthentication",
-          "username": "<set from env>",
-          "password": "<set from env>"
+          "username": "<set from code or env>",
+          "password": "<set from code or env>",
+          "headers": {
+            "my-header": "header value"
+          },
+          "queries": {
+            "my-url-param": "url param value"
+          }
         }
       }
     }
