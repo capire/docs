@@ -215,12 +215,6 @@ Add initial database configuration using the command:
 cds add hana
 ```
 
-Delete the generated _db_ folder as we don't need it on the root level:
-
-```shell
-rm -r db
-```
-
 Update the `db-deployer` path to use our `shared-db` project [created previously](#using-a-shared-database):
 
 ::: code-group
