@@ -30,9 +30,9 @@ The `cds.RemoteService` configuration allows you to define various options for c
 
 ### HTTP Client {#http-client}
 
-CAP supports two HTTP clients for outgoing remote service calls.
+CAP supports two HTTP clients for outgoing remote service calls: [SAP Cloud SDK](#sap-cloud-sdk) and CAP's built-in [native fetch client](#native-fetch).
 
-#### SAP Cloud SDK
+#### SAP Cloud SDK {#sap-cloud-sdk}
 
 By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all BTP Destination service features including on-premise connectivity.
 
