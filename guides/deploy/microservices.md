@@ -736,25 +736,6 @@ cds add approuter
 
 The App Router serves the UIs and acts as a proxy for requests toward the different apps.
 
-Since the App Router folder is only necessary for deployment, we move it into a `.deploy` folder.
-
-```shell
-mkdir .deploy
-mv app/router .deploy/app-router
-```
-
-::: code-group
-```yaml [mta.yaml]
-modules:
-  ...
-  - name: samples
-    type: approuter.nodejs
-    path: app/router # [!code --]
-    path: .deploy/app-router # [!code ++]
-  ...
-```
-:::
-
 #### Static Content
 
 The App Router can serve static content. Since our UIs are located in different NPM workspaces, we create symbolic links to them as an easy way to deploy them as part of the App Router.
