@@ -19,12 +19,8 @@ hero:
       link: /get-started/
       theme: alt
 
-    - text: Develop
+    - text: Guides
       link: /guides/
-      theme: alt
-
-    - text: Deploy
-      link: /guides/deploy/
       theme: alt
 
     - text: What's New?

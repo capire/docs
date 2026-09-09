@@ -207,7 +207,7 @@ To consume them, you need an MCP client. For local testing, you can use tools li
 1. Install [OpenCode](https://opencode.ai/), for example via npm:
 
     ```shell
-    npm i -g opencode-ai
+    npm install -global opencode-ai
     ```
 
 <div id="haiopencode" />
@@ -269,7 +269,7 @@ claude "list books with authors and genres"
 
 Here's the same query ran in Claude Code for VSCode:
 
-![Claude Code interface displaying query results in VSCode editor with a table showing books data, a sidebar with available tools and prompts, and syntax highlighting indicating the integration of MCP tools with the code editor environment](./assets/mcp/claude-vscode.png){style="width:70%"}
+![Claude Code interface displaying query results in VSCode editor with a table showing books data, a sidebar with available tools and prompts, and syntax highlighting indicating the integration of MCP tools with the code editor environment](../protocols/assets/mcp/claude-vscode.png){style="width:70%"}
 
 
 #### With Opencode CLI:
@@ -298,7 +298,7 @@ Here are the books with their authors and genres:
 
 You can also run `opencode web` to open the OpenCode web interface, which provides a more user-friendly way to interact with your MCP servers, including features like tool inspection and query building. Here's a screenshot of a simple session:
 
-![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](./assets/mcp/opencode-web.png){style="width:70%"}
+![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](../protocols/assets/mcp/opencode-web.png){style="width:70%"}
 
 ### Inspect Log Output
 
@@ -436,10 +436,10 @@ The adapter creates an MCP server per CAP service, hence each CAP application ca
 > Tools are meant to be used by LLMs and AI agents and do not constitute a stable API.
 > They may change in the future based on the needs of LLMs and AI agents. For stable APIs, please use the existing CAP protocols like OData, REST, GraphQL, etc.
 
-#### Tool: `describe`
+#### Tool: `describe` service
 This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
-#### Tool: `query`
+#### Tool: `query` entity
 This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
 
 Parameters of `query` requests:
@@ -456,7 +456,7 @@ Parameters of `query` requests:
 | orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
 
 
-#### Tool: `call_action`
+#### Tool: `call` action
 
 This tool is used to call unbound actions or functions. The required parameter `action` is an enum that lists all unbound actions and functions exposed by the service. The parameters of the action or function to call can be provided via the optional parameter `parameters`, that must contain all required parameters of the action or function. The tool takes these parameters and calls the action or function on the service.
 

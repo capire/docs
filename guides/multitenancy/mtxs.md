@@ -1592,6 +1592,8 @@ The response is similar to the following:
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
 
+<span id="jobworkers" />
+
 <span id="sms-provisioning-service" />
 
 ## About technical Tenant `t0`

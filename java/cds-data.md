@@ -328,9 +328,9 @@ On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1
 
 Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
 
-## Vector Embeddings { #vector-embeddings }
+## Vector Embeddings
 
-In CDS [vector embeddings](../guides/databases/vector-embeddings) are stored in elements of type `Vector`:
+In CDS [vector embeddings](../guides/ai/embeddings) are stored in elements of type `Vector`:
 
 CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
 

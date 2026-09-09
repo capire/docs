@@ -7,7 +7,7 @@ description: >
 
 This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite).
 
-CAP Java 3 is tested on [PostgreSQL](https://www.postgresql.org/) 16 and most CAP features are supported on PostgreSQL.
+CAP Java is tested on the latest [PostgreSQL](https://www.postgresql.org/) `15.x` version and most CAP features are supported.
 
 
 *Learn about migrating from the former `cds-pg` in the [Migration](#migration-from-cds-pg-in-nodejs) chapter.*{.learn-more}
