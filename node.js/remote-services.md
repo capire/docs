@@ -28,7 +28,6 @@ The `cds.RemoteService` configuration allows you to define various options for c
 <!--- % assign tx = '<span style="color:grey">srv</span>' %} -->
 
 
-
 ### HTTP Client {#http-client}
 
 CAP supports two HTTP clients for outgoing remote service calls.
