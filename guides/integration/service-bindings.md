@@ -143,7 +143,7 @@ cds add destination
 
 #### Native Fetch Client <Beta /> {#native-fetch-destinations}
 
-When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK.
+When the [native fetch client](../../node.js/remote-services#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK.
 
 **Supported authentication types:**
 
