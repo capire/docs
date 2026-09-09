@@ -35,7 +35,7 @@ CAP supports two HTTP clients for outgoing remote service calls.
 
 #### SAP Cloud SDK
 
-By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all BTP Destination Service features including on-premise connectivity.
+By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all BTP Destination service features including on-premise connectivity.
 
 [Learn more about SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
@@ -54,7 +54,7 @@ CAP selects the native fetch client for each outgoing request according to the f
 The native fetch client supports only proxy type `Internet` and authentication types `NoAuthentication`, `BasicAuthentication`, and `OAuth2ClientCredentials`. Other authentication types are resolved on a best-effort basis via the native destination client.
 :::
 
-[Learn more about BTP Destination Service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
+[Learn more about BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
 
 ### CSRF-Token Handling
 

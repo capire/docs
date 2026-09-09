@@ -116,7 +116,7 @@ You can use [SAP BTP Destination Service](#btp-destination-service) destinations
 
 ### BTP Destination Service {#btp-destination-service}
 
-CAP supports resolving named destinations from the SAP BTP Destination Service. Configure the destination name in the `credentials` block of the required service:
+CAP supports resolving named destinations from the SAP BTP Destination service. Configure the destination name in the `credentials` block of the required service:
 
 ```json
 "cds": {
@@ -159,7 +159,7 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 
 | Property | Default | Description |
 |---|---|---|
-| `timeout` | `'10s'` | Timeout for BTP Destination Service and token requests |
+| `timeout` | `'10s'` | Timeout for BTP Destination service and token requests |
 
 ```json
 "cds": {
@@ -201,7 +201,7 @@ When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolv
 
 ### Application-Defined Destinations {#application-defined-destinations}
 
-If you don't want to use the BTP Destination Service, you can define the URL and authentication details directly in your CAP configuration:
+If you don't want to use the BTP Destination service, you can define the URL and authentication details directly in your CAP configuration:
 
 ```json
 "cds": {
