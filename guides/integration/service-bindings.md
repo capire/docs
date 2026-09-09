@@ -153,8 +153,6 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 | `BasicAuthentication` | ✓ |
 | `OAuth2ClientCredentials` | ✓ |
 
-**Caching:** Destination and token responses are cached with TTL derived from the token's `expiresIn` value. Concurrent requests for the same destination are deduplicated automatically.
-
 **Configuration** (`cds.remote`):
 
 | Property | Default | Description |
