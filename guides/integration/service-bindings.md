@@ -153,7 +153,7 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 | `BasicAuthentication` | ✓ |
 | `OAuth2ClientCredentials` | ✓ |
 
-**Configuration** (`cds.remote`):
+**Configuration:**
 
 | Property | Default | Description |
 |---|---|---|
