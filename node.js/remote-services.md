@@ -44,7 +44,7 @@ CAP provides a built-in remote client that uses the native Node.js `fetch` API, 
 During local development, you don't need SAP Cloud SDK.
 For production, SAP Cloud SDK is only required if you use authentication types or proxy configurations not yet supported by the native client (see warning below).
 
-CAP selects the native fetch client for each outgoing request according to the following rules:
+CAP selects the client as follows:
 
 1. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
 2. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
