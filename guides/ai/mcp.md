@@ -131,6 +131,9 @@ entity Authors {
 
 ## Test-drive Locally
 
+As usual, and following the Calesi principles of "convention over configuration", you can run your CAP server locally and interact with it using the MCP protocol from common clients like OpenCode or Claude Code.
+
+
 ### Run the CAP server
 
 Run your CAP server locally as usual using `cds watch`.
