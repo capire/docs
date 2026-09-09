@@ -714,7 +714,7 @@ To access remote OData services, add a dependency to the *cds-feature-remote-oda
 			<groupId>com.sap.cds</groupId>
 			<artifactId>cds-feature-remote-odata</artifactId>
 			<scope>runtime</scope>
-			<version>4.0.2</version>
+			<version>5.1.1</version>
 		</dependency>
 
 		<dependency>
