@@ -121,7 +121,7 @@ The `requestTimeout` setting in the `cds.RemoteService` configuration specifies 
 ```
 
 ::: tip
-See [Using Destinations](../guides/services/consuming-services#using-destinations) for more details on destination configuration.
+See [BTP Destination Service](../guides/integration/service-bindings#btp-destination-service) for more details on destination configuration.
 :::
 
 ##  <i>  More to Come </i>

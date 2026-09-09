@@ -152,7 +152,6 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 | `NoAuthentication` | ✓ |
 | `BasicAuthentication` | ✓ |
 | `OAuth2ClientCredentials` | ✓ |
-| Others | Best-effort via native client |
 
 **Caching:** Destination and token responses are cached with TTL derived from the token's `expiresIn` value. Concurrent requests for the same destination are deduplicated automatically.
 
@@ -160,9 +159,7 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
 
 | Property | Default | Description |
 |---|---|---|
-| `cache_size` | `0` (disabled) | Max number of cached destination/token entries (LRU) |
-| `cache_expiry_buffer` | `'5min'` | Time subtracted from token TTL before cache expiry |
-| `timeout` | `'10s'` | Timeout for destination service HTTP requests |
+| `timeout` | `'10s'` | Timeout for BTP Destination Service and token requests |
 
 ```jsonc
 // package.json
@@ -170,8 +167,7 @@ When the [native fetch client](../../guides/deploy/to-cf#native-fetch) is active
   "cds": {
     "remote": {
       "native_fetch": true,
-      "cache_size": 500,
-      "cache_expiry_buffer": "2min"
+      "timeout": "30s"
     }
   }
 }
