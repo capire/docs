@@ -684,6 +684,8 @@ cds:
     ReviewsService: # [!code ++]
       name: ReviewsService # [!code ++]
       type: "odata-v4" # [!code ++]
+      http: # [!code ++]
+        suffix: "/odata/v4" # [!code ++]
       destination: # [!code ++]
         name: "reviews-dest" # [!code ++]
 ```
