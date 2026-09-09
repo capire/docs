@@ -147,12 +147,11 @@ mvn cds:watch
 
 ### Using OpenCode, or alike
 
-Assumed you have [Claude Code](https://code.claude.com/docs/en/overview) or [Opencode](https://opencode.ai/) installed, start them in a secondary terminal:
+Assumed you have [Claude Code](https://code.claude.com/docs/en/overview) or [Opencode](https://opencode.ai/) installed, start either one in a secondary terminal, for example:
 
 ```shell
 opencode
 ```
-
 
 ::: details Installing Claude Code or OpenCode ...
 
@@ -172,6 +171,9 @@ code --install-extension anthropic.claude-code
 ```
 
 :::
+
+
+![OpenCode started initially](assets/opencode-start-screen.png){.ignore-dark}
 
 
 
@@ -199,7 +201,7 @@ You can also run `opencode web` to open the OpenCode web interface, which provid
 
 When we initially started OpenCode above, it indicated in the bottom line of the interface that there's (at least) one MCP server connected.
 
-![OpenCode started initially](assets/opencode-start-screen.png){.ignore-dark}
+![OpenCode status line showing connected MCP servers](assets/opencode-status-line.png){.ignore-dark}
 
 Enter `/status` in the OpenCode interface to see details, which should display the status of the connected MCP servers like this:
 
