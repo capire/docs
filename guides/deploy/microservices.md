@@ -141,6 +141,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
    npm add --workspace shared-db @capire/bookstore
    npm add --workspace shared-db @capire/reviews
    npm add --workspace shared-db @capire/orders
+   npm install
    ```
 
    > Note how *NPM workspaces* allows us to use the package names of the projects, and nicely creates symlinks in *node_modules* accordingly.
