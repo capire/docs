@@ -156,7 +156,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 
    > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
-::: details The project Structure
+::: details The project structure
 
 ```txt
 <PROJECT-ROOT>/
@@ -242,7 +242,7 @@ build-parameters:
 
 The preceding steps only added configuration to the workspace root.
 
-Additionally [add database configuration](../databases/hana#setup-configuration) to each module that we want to deploy - bookstore, orders, and reviews:
+Additionally [add database configuration](../databases/hana#setup--configuration) to each module that we want to deploy - bookstore, orders, and reviews:
 
 ```shell
 npm i @cap-js/hana --workspace bookstore
