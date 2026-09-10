@@ -110,7 +110,7 @@ cds env requires -b
 
 ## Destinations
 
-Destinations contain the necessary information to connect to a remote system. They're basically an advanced URL, that can carry additional metadata like, for example, the authentication information.
+Destinations provide the connectivity details needed to reach a remote system, essentially a named URL enriched with metadata such as authentication configuration.
 
 You can use [SAP BTP Destination Service](#btp-destination-service) destinations or [application-defined destinations](#application-defined-destinations) inline in your CAP configuration.
 
