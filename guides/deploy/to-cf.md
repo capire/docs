@@ -133,7 +133,7 @@ The roles/scopes are derived from authorization-related annotations in your CDS 
 
 CAP supports two HTTP clients for remote service calls: [SAP Cloud SDK](../../node.js/remote-services#sap-cloud-sdk) and CAP's built-in [native fetch client](../../node.js/remote-services#native-fetch).
 
-If you need full BTP Destination service support including on-premise connectivity, add the SAP Cloud SDK packages:
+If you need full SAP BTP Destination service support including on-premise connectivity, add the SAP Cloud SDK packages:
 
 ```shell
 npm add @sap-cloud-sdk/connectivity
@@ -143,7 +143,7 @@ npm add @sap-cloud-sdk/resilience
 
 [Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
-Alternatively, CAP's built-in native fetch client supports BTP destinations without SAP Cloud SDK.
+Alternatively, CAP's built-in native fetch client supports SAP BTP destinations without SAP Cloud SDK.
 
 [Learn more about the native fetch client.](../../node.js/remote-services#native-fetch){.learn-more}
 

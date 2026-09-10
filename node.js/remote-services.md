@@ -34,7 +34,7 @@ CAP supports two HTTP clients for outgoing remote service calls: [SAP Cloud SDK]
 
 #### SAP Cloud SDK {#sap-cloud-sdk}
 
-By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all BTP Destination service features including on-premise connectivity.
+By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all SAP BTP Destination service features including on-premise connectivity.
 
 [Learn more about SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
@@ -53,7 +53,7 @@ CAP selects the client as follows:
 The native fetch client supports only proxy type `Internet` and authentication types `NoAuthentication`, `BasicAuthentication`, and `OAuth2ClientCredentials`. Other authentication types are resolved on a best-effort basis via the native destination client.
 :::
 
-[Learn more about BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
+[Learn more about SAP BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
 
 ### CSRF-Token Handling
 
@@ -120,7 +120,7 @@ The `requestTimeout` setting in the `cds.RemoteService` configuration specifies 
 ```
 
 ::: tip
-See [BTP Destination Service](../guides/integration/service-bindings#btp-destination-service) for more details on destination configuration.
+See [SAP BTP Destination Service](../guides/integration/service-bindings#btp-destination-service) for more details on destination configuration.
 :::
 
 ##  <i>  More to Come </i>

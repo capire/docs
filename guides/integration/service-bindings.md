@@ -114,7 +114,7 @@ Destinations provide the connectivity details needed to reach a remote system, e
 
 You can use [SAP BTP Destination Service](#btp-destination-service) destinations or [application-defined destinations](#application-defined-destinations) inline in your CAP configuration.
 
-### BTP Destination Service {#btp-destination-service}
+### SAP BTP Destination Service {#btp-destination-service}
 
 CAP supports resolving named destinations from the SAP BTP Destination service. Configure the destination name in the `credentials` block of the required service:
 
@@ -143,7 +143,7 @@ cds add destination
 
 #### Native Fetch Client <Beta /> {#native-fetch-destinations}
 
-When the [native fetch client](../../node.js/remote-services#native-fetch) is active, CAP resolves BTP destinations natively without SAP Cloud SDK.
+When the [native fetch client](../../node.js/remote-services#native-fetch) is active, CAP resolves SAP BTP destinations natively without SAP Cloud SDK.
 
 **Supported authentication types:**
 
@@ -157,7 +157,7 @@ When the [native fetch client](../../node.js/remote-services#native-fetch) is ac
 
 | Property | Default | Description |
 |---|---|---|
-| `timeout` | `'10s'` | Timeout for BTP Destination service and token requests |
+| `timeout` | `'10s'` | Timeout for SAP BTP Destination service and token requests |
 
 ```json
 "cds": {
@@ -174,7 +174,7 @@ Only destinations with proxy type `Internet` are fully supported. On-premise des
 
 #### SAP Cloud SDK
 
-When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolve BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
+When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolve SAP BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
 
 ```jsonc
 "cds": {
