@@ -273,7 +273,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
     provides: # [!code focus]
       - name: bookstore-api # [!code focus]
         properties:
@@ -291,7 +291,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
     provides: # [!code focus]
       - name: orders-api # [!code focus]
         properties:
@@ -309,7 +309,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
     provides: # [!code focus]
       - name: reviews-api # [!code focus]
         properties:
