@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  How to add custom event handlers and service implementations for logic that goes beyond CAP's generic runtime capabilities.
 ---
 
 
@@ -7,7 +8,7 @@ status: released
 
 As most use cases are covered by [generic runtimes](served-ootb), the need for custom coding is greatly reduced. Nevertheless, there are still numerous cases where custom code is required. And the CAP runtimes provide a flexible and powerful event handler mechanism for you to add custom code at any point during request processing. {.abstract}
 
-> [!tip] Always prefer declarative techniques 
+> [!tip] Always prefer declarative techniques
 > Consider first whether your custom logic can be addressed using declarative techniques, like [status flows](./status-flows) or [declarative constraints](./constraints), before resorting over to programmatic and hence imperative options.
 
 [[toc]]

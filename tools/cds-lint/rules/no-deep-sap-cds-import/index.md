@@ -1,6 +1,3 @@
----
-status: released
----
 
 <script setup>
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
@@ -23,7 +20,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 The following example imports `@sap/cds`:
 
 ::: code-group
-<<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< correct/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="no-deep-sap-cds-import"
@@ -36,7 +33,7 @@ The following example imports `@sap/cds`:
 This example incorrectly performs a deep import of a file within `@sap/cds`:
 
 ::: code-group
-<<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< incorrect/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="no-deep-sap-cds-import"

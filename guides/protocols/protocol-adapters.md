@@ -1,3 +1,8 @@
+---
+description: >
+  Overview of CAP's built-in protocol adapters (OData, OpenAPI, AsyncAPI, CDS APIs) and how to create custom ones.
+---
+
 # Protocol Adapters
 
 CAP supports various protocols to expose and consume services. These protocols are implemented via protocol adapters that translate between the CAP programming model and the respective protocol.
@@ -30,4 +35,4 @@ In this example, the `cds.serve()` method is used to expose the `my-service` ser
 - [OData](./odata.md)
 - [OpenAPI](./openapi.md)
 - [AsyncAPI](./asyncapi.md)
-- [MCP](mcp.md) <Alpha /> <Internal /> <!-- INTERNAL -->
+- [MCP Adapter](../ai/mcp.md) <Alpha /> <Internal /> <!-- INTERNAL -->

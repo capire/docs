@@ -1,14 +1,15 @@
 ---
-synopsis: >
+description: >
   API reference documentation for MTX Services.
 search: false
+sitemap: false
 ---
 
 
 
 # Old MTX Reference
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 All APIs receive and respond with JSON payloads. Application-specific logic (for example, scope checks) can be added using [Event Handlers](#event-handlers-for-cds-mtx-apis).
 
@@ -366,7 +367,7 @@ Returns information about a tenant's HDI container.
 > ---
 
 `cds-mtx` APIs are implemented as CDS services. Therefore, service implementations can be overridden using [CDS event handlers](../../node.js/core-services#srv-on-before-after).
-For `cds-mtx` APIs, custom handlers have to be registered on the `mtx` event in a [custom `server.js`](../../node.js/cds-serve#custom-server-js):
+For `cds-mtx` APIs, custom handlers have to be registered on the `mtx` event in a [custom `server.js`](../../node.js/cds-server#custom-server-js):
 
 ```js
 const cds = require('@sap/cds')

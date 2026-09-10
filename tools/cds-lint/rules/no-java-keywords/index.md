@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ The CAP Java code generation bases its class and method names on CDS entities. I
 In the following example, use of the reserved Java keyword as identifiers is fixed via the `@cds.java.name` annotation, so the rule doesn't raise any warnings:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-java-keywords"
@@ -38,7 +34,7 @@ In the following example, use of the reserved Java keyword as identifiers is fix
 This example shows the reserved SQL keyword `new` used as an element name, so the rule will raise a warning:
 
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-java-keywords"

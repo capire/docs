@@ -1,6 +1,8 @@
 ---
-status: released
+description: >
+  An index of Cookbook guides covering the most prominent tasks in CAP application development, from domain modeling to deployment.
 ---
+
 # The CAP Cookbook
 Recipes for CAP Development { .subtitle}
 
@@ -26,6 +28,9 @@ The following figure illustrates a walkthrough of the most prominent tasks durin
 
 [ Integration ](integration/index.md)
    : The guides in this section covers the various CAP-level service integration and data federation patterns, as well as platform capabilities available to your CAP projects.
+
+[  Native AI  ](ai/index.md)
+   : Guides the integration of native AI capabilities within CAP applications, including the use of MCP services and CAP-level Agents.
 
 [  Events & Messaging ](events/index.md)
    : CAP provides intrinsic support for emitting and receiving events. This is complemented by Messaging Services connecting to message brokers to exchange event messages across remote services.

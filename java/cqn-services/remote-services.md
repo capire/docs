@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Remote Services are CQN-based clients to remote APIs that a CAP application consumes. This section describes how to configure and use these services.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -11,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 The CAP Java SDK supports _Remote Services_ for OData V2 and V4 APIs out of the box.
 The CQN query APIs enable [late-cut microservices](../../get-started/features#late-cut-microservices) with simplified mocking capabilities. Regarding multitenant applications, these APIs keep you extensible, even towards remote APIs. In addition, they free developers from having to map CQN to OData themselves.
@@ -212,6 +212,39 @@ Create a destination configuration with the following parameters:
 At runtime, this destination configuration will use the bound `identity` service instance's credentials to request a token for the _remote API_.
 
 [Learn more about consuming APIs from other IAS-Applications in the **SAP Cloud Identity Services documentation**.](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/consume-apis-from-other-applications){.learn-more}
+
+##### Configuring the Authentication Strategy
+
+By default, when calling a remote IAS-based API through a destination, CAP propagates the user identity associated with the current `RequestContext` (`currentUser`). If the `RequestContext` contains a named user, CAP propagates the named user. If not, CAP requests a technical user token.
+
+For background processing or technical integrations, you may want to force the remote API call to use a technical user. Use the `destination.onBehalfOf` configuration to control this behavior:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml]
+cds:
+  remote.services:
+    RemoteIasService:
+      destination:
+        name: my-ias-destination
+        onBehalfOf: systemUser
+```
+:::
+
+The following options are available:
+
+| Value | Description |
+|-------|-------------|
+| `currentUser` | Propagates the named user if available, or falls back to a tenant-specific technical user. **(default)** |
+| `systemUser` | Uses a tenant-specific technical user, based on the tenant set in the current Request Context. |
+| `systemUserProvider` | Uses a technical user of the provider tenant. Useful for internal communication that does not require tenant-specific authorization. |
+
+::: tip Behaves similar to binding-based configuration
+This behaves identically to the [`onBehalfOf` option in binding-based configurations](#configuring-the-authentication-strategy). Use it when your IAS app-2-app communication is configured via a BTP destination with `cloudsdk.ias-dependency-name` rather than a direct service binding.
+:::
+
+::: warning Only applicable to IAS app-2-app destinations
+The `onBehalfOf` option applies only to IAS app-2-app destinations (destinations with the `cloudsdk.ias-dependency-name` property set). It has no effect on other destination types.
+:::
 
 #### Retrieve Destinations
 
@@ -495,7 +528,7 @@ Destination destination = DestinationAccessor.getDestination("<destinationName>"
 HttpClient httpClient = HttpClientAccessor.getHttpClient(destination);
 ...
 ```
-::::
+:::
 
 ### Programmatic Destinations { #programmatic-destinations }
 

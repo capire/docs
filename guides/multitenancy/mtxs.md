@@ -1,14 +1,11 @@
 ---
-
-label: MTX Reference
-synopsis: >
+description: >
   API reference for multitenancy and extensibility.
-status: released
 ---
 
 # MTX Services Reference
 
-{{$frontmatter?.synopsis}}
+{{$frontmatter?.description}}
 
 <style scoped lang="scss">
   h3 code + em { color: #666; font-weight: normal; }
@@ -171,14 +168,13 @@ An MTX sidecar is a standard, yet minimal Node.js CAP project. By default it's a
 {
   "name": "bookshop-mtx", "version": "0.0.0",
   "dependencies": {
-    "@sap/cds": "^9",
-    "@cap-js/hana": "^2",
-    "@sap/cds-mtxs": "^3",
+    "@sap/cds": "^10",
+    "@cap-js/hana": "^3",
+    "@sap/cds-mtxs": "^4",
     "@sap/xssec": "^4",
-    "express": "^4"
   },
   "devDependencies": {
-    "@cap-js/sqlite": "^2"
+    "@cap-js/sqlite": "^3"
   },
   "scripts": {
     "start": "cds-serve"
@@ -607,6 +603,31 @@ cds.on('served', ()=>{
 For CLI usage via `cds subscribe|upgrade|unsubscribe` you can create a `mtx/sidecar/cli.js` file, which works analogously to a `server.js`.
 :::
 
+#### Example handler for SaasProvisioningService
+
+A common usecase is the specification of an individual database ID per subscription.
+```js
+cds.on('served', async () => {
+  const {
+    'cds.xt.SaasProvisioningService': provisioning,
+  } = cds.services
+
+  await provisioning.prepend(() => {
+    provisioning.on('UPDATE', 'tenant', async (req, next) => {
+      req.data = cds.utils.merge(req?.data, {
+        _: {
+          hdi: {
+            create: {
+              database_id: '<database_id>',
+            }
+          }
+        }
+      })
+      return next()
+    })
+  })
+})
+```
 ## Consumption
 
 ### Via Programmatic APIs
@@ -1284,6 +1305,11 @@ The _SaasProvisioningService_ is a façade for the _DeploymentService_ to adapt 
   - `clusterSize` — max number of database clusters, running `workerSize` jobs each
   - `queueSize` — max number of jobs waiting to run in the job queue
 
+:::warning clusterSize configuration is not available with HANA TMS v2
+When using [HANA TMS v2](../multitenancy/index.md#sap-hana-tms-v2), the <Config label="`clusterSize` configuration" keyDelim="/" keyOnly>cds/requires/cds.xt.SaasProvisioningService/jobs/clusterSize</Config> is automatically set to `1`. HANA TMS v2 currently does not
+ provide a performant way to determine all database IDs, so clustering the upgrade by database does not work properly.
+:::
+
 #### HTTP Request Options
 
 | Request Header        |  Example Value                                         | Description  |
@@ -1566,7 +1592,56 @@ The response is similar to the following:
 
 The job and task status can take on the values `QUEUED`, `RUNNING`, `FINISHED` and `FAILED`.
 
+<span id="jobworkers" />
+
 <span id="sms-provisioning-service" />
+
+## About technical Tenant `t0`
+
+`t0` is a technical tenant used by `@sap/cds-mtxs`. It is a dedicated database container that stores operational metadata. The application's domain model is **not** deployed to `t0`.
+
+#### What `t0` stores
+
+| Entity | Purpose |
+|--------|---------|
+| `cds.xt.Tenants` | Registry of all subscribed tenants with their metadata, schema info, and version |
+| `cds.xt.Jobs` | Async job state for operations like `subscribe`, `upgrade`, `extend` |
+| `cds.xt.Tasks` | Individual tasks within a job (one per tenant per operation) |
+
+
+#### Lifecycle of `t0`
+
+The `t0` tenant is automatically created or updated at startup of the MTX sidecar.
+
+##### Schema evolution
+
+Each startup checks if `t0` needs redeployment. If the schema is up-to-date, no action is taken.
+
+##### Special constraints for `t0`
+
+- Never uses `hana_tenant_id` from subscription parameters for [SAP HANA TMS v2](./index#sap-hana-tms-v2)
+- Never applies `dataEncryption`
+- Never applies the application's `cdsc` compiler options
+
+
+#### Configuring a different Tenant Name for `t0`
+
+The default tenant name is `'t0'`. It can be customized via configuration <Config label="cds.env.requires.multitenancy.t0" keyDelim="/">cds/requires/multitenancy/t0</Config> or environment variable `CDS_REQUIRES_MULTITENANCY_T0=my-custom-t0`.
+
+This is useful for scenarios where the `'t0'` name must vary per deployment (e.g., when multiple apps share the same Service Manager instance and need distinct `t0` containers).
+
+#### Default `database_id` and `lazyT0`
+
+By default, `t0` is created on server startup without an explicit `database_id`. This means it uses the Service Manager's default (primary) HANA database associated with the service instance or the database that is configured for the <Config label="DeploymentService" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/database_id</Config>
+
+[Learn more about DeploymentService configuration.](./mtxs.md#deployment-config){.learn-more}
+
+##### `lazyT0` configuration
+
+The creation of the `t0` tenant can be deferred using configuration <Config label="lazyT0" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/lazyT0</Config>.
+
+With that, the `t0` tenant is only created together with the first subscription. Before the first tenant is subscribed, `t0` is created with the same onboarding parameters (including `database_id`) as the subscribing tenant. This can be useful if the `database_id` is not known when deploying the MTX sidecar.
+
 
 ## [Old MTX Reference](old-mtx-apis) {.toc-redirect}
 

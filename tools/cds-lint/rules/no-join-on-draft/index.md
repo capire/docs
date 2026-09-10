@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ Draft-enabled entities shall not be used in views that make use of `JOIN`. This 
 In the following example, no draft-enabled entities are used in the service `CatalogService`:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="no-join-on-draft"
@@ -37,7 +33,7 @@ In the following example, no draft-enabled entities are used in the service `Cat
 This example shows the service `CatalogService` using a draft-enabled entity and making use of `JOIN`, which violates the rule:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="no-join-on-draft"

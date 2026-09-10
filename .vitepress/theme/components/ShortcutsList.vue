@@ -6,7 +6,7 @@
           <span class="modal-close" title="Close dialog" @click="visible = false">&times;</span>
           <h5 class="no-anchor">Keyboard Shortcuts</h5>
         </div>
-        <div id="shortcuts-list" class="modal-body">
+        <div id="shortcuts-list" class="modal-body no-wide">
           <table>
             <tr v-for="cmd in activeCommands" :key="cmd.name">
               <td>{{ cmd.name }}</td>
@@ -194,8 +194,11 @@ td, th {
 /* Modal Content */
 .modal-content {
   position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   resize: both;
+  box-sizing: border-box;
   background-color: var(--vp-c-bg-soft);
   margin: 10% auto;
   border: 1px solid var(--vp-c-divider);
@@ -219,6 +222,9 @@ td, th {
 
 /* Modal Body */
 .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   font-size: 14px;
 }
 

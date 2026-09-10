@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Set up your local development environment with Node.js, cds-dk, and optional tools like Java and Visual Studio Code to start building CAP applications.
 ---
 
 # Getting Started
@@ -60,14 +61,15 @@ sqlite3 -version
 
 ::: code-group
 ```shell [macOS/Linux]
-brew install sapmachine-jdk
+brew tap sap/sapmachine
+brew install sapmachine25-jdk
 brew install maven
 ```
 ```PowerShell [Windows]
 winget install --silent SAP.SapMachine.25.JDK
 
 # Apache Maven is not available using winget so download it directly
-$v="3.9.12"; `
+$v="3.9.16"; `
 $url="https://dlcdn.apache.org/maven/maven-3/$v/binaries/apache-maven-$v-bin.zip"; `
 $mvnzip="$env:LOCALAPPDATA\maven.zip"; `
 curl $url -o $mvnzip; `

@@ -1,8 +1,6 @@
 ---
-synopsis: >
+description: >
   How to start a new CAP Java project and how to run it locally.
-#notebook: true
-status: released
 ---
 
 # Getting Started
@@ -13,7 +11,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Introduction
 <!--Used as link target from Help Portal: https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html -->
@@ -42,9 +40,9 @@ This section describes the prerequisites and tools to build a CAP application lo
 
 1. Install the CDS tools (`cds-dk`) by following the steps in the central *[Getting Started](../get-started/index#initial-setup)* guide.
 
-2. Install a Java VM. Java 17 is the minimum requirement, but we recommend using Java 21. For example, [download](https://github.com/SAP/SapMachine/releases) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 21.
+2. Install a Java VM. Java 21 is the minimum requirement, but we recommend using Java 25. For example, [download](https://github.com/SAP/SapMachine/releases) and [install](https://github.com/SAP/SapMachine/wiki/Installation) SapMachine 25.
 
-3. [Install Apache Maven](https://maven.apache.org/download.cgi) (at least version 3.6.3 is required).
+3. [Install Apache Maven](https://maven.apache.org/download.cgi) (at least version 3.9.14 is required).
 
 <span id="maven-sap" />
 
@@ -109,7 +107,7 @@ This command adds the following dependency to the pom.xml:
 </dependency>
 ```
 ::: tip
-CAP Java also provides a starter bundle for SAP BTP Kyma environment. See [CAP Starter Bundles](./developing-applications/building#starter-bundles#starter-bundles) for more details.
+CAP Java also provides a starter bundle for SAP BTP Kyma environment. See [CAP Starter Bundles](./developing-applications/building#starter-bundles) for more details.
 :::
 
 ### Project Layout

@@ -1,14 +1,13 @@
 ---
 title: Core Eventing in CAP
-synopsis: >
+description: >
   This guides introduces CAP's intrinsic support for emitting and receiving events in the very core of the runtimes' processing models.
-status: released
 ---
 
 # Core Eventing in CAP
 
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -205,7 +204,7 @@ It produces a trace output like that:
 
 As apparent from the output, both, the two bookshop services `CatalogService` and `AdminService` as well as our new `ReviewsService`, are served in the same process (mocked, as the `ReviewsService` is configured as required service in _[bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json#L30-L31)_).
 
-### 2. Add Reviews 
+### 2. Add Reviews
 
 Now, open [http://localhost:4004/reviews](http://localhost:4004/reviews) to display the Vue.js UI that is provided with the reviews service sample:
 
@@ -226,7 +225,7 @@ Now, open [http://localhost:4004/reviews](http://localhost:4004/reviews) to disp
 
 Which means the `ReviewsService` emitted a `reviewed` message that was received by the enhanced `CatalogService`.
 
-### 3. Check Ratings 
+### 3. Check Ratings
 
 Open [http://localhost:4004/bookshop](http://localhost:4004/bookshop) to see the list of books served by `CatalogService` and refresh to see the updated average rating and reviews count:
 

@@ -1,8 +1,6 @@
 ---
-shorty: OpenAPI
-synopsis: >
+description: >
   About how to publish service APIs in OpenAPI format.
-status: released
 ---
 
 <style scoped>

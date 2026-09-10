@@ -1,3 +1,8 @@
+---
+description: >
+  How to add `.csv` files to fill your database with initial and test data, automatically loaded by the CAP runtime.
+---
+
 # Adding Initial Data
 
 You can add `.csv` files to fill your database with initial data and test data. The runtime automatically loads these files whenever you bootstrap a database, run `cds watch` in development, or deploy and upgrade for production.
@@ -108,7 +113,7 @@ The following table describes the purpose and deployment scope of each location:
 
 ::: details Bookshop data is actually test data...
 Note that the initial data provided in the [_@capire/bookshop_](../../get-started/bookshop) sample is actually test data, and hence we would typically place it in the _test/data_ folder. But for simplicity, it's placed in _db/data_, also because the whole purpose of that project is to be a _sample_.
-::::
+:::
 
 > [!danger] Don't let users modify productive initial data
 > Otherwise this [data might get overridden on SAP HANA](./hana#csv-data-gets-overridden).
@@ -138,7 +143,7 @@ cds:
 ```
 :::
 
-Use `cds env` to check which configuration is active in your current profile, e.g.:
+Use `cds env` to check which configuration is active in your current profile, for example:
 ```shell
 cds env requires.db.data --profile development
 ```

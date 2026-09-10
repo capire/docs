@@ -1,3 +1,8 @@
+---
+description: >
+  How to set up a minimal CAP project with a Vue.js or React frontend.
+---
+
 # Serving Vue.js or React
 <Since version="9.9.0" package="@sap/cds-dk" />
 

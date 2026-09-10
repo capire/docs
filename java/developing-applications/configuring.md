@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section describes how to configure CAP Java applications.
 
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
@@ -42,7 +42,7 @@ Property defaults adjusted with the production profile are the following:
 
 Note, that explicit configuration in the application takes precedence over property defaults from the production profile.
 
-::: warning 
+::: warning
 **Do not manually enable features for production that are disabled by the production profile**, as this could introduce serious security vulnerabilities.
 :::
 

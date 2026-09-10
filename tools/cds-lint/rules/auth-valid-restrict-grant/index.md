@@ -1,9 +1,5 @@
 ---
 outline: [2,2]
-breadcrumbs:
-  - CDS Lint
-    - Rules Reference
-status: released
 ---
 
 <script setup>
@@ -23,7 +19,7 @@ The `grant` property of a `@restrict` privilege defines one or more events that 
 In the following example, `CatalogService.ListOfBooks` is restricted to the `READ` event for the `Viewer` role, which is a valid value for `@restrict.grant`:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-grant"
@@ -37,7 +33,7 @@ In the following example, `CatalogService.ListOfBooks` is restricted to the `REA
 This example shows the `@restrict.grant` with a typo in the event (that is, `REAAD` instead of `READ`) for the `Viewer` role, which is not a valid value for `@restrict.grant` so the rule will report a warning:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-grant"

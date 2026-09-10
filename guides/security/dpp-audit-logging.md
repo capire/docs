@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   The Audit Logging plugin provides out-of-the box support for automatic audit logging of data privacy-related events, in particular changes to personal data and reads of sensitive data.
-status: released
 ---
 
 
@@ -445,7 +444,7 @@ await audit.log ('SecurityEvent', {
 
 
 
-## Custom Implementation 
+## Custom Implementation
 
 In addition, everybody could provide new implementations in the same way as we implement the mock variant:
 

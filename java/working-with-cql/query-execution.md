@@ -1,5 +1,6 @@
 ---
-synopsis: API to execute CQL statements on services accepting CQN queries.
+description: >
+  API to execute CQL statements on services accepting CQN queries.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
@@ -10,7 +11,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Query Execution { #queries}
 
@@ -223,7 +224,7 @@ long deleteCount = service.run(delete).rowCount();
 
 ## Views and Projections { #views }
 
-With CDS [views](../../cds/cdl#views-projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
+With CDS [views](../../cds/cdl#views--projections) you can derive new entities from existing ones, for example to rename or exclude certain elements, or to add [virtual elements](../../cds/cdl#virtual-elements-in-views) for specific use cases.
 
 From the CDS model the CDS compiler generates [DDL](../../guides/databases/cdl-to-ddl) files, which include SQL views for the CDS views. These views are deployed to the [database](../cqn-services/persistence-services#database-support) and used by the CAP runtime to read data.
 

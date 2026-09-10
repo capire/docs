@@ -1,6 +1,3 @@
----
-status: released
----
 
 <script setup>
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
@@ -28,7 +25,7 @@ will also be checked by this rule.
 In the following example, only locally defined variables are used within handler implementation:
 
 ::: code-group
-<<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< correct/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="no-shared-handler-variable"
@@ -41,7 +38,7 @@ In the following example, only locally defined variables are used within handler
 In the following example, the variables `newBook` and `readBooks` are declared in scopes surrounding the handler function, making their value available to subsequent calls of that handler. While this may seem advantageous, it can cause issues in a multitenant scenario, where the handler function can be invoked by multiple tenants.
 
 ::: code-group
-<<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< incorrect/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="no-shared-handler-variable"

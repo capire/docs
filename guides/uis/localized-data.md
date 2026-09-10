@@ -1,6 +1,7 @@
 ---
+description: >
+  How to declare and serve localized data, automatically fetching translations matching a user's preferred language with fallback support.
 uacp: Linked from https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
-status: released
 ---
 
 # Localized Data
@@ -173,7 +174,7 @@ It isn't allowed to extend `sap.common.TextsAspect` with
 * localized elements
 * key elements
 
-For entities that have an annotation `@fiori.draft.enabled`, the corresponding *.texts*
+For entities that have an annotation [`@fiori.draft.enabled`](./fiori#draft-for-localized-data), the corresponding *.texts*
 entities also include the aspect, but the element `locale` isn't marked as a
 key and an element `key ID_texts : UUID` is added.
 
@@ -431,3 +432,18 @@ ID,locale,title,descr
 ...
 ```
 :::
+
+#### Add `ID_texts` for SAP Fiori Draft on SAP HANA
+If you set `@fiori.draft.enabled`, you need to manually add the technical primary key `ID_texts` to the initial data as follows:
+
+::: code-group
+```csv{1} [Books_texts.csv]
+ID_texts,ID,locale,title,descr
+d2a65a27-9f2a-480f-bc38-84ee8ec5c13e,201,de,Sturmhöhe,Sturmhöhe (Originaltitel: Wuthering Heights) ist der einzige Roman...
+8c42c706-a979-41cf-9ffe-91e6cf1383a0,201,fr,Les Hauts de Hurlevent,Les Hauts de Hurlevent (titre original : Wuthering Heights)...
+9e1c4c81-dc90-4600-85b1-e9dd4bf12ce0,207,de,Jane Eyre,Jane Eyre. Eine Autobiographie (Originaltitel: Jane Eyre. An Autobiography)...
+9be0524b-4cb9-4fc1-9dc2-d65b1c13cf53,252,de,Eleonora,Eleonora ist eine Erzählung von Edgar Allan Poe. Sie wurde 1841...
+```
+:::
+
+[Learn more about Enabling Draft for Localized Data.](./fiori#draft-for-localized-data){.learn-more}

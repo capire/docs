@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   This section describes how the CAP Developer Dashboard can be set up in both the local and cloud development environment to improve the developer experience.
-status: released
 ---
 
 # Developer Dashboard
@@ -36,7 +35,7 @@ Add the `cds-feature-dev-dashboard` feature to your maven dependencies:
 
 ## Local Setup
 
-By default, the dashboard requires authorized access, which requires the `cds.Developer` role. The default mock user configuration provides the user `developer` already configured with this role. If you use your own mocked users, you must assign them the `cds.Developer` role if you want to give them access to the dashboard. 
+By default, the dashboard requires authorized access, which requires the `cds.Developer` role. The default mock user configuration provides the user `developer` already configured with this role. If you use your own mocked users, you must assign them the `cds.Developer` role if you want to give them access to the dashboard.
 
 ::: code-group
 ```yaml [application.yaml]
@@ -121,7 +120,7 @@ modules:
 			"source": "^/dashboard_api/(.*)",
 			"authenticationType": "xsuaa",
 			"destination": "backend"
-		}, 
+		},
     [...]
 	]
 }
@@ -158,7 +157,7 @@ In some cases, your application may run in a complex environment and you simply 
 
 	:::
 
-2. Disable authentication. 
+2. Disable authentication.
 
 	::: code-group
 	```java [WebSecurity]

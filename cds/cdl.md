@@ -1,7 +1,6 @@
 ---
-# shorty: Definition Language
-synopsis: >
-  Specification of the definition language used to model data models and services in an easy and user-centric syntax. Includes a reference and overview of all CDS concepts and features with compact examples.
+description: >
+  Specification of the definition language used to model data models and services in an easy, user-centric syntax, including a reference and overview of all CDS concepts and features with compact examples.
 #permalink: /cds/cdl/
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
@@ -25,7 +24,7 @@ The *Conceptual Definition Language (CDL)* is a human-readable language for defi
 
 
 
-- [Keywords & Identifiers](#keywords-identifiers)
+- [Keywords & Identifiers](#keywords--identifiers)
 - [Built-in Types](#built-in-types)
 - [Literals](#literals)
 - [Model Imports](#model-imports)
@@ -146,21 +145,17 @@ Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`
 
 #### The `using` Directive {#using}
 
-Using directives allows to import definitions from other CDS models. As shown in line three below you can specify aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix. Optional: Choose a local alias.
+Using directives allow to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
 
-::: code-group
-
-```cds [using-from.cds]
+```cds
 using foo.bar.scoped.Bar from './contexts';
 using foo.bar.scoped.nested from './contexts';
-using foo.bar.scoped.nested as specified from './contexts';
+using foo.bar.scoped.nested as animal from './contexts';
 
 entity Car : Bar {}            //> : foo.bar.scoped.Bar
 entity Moo : nested.Zoo {}     //> : foo.bar.scoped.nested.Zoo
-entity Zoo : specified.Zoo {}  //> : foo.bar.scoped.nested.Zoo
+entity Zoo : animal.Zoo {}     //> : foo.bar.scoped.nested.Zoo
 ```
-
-:::
 
 Multiple named imports through ES6-like deconstructors:
 
@@ -172,6 +167,9 @@ entity Car : Bar { /*...*/ }
 
 > Also in the deconstructor variant of `using` shown in the previous example, specify fully qualified names.
 
+> [!important] Names do not restrict the import scope
+> All definitions of the model provided after `from` are imported, no matter which names are specified before `from`.
+> The purpose of these names is only to make global names accessible locally.
 
 
 
@@ -283,7 +281,7 @@ CDL supports line-end, block comments, and *doc* comments as in Java and JavaScr
 /** doc comment */
 ```
 
-#### Doc Comments 
+#### Doc Comments
 
 A multi-line comment of the form `/** … */` at an [annotation position](#annotation-targets) is considered a *doc comment*:
 
@@ -449,7 +447,7 @@ type EmailAddress : { kind:String; address:String; }
 
 > Keywords `many` and `array of` are mere syntax variants with identical semantics and implementations.
 
-When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array. 
+When deployed to SQL databases, such fields are mapped to [LargeString](./types) columns and the data is stored denormalized as JSON array.
 With OData V4, arrayed types are rendered as `Collection` in the EDM(X).
 
 
@@ -694,7 +692,7 @@ entity Orders {
 }
 ```
 
-To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assert-range).
+To enforce your _enum_ values during runtime, use the [`@assert.range` annotation](../guides/services/constraints#assertrange).
 For localization of enum values, model them as [code list](./common#adding-own-code-lists).
 
 <br>
@@ -758,9 +756,8 @@ Their [`elements`](./csn#structured-types) signature is **inferred** from the pr
 Each element inherits all properties from the respective base element, except the `key` property.
 The `key` property is only inherited if all of the following applies:
 - No explicit `key` is set in the query.
-- All key elements of the primary base entity are selected (for example, by using `*`).
-- No path expression with a to-many association is used.
-- No `union`, `join` or similar query construct is used.
+- All key elements of the primary base entity and all key elements of
+  explicitly joined entities are selected.
 
 For example, the following definition:
 
@@ -857,7 +854,7 @@ Result result = service.run(Select.from("UsingView"), params);
 
 ### Runtime Views { #runtimeviews }
 
-To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cds-persistence-skip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request. 
+To add or update CDS views without redeploying the database schema, annotate them with [@cds.persistence.skip](../guides/databases/cdl-to-ddl#cdspersistenceskip). This advises the CDS compiler to skip generating database views for these CDS views. Instead, CAP resolves them *at runtime* on each request.
 
 Runtime views must be simple [projections](#as-projection-on), not using *aggregations*, *join*, *union* or *subqueries* in the *from* clause, but may have a *where* condition if they are only used to read.
 
@@ -933,7 +930,7 @@ entity Addresses {
 ```
 
 
-### Managed (To-One) Associations 
+### Managed (To-One) Associations
 ###### managed-associations
 
 For to-one associations, CDS can automatically resolve and add requisite foreign key elements from the target's primary keys and implicitly add respective join conditions.
@@ -1153,7 +1150,7 @@ entity P_Authors as projection on Authors {
 In this example, in addition to `books` projection `P_Authors` has a new association `availableBooks`
 that points only to those books where `stock > 0`.
 
-If the filter condition effectively reduces the cardinality of the association
+If the filter condition effectively reduces the cardinality of the association (or composition)
 to one, you should make this explicit in the filter by adding a `1:` before the condition:
 
 ```cds
@@ -1162,6 +1159,12 @@ entity P_Employees as projection on Employees {
   addresses[1: kind='home'] as homeAddress  // homeAddress is to-one
 }
 ```
+
+::: warning `:1` doesn't itself reduce the cardinality
+The `:1` syntax itself has no effect on the cardinality. It is only an information by the developer
+that the specified condition reduces the cardinality of the association or composition to one.
+:::
+
 
 Filters usually are provided only for to-many associations, which usually are unmanaged.
 Thus publishing with a filter is almost exclusively used for unmanaged associations.
@@ -1424,10 +1427,6 @@ The rules are:
 
 3. An explicit **cast** in the select clause cuts off the inheritance, for example, as for `genre` in our previous example.
 
-::: tip
-Propagation of annotations can be stopped via value `null`, for example, `@anno: null`.
-:::
-
 
 ### Expressions as Annotation Values
 
@@ -1495,23 +1494,20 @@ actions {
 
 #### CSN Representation
 
-In CSN, the expression is represented as a record with two properties:
-* A string representation of the expression is stored in property `=`.
-* A tokenized representation of the expression is stored in one of the properties
-  `xpr`, `ref`, `val`, `func`, etc. (like if the expression was written in a query).
+In CSN, the expression is represented as a record with
+one of the properties `xpr`, `ref`, `val`, `func`, etc.,
+that contains the tokenized representation of the expression
+(like if the expression was written in a query).
 
 ```json
 {
   "@anExpression": {
-    "=": "foo.bar * 11",
     "xpr": [ {"ref": ["foo", "bar"]}, "*", {"value": 11} ]
   },
   "@aRefExpr": {
-    "=": "foo.bar",
     "ref": ["foo", "bar"]
   },
   "@aValueExpr": {
-    "=": "11",
     "val": 11
   }
 }
@@ -1520,13 +1516,17 @@ In CSN, the expression is represented as a record with two properties:
 Note the different CSN representations for a [plain value](#annotation-values) `"@anInteger": 11`
 and a value written as expression `@aValueExpr: ( 11 )`, respectively.
 
+For expressions that are simple references, the record currently contains an additional
+property `=` with the string representation of the expression. Do not rely on this property,
+but use the tokenized representation. Property `=` may vanish in a future release.
+
+
 #### Propagation
 
 [Annotations are propagated](#annotation-propagation) in views/projections, via includes, and along type references.
 If the annotation value is an expression, it is sometimes necessary to adapt references inside the expression
 during propagation, for example, when a referenced element is renamed in a projection.
-The compiler automatically takes care of the necessary rewriting. When a reference in an annotation expression
-is rewritten, the `=` property is adapted accordingly if the expression is a single reference, otherwise it is set to `true`.
+The compiler automatically takes care of the necessary rewriting.
 
 Example:
 ```cds
@@ -1552,8 +1552,7 @@ rewritten to `@Common.Text: (descr)`.
       "elements": {  // ...
         "code": {
           // original annotation
-          "@Common.Text": { "=": "text",
-                            "ref": ["text"] },
+          "@Common.Text": { "ref": ["text"] },
           "type": "cds.Integer"
         },
         "text": {"type": "cds.String"}
@@ -1563,8 +1562,7 @@ rewritten to `@Common.Text: (descr)`.
       "elements": {  // ...
         "code": {
           // propagated annotation, reference adapted
-          "@Common.Text": { "=": true,
-                            "ref": ["descr"] },
+          "@Common.Text": { "ref": ["descr"] },
           "type": "cds.Integer"
         },
         "descr": {"type": "cds.String"}
@@ -1585,8 +1583,11 @@ In these cases you can overwrite the annotation with the correct expression in t
 
 Using an expression as annotation value only makes sense if the evaluator of the annotation is
 prepared to deal with the new CSN representation.
-Currently, the CAP runtimes only support expressions in the `where` property of the `@restrict` annotation.
+Currently, the CAP runtimes support expressions
+*  in the `where` property of annotation [`@restrict`](../guides/security/authorization#restrict-annotation)
+*  in annotation [`@assert`](../guides/services/constraints#assert-constraint)
 
+Example:
 ```cds
 entity Orders @(restrict: [
     { grant: 'READ', to: 'Auditor', where: (AuditBy = $user.id) }
@@ -1993,10 +1994,12 @@ service AdminService {
 Auto-redirection fails if a target can't be resolved unambiguously, that is, when there is more than one projection with the same minimal 'distance' to the source. For example, compiling the following model with two projections on `my.Books` would produce this error:
 
 ::: danger
-Target "Books" is exposed in service "AdminService" by multiple projections "AdminService.ListOfBooks", "AdminService.Books" - no implicit redirection.
+Add “@cds.redirection.target” to either “AdminService.Books” or “AdminService.ListOfBooks” to select the entity as redirection target for “bookshop.Books” in this service; can't auto-redirect “AdminService.Authors:books” otherwise (in entity:“AdminService.Books”)
 :::
 
 ```cds
+using bookshop as my from '../db/schema';
+
 service AdminService {
   entity ListOfBooks as projection on my.Books;
   entity Books as projection on my.Books;

@@ -1,14 +1,12 @@
 ---
-synopsis: >
-  CAP provides intrinsic support for emitting and receiving events.
-  This is complemented by Messaging Services connecting to message brokers to exchange event messages across remote services.
-status: released
+description: >
+  How CAP's Messaging Services connect to message brokers to exchange event messages with remote services, complementing CAP's intrinsic event support.
 ---
 
 # CAP-level Messaging
 
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 [[toc]]
 
@@ -57,7 +55,7 @@ For quick tests during development, CAP provides a simple file-based messaging s
 In our samples, you find that in [@capire/reviews/package.json](https://github.com/capire/reviews/blob/main/package.json) as well as [@capire/bookstore/package.json](https://github.com/capire/bookstore/blob/main/package.json), which you'll run in the next step as separate processes.
 
 
-### 2. Start the `reviews` Service and `bookstore` Separately 
+### 2. Start the `reviews` Service and `bookstore` Separately
 
 First start the `reviews` service separately:
 

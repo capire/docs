@@ -1,7 +1,6 @@
 ---
-synopsis: >
+description: >
   A guide on deploying SAP Cloud Application Programming Model (CAP) applications as microservices to the SAP BTP Cloud Foundry environment.
-status: released
 ---
 
 # Microservices with CAP
@@ -357,14 +356,10 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build ./shared-db --for hana --production
-        - npx cds build ./orders --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./orders --for nodejs --production # [!code ++]
         - npx cds build ./reviews --for nodejs --production # [!code ++]
-        - npx cds build ./bookstore --for nodejs --production --ws-pack # [!code ++]
+        - npx cds build ./bookstore --for nodejs --production # [!code ++]
 ```
-:::
-
-::: info --ws-pack
-Note that we use the *--ws-pack* option for some modules. It's important for node modules referencing other repository-local node modules.
 :::
 
 

@@ -1,8 +1,6 @@
 ---
-synopsis: >
-  CAP Messaging provides support for publish-subscribe-based messaging, which is an asynchronous communication pattern well suited for scenarios where a sender wants to send out information to one or many receivers that are potentially unknown and/or unavailable at the time of sending.
-
-status: released
+description: >
+  How CAP's publish-subscribe-based Messaging support enables asynchronous communication with one or many receivers that may be unknown or unavailable at the time of sending.
 ---
 
 <script setup>
@@ -25,7 +23,7 @@ status: released
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 In contrast, the nature of synchronous communication between services can be disadvantageous depending on the desired information flow, for example, sender and receiver need to be available at the time of the request. The sender needs to know the receiver and how to call it, and that communication per request is usually point-to-point only.
 
@@ -85,10 +83,10 @@ As shown in the example, there are two flavors of sending messages with the mess
 In section [CDS-Declared Events](#cds-declared-events), we show how to declare events in CDS models and by this let CAP generate EventContext interfaces especially tailored for the defined payload, that allows type safe access to the payload.
 
 ::: tip Using an outbox
-The messages are sent once the transaction is successful. Per default, an in-memory outbox is used, but there's also support for a [persistent outbox](./outbox#persistent).
+The messages are sent once the transaction is successful. By default, an in-memory outbox is used, but there's also support for a [persistent outbox](./event-queues#default-outbox-services).
 
-You can configure a [custom outbox](./outbox#custom-outboxes) for a messaging service by setting the property
-`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This specifically makes sense when [using multiple channels](../guides/events/messaging#using-multiple-channels).
+You can configure a [custom outbox](./event-queues#custom-outbox-services) for a messaging service by setting the property
+`cds.messaging.services.<key>.outbox.name` to the name of the custom outbox. This is especially useful when [using multiple channels](../guides/events/messaging#using-multiple-channels).
 :::
 
 
@@ -470,7 +468,7 @@ Example:
 }
 ```
 
-[Learn more about _default-env.json_.](../node.js/cds-env#in-default-env-json){.learn-more}
+[Learn more about _default-env.json_.](../node.js/cds-env#in-default-envjson){.learn-more}
 
 
 #### VCAP_SERVICES Template for SAP Event Mesh
