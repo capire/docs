@@ -34,7 +34,7 @@ CAP supports two HTTP clients for outgoing remote service calls: [SAP Cloud SDK]
 
 #### SAP Cloud SDK {#sap-cloud-sdk}
 
-By default, CAP uses the SAP Cloud SDK HTTP client when `@sap-cloud-sdk/http-client` is installed. This provides full support for all SAP BTP Destination service features including on-premise connectivity.
+If the SAP Cloud SDK HTTP client (`@sap-cloud-sdk/http-client`) is installed, CAP uses it by default. This provides full support for all SAP BTP Destination service features including on-premise connectivity.
 
 [Learn more about SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
@@ -44,7 +44,7 @@ CAP provides a built-in remote client that uses the native Node.js `fetch` API, 
 During local development, you don't need SAP Cloud SDK.
 For production, SAP Cloud SDK is only required if you use authentication types or proxy configurations not yet supported by the native client (see warning below).
 
-CAP selects the client as follows:
+Which client is used depends on:
 
 1. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
 2. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
@@ -120,7 +120,7 @@ The `requestTimeout` setting in the `cds.RemoteService` configuration specifies 
 ```
 
 ::: tip
-See [SAP BTP Destination Service](../guides/integration/service-bindings#btp-destination-service) for more details on destination configuration.
+See [Using Destinations](../guides/integration/service-bindings#destinations) for more details on destination configuration.
 :::
 
 ##  <i>  More to Come </i>
