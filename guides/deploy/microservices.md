@@ -156,7 +156,7 @@ These are the (not so beneficial) side effects you when using a shared persisten
 
    > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
-:::tip Project Structure
+::: details The project Structure
 
 ```txt
 <PROJECT-ROOT>/
@@ -174,7 +174,6 @@ These are the (not so beneficial) side effects you when using a shared persisten
 The `shared-db` module is simply another CAP project, with only database content. The dependencies are installed via NPM, so it's still possible to install via an NPM registry if used outside of the monorepo setup.
 
 :::
-
 ::: details Try it out
 
 Run a build like in any other CAP project:
