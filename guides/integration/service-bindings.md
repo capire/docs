@@ -116,7 +116,7 @@ CAP supports named destinations from the [SAP BTP Destination Service](#btp-dest
 
 ### SAP BTP Destination Service {#btp-destination-service}
 
-CAP supports resolving named destinations from the SAP BTP Destination service. Configure the destination name in the `credentials` block of the required service:
+Named destinations are resolved from the SAP BTP Destination service. Configure the destination name in the `credentials` block of the required service:
 
 ```json
 "cds": {
