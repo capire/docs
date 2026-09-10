@@ -254,7 +254,7 @@ npm i @cap-js/hana --workspace reviews
 
 ::: details Java: Configure each app for cloud readiness
 
-For each project [add the cds-feature-hana dependency](../databases/hana#setup-configuration) or the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
+For each project [add the cds-feature-hana dependency](../databases/hana#setup--configuration) or the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
 
 :::
 
