@@ -174,7 +174,7 @@ Only destinations with proxy type `Internet` are fully supported. On-premise des
 
 #### SAP Cloud SDK
 
-When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolve SAP BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
+When the native fetch client isn't active, CAP uses the SAP Cloud SDK to resolve SAP BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
 
 ```jsonc
 "cds": {
