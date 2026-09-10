@@ -50,7 +50,9 @@ Add the `cds-adapter-mcp` dependency to your `srv/pom.xml`:
 
 ## Declare `@mcp` Services
 
-### Annotate services with `@mcp`
+
+
+### Using `@mcp` Annotation
 
 Simply add the `@mcp` annotation to a service definition to expose it via MCP.  For example, add the following to `srv/cat-service.cds`:
 
@@ -73,24 +75,28 @@ annotate CatalogService with @mcp:'books'
 > From the perspective of a developer in a CAP-based project, `@mcp` is just another protocol for your services, similar to `@odata`, `@graphql`, `@rest`, or `@hcql`. The adapter takes care of the rest, with all the standard CAP features you know working out of the box also with MCP, including annotations like `@cds.query.limit`, etc.
 
 
-### Tailored services for MCP use
+### MCP-specific Services
 
-In case you want to tailor the entities or elements served via MCP you can also create specific services for MCP and annotate only those with `@mcp`. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+Frequently, you might want to create services that are tailored specifically for MCP usage.
+Instead of annotating an existing service with `@mcp` and exposing all its entities and actions, simply create a dedicated service specifically for MCP. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
 
 ::: code-group
 ```cds [srv/books-service.cds]
 using { AdminService } from './admin-service';
+
 @mcp service BooksService {
-  entity Authors as projection on AdminService.Authors {
-    ID, name, books,
-  }
-  entity Books as projection on AdminService.Books {
+
+  @readonly entity Authors as projection on AdminService.Authors;
+  @readonly entity Books as projection on AdminService.Books {
     ID, title, stock, price,
     author,
     genre.name as genre,
     currency.name as currency,
   }
-}
+
+  @requires: 'authenticated-user'
+  action submitOrder ( book: Books:ID, quantity: Integer );
+ }
 ```
 :::
 
@@ -99,7 +105,7 @@ using { AdminService } from './admin-service';
 
 
 
-### Adding Context Information
+### Providing Descriptions
 
 As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
@@ -117,13 +123,13 @@ For example, you can add doc comments to your entities and their elements like t
  * This is the author entity.
  * It contains information about book authors.
  */
-entity Authors {
+annotate BookshopService.Authors with {
   /** The ID of the author. */
-  ID : Integer;
+  ID;
   /** The name of the author. */
-  name : String;
+  name;
   /** The books written by the author. */
-  books : Association to many Books;
+  books;
 }
 ```
 
@@ -134,9 +140,9 @@ entity Authors {
 As usual, and following the Calesi principles of "convention over configuration", you can run your CAP server locally and interact with it using the MCP protocol from common clients like OpenCode or Claude Code.
 
 
-### Run the CAP server
+### Run with `cds watch`
 
-Run your CAP server locally as usual using `cds watch`.
+Run your CAP server locally as usual using `cds watch`, and note that the `@mcp`-annotated service gets served at an additional endpoint for the MCP protocol:
 
 ::: code-group
 ```shell [Node.js]
@@ -146,6 +152,13 @@ cds watch
 mvn cds:watch
 ```
 :::
+
+```shell
+[cds] - serving CatalogService {
+  at: [ ..., '/mcp/browse' ],
+  ...
+}
+```
 
 
 ### Using OpenCode, or alike
@@ -176,7 +189,7 @@ code --install-extension anthropic.claude-code
 :::
 
 
-![OpenCode started initially](assets/opencode-start-screen.png){.ignore-dark}
+![OpenCode started initially](opencode-start-screen.png){.ignore-dark}
 
 
 
@@ -191,7 +204,7 @@ order wuthering heights
 
 And answer the questions that OpenCode asks you back.
 
-![List books and ordering books via OpenCode](assets/opencode-list-and-order-books.png){.ignore-dark}
+![List books and ordering books via OpenCode](opencode-list-and-order-books.png){.ignore-dark}
 
 
 
@@ -204,15 +217,14 @@ You can also run `opencode web` to open the OpenCode web interface, which provid
 
 When we initially started OpenCode above, it indicated in the bottom line of the interface that there's (at least) one MCP server connected.
 
-![OpenCode status line showing connected MCP servers](assets/opencode-status-line.png){.ignore-dark}
+![OpenCode status line showing connected MCP servers](opencode-status-line.png){.ignore-dark}
 
 Enter `/status` in the OpenCode interface to see details, which should display the status of the connected MCP servers like this:
 
-![OpenCode listing connected MCP servers](assets/opencode-status.png){.ignore-dark}
+![OpenCode listing connected MCP servers](opencode-status.png){.ignore-dark}
 
 > [!tip] Autowired during development
 > Whenever you start your CAP application with `cds watch`, all served MCP endpoints are automatically registered with local MCP clients like [Claude Code](https://code.claude.com/docs) and [OpenCode](https://opencode.ai/), so you can just go ahead and run queries from them without any additional configuration. This makes it super easy to test and interact with your services via MCP during development.
-
 
 ::: details Click to expand the client-specific configuration files
 ::: code-group
@@ -268,13 +280,13 @@ Enter `/status` in the OpenCode interface to see details, which should display t
 
 When you run queries, you can inspect the log output of your CAP server to see the incoming MCP requests and how they are processed. This can be helpful for debugging and understanding the interaction between the MCP client and your CAP services.
 
-For example, for the above query, you should see log output similar to this:
+For example, for a `list books` prompt, you should see log output similar to this:
 
 ::: code-group
 ```js [Node.js]
-[mcp] - query {
-  service: 'CatalogService',
-  cql: 'SELECT ID, title, author, genre, stock, price FROM ListOfBooks'
+[mcp] - CatalogService describe { entities: [ 'Books' ] }
+[mcp] - CatalogService query {
+  cql: 'SELECT ID, title, author, genre, stock, price, currency_code FROM Books'
 }
 ```
 ```js [Java]
@@ -298,21 +310,30 @@ the following tools for each MCP server, which can be used by LLMs and AI agents
 This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 ### • `query` entity {.tool}
-This tool is used to read data from the service. The only required parameter is `entity`, an enum that lists all entities exposed by the service. This tool takes all provided parameters and translates them to a [CQN](../../cds/cqn) query, which the service runs via `service.run(query)`. The parameter descriptions explain how to use them.
 
-Parameters of `query` requests:
+This tool is used to read data from the service.
+It expects a single parameter `cql`, which contains the query in [CQL](../../cds/cql) syntax to be executed.
 
-| Parameter | Description                                                                                                  |
-|-----------|--------------------------------------------------------------------------------------------------------------|
-| select    | Array of [`expr`](../../cds/cqn#expr) objects or `strings` ; allows path expressions along associations. |
-| entity    | The entity to query (enum values from `describe`)                                                            |
-| where     | Array of [`xpr`](../../cds/cqn#where) objects used as predicates used for filtering                     |
-| limit     | An integer limiting the results to return                                                                    |
-| one       | Return a single record instead of an array. Implies `limit:1`; default: `false`                              |
-| distinct  | Return only unique rows; default: `false` (Node.js only)                                                     |
-| groupBy   | An array of [`ref`](../../cds/cqn#ref) objects or `strings` to group results.                           |
-| orderBy   | List of objects to order the results (ref, sort, nulls)                                                      |
+> [!tip] CQL = SQL++ => well understood by LLMs
+> As common LLMs, like Claude Sonnet, are trained for SQL very well, they are quick to understand and generate CQL queries for interacting with the service.
 
+For example, given the `BookshopService` as [declared above](#mcp-specific-services) that exposes `Authors` with its to-many association to `Books` , we can ask OpenCode running Opus something like this:
+
+```sh
+list authors with their written books and genres
+```
+
+Which it would nicely translate into the following CQL query using nested postfix projection to expand the `books` association, as shown in the screenshot below:
+
+```sql
+SELECT from Authors {
+  ID, name, books {
+    title, genre
+  }
+}
+```
+
+![CQL query result showing authors with their written books and genres](cql-by-claude-opus.png){.ignore-dark}
 
 ### • `call` action {.tool}
 
@@ -320,7 +341,7 @@ This tool is used to call unbound actions or functions. The required parameter `
 
 ### Inspect the Tools
 
-You can start an [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) to inspect tools:
+You can use the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) to inspect the tools served from CAP services:
 
 ```bash
 npx @modelcontextprotocol/inspector
@@ -328,95 +349,20 @@ npx @modelcontextprotocol/inspector
 
 The inspector should automatically open in your browser.
 
-1. Select _Streamable HTTP_ as Transport Type.
-2. Enter the URL of your service - for example, `http://localhost:4004/mcp/browse`.
-3. Select `Via Proxy` as connection type and select _Connect_.
-4. Go to the _Tools_ tab and select _List Tools_.
-5. To get data, select the _query_ tool.
-6. Choose an entity.
-7. Scroll down and select _Run Tool_.
+![MCP Inspector start page](mcp-inspector.png){.ignore-dark}
 
+Register your `@mcp`-enabled CAP services to the inspector using the _Add Servers_ \> _+ Add manually_ menu option, and in the dialog that appears, follow these steps:
 
-## The XTravels Sample
+1. Enter a name for your server, e.g. _bookshop_.
+1. Select _streamable-http_ as transport type.
+3. Enter MCP endpoint into URL - for example, `http://localhost:4004/mcp/browse`.
 
-The XTravels sample provides a more comprehensive example of how to work with several MCP services. It comprises the following CAP services:
+A screenshot is shown below:
 
-- `EventsService`: to browse and book business or leisure events.
-- `HotelsService`: to browse and book hotel accommodations.
-- `FlightsService`: to browse airports, airlines and flights.
-- `TravelsAgentService`: an MCP service for managing travel agent interactions.
+![MCP Inspector](mcp-inspector-add-server.png){.ignore-dark}
 
-### Workspace Setup
+Then connect, and switch to the _Tools_ tab to the top of the inspector's window to inspect and try out the listed tools.
 
-To set up the workspace for the XTravels sample, follow these steps:
-
-1. Create a workspace root directory, e.g. `cap/samples`:
-
-```shell
-mkdir -p cap/samples
-cd cap/samples
-echo '{"workspaces":["*","*/apis/*"]}' > package.json
-```
-
-2. Clone the individual sample repositories:
-
-```shell
-git clone https://github.com/capire/xtravels
-git clone https://github.com/capire/xflights
-git clone https://github.com/capire/common
-git clone https://github.com/capire/s4
-```
-
-3. Install the necessary dependencies:
-
-```shell
-npm install
-```
-
-This will install all the dependencies for the cloned sample repositories linked locally within the npm workspace.
-
-
-### Run all-in-one
-
-```shell
-cds watch xtravels
-```
-
-
-### Use in OpenCode
-
-```shell
-opencode
-```
-
-Enter a prompt, such as:
-
-```
-Plan a trip to sapphire 27 for Anne Pratt flying from Frankfurt
-```
-
-You should see something like this:
-
-![OpenCode displays a proposed trip plan.](assets/mcp-opencode1.png){.ignore-dark}
-![OpenCode displays the booked travel.](assets/mcp-opencode2.png){.ignore-dark}
-
-
-### Run as separate services
-
-If you like you can also start the individual services separately in different terminals as shown below – no code or config changes required for that, and also no change to the usage in AI chat clients.
-
-Run each of the lines below in a separate terminal:
-
-```shell
-cds w xtravels/srv/events
-cds w xtravels/srv/hotels
-cds w s4
-cds w xflights
-cds w xtravels
-opencode
-```
-
-![The services running in separate terminals](assets/mcp-run-separately.png){.ignore-dark}
 
 ## Configuration
 

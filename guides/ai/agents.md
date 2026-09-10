@@ -18,7 +18,7 @@ npm add @cap-js/agents
 ## Declare `@agent` Services
 
 
-### Agentifying CAP Services
+### Using `@agent` Annotation
 
 Simply add the `@agent` annotation to a service definition to create an agent. For example, clone the [_capire/bookshop_](https://github.com/capire/bookshop) sample, and add a new file `srv/cat-service-agent.cds` with the following content:
 
@@ -53,21 +53,21 @@ When the agent decides to call the action, the task pauses and transitions to th
 
 ### Run with `cds watch`
 
-Start your server with `cds watch` and note that the `@agent`-annotated service gets served via the [A2A protocol](https://a2a-protocol.org/latest/specification/):
+Start your server with `cds watch`, and note that the `@agent`-annotated service gets served with an additional endpoint for the A2A protocol:
 
 ```shell
 cds watch
 ```
 ```shell
 [cds] - serving CatalogService {
-  at: [ ..., '/a2a/browse' ],
+  at: [ ..., '/a2a/browse' ]
   ...
 }
 ```
 
 ### Connect an LLM
 
-By default, the plugin uses a mock LLM for local development. Assuming you already have an LLM configured with a local installation of [Claude Code](https://claude.ai) or [OpenCode](https://opencode.ai), you can reuse it by simply adding this configuration:
+By default, the plugin uses a mock LLM for local development. Assuming you already have an LLM configured with a local installation of [Claude Code](https://claude.ai) or [OpenCode](https://opencode.ai), you can use that by simply adding this configuration:
 
 ::: code-group
 ```yaml [.cdsrc.yaml]
@@ -84,38 +84,6 @@ cds:
 ```
 :::
 
-Alternatively you can bind your app to an existing instance of [SAP AI Core](https://help.sap.com/docs/sap-ai-core):
-
-::: code-group
-```yaml [.cdsrc.yaml]
-cds:
-  requires:
-    llm:
-      kind: aicore
-      model: anthropic--claude-4.6-sonnet
-```
-```jsonc [package.json]
-"cds": {
-  "requires": {
-    "llm": {
-      "kind": "aicore",
-      "model": "anthropic--claude-4.6-sonnet"
-    }
-  }
-}
-```
-:::
-
-Then start your server in `hybrid` profile:
-
-```bash
-cds bind -2 <instance>
-cds w --profile hybrid
-```
-
-See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.
-
-
 
 ### Using Chat Preview
 
@@ -123,7 +91,7 @@ For local development, the plugin serves a chat preview at http://localhost:4004
 
 
 
-![alt text](assets/chat-preview.png)
+![alt text](chat-preview.png)
 
 
 
@@ -168,9 +136,19 @@ You are the **Catalog Agent**, a helpful assistant for the capire bookshop.
 
 ## Configuration
 
+### LLM Configuration
+
 The LLM used by an agent is configured via `cds.requires.llm`. You can provide a `kind` as with [any required service](https://cap.cloud.sap/docs/node.js/core-services#required-services).
 
-```jsonc
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  requires:
+    llm:
+      kind: aicore
+      model: anthropic--claude-4.6-sonnet
+```
+```jsonc [package.json]
 "cds": {
   "requires": {
     "llm": {
@@ -180,11 +158,17 @@ The LLM used by an agent is configured via `cds.requires.llm`. You can provide a
   }
 }
 ```
+:::
+
 
 | Kind     | Description                                                           |
 | -------- | --------------------------------------------------------------------- |
 | `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core    |
 | `mock`   | The default for `development`, provides a mocked response when called |
+| `anthropic` | Alternative for `development`, fetching credentials from local Claude or OpenCode installations |
+
+See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.
+
 
 ## Advanced
 

@@ -46,8 +46,13 @@ extend Incidents with {
 }
 ```
 
-> [!tip] Prefer calculated elements for vector embeddings
-> If the database calculates vector embeddings on write it automatically regenerates the embedding if the input data changes.
+:::tip Calculated elements for vector embeddings
+If the database calculates vector embeddings on-write it automatically regenerates the embedding if the input data changes.
+:::
+
+::: warning Embedding localized elements
+A stored ([on-write](../../cds/cdl#on-write)) calculated element **cannot** reference [localized](../uis/localized-data) elements. Instead, embed the default language and use a **multilingual embedding model** so that queries in other languages still match.
+:::
 
 
 ### Using SAP Cloud SDK for AI
