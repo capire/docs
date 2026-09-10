@@ -416,7 +416,7 @@ build-parameters:
 Add [security configuration](../security/authentication) using the command:
 
 ```shell
-cds add xsuaa --for production
+cds add xsuaa
 ```
 
 Add the admin role
