@@ -199,7 +199,7 @@ When the native fetch client is not active, CAP uses the SAP Cloud SDK to resolv
 
 ### Application-Defined Destinations {#application-defined-destinations}
 
-If you don't want to use the BTP Destination service, you can define the URL and authentication details directly in your CAP configuration:
+If you don't want to use SAP BTP destinations, you can define the URL, authentication details, and additional metadata directly in your CAP configuration:
 
 ```json
 "cds": {
