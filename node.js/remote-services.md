@@ -34,24 +34,24 @@ CAP supports two HTTP clients for outgoing remote service calls: [SAP Cloud SDK]
 
 #### SAP Cloud SDK {#sap-cloud-sdk}
 
-If the SAP Cloud SDK HTTP client (`@sap-cloud-sdk/http-client`) is installed, CAP uses it by default. This provides full support for all SAP BTP Destination service features including on-premise connectivity.
+If the SAP Cloud SDK HTTP client (`@sap-cloud-sdk/http-client`) is installed, CAP uses it by default. The client provides full support for all SAP BTP Destination service features including on-premise connectivity.
 
 [Learn more about SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
 #### Native Fetch Client <Beta /> {#native-fetch}
 
 CAP provides a built-in remote client that uses the native Node.js `fetch` API, including support for resolving named destinations from the SAP BTP Destination service.
-During local development, you don't need SAP Cloud SDK.
-For production, SAP Cloud SDK is only required if you use authentication types or proxy configurations not yet supported by the native client (see warning below).
-
-Which client is used depends on:
-
-1. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
-2. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
 
 ::: warning Current limitations
 The native fetch client supports only proxy type `Internet` and authentication types `NoAuthentication`, `BasicAuthentication`, and `OAuth2ClientCredentials`. Other authentication types are resolved on a best-effort basis via the native destination client.
 :::
+
+You don't need SAP Cloud SDK for local development. For production, the SAP Cloud SDK is only required if you use authentication types or proxy configurations not yet supported by the native client.
+
+The client selection follows this priority:
+
+1. **Explicit configuration** - set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
+2. **Default behavior** - CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
 
 [Learn more about SAP BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
 
