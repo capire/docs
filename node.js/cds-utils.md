@@ -24,7 +24,18 @@ let pkg = await read ('package.json')
 ```
 
 
+### ms4(**timeSpan**, **unit**) {.method}
 
+ Converts a time span with a unit to milliseconds.
+ You can pass the unit as part of the time span or as the second parameter.
+ The unit can be `s`, `m`, `h`, `d`, or `w`.
+ For example:
+
+ ```js
+const { ms4 } = cds.utils
+ms4(5,'s') //> 5000
+ms4('5s') //> 5000
+```
 
 
 ### uuid() {.method}

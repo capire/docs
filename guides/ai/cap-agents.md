@@ -5,6 +5,9 @@ Simply annotate a CAP service with [`@agent`](#declare-agent-services) to do so.
 The plugin uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) or [_Pi_](https://pi.dev) internally.
 {.abstract}
 
+> [!caution] SAP API Policy Applies!
+> CAP-level agents are intended only for exposing _custom_ CAP application services. They are **_NOT_**{.red} an SAP-endorsed architecture or pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ as referred to in the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), section 2.2.2. -> Read section [_SAP API Policy_](#sap-api-policy) below!
+
 [[toc]]
 
 
@@ -12,11 +15,18 @@ The plugin uses state-of-the-art agent harness frameworks like [_LangChain_](htt
 
 Within your project root run this to add the [`@cap-js/agents`](https://github.com/cap-js/agents) plugin:
 
-```bash
+::: code-group
+```sh [Node.js]
 npm add @cap-js/agents
 ```
+```xml [Java (srv/pom.xml)]
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-adapter-agent</artifactId>
+</dependency>
+```
+:::
 
-> [!note] Java variant coming soon.
 
 
 ## Declare `@agent` Services
@@ -59,11 +69,14 @@ annotate CatalogService.submitOrder with @agent.hitl; // [!code focus]
 
 When the agent decides to call the action, the task pauses and transitions to the A2A [`input-required`](https://a2a-protocol.org/latest/specification/#413-taskstate) state instead of running the action immediately.
 
+> [!warning] Only supported by CAP Node.js
+> `@agent.hitl` is not yet supported by CAP Java
+
 
 
 ### Optional: `AGENTS.md`
 
-You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated ReAct agent, the plugin auto-builds the agent from the directory at startup — no JavaScript handlers required.
+You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated _ReAct_ agent, the plugin auto-builds the agent from the directory at startup — no custom handlers required.
 
 For example, we do so in the [XTravels sample](./xtravels-sample.md):
 
@@ -108,7 +121,7 @@ XTravels application — the trips you persist show up in the app's Fiori UI.
 ...
 ```
 :::
-[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/aix/srv/travel-agent/AGENTS.md){.learn-more}
+[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/main/srv/travel-agent/AGENTS.md){.learn-more}
 
 
 > [!tip] Using <code>./srv/*</code> subfolders
@@ -173,7 +186,7 @@ the `Airports` entity (e.g. "Paris" → CDG, ORY).
 ```
 :::
 
-[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/aix/srv/travel-agent/skills/flight-booking/SKILL.md){.learn-more}
+[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/main/srv/travel-agent/skills/flight-booking/SKILL.md){.learn-more}
 
 > [!tip] Modular Skills for Subtasks
 > Think of such skills as modular capabilities that your agent can leverage to handle specific subtasks or workflows. Each skill is defined in its own `SKILL.md` file, making it easier to manage and extend the agent's functionality, at the same time keeping the context window contrained to the relevant skills required for the current task.
@@ -234,12 +247,14 @@ DEBUG=agents cds watch
 > [!tip] Zero Configuration
 > The plugin can automatically fetch required/missing credentials from local installations of supported LLMs, allowing you to work with zero additional configuration.
 
+> [!warning] CAP Node.js only
+> Auto configuration from local Claude and OpenCode installations is not supported by CAP Java
 
 ### Using Chat Preview <Alpha/>
 
-For local development, the plugin serves a rudimentary experimental chat preview at http://localhost:4004/a2a/browse/preview/.
+A rudimentary experimental chat preview is provided in the generic _index.html_ page → see the _Preview_ links next to the A2A endpoints – which can be used in local development.
 
-Open the chat preview in your browser to interact with the agent. For example, enter the same prompts as we did over in the [MCP Services](./cap-mcp.md#using-opencode-or-alike) guide with OpenCode:
+For our bookshop sample, open the chat preview in your browser at http://localhost:4004/a2a/browse/preview/ to interact with the agent. In the chat, enter the same prompts as we did over in the [MCP Services](./cap-mcp.md#using-opencode-or-alike) guide with OpenCode:
 
 
 ```sh
@@ -261,6 +276,10 @@ Also answer the questions that the agent asks you back.
 
 Given [`@agent`](#declare-agent-services)-annotated service definitions, the plugin automatically creates an agent per CAP service with the configured models, served out of the box via A2A endpoints, with seamless integration with local service capabilities, and ready-to-use support for persistence, telemetry, quotas, content filtering, as well as enterprise-grade features like audit logging, data privacy, and security.
 
+> [!warning] CAP Node.js only
+> Persistent chat history, telemetry, quotas, content filtering, audit logging and data privacy features are not yet supported by CAP Java.
+
+[Learn more about agents in CAP Java.](../../java/ai#agents){.learn-more}
 
 ### Autowired Tools via MCP
 
@@ -557,3 +576,10 @@ See section [_Telemetry \> MLflow_](#mlflow) above for details.
 
 A record of the quotas configurations, specifying limits on resource usage such as API calls, execution time, and memory consumption.
 See section [_Quotas_](#quotas) above for details.
+
+
+## SAP API Policy
+
+> [!caution]
+> CAP-level agents as documented herein must not be used as gateways or proxies for SAP Application APIs. The _cap/agents_ plugins are not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
+> Any use of SAP Application APIs must be in accordance with the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For SAP-endorsed patterns on agentic access to SAP Application APIs, consult the [_SAP Architecture Center_](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.

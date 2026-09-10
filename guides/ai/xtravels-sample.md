@@ -20,16 +20,15 @@ The XTravels sample provides a more comprehensive example of how to work with se
 
 The classic approach as illustrated below, is used a static UI where the user interacts with the XTravels application, and the application in turn interacts directly with individual services for events, hotels, and flights, without any intelligent coordination between them.
 
-![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg)
+![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg?raw)
 
 ### Agentic Approach
 
 By using agents we can replace classic UIs to create travels, with deep integration across the various services – both for development teams that had to invest accordingly, as well as for end-users seeking an automated travel planning experience.
 
-![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg)
+![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg?raw)
 
 The _XTravels App_ in the illustration above reduces to a lightweight application with only simple mostly readonly UIs and minimal user interaction, while the agents handle the complex coordination and integration tasks behind the scenes. Also, all the formerly required deep integrations can be eliminated, with all the orchestration and decision-making now offloaded to the agents. At least, that's what we hope to achieve.
-
 
 ## Preliminaries
 
@@ -173,7 +172,7 @@ In a separate terminal, start OpenCode:
 opencode
 ```
 
-![OpenCode start screen](opencode-start-screen.png)
+![OpenCode start screen](opencode-start-screen.png){.ignore-dark}
 
 Enter a prompt, such as:
 
@@ -252,11 +251,25 @@ Inspect these files in VS Code to understand how the instructions and guidelines
 
 ### Test-drive with Chat Client
 
-Again, start the CAP server as an all-in-one instance, with mocked required services:
+Again, start the CAP server as an all-in-one instance, with mocked required services, and we would see in the log that the agent is connecting to the LLM, as shown below:
 
 ```shell
 cds w xtravels
 ```
+```zsh
+[agents] - cds.connect.to 'llm' with: {
+  kind: 'anthropic',
+  model: 'claude-sonnet-4-6',
+  credentials: {
+    anthropicApiUrl: 'http://localhost:6655/anthropic/',
+    apiKey: '***'
+  }
+}
+```
+
+::: tip
+See [Automatic Config](cap-agents#automatic-config) in the CAP Agents documentation for details.
+:::
 
 But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4005/agent/preview.
 
@@ -300,13 +313,32 @@ cds w xflights
 cds w xtravels
 ```
 
-Then test-drive the XTravels application by interacting with the agents through [OpenCode](#test-drive-with-opencode) or the [Chat Preview](#test-drive-with-chat-client) as documented above.
+In the log output of each [`@agent`]-ified service, that is for `events`, `hotels`, and `travels`, we see the `cds.connect to 'llm'` taking place:
+
+```zsh
+[agents] - cds.connect.to 'llm' with: {
+  kind: 'anthropic',
+  model: 'claude-sonnet-4-6',
+  credentials: {
+    anthropicApiUrl: 'http://localhost:6655/anthropic/',
+    apiKey: '***'
+  }
+}
+```
+
+Then test-drive the XTravels application by interacting with the agents through [OpenCode](#test-drive-with-opencode) or the [Chat Preview](#test-drive-with-chat-client) as documented above, starting with the same prompt:
+
+```
+Plan a trip to sapphire 27
+```
 
 
 ![Desktop view with multiple terminal windows running XTravels services separately, including events, hotels, S4, flights, and the main xtravels service, plus an OpenCode session. The wider environment is a multi-window local development workspace, and the tone is technical and operational.](xtravels-run-separately.png){.ignore-dark}
 
 
-### Remote MCP Services
+### Calling Remote MCP Services
+
+Looking closer at the log output, we can see that as soon as the `TravelAgentService` starts in response to the initial user request, it immediately connects to the remote `FlightsService` service via MCP:
 
 ```zsh
 [agents] - sap.capire.travels.TravelAgentService request {
@@ -314,58 +346,146 @@ Then test-drive the XTravels application by interacting with the agents through 
   method: 'message/stream',
   text: 'Plan a trip to sapphire 27'
 }
-[agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService { at: 'http://localhost:4006/mcp/flights' }
+[agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService {
+  at: 'http://localhost:4006/mcp/flights'
+}
 ```
 
-### Remote Subagents
+Means that the `TravelAgentService` is auto-wired to the `FlightsService` through the MCP protocol, allowing it to request flight information as part of handling the user's travel planning request.
+
+#### Processed by the remote FlightsService
+
+In the log output of the `xflights` process, we can see the incoming MCP requests from the `TravelAgentService` being received and processed by the `FlightsService`:
 
 ```zsh
-[agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService { at: 'http://localhost:4008/a2a/hotels' }
-[agents:a2a] - Connecting to subagent sap.capire.events.EventsService { at: 'http://localhost:4007/a2a/events' }
+[mcp] - sap.capire.flights.FlightsService describe {
+  entities: [ 'Flights', 'Airlines', 'Airports', 'Supplements' ],
+  actions: [ 'ReserveSeats', 'ReleaseSeats' ]
+}
+[mcp] - sap.capire.flights.FlightsService describe {
+  entities: [ 'Airports', 'Flights' ]
+}
+[mcp] - sap.capire.flights.FlightsService query {
+  cql: "SELECT ID, name, city FROM Airports WHERE city = 'Orlando'"
+}
+[mcp] - sap.capire.flights.FlightsService query {
+  cql: "SELECT ID, date, origin.city, destination.city, ... from Flights
+  WHERE destination_ID = 'MCO' AND date = '2027-05-17' AND free_seats > 0"
+}
+...
 ```
-```zsh
-[agents:a2a] - Sending message to sap.capire.events.EventsService { messageId: '59e07fd2-2227-4522-824c-40cc8272dbc4' }
 
-Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.
+
+### Delegation to Subagents
+
+Immediately after connecting to the MCP service, we see that the `TravelAgentService` also connects to the `HotelsService` and `EventsService`, this time through the A2A protocol:
+
+```zsh
+[agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService {
+  at: 'http://localhost:4008/a2a/hotels'
+}
+[agents:a2a] - Connecting to subagent sap.capire.events.EventsService {
+  at: 'http://localhost:4007/a2a/events'
+}
 ```
+
+With that the root agent served by `TravelAgentService` is able to delegate individual subtasks to the `HotelsService` and `EventsService`. This happens through natural language requests sent via A2A, as we can see in the subsequent log outputs of the `travels` app:
+
+
+```zsh
+[agents:a2a] - Sending message to sap.capire.events.EventsService {
+  messageId: '59e07fd2-2227-4522-824c-40cc8272dbc4'
+}
+
+Find SAP Sapphire 2027 and tell me the event dates, city, venue, and prices.
+```
+
+
+#### Processed in remote subagents
+
+In the log output of the `events` process, we can see the incomming A2A message received by the `EventsService` and processed via service-local MCP queries:
+
 ```zsh
 [agents] - sap.capire.events.EventsService request {
   conversation: '-',
   method: 'message/send',
-  text: 'Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.'
+  text: 'Find SAP Sapphire 2027 and tell me the event dates, city, venue, and prices.'
 }
+
 [mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
 [mcp] - sap.capire.events.EventsService query {
-  cql: "SELECT from Events { ID, name, startDate, endDate, city, venue, price } WHERE name like '%Sapphire%' AND year(startDate) = 2027"
+  cql: "SELECT from Events {
+    ID, name, startDate, endDate, city, venue, price
+  } WHERE name like '%Sapphire%' AND year(startDate) = 2027"
 }
-[agents] - sap.capire.events.EventsService completed { conversation: 'd5fdcec4', duration: '7.9s' }
+[agents] - sap.capire.events.EventsService completed {
+  conversation: 'd5fdcec4',
+  duration: '7.9s'
+}
 ```
+
+Similar for the booking subtask delegated to the `EventsService` later on, which the subagent processes by `call`-ing its local action `bookTicket`:
+
 ```zsh
 [agents] - sap.capire.events.EventsService request {
   conversation: '-',
   method: 'message/send',
-  text: 'Book 1 attendee pass for SAP Sapphire 2027 in Orlando for guest "Mrs. Anne Marie Pratt".'
+  text: `Book 1 attendee pass for SAP Sapphire 2027 in Orlando
+    for guest "Mrs. Anne Marie Pratt".`
 }
 [mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
 [mcp] - sap.capire.events.EventsService query {
-  cql: "SELECT ID, name, city, country, venue, startDate, endDate, price, availableTickets FROM Events WHERE name LIKE '%Sapphire%' AND city LIKE '%Orlando%'"
+  cql: "SELECT ID, name, city, country, venue, ... FROM Events
+  WHERE name like '%Sapphire%' AND city like '%Orlando%'"
 }
 [mcp] - sap.capire.events.EventsService - call bookTicket {
   eventId: '4505f22c-817c-4db1-841c-afa9351b93ca',
   guest: 'Mrs. Anne Marie Pratt',
   seats: 1
 }
-[agents] - sap.capire.events.EventsService completed { conversation: '790039b6', duration: '9.1s' }
+[agents] - sap.capire.events.EventsService completed {
+  conversation: '790039b6',
+  duration: '9.1s'
+}
 ```
 
 ## Conclusion
 
-In this guide, we have walked through the process of setting up and interacting with the XTravels agents using both OpenCode and the Chat Preview. We explored the structure of the service and skill files, tested the agents' capabilities, and demonstrated how to approve actions triggered by the agents. This setup allows for efficient local development and testing of agent-driven workflows in the XTravels application.
+In this guide, we have walked through the process of setting up and interacting with CAP Services in the XTravels samplefrom using Generative AI on two levels:
+
+First we had [_MCP Services_](#mcp-services) consumed directly from an AI client, like OpenCode, Claude Code, or Joule Work, as illustrated below.
+
+![Diagram showing OpenCode connected as a generic agent via MCP to four backend services: Events Service, Hotels Service, Flights Service, and Travels Service, each labeled as an MCP Service](xtravels-mcp.drawio.svg)
+MCP only{style="font-family: serif; font-style:italic; text-align:center"}
+
+Next, we turned our CAP Services into [_Custom Agents_](#custom-agents) consumed via A2A from Chat Preview, with sub tasks factored out into subagents, as illustrated below.
+
+![Diagram showing a Travel Agent as the primary agent connected via A2A to two subagents, Events Service and Hotels Service, and via MCP to Flights Service, illustrating how the primary agent delegates tasks to subagents and a backend service](xtravels-subagents.drawio.svg)
+
+The following table highlights some key differences between both approaches.
+
+| Aspect | [MCP Services](#mcp-services) | [Custom Agents](#custom-agents) |
+| --- | --- | --- |
+| Client | Full-blown Generic AI client | Simple chat client (Browser-based) |
+| Agent(s) | Generic agent provided by client | Custom agents in CAP apps |
+| ReAct&nbsp;loops | Running within the client | Running within CAP apps |
+| Knowledge | Works for well-known domains | Works also for specialized domains |
+| Workflows | Best suited to well-known workflows that the model can handle from service metadata. | Supports specialized workflows through custom agents and explicit delegation. |
 
 
-> [!tip] Done, q.e.d. ... sort of :)
-> You have successfully tested the travel planning and booking workflow locally using OpenCode.
-> And we've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
+The table below highlights some key differences between the classic UI-centric approach and the agentic approach:
+
+| Aspect | [Classic UI-centric approach](#classic-ui-centric-approach) | [Agentic approach](#agentic-approach) |
+| --- | --- | --- |
+| User interaction | Tedious: Users fill in forms and screens manually. | Automated. Users describe their goal, and the agents handle the rest. |
+| Application UI | Requires purpose-built screens for planning, selection, validation, and booking. | Hardly any UIs required. Only one left to display and approve Travel requests; largely read-only. |
+| Service integration | Applications need deep integration with the backend services they use. | Services are completely decoupled. The agents do all integration. |
+| Development effort | High. Due to complex workflows that span multiple services, as well as intricate UI requirements. | Low. Teams define focused services and agent instructions, while the agents handle more orchestration. |
+| Flexibility | New scenarios often require substantial changes to the UI and integration code. | Agents easily and automatically serve various use cases in an ad-hoc and adaptive manner.  |
+
+
+> [!tip] Done, q.e.d.
+> We've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
 
 
 [`@agent`]: ./cap-agents.md#declare-agent-services

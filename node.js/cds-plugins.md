@@ -17,7 +17,7 @@ The `cds-plugin` technique allows to provide extension packages with auto-config
 
 Simply add a file `cds-plugin.js` next to the `package.json` of your package to have this detected and loaded automatically when bootstrapping CAP Node.js servers through `cds serve`, or other CLI commands.
 
-Within such `cds-plugin.js` modules you can use [the `cds` facade](cds-facade) object, to register to lifecycle events or plugin to other parts of the framework. For example, they can react to lifecycle events, the very same way as in [custom `server.js`](cds-server#custom-server-js) modules:
+Within such `cds-plugin.js` modules you can use [the `cds` facade](cds-facade) object, to register to lifecycle events or plugin to other parts of the framework. For example, they can react to lifecycle events, the very same way as in [custom `server.js`](cds-server#custom-serverjs) modules:
 
 ::: code-group
 

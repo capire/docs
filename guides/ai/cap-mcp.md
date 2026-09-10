@@ -23,19 +23,13 @@ With that it becomes accessible to AI agents and LLM-powered tools without addit
 ## Add the MCP Plugin
 
 
-### In CAP Node.js Projects
+Within your project root run this to add the [`@cap-js/mcp`](https://github.com/cap-js/mcp) plugin for Node.js projects, or the `cds-adapter-mcp` dependency to your `srv/pom.xml` for CAP Java projects:
 
-Within your project root run this to add the [`@cap-js/mcp`](https://github.com/cap-js/mcp) plugin:
-
+::: code-group
 ```shell [Node.js]
 npm add @cap-js/mcp
 ```
-### In CAP Java Projects
-
-Add the `cds-adapter-mcp` dependency to your `srv/pom.xml`:
-
-::: code-group
-```xml [srv/pom.xml]
+```xml [Java (srv/pom.xml)]
 <dependency>
   <groupId>com.sap.cds</groupId>
   <artifactId>cds-adapter-mcp</artifactId>
@@ -91,8 +85,19 @@ annotate BookshopService.Authors with {
   books /** All the books written by the author. */;
 }
 ```
-::: details Only for Node.js ...
-Doc comments are currently supported for Node.js only. With the Java version of the MCP Adapter, only `@title` and `@description` annotations are supported.
+::: details Configuration required for CAP Java ...
+You must enable doc comments in the Java application and in the MTX sidecar.
+
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
 :::
 
 This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions.
@@ -101,7 +106,7 @@ This information is included in the output of the [`describe`](#-describe-servic
 
 ### Custom `@mcp.instructions`
 
-The MCP Adapter automatically sends [MCP instructions](https://modelcontextprotocol.io/specification/2026-07-28/schema#discoverresult) to MCP clients to help models understand how to interact with your services effectively. While these generic instructions are mostly fully sufficient, there may be cases where you want to provide additional guidance specific to your service through custom instructions.
+The MCP Adapter automatically sends [MCP instructions](https://modelcontextprotocol.io/specification/2026-07-28/schema#discoverresult) to MCP clients to help models understand how to interact with your services effectively. While these generic instructions are mostly sufficient, there may be cases where you want to provide additional guidance specific to your service through custom instructions.
 
 Use the `@mcp.instructions` annotation on service level, entity level, or action level to specify such custom instructions. For example:
 
@@ -220,9 +225,6 @@ And answer the questions that OpenCode asks you back.
 
 
 
-You can also run `opencode web` to open the OpenCode web interface, which provides a more user-friendly way to interact with your MCP servers, including features like tool inspection and query building. Here's a screenshot of a simple session:
-
-![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](../protocols/assets/mcp/opencode-web.png){style="width:70%"}
 
 
 ### Autowired MCP Clients
@@ -304,7 +306,7 @@ For example, for a `list books` prompt, you should see log output similar to thi
 }
 ```
 ```js [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
+INFO MCP tool called: service='CatalogService', tool='query'
 ```
 :::
 
@@ -319,10 +321,9 @@ Given `@mcp`-annotated service definitions, the plugin automatically creates an 
 
 ### • `describe` service {.tool}
 
-This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
+This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entities` restricts the output to a single entity, the optional parameter `actions` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 ### • `query` entity {.tool}
-<div id="tool-query" />
 
 This tool is used to read data from the service.
 It expects a single parameter `cql`, which contains the query in [CQL](../../cds/cql) syntax to be executed. LLMs can generate this query based on natural language prompts.
@@ -489,7 +490,7 @@ By default, multiple actions may share the same generic [`call`](#-call-action) 
 
 ### Query and Actions Only
 
-The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
+The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#-query-entity) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
 
 For example, action `submitOrder` in the `CatalogService` ultimately creates an Order:
 
@@ -513,10 +514,13 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 > Agents can potentially be manipulated by data returned from the service to execute unintended actions. For any deployment ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
 
 
-## SAP API Policy
+### API Governance
 
 > [!caution]
 > The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
+
+
+## SAP API Policy
 
 > [!caution]
 > The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs. The adapter is not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
