@@ -273,6 +273,7 @@ main .vp-doc {
   .annotation::before { content: 'Annotation: '; color: var(--vp-c-text-2) }
   .interface::before { content: 'Interface: '; color: var(--vp-c-text-2) }
   .property::before { content: 'Property: '; color: var(--vp-c-text-2) }
+  .tool::before { content: 'Tool: '; color: var(--vp-c-text-2) }
   .type::before { content: 'Type: '; color: var(--vp-c-text-2) }
   .method::before { content: 'Method: '; color: var(--vp-c-text-2) }
   .event::before { content: 'Event: '; color: var(--vp-c-text-2) }
