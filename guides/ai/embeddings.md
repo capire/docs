@@ -112,8 +112,10 @@ var incidents = srv.run(Select.from(INCIDENTS)
 Computes the cosine of the angle between `vector1` and `vector2`, comparing the direction of the vectors. Both vectors must have the same dimension.
 
 ```tsx
-function cosine_similarity (vector1, vector2) => Number
+function cosine_similarity (vector1, vector2) => Double in [-1,1]
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. With modern embedding models, the result is between 0 (no similarity) and 1 (semantic match).
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector) {.learn-more}
 
@@ -123,14 +125,16 @@ function cosine_similarity (vector1, vector2) => Number
   Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
 
 ```tsx
-function l2distance (vector1, vector2) => Number
+function l2distance (vector1, vector2) => Double >= 0
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. The closer the result to 0, the higher the semantic similarity. Most modern embedding models produce L2-normalized vectors (length of 1.0), for which the `l2distance` is between 0 and 2.
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector) {.learn-more}
 
 ### `l2normalize` {.method}
 
-Normalizes the length of `vector` to 1 while keeping the direction. This can help to get more robust floating-point precision results.
+Normalizes the length of `vector` to 1.0 while preserving the direction. This improves floating-point precision and upper-bounds the resulting `l2distance` to 2.0, preventing distance overflow during comparisons.
 
 ```tsx
 function l2normalize (vector) => Vector
@@ -141,11 +145,11 @@ function l2normalize (vector) => Vector
 
 ### `vector_embedding` {.method}
 
-Creates a vector embedding from a given `text`.
+Creates a vector embedding of the given `text` using the `embedding_model`.
 
 ```tsx
-function vector_embedding (text, text_type, model_name) => Vector
-function vector_embedding (text, text_type, model_name, remote_source) => Vector
+function vector_embedding (text, text_type, embedding_model) => Vector
+function vector_embedding (text, text_type, embedding_model, remote_source) => Vector
 ```
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) {.learn-more}
