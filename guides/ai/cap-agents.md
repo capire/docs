@@ -1,6 +1,6 @@
 # CAP-level Agents
 
-The [`@cap-js/agents`](https://github.com/cap-js/agents) plugin allows to easily create _**enterprise grade**_ agents based on given CAP services, and served via the [_A2A_ protocol](https://a2a-protocol.org). It uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) and [_LangGraph_](https://www.langchain.com/langgraph), or the [_Pi_](https://pi.dev) internally.
+The [`@cap-js/agents`](https://github.com/cap-js/agents) plugin allows to easily create _**enterprise grade**_ agents based on given CAP services, and served via the [_A2A_ protocol](https://a2a-protocol.org). It uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) or [_Pi_](https://pi.dev) internally.
 {.abstract}
 
 [[toc]]
@@ -109,7 +109,7 @@ XTravels application — the trips you persist show up in the app's Fiori UI.
 
 > [!tip] Using <code>./srv/*</code> subfolders
 > You can use subfolders like `./srv/travel-agent` as shown above for the [XTravels sample](./xtravels-sample.md).
-> This helps keeping your service definitions and agent-related files organized, especially when working with multiple services and agents, and is supported by the <Config>`cds.folders.srvs: srv/*`</Config> config option added included with the `@cap-js/agents` plugin.
+> This helps keeping your service definitions and agent-related files organized, especially when working with multiple services and agents, and is supported by the <Config>`cds.folders.srvs: srv/*`</Config> config option included with the `@cap-js/agents` plugin.
 
 
 ### Optional: `skills/*/SKILL.md`s
@@ -188,47 +188,7 @@ For local development, the plugin serves a rudimentary experimental chat preview
 
 
 
-![alt text](chat-preview.png)
-
-
-
-
-## Markdown-Based Agents
-
-In addition you can further customize the agent by providing a Markdown-based agent definition, as described in the [Markdown-Based Agents](#markdown-based-agents) section.
-
-### Markdown-Based Agents
-
-To define an agent's identity, behaviour, and skills explicitly, add a sibling directory matching the slugified service name. When present, it replaces the default agentification: instead of the auto-generated ReAct agent, the plugin auto-builds the agent from the directory at startup — no JavaScript handler required.
-
-```zsh
-srv/
-├─ travel-agent/.cds
-└─ catalog-agent/                ← matches the slugified service name
-   │.  AGENTS.md                  ← agent identity + behaviour
-   └─ skills/
-      └─ book-purchase/
-         └─ SKILL.md             ← workflow + examples
-```
-
-`AGENTS.md` defines who the agent is. The frontmatter populates the agent card;
-the body is the agent's system prompt:
-
-```md
----
-name: catalog-agent
-version: "1.0.0"
-description: >
-  Bookshop assistant for placing book orders on behalf of the user.
----
-
-# Catalog Agent
-
-## Identity
-
-You are the **Catalog Agent**, a helpful assistant for the capire bookshop.
-...
-```
+![chat preview showing how the agent can list and order books](chat-preview.png)
 
 
 ## Configuration
@@ -261,7 +221,7 @@ cds:
 | Kind     | Description                                                           |
 | -------- | --------------------------------------------------------------------- |
 | `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core    |
-| `auto` | The default for `development`, using local Claude or OpenCode configuration |
+| `auto` | Only for `development`, using local Claude or OpenCode configuration |
 | `mock`   | A pure mock for `development`, provides dummy responses when called |
 
 See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.vite
