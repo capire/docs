@@ -66,7 +66,7 @@ opencode
 Enter a prompt, such as:
 
 ```
-Plan a trip to sapphire 27 for Anne Pratt flying from Frankfurt
+Attend Sapphire 27
 ```
 
 You should see something like this:
