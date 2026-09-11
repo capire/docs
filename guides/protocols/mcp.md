@@ -334,7 +334,7 @@ For example, for the above query, you should see log output similar to this:
 }
 ```
 ```js [Java]
-MCP tool called: service='CatalogService', tool='query', arguments={cql=SELECT from Books { ID, title, author { ID, name }, genre { ID, name } }}
+MCP tool called: service='CatalogService', tool='query'
 ```
 :::
 
