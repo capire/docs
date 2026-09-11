@@ -81,7 +81,7 @@ CdsVector vector = CdsVector.of(embedding);
 
 Use vector functions documented below in CQL statements to perform similarity searches and other operations on embeddings. Their behavior is based on the implementations from SAP HANA. CAP supports these functions across all supported databases.
 
-You can use these vector functions directly in your CQL queries; for CAP Java, [see respective documentation](../../java/working-with-cql/query-api#vector-functions).
+You can use these vector functions directly in your CQL queries. For CAP Java, see [Vector Functions](../../java/working-with-cql/query-api#vector-functions).
 
 
 ### Query for Similarity
