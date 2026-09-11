@@ -97,17 +97,11 @@ const incidents = await SELECT.from`Incidents`
   ) > 0.75`
 ```
 ```Java [Java]
-// Compute embedding for user question
-var query = CQL.val("Fetch incidents with solar inverters. How were they resolved?");
-var embedding = CQL.vectorEmbedding(query, TextType.QUERY, "SAP_GXY.20250407");
-
-// Compute similarity between user question and incident embeddings
-var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
-
-// Find Incidents related to user question
-Select.from(INCIDENTS)
-   .columns(i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
-   .where(i -> similarity.gt(0.75));
+var question = "Fetch incidents with solar inverters. How were they resolved?";
+var incidents = srv.run(Select.from(INCIDENTS)
+  .where(i -> CQL.cosineSimilarity(i.embedding(),
+    CQL.vectorEmbedding(question, TextType.QUERY, "SAP_GXY.20250407")
+  ).gt(0.75)));
 ```
 :::
 
