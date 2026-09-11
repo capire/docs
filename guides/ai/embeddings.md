@@ -134,7 +134,7 @@ In the context of embeddings, both vectors must be from the same embedding model
 function l2distance (vector1, vector2) => Double >= 0
 ```
 
-In the context of embeddings, both vectors must be from the same embedding model configuration. The closer the result to 0, the higher the semantic similarity.
+In the context of embeddings, both vectors must be from the same embedding model configuration. The closer the result to 0, the higher the semantic similarity. Most modern embedding models produce L2-normalized vectors (unit length of 1.0), for which the `l2distance` is between 0 and 2.
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector) {.learn-more}
 
