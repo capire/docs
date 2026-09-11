@@ -118,8 +118,10 @@ Select.from(INCIDENTS)
 Computes the cosine of the angle between `vector1` and `vector2`, comparing the direction of the vectors. Both vectors must have the same dimension.
 
 ```tsx
-function cosine_similarity (vector1, vector2) => Number
+function cosine_similarity (vector1, vector2) => Double in [-1,1]
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. With modern embedding models, the result is between 0 (no similarity) and 1 (semantic match).
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector) {.learn-more}
 
@@ -129,8 +131,10 @@ function cosine_similarity (vector1, vector2) => Number
   Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
 
 ```tsx
-function l2distance (vector1, vector2) => Number
+function l2distance (vector1, vector2) => Double >= 0
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. The closer the result to 0, the higher the semantic similarity.
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector) {.learn-more}
 
