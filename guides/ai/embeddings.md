@@ -140,7 +140,7 @@ In the context of embeddings, both vectors must be from the same embedding model
 
 ### `l2normalize` {.method}
 
-Normalizes the length of `vector` to 1 while keeping the direction. This can help to get more robust floating-point precision results.
+Normalizes the length of `vector` to 1.0 while preserving the direction. This improves floating-point precision and upper-bounds the resulting `l2distance` to 2.0, preventing distance overflow during comparisons.
 
 ```tsx
 function l2normalize (vector) => Vector
