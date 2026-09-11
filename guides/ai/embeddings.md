@@ -124,9 +124,9 @@ function cosine_similarity (vector1, vector2) => Number
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector) {.learn-more}
 
 
-  ### `l2distance` {.method}
+### `l2distance` {.method}
 
-  Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
+Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
 
 ```tsx
 function l2distance (vector1, vector2) => Number
