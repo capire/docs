@@ -109,12 +109,24 @@ using { AdminService } from './admin-service';
 
 As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
 
-- [Doc comments](../../cds/cdl#doc-comments) -> most recommended (Node.js only)
+- [Doc comments](../../cds/cdl#doc-comments) -> most recommended
 - `@title`
 - `@description`
 
-> [!note]
-> Doc comments are only supported in Node.js. In Java, use `@title` and `@description` annotations instead.
+::: warning Configuration required for CAP Java
+You must enable doc comments in the Java application and in the MTX sidecar.
+
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
+:::
 
 For example, you can add doc comments to your entities and their elements like that:
 
@@ -133,7 +145,20 @@ annotate BookshopService.Authors with {
 }
 ```
 
+You can also provide service-specific instructions via annotation `@mcp.instructions`.
 
+::: code-group
+```cds [srv/books-service.cds]
+using { AdminService } from './admin-service';
+@mcp 
+@mcp.instructions: 'Always ask a confirmation before ordering any books'  // [!code focus]
+service BooksService {
+  ...
+}
+```
+:::
+
+These instructions are sent to a client who connects with an MCP server.
 
 ## Test-drive Locally
 
@@ -290,7 +315,7 @@ For example, for a `list books` prompt, you should see log output similar to thi
 }
 ```
 ```js [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
+INFO MCP tool called: service='CatalogService', tool='query'
 ```
 :::
 
@@ -307,7 +332,7 @@ the following tools for each MCP server, which can be used by LLMs and AI agents
 
 ### • `describe` service {.tool}
 
-This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
+This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entities` restricts the output to a single entity, the optional parameter `actions` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 ### • `query` entity {.tool}
 
