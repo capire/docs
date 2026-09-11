@@ -151,11 +151,11 @@ function l2normalize (vector) => Vector
 
 ### `vector_embedding` {.method}
 
-Creates a vector embedding from a given `text`.
+Creates a vector embedding of the given `text` using the `embedding_model`.
 
 ```tsx
-function vector_embedding (text, text_type, model_name) => Vector
-function vector_embedding (text, text_type, model_name, remote_source) => Vector
+function vector_embedding (text, text_type, embedding_model) => Vector
+function vector_embedding (text, text_type, embedding_model, remote_source) => Vector
 ```
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) {.learn-more}
