@@ -312,16 +312,19 @@ To illustrate the above:
 
 ### Fuzzy Search on SAP HANA Cloud {#fuzzy-search}
 
-> Prerequisite: For CAP Java, you need to run in [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and enable <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>
-
-Fuzzy search is a fault-tolerant search feature of SAP HANA Cloud, which returns records even if the search term contains additional characters, is missing characters, or has typographical errors.
+Fuzzy search is a fault-tolerant search feature of SAP HANA Cloud, which returns records even if the search term contains additional characters, is missing characters, or has typographical errors. CAP automatically sorts fuzzy search results by relevance (match score), if no explicit `$orderby` is specified.
 
 You can configure the fuzziness in the range `[0.0, 1.0]`. The value 1.0 enforces exact search.
 
 - Java: <Config java keyOnly>cds.sql.hana.search.fuzzinessThreshold = 0.8</Config>
-- Node.js:<Config keyOnly>cds.hana.fuzzy = 0.7</Config><sup>(1)</sup>
-
-<sup>(1)</sup> If set to `false`, fuzzy search is disabled and falls back to a case insensitive substring search.
+- Node.js:
+  |Property|Effect|
+  |---|---|
+  |<Config keyOnly>cds.hana.fuzzy = 0.7</Config> | global fuzziness threshold<sup>(1)</sup> |
+  |<Config keyOnly>cds.hana.fuzzy.ranked_search = false</Config>| opt-out of ranked search |
+  |<Config keyOnly>cds.hana.fuzzy.score = 0.7</Config>|  global fuzziness threshold |
+  
+  <sup>(1)</sup> If set to `false`, fuzzy search is disabled and falls back to a case insensitive substring search.
 
 Override the fuzziness for elements, using the `@Search.fuzzinessThreshold` annotation:
 
@@ -349,7 +352,13 @@ When using wildcards in search terms, an *exact pattern search* is performed.
 Supported wildcards are '*' matching zero or more characters and '?' matching a single character. You can escape wildcards using '\\'.
 :::
 
+::: tip Enable Fuzzy Search in CAP Java `4.9`
+CAP Java `5.x` comes with fuzzy search enabled by default, in CAP Java `4.9` it can be enabled by first enabling [`HEX` optimization mode](../../java/cqn-services/persistence-services#sql-optimization-mode) on SAP HANA Cloud and then setting <Config java keyOnly>cds.sql.hana.search.fuzzy = true</Config>.
+:::
 
+::: info Relevance sorting doesn't consider to-many associations
+Elements from to-many associated entities don't contribute to the sort order. Strong matches from them appear after weaker matches directly from the searched entity.
+:::
 
 ## Pagination & Sorting
 
