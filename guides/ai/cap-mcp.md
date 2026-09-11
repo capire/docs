@@ -1,11 +1,8 @@
----
-description: >
-  Expose CAP services via the Model Context Protocol for seamless AI agent integration.
----
-
 # Model Context Protocol Adapter
 
-Simply annotate a CAP service with the [`@mcp`](#serving-mcp) annotation to expose it via [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). With that it becomes accessible to AI agents and LLM-powered tools without additional implementation work.
+The [`@cap-js/mcp`](https://github.com/cap-js/mcp) plugin allows to easily expose given CAP services via the [_Model Context Protocol (MCP)_](https://modelcontextprotocol.io/).
+Simply annotate a CAP service with `@mcp` to do so.
+With that it becomes accessible to AI agents and LLM-powered tools without additional implementation work.
 {.abstract}
 
 > [!caution] SAP API Policy Applies!
@@ -65,58 +62,23 @@ annotate CatalogService with @mcp; // [!code focus]
 ```
 :::
 
-You can also specify an alternative path under which the MCP endpoint should be served as usual with CAP protocol annotations:
-
+::: details Optionally specify an alternative endpoint path ...
+As usual with CAP protocol annotations, you can also choose a custom path under which the MCP endpoint should be served, instead of using the default path `/mcp/<service>`:
 ```cds
 annotate CatalogService with @mcp:'books'
 ```
+:::
 
 > [!tip] Just Another Protocol
 > From the perspective of a developer in a CAP-based project, `@mcp` is just another protocol for your services, similar to `@odata`, `@graphql`, `@rest`, or `@hcql`. The adapter takes care of the rest, with all the standard CAP features you know working out of the box also with MCP, including annotations like `@cds.query.limit`, etc.
 
 
-### MCP-specific Services
+### Add Comments for LLMs
 
-Frequently, you might want to create services that are tailored specifically for MCP usage.
-Instead of annotating an existing service with `@mcp` and exposing all its entities and actions, simply create a dedicated service specifically for MCP. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+LLMs rely heavily on context information to produce high-quality output. Use standard CDS [`/**...*/` doc comments](../../cds/cdl#doc-comments) to do so, focusing on relevant hints and information about the service, entities, elements, actions, and parameters to the LLM, which aren't clear already from the given names and types in the model.
+In addition, information can be provided through annotations [`@title`](../../cds/annotations#general-purpose) and [`@description`](../../cds/annotations#general-purpose).
 
-::: code-group
-```cds [srv/books-service.cds]
-using { AdminService } from './admin-service';
-
-@mcp service BooksService {
-
-  @readonly entity Authors as projection on AdminService.Authors;
-  @readonly entity Books as projection on AdminService.Books {
-    ID, title, stock, price,
-    author,
-    genre.name as genre,
-    currency.name as currency,
-  }
-
-  @requires: 'authenticated-user'
-  action submitOrder ( book: Books:ID, quantity: Integer );
- }
-```
-:::
-
-
-> => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
-
-
-
-### Providing Descriptions
-
-As LLMs rely heavily on context information to create high-quality output, the adapter evaluates existing doc comments and annotations to provide additional information about the service, entities, elements, actions, and parameters to the LLM. This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions. In particular, the following information is evaluated:
-
-- [Doc comments](../../cds/cdl#doc-comments) -> most recommended (Node.js only)
-- `@title`
-- `@description`
-
-> [!note]
-> Doc comments are only supported in Node.js. In Java, use `@title` and `@description` annotations instead.
-
-For example, you can add doc comments to your entities and their elements like that:
+For example:
 
 ```cds
 /**
@@ -124,14 +86,64 @@ For example, you can add doc comments to your entities and their elements like t
  * It contains information about book authors.
  */
 annotate BookshopService.Authors with {
-  /** The ID of the author. */
-  ID;
-  /** The name of the author. */
-  name;
-  /** The books written by the author. */
-  books;
+  ID    /** The ID of the author. */;
+  name  /** The name of the author. */;
+  books /** All the books written by the author. */;
 }
 ```
+::: details Only for Node.js ...
+Doc comments are currently supported for Node.js only. With the Java version of the MCP Adapter, only `@title` and `@description` annotations are supported.
+:::
+
+This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions.
+
+
+
+### Custom `@mcp.instructions`
+
+The MCP Adapter automatically sends [MCP instructions](https://modelcontextprotocol.io/specification/2026-07-28/schema#discoverresult) to MCP clients to help models understand how to interact with your services effectively. While these generic instructions are mostly fully sufficient, there may be cases where you want to provide additional guidance specific to your service through custom instructions.
+
+Use the `@mcp.instructions` annotation on service level, entity level, or action level to specify such custom instructions. For example:
+
+```cds
+annotate CatalogService with @mcp.instructions: 'Specific hints about your servcie in general.';
+annotate CatalogService.Books with @mcp.instructions: 'Specific hints about books.';
+```
+
+::: note The annotation also supports i18n references, e.g. `{i18n>key}`
+:::
+
+### Use Case-Specific Services
+
+Frequently, you might want to create services that are tailored specifically for MCP usage.
+Instead of annotating an existing service with `@mcp` and exposing all its entities and actions, simply create a dedicated service specifically for MCP. For example, you could create a `BooksService` that only exposes a subset of the entities of the `AdminService` like that:
+
+::: code-group
+```cds [srv/mcp-service.cds]
+using { CatalogService } from './cat-service';
+
+@agent service BookshopService {
+
+  @readonly entity Authors as projection on AdminService.Authors excluding {
+    createdBy, modifiedBy,
+  }
+
+  @readonly entity Books as projection on AdminService.Books {
+    ID, title, stock, price,
+    author,
+    genre.name as genre,
+    currency.name as currency,
+  }
+
+  @agent.hitl
+  action submitOrder ( book: Books:ID, quantity: Integer );
+}
+```
+:::
+
+
+> => See also: [_Use Case-Oriented Services_](../../get-started/bookshop#use-case-specific-services) in the getting started guide.
+
 
 
 
@@ -273,6 +285,8 @@ Enter `/status` in the OpenCode interface to see details, which should display t
 ```
 :::
 
+::: info You can opt out of autowiring with [`cds.mcp.autowire: false`](#cdsmcpautowire).
+:::
 
 
 
@@ -339,6 +353,19 @@ SELECT from Authors {
 
 This tool is used to call unbound actions or functions. The required parameter `action` is an enum that lists all unbound actions and functions exposed by the service. The parameters of the action or function to call can be provided via the optional parameter `parameters`, that must contain all required parameters of the action or function. The tool takes these parameters and calls the action or function on the service.
 
+
+### Generate Server Card
+
+You can use `cds compile` to generate an [Server Card](https://modelcontextprotocol.io/community/working-groups/server-card) for your MCP server:
+
+```sh
+cds compile srv/cat-service.cds --to mcp
+```
+
+> [!note]
+> A Server Card is not required for your MCP server to function, but it may be used in development and provides a standardized way to describe the server's capabilities and tools.
+
+
 ### Inspect the Tools
 
 You can use the [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) to inspect the tools served from CAP services:
@@ -366,33 +393,12 @@ Then connect, and switch to the _Tools_ tab to the top of the inspector's window
 
 ## Configuration
 
-### Tool Name Prefixes
 
-Some MCP clients or harnesses require unique tool names across all MCP servers. You can use the option <Config>cds.mcp.prefix</Config> to specify a prefix for the tool names. For example:
+### `cds.mcp.autowire`
 
-::: code-group
-```yaml [.cdsrc.yaml]
-cds:
-  mcp:
-    prefix: {service.name}-
-```
-```json [package.json]
-{
-  "cds": {
-    "mcp": {
-      "prefix": "{service.name}-"
-    }
-  }
-}
-```
-:::
+#### Opting Out of Autowiring
 
-With this, the tool names generated by the MCP clients will be prefixed with the specified value, with the placeholder `{service.name}` being replaced by the actual service's fully qualified name – e.g., `CatalogService-describe`.
-
-
-### Opting out of Autowiring
-
-You can opt out of [autowired MCP clients](#autowired-mcp-clients) in development by setting the `cds.mcp.autowire` option to `false`, like so in your `package.json`:
+You can opt out of [autowired MCP clients](#autowired-mcp-clients) in development by setting the <Config>cds.mcp.autowire: false</Config>, like so in your `package.json`:
 
 ::: code-group
 ```yaml [.cdsrc.yaml]
@@ -412,7 +418,7 @@ cds:
 :::
 
 
-### Mock Authentication
+#### Mock Authentication
 
 [Autowired MCP clients](#autowired-mcp-clients) automatically add `Authorization` headers for the mock user `alice` (Node.js) or `privileged` (Java). If your service requires something different, you can customize the credentials via the `cds.mcp.autowire` configuration:
 
@@ -437,6 +443,41 @@ cds:
 }
 ```
 :::
+
+### `cds.mcp.prefix`
+
+Some MCP clients or harnesses might require unique tool names across all MCP servers.
+You can use the option <Config>cds.mcp.prefix</Config> to specify a prefix for the tool names. For example:
+
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  mcp:
+    prefix: {service.name}-
+```
+```json [package.json]
+{
+  "cds": {
+    "mcp": {
+      "prefix": "{service.name}-"
+    }
+  }
+}
+```
+:::
+
+With this, the tool names generated by the MCP clients will be prefixed with the specified value, with the placeholder `{service.name}` being replaced by the actual service's fully qualified name – e.g., `CatalogService-describe`.
+
+
+### `cds.mcp.format`
+
+By default, the [`query`](#-query-entity) tool expects queries in [CQL](../../cds/cql) syntax, which is a SQL-like language for querying CAP services, and best suited for most LLMs. You can change this to <Config>cds.mcp.format: cqn</Config> if to prefer to use structured [CQN](../../cds/cqn) input instead of CQL.
+
+
+### `cds.mcp.per_action_tool`
+
+By default, multiple actions may share the same generic [`call`](#-call-action) tool, which has advantages in regarding context windows by reducing the number of tools within the MCP ecosystem. Set <Config>cds.mcp.per_action_tool: true</Config> to configure that each action gets its own dedicated tool.
+
 
 ## Current Limitations
 
