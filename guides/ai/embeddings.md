@@ -174,7 +174,7 @@ npm add -D @cap-js/ai @cap-js/sqlite@^3.1 @huggingface/hub@^2.15.0 \
   @huggingface/tokenizers@0.1.3 onnxruntime-node@1.20.1
 ```
 
-No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. Both the on-write calculated element from [Generate Embeddings on the Database](#generate-embeddings-on-the-database) and the query-time `vector_embedding` calls then run locally against that model. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
+No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. Both the on-write calculated element from [Adding Embeddings](#adding-embeddings) and the query-time `vector_embedding` calls then run locally against that model. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
 
 ## PostgreSQL
 
@@ -183,7 +183,7 @@ No configuration is needed — the plugin redirects the standard `sqlite` (and `
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
 - Vectors stored in native `vector` type
-- CAP provides no built-in `vector_embedding` implementation. Compute embeddings in your application layer (see [Generate Embeddings Programmatically](#generate-embeddings-programmatically)) or define your own `vector_embedding` database function.
+- CAP provides no built-in `vector_embedding` implementation. Compute embeddings in your application layer (see [`vector_embedding`](#vector_embedding)) or define your own `vector_embedding` database function.
 - For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
 
 ## SAP HANA

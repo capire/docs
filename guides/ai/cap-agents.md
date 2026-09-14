@@ -342,7 +342,7 @@ Agents can leverage this short-term memory to maintain context across multiple i
 ### Telemetry
 
 
-When [`@cap-js/telemetry`](../../plugins#telemetry) is installed, the plugin automatically instruments the agent harness to emit [_OpenTelemetry_](https://opentelemetry.io/) tracing and metrics.
+When [`@cap-js/telemetry`](../../plugins/index.md#telemetry) is installed, the plugin automatically instruments the agent harness to emit [_OpenTelemetry_](https://opentelemetry.io/) tracing and metrics.
 
 ```shell
 npm add @cap-js/telemetry
