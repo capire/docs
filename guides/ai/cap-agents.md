@@ -487,14 +487,46 @@ On all errors the plugin will summarize the progress till that point. The summar
 On execution timeouts the graph does not fail but instead interrupts and sends a HITL message asking the user whether to continue, including the summary about the progress.
 
 
+### Evals-based Agent Testing <Alpha/>
 
+Evaluate your agent behavior using `cds.test`. First, start your application and send a message to the agent.
+Then check the response with deterministic assertions or use an LLM-as-a-Judge to score it against specified criteria.
+
+```js
+import cds from '@sap/cds'
+import { Judge } from '@cap-js/agents/eval'
+
+cds.test()
+
+describe('catalog', () => {
+  test('should list drama books', async () => {
+    const catalog = await cds.connect.to('CatalogService')
+    const result = await catalog.chat('what drama books do you have?')
+
+    const response = result.messages.at(-1)
+    expect(response.content).toContain('Wuthering Heights')
+    expect(response.content).toContain('Jane Eyre')
+
+    const judge = new Judge()
+    const { score } = await judge
+      .criteria('Should list **only** drama books, and suggest ordering one')
+      .evaluate(result)
+
+    expect(score).toBeGreaterThan(0.8)
+  })
+})
+```
+
+When [MLflow](#mlflow) is enabled, your test runs also appear as evaluations grouped by their top-level `describe` block.
+
+For detailed guidance on writing evals, refer to the documentation at:
+https://github.com/cap-js/agents/blob/main/.docs/testing/evals.md
 
 
 ### More to come...
 
 Following are features and areas we are currently working on, and plan to release in the near future:
 
-- **Evals-based Agent Testing** – using best practice evaluation frameworks.
 - **RAG & Knowledge Graphs** – for agents to leverage structured knowledge.
 - **Alternative Agent Harnesses** – to provide different execution environments for agents.
 - **Custom-coded Agents** – to inject custom logic and behavior into agent harness.
