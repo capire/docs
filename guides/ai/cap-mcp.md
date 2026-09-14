@@ -322,10 +322,11 @@ Given `@mcp`-annotated service definitions, the plugin automatically creates an 
 This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 ### • `query` entity {.tool}
+<div id="tool-query" />
 
 This tool is used to read data from the service.
 It expects a single parameter `cql`, which contains the query in [CQL](../../cds/cql) syntax to be executed. LLMs can generate this query based on natural language prompts.
-For example, given the `BookshopService` as [declared above](#mcp-specific-services) that exposes `Authors` with its to-many association to `Books` , we can ask OpenCode running Opus something like this:
+For example, given the `BookshopService` as [declared above](#declare-mcp-services) that exposes `Authors` with its to-many association to `Books` , we can ask OpenCode running Opus something like this:
 
 ```sh
 list authors with their written books and genres
@@ -488,7 +489,7 @@ By default, multiple actions may share the same generic [`call`](#-call-action) 
 
 ### Query and Actions Only
 
-The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query-entity) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
+The MCP tools created by the adapter are currently focused on reading data and calling [**_unbound_** actions and functions](../../cds/cdl#actions) only. This means that you can use MCP to [`query`](#tool-query) data from your CAP services, while any data changes need to be implemented via unbound actions for now.
 
 For example, action `submitOrder` in the `CatalogService` ultimately creates an Order:
 
