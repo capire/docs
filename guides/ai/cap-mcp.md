@@ -91,8 +91,19 @@ annotate BookshopService.Authors with {
   books /** All the books written by the author. */;
 }
 ```
-::: details Only for Node.js ...
-Doc comments are currently supported for Node.js only. With the Java version of the MCP Adapter, only `@title` and `@description` annotations are supported.
+::: warning Configuration required for CAP Java
+You must enable doc comments in the Java application and in the MTX sidecar.
+
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
 :::
 
 This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions.
