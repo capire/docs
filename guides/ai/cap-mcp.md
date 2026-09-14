@@ -311,9 +311,7 @@ INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 
 
 ## Served out of the box
 
-The adapter creates an MCP server per CAP service, hence each CAP application can expose multiple MCP servers. By default, the adapter creates three generic tools, [`describe`](#-describe-service), [`query`](#-query-entity), and [`call`](#-call-action), for each MCP server, which can be used by LLMs and AI agents to interact with the service.
-
-the following tools for each MCP server, which can be used by LLMs and AI agents to interact with the service.
+Given `@mcp`-annotated service definitions, the plugin automatically creates an MCP server per CAP service, each serving three generic tools, [`describe`](#-describe-service), [`query`](#-query-entity), and [`call`](#-call-action) as outlined in the sections below.
 
 > [!warning]
 > Tools are meant to be used by LLMs and AI agents and do not constitute a stable API.
@@ -326,11 +324,7 @@ This tool returns information about the entities and their elements exposed by t
 ### • `query` entity {.tool}
 
 This tool is used to read data from the service.
-It expects a single parameter `cql`, which contains the query in [CQL](../../cds/cql) syntax to be executed.
-
-> [!tip] CQL = SQL++ => well understood by LLMs
-> As common LLMs, like Claude Sonnet, are trained for SQL very well, they are quick to understand and generate CQL queries for interacting with the service.
-
+It expects a single parameter `cql`, which contains the query in [CQL](../../cds/cql) syntax to be executed. LLMs can generate this query based on natural language prompts.
 For example, given the `BookshopService` as [declared above](#mcp-specific-services) that exposes `Authors` with its to-many association to `Books` , we can ask OpenCode running Opus something like this:
 
 ```sh
@@ -348,6 +342,11 @@ SELECT from Authors {
 ```
 
 ![CQL query result showing authors with their written books and genres](cql-by-claude-opus.png){.ignore-dark}
+
+> [!tip] CQL = SQL++ => well understood by LLMs
+> As common LLMs, like Claude Sonnet, are trained for SQL very well, they are quick to understand and generate CQL queries for interacting with the service.
+
+
 
 ### • `call` action {.tool}
 

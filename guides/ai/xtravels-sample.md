@@ -90,4 +90,4 @@ cds w xtravels
 opencode
 ```
 
-![The services running in separate terminals](mcp-run-separately.png){.ignore-dark}
+![The services running in separate terminals](xtravels-run-separately.png){.ignore-dark}
