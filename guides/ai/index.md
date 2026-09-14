@@ -11,3 +11,9 @@ CAP provides intrinsic support for integrating native AI capabilities, including
 
 [Vector Embeddings](./embeddings.md)
 : Learn how to leverage vector embeddings within CAP applications to enable advanced AI-driven search and recommendation capabilities.
+
+[The XTravels Sample](./xtravels-sample.md)
+: Explore a comprehensive example of integrating CAP-level agents, MCP services, and vector embeddings within a travel planning application.
+
+[Integration with Joule](./joule-integration.md)
+: Learn how to integrate CAP applications with SAP Joule Work and SAP Joule Studio to enhance AI-driven capabilities and workflows.
