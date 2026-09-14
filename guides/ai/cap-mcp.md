@@ -1,7 +1,7 @@
 # Model Context Protocol Adapter
 
 The [`@cap-js/mcp`](https://github.com/cap-js/mcp) plugin allows to easily expose given CAP services via the [_Model Context Protocol (MCP)_](https://modelcontextprotocol.io/).
-Simply annotate a CAP service with `@mcp` to do so.
+Simply annotate a CAP service with [`@mcp`](#declare-mcp-services) to do so.
 With that it becomes accessible to AI agents and LLM-powered tools without additional implementation work.
 {.abstract}
 

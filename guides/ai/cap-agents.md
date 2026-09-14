@@ -1,6 +1,8 @@
 # CAP-level Agents
 
-The [`@cap-js/agents`](https://github.com/cap-js/agents) plugin allows to easily create _**enterprise grade**_ agents based on given CAP services, and served via the [_A2A_ protocol](https://a2a-protocol.org) out-of-the-box. It uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) or [_Pi_](https://pi.dev) internally.
+The [`@cap-js/agents`](https://github.com/cap-js/agents) plugin allows to easily create _**enterprise grade**_ CAP-level agents, served via the [_A2A_ protocol](https://a2a-protocol.org) out-of-the-box.
+Simply annotate a CAP service with [`@agent`](#declare-agent-services) to do so.
+The plugin uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) or [_Pi_](https://pi.dev) internally.
 {.abstract}
 
 [[toc]]
