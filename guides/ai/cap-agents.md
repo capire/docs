@@ -489,8 +489,8 @@ On execution timeouts the graph does not fail but instead interrupts and sends a
 
 ### Evals-based Agent Testing <Alpha/>
 
-Evaluate your agent behavior using `cds.test`. Start your application and send a message to the agent.
-Then check the response with deterministic assertions or utilize an LLM-as-a-Judge, which scores the result against specified criteria.
+Evaluate your agent behavior using `cds.test`. First, start your application and send a message to the agent.
+Then check the response with deterministic assertions or use an LLM-as-a-Judge to score it against specified criteria.
 
 ```js
 import cds from '@sap/cds'
