@@ -116,7 +116,7 @@ XTravels application — the trips you persist show up in the app's Fiori UI.
 > This helps keeping your service definitions and agent-related files organized, especially when working with multiple services and agents, and is supported by the <Config>`cds.folders.srvs: srv/*`</Config> config option added included with the `@cap-js/agents` plugin.
 
 
-### Optional: `skills/*/SKILL.md`s
+### Optional: `*/SKILL.md`s
 
 In addition to defining the agent's identity and behaviour in `AGENTS.md`, you can define specific skills and their workflows in `SKILL.md` files within the `skills` subfolder.
 
