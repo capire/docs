@@ -242,10 +242,10 @@ For local development, the plugin serves a rudimentary experimental chat preview
 Open the chat preview in your browser to interact with the agent. For example, enter the same prompts as we did over in the [MCP Services](./cap-mcp.md#using-opencode-or-alike) guide with OpenCode:
 
 
-```sh
+```txt
 list books
 ```
-```sh
+```txt
 order wuthering heights
 ```
 
@@ -268,7 +268,7 @@ All entities and actions/functions defined in the CAP service are automatically 
 
 We can see the effects of that in the log output, for example, when asked to _"list books"_, the agent queried the service's `Books` entity via the [`query`](./cap-mcp.md#-query-entity) tool:
 
-```sh [Log output for "List books"]
+```txt [Log output for "List books"]
 [agents] - CatalogService request {
   text: 'list books', ...
 }
@@ -282,7 +282,7 @@ We can see the effects of that in the log output, for example, when asked to _"l
 
 Similarly, when asked to _"order wuthering heights"_, the agent eventually invoked the appropriate service action via the [`call`](./cap-mcp.md#-call-action) tool:
 
-```sh [Log output for "Order wuthering heights"]
+```txt [Log output for "Order wuthering heights"]
 [agents] - CatalogService request {
   text: 'order wuthering heights', ...
 }

@@ -207,10 +207,10 @@ code --install-extension anthropic.claude-code
 
 Go ahead and interact with your CAP services using natural language and conversational style via OpenCode, entering prompts like these:
 
-```sh
+```txt
 list books
 ```
-```sh
+```txt
 order wuthering heights
 ```
 
