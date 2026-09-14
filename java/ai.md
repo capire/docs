@@ -23,6 +23,10 @@ requests by using the service's entities, actions, and functions as tools, backe
 LLM. Agents speak the [A2A protocol](https://a2a-protocol.org/), so any A2A-compatible
 client can talk to them.
 
+::: warning In-Memory Chat History Only
+CAP Java stores conversation history in memory and doesn't yet have a persistent chat memory. Send all follow-up prompts to the same server instance.
+:::
+
 ### Adding the Dependency
 
 Add the agent adapter to your `srv/pom.xml`:
