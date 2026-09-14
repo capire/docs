@@ -23,6 +23,11 @@ requests by using the service's entities, actions, and functions as tools, backe
 LLM. Agents speak the [A2A protocol](https://a2a-protocol.org/), so any A2A-compatible
 client can talk to them.
 
+::: info A2A protocol version
+For compatibility reasons with Joule and Agent Gateway, version 0.3.0 of the A2A protocol is used by default.
+:::
+
+
 ::: warning In-Memory Chat History Only
 CAP Java stores conversation history in memory and doesn't yet have a persistent chat memory. Send all follow-up prompts to the same server instance.
 :::
