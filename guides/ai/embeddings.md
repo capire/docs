@@ -81,7 +81,7 @@ CdsVector vector = CdsVector.of(embedding);
 
 Use vector functions documented below in CQL statements to perform similarity searches and other operations on embeddings. Their behavior is based on the implementations from SAP HANA. CAP supports these functions across all supported databases.
 
-In CAP Node.js you can use these vector functions directly in your CQL queries; for CAP Java, [see respective documentation](../../java/working-with-cql/query-api#vector-functions).
+You can use these vector functions directly in your CQL queries. For CAP Java, see [Vector Functions](../../java/working-with-cql/query-api#vector-functions).
 
 
 ### Query for Similarity
@@ -97,17 +97,11 @@ const incidents = await SELECT.from`Incidents`
   ) > 0.75`
 ```
 ```Java [Java]
-// Compute embedding for user question
-var query = CQL.val("Fetch incidents with solar inverters. How were they resolved?");
-var embedding = CQL.vectorEmbedding(query, TextType.QUERY, "SAP_GXY.20250407");
-
-// Compute similarity between user question and incident embeddings
-var similarity = CQL.cosineSimilarity(CQL.get(Incidents.EMBEDDING), embedding);
-
-// Find Incidents related to user question
-Select.from(INCIDENTS)
-   .columns(i -> i.ID(), i -> i.title(), i -> i.summary(), i -> i.date())
-   .where(i -> similarity.gt(0.75));
+var question = "Fetch incidents with solar inverters. How were they resolved?";
+var incidents = srv.run(Select.from(INCIDENTS)
+  .where(i -> CQL.cosineSimilarity(i.embedding(),
+    CQL.vectorEmbedding(question, TextType.QUERY, "SAP_GXY.20250407")
+  ).gt(0.75)));
 ```
 :::
 
@@ -118,25 +112,29 @@ Select.from(INCIDENTS)
 Computes the cosine of the angle between `vector1` and `vector2`, comparing the direction of the vectors. Both vectors must have the same dimension.
 
 ```tsx
-function cosine_similarity (vector1, vector2) => Number
+function cosine_similarity (vector1, vector2) => Double in [-1,1]
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. With modern embedding models, the result is between 0 (no similarity) and 1 (semantic match).
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/cosine-similarity-function-vector) {.learn-more}
 
 
-  ### `l2distance` {.method}
+### `l2distance` {.method}
 
-  Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
+Computes the Euclidean distance (L2 norm) between `vector1` and `vector2`. Both vectors must have the same dimension.
 
 ```tsx
-function l2distance (vector1, vector2) => Number
+function l2distance (vector1, vector2) => Double >= 0
 ```
+
+In the context of embeddings, both vectors must be from the same embedding model configuration. The closer the result to 0, the higher the semantic similarity. Most modern embedding models produce L2-normalized vectors (length of 1.0), for which the `l2distance` is between 0 and 2.
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/l2distance-function-vector) {.learn-more}
 
 ### `l2normalize` {.method}
 
-Normalizes the length of `vector` to 1 while keeping the direction. This can help to get more robust floating-point precision results.
+Normalizes the length of `vector` to 1.0 while preserving the direction. This improves floating-point precision and upper-bounds the resulting `l2distance` to 2.0, preventing distance overflow during comparisons.
 
 ```tsx
 function l2normalize (vector) => Vector
@@ -147,11 +145,11 @@ function l2normalize (vector) => Vector
 
 ### `vector_embedding` {.method}
 
-Creates a vector embedding from a given `text`.
+Creates a vector embedding of the given `text` using the `embedding_model`.
 
 ```tsx
-function vector_embedding (text, text_type, model_name) => Vector
-function vector_embedding (text, text_type, model_name, remote_source) => Vector
+function vector_embedding (text, text_type, embedding_model) => Vector
+function vector_embedding (text, text_type, embedding_model, remote_source) => Vector
 ```
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) {.learn-more}
@@ -176,7 +174,7 @@ npm add -D @cap-js/ai @cap-js/sqlite@^3.1 @huggingface/hub@^2.15.0 \
   @huggingface/tokenizers@0.1.3 onnxruntime-node@1.20.1
 ```
 
-No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. Both the on-write calculated element from [Generate Embeddings on the Database](#generate-embeddings-on-the-database) and the query-time `vector_embedding` calls then run locally against that model. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
+No configuration is needed — the plugin redirects the standard `sqlite` (and `sqlite:memory`) database and downloads a default embedding model on first start. Both the on-write calculated element from [Adding Embeddings](#adding-embeddings) and the query-time `vector_embedding` calls then run locally against that model. The same query runs unchanged on SAP HANA and SQLite: on SQLite the model-name argument to `vector_embedding` is ignored and the locally configured model is used. See the [`@cap-js/ai` README](https://github.com/cap-js/ai#local-vector-embeddings-with-sqlite-experimental) for version requirements, model selection, and configuration.
 
 ## PostgreSQL
 
@@ -185,7 +183,7 @@ No configuration is needed — the plugin redirects the standard `sqlite` (and `
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
 - Vectors stored in native `vector` type
-- CAP provides no built-in `vector_embedding` implementation. Compute embeddings in your application layer (see [Generate Embeddings Programmatically](#generate-embeddings-programmatically)) or define your own `vector_embedding` database function.
+- CAP provides no built-in `vector_embedding` implementation. Compute embeddings in your application layer (see [`vector_embedding`](#vector_embedding)) or define your own `vector_embedding` database function.
 - For Node.js, the `pgvector` npm package is required when reading vector columns from query results or when passing vector values as parameters from the client. It is not needed if vectors are generated entirely within the database using functions like `vector_embedding()`: `npm install pgvector`
 
 ## SAP HANA
