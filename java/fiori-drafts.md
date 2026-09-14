@@ -128,9 +128,17 @@ cds.drafts.enforceReadonly: true
 
 With this property enabled, values sent for `@readonly` or `@Core.Computed` fields are ignored when a draft is created or patched, so these fields can no longer be modified through OData requests on the draft.
 
+### Determined Read-Only Fields { #readonly-determinations }
+
+Read-only fields are often filled by custom code, for example in a determination that computes a value from other fields. With the default behavior (`cds.drafts.enforceReadonly: false`), such a determination effectively runs when the draft is activated, during the `CREATE` or `UPDATE` event. You can additionally run it while the draft is being edited, for example on the `DRAFT_CREATE` event, so that the computed value is already shown in the UI. In this case the value is only a preview: it's recomputed during activation and the value stored on the active entity is the one determined then.
+
+This matters for determinations that aren't fully deterministic. If a determination produces a different value each time it runs, for example when generating a random UUID, the value shown on the draft and the value stored on the active entity can differ.
+
+Setting `cds.drafts.enforceReadonly: true` avoids this: read-only fields are no longer evaluated during activation, so the value computed while editing the draft is carried over unchanged to the active entity. Use this when the value determined in draft mode must be exactly the one that gets persisted.
+
 ### Writing Read-Only Fields from Custom Code { #readonly-hint }
 
-When `cds.drafts.enforceReadonly` is enabled, the read-only enforcement also applies to `Update` or `Insert` statements that your own event handlers run against the draft entity, for example in a determination. As a result, values for `@readonly` and `@Core.Computed` fields are removed from these statements as well.
+When `cds.drafts.enforceReadonly` is enabled, the read-only enforcement also applies to `Update` or `Insert` statements that your own event handlers run against the draft entity through the application service, for example in a determination. As a result, values for `@readonly` and `@Core.Computed` fields are removed from these statements as well.
 
 To intentionally write such fields from trusted custom code, add the `@readonly` hint with value `false` to the statement. This disables the read-only enforcement for that single statement:
 
@@ -139,7 +147,7 @@ Update.entity(Books_.class).data(book).hint("@readonly", false);
 ```
 
 ::: warning Use the hint only for trusted data
-The `@readonly` hint disables the read-only field protection for the affected statement. Only use it in server-side code where the values are computed or validated by your application, never with unvalidated client input. Managed fields (`@cds.on.insert`, `@cds.on.update`) and `@Core.Immutable` fields are always enforced and are not affected by this hint.
+The `@readonly` hint disables the read-only field protection for the affected statement. Only use it in server-side code where the values are computed or validated by your application, never with unvalidated client input. Managed fields (`@cds.on.insert`, `@cds.on.update`) are always enforced and are not affected by this hint. `@Core.Immutable` fields are not affected by this hint when updating an already-active entity; on the first activation of a new draft their value is retained.
 :::
 
 ## Working with Draft-Enabled Entities
