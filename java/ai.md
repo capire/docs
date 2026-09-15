@@ -55,10 +55,16 @@ service CatalogService {
 }
 ```
 
-The agent exposes all entities and actions of the [service](../../guides/security/authorization#dedicated-services) as tools:
+> [!tip] Define a tailored service for your agent
+> Define a [dedicated service](../../guides/security/authorization#dedicated-services) for your agent, tailored to its specific use case.
 
-- Entities become query tools, so the LLM can read data via CDS QL.
-- Actions and functions become callable tools, invoked by name.
+The following tools are derived from the service and made available to the agent:
+
+- A generic **query tool** allows the LLM to read data via CDS QL across all entities defined in the service.
+- Unbound **actions and functions** become individually callable tools, invoked by name.
+
+> [!warning] Unbound actions and functions only
+> Only unbound actions and functions are supported as tools. Bound actions and bound functions are not supported yet.
 
 By default the agent is served under `/a2a/<service-path>`, with its
 [agent card](https://a2a-protocol.org/latest/topics/agent-discovery/) available at the
