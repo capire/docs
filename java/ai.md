@@ -18,7 +18,7 @@ description: >
 
 ## Agents <Alpha /> { #ai-agents }
 
-An agent turns a CDS service into a conversational endpoint. It answers natural-language
+A CAP agent turns a CDS service into a conversational endpoint. It answers natural-language
 requests by using the service's entities, actions, and functions as tools, backed by an
 LLM. Agents speak the [A2A protocol](https://a2a-protocol.org/), so any A2A-compatible
 client can talk to them.
@@ -29,7 +29,7 @@ For compatibility reasons with Joule and Agent Gateway, version 0.3.0 of the A2A
 
 
 ::: warning In-Memory Chat History Only
-CAP Java stores conversation history in memory and doesn't yet have a persistent chat memory. Send all follow-up prompts to the same server instance.
+CAP Java doesn't yet have a persistent chat memory. Instead, it stores conversation history in volatile memory. Hence you need to send all follow-up prompts to the same server instance.
 :::
 
 ### Adding the Dependency
@@ -151,7 +151,7 @@ cds:
 
 ```cds
 @agent
-@agent.llm: 'reasoning'   // use the 'reasoning' config instead of the default model
+@agent.llm: 'reasoning'   // use the 'reasoning' config instead of the default ('llm') config
 service CatalogService { ... }
 ```
 
@@ -163,10 +163,13 @@ model you want to use; if omitted, a default model is used.
 
 ### Running Locally with Ollama
 
-To run an agent against a local model served by [Ollama](https://ollama.com/), pull a model
+For local testing with Spring's `default` profile, you can run an agent against a local model served by [Ollama](https://ollama.com/). Pull a model
 (for example `ollama pull gemma4:26b`) and point a configuration at it:
 
 ```yaml
+---
+spring:
+  config.activate.on-profile: default
 cds:
   ai.chat.models:
     llm:
