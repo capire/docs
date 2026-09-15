@@ -24,7 +24,7 @@ The classic approach as illustrated below, is used a static UI where the user in
 
 ### Agentic Approach
 
-By using agents we can replace the need to build classic UIs to create travels, with deep integration across the various services – both for development teams that had to invest accordingly and for end-users seeking an automated travel planning experience.
+By using agents we can replace classic UIs to create travels, with deep integration across the various services – both for development teams that had to invest accordingly, as well as for end-users seeking an automated travel planning experience.
 
 ![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg)
 
@@ -157,7 +157,7 @@ In case of the XTravels application we choose to not just [`@mcp`]-enable the ex
 > In case of question, always prefer using tailored, [use case-oriented services](../../get-started/bookshop.md#use-case-oriented-services). Especially for AI-driven planning and booking this is key to avoid polluting and eating up context windows when following the one-service-to-serve-all anti pattern.
 
 
-### Test-drive Locally
+### Test-drive with OpenCode
 
 CAP puts a main focus on [fast inner-loop development](../integration/inner-loops) and iterative testing, making it easy to quickly see the effects of changes in your services. This also holds true for MCP-enabled services, which we can test locally using local installations of [OpenCode](https://opencode.ai/), [Claude Code](https://claude.ai/), or any other MCP client.
 
@@ -192,37 +192,180 @@ You should see something like this:
 ![OpenCode chat interface showing confirmed booked travel details after planning, indicating that event attendance, accommodation, and transportation were booked. The scene is a developer desktop chat environment with a successful and task-complete tone.](mcp-opencode2.png){.ignore-dark}
 
 
-> [!tip] Done, q.e.d. ... sort of :)
-> You have successfully tested the travel planning and booking workflow locally using OpenCode.
-> And we've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
-
 
 ## Custom Agents
 
+In the previous sections, we have seen that the generic `build` agent in OpenCode can handle travel planning and booking tasks, just with MCP. That's because travel planning and booking is a well-known domain, and most LLMs have been trained to understand it effectively. That said, for more specialized domains or unique workflows, that would not be the case, but custom agents can fill the gap.
+
 ### 'Agentify' given Services
+
+So, we start by turning some of our existing services into agents, using the [`@agent`] annotation, as shown below.
+
+::: code-group
+```cds [xtravels/srv/travel-agent/service.cds]
+@agent:'/agent' service TravelAgentService { ... }
+```
+:::
+::: code-group
+```cds [xtravels/srv/events/services.cds]
+@agent service EventsService { ... }
+```
+:::
+::: code-group
+```cds [xtravels/srv/hotels/services.cds]
+@agent service HotelsService { ... }
+```
+:::
+
+The `TravelAgentService` is our root agent that coordinates travel planning and booking across multiple destinations. It shall interact with the `EventsService` and `HotelsService` as subagents via A2A. In contrast to the latter, it shall keep using the `FlightsService` service via MCP, so we don't turn it into an agent.
+
+
+
+> [!tip]
+> Simply checkout the `aix` branch of the `xtravels` repository to get the complete implementation of the agents:
+> ```shell
+> cd xtravels
+> git checkout aix
+> cd -
+> ```
+
 
 ### Add Custom Markdowns
 
-### Test-drive Locally
+In order to provide additional instructions and make move to a more deterministic behavior for the `TravelAgent`, we add an [`AGENTS.md`](cap-agents.md#optional-agentsmd) as well as [ `*/SKILL.md`](cap-agents.md#optional-skillmds) files for the individual subtasks.
 
 
-## Run Separately
+```zsh
+srv/travel-agent/
+ ├── AGENTS.md           # next to the service definition
+ ├── skills/
+ │ ├── flight-booking/SKILL.md
+ │ ├── itinerary-summary/SKILL.md
+ │ ├── persist-itinerary/SKILL.md
+ │ └── trip-planning/SKILL.md
+ ├── service.cds         # the service definition
+ └── service.js          # next to the service definition
+```
 
-If you like you can also start the individual services separately in different terminals as shown below – no code or config changes required for that, and also no change to the usage in AI chat clients.
+Inspect these files in VS Code to understand how the instructions and guidelines are structured for the agents.
 
-Run each of the lines below in a separate terminal:
+
+### Test-drive with Chat Client
+
+Again, start the CAP server as an all-in-one instance, with mocked required services:
+
+```shell
+cds w xtravels
+```
+
+But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4005/agent/preview.
+
+![Opening chat preview from index.html](chat-preview-from-index-html.png){style="width: 500px;"}
+
+![Chat preview showing up empty](chat-preview-empty.png)
+
+Now, enter the same prompts as you did before in OpenCode:
+
+```
+Plan a trip to Sapphire 27
+```
+
+![Chat preview showing the agent's response to the prompt for a trip to Sapphire](chat-trip-to-sapphire-1.png)
+
+And when the agent asks you for more details or clarifications, provide the necessary information – for example, the traveller's name, airport, and preferred hotel:
+
+![Chat preview showing the chosen itinerary](chat-trip-to-sapphire-2.png)
+
+Finally, allow the agent to call the `createTravel` action – which is annotated with [`@agent.hitl`](cap-agents.md#using-agenthitl) – when prompted:
+
+![Chat preview asking for approval to call the createTravel action](chat-trip-to-sapphire-3.png)
+
+
+## Run Services Separately
+
+To run the XTravels application with its services separately, you can start each service in its own terminal window. CAP's [late-cut microservices](../../get-started/features.md#late-cut-microservices) capabilities allows us to easily do so. Actually, with the need for tight integration gone, the services have no knowledge about or dependency on each other. We could also think of them as being developed and operated by independent teams, and only composed by the travel planning agent.
+
+Run each of the lines below in a separate terminal, in the given order:
 
 ```shell
 cds w xtravels/srv/events
-cds w xtravels/srv/hotels
-cds w s4
-cds w xflights
-cds w xtravels
-opencode
 ```
+```shell
+cds w xtravels/srv/hotels
+```
+```shell
+cds w xflights
+```
+```shell
+cds w xtravels
+```
+
+Then test-drive the XTravels application by interacting with the agents through [OpenCode](#test-drive-with-opencode) or the [Chat Preview](#test-drive-with-chat-client) as documented above.
+
 
 ![Desktop view with multiple terminal windows running XTravels services separately, including events, hotels, S4, flights, and the main xtravels service, plus an OpenCode session. The wider environment is a multi-window local development workspace, and the tone is technical and operational.](xtravels-run-separately.png){.ignore-dark}
 
+
+### Remote MCP Services
+
+```zsh
+[agents] - sap.capire.travels.TravelAgentService request {
+  conversation: '-',
+  method: 'message/stream',
+  text: 'Plan a trip to sapphire 27'
+}
+[agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService { at: 'http://localhost:4006/mcp/flights' }
+```
+
+### Remote Subagents
+
+```zsh
+[agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService { at: 'http://localhost:4008/a2a/hotels' }
+[agents:a2a] - Connecting to subagent sap.capire.events.EventsService { at: 'http://localhost:4007/a2a/events' }
+```
+```zsh
+[agents:a2a] - Sending message to sap.capire.events.EventsService { messageId: '59e07fd2-2227-4522-824c-40cc8272dbc4' }
+
+Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.
+```
+```zsh
+[agents] - sap.capire.events.EventsService request {
+  conversation: '-',
+  method: 'message/send',
+  text: 'Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.'
+}
+[mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
+[mcp] - sap.capire.events.EventsService query {
+  cql: "SELECT from Events { ID, name, startDate, endDate, city, venue, price } WHERE name like '%Sapphire%' AND year(startDate) = 2027"
+}
+[agents] - sap.capire.events.EventsService completed { conversation: 'd5fdcec4', duration: '7.9s' }
+```
+```zsh
+[agents] - sap.capire.events.EventsService request {
+  conversation: '-',
+  method: 'message/send',
+  text: 'Book 1 attendee pass for SAP Sapphire 2027 in Orlando for guest "Mrs. Anne Marie Pratt".'
+}
+[mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
+[mcp] - sap.capire.events.EventsService query {
+  cql: "SELECT ID, name, city, country, venue, startDate, endDate, price, availableTickets FROM Events WHERE name LIKE '%Sapphire%' AND city LIKE '%Orlando%'"
+}
+[mcp] - sap.capire.events.EventsService - call bookTicket {
+  eventId: '4505f22c-817c-4db1-841c-afa9351b93ca',
+  guest: 'Mrs. Anne Marie Pratt',
+  seats: 1
+}
+[agents] - sap.capire.events.EventsService completed { conversation: '790039b6', duration: '9.1s' }
+```
+
+## Conclusion
+
+In this guide, we have walked through the process of setting up and interacting with the XTravels agents using both OpenCode and the Chat Preview. We explored the structure of the service and skill files, tested the agents' capabilities, and demonstrated how to approve actions triggered by the agents. This setup allows for efficient local development and testing of agent-driven workflows in the XTravels application.
+
+
+> [!tip] Done, q.e.d. ... sort of :)
+> You have successfully tested the travel planning and booking workflow locally using OpenCode.
+> And we've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
 
 
 [`@agent`]: ./cap-agents.md#declare-agent-services

@@ -251,7 +251,7 @@ order wuthering heights
 
 Also answer the questions that the agent asks you back.
 
-![Chat conversation in Chat Preview](chat-preview.png)
+![Chat conversation in Chat Preview](chat-preview-bookshop.png)
 
 > [!tip] Embedded with the CAP application
 > Essentially we see that the CAP-level agent accomplishes the same functionality than the generic agent that comes with _OpenCode_. The main difference is that it is tightly integrated with the CAP application, allowing for more seamless interaction with the underlying services and data models. Also the end user doesn't need any local AI client like _OpenCode_, nor do they need access to an LLM directly.
