@@ -252,11 +252,25 @@ Inspect these files in VS Code to understand how the instructions and guidelines
 
 ### Test-drive with Chat Client
 
-Again, start the CAP server as an all-in-one instance, with mocked required services:
+Again, start the CAP server as an all-in-one instance, with mocked required services, and we would see in the log that the agent is connecting to the LLM, as shown below:
 
 ```shell
 cds w xtravels
 ```
+```zsh
+[agents] - cds.connect.to 'llm' with: {
+  kind: 'anthropic',
+  model: 'claude-sonnet-4-6',
+  credentials: {
+    anthropicApiUrl: 'http://localhost:6655/anthropic/',
+    apiKey: '***'
+  }
+}
+```
+
+::: tip
+See [Automatic Config](cap-agents#automatic-config) in the CAP Agents documentation for details.
+:::
 
 But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4005/agent/preview.
 
@@ -300,13 +314,32 @@ cds w xflights
 cds w xtravels
 ```
 
-Then test-drive the XTravels application by interacting with the agents through [OpenCode](#test-drive-with-opencode) or the [Chat Preview](#test-drive-with-chat-client) as documented above.
+In the log output of each [`@agent`]-ified service, that is for `events`, `hotels`, and `travels`, we see the `cds.connect to 'llm'` taking place:
+
+```zsh
+[agents] - cds.connect.to 'llm' with: {
+  kind: 'anthropic',
+  model: 'claude-sonnet-4-6',
+  credentials: {
+    anthropicApiUrl: 'http://localhost:6655/anthropic/',
+    apiKey: '***'
+  }
+}
+```
+
+Then test-drive the XTravels application by interacting with the agents through [OpenCode](#test-drive-with-opencode) or the [Chat Preview](#test-drive-with-chat-client) as documented above, starting with the same prompt:
+
+```
+Plan a trip to sapphire 27
+```
 
 
 ![Desktop view with multiple terminal windows running XTravels services separately, including events, hotels, S4, flights, and the main xtravels service, plus an OpenCode session. The wider environment is a multi-window local development workspace, and the tone is technical and operational.](xtravels-run-separately.png){.ignore-dark}
 
 
-### Remote MCP Services
+### Calling Remote MCP Services
+
+Looking closer at the log output, we can see that as soon as the `TravelAgentService` starts in response to the initial user request, it immediately connects to the remote `FlightsService` service via MCP:
 
 ```zsh
 [agents] - sap.capire.travels.TravelAgentService request {
@@ -314,48 +347,107 @@ Then test-drive the XTravels application by interacting with the agents through 
   method: 'message/stream',
   text: 'Plan a trip to sapphire 27'
 }
-[agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService { at: 'http://localhost:4006/mcp/flights' }
+[agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService {
+  at: 'http://localhost:4006/mcp/flights'
+}
 ```
 
-### Remote Subagents
+Means that the `TravelAgentService` is auto-wired to the `FlightsService` through the MCP protocol, allowing it to request flight information as part of handling the user's travel planning request.
+
+#### Processed by the remote FlightsService
+
+In the log output of the `xflights` process, we can see the incoming MCP requests from the `TravelAgentService` being received and processed by the `FlightsService`:
 
 ```zsh
-[agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService { at: 'http://localhost:4008/a2a/hotels' }
-[agents:a2a] - Connecting to subagent sap.capire.events.EventsService { at: 'http://localhost:4007/a2a/events' }
+[mcp] - sap.capire.flights.FlightsService describe {
+  entities: [ 'Flights', 'Airlines', 'Airports', 'Supplements' ],
+  actions: [ 'ReserveSeats', 'ReleaseSeats' ]
+}
+[mcp] - sap.capire.flights.FlightsService describe {
+  entities: [ 'Airports', 'Flights' ]
+}
+[mcp] - sap.capire.flights.FlightsService query {
+  cql: "SELECT ID, name, city FROM Airports WHERE city = 'Orlando'"
+}
+[mcp] - sap.capire.flights.FlightsService query {
+  cql: "SELECT ID, date, origin.city, destination.city, ... from Flights
+  WHERE destination_ID = 'MCO' AND date = '2027-05-17' AND free_seats > 0"
+}
+...
 ```
-```zsh
-[agents:a2a] - Sending message to sap.capire.events.EventsService { messageId: '59e07fd2-2227-4522-824c-40cc8272dbc4' }
 
-Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.
+
+### Delegation to Subagents
+
+Immediately after connecting to the MCP service, we see that the `TravelAgentService` also connects to the `HotelsService` and `EventsService`, this time through the A2A protocol:
+
+```zsh
+[agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService {
+  at: 'http://localhost:4008/a2a/hotels'
+}
+[agents:a2a] - Connecting to subagent sap.capire.events.EventsService {
+  at: 'http://localhost:4007/a2a/events'
+}
 ```
+
+With that the root agent served by `TravelAgentService` is able to delegate individual subtasks to the `HotelsService` and `EventsService`. This happens through natural language requests sent via A2A, as we can see in the subsequent log outputs of the `travels` app:
+
+
+```zsh
+[agents:a2a] - Sending message to sap.capire.events.EventsService {
+  messageId: '59e07fd2-2227-4522-824c-40cc8272dbc4'
+}
+
+Find SAP Sapphire 2027 and tell me the event dates, city, venue, and prices.
+```
+
+
+#### Processed in remote subagents
+
+In the log output of the `events` process, we can see the incomming A2A message received by the `EventsService` and processed via service-local MCP queries:
+
 ```zsh
 [agents] - sap.capire.events.EventsService request {
   conversation: '-',
   method: 'message/send',
-  text: 'Find SAP Sapphire 2027 and tell me the event dates, city, venue, and ticket price.'
+  text: 'Find SAP Sapphire 2027 and tell me the event dates, city, venue, and prices.'
 }
+
 [mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
 [mcp] - sap.capire.events.EventsService query {
-  cql: "SELECT from Events { ID, name, startDate, endDate, city, venue, price } WHERE name like '%Sapphire%' AND year(startDate) = 2027"
+  cql: "SELECT from Events {
+    ID, name, startDate, endDate, city, venue, price
+  } WHERE name like '%Sapphire%' AND year(startDate) = 2027"
 }
-[agents] - sap.capire.events.EventsService completed { conversation: 'd5fdcec4', duration: '7.9s' }
+[agents] - sap.capire.events.EventsService completed {
+  conversation: 'd5fdcec4',
+  duration: '7.9s'
+}
 ```
+
+Similar for the booking subtask delegated to the `EventsService` later on, which the subagent processes by `call`-ing its local action `bookTicket`:
+
 ```zsh
 [agents] - sap.capire.events.EventsService request {
   conversation: '-',
   method: 'message/send',
-  text: 'Book 1 attendee pass for SAP Sapphire 2027 in Orlando for guest "Mrs. Anne Marie Pratt".'
+  text: `Book 1 attendee pass for SAP Sapphire 2027 in Orlando
+    for guest "Mrs. Anne Marie Pratt".`
 }
 [mcp] - sap.capire.events.EventsService describe { entities: [ 'Events' ] }
 [mcp] - sap.capire.events.EventsService query {
-  cql: "SELECT ID, name, city, country, venue, startDate, endDate, price, availableTickets FROM Events WHERE name LIKE '%Sapphire%' AND city LIKE '%Orlando%'"
+  cql: "SELECT ID, name, city, country, venue, ... FROM Events
+  WHERE name like '%Sapphire%' AND city like '%Orlando%'"
 }
 [mcp] - sap.capire.events.EventsService - call bookTicket {
   eventId: '4505f22c-817c-4db1-841c-afa9351b93ca',
   guest: 'Mrs. Anne Marie Pratt',
   seats: 1
 }
-[agents] - sap.capire.events.EventsService completed { conversation: '790039b6', duration: '9.1s' }
+[agents] - sap.capire.events.EventsService completed {
+  conversation: '790039b6',
+  duration: '9.1s'
+}
 ```
 
 ## Conclusion
