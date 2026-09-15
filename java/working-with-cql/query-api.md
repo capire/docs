@@ -1690,7 +1690,7 @@ calls the custom functions of the CAP Node.js runtime.
 
 CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
 
-To automatically generate vector embeddings on write, define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function — see [Generate Embeddings on the Database](../../guides/ai/embeddings#generate-embeddings-on-the-database) in the guide.
+To automatically generate vector embeddings on write, define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function — see [Adding Embeddings](../../guides/ai/embeddings#adding-embeddings) in the guide.
 
 In Java queries, use the `CQL.vectorEmbedding` function to compute vector embeddings:
 
