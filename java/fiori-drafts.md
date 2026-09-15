@@ -120,7 +120,7 @@ In case the create or update operation raises an error, the transaction is rolle
 
 By default, `@readonly` and `@Core.Computed` fields are only enforced when a draft is activated, that means during the `CREATE` or `UPDATE` event on the active entity. Until then, such fields can still be changed on the draft, for example through an OData `PATCH` request.
 
-To enforce these annotations on the draft already, during the `DRAFT_NEW` and `DRAFT_PATCH` events, set the [`cds.drafts.enforceReadonly`](./developing-applications/properties#cds-drafts-enforcereadonly) property (default `false`):
+To enforce these annotations on the draft before activation, during the `DRAFT_NEW` and `DRAFT_PATCH` events, set the [`cds.drafts.enforceReadonly`](./developing-applications/properties#cds-drafts-enforcereadonly) property (default `false`):
 
 ```yaml
 cds.drafts.enforceReadonly: true
