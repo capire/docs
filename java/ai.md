@@ -55,7 +55,7 @@ service CatalogService {
 }
 ```
 
-The agent exposes all entities and actions of the service as tools:
+The agent exposes all entities and actions of the [service](../../guides/security/authorization#dedicated-services) as tools:
 
 - Entities become query tools, so the LLM can read data via CDS QL.
 - Actions and functions become callable tools, invoked by name.
