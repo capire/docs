@@ -65,7 +65,7 @@ By default the agent is served under `/a2a/<service-path>`, with its
 corresponding `.../.well-known/agent-card.json` endpoint.
 
 During development, a built-in chat UI lets you try out your agents in the browser. It's
-enabled by default and can be turned off with `cds.agent.preview.enabled: false`.
+disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
 ### Customizing an Agent
 
