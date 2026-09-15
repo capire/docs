@@ -64,7 +64,7 @@ By default the agent is served under `/a2a/<service-path>`, with its
 [agent card](https://a2a-protocol.org/latest/topics/agent-discovery/) available at the
 corresponding `.../.well-known/agent-card.json` endpoint.
 
-During development, a built-in chat UI lets you try out your agents in the browser. It's
+During development, a built-in chat UI lets you try out your agents in the browser from CAPs index page. It's
 disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
 ### Customizing an Agent
@@ -140,9 +140,6 @@ reference it with `@agent.llm`:
 ```yaml
 cds:
   ai.chat.models:
-    llm:
-      kind: aicore
-      model: anthropic--claude-4.6-sonnet
     reasoning:
       kind: aicore
       model: anthropic--claude-4.8-opus
