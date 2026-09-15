@@ -29,7 +29,7 @@ For compatibility reasons with Joule and Agent Gateway, version 0.3.0 of the A2A
 
 
 ::: warning In-Memory Chat History Only
-CAP Java doesn't yet have a persistent chat memory. Instead, it stores conversation history in volatile memory. Hence you need to send all follow-up prompts to the same server instance.
+CAP Java doesn't yet have a persistent chat history. Instead, it stores conversation history in volatile memory. Hence you need to send all follow-up prompts to the same server instance.
 :::
 
 ### Adding the Dependency
@@ -106,7 +106,7 @@ metadata:
     - Show me all available books
     - Find books about Java
 ---
-Use this skill to browse the book catalog.
+Query the Books entity to search the catalog. Prefer LIKE when matching book titles or descriptions.
 ```
 
 ## Chat Model Configuration <Alpha /> { #ai-chat-config }
@@ -163,13 +163,13 @@ model you want to use; if omitted, a default model is used.
 
 ### Running Locally with Ollama
 
-For local testing with Spring's `default` profile, you can run an agent against a local model served by [Ollama](https://ollama.com/). Pull a model
+For local testing, you can run an agent against a local model served by [Ollama](https://ollama.com/). Pull a model
 (for example `ollama pull gemma4:26b`) and point a configuration at it:
 
 ```yaml
 ---
 spring:
-  config.activate.on-profile: default
+  config.activate.on-profile: ollama
 cds:
   ai.chat.models:
     llm:
