@@ -86,7 +86,7 @@ You can use these vector functions directly in your CQL queries. For CAP Java, s
 
 ### Query for Similarity
 
-Following is an example for a Retrieval-Augmented Generation (RAG) scenario. We use [`cosine_similarity`](#cosine_similarity) to enhance the context of a user query for the LLM. To do this, we first compute the [`vector_embedding`](#vector_embedding) of a user input.
+Following is an example for a Retrieval-Augmented Generation (RAG) scenario. We use [`cosine_similarity`](#cosine_similarity) to find incidents with high relevance to a user question, so we can enhance the LLM prompt with factual context (grounding). To do this, we compute the [`vector_embedding`](#vector_embedding) of the user question, using the *SAP_GXY.20250407* embedding model from SAP HANA [NLP](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-predictive-analysis-library/natural-language-processing-nlp).
 
 ::: code-group
 ```js [Node.js]
