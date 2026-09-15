@@ -62,7 +62,7 @@ The agent exposes all entities and actions of the [service](../../guides/securit
 
 By default the agent is served under `/a2a/<service-path>`, with its
 [agent card](https://a2a-protocol.org/latest/topics/agent-discovery/) available at the
-corresponding `.../card` endpoint. Change the base path with `cds.agent.endpoint.path`.
+corresponding `.../.well-known/agent-card.json` endpoint.
 
 During development, a built-in chat UI lets you try out your agents in the browser. It's
 enabled by default and can be turned off with `cds.agent.preview.enabled: false`.
