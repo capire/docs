@@ -1,55 +1,48 @@
 ---
 description: >
-  How to integrate the SAP Business Technology Platform Attachment Service to manage file attachments in CAP applications.
+  How to add file attachment handling to CAP applications using the @cap-js/attachments plugin.
 ---
 
-# Adding Attachments to Your CAP Application
+# Attachments
 
- You can use the Attachment Service provided by SAP Business Technology Platform to manage file attachments in your CAP applications. This guide explains how to integrate the Attachment Service into your CAP application.
+The [`@cap-js/attachments`](https://github.com/cap-js/attachments) plugin adds file storage and handling to CAP applications via a reusable `Attachments` aspect. In development it stores files in the local database; in production it uses an Object Store service (AWS S3, Azure Blob Storage, or GCP Cloud Storage).
 
- ## Prerequisites
+## Setup
 
- - A CAP project set up on SAP Business Technology Platform.
- - Access to the SAP Business Technology Platform Cockpit.
- - Basic knowledge of CAP and Node.js.
+Add the package to your project:
 
- ## Steps to Integrate Attachment Service
+```sh
+npm add @cap-js/attachments
+```
 
- 1. **Enable Attachment Service**: In the SAP Business Technology Platform Cockpit, navigate to your subaccount and enable the Attachment Service.
+The plugin configures itself automatically.
 
- 2. **Install Required Packages**: In your CAP project, install the necessary packages for working with attachments. You can use the following command:
+## Adding Attachments to Your Model
 
-    ```bash
-    npm install @sap/cds-srv-attachments
-    ```
+Import the `Attachments` aspect and add a composition to your entity:
 
- 3. **Configure Attachment Service**: In your `package.json` file, add the Attachment Service configuration under the `cds` section:
+```cds
+using { Attachments } from '@cap-js/attachments';
 
-    ```json
-    "cds": {
-      "requires": {
-        "attachments": {
-          "kind": "attachment-service"
-        }
-      }
-    }
-    ```
+entity Incidents : cuid {
+  //...
+  attachments : Composition of many Attachments;
+}
+```
 
- 4. **Define Attachment Entity**: In your CDS model, define an entity for attachments. For example:
+To get the Fiori elements attachment UI, the entity must be draft-enabled:
 
-    ```cds
-    entity Attachments {
-      key ID : UUID;
-      Name   : String;
-      Content: LargeBinary;
-      MimeType: String;
-    }
-    ```
+```cds
+service IncidentsService {
+  entity Incidents as projection on my.Incidents;
+    annotate Incidents with @odata.draft.enabled;
+}
+```
 
- 5. **Implement Attachment Logic**: In your service implementation file (for example, `srv/your-service.js`), implement the logic to handle attachment operations such as upload, download, and delete.
+## Production Setup
 
- 6. **Test Your Application**: Run your CAP application and test the attachment functionality to ensure everything is working as expected.
+For Cloud Foundry, bind an Object Store service instance to your application and include it in your `mta.yaml`. The plugin picks up the binding and uses it as the storage backend.
 
- ## Conclusion
+## Further Capabilities
 
- By following these steps, you can successfully integrate the Attachment Service into your CAP application, allowing you to manage file attachments efficiently. For more detailed information, refer to the official SAP documentation on the Attachment Service.
+The plugin also supports file size and MIME type restrictions, malware scanning via SAP's malware scanning service, audit logging, and programmatic attachment copying between records. See the [plugin repository](https://github.com/cap-js/attachments) for details.
