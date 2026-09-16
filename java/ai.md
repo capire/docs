@@ -82,10 +82,15 @@ Without further configuration, the agent derives a system prompt and its adverti
 from the CDS model. To customize both, add resources under `<ServiceName>-agent/` on the
 classpath (for example `srv/src/main/resources/TravelService-agent/`):
 
+```txt
+TravelService-agent/
+├── AGENTS.md                     # system prompt + agent card metadata
+└── skills/
+    ├── browse-travels/SKILL.md
+    └── create-travel/SKILL.md
 ```
 
-`AGENTS.md` holds the system prompt as its body, with optional YAML frontmatter for the
-agent card:
+`AGENTS.md` holds the system prompt as its body, with optional YAML frontmatter for the agent card:
 
 ```md
 ---
