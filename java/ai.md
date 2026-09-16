@@ -208,7 +208,7 @@ the box.
 
 In CDS, [vector embeddings](../guides/ai/embeddings) are stored in elements of type `Vector`.
 
-CAP Java supports the `Vector` type on SAP HANA and, for local testing, on H2 and SQLite; PostgreSQL support is beta and requires the [pgvector](https://github.com/pgvector/pgvector) extension. See [Database-Specific Considerations](../guides/ai/embeddings#database-specific-considerations) for per-database behavior.
+CAP Java supports the `Vector` type on SAP HANA and, for local testing, on H2 and SQLite; PostgreSQL support is beta and requires the [pgvector](https://github.com/pgvector/pgvector) extension. Learn more in the embeddings guide [PostgreSQL section](../guides/ai/embeddings#postgresql).
 
 In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
 
