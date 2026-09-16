@@ -12,11 +12,18 @@ The plugin uses state-of-the-art agent harness frameworks like [_LangChain_](htt
 
 Within your project root run this to add the [`@cap-js/agents`](https://github.com/cap-js/agents) plugin:
 
-```bash
+::: code-group
+```sh [Node.js]
 npm add @cap-js/agents
 ```
+```xml [Java (srv/pom.xml)]
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-adapter-agent</artifactId>
+</dependency>
+```
+ :::
 
-> [!note] Java variant coming soon.
 
 
 ## Declare `@agent` Services
