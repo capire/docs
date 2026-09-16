@@ -76,6 +76,7 @@ During development, a built-in chat UI lets you try out your agents in the brows
 disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
 ![A chat interaction with the TravelService agent showing it's reply for the question "Show me the next two flights from Frankfurt to JFK"](./assets/travel-agent-chat.png){style="width: 80%"}
+
 ### Customizing an Agent
 
 Without further configuration, the agent derives a system prompt and its advertised skills
