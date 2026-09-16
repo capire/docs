@@ -22,7 +22,7 @@ npm add @cap-js/agents
   <artifactId>cds-adapter-agent</artifactId>
 </dependency>
 ```
- :::
+:::
 
 
 
