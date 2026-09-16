@@ -191,6 +191,8 @@ In the CDS model, some of the user properties can be referenced in annotations o
 | Attribute                     | `$user.<attribute>` | [@restrict](./authorization#user-attrs) |
 | Role                          | `<role>`            | [@requires](./authorization#requires) and [@restrict.to](./authorization#restrict-annotation) |
 
+[See how `$user` is mapped from request claims.](#reflection){.learn-more}
+
 ### Tracing { #user-tracing }
 
 To track down issues during development, it can help to trace the properties of the request user to the application log.

@@ -140,17 +140,17 @@ cds build --for postgres
 ]
 ```
 
-> See also the command line help for further details using `cds build --help`.## Test-Run Built Projects Locally {#test-run}
+> See also the command line help for further details using `cds build --help`.
+
+## Test-Run Built Projects Locally {#test-run}
 
 Test the application as it runs on the cloud:
 
 ::: code-group
 ```sh [Node.js]
-cd gen/srv && npx cds-serve
-# or:
 cd gen/srv && npm start
-# or:
-npx cds-serve -p gen/srv
+# or
+npm start --prefix gen/srv
 ```
 
 ```sh [Java]

@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import languages from './languages'
+import languages from './languages/index.ts'
 import playground from './lib/cds-playground/index.js'
 import { slugify } from './lib/slugify.ts'
 import { Menu } from './menu.js'
@@ -83,7 +83,7 @@ const config = defineConfig({
 
   head: [
     ['meta', { name: 'theme-color', content: '#db8b0b' }],
-    ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'" }],
+    ['meta', { 'http-equiv': 'Content-Security-Policy', content: "script-src 'self' https://www.capire-matomo.cloud.sap 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:" }],
     ['link', { rel: 'icon', href: base+'favicon.ico' }],
     ['link', { rel: 'shortcut icon', href: base+'favicon.ico' }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: base+'logos/cap.png' }],
@@ -97,6 +97,15 @@ const config = defineConfig({
     plugins: [...playground.plugins()],
     build: {
       chunkSizeWarningLimit: 6000, // chunk for local search index dominates
+    },
+    // cds-worker.js is constructed with `type: 'module'`; match that at build time so its
+    // dynamic import('@sap/cds') is emitted as native ESM instead of an iife require() shim
+    worker: {
+      format: 'es',
+      rolldownOptions: { output: { keepNames: true, } },
+      // Vite doesn't reuse the main `plugins` array for worker bundles; without vite-plugin-cds's
+      // node()/cap() here, the worker build misses their Node built-in shims (e.g. lazify's module.require)
+      plugins: () => [...playground.plugins()],
     },
     css: {
       preprocessorOptions: {
@@ -117,7 +126,7 @@ export default config
 // -----------------------------------------------------------------------------------------------
 
 // Add rewrites
-import rewrites from './rewrites'
+import rewrites from './rewrites.js'
 config.rewrites = rewrites
 
 // Read menu from local menu.md, but only if we run standalone, not embeded as @external
@@ -132,8 +141,8 @@ const siteURL = new URL(process.env.SITE_HOSTNAME || 'http://localhost:4173/docs
 if (!siteURL.pathname.endsWith('/'))  siteURL.pathname += '/'
 config.themeConfig.capire = {
   versions: {
-    java_services: '5.0.2',
-    java_cds4j: '5.0.2',
+    java_services: '5.1.1',
+    java_cds4j: '5.1.1',
     cloud_sec_ams: '3.8.1'
   },
   gotoLinks: [],
@@ -203,10 +212,10 @@ config.themeConfig.search = {
 
 // Add custom markdown renderers...
 import { dl } from '@mdit/plugin-dl'
-import * as MdLiveCode from './lib/cds-playground/md-live-code'
-import * as MdAttrsPropagate from './lib/md-attrs-propagate'
-import * as MdDiagramSvg from './lib/md-diagram-svg'
-import * as MdTypedModels from './lib/md-typed-models'
+import * as MdLiveCode from './lib/cds-playground/md-live-code.ts'
+import * as MdAttrsPropagate from './lib/md-attrs-propagate.ts'
+import * as MdDiagramSvg from './lib/md-diagram-svg.ts'
+import * as MdTypedModels from './lib/md-typed-models.ts'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -227,7 +236,7 @@ if (process.env.VITE_CAPIRE_EXTRA_ASSETS) {
 
 // Add custom buildEnd hook
 import { promises as fs } from 'node:fs'
-import * as cdsMavenSite from './lib/cds-maven-site'
+import * as cdsMavenSite from './lib/cds-maven-site.ts'
 config.buildEnd = async ({ outDir, site }) => {
   const sitemapURL = new URL(config.themeConfig.capire.siteURL.href)
   sitemapURL.pathname = join(sitemapURL.pathname, 'sitemap.xml')

@@ -26,6 +26,10 @@ const props = defineProps({
   rows: {
     type: Number,
     default: 3
+  },
+  highlightLines: {
+    type: String,
+    default: ''
   }
 })
 
@@ -36,8 +40,9 @@ let editor
 let monaco
 let unmountActions = []
 const lineHeight = 24  // matching the css line-height for other code blocks
-const editorPaddingTop = 4
-const editorPaddingBottom = 4
+// matches the height of a plain (non-live) single-line code box in this repo
+const editorPaddingTop = 12
+const editorPaddingBottom = 12
 
 async function createEditor() { try {
   if (typeof window === 'undefined' || editor) return
@@ -60,6 +65,7 @@ async function createEditor() { try {
     overviewRulerLanes: 0,
     overviewRulerBorder: false,
     scrollBeyondLastLine: false,
+    tabFocusMode: true,
     scrollbar: {
       vertical: 'hidden',
       horizontal: 'hidden',
@@ -84,6 +90,17 @@ async function createEditor() { try {
 
   const contentSizeDispose = editor.onDidContentSizeChange(() => updateHeight())
   updateHeight()
+
+  if (props.highlightLines) {
+    const lines = props.highlightLines.replace(/^\{|\}$/g, '').split(',').flatMap(part => {
+      const [a, b] = part.trim().split('-').map(Number)
+      return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a]
+    })
+    editor.createDecorationsCollection(lines.map(line => ({
+      range: new monaco.Range(line, 1, line, 1),
+      options: { isWholeLine: true, className: 'live-code-highlighted-line' }
+    })))
+  }
 
   // Emit evaluate on Cmd/Ctrl+Enter
   editor.addAction({
@@ -153,5 +170,9 @@ watch(() => isDark.value, (dark) => {
 .monaco-editor, .monaco-editor .margin, .monaco-editor-background {
     background-color: var(--vp-code-block-bg) !important;
     font-family: var(--vp-font-family-mono) !important;
+}
+
+.live-code-highlighted-line {
+  background-color: var(--vp-code-line-highlight-color) !important;
 }
 </style>

@@ -56,6 +56,8 @@ const urlExcludesPublicRepo = [
     /\/releases/,
     /\/resources/,
     /cds\/compiler\/messages/,
+    /cds\/cdl/,
+    /cds\/types/,
     /mcp/
 ]
 

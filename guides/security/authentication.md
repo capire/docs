@@ -1262,7 +1262,9 @@ This will make standard CAP authorization work properly.
 If you switch off CAP authentication, make sure that the internal communication channels are secured by the given infrastructure.
 :::
 
-In Java, in such architectures, CAP authentication is obsolete and can be deactivated entirely with <Config java>`cds.security.authentication.mode="never"`</Config>.
+In such architectures, CAP authentication is obsolete and can be deactivated entirely. This can be achieved with <Config java>`cds.security.authentication.mode="never"`</Config> in CAP Java and with an empty custom authentication implementation in CAP Node.js.
+
+[Learn more about custom authentication in Node.js.](../../node.js/authentication.md#custom){.learn-more}
 
 [Learn more about how to switch off authentication.](../../java/security#custom-spring-security-alone){.learn-more}
 

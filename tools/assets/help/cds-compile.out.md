@@ -22,7 +22,7 @@
     - cdl
     - xsuaa
     - openapi
-    - asyncapi
+    - asyncapi  (requires @cap-js/asyncapi as a project dependency, currently bundled as a fallback)
 
   <em>-4</em> | <em>--for</em> &lt;target&gt;
 

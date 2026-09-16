@@ -228,6 +228,7 @@ cds:
         name: my-ias-destination
         onBehalfOf: systemUser
 ```
+:::
 
 The following options are available:
 
@@ -527,7 +528,7 @@ Destination destination = DestinationAccessor.getDestination("<destinationName>"
 HttpClient httpClient = HttpClientAccessor.getHttpClient(destination);
 ...
 ```
-::::
+:::
 
 ### Programmatic Destinations { #programmatic-destinations }
 

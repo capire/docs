@@ -371,7 +371,7 @@ If you have customized the security configuration, you need to adapt it to the n
 Though CAP does not support multiple XSUAA bindings, it was possible in previous versions to extend the standard security configuration to work with multiple bindings. If you require this, you need to set `cds.security.xsuaa.allowMultipleBinding` to `true` so that all XSUAA bindings are available in custom spring auto-configurations. Note: CAP Java still does not process multiple bindings and requires a dedicated spring configuration. In general, applications should refrain from configuring several XSUAA bindings.
 
 [Learn more about the security configuration.](./security#xsuaa-ias){.learn-more}
-[Learn more about migration to SAP´s `spring-security` library.](https://github.com/SAP/cloud-security-services-integration-library/blob/main/spring-security/Migration_SpringXsuaaProjects.md)
+[Learn more about migration to SAP´s `spring-security` library.](https://github.com/SAP/cloud-security-services-integration-library/blob/main/spring-security/Migration_SpringXsuaaProjects.md){.learn-more}
 
 ### Proof-Of-Possession enforced for IAS-based authentication
 

@@ -17,7 +17,7 @@ CAP provides intrinsic extensibility, which means all your entities and services
 #### ✅ &nbsp; Correct example
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="extension-restrictions"
@@ -30,7 +30,7 @@ CAP provides intrinsic extensibility, which means all your entities and services
 #### ❌ &nbsp; Incorrect example
 <!-- TODO: Remove nolink=true as soon as rule works in Playground (i.e. Playground support node_modules additions without install) -->
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   nolink="true"
