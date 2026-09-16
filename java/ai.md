@@ -49,9 +49,11 @@ Annotate a service with `@agent` to expose it as an agent:
 
 ```cds
 @agent
-service CatalogService {
-  entity Books as projection on my.Books;
-  action orderBook(book: Books:ID, quantity: Integer);
+service TravelService {
+  entity Travels   as projection on db.Travels;
+  entity Flights   as projection on xflights.Flights;
+  action createTravel(Description: String, BeginDate: Date, EndDate: Date) returns Travels:ID;
+  action addFlightToTravel(TravelID: Travels:ID, FlightID: Flights:ID, FlightDate: Date);
 }
 ```
 
@@ -73,18 +75,13 @@ corresponding `.../.well-known/agent-card.json` endpoint.
 During development, a built-in chat UI lets you try out your agents in the browser from CAPs index page. It's
 disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
+![](./assets/travel-agent-chat.png){style="width: 80%"}
 ### Customizing an Agent
 
 Without further configuration, the agent derives a system prompt and its advertised skills
 from the CDS model. To customize both, add resources under `<ServiceName>-agent/` on the
-classpath (for example `srv/src/main/resources/CatalogService-agent/`):
+classpath (for example `srv/src/main/resources/TravelService-agent/`):
 
-```txt
-CatalogService-agent/
-├── AGENTS.md                     # system prompt + agent card metadata
-└── skills/
-    ├── browse-books/SKILL.md
-    └── order-book/SKILL.md
 ```
 
 `AGENTS.md` holds the system prompt as its body, with optional YAML frontmatter for the
@@ -92,11 +89,11 @@ agent card:
 
 ```md
 ---
-name: Bookshop Assistant
+name: Travel Assistant
 version: 2.0.0
-description: Helps customers browse and order books
+description: Helps customers browse and book travels
 ---
-You are a helpful bookshop assistant. Help customers find and order books.
+You are a helpful travel assistant. Help customers find flights and manage their travels.
 Always use the provided tools to answer questions — do not make up data.
 ```
 
@@ -104,15 +101,15 @@ Each `skills/<id>/SKILL.md` describes one skill advertised in the agent card:
 
 ```md
 ---
-name: browse-books
-description: Browse and search the book catalog
+name: browse-travels
+description: Browse and search available travels
 metadata:
-  tags: [books, catalog]
+  tags: [travels, search]
   examples:
-    - Show me all available books
-    - Find books about Java
+    - Show me all open travels
+    - Find travels in March 2027
 ---
-Query the Books entity to search the catalog. Prefer LIKE when matching book titles or descriptions.
+Query the Travels entity to search for existing travels. Use filters on BeginDate, EndDate, or status as needed.
 ```
 
 ## Chat Model Configuration <Alpha /> { #ai-chat-config }
@@ -155,7 +152,7 @@ cds:
 ```cds
 @agent
 @agent.llm: 'reasoning'   // use the 'reasoning' config instead of the default ('llm') config
-service CatalogService { ... }
+service TravelService { ... }
 ```
 
 ### SAP AI Core
