@@ -58,7 +58,7 @@ service TravelService {
 ```
 
 > [!tip] Define a tailored service for your agent
-> Define a [dedicated service](../../guides/security/authorization#dedicated-services) for your agent, tailored to its specific use case.
+> Define a [dedicated service](../guides/security/authorization.md#dedicated-services) for your agent, tailored to its specific use case.
 
 The following tools are derived from the service and made available to the agent:
 
