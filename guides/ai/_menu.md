@@ -1,5 +1,6 @@
 
-# [MCP Services](mcp.md)
-# [CAP Agents](agents.md)
-# [Embeddings](embeddings.md)
-# [Joule Integration](joule-integration.md)  <!-- UNRELEASED -->
+# [ MCP Services ](cap-mcp.md)
+# [ CAP Agents ](cap-agents.md)
+# [ Embeddings ](embeddings.md)
+# [ The Xtravels Sample ](xtravels-sample.md)
+# [ Joule Integration ](joule-integration.md)
