@@ -29,7 +29,7 @@ For compatibility reasons with Joule and Agent Gateway, version 0.3.0 of the A2A
 
 
 ::: warning In-Memory Chat History Only
-CAP Java doesn't yet have a persistent chat history. Instead, it stores conversation history in volatile memory. Hence you need to send all follow-up prompts to the same server instance.
+CAP Java doesn't yet have a persistent chat history. Instead, it stores conversation history in volatile memory. Hence, you need to send all follow-up prompts to the same server instance.
 :::
 
 ### Adding the Dependency
@@ -66,16 +66,16 @@ The following tools are derived from the service and made available to the agent
 - Unbound **actions and functions** become individually callable tools, invoked by name.
 
 > [!warning] Unbound actions and functions only
-> Only unbound actions and functions are supported as tools. Bound actions and bound functions are not supported yet.
+> Only unbound actions and functions are supported as tools. Bound actions and bound functions aren't supported yet.
 
 By default the agent is served under `/a2a/<service-path>`, with its
 [agent card](https://a2a-protocol.org/latest/topics/agent-discovery/) available at the
 corresponding `.../.well-known/agent-card.json` endpoint.
 
-During development, a built-in chat UI lets you try out your agents in the browser from CAPs index page. It's
+During development, a built-in chat UI lets you try out your agents in the browser from CAP's index page. It's
 disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
-![](./assets/travel-agent-chat.png){style="width: 80%"}
+![A chat interaction with the TravelService agent showing it's reply for the question "Show me the next two flights from Frankfurt to JFK"](./assets/travel-agent-chat.png){style="width: 80%"}
 ### Customizing an Agent
 
 Without further configuration, the agent derives a system prompt and its advertised skills
@@ -205,7 +205,7 @@ the box.
 
 In CDS, [vector embeddings](../guides/ai/embeddings) are stored in elements of type `Vector`.
 
-CAP Java supports the `Vector` type on SAP HANA and, for local testing, on H2 and SQLite; PostgreSQL support is beta and requires the [pgvector](https://github.com/pgvector/pgvector) extension. Learn more in the embeddings guide [PostgreSQL section](../guides/ai/embeddings#postgresql).
+CAP Java supports the `Vector` type on SAP HANA and, for local testing, on H2 and SQLite; PostgreSQL support is in beta and requires the [pgvector](https://github.com/pgvector/pgvector) extension. Learn more in the embeddings guide [PostgreSQL section](../guides/ai/embeddings#postgresql).
 
 In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
 
