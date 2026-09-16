@@ -22,7 +22,7 @@ npm add @cap-js/agents
   <artifactId>cds-adapter-agent</artifactId>
 </dependency>
 ```
- :::
+:::
 
 
 
@@ -66,11 +66,14 @@ annotate CatalogService.submitOrder with @agent.hitl; // [!code focus]
 
 When the agent decides to call the action, the task pauses and transitions to the A2A [`input-required`](https://a2a-protocol.org/latest/specification/#413-taskstate) state instead of running the action immediately.
 
+> [!warning] Only supported by CAP Node.js
+> `@agent.hitl` is not yet supported by CAP Java
+
 
 
 ### Optional: `AGENTS.md`
 
-You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated ReAct agent, the plugin auto-builds the agent from the directory at startup — no JavaScript handlers required.
+You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated ReAct agent, the plugin auto-builds the agent from the directory at startup — no custom handlers required.
 
 For example, we do so in the [XTravels sample](./xtravels-sample.md):
 
@@ -241,10 +244,12 @@ DEBUG=agents cds watch
 > [!tip] Zero Configuration
 > The plugin can automatically fetch required/missing credentials from local installations of supported LLMs, allowing you to work with zero additional configuration.
 
+> [!warning] CAP Node.js only
+> Auto configuration from local Claude and OpenCode installations is not supported by CAP Java
 
 ### Using Chat Preview <Alpha/>
 
-For local development, the plugin serves a rudimentary experimental chat preview at http://localhost:4004/a2a/browse/preview/.
+For local development, a rudimentary experimental chat preview is provided via the generic index page (In Node.js via http://localhost:4004/a2a/browse/preview/).
 
 Open the chat preview in your browser to interact with the agent. For example, enter the same prompts as we did over in the [MCP Services](./cap-mcp.md#using-opencode-or-alike) guide with OpenCode:
 
@@ -268,6 +273,10 @@ Also answer the questions that the agent asks you back.
 
 Given [`@agent`](#declare-agent-services)-annotated service definitions, the plugin automatically creates an agent per CAP service with the configured models, served out of the box via A2A endpoints, with seamless integration with local service capabilities, and ready-to-use support for persistence, telemetry, quotas, content filtering, as well as enterprise-grade features like audit logging, data privacy, and security.
 
+> [!warning] CAP Node.js only
+> Persistent chat history, telemetry, quotas, content filtering, audit logging and data privacy features are not yet supported by CAP Java.
+
+[Learn more about agents in CAP Java.](/@external/java/ai#ai-agents){.learn-more}
 
 ### Autowired Tools via MCP
 
@@ -336,6 +345,7 @@ In development, audit events are logged to the console. In production, they are 
 All events are emitted as `SecurityEvent` for compatibility with the SAP Audit Log Service.
 
 For details on configuring and using audit logging, refer to the documentation at: https://github.com/cap-js/agents/blob/main/.docs/audit-logging.md.
+
 
 
 ### Persistence
