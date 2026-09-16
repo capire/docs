@@ -347,7 +347,6 @@ All events are emitted as `SecurityEvent` for compatibility with the SAP Audit L
 For details on configuring and using audit logging, refer to the documentation at: https://github.com/cap-js/agents/blob/main/.docs/audit-logging.md.
 
 
-
 ### Persistence
 
 The CAP-based harness provides short-term memory for agents by storing conversational and checkpoints in the connected primary database.
