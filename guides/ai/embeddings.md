@@ -154,7 +154,7 @@ function vector_embedding (text, text_type, embedding_model, remote_source) => V
 
 [Learn more in the SAP HANA documentation](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) {.learn-more}
 
-[Learn more about Vector Embeddings in CAP Java](../../java/cds-data#vector-embeddings) {.learn-more}
+[Learn more about Vector Embeddings in CAP Java](../../java/ai#vector-embeddings) {.learn-more}
 
 > [!info] Emulated in SQLite and H2 <Beta/>
 > On SQLite and H2 the `vector_embedding` function is emulated for local testing, with optional local [ONNX](https://onnx.ai) models for semantic embeddings. See [SQLite and H2](#sqlite-and-h2) for setup details. It is not supported on PostgreSQL.
