@@ -146,6 +146,7 @@ Requirements:
 
 ... with error messages like these:
 
+- _Pool resource could not be acquired within 1s_
 - _Acquiring client from pool timed out_
 - _ResourceRequest timed out_
 
