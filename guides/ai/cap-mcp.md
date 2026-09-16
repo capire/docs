@@ -101,7 +101,7 @@ This information is included in the output of the [`describe`](#-describe-servic
 
 ### Custom `@mcp.instructions`
 
-The MCP Adapter automatically sends [MCP instructions](https://modelcontextprotocol.io/specification/2026-07-28/schema#discoverresult) to MCP clients to help models understand how to interact with your services effectively. While these generic instructions are mostly fully sufficient, there may be cases where you want to provide additional guidance specific to your service through custom instructions.
+The MCP Adapter automatically sends [MCP instructions](https://modelcontextprotocol.io/specification/2026-07-28/schema#discoverresult) to MCP clients to help models understand how to interact with your services effectively. While these generic instructions are mostly sufficient, there may be cases where you want to provide additional guidance specific to your service through custom instructions.
 
 Use the `@mcp.instructions` annotation on service level, entity level, or action level to specify such custom instructions. For example:
 
@@ -220,9 +220,6 @@ And answer the questions that OpenCode asks you back.
 
 
 
-You can also run `opencode web` to open the OpenCode web interface, which provides a more user-friendly way to interact with your MCP servers, including features like tool inspection and query building. Here's a screenshot of a simple session:
-
-![OpenCode web interface dashboard showing a sidebar with available MCP tools and a main panel displaying query results in a table format with database records and their properties](../protocols/assets/mcp/opencode-web.png){style="width:70%"}
 
 
 ### Autowired MCP Clients
