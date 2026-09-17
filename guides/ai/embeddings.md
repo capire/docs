@@ -98,6 +98,14 @@ await UPDATE (Incidents) .with ({
   )`
 }) .where`modifiedAt > ${lastModified}`;
 ```
+```Java [Java]
+srv.run(Update.entity(INCIDENTS).set(
+  "embedding", CQL.vectorEmbedding(
+    CQL.constant("Title: ").concat(CQL.get("title").concat(CQL.constant(", Summary: ").concat(CQL.get("summary")))),
+    DOCUMENT, "SAP_GXY.20250407"
+  )
+).where(i -> i.modifiedAt().gt(Instant.now().minus(24, HOURS))));
+```
 :::
 
 ## Using Embeddings
