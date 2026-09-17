@@ -6,6 +6,7 @@ import ImplVariantsHint from './components/implvariants/ImpVariantsHint.vue';
 import StatusBadge from './components/StatusBadge.vue';
 import Alpha from './components/Alpha.vue';
 import Beta from './components/Beta.vue';
+import GA from './components/GA.vue';
 import Gamma from './components/Gamma.vue';
 import Concept from './components/Concept.vue'
 import Since from './components/Since.vue';
@@ -32,6 +33,7 @@ export default {
     ctx.app.component('StatusBadge', StatusBadge)
     ctx.app.component('Alpha', Alpha)
     ctx.app.component('Beta', Beta)
+    ctx.app.component('GA', GA)
     ctx.app.component('Gamma', Gamma)
     ctx.app.component('Concept', Concept)
     ctx.app.component('Since', Since)
