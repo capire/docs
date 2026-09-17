@@ -20,13 +20,13 @@ The XTravels sample provides a more comprehensive example of how to work with se
 
 The classic approach as illustrated below, is used a static UI where the user interacts with the XTravels application, and the application in turn interacts directly with individual services for events, hotels, and flights, without any intelligent coordination between them.
 
-![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg)
+![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg?raw)
 
 ### Agentic Approach
 
 By using agents we can replace classic UIs to create travels, with deep integration across the various services – both for development teams that had to invest accordingly, as well as for end-users seeking an automated travel planning experience.
 
-![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg)
+![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg?raw)
 
 The _XTravels App_ in the illustration above reduces to a lightweight application with only simple mostly readonly UIs and minimal user interaction, while the agents handle the complex coordination and integration tasks behind the scenes. Also, all the formerly required deep integrations can be eliminated, with all the orchestration and decision-making now offloaded to the agents. At least, that's what we hope to achieve.
 
@@ -173,7 +173,7 @@ In a separate terminal, start OpenCode:
 opencode
 ```
 
-![OpenCode start screen](opencode-start-screen.png)
+![OpenCode start screen](opencode-start-screen.png){.ignore-dark}
 
 Enter a prompt, such as:
 

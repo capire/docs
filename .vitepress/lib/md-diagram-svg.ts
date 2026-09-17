@@ -20,7 +20,7 @@ export function install(md: MarkdownRenderer) {
     }
 
     const name = 'svg_' + src.replace('?raw', '').replace(/[^a-zA-Z0-9_]/g, '_') // stable variable name for the imported SVG content
-    const importPath = src.startsWith('/') && src.startsWith('.') ? src : './' + src
+    const importPath = (src.startsWith('/') || src.startsWith('.')) ? src : './' + src
 
     const sfcBlocks = env.sfcBlocks! 
     if (!sfcBlocks.scriptSetup) {
