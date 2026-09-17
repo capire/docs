@@ -394,7 +394,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ### How do I generate an OData response in Node.js for Error 404?
 
-If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-server-js).
+If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-serverjs).
 
 ```js
 let app
