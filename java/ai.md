@@ -16,7 +16,7 @@ description: >
 
 <!--- % include links.md %} -->
 
-## Agents <Alpha /> { #ai-agents }
+## Agents <Alpha />
 
 A CAP agent turns a CDS service into a conversational endpoint. It answers natural-language
 requests by using the service's entities, actions, and functions as tools, backed by an
