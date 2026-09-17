@@ -24,7 +24,7 @@ let pkg = await read ('package.json')
 ```
 
 
-### ms4(**ts**, **unit**) {.method}
+### ms4(**timeSpan**, **unit**) {.method}
 
  Converts a time span with a unit to milliseconds.
  You can pass the unit as part of the time span or as the second parameter.
