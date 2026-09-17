@@ -76,16 +76,22 @@ During development, a built-in chat UI lets you try out your agents in the brows
 disabled by default in the [production profile](./developing-applications/configuring#production-profile).
 
 ![A chat interaction with the TravelService agent showing it's reply for the question "Show me the next two flights from Frankfurt to JFK"](./assets/travel-agent-chat.png){style="width: 80%"}
+
 ### Customizing an Agent
 
 Without further configuration, the agent derives a system prompt and its advertised skills
 from the CDS model. To customize both, add resources under `<ServiceName>-agent/` on the
 classpath (for example `srv/src/main/resources/TravelService-agent/`):
 
+```txt
+TravelService-agent/
+├── AGENTS.md                     # system prompt + agent card metadata
+└── skills/
+    ├── browse-travels/SKILL.md
+    └── create-travel/SKILL.md
 ```
 
-`AGENTS.md` holds the system prompt as its body, with optional YAML frontmatter for the
-agent card:
+`AGENTS.md` holds the system prompt as its body, with optional YAML frontmatter for the agent card:
 
 ```md
 ---
