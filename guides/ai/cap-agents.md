@@ -73,7 +73,7 @@ When the agent decides to call the action, the task pauses and transitions to th
 
 ### Optional: `AGENTS.md`
 
-You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated ReAct agent, the plugin auto-builds the agent from the directory at startup — no custom handlers required.
+You can add an `AGENTS.md` file next to the service definition's `.cds` file to add detailed information about the agent's identity and behaviour. When present, it replaces the generic default agentification: instead of the auto-generated _ReAct_ agent, the plugin auto-builds the agent from the directory at startup — no custom handlers required.
 
 For example, we do so in the [XTravels sample](./xtravels-sample.md):
 
