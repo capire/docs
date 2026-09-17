@@ -276,7 +276,7 @@ Given [`@agent`](#declare-agent-services)-annotated service definitions, the plu
 > [!warning] CAP Node.js only
 > Persistent chat history, telemetry, quotas, content filtering, audit logging and data privacy features are not yet supported by CAP Java.
 
-[Learn more about agents in CAP Java.](/@external/java/ai#ai-agents){.learn-more}
+[Learn more about agents in CAP Java.](../../java/ai#agents){.learn-more}
 
 ### Autowired Tools via MCP
 
