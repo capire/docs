@@ -249,7 +249,7 @@ DEBUG=agents cds watch
 
 ### Using Chat Preview <Alpha/>
 
-For local development, a rudimentary experimental chat preview is provided via the generic index page (In CAP Node.js via http://localhost:4004/a2a/browse/preview/).
+In CAP Node.js, a rudimentary experimental chat preview is provided in the generic _index.html_ page → see the _Preview_ links next to the A2A endpoints – which can be used in local development.
 
 Open the chat preview in your browser to interact with the agent. For example, enter the same prompts as we did over in the [MCP Services](./cap-mcp.md#using-opencode-or-alike) guide with OpenCode:
 
