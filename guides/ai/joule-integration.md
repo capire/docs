@@ -6,7 +6,7 @@ The CAP-level AI features seamlessly integrate with [_SAP Joule Work_](https://w
 [[toc]]
 
 > [!important] Under Construction
-> This guide is currently empty, yet we still decided to publish it to provide early visibility into **(a)** the fact that we are actively working in that areas, **(b)** some hints about the preliminary ideas and approaches we are exploring, and **(c)** the directions we are heading with Joule integration overall.
+> This guide is currently empty, yet we still decided to publish it to provide early visibility into **(a)** the fact that we are actively working in these areas, of course, **(b)** some hints about the preliminary ideas and approaches we are exploring, and **(c)** the directions we are heading with Joule integration overall.
 
 ## Why CAP-level Agents & AI?
 
