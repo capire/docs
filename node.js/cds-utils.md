@@ -26,9 +26,9 @@ let pkg = await read ('package.json')
 
 ### ms4(**ts**, **unit**) {.method}
 
- Converts a time span with a unit into milliseconds.
- The unit to convert from can either be passed as part of the time span, or as second parameter.
- Unit can be `s`, `m`, `h`, `d`, or `w`.
+ Converts a time span with a unit to milliseconds.
+ You can pass the unit as part of the time span or as the second parameter.
+ The unit can be `s`, `m`, `h`, `d`, or `w`.
  For example:
 
  ```js
