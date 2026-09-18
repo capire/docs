@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { fileURLToPath } from 'url'
 
 export default {
   async load() {
@@ -19,7 +20,7 @@ export default {
       const rule = plugin.rules[cdsRuleName]
       const model = rule.meta?.model
       const category = model === 'none' ? 'Environment' : 'Model Validation';
-      
+
       data[category].push({...ruleInfo(cdsRuleName, rule),
         model: model === 'parsed' ? '👀' : ''
       })
@@ -40,7 +41,7 @@ export default {
 
 function ruleInfo (name, rule) {
   const meta = rule.meta ?? {}
-  const ruleDocs = path.join(__dirname, `rules/${name}.md`)
+  const ruleDocs = path.join(path.dirname(fileURLToPath(import.meta.url)), `rules/${name}.md`)
   const hasRuleDocs = fs.existsSync(ruleDocs)
   return {
     rule: name,

@@ -3,7 +3,7 @@
 > cds add --help
 
 <strong>SYNOPSIS</strong>
-    <em>cds add</em> &lt;feature | comma-separated list of features&gt;
+    <em>cds add</em> &lt;feature&gt; [&lt;feature&gt; ...]
 
     Add one or more features to an existing project - grow as you go.
 
@@ -27,6 +27,7 @@
       <em>ias</em>                          - authentication via IAS
       <em>ams</em>                          - authorization via AMS
       <em>hana</em>                         - database support for SAP HANA
+      <em>hana-serverless</em>              - database support for SAP HANA Cloud serverless
       <em>postgres</em>                     - database support for PostgreSQL
       <em>sqlite</em>                       - database support for SQLite
       <em>liquibase</em>                    - database migration using Liquibase
@@ -83,6 +84,13 @@
 
 
 <strong>FEATURE OPTIONS</strong>
+    <em>cds add ai</em>
+
+      --plan
+
+        Specify the service plan.
+
+
     <em>cds add audit-logging</em>
 
       --plan
@@ -126,6 +134,10 @@
 
         The number of records to be created for each entity.
 
+      --composition-records
+
+        The number of records to be created per to-many composition (default 2).
+
       --content-type | -c
 
         The content type of the data. One of "json" or "csv".
@@ -133,6 +145,12 @@
       --out | -o
 
         The output target folder.
+
+      --keys-only
+
+        Only fill key values into the generated CSV records, leaving all
+        other columns empty. Requires '--records'. Useful to generate placeholder
+        rows for an agent or human to fill in later.
 
 
     <em>cds add enterprise-messaging</em>
@@ -251,6 +269,7 @@
 
 <strong>EXAMPLES</strong>
   <em>cds add</em> sample
+  <em>cds add</em> multitenancy hana xsuaa
   <em>cds add</em> multitenancy,hana,xsuaa
   <em>cds add</em> data --filter my.namespace.MyEntity
   <em>cds add</em> mta
@@ -260,5 +279,5 @@
   <em>cds init</em>
 
 <strong>SUMMARY</strong>
-  <em>cds add</em> &lt;feature | comma-separated list of features&gt;
+  <em>cds add</em> &lt;feature&gt; [&lt;feature&gt; ...]
 </pre>

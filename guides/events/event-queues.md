@@ -74,7 +74,7 @@ const xflights = await cds.connect.to('xflights')
 this.after('CREATE', 'Bookings', async (_, req) => {
   const { flight_ID: flight, flight_date: date } = req.data
   // Anti-pattern: the remote call happens before the local commit is safe  // [!code --]
-  await xflights.send('POST', 'BookingCreated', { flight, date })           // [!code --]
+  await xflights.send('POST', 'ReserveSeats', { flight, date })           // [!code --]
 })
 ```
 
@@ -90,7 +90,7 @@ const qd_xflights = cds.queued(xflights)
 this.after('CREATE', 'Bookings', async (_, req) => {
   const { flight_ID: flight, flight_date: date } = req.data
   // Persisted within the current transaction, sent after commit      // [!code ++]
-  await qd_xflights.send('POST', 'BookingCreated', { flight, date })  // [!code ++]
+  await qd_xflights.send('POST', 'ReserveSeats', { flight, date })  // [!code ++]
 })
 ```
 ```java [Java]
@@ -203,20 +203,20 @@ Because queued calls return after the message is *stored*, not after the remote 
 - `<event>/#succeeded`: fires when processing completes successfully.
 - `<event>/#failed`: fires when the message becomes a dead letter (after all retries are exhausted).
 
-**Example:** After *xflights* successfully processes a `BookingCreated` event, the *xtravels* application replicates the booking confirmation back into its own database. If the booking fails, the application updates the local `Bookings` row to surface the error in its UI.
+**Example:** After *xflights* successfully processes a `ReserveSeats` event, the *xtravels* application replicates the booking confirmation back into its own database. If the booking fails, the application updates the local `Bookings` row to surface the error in its UI.
 
 ::: code-group
 ```js [Node.js]
 const xflights = await cds.connect.to('xflights')
 
 // Called when the queued booking succeeds
-xflights.after('BookingCreated/#succeeded', async (result, req) => {
+xflights.after('ReserveSeats/#succeeded', async (result, req) => {
   console.log('Flight booked successfully:', result)
   // Replicate booking details from remote
 })
 
 // Called when the queued booking fails after max retries
-xflights.after('BookingCreated/#failed', async (error, req) => {
+xflights.after('ReserveSeats/#failed', async (error, req) => {
   console.log('Flight booking failed:', error)
   // Trigger compensation logic
 })
@@ -414,18 +414,18 @@ module.exports = class TravelService extends cds.ApplicationService {
     const { Flights, Travels } = this.entities
     const { Bookings } = cds.entities('sap.capire.travels')
 
-    // After saving a Travel, emit a BookingCreated event for each booking.
+    // After saving a Travel, emit a ReserveSeats event for each booking.
     // Travel_ID + Pos are carried as headers so the callbacks can correlate back.
     this.after('SAVE', Travels, (_, req) => {
       const { Bookings: bookings = [] } = req.data
       return Promise.all(bookings.map(booking => {
         const { Flight_ID: flight, Flight_date: date, Travel_ID, Pos } = booking
-        return qd_xflights.emit('BookingCreated', { flight, date }, { Travel_ID, Pos })
+        return qd_xflights.emit('ReserveSeats', { flight, date }, { Travel_ID, Pos })
       }))
     })
 
     // xflights confirmed the seat — mark the booking as Confirmed
-    xflights.after('BookingCreated/#succeeded', async (_, req) => {
+    xflights.after('ReserveSeats/#succeeded', async (_, req) => {
       const { Travel_ID, Pos } = req.headers
       await UPDATE(Bookings, { Travel_ID, Pos }).set({ Status_code: 'C' })
     })
@@ -433,7 +433,7 @@ module.exports = class TravelService extends cds.ApplicationService {
     // xflights rejected the seat (e.g. no availability) — mark as Failed
     // This is not a rollback: the booking was never confirmed, so there is nothing to undo.
     // The status is recorded explicitly, leaving it visible for manual resolution or retry.
-    xflights.after('BookingCreated/#failed', async (err, req) => {
+    xflights.after('ReserveSeats/#failed', async (err, req) => {
       const { Travel_ID, Pos } = req.headers
       await UPDATE(Bookings, { Travel_ID, Pos }).set({ Status_code: 'F' })
     })
@@ -769,4 +769,3 @@ Most event-queue usage comes through messaging or remote services. From here you
 - [Messaging](messaging) — emitting and consuming events between CAP applications and via brokers; messaging services are auto-outboxed.
 - [CAP-Level Service Integration](../integration/calesi) — consuming remote services as if they were local; outboxing them centrally with `outboxed: true`.
 - [CAP-Level Data Federation](../integration/data-federation) — using `srv.schedule().every()` for polling-based replication from remote services.
-

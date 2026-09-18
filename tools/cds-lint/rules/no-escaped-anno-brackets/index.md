@@ -19,7 +19,7 @@ The escaped annotation syntax `![@...]` is unnecessary in modern CAP CDS. Inline
 In the following example, inline annotations use the modern `@...` syntax without escaping:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-escaped-anno-brackets"
@@ -33,7 +33,7 @@ In the following example, inline annotations use the modern `@...` syntax withou
 This example shows the old escaped annotation syntax `![@UI.Importance]` which is unnecessary and should be replaced with `@UI.Importance`:
 
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{cds:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{cds:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="no-escaped-anno-brackets"

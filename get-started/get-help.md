@@ -146,6 +146,7 @@ Requirements:
 
 ... with error messages like these:
 
+- _Pool resource could not be acquired within 1s_
 - _Acquiring client from pool timed out_
 - _ResourceRequest timed out_
 
@@ -394,7 +395,7 @@ If you don't want to exclude dependencies completely, but make sure that an in-m
 
 ### How do I generate an OData response in Node.js for Error 404?
 
-If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-server-js).
+If your application(s) endpoints are served with OData and you want to change the standard HTML response to an OData response, adapt the following snippet to your needs and add it in your [custom _server.js_ file](../node.js/cds-server#custom-serverjs).
 
 ```js
 let app
@@ -721,6 +722,13 @@ Most probably, you are using the same `hana_tenant_prefix` and `tenant_id` as an
 
 See how to [handle HANA tenants with HANA TMS v2](../guides/multitenancy/index.md#handle-sap-hana-tenants) to avoid this situation.
 
+### Why does my tenant URL fail or is truncated?
+
+DNS host labels are limited to 63 characters. The tenant-specific hostname can exceed this limit with long names.
+
+**Solution:** Use shorter component names or configure an explicit short route using the `routes` parameter in your `mta.yaml`.
+
+[Learn more about routes in the Multitenancy guide.](../guides/multitenancy/index.md#cloud-foundry){.learn-more}
 
 ## BTP
 

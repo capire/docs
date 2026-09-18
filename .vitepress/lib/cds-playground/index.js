@@ -1,6 +1,9 @@
-import templates from './vite-plugin-templates'
+import templates from './vite-plugin-templates.ts'
 import path from 'path'
+import { dirname } from 'path'
+import { fileURLToPath } from 'node:url'
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
 let enabled = false
 let plugins = () => []
 

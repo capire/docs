@@ -52,7 +52,6 @@ With CAP, Service integration is greatly simplified. Consumption of remote servi
      }
    }`
    ```
-:::
 
 The graphic below illustrates what happened here:
 
@@ -891,7 +890,7 @@ Here are some typical usages found in the xflights/xtravels sample:
 
 ```js :line-numbers=1
 await xflights.run (SELECT.from`Flights`.where`modifiedAt > ${latest}`)
-await xflights.send ('POST','BookingCreated', { flight, date, seats })
+await xflights.send ('POST','ReserveSeats', { flight, date, seats })
 await this.emit ('Flights.Updated', { flight, date, free_seats }) // this = xflights service
 xflights.on ('Flights.Updated', async msg => { ... })
 ```
@@ -1299,7 +1298,7 @@ const xflights_ = cds.outboxed (xflights) // [!code focus]
 this.after ('SAVE', Travels, ({ Bookings=[] }) => {
   return Promise.all (Bookings.map (booking => {
     let { Flight_ID: flight, Flight_date: date } = booking
-    return xflights_.send ('POST', 'BookingCreated', { flight, date }) // [!code focus]
+    return xflights_.send ('POST', 'ReserveSeats', { flight, date }) // [!code focus]
   }))
 })
 ```
@@ -1318,6 +1317,7 @@ This creates ultimate resilience, as the events are stored in a local outbox tab
 
 - [Inner Loop Development](inner-loops) – Understand how to develop and test integrated applications efficiently using CAP's inner loop development features.
 
+- [Outbound Authentication](../security/remote-authentication.md) - Find details about authenticating requests to remote services.
 <!--
 - [Service Bindings](service-bindings) – Learn how to configure connections to external services in a declarative way using service bindings.
 -->

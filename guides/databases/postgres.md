@@ -7,7 +7,7 @@ description: >
 
 This guide focuses on the new PostgreSQL Service provided through *[@cap-js/postgres](https://www.npmjs.com/package/@cap-js/postgres)*, which is based on the same new database services architecture as the new [SQLite Service](./sqlite).
 
-CAP Java 3 is tested on [PostgreSQL](https://www.postgresql.org/) 16 and most CAP features are supported on PostgreSQL.
+CAP Java is tested on the latest [PostgreSQL](https://www.postgresql.org/) `15.x` version and most CAP features are supported.
 
 
 *Learn about migrating from the former `cds-pg` in the [Migration](#migration-from-cds-pg-in-nodejs) chapter.*{.learn-more}
@@ -321,7 +321,7 @@ cds add postgres
 
 You can package and deploy that application, for example using [MTA-based deployment](../deploy/to-cf#add-mta-yaml).
 
-## Automatic Schema Evolution { #schema-evolution }
+## Schema Evolution
 
 When redeploying after you changed your CDS models, like adding fields, automatic schema evolution is applied. Whenever you  run `cds deploy` (or `cds-deploy`) it executes these steps:
 
@@ -464,8 +464,8 @@ cds deploy --script --delta-from cds-model.csn --out delta_script.sql
 If your model change includes changes that could lead to data loss, there will be a warning
 and a respective comment is added to the dangerous statements in the resulting script.
 For example, deleting an element or reducing the length of an element would look like this:
- ::: code-group
 
+::: code-group
 ```sql [delta_script.sql]
 ...
 -- [WARNING] this statement is lossy
@@ -477,12 +477,8 @@ ALTER TABLE sap_capire_bookshop_Books ALTER title TYPE VARCHAR(11);
 ```
 :::
 
-:::warning
-
-Always check and, if necessary, adapt the generated script before you apply it
-to your database!
-
-:::
+> [!warning]
+> Always check and, if necessary, adapt the generated script before you apply it to your database!
 
 
 ## Using Liquibase in CAP Java

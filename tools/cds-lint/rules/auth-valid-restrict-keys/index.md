@@ -19,7 +19,7 @@ To define authorizations on a fine-grained level, the `@restrict` annotation all
 In the following example, the `@restrict` annotation on `CatalogService.ListOfBooks` has correctly spelled `to`, `grant`, and `where` keys in the defined privilege:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{ts:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{ts:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-keys"
@@ -33,7 +33,7 @@ In the following example, the `@restrict` annotation on `CatalogService.ListOfBo
 This example shows the `@restrict` annotation on `CatalogService.ListOfBooks` with typos in the `grant` key (`grants` instead of `grant`), the `to` key (`too` instead of `to`), and the `where` key (`were` instead of `where`) and the rule will report them as a warning:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{ts:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{ts:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-keys"

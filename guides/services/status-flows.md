@@ -6,7 +6,7 @@ description: >
 # Status-Transition Flows
 
 
-Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding. – _Status: <Gamma/>_
+Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
 {.abstract}
 
 
@@ -65,7 +65,7 @@ This designated status element is expected to be an `enum`, with enum symbols re
 
 ```cds
 entity Travels { // ...
-  @readonly Status : TravelStatusCode default 'O';
+  @readonly Status : TravelStatusCode default #Open;
 }
 ```
 ```cds
@@ -80,7 +80,7 @@ Alternatively, the status element can also be an association to a code list enti
 
 ```cds
 entity Travels { // ...
-  @readonly Status : Association to TravelStatus default 'O';
+  @readonly Status : Association to TravelStatus default #Open;
 }
 ```
 ```cds

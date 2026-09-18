@@ -44,6 +44,10 @@
 
     if (tabs.length === 0) return
 
+    // Skip code groups unrelated to the OS/runtime/cloud-runtime dimensions (e.g. file-path
+    // tabs), otherwise they'd be forced back to their first tab on every re-init.
+    if (!tabs.some((tab) => getTabDimension(tab))) return // eslint-disable-line no-undef
+
     const selectedTab = getBestTab(tabs, activeTabs) // eslint-disable-line no-undef
     const selectedIndex = tabs.indexOf(selectedTab)
 

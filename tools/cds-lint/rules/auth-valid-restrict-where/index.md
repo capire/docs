@@ -19,7 +19,7 @@ The `where` property of a `@restrict` privilege defines a filter expression that
 In the following example, the `@restrict` privilege is defined with a valid `where` property `CreatedBy = $user'`:
 
 ::: code-group
-<<< correct/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< correct/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-where"
@@ -33,7 +33,7 @@ In the following example, the `@restrict` privilege is defined with a valid `whe
 This example shows the `@restrict` privilege defined with an invalid `where` property `CreatedBy === $user`. Since this is not a valid filter expression according to the CDS compiler, the rule reports a warning:
 
 ::: code-group
-<<< incorrect/srv/cat-service.cds#snippet{cds:line-numbers} [srv/cat-service.cds]
+<<< incorrect/srv/cat-service.cds{cds:line-numbers} [srv/cat-service.cds]
 :::
 <PlaygroundBadge
   name="auth-valid-restrict-where"

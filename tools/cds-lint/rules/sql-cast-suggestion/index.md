@@ -19,7 +19,7 @@ With compiler v2, appending a type declaration to a column expression in a view'
 In the following example, the entity `ListOfBooks` contains explicit casts for elements `name2` and `name3`, so the rule will not be triggered for these elements:
 
 ::: code-group
-<<< correct/db/schema.cds#snippet{ts:line-numbers} [db/schema.cds]
+<<< correct/db/schema.cds{ts:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="sql-cast-suggestion"
@@ -33,7 +33,7 @@ In the following example, the entity `ListOfBooks` contains explicit casts for e
 This example shows the rule triggered for elements `name1` and `name2` because they require explicit casts:
 
 ::: code-group
-<<< incorrect/db/schema.cds#snippet{ts:line-numbers} [db/schema.cds]
+<<< incorrect/db/schema.cds{ts:line-numbers} [db/schema.cds]
 :::
 <PlaygroundBadge
   name="sql-cast-suggestion"

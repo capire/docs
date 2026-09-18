@@ -197,8 +197,6 @@ The project structure used here is as follows:
 
 The `shared-db` module is simply another CAP project, with only database content. The dependencies are installed via NPM, so it's still possible to install via an NPM registry if used outside of the monorepo setup.
 
-The database model could also be collected on root level instead of creating a separate `shared-db` module. When collecting on root level, the `cds build --ws` option can be used to collect the models of all NPM workspaces.
-
 :::
 
 ## All-in-one Deployment
@@ -256,18 +254,6 @@ build-parameters:
         - npx cds build ./shared-db --for hana --production # [!code ++]
 ```
 :::
-
-
-::: info `cds build --ws`
-If the CDS models of every NPM workspace contained in the monorepo should be considered, then instead of creating this `shared-db` folder, you can also use:
-```shell
-cds build --for hana --production --ws
-```
-The `--ws` aggregates all models in the NPM workspaces.
-
-In this walkthrough, we only include a subset of the CDS models in the deployment.
-:::
-
 
 ::: details Configure each app for cloud readiness
 The preceding steps only added configuration to the workspace root.
@@ -551,7 +537,7 @@ modules:
   - name: bookstore-srv
     ...
     properties: # [!code ++]
-      cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/reviews"} # [!code ++]
+      cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/odata/v4/reviews"} # [!code ++]
       cds_requires_OrdersService_credentials: {"destination": "orders-dest","path": "/odata/v4/orders"} # [!code ++]
 ```
 :::
@@ -665,32 +651,22 @@ The _xs-app.json_ file describes how to forward incoming request to the API endp
       "csrfProtection": true // [!code --]
     } // [!code --]
     { // [!code ++]
-      "source": "^/admin/(.*)$", // [!code ++]
-      "target": "/admin/$1", // [!code ++]
+      "source": "^/admin/", // [!code ++]
       "destination": "bookstore-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
     { // [!code ++]
-      "source": "^/browse/(.*)$", // [!code ++]
-      "target": "/browse/$1", // [!code ++]
+      "source": "^/odata/v4/browse/", // [!code ++]
       "destination": "bookstore-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
     { // [!code ++]
-      "source": "^/user/(.*)$", // [!code ++]
-      "target": "/user/$1", // [!code ++]
-      "destination": "bookstore-api", // [!code ++]
-      "csrfProtection": true // [!code ++]
-    }, // [!code ++]
-    { // [!code ++]
-      "source": "^/odata/v4/orders/(.*)$",  // [!code ++]
-      "target": "/odata/v4/orders/$1", // [!code ++]
+      "source": "^/odata/v4/orders/",  // [!code ++]
       "destination": "orders-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     }, // [!code ++]
     { // [!code ++]
-      "source": "^/reviews/(.*)$", // [!code ++]
-      "target": "/reviews/$1", // [!code ++]
+      "source": "^/odata/v4/reviews/", // [!code ++]
       "destination": "reviews-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     } // [!code ++]

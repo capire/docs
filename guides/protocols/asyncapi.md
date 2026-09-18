@@ -10,10 +10,15 @@ description: >
   }
 </style>
 
-
 # Publishing to AsyncAPI
 
 You can convert events in CDS models to the [AsyncAPI specification](https://www.asyncapi.com), a widely adopted standard used to describe and document message-driven asynchronous APIs.
+
+Install the plugin like so:
+
+```sh
+npm add -D @cap-js/asyncapi
+```
 
 [[toc]]
 
@@ -32,7 +37,25 @@ If you want to generate one AsyncAPI document for all the services, you can use 
 cds compile srv --service all -o docs --to asyncapi --asyncapi:merged
 ```
 
-[Learn how to programmatically convert the CSN file into an AsyncAPI Document](../../node.js/cds-compile#asyncapi){.learn-more}
+## Programmatic Usage { #programmatic}
+
+```js
+const cds = require('@sap/cds')
+const { compile } = require('@cap-js/asyncapi')
+
+const csn = await cds.load(cds.env.folders.srv)
+const doc = compile(csn)
+```
+
+## Importing AsyncAPI { #import}
+
+Use `cds import` to convert an AsyncAPI document into a CDS service definition:
+
+```sh
+cds import --asyncapi ~/Downloads/BookStore_AsyncAPI.json
+```
+
+[Learn more about `cds.import`](../../tools/apis/cds-import#from-asyncapi){.learn-more}
 
 ## Presets { #presets}
 
@@ -84,7 +107,7 @@ Annotations will take precedence over [presets](#presets).
 | `EventCharacteristics` | Event             | x-sap-event-characteristics   |                                                                                                                         |
 | `EventStateInfo`       | Event             | x-sap-stateInfo               |                                                                                                                         |
 | `EventSchemaVersion`   | Event             | x-sap-event-version           |                                                                                                                         |
-| `EventType`            | Event             |                               | Optional; The value from this annotation will be used to<br> overwrite the default event type in the AsyncAPI document. |
+| `EventType`            | Event             |                               | Optional; The value from this annotation will be used to overwrite the default event type in the AsyncAPI document. |
 
 For example:
 
@@ -92,14 +115,13 @@ For example:
 @AsyncAPI.Title        : 'CatalogService Events'
 @AsyncAPI.SchemaVersion: '1.0.0'
 @AsyncAPI.Description  : 'Events emitted by the CatalogService.'
-
 service CatalogService {
+
   @AsyncAPI.EventSpecVersion    : '2.0'
   @AsyncAPI.EventCharacteristics: {
     ![state-transfer]: 'full-after-image'
   }
-  @AsyncAPI.EventSchemaVersion       : '1.0.0'
-
+  @AsyncAPI.EventSchemaVersion  : '1.0.0'
   event SampleEntity.Changed.v1 : projection on CatalogService.SampleEntity;
 }
 ```
@@ -113,14 +135,14 @@ For example, if both `@AsyncAPI.ShortText` and `@AsyncAPI.Extensions: { ![sap-sh
 For example:
 
 ```cds
-@AsyncAPI.Extensions   : {
-  ![foo-bar]                    : 'baz',
-  ![sap-shortText]              : 'Service Base 1'
+@AsyncAPI.Extensions: {
+  ![foo-bar]: 'baz',
+  ![sap-shortText]: 'Service Base 1'
 }
-
 service CatalogService {
-  @AsyncAPI.Extensions          : {
-    ![sap-event-source]           : '/{region}/sap.app.test'
+
+  @AsyncAPI.Extensions: {
+    ![sap-event-source]: '/{region}/sap.app.test'
   }
   event SampleEntity.Changed.v1 : projection on CatalogService.SampleEntity;
 }

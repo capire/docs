@@ -27,6 +27,23 @@ entity Authors {
   age = years_between(dateOfBirth, coalesce(dateOfDeath, date( $now )));
 }
 
+extend Authors with {
+  address : Association to Addresses;
+}
+
+entity Addresses {
+  key ID : Integer;
+  street : String;
+  town   : Association to Towns;
+}
+
+entity Towns {
+  key ID  : Integer;
+  name    : String;
+  zip     : String;
+  country : String;
+}
+
 /** Hierarchically organized Code List for Genres */
 entity Genres : cuid, sap.common.CodeList {
   parent   : Association to Genres;
