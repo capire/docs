@@ -985,7 +985,9 @@ SAP Automation Pilot will also support this migration as a mass migration.
 
 ##### Switch application to HANA TMS v2
 
-Before you run the migration, you will need to create a HANA TMS v2 service with service plan `hana-multitenancy` to ensure the new containers are assigned to the right service instance.
+As described in the migration documentation, you need to create a HANA TMS v2 service with service plan `hana-multitenancy` before the migration to ensure the new containers are assigned
+to the right service instance.
+
 To switch the application to HANA TMS v2 without redeploying the application, bind the HANA TMS v2 service to the application in addition to the Service Manager binding.
 Use [`cds` configuration profiles with the `CDS_ENV` environment variable](../../node.js/cds-env#profiles) to switch to the HANA TMS v2 binding with a restart.
 
