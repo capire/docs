@@ -85,8 +85,19 @@ annotate BookshopService.Authors with {
   books /** All the books written by the author. */;
 }
 ```
-::: details Only for Node.js ...
-Doc comments are currently supported for Node.js only. With the Java version of the MCP Adapter, only `@title` and `@description` annotations are supported.
+::: details Configuration required for CAP Java ...
+You must enable doc comments in the Java application and in the MTX sidecar.
+
+::: code-group
+```json [.cdsrc.json]
+"cdsc": {
+   "docs": true
+}
+```
+```yaml [srv/application.yaml]
+cds:
+  model.includeDocComments: true
+```
 :::
 
 This information is included in the output of the [`describe`](#-describe-service) tool and can be used by agents to better understand the data model and available actions/functions.
@@ -295,7 +306,7 @@ For example, for a `list books` prompt, you should see log output similar to thi
 }
 ```
 ```js [Java]
-INFO com.sap.cds.adapter.mcp.McpServlet : Received MCP query request for entity 'Books' with select fields [ID, title, author.name, genre.name, stock, price] and limit 20
+INFO MCP tool called: service='CatalogService', tool='query'
 ```
 :::
 
@@ -310,7 +321,7 @@ Given `@mcp`-annotated service definitions, the plugin automatically creates an 
 
 ### • `describe` service {.tool}
 
-This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entity` restricts the output to a single entity, the optional parameter `action` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
+This tool returns information about the entities and their elements exposed by the service. It also returns information about unbound actions and functions. If you do not provide a parameter, the tool describes all exposed entities, actions and functions. The optional parameter `entities` restricts the output to a single entity, the optional parameter `actions` restricts the output to a single action/function. The tool provides an enum that lists all available entities, actions and functions.
 
 ### • `query` entity {.tool}
 
