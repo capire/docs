@@ -118,7 +118,7 @@ XTravels application — the trips you persist show up in the app's Fiori UI.
 ...
 ```
 :::
-[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/aix/srv/travel-agent/AGENTS.md){.learn-more}
+[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/main/srv/travel-agent/AGENTS.md){.learn-more}
 
 
 > [!tip] Using <code>./srv/*</code> subfolders
@@ -183,7 +183,7 @@ the `Airports` entity (e.g. "Paris" → CDG, ORY).
 ```
 :::
 
-[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/aix/srv/travel-agent/skills/flight-booking/SKILL.md){.learn-more}
+[See full source in _capire/xtravels_](https://github.com/capire/xtravels/blob/main/srv/travel-agent/skills/flight-booking/SKILL.md){.learn-more}
 
 > [!tip] Modular Skills for Subtasks
 > Think of such skills as modular capabilities that your agent can leverage to handle specific subtasks or workflows. Each skill is defined in its own `SKILL.md` file, making it easier to manage and extend the agent's functionality, at the same time keeping the context window contrained to the relevant skills required for the current task.
