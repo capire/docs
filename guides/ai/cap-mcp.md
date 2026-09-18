@@ -91,7 +91,7 @@ annotate BookshopService.Authors with {
   books /** All the books written by the author. */;
 }
 ```
-::: details Configuration required for CAP Java
+::: details Configuration required for CAP Java ...
 You must enable doc comments in the Java application and in the MTX sidecar.
 
 ::: code-group
