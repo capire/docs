@@ -20,16 +20,15 @@ The XTravels sample provides a more comprehensive example of how to work with se
 
 The classic approach as illustrated below, is used a static UI where the user interacts with the XTravels application, and the application in turn interacts directly with individual services for events, hotels, and flights, without any intelligent coordination between them.
 
-![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg)
+![Classic XTravels architecture diagram showing a Travels App connected to three service boxes labeled Events, Hotels, and Flights. Text under Travels App lists create travel requests, via deeply integrated services, show travel requests, and approve or reject. Text next to Events says browse events and book event passes, next to Hotels says browse hotels and book rooms, and next to Flights says browse airports and flights and book seats. The layout is a clean technical diagram on a plain background with a structured and informative tone.](xtravels-classic.drawio.svg?raw)
 
 ### Agentic Approach
 
 By using agents we can replace classic UIs to create travels, with deep integration across the various services – both for development teams that had to invest accordingly, as well as for end-users seeking an automated travel planning experience.
 
-![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg)
+![Agentic XTravels architecture diagram presenting how travel planning flows between CAP services and agent components in a connected system. The visual is a structured technical schematic in a plain workspace style, with an explanatory and informative tone.](xtravels-agentic.drawio.svg?raw)
 
 The _XTravels App_ in the illustration above reduces to a lightweight application with only simple mostly readonly UIs and minimal user interaction, while the agents handle the complex coordination and integration tasks behind the scenes. Also, all the formerly required deep integrations can be eliminated, with all the orchestration and decision-making now offloaded to the agents. At least, that's what we hope to achieve.
-
 
 ## Preliminaries
 
@@ -173,7 +172,7 @@ In a separate terminal, start OpenCode:
 opencode
 ```
 
-![OpenCode start screen](opencode-start-screen.png)
+![OpenCode start screen](opencode-start-screen.png){.ignore-dark}
 
 Enter a prompt, such as:
 
@@ -452,12 +451,41 @@ Similar for the booking subtask delegated to the `EventsService` later on, which
 
 ## Conclusion
 
-In this guide, we have walked through the process of setting up and interacting with the XTravels agents using both OpenCode and the Chat Preview. We explored the structure of the service and skill files, tested the agents' capabilities, and demonstrated how to approve actions triggered by the agents. This setup allows for efficient local development and testing of agent-driven workflows in the XTravels application.
+In this guide, we have walked through the process of setting up and interacting with CAP Services in the XTravels samplefrom using Generative AI on two levels:
+
+First we had [_MCP Services_](#mcp-services) consumed directly from an AI client, like OpenCode, Claude Code, or Joule Work, as illustrated below.
+
+![Diagram showing OpenCode connected as a generic agent via MCP to four backend services: Events Service, Hotels Service, Flights Service, and Travels Service, each labeled as an MCP Service](xtravels-mcp.drawio.svg)
+MCP only{style="font-family: serif; font-style:italic; text-align:center"}
+
+Next, we turned our CAP Services into [_Custom Agents_](#custom-agents) consumed via A2A from Chat Preview, with sub tasks factored out into subagents, as illustrated below.
+
+![Diagram showing a Travel Agent as the primary agent connected via A2A to two subagents, Events Service and Hotels Service, and via MCP to Flights Service, illustrating how the primary agent delegates tasks to subagents and a backend service](xtravels-subagents.drawio.svg)
+
+The following table highlights some key differences between both approaches.
+
+| Aspect | [MCP Services](#mcp-services) | [Custom Agents](#custom-agents) |
+| --- | --- | --- |
+| Client | Full-blown Generic AI client | Simple chat client (Browser-based) |
+| Agent(s) | Generic agent provided by client | Custom agents in CAP apps |
+| ReAct&nbsp;loops | Running within the client | Running within CAP apps |
+| Knowledge | Works for well-known domains | Works also for specialized domains |
+| Workflows | Best suited to well-known workflows that the model can handle from service metadata. | Supports specialized workflows through custom agents and explicit delegation. |
 
 
-> [!tip] Done, q.e.d. ... sort of :)
-> You have successfully tested the travel planning and booking workflow locally using OpenCode.
-> And we've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
+The table below highlights some key differences between the classic UI-centric approach and the agentic approach:
+
+| Aspect | [Classic UI-centric approach](#classic-ui-centric-approach) | [Agentic approach](#agentic-approach) |
+| --- | --- | --- |
+| User interaction | Tedious: Users fill in forms and screens manually. | Automated. Users describe their goal, and the agents handle the rest. |
+| Application UI | Requires purpose-built screens for planning, selection, validation, and booking. | Hardly any UIs required. Only one left to display and approve Travel requests; largely read-only. |
+| Service integration | Applications need deep integration with the backend services they use. | Services are completely decoupled. The agents do all integration. |
+| Development effort | High. Due to complex workflows that span multiple services, as well as intricate UI requirements. | Low. Teams define focused services and agent instructions, while the agents handle more orchestration. |
+| Flexibility | New scenarios often require substantial changes to the UI and integration code. | Agents easily and automatically serve various use cases in an ad-hoc and adaptive manner.  |
+
+
+> [!tip] Done, q.e.d.
+> We've demonstrated that we can indeed save quite some development efforts, as well as improving end user experience significantly, by letting agents do the heavy lifting and automate things for us.
 
 
 [`@agent`]: ./cap-agents.md#declare-agent-services

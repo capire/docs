@@ -49,7 +49,7 @@ Easily turn your CAP services into agents, served via _Agent-to-Agent Protocol (
 
 Explore a comprehensive example of integrating CAP-level agents, MCP services, and vector embeddings within a travel planning application.
 
-![Architecture diagram showing an Agent connected to Travels, Events, Hotels, and Flights services. Travels supports showing travel requests and approve or reject actions; Events supports browsing events and booking tickets; Hotels supports browsing hotels and booking rooms; Flights supports browsing airports and flights and booking seats. The diagram presents a clear, neutral overview of an integrated travel-planning system.](xtravels-agentic.drawio.svg)
+![Architecture diagram showing an Agent connected to Travels, Events, Hotels, and Flights services. Travels supports showing travel requests and approve or reject actions; Events supports browsing events and booking tickets; Hotels supports browsing hotels and booking rooms; Flights supports browsing airports and flights and booking seats. The diagram presents a clear, neutral overview of an integrated travel-planning system.](xtravels-agentic.drawio.svg?raw)
 
 ### [Integration with Joule](./joule-integration.md)
 
