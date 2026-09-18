@@ -41,7 +41,7 @@ The [predefined CDS types](../cds/types) are mapped to Java types and as follows
 | `cds.LargeString`  | `java.lang.String`      | `java.io.Reader` <sup>(1)</sup> if annotated with `@Core.MediaType`      |
 | `cds.Binary`       | `byte[]`                |                                                                          |
 | `cds.LargeBinary`  | `byte[]`                | `java.io.InputStream` <sup>(1)</sup> if annotated with `@Core.MediaType` |
-| `cds.Vector`       | `com.sap.cds.CdsVector` | for [vector embeddings](#vector-embeddings)                              |
+| `cds.Vector`       | `com.sap.cds.CdsVector` | for [vector embeddings](./ai#vector-embeddings)                              |
 | `cds.Map`          | `java.util.Map`         | for schemaless [structured data](#cds-map)          |
 
 ### SAP HANA-Specific Data Types
@@ -327,28 +327,6 @@ On the database, this data is serialized to [JSON](https://www.json.org/)<sup>(1
 > <sup>(2)</sup> The actual subclass of a `Number` is not preserved upon serialization and might change upon deserialization.
 
 Map data can be nested and may contain nested maps and lists, which are serialized to JSON objects and arrays, respectively.
-
-## Vector Embeddings
-
-In CDS [vector embeddings](../guides/ai/embeddings) are stored in elements of type `Vector`:
-
-CAP Java support the vector type on SAP HANA, as well as H2 and SQLite for local testing. On Postgres (beta) support for vectors requires the [pgvector](https://github.com/pgvector/pgvector) extension.
-
-In CAP Java, vectors are represented by the `CdsVector` type, which allows a unified handling of different vector representations such as `float[]` and `String`:
-
-```Java
-// Vector embedding of text via SAP Cloud SDK for AI
-float[] embedding = embeddingModel.embedding(
-  new OpenAiEmbeddingRequest(List.of(text))).getEmbeddingVectors().get(0);
-
-CdsVector v1 = CdsVector.of(embedding); // float[] format
-```
-
-::: info
-In CDS QL queries, elements of type `Vector` are excluded from the select list by default.
-:::
-
-CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Data in CDS Query Language (CQL)
 

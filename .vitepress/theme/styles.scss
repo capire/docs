@@ -383,8 +383,8 @@ img, video.bright {
   --vp-sidebar-bg-color: var(--vp-c-bg);
 }
 .VPNav {
-  .VPNavBarTitle .title { border: none}
   border-bottom: 1px solid var(--vp-c-divider);
+  .VPNavBarTitle .title { border: none}
 }
 .VPDoc {
   border-left: 1px solid var(--vp-c-divider);

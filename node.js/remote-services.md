@@ -53,7 +53,7 @@ The client selection follows this priority:
 1. **Explicit configuration** - set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
 2. **Default behavior** - CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
 
-[Learn more about SAP BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more}
+<!-- [Learn more about SAP BTP Destination service support for the native fetch client.](../guides/integration/service-bindings#native-fetch-destinations){.learn-more} -->
 
 ### CSRF-Token Handling
 
@@ -119,9 +119,9 @@ The `requestTimeout` setting in the `cds.RemoteService` configuration specifies 
 }
 ```
 
-::: tip
+<!-- ::: tip
 See [Using Destinations](../guides/integration/service-bindings#destinations) for more details on destination configuration.
-:::
+::: -->
 
 ##  <i>  More to Come </i>
 

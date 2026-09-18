@@ -11,7 +11,7 @@ description: >
 
 
 
-CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-serverjs), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-server-js) in your project.
+CAP Node.js servers are bootstrapped through a [built-in `server.js` module](#built-in-serverjs), which can be accessed through [`cds.server`](#cds-server). You can plug-in custom logic to the default bootstrapping choreography using a [custom `server.js`](#custom-serverjs) in your project.
 
 
 
@@ -87,7 +87,7 @@ module.exports = async function cds_server(options) {
 
 This is essentially a shortcut getter to `require('@sap/cds/server')`, that is, it loads and returns
 the [built-in `server.js`](#built-in-serverjs) implementation.
-You'd mainly use this in [custom `server.js`](#custom-server-js) to delegate to the default implementation, [as shown below](#override-cdsserver).
+You'd mainly use this in [custom `server.js`](#custom-serverjs) to delegate to the default implementation, [as shown below](#override-cdsserver).
 
 
 
@@ -97,8 +97,7 @@ The express.js `app` constructed by the server implementation.
 
 
 
-##   Custom `server.js`
-<div id="custom-server-js"></div>
+##  Custom `server.js`
 
 The CLI command `cds serve` optionally bootstraps from project-local `./server.js` or  `./srv/server.js`.
 
