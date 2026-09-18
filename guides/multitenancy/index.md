@@ -978,16 +978,16 @@ To group the tenant containers of many applications or microservices in a common
 
 When you unsubscribe and the tenant container is deleted, the corresponding SAP HANA tenant isn't deleted as it could potentially still be in use for other applications.
 
-#### Migration of exisiting Service Manager based applications
+#### Migration of existing Service Manager-based applications
 
-Please check the [SAP HANA documentation how to migrate tenant containers to HANA TMS v2](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/migrate-schema-or-hdi-container-to-database-tenant).
-This migration will also be provided as a mass migration using the Automation Pilot soon.
+Refer to the [SAP HANA documentation for migrating tenant containers to HANA TMS v2](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/migrate-schema-or-hdi-container-to-database-tenant).
+SAP Automation Pilot will also support this migration as a mass migration.
 
 ##### Switch application to HANA TMS v2
 
 Before you run the migration, you will need to create a HANA TMS v2 service with service plan `hana-multitenancy` to ensure the new containers are assigned to the right service instance.
 To switch the application to HANA TMS v2 without redeploying the application, bind the HANA TMS v2 service to the application in addition to the Service Manager binding.
-By using cds [configuration profiles in compination with the `CDS_ENV` environment variable](../../node.js/cds-env#profiles), you can switch to the HANA TMS v2 binding with a simple restart.
+Use [`cds` configuration profiles with the `CDS_ENV` environment variable](../../node.js/cds-env#profiles) to switch to the HANA TMS v2 binding with a restart.
 
 Example:
 ```jsonc
@@ -1010,7 +1010,7 @@ Example:
     }
   }
 ```
-If you set the environment `CDS_ENV=hanatms`, the application will use HANA TMS v2 after the next restart.
+If you set the `CDS_ENV` environment variable to `hanatms`, the application uses HANA TMS v2 after the next restart.
 
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
