@@ -818,10 +818,6 @@ cds watch --profile dev
 
 The SAP HANA Tenant Management Service (TMS) v2 service provides direct support for managing SAP HANA tenants.
 
-> [!important] Be aware of the current limitations:
-> - **Not suitable for existing applications** as there is **no migration from Service Manager** available yet. This will be provided as HANA tool later.<br>
-> There **won't be support for both Service Manager and TMS v2** together in one application.
-
 [For more information, see the SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/introducing-sap-hana-cloud-multitenancy){.learn-more}
 [Find the TMS v2 API on the SAP Business Accelerator Hub](https://api.sap.com/api/TenantAPI/overview){.learn-more}
 
@@ -982,13 +978,41 @@ To group the tenant containers of many applications or microservices in a common
 
 When you unsubscribe and the tenant container is deleted, the corresponding SAP HANA tenant isn't deleted as it could potentially still be in use for other applications.
 
-#### Limitations
+#### Migration of existing Service Manager-based applications
 
-There are still some limitations with the current client implementation.
+Refer to the [SAP HANA documentation for migrating tenant containers to HANA TMS v2](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/migrate-schema-or-hdi-container-to-database-tenant).
+SAP Automation Pilot will also support this migration as a mass migration.
 
-- **Database ID is Mandatory**
-  As mentioned, you need to specify a database ID that's to be used, either for all tenants or per subscription request, see [Deployment configuration](./mtxs#deployment-config).
+##### Switch application to HANA TMS v2
 
+As described in the migration documentation, you need to create a HANA TMS v2 service with service plan `hana-multitenancy` before the migration to ensure the new containers are assigned
+to the right service instance.
+
+To switch the application to HANA TMS v2 without redeploying the application, bind the HANA TMS v2 service to the application in addition to the Service Manager binding.
+Use [`cds` configuration profiles with the `CDS_ENV` environment variable](../../node.js/cds-env#profiles) to switch to the HANA TMS v2 binding with a restart.
+
+Example:
+```jsonc
+"cds": {
+    ...,
+    "requires": {
+      "db": {
+        "kind": "hana",
+        "vcap": {
+          "name": "application-db"
+        },
+        "[hanatms]": {
+          "kind": "hana",
+          "vcap": {
+            "name": "application-db-tms"
+          }
+        }
+      },
+      ...
+    }
+  }
+```
+If you set the `CDS_ENV` environment variable to `hanatms`, the application uses HANA TMS v2 after the next restart.
 
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
