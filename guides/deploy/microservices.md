@@ -270,7 +270,7 @@ npm i @cap-js/hana --workspace reviews
 
 ### Applications
 
-Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
+Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name.
 
 ::: code-group
 ```yaml [mta.yaml]
@@ -282,7 +282,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: bookstore-api # [!code focus]
         properties:
@@ -300,7 +300,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: orders-api # [!code focus]
         properties:
@@ -318,7 +318,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci
     provides: # [!code focus]
       - name: reviews-api # [!code focus]
         properties:
@@ -353,8 +353,8 @@ build-parameters:
 
 Add [security configuration](../security/authentication) using the command:
 
-```shell
-cds add xsuaa --for production
+```sh
+cds add xsuaa
 ```
 
 Add the admin role
