@@ -5,6 +5,9 @@ Simply annotate a CAP service with [`@agent`](#declare-agent-services) to do so.
 The plugin uses state-of-the-art agent harness frameworks like [_LangChain_](https://www.langchain.com) or [_Pi_](https://pi.dev) internally.
 {.abstract}
 
+> [!caution] SAP API Policy Applies!
+> CAP-level agents are intended only for exposing _custom_ CAP application services. They are **_NOT_**{.red} an SAP-endorsed architecture or pathway for exposing, proxying, or providing agentic access to _SAP Application APIs_ as referred to in the [_SAP API Policy_](https://help.sap.com/doc/sap-api-policy), section 2.2.2. -> Read section [_SAP API Policy_](#sap-api-policy) below!
+
 [[toc]]
 
 
@@ -573,3 +576,10 @@ See section [_Telemetry \> MLflow_](#mlflow) above for details.
 
 A record of the quotas configurations, specifying limits on resource usage such as API calls, execution time, and memory consumption.
 See section [_Quotas_](#quotas) above for details.
+
+
+## SAP API Policy
+
+> [!caution]
+> CAP-level agents as documented herein must not be used as gateways or proxies for SAP Application APIs. The _cap/agents_ plugins are not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
+> Any use of SAP Application APIs must be in accordance with the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For SAP-endorsed patterns on agentic access to SAP Application APIs, consult the [_SAP Architecture Center_](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.
