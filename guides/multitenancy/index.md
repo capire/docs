@@ -822,7 +822,7 @@ The SAP HANA Tenant Management Service (TMS) v2 service provides direct support 
 [Find the TMS v2 API on the SAP Business Accelerator Hub](https://api.sap.com/api/TenantAPI/overview){.learn-more}
 
 :::info Migration of existing applications
-The configuration changes that are decscribed here also apply for existing applications that you want to migrate to HANA TMS v2.
+The configuration changes described here also apply to existing applications that you want to migrate to HANA TMS v2.
 
 The migration of existing tenant containers to HANA TMS v2 is described in the [Migration section](#migration-of-existing-service-manager-based-applications).
 :::
