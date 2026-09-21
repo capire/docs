@@ -514,10 +514,13 @@ Future versions of the adapter may add support for data changes using CREATE, UP
 > Agents can potentially be manipulated by data returned from the service to execute unintended actions. For any deployment ensure you use infrastructure and practices that mitigate prompt injection risks and connect only to trusted MCP agents (e.g., Joule).
 
 
-## SAP API Policy
+### API Governance
 
 > [!caution]
 > The adapter itself does not provide any built-in governance features: there is no automatic rate limiting, no specific audit logging of agent actions, no approval workflows for sensitive operations, and no policy enforcement layer. Before using MCP in a productive environment, put appropriate controls for example by using MCP Gateway of SAP Integration Suite or integrate with SAP Agent Gateway (not GA yet).
+
+
+## SAP API Policy
 
 > [!caution]
 > The CAP MCP adapter must not be used as a gateway or proxy for SAP Application APIs. The adapter is not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
