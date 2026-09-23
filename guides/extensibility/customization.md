@@ -25,13 +25,31 @@ In this guide, you will learn the following:
 
 Before we start, you'll need a **CAP-based [multitenant SaaS application](../multitenancy/)** that you can modify and deploy.
 
-<!-- REVISIT: Use cds init bookshop --add sample instead -->
-::: tip Jumpstart
-You can download the ready-to-use [Orders Management application](https://github.com/capire/orders):
+::: tip Jumpstart with XTravels
+This guide uses the [XTravels](https://github.com/capire/xtravels) sample. Unlike a single-package app such as _bookshop_, XTravels is a **modular application** composed from several reuse packages — `@capire/xflights` (flights master data), `@capire/s4` (business partners), and `@capire/common` (shared currencies/regions). It is therefore set up as a local **npm workspace** so those cross-package dependencies resolve via symlinks:
 
 ```sh
-git clone https://github.com/capire/orders
-cd orders
+mkdir -p cap/samples && cd cap/samples
+echo '{"workspaces":["*","*/apis/*"]}' > package.json
+git clone https://github.com/capire/xtravels
+git clone https://github.com/capire/xflights
+git clone https://github.com/capire/common
+git clone https://github.com/capire/s4
+npm install
+```
+
+The workspace globs also expose the `@capire/xflights-data` API (published from `xflights/apis/data-service`) to XTravels automatically. Verify the wiring with:
+
+```sh
+npm ls @capire/xflights-data
+```
+
+For the end-to-end walkthrough of this multi-repo setup — including how the reuse APIs are linked — see the [guide on inner-loop development](../integration/inner-loops).
+
+Then enable multitenancy in the `xtravels` package:
+
+```sh
+cd xtravels
 cds add multitenancy
 ```
 
@@ -71,10 +89,12 @@ npm add @sap/cds-mtxs
 
 ```json [package.json]
 {
-  "name": "@capire/orders",
-  "version": "1.0.0",
+  "name": "@capire/xtravels",
+  "version": "1.0.1",
   "dependencies": {
     "@capire/common": "*",
+    "@capire/s4": "*",
+    "@capire/xflights-data": "*",
     "@sap/cds": "^10",
     "@sap/cds-mtxs": "^4"
   },
@@ -108,12 +128,12 @@ Normally, you'll want to restrict which services or entities your SaaS customers
         "element-prefix": ["x_"],
         "extension-allowlist": [
           {
-            "for": ["sap.capire.orders"],
+            "for": ["sap.capire.travels"],
             "kind": "entity",
             "new-fields": 2
           },
           {
-            "for": ["OrdersService"],
+            "for": ["TravelService"],
             "new-entities": 2
           }
         ]
@@ -128,8 +148,14 @@ Normally, you'll want to restrict which services or entities your SaaS customers
 This enforces the following restrictions:
 
 - All new elements have to start with `x_` → to avoid naming conflicts.
-- Only entities in namespace `sap.capire.orders` can be extended, with a maximum 2 new fields allowed.
-- Only the `OrdersService` can be extended, with a maximum of 2 new entities allowed.
+- Only entities in namespace `sap.capire.travels` can be extended, with a maximum 2 new fields allowed.
+- Only the `TravelService` can be extended, with a maximum of 2 new entities allowed.
+
+::: warning XTravels is a modular application
+XTravels composes several reuse modules: `Flights` and `Supplements` come from `@capire/xflights` (namespace `sap.capire.xflights`), and `Customers` from `@capire/s4` (namespace `sap.capire.s4`). `TravelService` merely re-exposes these as read-only projections.
+
+Extensions can only target the application's **own** model — namespace `sap.capire.travels` (`Travels`, `Bookings`, `TravelAgencies`, and the code lists). Entities from reuse modules, like `Flights`, `Supplements`, or `Customers`, **cannot** be extended. By scoping the `extension-allowlist` to `sap.capire.travels` and `TravelService` as shown above, you deliberately keep the reuse-module namespaces off-limits.
+:::
 
 [Learn more about extension restrictions.](../multitenancy/mtxs#extension-restrictions){.learn-more}
 
@@ -141,12 +167,12 @@ To jumpstart your customers with extension projects, it's beneficial to provide 
 
 Extension projects are standard CAP projects extending the SaaS application. Create one for your SaaS app following these steps:
 
-1. Create a new CAP project — `orders-ext` in our walkthrough:
+1. Create a new CAP project — `xtravels-ext` in our walkthrough:
 
    ```sh
    cd ..
-   cds init orders-ext --nodejs
-   code orders-ext # open in VS Code
+   cds init xtravels-ext --nodejs
+   code xtravels-ext # open in VS Code
    ```
 
 2. Add this to your _package.json_:
@@ -155,8 +181,8 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
     ```jsonc [package.json]
     {
-      "name": "@capire/orders-ext",
-      "extends": "@capire/orders",
+      "name": "xtravels-ext",
+      "extends": "@capire/xtravels",
       "workspaces": [ ".base" ]
     }
     ```
@@ -181,19 +207,19 @@ Create a new file _app/extensions.cds_ and fill in this content:
 ::: code-group
 
 ```cds [app/extensions.cds]
-namespace x_orders.ext; // only applies to new entities defined below
-using { OrdersService, sap.capire.orders.Orders } from '@capire/orders';
+namespace x_travels.ext; // only applies to new entities defined below
+using { TravelService, sap.capire.travels.Travels } from '@capire/xtravels';
 
-extend Orders with {
+extend Travels with {
   x_new_field : String;
 }
 
 // -------------------------------------------
 // Fiori Annotations
 
-annotate Orders:x_new_field with @title: 'New Field';
-annotate OrdersService.Orders with @UI.LineItem: [
-  ... up to { Value: OrderNo },
+annotate Travels:x_new_field with @title: 'New Field';
+annotate TravelService.Travels with @UI.LineItem: [
+  ... up to { Value: Description },
   { Value : x_new_field },
   ...
 ];
@@ -211,14 +237,14 @@ You may want to consider [separating concerns](../domain/index#separation-of-con
 
 #### Add Test Data
 
-To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. In your template project, create a file _test/data/sap.capire.orders-Orders.csv_ like that:
+To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. In your template project, create a file _test/data/sap.capire.travels-Travels.csv_ like that:
 
 ::: code-group
 
-```csv [test/data/sap.capire.orders-Orders.csv]
-ID,createdAt,buyer,OrderNo,currency_code
-7e2f2640-6866-4dcf-8f4d-3027aa831cad,2019-01-31,john.doe@test.com,1,EUR
-64e718c9-ff99-47f1-8ca3-950c850777d4,2019-01-30,jane.doe@test.com,2,EUR
+```csv [test/data/sap.capire.travels-Travels.csv]
+ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,Customer_ID
+1,"Business Trip for Christine, Pierre",2026-08-04,2026-08-04,20,USD,O,070007,000608
+2,Vacation,2026-08-04,2027-06-02,80,USD,O,070046,000093
 ```
 
 :::
@@ -231,7 +257,7 @@ Include additional documentation for the extension developer in a _README.md_ fi
 ```md [README.md]
 # Getting Started
 
-Welcome to your extension project to  `@capire/orders`.
+Welcome to your extension project for `@capire/xtravels`.
 
 It contains these folders and files, following our recommended project layout:
 
@@ -276,14 +302,14 @@ Here's a rough checklist what this guide should cover:
 ### 5. Deploy Application
 
 Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
-Prepare this by going back to your app with `cd orders`.
+Prepare this by going back to your app with `cd xtravels`.
 
 With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deploy/).
 
 ## As a SaaS Customer {#prep-as-operator}
 
 The following sections provide step-by-step instructions on adding extensions.
-All steps are based on our Orders Management sample which can be [started locally for testing](../multitenancy/index#test-drive-locally).
+All steps are based on our XTravels sample which can be [started locally for testing](../multitenancy/index#test-drive-locally).
 
 ::: details On BTP…
 
@@ -311,9 +337,9 @@ In your local setup, you can simulate this with a [mock user](../../node.js/auth
   Please note that the URL used for the subscription command is the sidecar URL, if a sidecar is used.
   Learn more about tenant subscriptions [via the MTX API for local testing](../multitenancy/mtxs#put-tenant).{.learn-more}
 
-2. Verify that it worked by opening the [Orders Management Fiori UI](http://localhost:4004/orders/index.html#manage-orders) in a **new private browser window** and log in as `carol`, which is assigned to tenant `t1`.
+2. Verify that it worked by opening the [XTravels Fiori UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window** and log in as `carol`, which is assigned to tenant `t1`.
 
-![A screenshot of an SAP Fiori UI on the orders management example. It shows a table with the columns order number, customer, currency and date. The table contains two orders.](assets/image-20221004054556898.png){.mute-dark}
+![A screenshot of the SAP Fiori UI of the XTravels application. It shows a table of travels with the columns Travel, Description, Customer, Agency, Starting Date, and Travel Status.](assets/xtravels-travels-list.png){.mute-dark}
 
 ### 2. Prepare an Extension Tenant {#prepare-an-extension-tenant}
 
@@ -355,13 +381,13 @@ In order to test-drive and validate the extension before activating to productio
 Extension projects are standard CAP projects extending the subscribed application. SaaS providers usually provide **application-specific templates**, which extension developers can download and open in their editor.
 
 You can therefore use the extension template created in your walkthrough [as SaaS provider](#templates).
-Open the `orders-ext` folder in your editor. Here's how you do it using VS Code:
+Open the `xtravels-ext` folder in your editor. Here's how you do it using VS Code:
 
 ```sh
-code ../orders-ext
+code ../xtravels-ext
 ```
 
-![A screenshot of a readme.md file as it's described in the previous "Add a readme" section of this guide.](assets/orders-ext.png){.ignore-dark}
+![A screenshot of a readme.md file as it's described in the previous "Add a readme" section of this guide.](assets/xtravels-ext-readme.png){.ignore-dark}
 
 ### 4. Pull the Latest Base Model {#pull-base}
 
@@ -401,7 +427,7 @@ To make the downloaded base model ready for use in your extension project, insta
 npm install
 ```
 
-This will link the base model in the workspace folder to the subdirectory `node_modules/@capire/orders` (in this example).
+This will link the base model in the workspace folder to the subdirectory `node_modules/@capire/xtravels` (in this example).
 
 ### 6. Write the Extension {#write-extension }
 
@@ -410,29 +436,29 @@ Edit the file _app/extensions.cds_ and replace its content with the following:
 ::: code-group
 
 ```cds [app/extensions.cds]
-namespace x_orders.ext; // for new entities like SalesRegion below
-using { OrdersService, sap, sap.capire.orders.Orders } from '@capire/orders';
+namespace x_travels.ext; // for new entities like x_CostCenters below
+using { TravelService, sap, sap.capire.travels.Travels } from '@capire/xtravels';
 
-extend Orders with { // 2 new fields....
-  x_priority    : String enum {high; medium; low} default 'medium';
-  x_salesRegion : Association to x_SalesRegion;
+extend Travels with { // 2 new fields....
+  x_priority   : String enum {high; medium; low} default 'medium';
+  x_CostCenter : Association to x_CostCenters;
 }
 
-entity x_SalesRegion : sap.common.CodeList { // Value Help
-  key code : String(11);
+entity x_CostCenters : sap.common.CodeList { // Value Help
+  key code : String(10);
 }
 
 
 // -------------------------------------------
 // Fiori Annotations
 
-annotate Orders:x_priority with @title: 'Priority';
-annotate x_SalesRegion:name with @title: 'Sales Region';
+annotate Travels:x_priority with @title: 'Priority';
+annotate x_CostCenters:name with @title: 'Cost Center';
 
-annotate OrdersService.Orders with @UI.LineItem: [
-  ... up to { Value: OrderNo },
+annotate TravelService.Travels with @UI.LineItem: [
+  ... up to { Value: Description },
   { Value: x_priority },
-  { Value: x_salesRegion.name },
+  { Value: x_CostCenter.name },
   ...
 ];
 ```
@@ -461,36 +487,36 @@ cds watch --port 4006
 
 To improve local test drives, you can add _local_ test data for extensions.
 
-Edit the template-provided file `test/data/sap.capire.orders-Orders.csv` and add data for the new fields as follows:
+Edit the template-provided file `test/data/sap.capire.travels-Travels.csv` and add data for the new fields as follows:
 
 ::: code-group
 
-```csv [test/data/sap.capire.orders-Orders.csv]
-ID,createdAt,buyer,OrderNo,currency_code,x_priority,x_salesRegion_code
-7e2f2640-6866-4dcf-8f4d-3027aa831cad,2019-01-31,john.doe@test.com,1,EUR,high,EMEA
-64e718c9-ff99-47f1-8ca3-950c850777d4,2019-01-30,jane.doe@test.com,2,EUR,low,APJ
+```csv [test/data/sap.capire.travels-Travels.csv]
+ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,Customer_ID,x_priority,x_CostCenter_code
+1,"Business Trip for Christine, Pierre",2026-08-04,2026-08-04,20,USD,O,070007,000608,high,TRAVEL
+2,Vacation,2026-08-04,2027-06-02,80,USD,O,070046,000093,low,SALES
 ```
 
 :::
 
-Create a new file `test/data/x_orders.ext-x_SalesRegion.csv` with this content:
+Create a new file `test/data/x_travels.ext-x_CostCenters.csv` with this content:
 
 ::: code-group
 
-```csv [test/data/x_orders.ext-x_SalesRegion.csv]
+```csv [test/data/x_travels.ext-x_CostCenters.csv]
 code,name,descr
-AMER,"Americas","North, Central and South America"
-EMEA,"Europe, the Middle East and Africa","Europe, the Middle East and Africa"
-APJ,"Asia Pacific and Japan","Asia Pacific and Japan"
+TRAVEL,"Travel & Expenses","Travel and expenses cost center"
+SALES,"Sales","Sales department cost center"
+OPS,"Operations","Operations cost center"
 ```
 
 :::
 
 #### Verify the Extension
 
-Verify your extensions are applied correctly by opening the [Orders Fiori Preview](http://localhost:4006/$fiori-preview/OrdersService/Orders#preview-app) in a **new private browser window**, log in as `bob`, and see columns _Priority_ and _Sales Region_ filled as in the following screenshot:
+Verify your extensions are applied correctly by opening the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window**, log in as `bob`, and see columns _Priority_ and _Cost Center_ filled as in the following screenshot:
 
-![This screenshot is explained in the accompanying text.](assets/image-20221004080722532.png){.mute-dark}
+![A screenshot of the generic Fiori preview of TravelService.Travels. The travels table shows the two extension columns Priority, with values high and low, and Cost Center, with values Travel & Expenses and Sales.](assets/xtravels-fiori-preview-ext.png){.mute-dark}
 
 > Note: the screenshot includes local test data, added as explained below.
 
@@ -527,13 +553,13 @@ Execute `cds build --log-level info` to display all messages, although they shou
 
 #### Verify the Extension {#test-extension }
 
-Verify your extensions are applied correctly by opening the [Order Management UI](http://localhost:4004/orders/index.html#manage-orders) in a **new private browser window**, log in as `bob`, and check that columns _Priority_ and _Sales Region_ are displayed as in the following screenshot. Also, check that there's content with a proper label in the _Sales Region_ column.
+Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Also, check that there's content with a proper label in the _Cost Center_ column.
 
-![The screenshot is explained in the accompanying text.](assets/image-20221004081826167.png){.mute-dark}
+![A screenshot of the deployed XTravels Fiori UI. The travels table now includes the extension columns Priority and Cost Center, with Travel 1 showing high and Travel & Expenses, and Travel 2 showing low and Sales.](assets/xtravels-deployed-ext.png){.mute-dark}
 
 ### 9. Add Data {#add-data}
 
-After pushing your extension, you have seen that the column for _Sales Region_ was added, but is not filled.
+After pushing your extension, you have seen that the column for _Cost Center_ was added, but is not filled.
 To change this, you need to provide initial data with your extension. Copy the data file that you created before from `test/data/` to `db/data/` and push the extension again.
 
 [Learn more about adding data to extensions](#add-data-to-extensions) {.learn-more}
@@ -598,40 +624,39 @@ Following [the extend directive](../../cds/cdl#extend) it is pretty straightforw
 - Define new unique constraints on new or existing entities.
 
 ```cds
-using {sap.capire.bookshop, sap.capire.orders} from '@capire/fiori';
+using { sap.capire.travels } from '@capire/xtravels';
 using {
   cuid, managed, Country, sap.common.CodeList
 } from '@sap/cds/common';
 
-namespace x_bookshop.extension;
+namespace x_travels.ext;
 
 // extend existing entity
-extend orders.Orders with {
-  x_Customer    : Association to one x_Customers;
-  x_SalesRegion : Association to one x_SalesRegion;
+extend travels.Travels with {
+  x_Approver    : Association to one x_Approvers;
+  x_CostCenter  : Association to one x_CostCenters;
   x_priority    : String @assert.range enum {high; medium; low} default 'medium';
-  x_Remarks     : Composition of many x_Remarks on x_Remarks.parent = $self;
+  x_Notes       : Composition of many x_Notes on x_Notes.parent = $self;
 }
 // new entity - as association target
-entity x_Customers : cuid, managed {
-  email        : String;
-  firstName    : String;
-  lastName     : String;
-  creditCardNo : String;
-  dateOfBirth  : Date;
-  status       : String   @assert.range enum {platinum; gold; silver; bronze} default 'bronze';
-  creditScore  : Decimal  @assert.range: [ 1.0, 100.0 ] default 50.0;
-  PostalAddresses : Composition of many x_CustomerPostalAddresses on PostalAddresses.Customer = $self;
+entity x_Approvers : cuid, managed {
+  email         : String;
+  firstName     : String;
+  lastName      : String;
+  department    : String;
+  level         : String   @assert.range enum {junior; senior; executive} default 'senior';
+  approvalLimit : Decimal  @assert.range: [ 0.0, 100000.0 ] default 5000.0;
+  PostalAddresses : Composition of many x_ApproverPostalAddresses on PostalAddresses.Approver = $self;
 }
 
 // new unique constraint (secondary index)
-annotate x_Customers with @assert.unique: { email: [ email ] } {
+annotate x_Approvers with @assert.unique: { email: [ email ] } {
   email @mandatory;  // mandatory check
 }
 
 // new entity - as composition target
-entity x_CustomerPostalAddresses : cuid, managed {
-  Customer     : Association to one x_Customers;
+entity x_ApproverPostalAddresses : cuid, managed {
+  Approver     : Association to one x_Approvers;
   description  : String;
   street       : String;
   town         : String;
@@ -639,15 +664,15 @@ entity x_CustomerPostalAddresses : cuid, managed {
 }
 
 // new entity - as code list
-entity x_SalesRegion: CodeList {
-  key regionCode : String(11);
+entity x_CostCenters: CodeList {
+  key code : String(10);
 }
 
 // new entity - as composition target
-entity x_Remarks : cuid, managed {
-  parent      : Association to one orders.Orders;
+entity x_Notes : cuid, managed {
+  parent      : Association to one travels.Travels;
   number      : Integer;
-  remarksLine : String;
+  noteLine    : String;
 }
 ```
 
@@ -658,16 +683,16 @@ Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#an
 
 ### Extending the Service Model
 
-In the existing in `OrdersService`, the new entities `x_CustomerPostalAddresses` and `x_Remarks` are automatically included since they are targets of the corresponding _compositions_.
+In the existing in `TravelService`, the new entities `x_ApproverPostalAddresses` and `x_Notes` are automatically included since they are targets of the corresponding _compositions_.
 
-The new entities `x_Customers` and `x_SalesRegion` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
+The new entities `x_Approvers` and `x_CostCenters` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
 
 ```cds
-using { OrdersService } from '@capire/fiori';
+using { TravelService } from '@capire/xtravels';
 
-extend service OrdersService with {
-  entity x_Customers   as projection on extension.x_Customers;
-  entity x_SalesRegion as projection on extension.x_SalesRegion;
+extend service TravelService with {
+  entity x_Approvers   as projection on x_travels.ext.x_Approvers;
+  entity x_CostCenters as projection on x_travels.ext.x_CostCenters;
 }
 ```
 
@@ -675,31 +700,30 @@ extend service OrdersService with {
 
 The following snippet demonstrates which UI annotations you need to expose your extensions to the SAP Fiori elements UI.
 
-Add UI annotations for the completely new entities `x_Customers, x_CustomerPostalAddresses, x_SalesRegion, x_Remarks`:
+Add UI annotations for the completely new entities `x_Approvers, x_ApproverPostalAddresses, x_CostCenters, x_Notes`:
 
 ```cds
-using { OrdersService } from '@capire/fiori';
+using { TravelService } from '@capire/xtravels';
 
 // new entity -- draft enabled
-annotate OrdersService.x_Customers with @odata.draft.enabled;
+annotate TravelService.x_Approvers with @odata.draft.enabled;
 
 // new entity -- titles
-annotate OrdersService.x_Customers with {
-  ID           @(
+annotate TravelService.x_Approvers with {
+  ID            @(
     UI.Hidden,
     Common : {Text : email}
   );
-  firstName    @title : 'First Name';
-  lastName     @title : 'Last Name';
-  email        @title : 'Email';
-  creditCardNo @title : 'Credit Card No';
-  dateOfBirth  @title : 'Date of Birth';
-  status       @title : 'Status';
-  creditScore  @title : 'Credit Score';
+  firstName     @title : 'First Name';
+  lastName      @title : 'Last Name';
+  email         @title : 'Email';
+  department    @title : 'Department';
+  level         @title : 'Level';
+  approvalLimit @title : 'Approval Limit';
 }
 
 // new entity -- titles
-annotate OrdersService.x_CustomerPostalAddresses with {
+annotate TravelService.x_ApproverPostalAddresses with {
   ID          @(
     UI.Hidden,
     Common : {Text : description}
@@ -711,44 +735,44 @@ annotate OrdersService.x_CustomerPostalAddresses with {
 }
 
 // new entity -- titles
-annotate x_SalesRegion : regionCode with @(
-  title : 'Region Code',
+annotate x_CostCenters : code with @(
+  title : 'Cost Center Code',
   Common: { Text: name, TextArrangement: #TextOnly }
 );
 
 
 // new entity in service -- UI
-annotate OrdersService.x_Customers with @(UI : {
+annotate TravelService.x_Approvers with @(UI : {
   HeaderInfo       : {
-    TypeName       : 'Customer',
-    TypeNamePlural : 'Customers',
+    TypeName       : 'Approver',
+    TypeNamePlural : 'Approvers',
     Title          : { Value : email}
   },
   LineItem         : [
     {Value : firstName},
     {Value : lastName},
     {Value : email},
-    {Value : status},
-    {Value : creditScore}
+    {Value : level},
+    {Value : approvalLimit}
   ],
   Facets           : [
   {$Type: 'UI.ReferenceFacet', Label: 'Main', Target : '@UI.FieldGroup#Main'},
-  {$Type: 'UI.ReferenceFacet', Label: 'Customer Postal Addresses', Target: 'PostalAddresses/@UI.LineItem'}
+  {$Type: 'UI.ReferenceFacet', Label: 'Approver Postal Addresses', Target: 'PostalAddresses/@UI.LineItem'}
 ],
   FieldGroup #Main : {Data : [
     {Value : firstName},
     {Value : lastName},
     {Value : email},
-    {Value : status},
-    {Value : creditScore}
+    {Value : level},
+    {Value : approvalLimit}
   ]}
 });
 
 // new entity -- UI
-annotate OrdersService.x_CustomerPostalAddresses with @(UI : {
+annotate TravelService.x_ApproverPostalAddresses with @(UI : {
   HeaderInfo       : {
-    TypeName       : 'CustomerPostalAddress',
-    TypeNamePlural : 'CustomerPostalAddresses',
+    TypeName       : 'ApproverPostalAddress',
+    TypeNamePlural : 'ApproverPostalAddresses',
     Title          : { Value : description }
   },
   LineItem         : [
@@ -769,15 +793,15 @@ annotate OrdersService.x_CustomerPostalAddresses with @(UI : {
 }) {};
 
 // new entity -- UI
-annotate OrdersService.x_SalesRegion with @(
+annotate TravelService.x_CostCenters with @(
   UI: {
     HeaderInfo: {
-      TypeName       : 'Sales Region',
-      TypeNamePlural : 'Sales Regions',
-      Title          : { Value : regionCode }
+      TypeName       : 'Cost Center',
+      TypeNamePlural : 'Cost Centers',
+      Title          : { Value : code }
     },
     LineItem: [
-      {Value: regionCode},
+      {Value: code},
       {Value: name},
       {Value: descr}
     ],
@@ -786,7 +810,7 @@ annotate OrdersService.x_SalesRegion with @(
     ],
     FieldGroup#Main: {
       Data: [
-        {Value: regionCode},
+        {Value: code},
         {Value: name},
         {Value: descr}
       ]
@@ -795,16 +819,16 @@ annotate OrdersService.x_SalesRegion with @(
 ) {};
 
 // new entity -- UI
-annotate OrdersService.x_Remarks with @(
+annotate TravelService.x_Notes with @(
   UI: {
     HeaderInfo: {
-      TypeName       : 'Remark',
-      TypeNamePlural : 'Remarks',
+      TypeName       : 'Note',
+      TypeNamePlural : 'Notes',
       Title          : { Value : number }
     },
     LineItem: [
       {Value: number},
-      {Value: remarksLine}
+      {Value: noteLine}
     ],
     Facets: [
       {$Type: 'UI.ReferenceFacet', Label: 'Main', Target: '@UI.FieldGroup#Main'}
@@ -812,7 +836,7 @@ annotate OrdersService.x_Remarks with @(
     FieldGroup#Main: {
       Data: [
           {Value: number},
-          {Value: remarksLine}
+          {Value: noteLine}
       ]
     }
   }
@@ -821,27 +845,27 @@ annotate OrdersService.x_Remarks with @(
 
 #### Extending Array Values
 
-Extend the existing UI annotation of the existing `Orders` entity with new extension fields and new facets using the special [syntax for array-valued annotations](../../cds/cdl#extend-array-annotations).
+Extend the existing UI annotation of the existing `Travels` entity with new extension fields and new facets using the special [syntax for array-valued annotations](../../cds/cdl#extend-array-annotations).
 
 ```cds
-// extend existing entity Orders with new extension fields and new composition
-annotate OrdersService.Orders with @(
+// extend existing entity Travels with new extension fields and new composition
+annotate TravelService.Travels with @(
   UI: {
     LineItem: [
-      ... up to { Value: OrderNo },                             // head
-      {Value: x_Customer_ID,            Label:'Customer'},     //> extension field
-      {Value: x_SalesRegion.regionCode, Label:'Sales Region'}, //> extension field
-      {Value: x_priority,               Label:'Priority'},     //> extension field
-      ...,                                                     // rest
+      ... up to { Value: Description },                     // head
+      {Value: x_Approver_ID,      Label:'Approver'},        //> extension field
+      {Value: x_CostCenter.code,  Label:'Cost Center'},     //> extension field
+      {Value: x_priority,         Label:'Priority'},        //> extension field
+      ...,                                                  // rest
     ],
     Facets: [...,
-      {$Type: 'UI.ReferenceFacet', Label: 'Remarks', Target: 'x_Remarks/@UI.LineItem'} // new composition
+      {$Type: 'UI.ReferenceFacet', Label: 'Notes', Target: 'x_Notes/@UI.LineItem'} // new composition
     ],
     FieldGroup#Details: {
       Data: [...,
-        {Value: x_Customer_ID,            Label:'Customer'},      // extension field
-        {Value: x_SalesRegion.regionCode, Label:'Sales Region'},  // extension field
-        {Value: x_priority,               Label:'Priority'}       // extension field
+        {Value: x_Approver_ID,      Label:'Approver'},        // extension field
+        {Value: x_CostCenter.code,  Label:'Cost Center'},     // extension field
+        {Value: x_priority,         Label:'Priority'}         // extension field
       ]
     }
   }
@@ -853,20 +877,20 @@ The advantage of this syntax is that you do not have to replicate the complete a
 
 #### Semantic IDs
 
-Finally, exchange the display ID (which is by default a GUID) of the new `x_Customers` entity with a human readable text which in your case is given by the unique property `email`.
+Finally, exchange the display ID (which is by default a GUID) of the new `x_Approvers` entity with a human readable text which in your case is given by the unique property `email`.
 
 ```cds
 // new field in existing service -- exchange ID with text
-annotate OrdersService.Orders:x_Customer with @(
+annotate TravelService.Travels:x_Approver with @(
   Common: {
-    //show email, not id for Customer in the context of Orders
-    Text: x_Customer.email  , TextArrangement: #TextOnly,
+    //show email, not id for Approver in the context of Travels
+    Text: x_Approver.email  , TextArrangement: #TextOnly,
     ValueList: {
-      Label: 'Customers',
-      CollectionPath: 'x_Customers',
+      Label: 'Approvers',
+      CollectionPath: 'x_Approvers',
       Parameters: [
         { $Type: 'Common.ValueListParameterInOut',
-          LocalDataProperty: x_Customer_ID,
+          LocalDataProperty: x_Approver_ID,
           ValueListProperty: 'ID'
         },
         { $Type: 'Common.ValueListParameterDisplayOnly',
@@ -885,8 +909,8 @@ To externalize translatable texts, use the same approach as for standard applica
 ::: code-group
 
 ```properties [i18n/i18n.properties]
-SalesRegion_name_col = Sales Region
-Orders_priority_col = Priority
+CostCenter_name_col = Cost Center
+Travels_priority_col = Priority
 ...
 ```
 
@@ -1047,14 +1071,14 @@ Set-Variable -Name "DEBUG" -Value "cli"
 
 ## Add Data to Extensions
 
-As described in [Add Data](#add-data), you can provide local test data and initial data for your extension. In this guide we copied local data from the `test/data` folder into the `db/data` folder. When using SQLite, this step can be further simplified. For `sap.capire.orders-Orders.csv`, just add the _new_ columns along with the primary key:
+As described in [Add Data](#add-data), you can provide local test data and initial data for your extension. In this guide we copied local data from the `test/data` folder into the `db/data` folder. When using SQLite, this step can be further simplified. For `sap.capire.travels-Travels.csv`, just add the _new_ columns along with the primary key:
 `
 ::: code-group
 
-```csv [sap.capire.orders-Orders.csv]
-ID,x_priority,x_salesRegion_code
-7e2f2640-6866-4dcf-8f4d-3027aa831cad,high,EMEA
-64e718c9-ff99-47f1-8ca3-950c850777d4,low,APJ
+```csv [sap.capire.travels-Travels.csv]
+ID,x_priority,x_CostCenter_code
+1,high,TRAVEL
+2,low,SALES
 ```
 
 :::
