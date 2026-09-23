@@ -257,7 +257,7 @@ Include additional documentation for the extension developer in a _README.md_ fi
 ```md [README.md]
 # Getting Started
 
-Welcome to your extension project to  `@capire/xtravels`.
+Welcome to your extension project for `@capire/xtravels`.
 
 It contains these folders and files, following our recommended project layout:
 
