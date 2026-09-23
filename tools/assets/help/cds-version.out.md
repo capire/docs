@@ -2,12 +2,12 @@
 <pre class="log">
 > cds version
 
- <em> @sap/cds-dk (global) </em><em> 10.1.0  </em><i> .../node_modules/@sap/cds-dk </i>
- <em> @sap/cds             </em><em> 10.1.0  </em><i> .../node_modules/@sap/cds                                            </i>
- <em> @sap/cds-compiler    </em><em> 7.1.0   </em><i> .../node_modules/@sap/cds-compiler                                   </i>
+ <em> @sap/cds-dk (global) </em><em> 10.1.2  </em><i> .../node_modules/@sap/cds-dk </i>
+ <em> @sap/cds             </em><em> 10.1.1  </em><i> .../node_modules/@sap/cds                                            </i>
+ <em> @sap/cds-compiler    </em><em> 7.1.1   </em><i> .../node_modules/@sap/cds-compiler                                   </i>
  <em> @sap/cds-fiori       </em><em> 2.3.0   </em><i> .../node_modules/@sap/cds-fiori                                      </i>
- <em> @cap-js/db-service   </em><em> 3.1.0   </em><i> .../node_modules/@cap-js/db-service                                  </i>
- <em> @cap-js/sqlite       </em><em> 3.1.0   </em><i> .../node_modules/@cap-js/sqlite                                      </i>
+ <em> @cap-js/db-service   </em><em> 3.1.1   </em><i> .../node_modules/@cap-js/db-service                                  </i>
+ <em> @cap-js/sqlite       </em><em> 3.1.1   </em><i> .../node_modules/@cap-js/sqlite                                      </i>
  <em> cds.home             </em><em>         </em><i> .../node_modules/@sap/cds                                            </i>
  <em> cds.root             </em><em>         </em><i> .../your-project                                                  </i>
  <em> npm root -l          </em><em>         </em><i> .../node_modules                                                     </i>
