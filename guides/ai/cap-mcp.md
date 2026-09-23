@@ -377,7 +377,7 @@ npx @modelcontextprotocol/inspector
 
 The inspector should automatically open in your browser.
 
-![MCP Inspector start page](mcp-inspector.png){.ignore-dark}
+![MCP Inspector start page](mcp-inspector.png)
 
 Register your `@mcp`-enabled CAP services to the inspector using the _Add Servers_ \> _+ Add manually_ menu option, and in the dialog that appears, follow these steps:
 
@@ -387,7 +387,7 @@ Register your `@mcp`-enabled CAP services to the inspector using the _Add Server
 
 A screenshot is shown below:
 
-![MCP Inspector](mcp-inspector-add-server.png){.ignore-dark}
+![MCP Inspector](mcp-inspector-add-server.png)
 
 Then connect, and switch to the _Tools_ tab to the top of the inspector's window to inspect and try out the listed tools.
 
