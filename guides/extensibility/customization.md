@@ -87,7 +87,7 @@ npm add @sap/cds-mtxs
 
 ::: code-group
 
-```json [package.json]
+```json{13} [package.json]
 {
   "name": "@capire/xtravels",
   "version": "1.0.1",
@@ -100,7 +100,7 @@ npm add @sap/cds-mtxs
   },
   "cds": {
     "requires": {
-      "extensibility": true // [!code focus]
+      "extensibility": true
     }
   }
 }
@@ -163,35 +163,73 @@ Extensions can only target the application's **own** model — namespace `sap.ca
 
 To jumpstart your customers with extension projects, it's beneficial to provide a template project. Including this template with your application and making it available as a downloadable archive not only simplifies their work but also enhances their experience.
 
+A good template **starts clean, runs immediately, and documents intent**: after cloning it, the extension developer's first two commands should be `npm install` and `cds watch` without the need to pull a base model or login to the tenant host.
+
+#### Preferred Project Layout {#template-layout}
+
+The template we build in the following steps has this structure:
+
+```zsh
+xtravels-ext/
+├── app/
+│   └── extensions.cds       # your extensions (fields, entities, annotations)
+├── srv/
+│   └── server.js            # optional: plumbing and initial logic for local test-drives
+├── test/
+│   └── data/                # seed data for local test-drives (dev only)
+│       ├── sap.capire.travels-Travels.csv
+│       ├── sap.common-Currencies.csv
+│       └── …                # one CSV per seeded entity (see Add Test Data)
+├── .base/                   # optional: pre-filled base model (replaces cds pull)
+├── package.json             # extends "@capire/xtravels"
+└── readme.md                # getting-started guide for extension developers
+```
+
+::: tip Keep it simple
+Put all your extension content into `./app`. `cds add extension` already trims the scaffold to a model-only layout (no `./db`). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
+:::
+
 #### Create an Extension Project (Template)
 
 Extension projects are standard CAP projects extending the SaaS application. Create one for your SaaS app following these steps:
 
-1. Create a new CAP project — `xtravels-ext` in our walkthrough:
+1. Create a new CAP project and add the extension facet — `xtravels-ext` in our walkthrough:
 
    ```sh
    cd ..
    cds init xtravels-ext --nodejs
-   code xtravels-ext # open in VS Code
+   cd xtravels-ext
+   cds add extension
+   code . # open in VS Code
    ```
 
-2. Add this to your _package.json_:
+   `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder that will hold the pulled base model.
+
+2. `cds add extension` sets `extends` to a placeholder — point it at your SaaS app and add the two focused settings below to your _package.json_:
 
     ::: code-group
 
-    ```jsonc [package.json]
+    ```json{3,6,9} [package.json]
     {
       "name": "xtravels-ext",
       "extends": "@capire/xtravels",
-      "workspaces": [ ".base" ]
+      "workspaces": [ ".base" ],
+      "optionalDependencies": {
+        "@cap-js/sqlite": "^3"
+      },
+      "cds": {
+        "server": { "port": 4006 }
+      }
     }
     ```
 
     :::
 
 - `name` identifies the extension within a SaaS subscription; extension developers can choose the value freely.
-- `extends` is the name by which the extension model will refer to the base model. This must be a valid npm package name as it will be used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it will only be used locally.
-- `workspaces` is a list of folders including the one where the base model is stored. `cds pull` will add this property automatically if not already present.
+- `extends` is the name by which the extension model will refer to the base model. `cds add extension` writes a placeholder here — change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it will be used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it will only be used locally.
+- `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. `cds pull` will keep this property in sync if needed.
+- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. It sits under `optionalDependencies` **on purpose**: it's still installed by `npm install`, so local test-drives get a real database — but because it isn't a regular `dependency` or `devDependency`, `cds build` doesn't treat the project as a runnable app and therefore keeps your local `test/data` **out of the pushed extension** (see [Add Test Data](#add-test-data)). Declaring it as a `devDependency` would bundle that dev-only data into `cds push` and deploy it to the tenant.
+- `cds.server.port` fixes the local test-drive port to `4006`, so extension developers can just run `cds watch` without passing `--port`.
 
 ::: details Uniqueness of base-model name…
 
@@ -229,9 +267,7 @@ annotate TravelService.Travels with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-::: tip Keep it simple
-We recommend putting all extension files into `./app` and removing `./srv` and `./db` from extension projects.
-
+::: tip Separate concerns
 You may want to consider [separating concerns](../domain/index#separation-of-concerns) by putting all Fiori annotations into a separate _./app/fiori.cds_.
 :::
 
@@ -248,6 +284,71 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 ```
 
 :::
+
+::: tip Ship a complete seed set
+So the template is **browsable out of the box** — not just a bare Travels table — copy the base app's full seed set into `test/data/`, so associations resolve to real rows:
+
+- **The app's own data:** the `sap.capire.travels-*` CSVs (`Travels`, `Bookings`, `Bookings.Supplements`, `TravelAgencies`, `TravelStatus`(+`.texts`), `TravelPurposes`, `PaymentMethods`, `BookingStatus`(+`.texts`)).
+- **Reuse code lists** from `@capire/common`: `sap.common-Currencies`(+`_texts`) and `sap.common-Countries`(+`_texts`), so currency symbols and country names resolve.
+- **External & federated data** — flights (from `@capire/xflights-data`) and customers (from `@capire/s4`). These aren't stored in XTravels' own model but projected from external services, so their local table names and columns take a little care — see [Seed External & Federated Data](#seed-external).
+:::
+
+::: details Why `test/data/` and not `db/data/`?
+Data under `test/data/` is loaded **only** during local `cds watch` — it stays scoped to development and is _not_ deployed when the extension is activated to a tenant. Put initial data that must ship to production under `db/data/` instead (see [Add Data](#add-data)).
+:::
+
+#### Seed External & Federated Data {#seed-external}
+
+Not everything XTravels shows comes from its own tables. `Customers` and the `Flights`/`Supplements` behind each booking are **projections over external services** — SAP S/4HANA business partners (`@capire/s4`) and a remote flights service (`@capire/xflights-data`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it — a standalone `cds watch` starts with those tables **empty**, and the Fiori list shows blank _Customer_ and _Flight_ cells.
+
+To make the template browsable, seed that data locally. Two things need to line up: the **target file name** and the **columns**.
+
+**1. Derive the target name from the projection.** A federated entity is declared as a projection on an external service's entity — for customers:
+
+```cds
+@federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
+```
+
+Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table** — `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity — a dot or a dash. Each reuse module ships this data with its package, so copy it verbatim:
+
+- `@capire/s4/srv/external/data/API_BUSINESS_PARTNER.A_BusinessPartner.csv` → customers.
+- `@capire/xflights-data/data/sap.capire.flights.FlightsService.Flights.csv` → flights, together with `…FlightsService.Airlines.csv`, `…FlightsService.Airports.csv`, and `…FlightsService.Supplements.csv`, so the flattened `airline`/`origin`/`destination` names resolve.
+
+**2. Match the columns to the pulled model.** The base model you pull is **minified** (`@cds.minify`) — external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …`; if it targets an entity that was dropped entirely, you get `no such table`.
+
+This matters here because XTravels builds on **`@capire/common`**, which _extends_ the stock `@sap/cds/common`: it adds `numcode`/`exponent`/`minor` to `Currencies`, a `Regions`/`Cities`/`Districts` hierarchy under `Countries`, and a whole `Languages` code list. None of that is reachable through XTravels' services, so minification drops it — the pulled model falls back to a plain `sap.common` shape. Two consequences for your seed data:
+
+- **`Currencies` — trim the extra columns.** `@capire/common`'s `sap.common-Currencies.csv` ships `code;symbol;name;descr;numcode;minor;exponent`, but the pulled `sap.common.Currencies` keeps only `code`, `symbol`, `name`, `descr` (plus `minorUnit`). Drop the extra three:
+
+  ```csv [test/data/sap.common-Currencies.csv]
+  code;symbol;name;descr
+  EUR;€;Euro;European Euro
+  USD;$;US Dollar;United States Dollar
+  ```
+
+- **`Languages` and `Regions` — don't seed them at all.** They aren't in the pulled model, so there's no table to load into; copying `sap.common-Languages.csv` would fail with `no such table`.
+
+The companion `sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts` CSVs already match the pulled model — copy them as-is.
+
+::: tip Find the target quickly
+Not sure what an entity projects on, which columns survived minification, or whether an entity survived at all? Open the pulled `.base/index.csn` and look it up: its `projection`/`query` shows the source it reads from, its `elements` are exactly the columns your CSV may contain — and if the definition isn't there, minification dropped it and there's nothing to seed.
+:::
+
+#### Ship a Pre-Filled Base Model {#template-base}
+
+Normally an extension developer has to run [`cds pull`](#pull-base) against a live tenant subscription before the project compiles, because `using … from '@capire/xtravels'` needs the base model. You can remove that first hurdle by shipping a **pre-filled `.base/`** with the template — a compiled snapshot of the base model, so `cds watch` works right after `npm install`.
+
+- The base CSN must be structurally valid, and every service and entity your extensions reference must be present.
+- You may trim it — dropping internal entities and unexposed projections keeps the template small.
+- It's a snapshot: when the base model changes, developers re-run `cds pull` to refresh it.
+
+::: tip
+If you don't ship `.base/`, that's fine — developers just run [`cds pull`](#pull-base) once as the first step, as described in the SaaS-customer walkthrough below.
+:::
+
+#### Make It Browsable {#template-ui}
+
+For model-only extensions, the [generic Fiori preview](#test-locally) is enough to see your new fields. If you want extension developers to work against the **real** application UI locally, copy the base app's Fiori Elements shell (`app/travels/webapp/`) into the template. `cds watch` then serves it at `http://localhost:4006/travels/webapp/index.html`. The UI annotations themselves already travel with the base model, so only the HTML/JS shell needs to be copied.
 
 #### Add a Readme
 
@@ -269,13 +370,23 @@ It contains these folders and files, following our recommended project layout:
 | `readme.md`    | this getting started guide     |
 
 
-## Next Steps
+## Two Ways to Run
 
-- `cds pull` the latest models from the SaaS application
-- edit [`./app/extensions.cds`](./app/extensions.cds) to add your extensions
-- `cds watch` your extension in local test-drives
-- `cds push` your extension to **test** tenant
-- `cds push` your extension to **prod** tenant
+**A — Standalone (fast local iteration)**
+
+Boot the extension on its own. The pre-filled `.base/` model and the seed data in `test/data/` give you a fully browsable app.
+
+    npm install
+    cds watch          # → http://localhost:4006
+
+Edit `./app/extensions.cds`, save, and `cds watch` reloads.
+
+**B — Push to a tenant**
+
+The round-trip you use once you're happy with the extension:
+
+    cds pull           # refresh the base model from the SaaS app
+    cds push           # activate the extension on your tenant
 
 
 ## Learn More
@@ -285,7 +396,64 @@ Learn more at https://cap.cloud.sap/docs/guides/extensibility/customization.
 
 :::
 
-### 4. Provide Extension Guides {#guide}
+### 4. Provide Reference Logic for Local Runs {#reference-wiring}
+
+`cds pull` delivers the SaaS app's **model** — the compiled CSN with all services, entities, and annotations — but _not_ its **server-side handler code**. That code stays on the provider's side. For a model-only extension that's exactly right: you extend the model, you don't ship logic. But it has one consequence for _local_ test-drives.
+
+When you run the extension standalone with `cds watch`, the app boots against the pulled model with **generic** CRUD handlers only. Anything the base app implemented in JavaScript is simply absent:
+
+- **Primary keys aren't generated.** The base app assigns a new `Travel`'s `ID` in a `before CREATE` handler. Standalone, creating a record leaves the key empty and the insert fails.
+- **Bound actions error.** The Travels list report shows actions like _Accept_, _Reject_, _Reopen_, and _Deduct Discount_ (`acceptTravel`, `rejectTravel`, `reopenTravel`, `deductDiscount` on `TravelService.Travels`). With no handler behind them, triggering one from the UI raises a runtime error.
+
+::: tip This is a local-only concern
+On a real tenant your extension runs _inside_ the deployed SaaS app, so all of this wiring is already there. You only need it to make **standalone `cds watch`** behave like the deployed app.
+:::
+
+Bridge the gap with a read-only `srv/server.js` that reproduces just enough of the base app's behavior. Place it **directly** under `srv/`, where it runs as a regular Node.js bootstrap module during `cds watch`. A model-only extension carries no code, so even though `cds push` packages this file into the extension archive, the tenant activates only the model — the file is never executed there. Mark it clearly as reference code:
+
+::: code-group
+
+```js [srv/server.js]
+// ────────────────────────────────────────────────────────────────
+// Reference logic for LOCAL runs only — NOT part of the extension.
+// `cds pull` delivers the base *model*, not the base app's handlers.
+// This reproduces just enough of them so a standalone `cds watch`
+// behaves like the deployed app. On a model-only tenant this file is
+// packaged but never executed — only the model is activated.
+// ────────────────────────────────────────────────────────────────
+import cds from '@sap/cds'
+
+cds.once('served', () => {
+  const { TravelService } = cds.services
+  if (!TravelService) return
+  const { Travels } = TravelService.entities
+
+  // The base app generates a sequential key before persisting.
+  const nextTravelId = async () => {
+    const [active, draft] = await Promise.all([
+      SELECT.one`max(ID) as maxID`.from(Travels),
+      SELECT.one`max(ID) as maxID`.from(Travels.drafts),
+    ])
+    return Math.max(active?.maxID ?? 0, draft?.maxID ?? 0) + 1
+  }
+  TravelService.before('CREATE', Travels, async req => { req.data.ID ??= await nextTravelId() })
+  TravelService.before('NEW', Travels.drafts, async req => { req.data.ID ??= await nextTravelId() })
+
+  // Bound UI actions have no handler in a model-only extension —
+  // triggering one from the list report would error. Stub them so
+  // the UI stays clickable during local test-drives.
+  for (const action of ['deductDiscount', 'acceptTravel', 'rejectTravel', 'reopenTravel'])
+    TravelService.on(action, Travels, req => req.data ?? {})
+})
+
+export default cds.server
+```
+
+:::
+
+That's all a model-only template needs: keys get generated, the list report's actions no longer break, and the app is fully browsable locally. When the base app changes its behavior, refresh this file by hand — it's a convenience copy, not something `cds pull` keeps in sync.
+
+### 5. Provide Extension Guides {#guide}
 
 You should provide documentation to guide your customers through the steps to add extensions. This guide should provide application-specific information along the lines of the walkthrough steps presented in this guide.
 
@@ -299,7 +467,7 @@ Here's a rough checklist what this guide should cover:
 - [What can be extended?](#about-extension-models) → which services, entities, ...
 - [With enclosed documentation](../../cds/cdl#doc-comments) to the models for these services and entities.
 
-### 5. Deploy Application
+### 6. Deploy Application
 
 Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
 Prepare this by going back to your app with `cd xtravels`.
@@ -441,7 +609,7 @@ using { TravelService, sap, sap.capire.travels.Travels } from '@capire/xtravels'
 
 extend Travels with { // 2 new fields....
   x_priority   : String enum {high; medium; low} default 'medium';
-  x_CostCenter : Association to x_CostCenters;
+  x_CostCenter : Association to x_CostCenters default 'TRAVEL';
 }
 
 entity x_CostCenters : sap.common.CodeList { // Value Help
@@ -467,6 +635,11 @@ annotate TravelService.Travels with @UI.LineItem: [
 
 [Learn more about what you can do in CDS extension models](#about-extension-models){.learn-more}
 
+::: tip Both fields carry a default
+`x_priority` defaults to `medium`, and `x_CostCenter` defaults to the `TRAVEL` code list entry. A `default` on an association sets its foreign key (`x_CostCenter_code`), so it behaves just like the scalar default on `x_priority`. When the extension is activated, these defaults are applied as `ADD COLUMN … DEFAULT …`, which also fills the column for every existing travel — so the tenant starts with sensible values instead of empty cells, and users only need to change the exceptions.
+:::
+
+
 <!-- REVISIT: do we need to say that? -->
 ::: tip
 Make sure **no syntax errors** are shown in the [CDS editor](../../tools/cds-editors#vscode) before going on to the next steps.
@@ -477,11 +650,15 @@ Make sure **no syntax errors** are shown in the [CDS editor](../../tools/cds-edi
 To conduct an initial test of your extension, run it locally with `cds watch`:
 
 ```sh
-cds watch --port 4006
+cds watch
 ```
 
 > This starts a local Node.js application server serving your extension along with the base model and supplied test data stored in an in-memory database.<br>
 > It does not include any custom application logic though.
+
+::: tip Serving on port 4006
+The template's _package.json_ fixes the port via `cds.server.port: 4006` (see [Create an Extension Project](#templates)), so `cds watch` serves at `http://localhost:4006` without a `--port` flag. If your template omits that setting, pass `cds watch --port 4006` instead.
+:::
 
 #### Add Local Test Data
 
@@ -499,11 +676,11 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 
 :::
 
-Create a new file `test/data/x_travels.ext-x_CostCenters.csv` with this content:
+Create a new file `db/data/x_travels.ext-x_CostCenters.csv` with this content:
 
 ::: code-group
 
-```csv [test/data/x_travels.ext-x_CostCenters.csv]
+```csv [db/data/x_travels.ext-x_CostCenters.csv]
 code,name,descr
 TRAVEL,"Travel & Expenses","Travel and expenses cost center"
 SALES,"Sales","Sales department cost center"
@@ -512,15 +689,19 @@ OPS,"Operations","Operations cost center"
 
 :::
 
+::: tip `test/data/` vs `db/data/`
+The `x_CostCenters` code list is your extension's own [_(real) initial data_](../databases/initial-data#initial-vs-test-data): the **value help** that labels the `TRAVEL`/`SALES`/`OPS` codes. It's configuration data users don't change through the app, so it belongs under `db/data/` — from where it both loads locally _and_ ships to the tenant with `cds push`. The Travels rows above go under `test/data/`, which loads **only** during local `cds watch` and never reaches the tenant. See [Add Data](#add-data) for why writeable data like `Travels` must stay local.
+:::
+
 #### Verify the Extension
 
 Verify your extensions are applied correctly by opening the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window**, log in as `bob`, and see columns _Priority_ and _Cost Center_ filled as in the following screenshot:
 
 ![A screenshot of the generic Fiori preview of TravelService.Travels. The travels table shows the two extension columns Priority, with values high and low, and Cost Center, with values Travel & Expenses and Sales.](assets/xtravels-fiori-preview-ext.png){.mute-dark}
 
-> Note: the screenshot includes local test data, added as explained below.
+> Note: the two rows shown come from your local `test/data/Travels`, and their _Cost Center_ labels resolve against the `x_CostCenters` code list.
 
-This test data will only be deployed to the local sandbox and not be processed during activation to the productive environment.
+The Travels rows stay in the local sandbox and are not processed during activation to the tenant; the `x_CostCenters` code list under `db/data/`, however, ships with the extension — see [Add Data](#add-data).
 
 ### 8. Push to Test Tenant {#push-extension }
 
@@ -553,14 +734,19 @@ Execute `cds build --log-level info` to display all messages, although they shou
 
 #### Verify the Extension {#test-extension }
 
-Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Also, check that there's content with a proper label in the _Cost Center_ column.
+Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push — see the [next step](#add-data) for what that means.
 
-![A screenshot of the deployed XTravels Fiori UI. The travels table now includes the extension columns Priority and Cost Center, with Travel 1 showing high and Travel & Expenses, and Travel 2 showing low and Sales.](assets/xtravels-deployed-ext.png){.mute-dark}
+![A screenshot of the deployed XTravels Fiori UI. The travels table now includes the extension columns Priority, showing the default value medium for every row, and Cost Center, showing the default value Travel & Expenses for every row.](assets/xtravels-deployed-ext.png){.mute-dark}
 
 ### 9. Add Data {#add-data}
 
-After pushing your extension, you have seen that the column for _Cost Center_ was added, but is not filled.
-To change this, you need to provide initial data with your extension. Copy the data file that you created before from `test/data/` to `db/data/` and push the extension again.
+You already shipped data with your extension: the `x_CostCenters` code list under `db/data/`. That's why _Cost Center_ shows the label _Travel & Expenses_ rather than the raw code `TRAVEL` on the tenant — the code list traveled with the `cds push` and provides the **value help** that labels the codes and lets users re-classify travels.
+
+Files under `db/data/` are your extension's [_(real) initial data_](../databases/initial-data#initial-vs-test-data): they load locally _and_ activate on the tenant. Restrict this to **configuration data** that users don't change through the app — such as a code list. Anything under `test/data/` (like your local `Travels` rows) stays on your machine and never reaches the tenant.
+
+::: warning Ship only configuration data — never writeable data
+It's tempting to also pre-fill the _Cost Center_ of individual travels by shipping a `db/data/sap.capire.travels-Travels.csv`. Don't do that for production. `Travels` is writeable transactional data, and on SAP HANA shipped CSVs [are deployed as `.hdbtabledata`, exclusively owned by the deployment and **overwritten on every redeployment**](../databases/hana#csv-data-gets-overridden) — which would reset whatever users entered. Only ship data that can't be changed through the app, such as code lists. To pre-populate a writeable column, use a model `default` (as `x_CostCenter` does) — it's applied once when the column is added and never overwrites later edits. Let users take it from there through the value help.
+:::
 
 [Learn more about adding data to extensions](#add-data-to-extensions) {.learn-more}
 
@@ -1071,20 +1257,15 @@ Set-Variable -Name "DEBUG" -Value "cli"
 
 ## Add Data to Extensions
 
-As described in [Add Data](#add-data), you can provide local test data and initial data for your extension. In this guide we copied local data from the `test/data` folder into the `db/data` folder. When using SQLite, this step can be further simplified. For `sap.capire.travels-Travels.csv`, just add the _new_ columns along with the primary key:
-`
-::: code-group
+As described in [Add Data](#add-data), you ship [_(real) initial data_](../databases/initial-data#initial-vs-test-data) for your extension by placing `.csv` files under `db/data/`. Restrict this to **configuration data** that users don't change through the app — such as the `x_CostCenters` code list. Anything under `test/data/` stays local and is never activated on the tenant.
 
-```csv [sap.capire.travels-Travels.csv]
-ID,x_priority,x_CostCenter_code
-1,high,TRAVEL
-2,low,SALES
-```
+Be aware that initial data behaves differently per database, which is why writeable business data doesn't belong here:
 
-:::
+- **SQLite (local `cds watch`):** CSV files are loaded with an `UPSERT`, so a file that lists only the primary key plus your _new_ columns updates just those columns of the matching rows. That's a convenience for local test data.
+- **SAP HANA (production):** CSV files are deployed as [`.hdbtabledata`](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata). The deployment takes [exclusive ownership of that data and overwrites it on every redeployment](../databases/hana#csv-data-gets-overridden), and you must provide the **full** set of columns and rows — partial-column updates like the SQLite case don't apply.
 
-::: warning Adding data only for missing columns doesn't work with SAP HANA
-With SAP HANA, you always have to provide the full set of data.
+::: danger Don't ship data for writeable entities to production
+Because SAP HANA overwrites owned CSV data on each redeployment, shipping initial data for a writeable entity like `Travels` would wipe out whatever users entered. Ship code lists and other non-editable configuration only; let users maintain everything else through the app.
 :::
 
 <span id="afterAddingData" />
