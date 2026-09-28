@@ -101,6 +101,15 @@ This is exactly where the MCP services come into play, automating much of the pl
 
 ## MCP Services
 
+### Install the MCP Plugin
+
+Before using MCP services, install the MCP plugin in the xtravels project:
+
+```shell
+cd xtravels
+npm install @cap-js/mcp --save
+```
+
 ### MCP-enable given Services
 
 Instead of implementing static UIs, we merely annotate the existing service definitions with [`@mcp`] to make them available for automated planning and booking from AI agents:
@@ -160,11 +169,20 @@ In case of the XTravels application we choose to not just [`@mcp`]-enable the ex
 
 CAP puts a main focus on [fast inner-loop development](../integration/inner-loops) and iterative testing, making it easy to quickly see the effects of changes in your services. This also holds true for MCP-enabled services, which we can test locally using local installations of [OpenCode](https://opencode.ai/), [Claude Code](https://claude.ai/), or any other MCP client.
 
+> [!note] MCP Client Prerequisites
+> MCP clients like OpenCode require an LLM API key to be configured before use. See your client's documentation for setup instructions.
+
+> [!note] Different AI Client Behaviors
+> Different MCP clients may have different interaction patterns. The screenshots below show OpenCode's style. Your experience may vary with other clients.
+
 With the above changes, restart your CAP server in a terminal:
 
 ```shell
 cds w xtravels
 ```
+
+> [!note] MCP Auto-wiring
+> When `cds watch` starts, CAP automatically writes MCP server entries to your MCP client's configuration files (e.g., `~/.opencode/config.json` for OpenCode or `~/.claude.json` for Claude Code). These entries **persist after the server stops**. If you work with multiple CAP projects or change ports/services, you may need to manually clean up stale entries from these config files.
 
 In a separate terminal, start OpenCode:
 
@@ -221,10 +239,10 @@ The `TravelAgentService` is our root agent that coordinates travel planning and 
 
 
 > [!tip]
-> Simply checkout the `aix` branch of the `xtravels` repository to get the complete implementation of the agents:
+> Simply checkout the `jv-agents` branch of the `xtravels` repository to get the complete implementation of the agents:
 > ```shell
 > cd xtravels
-> git checkout aix
+> git checkout jv-agents
 > cd -
 > ```
 
@@ -271,7 +289,7 @@ cds w xtravels
 See [Automatic Config](cap-agents#automatic-config) in the CAP Agents documentation for details.
 :::
 
-But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4005/agent/preview.
+But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4004/a2a/travel-agent/preview.
 
 ![Opening chat preview from index.html](chat-preview-from-index-html.png){style="width: 500px;"}
 
@@ -301,17 +319,20 @@ To run the XTravels application with its services separately, you can start each
 Run each of the lines below in a separate terminal, in the given order:
 
 ```shell
-cds w xtravels/srv/events
+cds w xtravels/srv/events --port 4006
 ```
 ```shell
-cds w xtravels/srv/hotels
+cds w xtravels/srv/hotels --port 4007
 ```
 ```shell
-cds w xflights
+cds w xflights --port 4005
 ```
 ```shell
-cds w xtravels
+cds w xtravels --port 4004
 ```
+
+> [!note] Port Configuration
+> Each service must run on a different port. Without explicit `--port` flags, all services would try to use the default port 4004 and fail with "address already in use" errors.
 
 In the log output of each [`@agent`]-ified service, that is for `events`, `hotels`, and `travels`, we see the `cds.connect to 'llm'` taking place:
 
