@@ -29,6 +29,18 @@ Extension handlers never run as ordinary Node.js modules on the tenant. They run
 
 The plugin picks the engine automatically. **Every multitenant setup uses `wasm`** — the realistic push flow always runs the isolated engine. The permissive `mocked` engine is a single-tenant local-development convenience, selected only when `code-extensibility.sandbox` is `mocked` and the app is single-tenant. Because production is always `wasm`, verify under `cds watch --wasm` before pushing.
 
+### Debugging in the mocked sandbox {#debugging}
+
+The `mocked` engine runs each handler **in-process**, executing your handler file as its own source (the sandbox sets the file path as the script's `sourceURL`). That makes handlers debuggable like any other Node.js code: launch the app with an inspector, then set breakpoints directly in the handler file.
+
+```sh
+cds watch --debug        # or --inspect-brk to also break on the first line
+```
+
+Attach your editor's Node debugger (VS Code's JavaScript debugger, Chrome DevTools, …) and set a breakpoint in `srv/<Service>/on-<action>.js` or any CRUD handler file. Execution stops there on the next call, so you can step through the handler, inspect `req`, `req.data`, and `this.entities`, and evaluate `SELECT` / `cql` in the debug console.
+
+This works **only** in the `mocked` engine, which is selected for single-tenant local development — the default when you run an extension standalone with `cds watch`. The `wasm` engine runs handler code in an isolated WebAssembly runtime with no attach point, so breakpoints never bind there. Debug your logic in the mocked sandbox, then [verify under `--wasm`](business-logic#verify-wasm) to catch anything the isolated engine forbids.
+
 ## Configuration {#config}
 
 The plugin auto-registers `cds.requires.code-extensibility` with profile-aware defaults, so most projects need no configuration. To tune limits or force `wasm` locally, add a `code-extensibility` block — all keys are optional:
@@ -144,3 +156,4 @@ Providers should make it an operations task to watch `cds.xt.Extensions` for blo
 | Handler never fires locally | The provider's `before(...)` wiring isn't in the pulled model; re-provide it in _srv/server.js_ (see [Business Logic Extensibility](business-logic#test-locally)). |
 | Handler silently skipped for the whole tenant | An **unhandled runtime error** blocks the extension (`isBlockedCode`); see [Quarantine](#quarantine). Fix the handler and re-push. Use `req.reject`/`req.error`, never `throw`. |
 | `422 … not permitted` mentioning `@extensible.code` | Extensions may not carry `@extensible.code` themselves — it's a provider-only annotation. Remove it from the extension model. |
+| Breakpoints don't bind / debugger won't stop | You're on the `wasm` engine (a multitenant app, or `sandbox: wasm`). Breakpoints only work in the single-tenant `mocked` engine; see [Debugging in the mocked sandbox](#debugging). |

@@ -102,7 +102,7 @@ extend service TravelService with {
 
 :::
 
-The handlers also read and write two supporting entities: a per-customer budget ceiling and an audit log. These are **not** provider entities: the partner **brings them as extension entities**. A new entity a subscriber adds is **extensible by default**, so handlers query it through `this.entities` with no annotation at all:
+The handlers also read two supporting entities — a per-customer budget ceiling and a per-customer policy flag — and emit a domain event. The entities are **not** provider entities: the partner **brings them as extension entities**. A new entity a subscriber adds is **extensible by default**, so handlers query it through `this.entities` with no annotation at all. The event is declared the same way, so `after-CREATE` can emit it:
 
 ::: code-group
 
@@ -117,11 +117,16 @@ extend service TravelService with {
         maxTotal    : Decimal;
   }
 
-  // Audit trail written by the after-handlers.
-  entity TravelLog {
-    key ID        : UUID;
-        travel_ID : Integer;
-        action    : String;
+  // Per-customer policy flags — read by before-CREATE.
+  entity CustomerPolicies {
+    key customer_ID : String;
+        blocked     : Boolean;
+  }
+
+  // Domain event emitted by after-CREATE (see after Handlers).
+  event TravelCreated {
+    ID       : Integer;
+    customer : String;
   }
 }
 ```
@@ -160,7 +165,7 @@ Letting subscribers add entities is powerful, so cap it. An **extension allow-li
 
 :::
 
-- `{ "for": ["TravelService"], "new-entities": 3 }` — at most **3** new entities may be added to `TravelService` (here `CustomerBudgets` and `TravelLog`, leaving room for one). A base-model **service** must be listed before *any* entity may be added to it.
+- `{ "for": ["TravelService"], "new-entities": 3 }` — at most **3** new entities may be added to `TravelService` (here `CustomerBudgets` and `CustomerPolicies`, leaving room for one; the `TravelCreated` **event** does not count against the entity cap). A base-model **service** must be listed before *any* entity may be added to it.
 - `{ "for": ["com.partner.ext"], "new-entities": 3 }` — at most **3** standalone tables in the `com.partner.ext` **namespace**. Namespaces are open by default; this caps them.
 - `{ "for": [...], "kind": "entity", "new-fields": 5 }` — caps new fields on an existing entity (the `agencyEmail` model extension below adds one).
 
@@ -227,31 +232,48 @@ Set `limitedAfterRead: true` in the [sandbox config](code-extension#config) to r
 
 `before` handlers run before the event reaches the database. They can read and mutate `req.data` to change what gets written, or call `req.reject` to abort. `req.data` is always `{}` for `before-DELETE`.
 
-### before CREATE — validate, default, and call an action {#before-create}
+### before CREATE — cross-record checks {#before-create}
 
-This handler enforces required fields, applies defaults, and delegates the cross-record budget check to a reusable unbound action. **Any unbound service action is callable via `this.<action>(params)`** from within any sandbox handler:
+Single-record rules — a **required** field, a **value range**, a **default** — are declarative. Where they belong depends on *who owns the field*.
+
+**Fields you add** in the extension model can carry their own validation — **as long as the field is defaulted**. The extension linter allows `@mandatory`, `@assert.range`, `@assert.notNull`, and `@readonly` on an extension field **only when it also has a `default`**, so the rule can never fail activation or reject data the tenant didn't send:
+
+::: code-group
+
+```cds [extension model]
+extend TravelService.Travels with {
+  x_headcount : Integer @assert.range: [1, 50] default 1;
+}
+```
+
+:::
+
+**The provider's own fields**, by contrast, can't be re-annotated from an extension — a `@mandatory` or `@assert.range` on `Travels.Description` is rejected at `cds push`. Those rules are the provider's to declare on the base model.
+
+::: warning Case-expression constraints don't work in extensions
+The declarative [constraint](../services/constraints) form — `@assert: (case … end)`, which a **cross-field** rule like `EndDate >= BeginDate` needs — is rejected at `cds push` from an extension (reported as `Annotation '@assert' … is not supported in extensions`), on your own fields as much as the provider's, and a `default` does not exempt it. Keep cross-field rules in a handler, or have the provider add the constraint to the base model.
+:::
+
+That leaves the handler for the checks a constraint genuinely *can't* express — anything that reaches **across records**. This before-CREATE does two: it rejects travels for a **blocked customer** (a lookup on another entity) and delegates the customer-wide **budget** check to a reusable unbound action. **Any unbound service action is callable via `this.<action>(params)`** from within a sandbox handler:
 
 ::: code-group
 
 ```js [srv/TravelService/Travels/before-CREATE.js]
 module.exports = async function beforeCreateTravel(req) {
-  if (!req.data.Description?.trim())
-    req.reject(400, 'Description is required')
+  const { CustomerPolicies } = this.entities
+  const { Customer_ID, BookingFee } = req.data
+  if (!Customer_ID) return
 
-  if (req.data.BeginDate && req.data.EndDate && req.data.EndDate < req.data.BeginDate)
-    req.reject(400, 'End date must be after begin date')
-
-  // Defaults for optional fields the caller omitted
-  if (req.data.Status_code   == null) req.data.Status_code   = 'O'    // Open
-  if (req.data.Currency_code == null) req.data.Currency_code = 'EUR'
+  // Lookup on another entity: is this customer blocked?
+  const policy = await SELECT.one.from(CustomerPolicies)
+    .columns('blocked')
+    .where({ customer_ID: Customer_ID })
+  if (policy?.blocked)
+    req.reject(403, `Customer ${Customer_ID} is blocked and cannot have new travels`)
 
   // Cross-record budget check — reuse the same action UPDATE uses
-  if (req.data.Customer_ID && req.data.BookingFee != null) {
-    await this.assert_within_budget({
-      customerID: req.data.Customer_ID,
-      delta:      req.data.BookingFee,   // a create adds the full fee
-    })
-  }
+  if (BookingFee != null)
+    await this.assert_within_budget({ customerID: Customer_ID, delta: BookingFee })
 }
 ```
 
@@ -343,72 +365,36 @@ module.exports = async function assert_within_budget(req) {
 
 `after` handlers run once the transaction has committed. They receive `(result, req)`, where `req.results` is the same value. Because the transaction is closed, any CQL you run executes in a **new** transaction. Side effects survive even if the caller aborts later work, and a rejection here surfaces to the caller but does **not** roll the original write back.
 
-The invariant: **reject in `before`, react in `after`.** That makes `after` handlers the place for audit trails, change tracking, and cleanup, not for enforcing rules.
+The invariant: **reject in `before`, react in `after`.** That makes `after` handlers the place for side effects — emitting domain events, sending notifications, kicking off downstream work — not for enforcing rules.
 
-### after CREATE — audit entry {#after-create}
+::: tip Don't hand-roll audit trails
+For audit logs and change history, use the declarative [Change Tracking](../../plugins/index#change-tracking) plugin (`@cap-js/change-tracking`) rather than writing your own log entity from `after` handlers: annotate the tracked entities and the framework records who changed which field when. Reserve `after` handlers for reactions no plugin covers.
+:::
+
+### after CREATE — emit a domain event {#after-create}
+
+The canonical `after` reaction is emitting an event so downstream systems can pick up the change asynchronously. `after-CREATE` emits `TravelCreated`, declared as an event in the [extension model](#opening):
 
 ::: code-group
 
 ```js [srv/TravelService/Travels/after-CREATE.js]
 module.exports = async function afterCreateTravel(result, req) {
-  const { TravelLog } = this.entities
-  await INSERT.into(TravelLog).entries({
-    ID:        utils.uuid(),
-    travel_ID: req.data.ID,
-    action:    `created (customer=${req.data.Customer_ID}, agency=${req.data.Agency_ID})`,
+  await this.emit('TravelCreated', {
+    ID:       req.data.ID,
+    customer: req.data.Customer_ID,
   })
 }
 ```
 
 :::
 
-Read from `req.data`: it carries the full payload, including the ID assigned in `before-CREATE`. Use `utils.uuid()` (available on every sandbox handler) rather than a hand-rolled ID. Under CAP 10, `result` is a minimal projection (typically just key columns), so `req.data` gives you every field the write touched.
+- **Emit only modeled events.** The sandbox rejects `this.emit('X', …)` unless `X` is an event declared in the service model, and it validates the payload against that declaration. Declaring the event is what makes the emit legal — see the `event TravelCreated` in [Opening Regular Services](#opening).
+- **`await` the emit.** The sandbox await-linter requires it; a bare `this.emit(...)` is flagged.
+- **Read from `req.data`, not `result`.** `req.data` carries the full payload, including the `ID` assigned in `before-CREATE`; under CAP 10 `result` is a minimal projection (typically just key columns).
 
-### after UPDATE — change tracking {#after-update}
-
-`req.data` still carries the caller's payload, so you can log exactly which tracked fields changed without re-reading the row:
-
-::: code-group
-
-```js [srv/TravelService/Travels/after-UPDATE.js]
-const TRACKED = ['Status_code', 'BookingFee', 'Description']
-
-module.exports = async function afterUpdateTravel(result, req) {
-  const { TravelLog } = this.entities
-  const changed = TRACKED.filter(f => f in req.data)
-  if (!changed.length) return
-
-  await INSERT.into(TravelLog).entries({
-    ID:        utils.uuid(),
-    travel_ID: req.subject.ref[0].where?.[2].val,
-    action:    `updated: ${changed.map(f => `${f}=${req.data[f]}`).join(', ')}`,
-  })
-}
-```
-
+::: tip after-UPDATE and after-DELETE work the same way
+The same rules apply to the other `after` events, so they need no separate examples. Two facts worth keeping in mind: on UPDATE and DELETE the record key comes from `req.subject` (populated for OData PATCH/PUT/DELETE by the URL key, e.g. `req.subject.ref[0].where?.[2].val`), since `result` is a minimal projection on UPDATE and `undefined` on DELETE; and on DELETE, CAP cascades to **composition** targets automatically but leaves rows referenced through a plain **association** untouched — sweep those with your own `DELETE` if needed. Because `after` runs post-commit, a failure there cannot roll the original write back; log it or emit a compensating event.
 :::
-
-The `TRACKED` allow-list keeps noise out of the log. The travel ID comes from `req.subject.ref` (the URL key), populated for OData PATCH/PUT.
-
-### after DELETE — cleanup of non-composition dependents {#after-delete}
-
-CAP automatically deletes composition targets with their parent. Anything referencing a travel through a **plain association** (foreign key only) is not touched; `TravelLog` is such a case. Sweep those rows:
-
-::: code-group
-
-```js [srv/TravelService/Travels/after-DELETE.js]
-module.exports = async function afterDeleteTravel(result, req) {
-  const { TravelLog } = this.entities
-  const ID = req.subject.ref[0].where?.[2].val
-  if (ID == null) return   // programmatic delete without an OData key — nothing to sweep
-
-  await DELETE.from(TravelLog).where({ travel_ID: ID })
-}
-```
-
-:::
-
-`result` is `undefined` for after-DELETE (the row is gone), so the key comes from `req.subject`. Guard on the key: OData deletes populate `req.subject.ref[0].where`, but a programmatic `DELETE.from(…).where(…)` may not. The cleanup runs after commit. If it fails, the travel is still deleted; log the failure or emit a compensating event rather than trying to abort here.
 
 ## Paginated Reads {#pagination}
 
@@ -452,5 +438,5 @@ These patterns open more surface than [pre-defined extension points](business-lo
 - **Open the smallest surface that fits.** Annotate individual entities and unbound operations, not the whole service. You can widen later; **narrowing** an already-opened surface breaks deployed extensions.
 - **Prefer pre-defined extension points whenever the integration is a single hook.** CRUD handlers are powerful but ambient: an author must reason about every write that reaches the entity. A dedicated `@extensible.code` action gives the same result with a clearer contract. See [When to Open Things Up](#when).
 - **Factor cross-record rules into unbound actions.** The `assert_within_budget` pattern scales because every handler that touches the invariant delegates to one place. Duplicating the check in each handler drifts.
-- **Keep declarative rules declarative.** Status transitions, mandatory fields, and value ranges belong on the model (`@assert.*`, flow annotations, `@readonly`). Restating them in a handler bypasses tooling and hides the rule. The `before-UPDATE` example here is deliberately a **cross-record aggregate**, something annotations cannot express.
+- **Keep declarative rules declarative — within the extension boundary.** Value ranges and mandatory checks belong on the model, not in a handler that bypasses tooling and hides the rule. In an extension that works only on **fields you add** and **only when they carry a `default`** (`x_… @assert.range: […] default …`); the provider's own fields, cross-field case-expression constraints (`@assert: (case …)`), and undefaulted asserts are all rejected at `cds push`, so those stay a handler check or move to the base model. The `before-CREATE` customer lookup and the `before-UPDATE` **cross-record aggregate** are deliberately in handlers: no constraint can express them.
 - **When in doubt, go back to [pre-defined extension points](business-logic).** If your integration is *"call this action at this point"*, keep it there. The scenarios that justify this guide all share a controlled extension-supply chain.

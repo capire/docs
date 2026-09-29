@@ -177,6 +177,25 @@ cds add ext-handler --filter validateReview
 
 This writes _srv/TravelExtensionService/on-validateReview.js_ with a leading `#` in its name, marking it an **inactive** stub. Remove the `#` to activate it.
 
+The stub is **typed**, not empty. It ships with a JSDoc header that wires the handler into the model's generated types:
+
+::: code-group
+
+```js [srv/TravelExtensionService/#on-validateReview.js]
+/// <reference types="@sap/cds-oyster/sandbox-globals" />
+/**
+ * @param {import('@sap/cds-oyster').OysterReq<import('#cds-models/TravelExtensionService')['validateReview']['__parameters']>} req
+ * @this {import('@sap/cds-oyster').OysterThis<import('#cds-models/TravelExtensionService')>}
+ */
+module.exports = async function (req) {
+  // TODO: implement the handler, then remove the leading '#' from the filename
+}
+```
+
+:::
+
+That header drives editor code completion for exactly what the sandbox exposes, and nothing more: `req` is narrowed to the sandbox request surface, with `req.data` typed from the action's own parameters; `this.entities` and the CRUD methods (`this.read`, `this.update`, …) are scoped to the extension service's entities; and the leading triple-slash reference pulls in the sandbox globals (`SELECT`, `cql`, `utils`). Completion relies on the generated `#cds-models` types (produced by `@cap-js/cds-typer`), which the extension template from [step 1](customization#start-ext-project) already sets up — so IntelliSense works as soon as you open the file.
+
 ::: tip Scope the generation
 Without `--filter`, `cds add ext-handler` generates stubs for *every* entity and action in the whole base model, including services that aren't `@extensible.code`. Those won't push. Filter to the extension point you're implementing, or delete the extras.
 :::
@@ -212,6 +231,8 @@ cds watch
 ```
 
 Call `submitForReview` on a travel over the limit and confirm the `409`; on a cheap one it passes and the status flips to `InReview`.
+
+Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there — see [Debugging in the mocked sandbox](code-extension#debugging) for the full story.
 
 ::: tip Reproduce provider wiring locally
 `cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Re-provide just that wiring in a read-only _srv/server.js_, exactly as described for [reference logic](customization#reference-wiring). On a real tenant this wiring is already there.
