@@ -66,8 +66,21 @@ annotate CatalogService.submitOrder with @agent.hitl; // [!code focus]
 ```
 :::
 
-
 When the agent decides to call the action, the task pauses and transitions to the A2A [`input-required`](https://a2a-protocol.org/latest/specification/#413-taskstate) state instead of running the action immediately.
+
+> [!tip] Annotation Placement Matters
+> The CDS compiler only recognizes annotations placed **before** the action keyword or in a separate `annotate` statement. Annotations placed **after** the `returns` clause are silently ignored:
+> ```cds
+> // ✅ Correct - annotation before action
+> @agent.hitl
+> action submitOrder(...) returns String;
+> 
+> // ✅ Also correct - separate annotate statement (shown above)
+> annotate CatalogService.submitOrder with @agent.hitl;
+> 
+> // ❌ WRONG - silently ignored by CDS compiler
+> action submitOrder(...) returns String @agent.hitl;
+> ```
 
 > [!warning] Only supported by CAP Node.js
 > `@agent.hitl` is not yet supported by CAP Java
@@ -221,7 +234,7 @@ You can see the effects of this in the server logs when starting your CAP applic
 ```shell
 [agents] - cds.connect.to 'llm' with: {
   kind: 'anthropic',
-  model: 'claude-sonnet-4-6',
+  model: 'anthropic--claude-4.6-sonnet',
   credentials: {
     anthropicApiUrl: 'http://localhost:4711/anthropic/',
     apiKey: '***'
@@ -237,7 +250,7 @@ DEBUG=agents cds watch
 ```shell
 [agents] - Loaded config from ~/.claude/settings.json : {
   anthropicApiUrl: 'http://localhost:4711/anthropic/',
-  model: 'claude-sonnet-4-6',
+  model: 'anthropic--claude-4.6-sonnet',
   apiKey: '***'
 }
 ```
@@ -312,13 +325,13 @@ Similarly, when asked to _"order wuthering heights"_, the agent eventually invok
 
 
 
-### Subagents via A2A
+### Multi-Agent Coordination via A2A
 
-In addition to a main agent served out of the box, developers can define subagents that handle specific tasks or domains within the CAP application, allowing for modular and scalable agent architectures.
+CAP agents can communicate with each other using the [A2A protocol](https://a2a-protocol.org), enabling modular and scalable multi-agent architectures. All [`@agent`](#declare-agent-services)-annotated services are **peers** — any agent can call other agents, regardless of whether they run in the same process or are deployed separately.
 
-This includes [`@agent`](#declare-agent-services)-ified services, [imported](../integration/calesi.md) from external CAP projects. The main agent coordinates these subagents, and communicates with them via A2A endpoints.
+This includes [`@agent`](#declare-agent-services)-ified services [imported](../integration/calesi.md) from external CAP projects, which can be invoked via their A2A endpoints.
 
-We demonstrate the use of subagents in the [_XTravels_ sample](./xtravels-sample.md) application.
+Common patterns include **coordinator agents** that delegate domain-specific tasks to specialist agents. For example, a travel planning agent might coordinate with separate hotel and event booking agents. We demonstrate this pattern in the [_XTravels_ sample](./xtravels-sample.md) application.
 
 
 ### Audit Logging
