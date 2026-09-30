@@ -379,9 +379,9 @@ module.exports = async function assert_within_budget(req) {
 
 ## after Handlers {#after}
 
-`after` handlers run once the transaction has committed. They receive `(result, req)`, where `req.results` is the same value. Because the transaction is closed, any CQL you run executes in a **new** transaction. Side effects survive even if the caller aborts later work, and a rejection here surfaces to the caller but does **not** roll the original write back.
+`after` handlers run after the `on` phase but **before the transaction commits**. They receive `(result, req)`, where `req.results` is the same value. Any CQL you run executes in the **same** transaction as the triggering operation, so a `req.reject` (or any thrown error) here rejects the whole request and rolls back both the original write and anything the handler already changed. Emitted events are dispatched on commit, so they fire only if the request ultimately succeeds.
 
-The invariant: **reject in `before`, react in `after`.** That makes `after` handlers the place for side effects (emitting domain events, sending notifications, kicking off downstream work), not for enforcing rules.
+The invariant: **validate in `before`, react in `after`.** A reject in `after` still rolls the request back, but the work is already done by then, so enforcing rules there is wasteful. Keep `after` handlers for reacting to a successful operation (emitting domain events, sending notifications, kicking off downstream work).
 
 ### after CREATE: emit a domain event {#after-create}
 
@@ -405,7 +405,7 @@ module.exports = async function afterCreateTravel(result, req) {
 - **Read from `req.data`, not `result`.** `req.data` carries the full payload, including the `ID` assigned in `before-CREATE`; under CAP 10 `result` is a minimal projection (typically just key columns).
 
 ::: tip after-UPDATE and after-DELETE work the same way
-The same rules apply to the other `after` events, so they need no separate examples. Two facts worth keeping in mind: on UPDATE and DELETE the record key comes from `req.subject` (populated for OData PATCH/PUT/DELETE by the URL key, e.g. `req.subject.ref[0].where?.[2].val`), since `result` is a minimal projection on UPDATE and `undefined` on DELETE; and on DELETE, CAP cascades to **composition** targets automatically but leaves rows referenced through a plain **association** untouched, so sweep those with your own `DELETE` if needed. Because `after` runs post-commit, a failure there cannot roll the original write back; log it or emit a compensating event.
+The same rules apply to the other `after` events, so they need no separate examples. Two facts worth keeping in mind: on UPDATE and DELETE the record key comes from `req.subject` (populated for OData PATCH/PUT/DELETE by the URL key, e.g. `req.subject.ref[0].where?.[2].val`), since `result` is a minimal projection on UPDATE and `undefined` on DELETE; and on DELETE, CAP cascades to **composition** targets automatically but leaves rows referenced through a plain **association** untouched, so sweep those with your own `DELETE` if needed. Keep `after` logic lightweight: it runs inside the request transaction, so if it throws, the whole request is rolled back.
 :::
 
 ## Paginated Reads {#pagination}
@@ -450,7 +450,7 @@ The `@odata.nextLink` that CAP adds to a truncated OData **response** is a seria
 
 These patterns open more surface than [pre-defined extension points](business-logic). The following keep it manageable:
 
-- **Reject in `before`, react in `after`.** `before` runs inside the request's transaction and can abort it; `after` runs after commit and cannot undo the write. Put invariants in `before` and side effects (notify, emit events, cleanup) in `after`.
+- **Reject in `before`, react in `after`.** Both phases run inside the request's transaction, so a reject in either aborts it and rolls back. Validate in `before`, before any work happens; use `after` to react to a successful operation (notify, emit events, cleanup).
 - **Open the smallest surface that fits.** Annotate individual entities and unbound operations, not the whole service. You can widen later; **narrowing** an already-opened surface breaks deployed extensions.
 - **Prefer pre-defined extension points whenever the integration is a single hook.** CRUD handlers are powerful but ambient: an author must reason about every write that reaches the entity. A dedicated `@extensible.code` action gives the same result with a clearer contract. See [When to Open Things Up](#when).
 - **Factor cross-record rules into unbound actions.** The `assert_within_budget` pattern scales because every handler that touches the invariant delegates to one place. Duplicating the check in each handler drifts.

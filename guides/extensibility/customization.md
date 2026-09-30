@@ -175,6 +175,9 @@ xtravels-ext/
 │   └── extensions.cds       # your extensions (fields, entities, annotations)
 ├── srv/
 │   └── server.js            # optional: plumbing and initial logic for local test-drives
+├── db/
+│   └── data/                # (real) initial data that ships with the extension
+│       └── x_travels.ext-x_CostCenters.csv
 ├── test/
 │   └── data/                # seed data for local test-drives (dev only)
 │       ├── sap.capire.travels-Travels.csv
@@ -186,7 +189,7 @@ xtravels-ext/
 ```
 
 ::: tip Keep it simple
-Put all your extension content into `./app`. `cds add extension` already trims the scaffold to a model-only layout (no `./db`). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
+Put all your model content into `./app`. `cds add extension` trims the scaffold to a model-only layout (no `./db` by default); add `./db/data` only to ship **configuration data** such as a code list (see [Add Data](#add-data)). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
 :::
 
 #### Create an Extension Project (Template)
