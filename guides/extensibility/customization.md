@@ -507,7 +507,7 @@ In your local setup, you can simulate this with a [mock user](../../node.js/auth
 
 2. Verify that it worked by opening the [XTravels Fiori UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window** and log in as `carol`, which is assigned to tenant `t1`.
 
-![A screenshot of the SAP Fiori UI of the XTravels application. It shows a table of travels with the columns Travel, Description, Customer, Agency, Starting Date, and Travel Status.](assets/xtravels-travels-list.png){.mute-dark}
+![XTravels travel list with columns for Travel, Description, Customer, Agency, Starting Date, and Travel Status.](assets/xtravels-travels-list.png){.mute-dark}
 
 ### 2. Prepare an Extension Tenant {#prepare-an-extension-tenant}
 
