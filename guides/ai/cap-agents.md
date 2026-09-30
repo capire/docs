@@ -68,20 +68,6 @@ annotate CatalogService.submitOrder with @agent.hitl; // [!code focus]
 
 When the agent decides to call the action, the task pauses and transitions to the A2A [`input-required`](https://a2a-protocol.org/latest/specification/#413-taskstate) state instead of running the action immediately.
 
-> [!tip] Annotation Placement Matters
-> The CDS compiler only recognizes annotations placed **before** the action keyword or in a separate `annotate` statement. Annotations placed **after** the `returns` clause are silently ignored:
-> ```cds
-> // ✅ Correct - annotation before action
-> @agent.hitl
-> action submitOrder(...) returns String;
-> 
-> // ✅ Also correct - separate annotate statement (shown above)
-> annotate CatalogService.submitOrder with @agent.hitl;
-> 
-> // ❌ WRONG - silently ignored by CDS compiler
-> action submitOrder(...) returns String @agent.hitl;
-> ```
-
 > [!warning] Only supported by CAP Node.js
 > `@agent.hitl` is not yet supported by CAP Java
 
