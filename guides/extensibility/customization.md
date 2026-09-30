@@ -421,7 +421,7 @@ Bridge the gap with a read-only `srv/server.js` that reproduces just enough of t
 // behaves like the deployed app. On a model-only tenant this file is
 // packaged but never executed — only the model is activated.
 // ────────────────────────────────────────────────────────────────
-import cds from '@sap/cds'
+const cds = require('@sap/cds')
 
 cds.once('served', () => {
   const { TravelService } = cds.services
@@ -446,7 +446,7 @@ cds.once('served', () => {
     TravelService.on(action, Travels, req => req.data ?? {})
 })
 
-export default cds.server
+module.exports = cds.server
 ```
 
 :::
@@ -736,7 +736,7 @@ Execute `cds build --log-level info` to display all messages, although they shou
 
 Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push — see the [next step](#add-data) for what that means.
 
-![A screenshot of the deployed XTravels Fiori UI. The travels table now includes the extension columns Priority, showing the default value medium for every row, and Cost Center, showing the default value Travel & Expenses for every row.](assets/xtravels-deployed-ext.png){.mute-dark}
+![Deployed XTravels Fiori UI with extension columns Priority, set to the default value medium, and Cost Center, set to the default value Travel & Expenses for every travel.](assets/xtravels-deployed-ext.png){.mute-dark}
 
 ### 9. Add Data {#add-data}
 
