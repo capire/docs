@@ -285,4 +285,4 @@ The [Code Extension Reference](code-extension) documents the sandbox in full: [e
 
 ## Learn More
 
-This guide covers the recommended scenario: a **pre-defined extension point**, an action the app calls at a well-known place, implemented by tenant handlers. When you also control *which* extensions reach *which* tenant — reviewed partner code, tier-gated toggles, a scratch space, or a separate microservice — you can safely open much more: CRUD events on regular entities, after-READ enrichment, and cross-record validation. See [Partner-Driven Extensibility](business-logic-advanced).
+This guide covers the recommended scenario: a **pre-defined extension point**, an action the app calls at a well-known place, implemented by tenant handlers. When you also control *which* extensions reach *which* tenant — reviewed partner code, tier-gated toggles, a scratch space, or a separate microservice — you can safely open much more: CRUD events on regular entities, after-READ enrichment, and cross-record validation. See [Opening Regular Services](business-logic-advanced).

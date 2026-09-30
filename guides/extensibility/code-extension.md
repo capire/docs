@@ -14,7 +14,7 @@ Code extensions run tenant-supplied JavaScript handlers **sandboxed** on the app
 This page is the shared reference for both extensibility guides:
 
 - [Business Logic Extensibility](business-logic) — declaring **pre-defined extension points** on a dedicated service (the recommended default).
-- [Partner-Driven Extensibility](business-logic-advanced) — opening regular services to CRUD, before/after, and after-READ handlers once you control which extensions reach which tenant.
+- [Opening Regular Services](business-logic-advanced) — opening regular services to CRUD, before/after, and after-READ handlers once you control which extensions reach which tenant.
 
 See those guides for the end-to-end walkthroughs; the sections below document the sandbox itself.
 
