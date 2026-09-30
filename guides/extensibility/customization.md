@@ -695,7 +695,7 @@ The `x_CostCenters` code list is your extension's own [_(real) initial data_](..
 
 #### Verify the Extension
 
-Verify your extensions are applied correctly by opening the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window**, log in as `bob`, and see columns _Priority_ and _Cost Center_ filled as in the following screenshot:
+Verify your extensions are applied correctly by opening the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window**, log in as `bob`, and confirm that the _Priority_ and _Cost Center_ columns contain values, as in the following screenshot:
 
 ![A screenshot of the generic Fiori preview of TravelService.Travels. The travels table shows the two extension columns Priority, with values high and low, and Cost Center, with values Travel & Expenses and Sales.](assets/xtravels-fiori-preview-ext.png){.mute-dark}
 
