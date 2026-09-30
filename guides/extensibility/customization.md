@@ -555,7 +555,7 @@ Open the `xtravels-ext` folder in your editor. Here's how you do it using VS Cod
 code ../xtravels-ext
 ```
 
-![A screenshot of a readme.md file as it's described in the previous "Add a readme" section of this guide.](assets/xtravels-ext-readme.png){.ignore-dark}
+![README.md getting-started content for the XTravels extension project template.](assets/xtravels-ext-readme.png){.ignore-dark}
 
 ### 4. Pull the Latest Base Model {#pull-base}
 
