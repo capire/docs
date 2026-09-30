@@ -83,8 +83,8 @@ srv/
 └─ <ServiceName>/
    ├─ on-<action>.js          # unbound action or event
    └─ <EntityName>/
-      ├─ when-<CUD>.js         # before a Create/Update/Delete
-      ├─ after-<READ>.js       # after a Read
+      ├─ before-<CUD>.js       # before a Create/Update/Delete
+      ├─ after-READ.js         # after a Read
       └─ on-<action>.js        # bound action or event
 ```
 
