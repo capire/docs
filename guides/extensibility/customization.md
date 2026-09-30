@@ -871,7 +871,7 @@ Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#an
 
 In `TravelService`, the new entities `x_ApproverPostalAddresses` and `x_Notes` are automatically included since they are targets of the corresponding _compositions_.
 
-The new entities `x_Approvers` and `x_CostCenters` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way as [CodeLists](../../cds/common#aspect-codelist).  Only if wanted to _change_ it, you would need to expose them explicitly:
+The new entities `x_Approvers` and `x_CostCenters` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way. Only `x_CostCenters` is a [CodeList](../../cds/common#aspect-codelist). If you want to change how they are exposed, expose them explicitly:
 
 ```cds
 using { TravelService } from '@capire/xtravels';
