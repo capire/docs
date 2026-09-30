@@ -112,7 +112,7 @@ A handler binds to an **action or event** (bound or unbound) or, on an opened en
 | :------- | :------------------------------------ | :------- |
 | `before` | Create, Update, Upsert                | Manipulate `req.data` for custom calculations; validate input and reject requests. |
 | `before` | Delete                                | Validate or prevent deletion. `req.data` is always `{}` — use `req.subject` to identify the record. |
-| `after`  | Read, Create, Update, Delete, Upsert  | Manipulate `req.results`. The DB transaction has already committed, so any CQL runs in a **new** transaction. Signature is `(result, req)`, where `result` equals `req.results`. |
+| `after`  | Read, Create, Update, Delete, Upsert  | Manipulate `req.results` after the `on` handler has completed successfully. Signature is `(result, req)`, where `result` equals `req.results`. |
 
 - Handlers fire **after** the draft workflow; draft-specific events are not currently supported.
 - Sandboxed code runs within the CAP event loop alongside other handlers; execution order relative to other handlers is **not guaranteed**.
