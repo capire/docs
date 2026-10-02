@@ -117,7 +117,7 @@ To change the default target folder, use the <Config keyOnly>cds.build.target=pa
 #### Node.js
 
 Node.js projects use the folder _./gen_ below the project root as build target folder by default.<br>
-Relevant source files from _db_ or _srv_ folders are copied into this folder, which makes it self-contained and ready for deployment. The default folder names can be changed with the <Config keyOnly>cds.folders.database</Config>, <Config keyOnly>cds.folders.srv</Config>, <Config keyOnly>cds.folders.app</Config> configuration. Or you can go for individual build task configuration for full flexibility.
+Relevant source files from _db_ or _srv_ folders are copied into this folder, which makes it self-contained and ready for deployment. The default folder names can be changed with the <Config keyOnly>cds.folders.db</Config>, <Config keyOnly>cds.folders.srv</Config>, <Config keyOnly>cds.folders.app</Config> configuration. Or you can go for individual build task configuration for full flexibility.
 
   Project files like _.cdsrc.json_ or _.npmrc_ located in the _root_ folder or in the _srv_ folder of your project are copied into the application's deployment folder (default _gen/srv_). Files located in the _srv_ folder have precedence over the corresponding files located in the project root directory.
   As a consequence these files are used when deployed to production. Make sure that the folders do not contain one of these files by mistake. Consider using profiles `development` or `production` in order to distinguish environments. CDS configuration that should be kept locally can be defined in a file _.cdsrc-private.json_.
