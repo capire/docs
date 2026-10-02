@@ -455,12 +455,12 @@ In this guide, we have walked through the process of setting up and interacting 
 
 First we had [_MCP Services_](#mcp-services) consumed directly from an AI client, like OpenCode, Claude Code, or Joule Work, as illustrated below.
 
-![Diagram showing OpenCode connected as a generic agent via MCP to four backend services: Events Service, Hotels Service, Flights Service, and Travels Service, each labeled as an MCP Service](xtravels-mcp.drawio.svg)
+![Diagram showing OpenCode connected as a generic agent via MCP to four backend services: Events Service, Hotels Service, Flights Service, and Travels Service, each labeled as an MCP Service](xtravels-mcp.drawio.svg?raw)
 MCP only{style="font-family: serif; font-style:italic; text-align:center"}
 
 Next, we turned our CAP Services into [_Custom Agents_](#custom-agents) consumed via A2A from Chat Preview, with sub tasks factored out into subagents, as illustrated below.
 
-![Diagram showing a Travel Agent as the primary agent connected via A2A to two subagents, Events Service and Hotels Service, and via MCP to Flights Service, illustrating how the primary agent delegates tasks to subagents and a backend service](xtravels-subagents.drawio.svg)
+![Diagram showing a Travel Agent as the primary agent connected via A2A to two subagents, Events Service and Hotels Service, and via MCP to Flights Service, illustrating how the primary agent delegates tasks to subagents and a backend service](xtravels-subagents.drawio.svg?raw)
 
 The following table highlights some key differences between both approaches.
 
