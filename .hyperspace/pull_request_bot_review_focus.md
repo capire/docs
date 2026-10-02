@@ -69,7 +69,7 @@ Focus on content-level accessibility based on WCAG guidelines. Prioritize Level 
 - Make sure that sentences are complete and that images, code blocks, and so on are not in between overflowing sentences.
 
 7. Consistency
-Check consistency across the repo. Report findings but do not auto-fix — flag locations for the author to review. Identify the questionable changes and search through the repository or an cap.cloud.sap.
+Check consistency across the repo. Report findings but do not auto-fix — flag locations for the author to review. Identify questionable changes, and search the repository or cap.cloud.sap for related terms and references.
 
 - **Terminology**: Identify terms, product names, or UI labels introduced or changed in the diff. Search the repo for prior uses of the old term and flag files where the wording may be inconsistent or outdated.
 - **Renamed identifiers**: When a variable, class, method, config key, or file is renamed in the diff, search the repo for references to the old name and list any files that likely need updating.
