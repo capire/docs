@@ -24,7 +24,7 @@ To use the change tracking feature, you need to add a dependency to [cds-feature
 <dependency>
   <groupId>com.sap.cds</groupId>
     <artifactId>cds-feature-change-tracking</artifactId>
-    <scope>runtime</scope>
+    <scope>run</scope>
 </dependency>
 ```
 
