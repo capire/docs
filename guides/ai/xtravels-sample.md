@@ -175,9 +175,6 @@ With the above changes, restart your CAP server in a terminal:
 cds w xtravels
 ```
 
-> [!note] MCP Auto-wiring
-> When `cds watch` starts, CAP automatically writes MCP server entries to your MCP client's configuration files (e.g., `~/.opencode/config.json` for OpenCode or `~/.claude.json` for Claude Code). These entries **persist after the server stops**. If you work with multiple CAP projects or change ports/services, you may need to manually clean up stale entries from these config files.
-
 In a separate terminal, start OpenCode:
 
 ```shell
