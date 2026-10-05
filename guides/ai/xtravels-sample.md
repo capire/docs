@@ -107,7 +107,7 @@ Before using MCP services, install the MCP plugin in the xtravels project:
 
 ```shell
 cd xtravels
-npm install @cap-js/mcp --save
+npm add @cap-js/mcp
 ```
 
 ### MCP-enable given Services
