@@ -169,9 +169,6 @@ In case of the XTravels application we choose to not just [`@mcp`]-enable the ex
 
 CAP puts a main focus on [fast inner-loop development](../integration/inner-loops) and iterative testing, making it easy to quickly see the effects of changes in your services. This also holds true for MCP-enabled services, which we can test locally using local installations of [OpenCode](https://opencode.ai/), [Claude Code](https://claude.ai/), or any other MCP client.
 
-> [!note] MCP Client Prerequisites
-> MCP clients like OpenCode require an LLM API key to be configured before use. See your client's documentation for setup instructions.
-
 > [!note] Different AI Client Behaviors
 > Different MCP clients may have different interaction patterns. The screenshots below show OpenCode's style. Your experience may vary with other clients.
 
