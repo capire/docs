@@ -254,9 +254,10 @@ You can run [insert](./query-api#insert), [upsert](./query-api#upsert), and [upd
 
 CDS views must fulfill the following requirements to be resolvable:
 
-- The view is a simple [projection](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union*, or *where*.
-- The projection includes all *not null* elements (incl. keys), unless they have a default or generated value.
-- The projection does not include [path expressions](../../cds/cql#path-expressions) using *to-many* associations.
+- must be simple [projections](../../cds/cdl#as-projection-on), not using *aggregations*, *join*, *union*, or *where*.
+- must include all *not-null* elements (incl. keys), unless they have a default or generated value.
+- must **not** include [path expressions](../../cds/cql#path-expressions) using *to-many* associations.
+- must **not** include path expression over [mixed-in](../../cds/cql#query-local-mixins) associations.
 
 If the runtime cannot resolve a view, the write operation is executed directly on the database view and the execution depends on the [database](../cqn-services/persistence-services#database-support) support.
 
