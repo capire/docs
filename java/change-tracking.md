@@ -11,10 +11,17 @@ description: >
   }
 </style>
 
-The feature tracks the changes of all modifying operations executed via CQN statements, which are indirectly triggered
-by the protocol adapters or directly by a custom code.
-Changes made through the native SQL, JDBC, or other means that bypass the CAP Java runtime or that are forwarded
-to the remote services aren't tracked.
+This page covers **`cds-feature-change-tracking`**, a Java runtime library that intercepts modifying CQN operations to record changes. If you are evaluating options, there is also the [**`@cap-js/change-tracking` v2 plugin**](../plugins/#change-tracking), which captures changes via database triggers and works for both Node.js and Java — see the [project repository](http://github.com/cap-js/change-tracking) for its documentation.
+
+| | `cds-feature-change-tracking` | `@cap-js/change-tracking` v2 |
+|---|---|---|
+| **Mechanism** | CAP Java runtime (CQN layer) | Database triggers (generated at build time) |
+| **Java support** | Yes | Yes |
+| **Node.js support** | No | Yes |
+| **Captures non-runtime writes** | No | Yes |
+| **Extensible via event handlers** | Yes (`createChanges` event) | No |
+
+Continue reading to learn more about the cds-feature-change-tracking module.
 
 ## Enabling Change Tracking
 
