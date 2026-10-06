@@ -11,18 +11,17 @@ description: >
   }
 </style>
 
-::: info Two change-tracking options for CAP Java
-There are two ways to add change tracking to a CAP Java application:
+This page covers **`cds-feature-change-tracking`**, a Java runtime library that intercepts modifying CQN operations to record changes. If you are evaluating options, there is also the [**`@cap-js/change-tracking` v2 plugin**](../plugins/#change-tracking), which captures changes via database triggers and works for both Node.js and Java — see the [project repository](http://github.com/cap-js/change-tracking) for its documentation.
 
-- **`@cap-js/change-tracking` v2** — a CDS plugin that works for both Node.js and Java. It generates native **database triggers** at build time, so changes are captured at the database level regardless of which runtime writes to the tables. This is the recommended approach for new projects and for projects that share a schema between Node.js and Java runtimes. See [Change Tracking](../plugins/#change-tracking) in the Plugins guide. Note that because tracking happens inside the database trigger, no `createChanges` event is emitted — you cannot extend or intercept the change-writing logic via CAP event handlers.
+| | `cds-feature-change-tracking` | `@cap-js/change-tracking` v2 |
+|---|---|---|
+| **Mechanism** | CAP Java runtime (CQN layer) | Database triggers (generated at build time) |
+| **Java support** | Yes | Yes |
+| **Node.js support** | No | Yes |
+| **Captures non-runtime writes** | No | Yes |
+| **Extensible via event handlers** | Yes (`createChanges` event) | No |
 
-- **`cds-feature-change-tracking`** (this page) — a Java-only library that intercepts modifying **CQN operations at the CAP Java runtime layer**. It does not require a build step to generate triggers, but only captures changes made through the CAP Java runtime; writes that bypass the runtime (native SQL, JDBC, remote services) are not tracked.
-:::
-
-The feature tracks the changes of all modifying operations executed via CQN statements, which are indirectly triggered
-by the protocol adapters or directly by a custom code.
-Changes made through the native SQL, JDBC, or other means that bypass the CAP Java runtime or that are forwarded
-to the remote services aren't tracked.
+Continue reading to learn more about the cds-feature-change-tracking module.
 
 ## Enabling Change Tracking
 
