@@ -1020,7 +1020,7 @@ Example:
 ```
 If you set the `CDS_ENV` environment variable to `hanatms`, the application uses HANA TMS v2 after the next restart.
 
-You can use the profile also to add the `hana_tenant_prefix` and `database_id` for the [individual deployment descriptor](#configure-mtxs-for-tenant-management-service)(`mta.yaml` or `mtaext.yaml`):
+You can also use the `hanatms` profile to set `hana_tenant_prefix` and `database_id` in an [MTA deployment descriptor](#configure-mtxs-for-tenant-management-service), such as `mta.yaml` or `mtaext.yaml`:
 ```yaml
 - name: application-mtx
 ...
