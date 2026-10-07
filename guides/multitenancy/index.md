@@ -1023,9 +1023,9 @@ If you set the `CDS_ENV` environment variable to `hanatms`, the application uses
 You can also use the `hanatms` profile to set `hana_tenant_prefix` and `database_id` in an [MTA deployment descriptor](#configure-mtxs-for-tenant-management-service), such as `mta.yaml` or `mtaext.yaml`:
 ```yaml
 - name: application-mtx
-...
-    properties:
-      CDS_CONFIG: |
+  ...
+  properties:
+    CDS_CONFIG: |
         {
           "requires": {
               "[hanatms]": {
