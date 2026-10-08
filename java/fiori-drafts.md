@@ -116,6 +116,58 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
 
+### Delta Draft Activation { #delta-draft }
+
+By default, when a draft is activated, the entire draft document — including every composition child at every level — is written back to the active tables unconditionally. This *full* mode is simple and safe, but it means that every child entity receives a new `modifiedAt` timestamp even when nothing about it actually changed.
+
+*Delta* mode changes this: before writing, the draft image is compared to the current active image. Only entities on a *changed path* — entities that have changed fields, or that are ancestors of added or removed children — are included in the database update. Unchanged siblings are simply left out and their `modifiedAt` stays at its previous value.
+
+Enable delta mode with the `cds.drafts.save-mode` property:
+
+```yaml
+cds:
+  drafts:
+    save-mode: delta
+```
+
+#### Effect on the database
+
+In delta mode, a single deep `UPDATE` statement is issued for the changed subgraph of the document. The following rules determine which rows are touched:
+
+- **Changed node**: a row whose own scalar fields differ from the active image is included. Managed fields (`@cds.on.update`, for example `modifiedAt`) are stamped fresh on every row included in the update.
+- **Ancestor on a changed path**: if a child node changes, its parent is also included in the deep update, all the way up to the root. These ancestors therefore also receive a new `modifiedAt`, even if their own scalar fields did not change.
+- **Unchanged sibling**: a child node whose own fields and sub-tree are identical to the active image is *absent* from the update payload. Its database row is not touched and its `modifiedAt` remains unchanged.
+- **Added child**: a newly added composition child is inserted as a full new row.
+- **Removed child**: a composition child that was deleted from the draft is removed from the active table.
+
+Consider a three-level document `Travel → Booking → BookingSupplement`. When only `Booking 1.price` is patched:
+
+- `Booking 1` is updated (changed fields, `modifiedAt` advances).
+- `Travel` is updated (ancestor on the changed path, `modifiedAt` advances).
+- `Booking 2` (sibling of `Booking 1`) is **not** updated — absent from the payload, `modifiedAt` unchanged.
+- All `BookingSupplements` under `Booking 1` are **not** updated — no changes in their sub-tree, `modifiedAt` unchanged.
+
+If the active counterpart of a draft root cannot be found — for example because the active record was deleted externally between `draftEdit` and `draftActivate` — delta mode falls back to a full update for that root, re-inserting it as a new entity.
+
+Activating a draft that has no changes at all is idempotent: the update payload contains only the key fields of the root, no composition children are written, and no `modifiedAt` values advance.
+
+#### Effect on event handlers
+
+From a handler's perspective, delta mode is transparent: the same `CREATE` and `UPDATE` events fire as in full mode, and the `DraftSaveEventContext.getResult()` returns the same flat root row (keys plus draft virtual fields such as `IsActiveEntity`). Composition children are stripped from the result by the framework, as in full mode — the OData adapter re-reads the full document to build the response sent to the UI.
+
+```java
+@After(event = DraftService.EVENT_DRAFT_SAVE)
+public void afterSave(DraftSaveEventContext context) {
+    // context.getResult() contains a flat root row with IsActiveEntity = true.
+    // Composition children are absent from the result in both full and delta mode.
+    context.getResult().forEach(row -> { /* ... */ });
+}
+```
+
+The key difference is that in delta mode, the `UPDATE` event receives only the changed subgraph as its payload. Custom `@Before` or `@On` handlers that inspect `context.getCqn()` will see a deeply structured update restricted to the changed nodes, not the full document. `@After` handlers on the individual `CREATE` / `UPDATE` events see only the rows that were actually written.
+
+In delta mode, `DraftSaveEventContext.getDelta()` provides the changed subgraph as a `Result` — the same deeply structured rows that were written, including composition children. Ancestors on the changed path are included even if their own scalar fields did not change (managed-field stamping makes them non-NOP). Unchanged siblings absent from the update are not present. `getDelta()` returns `null` in full mode.
+
 ## Read-Only Fields in Drafts { #readonly-in-drafts }
 
 By default, `@readonly` and `@Core.Computed` fields are only enforced when a draft is activated, that means during the `CREATE` or `UPDATE` event on the active entity. Until then, such fields can still be changed on the draft, for example through an OData `PATCH` request.
