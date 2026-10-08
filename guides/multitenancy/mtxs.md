@@ -1376,6 +1376,8 @@ Content-Type: application/json
 }
 ```
 
+When upgrading all tenants with `"tenants": ["*"]`, only tenants with status `SUBSCRIBED` are included. Tenants with failed unsubscriptions are skipped.
+
 ### GET `tenant/<tenant>` {#get-tenant}
 
 Returns tenant-specific metadata if `<tenant>` is set, and a list of all tenants' metadata if omitted.
@@ -1383,6 +1385,14 @@ Returns tenant-specific metadata if `<tenant>` is set, and a list of all tenants
 | Parameters |  Description                                                |
 | ---------------- | ----------------------------------------------------------- |
 | `tenant`         | A string identifying the tenant.                            |
+
+The response reports the tenant's `status`:
+
+| Status | Description |
+| ------ | ----------- |
+| `SUBSCRIBED` | The tenant is subscribed. |
+| `UNSUBSCRIBING` | Tenant unsubscription is in progress. |
+| `UNSUBSCRIPTION_FAILED` | The latest unsubscription attempt failed. |
 
 #### Example Usage {#example-tenant-metadata}
 
@@ -1402,6 +1412,7 @@ Content-Type: application/json
     "subscribedSubdomain": "subdomain-1",
     "subscriptionAppName": "app-1",
     "subscribedSubaccountId": "subaccount-1",
+    "status": "SUBSCRIBED",
     "createdAt": "2023-11-10T14:36:22.639Z",
     "modifiedAt": "2023-13-10T15:16:22.802Z"
 }
@@ -1426,6 +1437,7 @@ Content-Type: application/json
     "subscribedSubdomain": "subdomain-1",
     "subscriptionAppName": "app-1",
     "subscribedSubaccountId": "subaccount-1",
+    "status": "SUBSCRIBED",
     "createdAt": "2023-11-10T14:36:22.639Z",
     "modifiedAt": "2023-13-10T15:16:22.802Z"
   },
@@ -1435,6 +1447,7 @@ Content-Type: application/json
     "subscribedSubdomain": "subdomain-2",
     "subscriptionAppName": "app-2",
     "subscribedSubaccountId": "subaccount-2",
+    "status": "SUBSCRIBED",
     "createdAt": "2023-11-11T14:36:22.639Z",
     "modifiedAt": "2023-11-12T12:14:45.452Z"
   }
