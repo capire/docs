@@ -1,41 +1,44 @@
-# Integrating CAP Agents with Joule
+# Integrating XTravels with Joule
 
-CAP agents can be exposed through the Agent-to-Agent (A2A) protocol and consumed from SAP Joule. This guide connects an IAS-protected CAP agent to a Joule development tenant using an SAP BTP destination and a Joule capability.
+This guide connects the IAS-protected XTravels hotel agent to a Joule development tenant using the Agent-to-Agent (A2A) protocol, an SAP BTP destination, and a Joule capability.
 {.abstract}
 
 [[toc]]
 
 The setup follows the [Integrate Joule with an External Agent reference architecture](https://architecture.learning.sap.com/docs/ref-arch/7b6426).
 
-## How It Works
+## Start with XTravels
 
-The integration has four parts:
+Clone the CAP XTravels sample and install its dependencies:
 
-1. A CAP application exposes an A2A endpoint and agent card.
-2. SAP Cloud Identity Services protects the CAP application.
-3. An SAP BTP destination obtains an IAS token with an X.509 client certificate and calls the A2A endpoint.
-4. A Joule capability uses that destination through a remote `agent-request`.
+```zsh
+git clone https://github.com/capire/xtravels
+cd xtravels
+npm install
+```
 
-The Joule development tenant, BTP subaccount, and IAS tenant must belong to the same formation.
+The sample's [`HotelsService`](https://github.com/capire/xtravels/blob/main/srv/hotels/services.cds) is annotated with `@agent`, which exposes it through A2A. This guide connects that hotel agent to Joule.
+
+If `npm install` can't download the `@capire` packages, follow the sample's [GitHub Packages setup](https://github.com/capire/xtravels#using-github-packages).
 
 ## Prerequisites
 
-Before you start, you need:
+Install the Joule Studio CLI and verify the installation:
+
+```zsh
+npm install -g @sap/joule-studio-cli --force --registry=https://registry.npmjs.org
+joule --version
+```
+
+You also need:
 
 - A CAP agent deployed to Cloud Foundry and protected by SAP Cloud Identity Services
 - An IAS service binding or service key with `credential-type: X509_GENERATED`
-- A Joule development tenant and the Joule Studio CLI
+- A Joule development tenant
+- A Joule Studio CLI service key
 - Permissions to manage destinations, formations, and Joule capabilities
 
-The examples below use these names:
-
-| Resource | Example |
-| --- | --- |
-| Capability | `xtravels_hotels_a2a` |
-| System alias | `XTravelsHotelsAgent` |
-| Destination | `XTRAVELS_HOTELS_A2A` |
-| A2A endpoint | `https://<app-route>/a2a/hotels` |
-| Agent card | `https://<app-route>/a2a/hotels/.well-known/agent-card.json` |
+The Joule development tenant, BTP subaccount, and IAS tenant must belong to the same formation.
 
 ## Verify the CAP Agent
 
@@ -59,12 +62,48 @@ Keep both URLs distinct:
 
 ## Create the Joule Capability
 
-Create a project with the digital assistant definition at its root and the capability in a subdirectory:
+Add a Joule capability scaffold to your CAP project:
 
-```text
+```zsh
+cds add joule
+```
+
+The command derives the capability name, agent folder, destination, and system alias from the CAP project name and creates the digital assistant definition and capability files under `joule-integration`. Adapt the generated display name, description, and scenario description to the agent's purpose so Joule can select it for the intended requests.
+
+For `@capire/xtravels`, the generated names are:
+
+| Resource | Generated value |
+| --- | --- |
+| Capability | `xtravels_a2a` |
+| Agent folder | `xtravels-agent` |
+| Destination | `XTRAVELS_A2A` |
+| System alias | `XtravelsAgent` |
+
+In `joule-integration/xtravels-agent/capability.sapdas.yaml`, describe the hotel agent:
+
+```yaml
+metadata:
+  namespace: com.sap.cap
+  name: xtravels_a2a
+  version: 1.0.0
+  display_name: XTravels Hotels Agent
+  description: Finds and books hotels through the XTravels CAP A2A agent.
+```
+
+Make the scenario description in `scenarios/invoke_agent.yaml` specific enough for Joule to select it for hotel requests:
+
+```yaml
+description: Delegate hotel search and booking requests to the XTravels Hotels Agent.
+```
+
+::: details Create the Joule capability manually
+
+If `cds add joule` isn't available, create this structure in the CAP project:
+
+```zsh
 joule-integration/
 ├── da.sapdas.yaml
-└── hotels-agent/
+└── xtravels-agent/
     ├── capability.sapdas.yaml
     ├── capability_context.yaml
     ├── functions/
@@ -73,14 +112,20 @@ joule-integration/
         └── invoke_agent.yaml
 ```
 
-The digital assistant definition references the local capability:
+In `da.sapdas.yaml`, reference the local capability:
 
 ```yaml
-schema_version: 1.4.0
-name: xtravels_hotels_a2a
+schema_version: 1.5.0-beta
+name: xtravels_a2a
 capabilities:
   - type: local
-    folder: ./hotels-agent
+    name: xtravels_a2a
+    folder: ./xtravels-agent
+
+enable_native_agenticness: false
+
+conversational_search:
+  enabled: false
 ```
 
 In `capability.sapdas.yaml`, map a system alias to the destination:
@@ -89,18 +134,26 @@ In `capability.sapdas.yaml`, map a system alias to the destination:
 schema_version: 3.27.0
 
 metadata:
-  namespace: com.example
-  name: xtravels_hotels_a2a
+  namespace: com.sap.cap
+  name: xtravels_a2a
   version: 1.0.0
   display_name: XTravels Hotels Agent
   description: Finds and books hotels through a CAP A2A agent.
 
 system_aliases:
-  XTravelsHotelsAgent:
-    destination: XTRAVELS_HOTELS_A2A
+  XtravelsAgent:
+    destination: XTRAVELS_A2A
 ```
 
-The function delegates the user's request to the remote agent and retains the A2A context for subsequent messages:
+Declare the A2A conversation identifiers in `capability_context.yaml`:
+
+```yaml
+variables:
+  - name: contextId
+  - name: taskId
+```
+
+In `functions/call_agent.yaml`, delegate the request to the remote agent and retain the A2A context for subsequent messages:
 
 ```yaml
 parameters:
@@ -111,21 +164,58 @@ parameters:
 
 action_groups:
   - actions:
+      - type: status-update
+        message: <? "Invoking XTravels Hotels Agent" ?>
+
       - type: agent-request
         agent_type: remote
-        system_alias: XTravelsHotelsAgent
+        system_alias: XtravelsAgent
         body: >
           <? (contextId == null || contextId.isEmpty()) && (taskId == null || taskId.isEmpty())
              ? null
              : '{ "contextId": "' + contextId + '", "taskId": "' + taskId + '" }' ?>
         result_variable: result
 
+      - type: set-variables
+        variables:
+          - name: contextId
+            value: <? result.body.contextId ?>
+          - name: taskId
+            value: <? result.body.id ?>
+
+      - type: message
+        message:
+          type: text
+          content: "<? result.body.status.message.parts[0].text ?>"
+          markdown: true
+
 result:
-  contextId: "<? result.body.contextId ?>"
-  taskId: "<? result.body.id ?>"
+  contextId: "<? contextId ?>"
+  taskId: "<? taskId ?>"
 ```
 
-Declare `contextId` and `taskId` in `capability_context.yaml` and map them between the scenario and function. The scenario description should state clearly when Joule should select the agent.
+Finally, map the context variables between the scenario and function in `scenarios/invoke_agent.yaml`. Make its description specific enough for Joule to select the agent for the intended requests:
+
+```yaml
+description: Delegate hotel search and booking requests to the XTravels Hotels Agent.
+
+target:
+  type: function
+  name: call_agent
+  parameters:
+    - name: contextId
+      value: $capability_context.contextId
+    - name: taskId
+      value: $capability_context.taskId
+
+capability_context:
+  - name: contextId
+    value: $target_result.contextId
+  - name: taskId
+    value: $target_result.taskId
+```
+
+:::
 
 ## Create the Destination
 
@@ -133,7 +223,7 @@ The destination uses OAuth client credentials with mutual TLS to obtain an IAS a
 
 | Property | Value |
 | --- | --- |
-| Name | `XTRAVELS_HOTELS_A2A` |
+| Name | `XTRAVELS_A2A` |
 | Type | `HTTP` |
 | URL | The A2A endpoint from the agent card, for example `https://<app-route>/a2a/hotels` |
 | Proxy Type | `Internet` |
@@ -162,20 +252,27 @@ The cockpit's **Check Connection** can issue an unauthenticated request and ther
 
 In **System Landscape** in the BTP cockpit, open or create a formation of type **Integrate with Joule Development**. Add the following systems:
 
-- The subaccount that contains the destination
 - The Joule development tenant
 - The SAP Cloud Identity Services tenant that protects the CAP application
 
-The formation must reach the **Ready** state. If the IAS tenant isn't offered in the formation wizard, register it as an SAP Cloud Identity Services system first. This system type is provider-managed and can't be replaced with a generic system entry. Ask the global account or IAS administrator to complete the tenant registration if it isn't available.
+The Joule development tenant is associated with the subaccount that contains the destination. The formation must reach the **Ready** state.
+
+If an internal IAS tenant isn't offered in a canary global account, switch **System Landscape** to **Service Owner View**, choose **Add** > **Add via CLD Discovery**, select **SAP Cloud Identity Services**, and enter the tenant's CLD tenant ID. In customer view, this system type is provider-managed and can't be replaced with a generic system entry. Ask the global account or IAS administrator to register the tenant if you can't use CLD discovery.
 
 ## Compile and Deploy
 
-Log in with the Joule Studio CLI. When your environment uses a one-time SSO passcode, request a fresh passcode for each login attempt and don't store it.
+Log in with the client credentials for your Joule Studio CLI service key. When your environment uses one-time SSO passcodes, request a fresh passcode for every attempt:
+
+```zsh
+joule login --sso-passcode --app-tid
+```
+
+Enter the authentication URL, API URL, client ID, and client secret from the Joule Studio CLI service key when prompted, followed by a fresh passcode. The secret and passcode prompts are masked. Use bare `--app-tid` to let the CLI discover the application tenant. Never commit these credentials or put them in scripts.
 
 Compile from the capability directory, where `capability.sapdas.yaml` is located:
 
 ```sh
-cd joule-integration/hotels-agent
+cd joule-integration/xtravels-agent
 joule compile
 ```
 
@@ -183,7 +280,7 @@ Deploy from the parent directory, where `da.sapdas.yaml` is located:
 
 ```sh
 cd ..
-joule deploy -c -n xtravels_hotels_a2a
+joule deploy -c -n xtravels_a2a
 joule list
 ```
 
@@ -197,7 +294,7 @@ The `-c` option compiles the local capabilities before deployment. A successful 
 Launch the deployed assistant:
 
 ```sh
-joule launch xtravels_hotels_a2a
+joule launch xtravels_a2a
 ```
 
 Send a request that matches the scenario description, for example:
@@ -207,6 +304,8 @@ Find hotels in Berlin for two adults from October 20 to October 22.
 ```
 
 The response insights should show that Joule selected the capability and invoked the remote agent. A successful response from the CAP agent confirms all of the following:
+
+![Joule invoking the XTravels CAP agent and displaying its hotel availability response](assets/joule-agent-response.png){.ignore-dark}
 
 - The capability is deployed and discoverable.
 - The destination can obtain an IAS token with its X.509 certificate.
