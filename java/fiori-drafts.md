@@ -132,24 +132,11 @@ cds:
 
 #### Effect on the database
 
-In delta mode, a single deep `UPDATE` statement is issued for the changed subgraph of the document. The following rules determine which rows are touched:
+Only entities on a *changed path* are written: a changed node itself, and all its ancestors up to the root. Unchanged siblings are left out and their `modifiedAt` stays at its previous value. Added children are inserted, removed children are deleted. Managed fields (`modifiedAt` etc.) are stamped on every node that is written.
 
-- **Changed node**: a row whose own scalar fields differ from the active image is included. Managed fields (`@cds.on.update`, for example `modifiedAt`) are stamped fresh on every row included in the update.
-- **Ancestor on a changed path**: if a child node changes, its parent is also included in the deep update, all the way up to the root. These ancestors therefore also receive a new `modifiedAt`, even if their own scalar fields did not change.
-- **Unchanged sibling**: a child node whose own fields and sub-tree are identical to the active image is *absent* from the update payload. Its database row is not touched and its `modifiedAt` remains unchanged.
-- **Added child**: a newly added composition child is inserted as a full new row.
-- **Removed child**: a composition child that was deleted from the draft is removed from the active table.
+For example, in a `Travel → Booking → BookingSupplement` document, patching `Booking 1.price` updates `Booking 1` and `Travel`, but leaves `Booking 2` and all `BookingSupplements` untouched.
 
-Consider a three-level document `Travel → Booking → BookingSupplement`. When only `Booking 1.price` is patched:
-
-- `Booking 1` is updated (changed fields, `modifiedAt` advances).
-- `Travel` is updated (ancestor on the changed path, `modifiedAt` advances).
-- `Booking 2` (sibling of `Booking 1`) is **not** updated — absent from the payload, `modifiedAt` unchanged.
-- All `BookingSupplements` under `Booking 1` are **not** updated — no changes in their sub-tree, `modifiedAt` unchanged.
-
-If the active counterpart of a draft root cannot be found — for example because the active record was deleted externally between `draftEdit` and `draftActivate` — delta mode falls back to a full update for that root, re-inserting it as a new entity.
-
-Activating a draft that has no changes at all is idempotent: the update payload contains only the key fields of the root, no composition children are written, and no `modifiedAt` values advance.
+If the active counterpart of a draft root cannot be found at activation time, delta mode falls back to a full insert for that root.
 
 #### Effect on event handlers
 
