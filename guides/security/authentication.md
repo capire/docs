@@ -711,12 +711,8 @@ Enhance your [sample application](#mock-user-authentication) with XSUAA-support:
 
 ::: code-group
 
-```sh [Java]
+```sh
 cds add xsuaa
-```
-
-```sh [Node.js]
-cds add xsuaa --for production
 ```
 
 :::

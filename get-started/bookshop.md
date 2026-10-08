@@ -733,7 +733,8 @@ annotate AdminService.Books with {
 
 ### Custom Handlers in Node.js
 
-Prepare your project for custom coding in Node.js by adding the respective facet:
+Custom handlers are required for implementing business logic that cannot be expressed declarativatively, for example, through constraints. Prepare your project for custom coding in Node.js by adding the respective facet:
+
 ```shell
 cds add nodejs
 npm install
@@ -743,33 +744,22 @@ Put implementations for services into equally named _.js_ files placed next to a
 
 ```zsh
 ├─ srv/
-│ ├─ cat-service.cds # [!code focus]
-│ └─ cat-service.js # [!code focus]
+│ ├─ admin-service.cds # [!code focus]
+│ └─ admin-service.js # [!code focus]
 └─ ...
 ```
 
 ::: code-group
-```js [srv/cat-service.js]
-const cds = require('@sap/cds')
-class CatalogService extends cds.ApplicationService { init() {
-
-  // After READ handler on Books to add discount info
-  this.after ('READ', 'Books', results => results.forEach (book => {
-    if (book.stock > 111) book.title += ` -- 11% discount!`
-  }))
-
-  return super.init()
-}}
-module.exports = { CatalogService }
-```
-```js [srv/cat-service.mjs]
+```js [srv/admin-service.js]
 import cds from '@sap/cds'
-export class CatalogService extends cds.ApplicationService { init() {
+export class AdminService extends cds.ApplicationService { init() {
 
-  // After READ handler on Books to add discount info
-  this.after ('READ', 'Books', results => results.forEach (book => {
-    if (book.stock > 111) book.title += ` -- 11% discount!`
-  }))
+  /** Auto-fill integer primary keys, if necessary */
+  this.before ('CREATE', 'Books', async req => {
+    if (req.data.ID) return // skip if ID is already set
+    let {id} = await SELECT.one`max(ID) as id`.from(req.target)
+    req.data.ID = id + 4 // not safe, but ok for demo purposes
+  })
 
   return super.init()
 }}
@@ -852,11 +842,18 @@ While you **_can_** add custom handlers for standard CRUD events, you **_have to
 ```js [srv/cat-service.js]
   // Action handler for submitOrder
   this.on ('submitOrder', async req => {
-    let { book:id, quantity } = req.data
-    let affected = await UPDATE (Books,id)
+
+    // Try to reduce the stock of the ordered book, the good case
+    let { book:id, quantity=1 } = req.data
+    let { affected } = await UPDATE.entity (Books,id)
       .with `stock = stock - ${quantity}`
       .where `stock >= ${quantity}`
-    if (!affected) req.error `${quantity} exceeds stock for book #${id}`
+    if (affected) return //> done, the update was successful
+
+    // The update failed, let's check why, and respond accordingly...
+    let exists = await SELECT.one`stock`.from(Books,id)
+    if (!exists) req.error (404, `Book #${id} doesn't exist`)
+    else req.error (409, `${quantity} exceeds stock for book #${id}`, { id, quantity, ...exists })
   })
 ```
 :::
