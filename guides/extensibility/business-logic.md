@@ -232,7 +232,7 @@ cds watch
 
 Call `submitForReview` on a travel over the limit and confirm the `409`; on a cheap one it passes and the status flips to `InReview`.
 
-Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there — see [Debugging in the mocked sandbox](code-extension#debugging) for the full story.
+Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
 
 ::: tip Reproduce provider wiring locally
 `cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Re-provide just that wiring in a read-only _srv/server.js_, exactly as described for [reference logic](customization#reference-wiring). On a real tenant this wiring is already there.
@@ -264,7 +264,7 @@ If `cds push` fails to process the handler, confirm `@sap/cds-oyster` is install
 
 ## The Sandbox {#sandbox}
 
-Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --wasm` (isolated, enforces all restrictions). Every multitenant setup uses `wasm`, so the [`--wasm` check](#verify-wasm) before pushing is what catches forbidden constructs early.
+Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --wasm` (isolated, enforces the runtime restrictions). Every multitenant setup uses `wasm`, so a quick [`--wasm` run](#verify-wasm) before pushing surfaces isolation issues early. Push then adds a **static** check on top, which rejects constructs like `console` that still run under `--wasm`.
 
 The [Code Extension Reference](code-extension) documents the sandbox in full: [engines](code-extension#sandbox), [configuration](code-extension#config), the [handler-file layout](code-extension#files) and [sandbox API](code-extension#api), [query rules](code-extension#queries), [forbidden constructs](code-extension#forbidden), [quarantine](code-extension#quarantine), and [troubleshooting](code-extension#troubleshooting).
 
@@ -273,7 +273,7 @@ The [Code Extension Reference](code-extension) documents the sandbox in full: [e
 - **Keep handlers small and focused** — one file, one job. Complex logic is hard to diagnose when a runtime error blocks the extension.
 - **Push work down to the database** — filter and scope with `where` clauses and aggregates rather than looping in JavaScript.
 - **Signal outcomes with `req.reject` / `req.error`, never `throw`** — an unhandled throw blocks the extension for the whole tenant until you re-push.
-- **Test in the mocked sandbox, then verify with `cds watch --wasm`** before pushing, to catch forbidden constructs early.
+- **Test in the mocked sandbox, then verify with `cds watch --wasm`** before pushing. The wasm run exercises the isolated engine and catches reliance on globals it doesn't provide; keep in mind that push adds a **static** check on top, which rejects constructs like `console` that still run under `--wasm`.
 
 ## Best Practices for Application Providers {#provider-best-practices}
 
