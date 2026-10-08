@@ -175,7 +175,7 @@ Scaffold an inactive stub for the extension point:
 cds add ext-handler --filter validateReview
 ```
 
-This writes _srv/TravelExtensionService/on-validateReview.js_ with a leading `#` in its name, marking it an **inactive** stub. Remove the `#` to activate it.
+This writes _srv/TravelExtensionService/#on-validateReview.js_. The leading `#` marks it an **inactive** stub; remove it to activate the handler.
 
 The stub is **typed**, not empty. It ships with a JSDoc header that wires the handler into the model's generated types:
 
@@ -235,7 +235,7 @@ Call `submitForReview` on a travel over the limit and confirm the `409`; on a ch
 Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
 
 ::: tip Reproduce provider wiring locally
-`cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Re-provide just that wiring in a read-only _srv/server.js_, exactly as described for [reference logic](customization#reference-wiring). On a real tenant this wiring is already there.
+`cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Add a local-only _srv/server.js_ that reconnects to `TravelExtensionService` and registers the same `before(submitForReview)` handler shown in [Call the Extension Point](#wire). The [reference logic](customization#reference-wiring) section is the pattern for this kind of local wiring (a read-only _server.js_ that reproduces provider behavior), not the exact handler to copy. On a real tenant this wiring is already there.
 :::
 
 ### 5. Verify Against the Production Sandbox {#verify-wasm}

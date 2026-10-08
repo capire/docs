@@ -151,10 +151,10 @@ This enforces the following restrictions:
 - Only entities in namespace `sap.capire.travels` can be extended, with a maximum 2 new fields allowed.
 - Only the `TravelService` can be extended, with a maximum of 2 new entities allowed.
 
-::: warning XTravels is a modular application
-XTravels composes several reuse modules: `Flights` and `Supplements` come from `@capire/xflights` (namespace `sap.capire.xflights`), and `Customers` from `@capire/s4` (namespace `sap.capire.s4`). `TravelService` merely re-exposes these as read-only projections.
+::: warning Reuse-module entities can't be extended
+The allowlist above is scoped to the app's **own** model on purpose: namespace `sap.capire.travels` (`Travels`, `Bookings`, `TravelAgencies`, and the code lists) and `TravelService`. Subscribers can extend only those.
 
-Extensions can only target the application's **own** model — namespace `sap.capire.travels` (`Travels`, `Bookings`, `TravelAgencies`, and the code lists). Entities from reuse modules, like `Flights`, `Supplements`, or `Customers`, **cannot** be extended. By scoping the `extension-allowlist` to `sap.capire.travels` and `TravelService` as shown above, you deliberately keep the reuse-module namespaces off-limits.
+XTravels is modular: `Flights` and `Supplements` come from `@capire/xflights` (namespace `sap.capire.xflights`), `Customers` from `@capire/s4` (namespace `sap.capire.s4`), and `TravelService` merely re-exposes them as read-only projections. Those reuse-module namespaces are **not** in the allowlist, so `Flights`, `Supplements`, and `Customers` **cannot** be extended.
 :::
 
 [Learn more about extension restrictions.](../multitenancy/mtxs#extension-restrictions){.learn-more}
@@ -289,11 +289,11 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 :::
 
 ::: tip Ship a complete seed set
-So the template is **browsable out of the box** — not just a bare Travels table — copy the base app's full seed set into `test/data/`, so associations resolve to real rows:
+A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't seeded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's seed CSVs into your extension's `test/data/` folder. You're assembling this template from the base app's sources, so copy straight from the base app and its reuse packages:
 
-- **The app's own data:** the `sap.capire.travels-*` CSVs (`Travels`, `Bookings`, `Bookings.Supplements`, `TravelAgencies`, `TravelStatus`(+`.texts`), `TravelPurposes`, `PaymentMethods`, `BookingStatus`(+`.texts`)).
-- **Reuse code lists** from `@capire/common`: `sap.common-Currencies`(+`_texts`) and `sap.common-Countries`(+`_texts`), so currency symbols and country names resolve.
-- **External & federated data** — flights (from `@capire/xflights-data`) and customers (from `@capire/s4`). These aren't stored in XTravels' own model but projected from external services, so their local table names and columns take a little care — see [Seed External & Federated Data](#seed-external).
+- **The app's own data.** Copy every `sap.capire.travels-*.csv` from the base app's `db/data/` folder into your `test/data/`: `Travels`, `Bookings`, `Bookings.Supplements`, `TravelAgencies`, `TravelStatus`(+`.texts`), `TravelPurposes`, `PaymentMethods`, and `BookingStatus`(+`.texts`). These are a plain copy, no edits needed.
+- **Reuse code lists** from `@capire/common/data/`: `sap.common-Currencies`(+`_texts`) and `sap.common-Countries`(+`_texts`), so currency symbols and country names resolve. Mostly a plain copy, but `Currencies` needs its extra columns trimmed (see the next section).
+- **External & federated data**: flights (from `@capire/xflights-data`) and customers (from `@capire/s4`). These aren't stored in XTravels' own model but projected from external services, so their local table names and columns need a little care. See [Seed External & Federated Data](#seed-external).
 :::
 
 ::: details Why `test/data/` and not `db/data/`?
@@ -302,20 +302,29 @@ Data under `test/data/` is loaded **only** during local `cds watch` — it stays
 
 #### Seed External & Federated Data {#seed-external}
 
-Not everything XTravels shows comes from its own tables. `Customers` and the `Flights`/`Supplements` behind each booking are **projections over external services** — SAP S/4HANA business partners (`@capire/s4`) and a remote flights service (`@capire/xflights-data`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it — a standalone `cds watch` starts with those tables **empty**, and the Fiori list shows blank _Customer_ and _Flight_ cells.
+Not everything XTravels shows comes from its own tables. `Customers` and the `Flights`/`Supplements` behind each booking are **projections over external services**: SAP S/4HANA business partners (served by `@capire/s4`) and the flights microservice (`@capire/xflights`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it, and a standalone `cds watch` starts with those tables **empty**, so the Fiori list shows blank _Customer_ and _Flight_ cells.
 
 To make the template browsable, seed that data locally. Two things need to line up: the **target file name** and the **columns**.
 
-**1. Derive the target name from the projection.** A federated entity is declared as a projection on an external service's entity — for customers:
+**1. Derive the target name from the projection.** You don't write any of these declarations yourself; they already exist in the base app's model, and you only read them to find the right CSV file name. A federated entity is declared as a projection on an external service's entity. For customers, the base app's model contains:
 
 ```cds
 @federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
 ```
 
-Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table** — `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity — a dot or a dash. Each reuse module ships this data with its package, so copy it verbatim:
+Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, so copy the files verbatim from these locations into your `test/data/`:
 
-- `@capire/s4/srv/external/data/API_BUSINESS_PARTNER.A_BusinessPartner.csv` → customers.
-- `@capire/xflights-data/data/sap.capire.flights.FlightsService.Flights.csv` → flights, together with `…FlightsService.Airlines.csv`, `…FlightsService.Airports.csv`, and `…FlightsService.Supplements.csv`, so the flattened `airline`/`origin`/`destination` names resolve.
+| Copy from (in the reuse package) | Seeds |
+| --- | --- |
+| `@capire/s4/srv/external/data/API_BUSINESS_PARTNER.A_BusinessPartner.csv` | Customers |
+| `@capire/xflights-data/data/sap.capire.flights.FlightsService.Flights.csv` | Flights |
+| `@capire/xflights-data/data/…FlightsService.Airlines.csv` | Airlines (so the flattened `airline` name resolves) |
+| `@capire/xflights-data/data/…FlightsService.Airports.csv` | Airports (so `origin`/`destination` resolve) |
+| `@capire/xflights-data/data/…FlightsService.Supplements.csv` | Supplements |
+
+::: tip Why flights data comes from `@capire/xflights-data`, not `@capire/xflights`
+`@capire/xflights` is the flights **microservice**: in the deployed app XTravels calls it remotely and replicates its data, so the service owns that data, XTravels doesn't. There's nothing to copy from it. `@capire/xflights-data` is a separate pre-built **integration package** that bundles the same `FlightsService` definition together with sample master data (Airlines, Airports, Flights, Supplements). XTravels depends on `@capire/xflights-data` (not the live microservice), so a standalone `cds watch` runs against a **mock** of the service, and that package is where the seed CSVs live. The same split applies to any federated service: the running service is one thing, the sample-data package you seed from is another.
+:::
 
 **2. Match the columns to the pulled model.** The base model you pull is **minified** (`@cds.minify`) — external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …`; if it targets an entity that was dropped entirely, you get `no such table`.
 
@@ -334,7 +343,9 @@ This matters here because XTravels builds on **`@capire/common`**, which _extend
 The companion `sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts` CSVs already match the pulled model — copy them as-is.
 
 ::: tip Find the target quickly
-Not sure what an entity projects on, which columns survived minification, or whether an entity survived at all? Open the pulled `.base/index.csn` and look it up: its `projection`/`query` shows the source it reads from, its `elements` are exactly the columns your CSV may contain — and if the definition isn't there, minification dropped it and there's nothing to seed.
+This lookup uses the pulled base model, so run [`cds pull`](#pull-base) first (or ship a pre-filled [`.base/`](#template-base)) if you haven't yet: that's what creates `.base/index.csn`. `cds pull` only writes the `.base/` folder and a few `package.json` entries; it never touches your `app/`, `test/data/`, or `db/data/`, so it won't overwrite the template you've built so far.
+
+Not sure what an entity projects on, which columns survived minification, or whether an entity survived at all? Open the pulled `.base/index.csn` and look it up: its `projection`/`query` shows the source it reads from, and its `elements` are exactly the columns your CSV may contain. If the definition isn't there, minification dropped it and there's nothing to seed.
 :::
 
 #### Ship a Pre-Filled Base Model {#template-base}

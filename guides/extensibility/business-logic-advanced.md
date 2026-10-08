@@ -178,7 +178,7 @@ Exceed a cap and the push is rejected, naming every offending definition:
 
 ## CRUD Event Handler Scope {#crud}
 
-Beyond the action and event handlers used for [pre-defined extension points](business-logic), opening an entity enables **before** and **after** handlers on its CRUD events (Create, Read, Update, Delete, Upsert). The full event scope (signatures, transaction semantics, and the `req.data` / `req.subject` / `req.results` each handler sees) is in [Code Extension Reference › Event Scope](code-extension#events). The handler-file convention and sandbox API are unchanged from [Part 1](code-extension#files).
+Beyond the action and event handlers used for [pre-defined extension points](business-logic), opening an entity enables **before** handlers on Create, Update, Upsert, and Delete, plus **after** handlers on Read, Create, Update, Upsert, and Delete (there is no `before`-READ). The full event scope (signatures, transaction semantics, and the `req.data` / `req.subject` / `req.results` each handler sees) is in [Code Extension Reference › Event Scope](code-extension#events). The handler-file convention and sandbox API are unchanged from [Part 1](code-extension#files).
 
 The examples below implement one handler of each kind.
 

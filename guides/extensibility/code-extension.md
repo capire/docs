@@ -91,11 +91,11 @@ Handlers live in service-named folders, one file per binding:
 ```zsh
 srv/
 └─ <ServiceName>/
-   ├─ on-<action>.js          # unbound action or event
+   ├─ on-<action>.js             # unbound action or event
    └─ <EntityName>/
-      ├─ before-<CUD>.js       # before a Create/Update/Delete
-      ├─ after-READ.js         # after a Read
-      └─ on-<action>.js        # bound action or event
+      ├─ before-<CUD|UPSERT>.js  # before a Create/Update/Delete/Upsert
+      ├─ after-<CRUD|UPSERT>.js  # after a Create/Read/Update/Delete/Upsert
+      └─ on-<action>.js          # bound action or event
 ```
 
 ## Sandbox API {#api}
