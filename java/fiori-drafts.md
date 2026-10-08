@@ -116,7 +116,7 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
 
-### Delta Draft Activation { #delta-draft }
+### Delta Draft Activation <Beta /> { #delta-draft }
 
 By default, when a draft is activated, the entire draft document — including every composition child at every level — is written back to the active tables unconditionally. This *full* mode is simple and safe, but it means that every child entity receives a new `modifiedAt` timestamp even when nothing about it actually changed.
 
