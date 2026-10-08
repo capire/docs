@@ -59,9 +59,19 @@ Keep both URLs distinct:
 
 ## Create the Joule Capability
 
-Create a project with the digital assistant definition at its root and the capability in a subdirectory:
+Add a Joule capability scaffold to your CAP project:
 
-```text
+```zsh
+cds add joule
+```
+
+The command derives the capability name, agent folder, destination, and system alias from the CAP project name and creates the digital assistant definition and capability files under `joule-integration`. Adapt the generated display name, description, and scenario description to the agent's purpose so Joule can select it for the intended requests.
+
+::: details Create the Joule capability manually
+
+If `cds add joule` isn't available, create this structure in the CAP project:
+
+```zsh
 joule-integration/
 ├── da.sapdas.yaml
 └── hotels-agent/
@@ -73,14 +83,20 @@ joule-integration/
         └── invoke_agent.yaml
 ```
 
-The digital assistant definition references the local capability:
+In `da.sapdas.yaml`, reference the local capability:
 
 ```yaml
-schema_version: 1.4.0
+schema_version: 1.5.0-beta
 name: xtravels_hotels_a2a
 capabilities:
   - type: local
+    name: xtravels_hotels_a2a
     folder: ./hotels-agent
+
+enable_native_agenticness: false
+
+conversational_search:
+  enabled: false
 ```
 
 In `capability.sapdas.yaml`, map a system alias to the destination:
@@ -100,7 +116,15 @@ system_aliases:
     destination: XTRAVELS_HOTELS_A2A
 ```
 
-The function delegates the user's request to the remote agent and retains the A2A context for subsequent messages:
+Declare the A2A conversation identifiers in `capability_context.yaml`:
+
+```yaml
+variables:
+  - name: contextId
+  - name: taskId
+```
+
+In `functions/call_agent.yaml`, delegate the request to the remote agent and retain the A2A context for subsequent messages:
 
 ```yaml
 parameters:
@@ -111,6 +135,9 @@ parameters:
 
 action_groups:
   - actions:
+      - type: status-update
+        message: <? "Invoking XTravels Hotels Agent" ?>
+
       - type: agent-request
         agent_type: remote
         system_alias: XTravelsHotelsAgent
@@ -120,12 +147,46 @@ action_groups:
              : '{ "contextId": "' + contextId + '", "taskId": "' + taskId + '" }' ?>
         result_variable: result
 
+      - type: set-variables
+        variables:
+          - name: contextId
+            value: <? result.body.contextId ?>
+          - name: taskId
+            value: <? result.body.id ?>
+
+      - type: message
+        message:
+          type: text
+          content: "<? result.body.status.message.parts[0].text ?>"
+          markdown: true
+
 result:
-  contextId: "<? result.body.contextId ?>"
-  taskId: "<? result.body.id ?>"
+  contextId: "<? contextId ?>"
+  taskId: "<? taskId ?>"
 ```
 
-Declare `contextId` and `taskId` in `capability_context.yaml` and map them between the scenario and function. The scenario description should state clearly when Joule should select the agent.
+Finally, map the context variables between the scenario and function in `scenarios/invoke_agent.yaml`. Make its description specific enough for Joule to select the agent for the intended requests:
+
+```yaml
+description: Delegate hotel search and booking requests to the XTravels Hotels Agent.
+
+target:
+  type: function
+  name: call_agent
+  parameters:
+    - name: contextId
+      value: $capability_context.contextId
+    - name: taskId
+      value: $capability_context.taskId
+
+capability_context:
+  - name: contextId
+    value: $target_result.contextId
+  - name: taskId
+    value: $target_result.taskId
+```
+
+:::
 
 ## Create the Destination
 
@@ -162,11 +223,12 @@ The cockpit's **Check Connection** can issue an unauthenticated request and ther
 
 In **System Landscape** in the BTP cockpit, open or create a formation of type **Integrate with Joule Development**. Add the following systems:
 
-- The subaccount that contains the destination
 - The Joule development tenant
 - The SAP Cloud Identity Services tenant that protects the CAP application
 
-The formation must reach the **Ready** state. If the IAS tenant isn't offered in the formation wizard, register it as an SAP Cloud Identity Services system first. This system type is provider-managed and can't be replaced with a generic system entry. Ask the global account or IAS administrator to complete the tenant registration if it isn't available.
+The Joule development tenant is associated with the subaccount that contains the destination. The formation must reach the **Ready** state.
+
+If an internal IAS tenant isn't offered in a canary global account, switch **System Landscape** to **Service Owner View**, choose **Add** > **Add via CLD Discovery**, select **SAP Cloud Identity Services**, and enter the tenant's CLD tenant ID. In customer view, this system type is provider-managed and can't be replaced with a generic system entry. Ask the global account or IAS administrator to register the tenant if you can't use CLD discovery.
 
 ## Compile and Deploy
 
@@ -207,6 +269,8 @@ Find hotels in Berlin for two adults from October 20 to October 22.
 ```
 
 The response insights should show that Joule selected the capability and invoked the remote agent. A successful response from the CAP agent confirms all of the following:
+
+![Joule invoking the XTravels CAP agent and displaying its hotel availability response](assets/joule-agent-response.png){.ignore-dark}
 
 - The capability is deployed and discoverable.
 - The destination can obtain an IAS token with its X.509 certificate.
