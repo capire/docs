@@ -254,7 +254,7 @@ SendMessage                              // inbound A2A request span (SERVER), v
      └─ chat anthropic--claude-4.6-sonnet   // follow-up round-trip after the tool results
 ```
 
-The agent spans are part of CAP's OpenTelemetry instrumentation and are created only when the OpenTelemetry Java Agent is attached and the corresponding span loggers are enabled. See [CAP Instrumentation](./operating-applications/observability#cap-instrumentation) for how to attach the Java Agent, configure OpenTelemetry export, and the full list of span loggers — including the `Agent`, `ChatModel`, and `ToolExecution` loggers for the spans described here.
+These are standard OpenTelemetry spans, emitted through CAP's OpenTelemetry instrumentation. See [CAP Instrumentation](./operating-applications/observability#cap-instrumentation) for how to set up the required infrastructure and enable the individual span loggers — including the `Agent`, `ChatModel`, and `ToolExecution` loggers for the spans described here.
 
 ### Span Attributes
 
