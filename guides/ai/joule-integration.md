@@ -1,11 +1,11 @@
 # Integrating XTravels with Joule
 
-This guide connects the IAS-protected XTravels hotel agent to a Joule development tenant using the Agent-to-Agent (A2A) protocol, an SAP BTP destination, and a Joule capability.
+This guide connects the IAS-protected XTravels hotel agent to a Joule tenant using the Agent-to-Agent (A2A) protocol, an SAP BTP destination, and a Joule capability.
 {.abstract}
 
 [[toc]]
 
-The setup follows the [Integrate Joule with an External Agent reference architecture](https://architecture.learning.sap.com/docs/ref-arch/7b6426).
+Follows the [**Bring Your Own Agent**](https://architecture.learning.sap.com/docs/ref-arch/7b6426) reference architecture{.learn-more}
 
 ## Start with XTravels
 
@@ -17,11 +17,44 @@ cd xtravels
 npm install
 ```
 
-The sample's [`HotelsService`](https://github.com/capire/xtravels/blob/main/srv/hotels/services.cds) is annotated with `@agent`, which exposes it through A2A. This guide connects that hotel agent to Joule.
+The sample's [`HotelsService`](https://github.com/capire/xtravels/blob/main/srv/hotels/services.cds) is annotated with `@agent`, which exposes it through A2A.
 
-If `npm install` can't download the `@capire` packages, follow the sample's [GitHub Packages setup](https://github.com/capire/xtravels#using-github-packages).
+
+::: tip Problems with `npm install`?
+For installing the `@capire` packages, follow the sample's [GitHub Packages setup](https://github.com/capire/xtravels#using-github-packages).
+:::
 
 ## Prerequisites
+
+### Subscribe to Joule in BTP
+
+In the **provider subaccount**…
+1. Choose **Services** → **Instances and Subscriptions** → **Create**.
+2. Select **Service: Joule Development** and **Plan: standard**.
+3. Choose **Create** and wait until the subscription status is **Subscribed**.
+
+### Register the IAS Tenant
+
+
+In the **global account**…
+1. Choose **System Landscape** → **Systems** → **Service Owner View**.
+2. Choose **Add** → **Add via CLD Discovery** → **Next Step**.
+3. Select **System Type: SAP Cloud Identity Services** and enter the **CLD Tenant ID**.
+   > For an IAS URL like `https://xxx.accounts400.ondemand.com`, the tenant is `xxx`.
+4. Choose **Next Step** → **Create**.
+
+::: tip Skip this if the IAS tenant is already listed under *System Landscape* → *Systems*.
+:::
+
+### Create the Formation
+
+In the **global account**…
+1. Choose **System Landscape** → **Formations** → **Create Formation**.
+2. Enter a **Formation Name**, select **Formation Type: Integrate with Joule Development**, and choose **Next Step**.
+3. Under **Include Systems**, select the **Joule Dev** system and the **SAP Cloud Identity Services** system for XTravels.
+4. Choose **Next Step** → **Create** and wait until the formation status is **Ready**.
+
+### Install the Joule Studio CLI
 
 Install the Joule Studio CLI and verify the installation:
 
@@ -30,54 +63,29 @@ npm install -g @sap/joule-studio-cli
 joule --version
 ```
 
-You also need:
+Create the Joule CLI service key in the target Cloud Foundry space:
 
-- A CAP agent deployed to Cloud Foundry and protected by SAP Cloud Identity Services
-- An IAS service binding or service key with `credential-type: X509_GENERATED`
-- A Joule development tenant
-- A Joule Studio CLI service key
-- Permissions to manage destinations, formations, and Joule capabilities
+```zsh
+cf login --sso
 
-The Joule development tenant, BTP subaccount, and IAS tenant must belong to the same formation.
-
-## Verify the CAP Agent
-
-The agent card must be available with an IAS access token and must advertise the URL of the JSON-RPC endpoint. For example:
-
-```json
-{
-  "name": "HotelsService",
-  "url": "https://<app-route>/a2a/hotels",
-  "protocolVersion": "0.3.0"
-}
+cf create-service-key joule-designer joule-agent-cli
+cf service-key joule-designer joule-agent-cli
 ```
 
-Keep both URLs distinct:
+Create an X.509 key for the IAS service instance that protects XTravels:
 
-- Use `.../.well-known/agent-card.json` to discover and inspect the agent.
-- Use the value of the card's `url` property as the destination URL. Joule sends A2A JSON-RPC requests to this URL.
-
-> [!warning] Do not use the agent-card URL as the destination URL
-> If the destination points to `.../.well-known/agent-card.json`, Joule sends a `POST` request to the card resource. The CAP application responds with `404`, and Joule reports an agent connector error such as `AgentConnector - 0105` with HTTP status `400`.
+```zsh
+cf create-service-key xtravels-auth xtravels-a2a-x509 \
+  -c '{"credential-type":"X509_GENERATED"}'
+```
 
 ## Create the Joule Capability
 
-Add a Joule capability scaffold to your CAP project:
+Add Joule capabilities to your CAP project:
 
 ```zsh
 cds add joule
 ```
-
-The command derives the capability name, agent folder, destination, and system alias from the CAP project name. It creates a ready-to-compile capability under `joule`; you don't need to create or edit its YAML files.
-
-For `@capire/xtravels`, the generated names are:
-
-| Resource | Generated value |
-| --- | --- |
-| Capability | `xtravels_a2a` |
-| Agent folder | `xtravels-agent` |
-| Destination | `XTRAVELS_A2A` |
-| System alias | `XtravelsAgent` |
 
 ::: details Files generated by `cds add joule`
 
@@ -202,72 +210,63 @@ capability_context:
 
 ## Create the Destination
 
-The destination uses OAuth client credentials with mutual TLS to obtain an IAS access token. In the BTP cockpit, create an HTTP destination with these properties:
+1. Convert the IAS certificate and private key into a temporary PKCS#12 key store:
+
+```zsh
+destination_tmp=$(mktemp -d)
+openssl pkcs12 -export \
+  -in <(cf service-key xtravels-auth xtravels-a2a-x509 --json | jq -r .certificate) \
+  -inkey <(cf service-key xtravels-auth xtravels-a2a-x509 --json | jq -r .key) \
+  -out "$destination_tmp/ias-client.p12" \
+  -name ias-client
+```
+
+2. In the **provider subaccount**, choose **Connectivity** → **Destinations** → **Create** → **From Scratch** → **Create**.
+3. Enter these properties:
 
 | Property | Value |
 | --- | --- |
 | Name | `XTRAVELS_A2A` |
 | Type | `HTTP` |
-| URL | The A2A endpoint from the agent card, for example `https://<app-route>/a2a/hotels` |
+| URL | The `url` from the agent card, for example `https://<app-route>/a2a/hotels` |
 | Proxy Type | `Internet` |
 | Authentication | `OAuth2ClientCredentials` |
-| Client ID | `clientid` from the IAS X.509 binding |
+| Client ID | Output of `cf service-key xtravels-auth xtravels-a2a-x509 --json | jq -r .clientid` |
 | Use mTLS for token retrieval | Enabled |
 | Token Service URL | `<ias-url>/oauth2/token` |
 | Token Service URL Type | `Dedicated` |
 | Use default client trust store | Enabled |
 
-Convert the certificate and private key from the IAS binding into a PKCS#12 key store:
+4. Upload `ias-client.p12` as the **Token Service Key Store Location** and enter its export password as the **Token Service Key Store Password**.
+5. Choose **Create**, then delete the temporary key store with `rm "$destination_tmp/ias-client.p12" && rmdir "$destination_tmp"`.
 
-```sh
-openssl pkcs12 -export \
-  -in certificate.pem \
-  -inkey key.pem \
-  -out ias-client.p12 \
-  -name ias-client
-```
+::: danger Never commit the key store, certificates, or private keys.
+:::
 
-Upload the key store as the **Token Service Key Store** and enter its password. Delete the temporary PEM and PKCS#12 files after the upload. Never commit certificates, private keys, service secrets, tokens, or one-time passcodes.
+## Deploy
 
-The cockpit's **Check Connection** can issue an unauthenticated request and therefore doesn't prove that token retrieval and the A2A call work. Complete the end-to-end verification in Joule.
-
-## Add the Systems to a Formation
-
-In **System Landscape** in the BTP cockpit, open or create a formation of type **Integrate with Joule Development**. Add the following systems:
-
-- The Joule development tenant
-- The SAP Cloud Identity Services tenant that protects the CAP application
-
-The Joule development tenant is associated with the subaccount that contains the destination. The formation must reach the **Ready** state.
-
-If an internal IAS tenant isn't offered in a canary global account, switch **System Landscape** to **Service Owner View**, choose **Add** > **Add via CLD Discovery**, select **SAP Cloud Identity Services**, and enter the tenant's CLD tenant ID. In customer view, this system type is provider-managed and can't be replaced with a generic system entry. Ask the global account or IAS administrator to register the tenant if you can't use CLD discovery.
-
-## Compile and Deploy
-
-Log in with the client credentials for your Joule Studio CLI service key. When your environment uses one-time SSO passcodes, request a fresh passcode for every attempt:
+Log in with the `joule-agent-cli` service-key values and a fresh SSO passcode:
 
 ```zsh
 joule login --sso-passcode --app-tid
 ```
 
-Enter the authentication URL, API URL, client ID, and client secret from the Joule Studio CLI service key when prompted, followed by a fresh passcode. The secret and passcode prompts are masked. Use bare `--app-tid` to let the CLI discover the application tenant. Never commit these credentials or put them in scripts.
+Deploy XTravels and its Joule capability:
 
-Compile from the capability directory, where `capability.sapdas.yaml` is located:
-
-```sh
-cd joule/xtravels-agent
-joule compile
+```zsh
+cds up
 ```
 
-Deploy from the parent directory, where `da.sapdas.yaml` is located:
+::: details What `cds up` does
 
-```sh
-cd ..
-joule deploy -c -n xtravels_a2a
-joule list
-```
+1. Selects [Cloud Foundry](../deploy/to-cf) or [Kyma](../deploy/to-kyma) from the project files, unless `--to` specifies the target.
+2. Builds and deploys XTravels:
+   - On Cloud Foundry, builds the MTA and runs `cf deploy`.
+   - On Kyma, builds the production artifacts and container images, applies the Helm chart, and waits for the deployments.
+3. Detects the generated `joule/da.sapdas.yaml` and reads its capability name.
+4. Runs `joule deploy -c -n xtravels_a2a` from `joule` to compile and deploy the capability.
 
-The `-c` option compiles the local capabilities before deployment. A successful deployment appears in `joule list`.
+:::
 
 ## Launch and Verify
 
@@ -280,25 +279,12 @@ joule launch xtravels_a2a
 Send a request that matches the scenario description, for example:
 
 ```text
-Find hotels in Berlin for two adults from October 20 to October 22.
+Find hotels in New York for two adults
+from October 20 to October 22, 2026.
 ```
 
-The response insights should show that Joule selected the capability and invoked the remote agent. A successful response from the CAP agent confirms all of the following:
+Joule can now invoke the agent:
 
-![Joule invoking the XTravels CAP agent and displaying its hotel availability response](assets/joule-agent-response.png){.ignore-dark}
+![Joule invoking the XTravels CAP agent and displaying its hotel availability response](assets/joule-agent-response.png)
 
-- The capability is deployed and discoverable.
-- The destination can obtain an IAS token with its X.509 certificate.
-- Joule can call the A2A JSON-RPC endpoint.
-- The CAP agent can process the request and return its result.
-
-## Troubleshooting
-
-| Symptom | Cause and resolution |
-| --- | --- |
-| `COMPILE_TRIGGER_FAILED` with HTTP `403` | The logged-in user lacks a compiler role accepted by the target Joule application. Assign `capability_developer`, `capability_release_admin`, or the matching `extensibility_developer` role for that application. |
-| `AgentConnector - 0105` with HTTP `400` and a `POST` to the agent-card URL returning `404` | Change the destination URL to the A2A endpoint advertised in the card's `url` property. |
-| The protected card works with a direct IAS token, but Joule can't invoke the agent | Check the destination's client ID, key store, key store password, token service URL, and mTLS setting. Then verify formation membership. |
-| The IAS tenant isn't available in the formation wizard | Register the IAS tenant as an SAP Cloud Identity Services system or ask the responsible administrator to do so. |
-
-Use Cloud Foundry application logs and Joule response insights together when diagnosing an invocation. The router log reveals the exact HTTP method, path, and status while response insights confirm whether Joule selected the intended capability.
+For productive use, repeat these steps with Joule Production.
