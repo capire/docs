@@ -728,6 +728,9 @@ Update.entity(Orders_.class, f -> f.filter(o -> o.ID().eq("1")).items())
 Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
 
+::: warning
+The [@cds.search](/guides/services/served-ootb#cds-search) must not include restricted annotations. Search through associations might reveal content of restricted entities.
+:::
 
 ### Compositions
 
