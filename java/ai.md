@@ -228,3 +228,46 @@ In CDS QL queries, elements of type `Vector` are excluded from the select list b
 :::
 
 CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
+
+## Tracing Agents <Alpha /> { #ai-tracing }
+
+When an [agent](#agents) handles a request, CAP Java emits a hierarchy of OpenTelemetry spans that follow the request from the AI service invocation through each LLM round-trip down to the individual tool executions. The span attributes follow the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) (`gen_ai.*`), so traces are directly consumable by standard observability backends (for example SAP Cloud Logging, Dynatrace, or Jaeger) without custom mapping.
+
+The same spans are produced regardless of the underlying AI framework (LangChain4j or Spring AI).
+
+### Span Hierarchy
+
+A single agent request produces the following nested spans. When the agent is exposed via the [A2A protocol adapter](#agents), the inbound A2A request span wraps the `invoke_agent` span:
+
+| Span name              | Span kind  | Description                                                                                   |
+| ---------------------- | ---------- | --------------------------------------------------------------------------------------------- |
+| `invoke_agent <agent>` | `INTERNAL` | One span per agent invocation, covering all LLM round-trips triggered by tool calls.          |
+| `chat <model>`         | `CLIENT`   | One span per LLM call.                                                                         |
+| `execute_tool <tool>`  | `INTERNAL` | One child span per tool call, between the LLM response requesting the tool and its result.    |
+
+```txt
+SendMessage                              // inbound A2A request span (SERVER), via the A2A adapter
+ └─ invoke_agent TravelService           // gen_ai.agent.name, gen_ai.conversation.id, cds.ai.service.method
+     ├─ chat anthropic--claude-4.6-sonnet   // gen_ai.request.model, gen_ai.usage.input_tokens/output_tokens, ...
+     ├─ execute_tool describe             // gen_ai.tool.call.name, gen_ai.tool.call.outcome
+     ├─ execute_tool query
+     └─ chat anthropic--claude-4.6-sonnet   // follow-up round-trip after the tool results
+```
+
+### Span Attributes
+
+The spans carry the following `gen_ai.*` attributes (omitted when the corresponding value is not available):
+
+| Span            | Attributes                                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `invoke_agent`  | `gen_ai.operation.name`, `gen_ai.agent.name`, `gen_ai.conversation.id`, `cds.ai.service.method`, `cds.ai.agent.outcome`               |
+| `chat`          | `gen_ai.operation.name`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.request.temperature`, `gen_ai.request.top_p`, `gen_ai.request.max_tokens`, `gen_ai.response.model`, `gen_ai.response.id`, `gen_ai.response.finish_reasons`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens` |
+| `execute_tool`  | `gen_ai.operation.name`, `gen_ai.tool.call.name`, `gen_ai.tool.call.id`, `gen_ai.tool.call.outcome`, `gen_ai.tool.call.arguments`<sup>*</sup>, `gen_ai.tool.call.result`<sup>*</sup> |
+
+Errors are recorded on the affected span, and any tool spans still open when an invocation fails are closed and marked with outcome `error`.
+
+<sup>*</sup> Tool-call arguments and results are potentially sensitive and are only recorded when the [`cds.security.logPotentiallySensitive`](./developing-applications/properties#cds-security-logpotentiallysensitive) setting is enabled. By default they are omitted.
+
+### Enabling the Spans
+
+The agent spans are part of CAP's OpenTelemetry instrumentation and are created only when the OpenTelemetry Java Agent is attached and the corresponding span loggers are enabled. See [CAP Instrumentation](./operating-applications/observability#cap-instrumentation) for how to attach the Java Agent, configure OpenTelemetry export, and the full list of span loggers — including the `Agent`, `ChatModel`, and `ToolExecution` loggers for the spans described here.
