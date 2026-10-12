@@ -101,15 +101,6 @@ This is exactly where the MCP services come into play, automating much of the pl
 
 ## MCP Services
 
-### Install the MCP Plugin
-
-Before using MCP services, install the MCP plugin in the xtravels project:
-
-```shell
-cd xtravels
-npm add @cap-js/mcp
-```
-
 ### MCP-enable given Services
 
 Instead of implementing static UIs, we merely annotate the existing service definitions with [`@mcp`] to make them available for automated planning and booking from AI agents:
@@ -227,17 +218,6 @@ So, we start by turning some of our existing services into agents, using the [`@
 
 The `TravelAgentService` is our root agent that coordinates travel planning and booking across multiple destinations. It shall interact with the `EventsService` and `HotelsService` as subagents via A2A. In contrast to the latter, it shall keep using the `FlightsService` service via MCP, so we don't turn it into an agent.
 
-
-
-> [!tip]
-> Simply checkout the `jv-agents` branch of the `xtravels` repository to get the complete implementation of the agents:
-> ```shell
-> cd xtravels
-> git checkout jv-agents
-> cd -
-> ```
-
-
 ### Add Custom Markdowns
 
 In order to provide additional instructions and make move to a more deterministic behavior for the `TravelAgent`, we add an [`AGENTS.md`](cap-agents.md#optional-agentsmd) as well as [ `*/SKILL.md`](cap-agents.md#optional-skillmds) files for the individual subtasks.
@@ -280,7 +260,7 @@ cds w xtravels
 See [Automatic Config](cap-agents#automatic-config) in the CAP Agents documentation for details.
 :::
 
-But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4004/a2a/travel-agent/preview.
+But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4114/agent/preview.
 
 ![Opening chat preview from index.html](chat-preview-from-index-html.png){style="width: 500px;"}
 
@@ -310,20 +290,17 @@ To run the XTravels application with its services separately, you can start each
 Run each of the lines below in a separate terminal, in the given order:
 
 ```shell
-cds w xtravels/srv/events --port 4006
+cds w xtravels/srv/events
 ```
 ```shell
-cds w xtravels/srv/hotels --port 4007
+cds w xtravels/srv/hotels
 ```
 ```shell
-cds w xflights --port 4005
+cds w xflights
 ```
 ```shell
-cds w xtravels --port 4004
+cds w xtravels
 ```
-
-> [!note] Port Configuration
-> Each service must run on a different port. Without explicit `--port` flags, all services would try to use the default port 4004 and fail with "address already in use" errors.
 
 In the log output of each [`@agent`]-ified service, that is for `events`, `hotels`, and `travels`, we see the `cds.connect to 'llm'` taking place:
 
