@@ -80,12 +80,12 @@ cds watch xtravels
 [cds] - mocking sap.capire.flights.FlightsService { ... }
 [cds] - mocking sap.capire.s4.business-partner { ... }
 [cds] - serving TravelService { ... }
-[cds] - server listening on { url: 'http://localhost:4005' }
+[cds] - server listening on { url: 'http://localhost:4114' }
 ```
 
 ### Using static UIs
 
-We can open the travel application's Fiori UI from the index.html page served at _http://localhost:4005_ -> click on the [_/travels/webapp_](http://localhost:4005/travels/webapp/index.html) link on the top, to see the list of existing travel requests:
+We can open the travel application's Fiori UI from the index.html page served at _http://localhost:4114_ -> click on the [_/travels/webapp_](http://localhost:4114/travels/webapp/index.html) link on the top, to see the list of existing travel requests:
 
 ![Fiori UI showing for the list of existing travel requests](xtravels-list.png)
 
@@ -336,7 +336,7 @@ Looking closer at the log output, we can see that as soon as the `TravelAgentSer
   text: 'Plan a trip to sapphire 27'
 }
 [agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService {
-  at: 'http://localhost:4006/mcp/flights'
+  at: 'http://localhost:4115/mcp/flights'
 }
 ```
 
@@ -371,10 +371,10 @@ Immediately after connecting to the MCP service, we see that the `TravelAgentSer
 
 ```zsh
 [agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService {
-  at: 'http://localhost:4008/a2a/hotels'
+  at: 'http://localhost:4117/a2a/hotels'
 }
 [agents:a2a] - Connecting to subagent sap.capire.events.EventsService {
-  at: 'http://localhost:4007/a2a/events'
+  at: 'http://localhost:4116/a2a/events'
 }
 ```
 
