@@ -80,12 +80,12 @@ cds watch xtravels
 [cds] - mocking sap.capire.flights.FlightsService { ... }
 [cds] - mocking sap.capire.s4.business-partner { ... }
 [cds] - serving TravelService { ... }
-[cds] - server listening on { url: 'http://localhost:4005' }
+[cds] - server listening on { url: 'http://localhost:4114' }
 ```
 
 ### Using static UIs
 
-We can open the travel application's Fiori UI from the index.html page served at _http://localhost:4005_ -> click on the [_/travels/webapp_](http://localhost:4005/travels/webapp/index.html) link on the top, to see the list of existing travel requests:
+We can open the travel application's Fiori UI from the index.html page served at _http://localhost:4114_ -> click on the [_/travels/webapp_](http://localhost:4114/travels/webapp/index.html) link on the top, to see the list of existing travel requests:
 
 ![Fiori UI showing for the list of existing travel requests](xtravels-list.png)
 
@@ -218,17 +218,6 @@ So, we start by turning some of our existing services into agents, using the [`@
 
 The `TravelAgentService` is our root agent that coordinates travel planning and booking across multiple destinations. It shall interact with the `EventsService` and `HotelsService` as subagents via A2A. In contrast to the latter, it shall keep using the `FlightsService` service via MCP, so we don't turn it into an agent.
 
-
-
-> [!tip]
-> Simply checkout the `aix` branch of the `xtravels` repository to get the complete implementation of the agents:
-> ```shell
-> cd xtravels
-> git checkout aix
-> cd -
-> ```
-
-
 ### Add Custom Markdowns
 
 In order to provide additional instructions and make move to a more deterministic behavior for the `TravelAgent`, we add an [`AGENTS.md`](cap-agents.md#optional-agentsmd) as well as [ `*/SKILL.md`](cap-agents.md#optional-skillmds) files for the individual subtasks.
@@ -271,7 +260,7 @@ cds w xtravels
 See [Automatic Config](cap-agents#automatic-config) in the CAP Agents documentation for details.
 :::
 
-But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4005/agent/preview.
+But instead of using OpenCode as a generic client, we use the Chat Preview provided by the `cap-js/agent` plugin, which you can open from `Preview` links that are available in the _index.html_ for A2A agent endpoints – or simply open http://localhost:4114/agent/preview.
 
 ![Opening chat preview from index.html](chat-preview-from-index-html.png){style="width: 500px;"}
 
@@ -347,7 +336,7 @@ Looking closer at the log output, we can see that as soon as the `TravelAgentSer
   text: 'Plan a trip to sapphire 27'
 }
 [agents:mcp] - Connecting to MCP service sap.capire.flights.FlightsService {
-  at: 'http://localhost:4006/mcp/flights'
+  at: 'http://localhost:4115/mcp/flights'
 }
 ```
 
@@ -382,10 +371,10 @@ Immediately after connecting to the MCP service, we see that the `TravelAgentSer
 
 ```zsh
 [agents:a2a] - Connecting to subagent sap.capire.hotels.HotelsService {
-  at: 'http://localhost:4008/a2a/hotels'
+  at: 'http://localhost:4117/a2a/hotels'
 }
 [agents:a2a] - Connecting to subagent sap.capire.events.EventsService {
-  at: 'http://localhost:4007/a2a/events'
+  at: 'http://localhost:4116/a2a/events'
 }
 ```
 
