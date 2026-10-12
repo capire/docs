@@ -198,8 +198,12 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
 1. Create a new CAP project and add the extension facet — `xtravels-ext` in our walkthrough:
 
+   ::: warning Create the extension project outside the base app's workspace
+   Create `xtravels-ext` next to `samples/`, not inside it (that's what the `cd ../..` below does). An extension project is its own workspace root: it maps `@capire/xtravels` to the pulled base model in `.base`. If it sat inside the `samples` workspace, that name would instead resolve to the base-app **sources**, and the extension would not compile.
+   :::
+
    ```sh
-   cd ..
+   cd ../..   # leave the samples workspace, back to the cap/ folder
    cds init xtravels-ext --nodejs
    cd xtravels-ext
    cds add extension
@@ -207,6 +211,10 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
    ```
 
    `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder that will hold the pulled base model.
+
+   ::: info `cds add extension` writes a bookshop placeholder
+   It also writes a small **bookshop** placeholder that you don't keep: it sets `extends` to `@capire/bookshop` and writes `.base/package.json` as `{ "name": "@capire/bookshop" }`. You don't hand-edit the latter: point `extends` at your app (next step), and [`cds pull`](#pull-base) overwrites `.base/` with your real base model, so its name becomes `@capire/xtravels` on its own.
+   :::
 
 2. `cds add extension` sets `extends` to a placeholder — point it at your SaaS app and add the two focused settings below to your _package.json_:
 
@@ -231,7 +239,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 - `name` identifies the extension within a SaaS subscription; extension developers can choose the value freely.
 - `extends` is the name by which the extension model will refer to the base model. `cds add extension` writes a placeholder here — change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it will be used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it will only be used locally.
 - `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. `cds pull` will keep this property in sync if needed.
-- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. It sits under `optionalDependencies` **on purpose**: it's still installed by `npm install`, so local test-drives get a real database — but because it isn't a regular `dependency` or `devDependency`, `cds build` doesn't treat the project as a runnable app and therefore keeps your local `test/data` **out of the pushed extension** (see [Add Test Data](#add-test-data)). Declaring it as a `devDependency` would bundle that dev-only data into `cds push` and deploy it to the tenant.
+- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. `cds add extension` scaffolds it under `devDependencies` — **move it to `optionalDependencies`** as shown above. It sits there **on purpose**: it's still installed by `npm install`, so local test-drives get a real database — but because it isn't a regular `dependency` or `devDependency`, `cds build` doesn't treat the project as a runnable app and therefore keeps your local `test/data` **out of the pushed extension** (see [Add Test Data](#add-test-data)). Leaving it as a `devDependency` would bundle that dev-only data into `cds push` and deploy it to the tenant.
 - `cds.server.port` fixes the local test-drive port to `4006`, so extension developers can just run `cds watch` without passing `--port`.
 
 ::: details Uniqueness of base-model name…
@@ -276,7 +284,7 @@ You may want to consider [separating concerns](../domain/index#separation-of-con
 
 #### Add Test Data
 
-To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. In your template project, create a file _test/data/sap.capire.travels-Travels.csv_ like that:
+To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. A `test/data/sap.capire.travels-Travels.csv` has this shape (the complete, real data you copy in the next step replaces this illustrative sample, so you don't need to hand-write it):
 
 ::: code-group
 
@@ -289,11 +297,19 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 :::
 
 ::: tip Provide a complete set of test data
-A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder. You're assembling this template from the base app's sources, so copy straight from the base app and its reuse packages:
+A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
-- **The app's own data.** Copy every `sap.capire.travels-*.csv` from the base app's `db/data/` folder into your `test/data/`: `Travels`, `Bookings`, `Bookings.Supplements`, `TravelAgencies`, `TravelStatus`(+`.texts`), `TravelPurposes`, `PaymentMethods`, and `BookingStatus`(+`.texts`). These are a plain copy, no edits needed.
-- **Reuse code lists** from `@capire/common/data/`: `sap.common-Currencies`(+`_texts`) and `sap.common-Countries`(+`_texts`), so currency symbols and country names resolve. Mostly a plain copy, but `Currencies` needs its extra columns trimmed (see the next section).
-- **External & federated data**: flights (from `@capire/xflights-data`) and customers (from `@capire/s4`). These aren't stored in XTravels' own model but projected from external services, so their local table names and columns need a little care. See [External & Federated Test Data](#external-test-data).
+You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across. From the `xtravels-ext` folder:
+
+```sh
+# The app's own data: plain copy from the base app's db/data/
+cp ../samples/xtravels/db/data/sap.capire.travels-{Travels,Bookings,Bookings.Supplements,TravelAgencies,TravelStatus,TravelStatus.texts,TravelPurposes,PaymentMethods,BookingStatus,BookingStatus.texts}.csv test/data/
+
+# Reuse code lists from @capire/common: plain copy (Currencies is handled separately below)
+cp ../samples/common/db/data/sap.common-{Countries,Countries_texts,Currencies_texts}.csv test/data/
+```
+
+Two groups still need care, both covered in the next section: `Currencies` has extra columns to trim, and the external **flights** and **customers** data has filenames to derive. See [External & Federated Test Data](#external-test-data).
 :::
 
 ::: details Why `test/data/` and not `db/data/`?
@@ -312,18 +328,20 @@ To make the template browsable, provide that data locally. Two things need to li
 @federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
 ```
 
-Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, so copy the files verbatim from these locations into your `test/data/`:
+Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, found under the `samples` workspace next to your extension project. From the `xtravels-ext` folder:
 
-| Copy from (in the reuse package) | Provides |
-| --- | --- |
-| `@capire/s4/srv/external/data/API_BUSINESS_PARTNER.A_BusinessPartner.csv` | Customers |
-| `@capire/xflights-data/data/sap.capire.flights.FlightsService.Flights.csv` | Flights |
-| `@capire/xflights-data/data/…FlightsService.Airlines.csv` | Airlines (so the flattened `airline` name resolves) |
-| `@capire/xflights-data/data/…FlightsService.Airports.csv` | Airports (so `origin`/`destination` resolve) |
-| `@capire/xflights-data/data/…FlightsService.Supplements.csv` | Supplements |
+```sh
+# Customers: SAP S/4HANA business partners (@capire/s4)
+cp ../samples/s4/srv/external/data/API_BUSINESS_PARTNER.A_BusinessPartner{,Address}.csv test/data/
+
+# Flights, Airlines, Airports, Supplements: the FlightsService master data (@capire/xflights-data)
+cp ../samples/xflights/apis/data-service/data/sap.capire.flights.FlightsService.{Flights,Airlines,Airports,Supplements}.csv test/data/
+```
+
+`Airlines` and `Airports` are needed so the flattened `airline`, `origin`, and `destination` names resolve, and `A_BusinessPartnerAddress` carries the customer address the UI shows.
 
 ::: tip Why flights data comes from `@capire/xflights-data`, not `@capire/xflights`
-`@capire/xflights` is the flights **microservice**: in the deployed app XTravels calls it remotely and replicates its data, so the service owns that data, XTravels doesn't. There's nothing to copy from it. `@capire/xflights-data` is a separate pre-built **integration package** that bundles the same `FlightsService` definition together with sample master data (Airlines, Airports, Flights, Supplements). XTravels depends on `@capire/xflights-data` (not the live microservice), so a standalone `cds watch` runs against a **mock** of the service, and that package is where the data CSVs live. The same split applies to any federated service: the running service is one thing, the sample-data package you copy from is another.
+`@capire/xflights` is the flights **microservice**: in the deployed app XTravels calls it remotely and replicates its data, so the service owns that data, XTravels doesn't. There's nothing to copy from it. `@capire/xflights-data` is a separate pre-built **integration package** that bundles the same `FlightsService` definition together with sample master data (Airlines, Airports, Flights, Supplements). XTravels depends on `@capire/xflights-data` (not the live microservice), so a standalone `cds watch` runs against a **mock** of the service, and that package is where the data CSVs live. The same split shows up on disk: the FlightsService master data is under `xflights/apis/data-service/data/` (the `@capire/xflights-data` package), **not** under the microservice's own `xflights/db/data/` (whose `sap.capire.flights-*` tables are the service's internal storage, a different namespace). Copy from `apis/data-service/data/`. The same split applies to any federated service: the running service is one thing, the sample-data package you copy from is another.
 :::
 
 **2. Match the columns to the pulled model.** The base model you pull is **minified** (`@cds.minify`) — external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …`; if it targets an entity that was dropped entirely, you get `no such table`.
@@ -510,7 +528,14 @@ Refer to the section on [`cds login`](#cds-login) for a simplified workflow.
 It all starts with a customer subscribing to a SaaS application. In a productive application this is usually triggered by the platform to which the customer is logged on. The platform is using a technical user to call the application subscription API.
 In your local setup, you can simulate this with a [mock user](../../node.js/authentication#mock-users) `yves`.
 
-1. In a new terminal, subscribe as tenant `t1`:
+First, start the app locally with its MTX sidecar (see [Test-Drive Locally](../multitenancy/index#test-drive-locally) for details). In the `xtravels` folder, use two terminals:
+
+```sh
+cds watch mtx/sidecar   # terminal 1 — MTX sidecar on :4005
+cds watch --with-mtx    # terminal 2 — app on :4114 (XTravels pins this port)
+```
+
+1. In a third terminal, subscribe as tenant `t1`:
 
     ```sh
     cds subscribe t1 --to http://localhost:4005 -u yves:
@@ -519,7 +544,7 @@ In your local setup, you can simulate this with a [mock user](../../node.js/auth
   Please note that the URL used for the subscription command is the sidecar URL, if a sidecar is used.
   Learn more about tenant subscriptions [via the MTX API for local testing](../multitenancy/mtxs#put-tenant).{.learn-more}
 
-2. Verify that it worked by opening the [XTravels Fiori UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window** and log in as `carol`, which is assigned to tenant `t1`.
+2. Verify that it worked by opening the [XTravels Fiori UI](http://localhost:4114/travels/webapp/index.html) in a **new private browser window** and log in as `carol`, which is assigned to tenant `t1`.
 
 ![XTravels travel list with columns for Travel, Description, Customer, Agency, Starting Date, and Travel Status.](assets/xtravels-travels-list.png){.mute-dark}
 
@@ -563,10 +588,10 @@ In order to test-drive and validate the extension before activating to productio
 Extension projects are standard CAP projects extending the subscribed application. SaaS providers usually provide **application-specific templates**, which extension developers can download and open in their editor.
 
 You can therefore use the extension template created in your walkthrough [as SaaS provider](#templates).
-Open the `xtravels-ext` folder in your editor. Here's how you do it using VS Code:
+Open the `xtravels-ext` folder in your editor (it sits next to the `samples` workspace). Here's how you do it using VS Code:
 
 ```sh
-code ../xtravels-ext
+code ../../xtravels-ext
 ```
 
 ![README.md getting-started content for the XTravels extension project template.](assets/xtravels-ext-readme.png){.ignore-dark}
@@ -748,7 +773,7 @@ Execute `cds build --log-level info` to display all messages, although they shou
 
 #### Verify the Extension {#test-extension }
 
-Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4004/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push — see the [next step](#add-data) for what that means.
+Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4114/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push — see the [next step](#add-data) for what that means.
 
 ![Deployed XTravels Fiori UI with extension columns Priority, set to the default value medium, and Cost Center, set to the default value Travel & Expenses for every travel.](assets/xtravels-deployed-ext.png){.mute-dark}
 

@@ -112,19 +112,19 @@ using { TravelService } from '@capire/xtravels';
 extend service TravelService with {
 
   // Per-customer budget ceiling: read by assert_within_budget.
-  entity CustomerBudgets {
+  entity x_CustomerBudgets {
     key customer_ID : String;
         maxTotal    : Decimal;
   }
 
   // Per-customer policy flags: read by before-CREATE.
-  entity CustomerPolicies {
+  entity x_CustomerPolicies {
     key customer_ID : String;
         blocked     : Boolean;
   }
 
   // Domain event emitted by after-CREATE (see after Handlers).
-  event TravelCreated {
+  event x_TravelCreated {
     ID       : Integer;
     customer : String;
   }
@@ -152,6 +152,7 @@ Letting subscribers add entities is powerful, so cap it. An **extension allow-li
   "cds": {
     "requires": {
       "cds.xt.ExtensibilityService": {
+        "element-prefix": ["x_"],
         "extension-allowlist": [
           { "for": ["sap.capire.travels.Travels"], "kind": "entity", "new-fields": 5 },
           { "for": ["TravelService"], "new-entities": 3 },
@@ -165,9 +166,9 @@ Letting subscribers add entities is powerful, so cap it. An **extension allow-li
 
 :::
 
-- `{ "for": ["TravelService"], "new-entities": 3 }`: at most **3** new entities may be added to `TravelService` (here `CustomerBudgets` and `CustomerPolicies`, leaving room for one; the `TravelCreated` **event** does not count against the entity cap). A base-model **service** must be listed before *any* entity may be added to it.
+- `{ "for": ["TravelService"], "new-entities": 3 }`: at most **3** new entities may be added to `TravelService` (here `x_CustomerBudgets` and `x_CustomerPolicies`, leaving room for one; the `x_TravelCreated` **event** does not count against the entity cap). A base-model **service** must be listed before *any* entity may be added to it.
 - `{ "for": ["com.partner.ext"], "new-entities": 3 }`: at most **3** standalone tables in the `com.partner.ext` **namespace**. Namespaces are open by default; this caps them.
-- `{ "for": [...], "kind": "entity", "new-fields": 5 }`: caps new fields on an existing entity (the `customerStatus` model extension below adds one).
+- `{ "for": [...], "kind": "entity", "new-fields": 5 }`: caps new fields on an existing entity (the `x_customerStatus` model extension below adds one).
 
 Exceed a cap and the push is rejected, naming every offending definition:
 
@@ -190,7 +191,7 @@ A common use-case is adding computed information to read responses without chang
 2. **Use an after-READ handler only for what the model can't express**: a value that needs a service call, an aggregate over a *different* set of rows, or a source the projection can't reach. Even then, favor enriching **single-record** reads, where the cost is one extra lookup.
 3. **Never look up per row on a multi-record read.** A handler that issues one query per row turns a page of N rows into N database round-trips, the classic N+1. Either enrich single-record reads only, as below, or, when a page genuinely needs enriching, collect the keys and fetch them in **one** query.
 
-The example enriches `Travels` with a `customerStatus` tier (Gold, Silver, or Bronze) computed from the customer's **lifetime spend across all their travels**. This can't be a calculated element or an association path: it isn't an expression over the row's own columns, and the `Customer` association yields the customer record, not an aggregate over that customer's *other* travels. It needs a handler, and because computing it means a full aggregate scan per customer, a **single-record** one.
+The example enriches `Travels` with a `x_customerStatus` tier (Gold, Silver, or Bronze) computed from the customer's **lifetime spend across all their travels**. This can't be a calculated element or an association path: it isn't an expression over the row's own columns, and the `Customer` association yields the customer record, not an aggregate over that customer's *other* travels. It needs a handler, and because computing it means a full aggregate scan per customer, a **single-record** one.
 
 First, add the virtual element to the data model (see [Extending the Data Model](customization#extending-the-data-model) for the mechanics):
 
@@ -198,7 +199,7 @@ First, add the virtual element to the data model (see [Extending the Data Model]
 
 ```cds [extension model]
 extend Travels with {
-  virtual customerStatus : String @title: 'Customer Status';
+  virtual x_customerStatus : String @title: 'Customer Status';
 }
 ```
 
@@ -225,7 +226,7 @@ module.exports = async function enrichCustomerStatus(results, req) {
     .where({ Customer_ID: travel.Customer_ID })
 
   const spend = total ?? 0
-  travel.customerStatus = spend > 50000 ? 'Gold' : spend > 10000 ? 'Silver' : 'Bronze'
+  travel.x_customerStatus = spend > 50000 ? 'Gold' : spend > 10000 ? 'Silver' : 'Bronze'
 }
 ```
 
@@ -233,7 +234,7 @@ module.exports = async function enrichCustomerStatus(results, req) {
 
 - **Guard on result size.** `results.length !== 1` restricts the work to single-record reads: the aggregate scan runs once, for the one addressed row, never once per row of a page. A filtered collection read that returns a single row is enriched too; the guard keys on the result, not on the URL shape.
 - **Aggregate in the database.** `` .columns`sum(TotalPrice) as total` `` computes the total in one query instead of fetching the customer's travels and summing in JavaScript. Push work down to the database.
-- **The handler depends on the fields it reads.** It reads `travel.Customer_ID`, so a client projecting a subset that omits it (`$select=ID,customerStatus`) leaves `customerStatus` empty, because the handler returns early. Read the fields your enrichment needs, or don't narrow them away.
+- **The handler depends on the fields it reads.** It reads `travel.Customer_ID`, so a client projecting a subset that omits it (`$select=ID,x_customerStatus`) leaves `x_customerStatus` empty, because the handler returns early. Read the fields your enrichment needs, or don't narrow them away.
 - **Object `where` does equality only.** `` .where({ Customer_ID: … }) `` is fine for an equality match, but operators must use the tagged-template form: `` .where`ID in ${ids}` ``, `` .where`TotalPrice > ${limit}` ``. The object form `{ in: [ … ] }` is **not** honored inside the sandbox and silently matches nothing.
 
 ::: warning after-READ does not recurse
@@ -257,7 +258,7 @@ Single-record rules (a **required** field, a **value range**, a **default**) are
 ::: code-group
 
 ```cds [extension model]
-extend TravelService.Travels with {
+extend Travels with {
   x_headcount : Integer @assert.range: [1, 50] default 1;
 }
 ```
@@ -276,12 +277,12 @@ That leaves the handler for the checks a constraint genuinely *can't* express: a
 
 ```js [srv/TravelService/Travels/before-CREATE.js]
 module.exports = async function beforeCreateTravel(req) {
-  const { CustomerPolicies } = this.entities
+  const { x_CustomerPolicies } = this.entities
   const { Customer_ID, BookingFee } = req.data
   if (!Customer_ID) return
 
   // Lookup on another entity: is this customer blocked?
-  const policy = await SELECT.one.from(CustomerPolicies)
+  const policy = await SELECT.one.from(x_CustomerPolicies)
     .columns('blocked')
     .where({ customer_ID: Customer_ID })
   if (policy?.blocked)
@@ -301,7 +302,7 @@ The sandbox validates parameter and return types against the CDS model on every 
 
 State machines and per-field transition rules belong in the CDS model; CAP already offers declarative flow annotations for them. Handlers earn their keep when a rule reaches **across records** and needs a live aggregate no annotation can express.
 
-A customer has a fixed travel budget stored in `CustomerBudgets`. Before a travel is updated, the handler reads the currently-persisted `BookingFee`, computes the delta the caller is applying, and delegates the customer-wide check:
+A customer has a fixed travel budget stored in `x_CustomerBudgets`. Before a travel is updated, the handler reads the currently-persisted `BookingFee`, computes the delta the caller is applying, and delegates the customer-wide check:
 
 ::: code-group
 
@@ -354,10 +355,10 @@ Implement `assert_within_budget` (declared in [Opening Entities and Actions](#op
 
 ```js [srv/TravelService/on-assert_within_budget.js]
 module.exports = async function assert_within_budget(req) {
-  const { Travels, CustomerBudgets } = this.entities
+  const { Travels, x_CustomerBudgets } = this.entities
   const { customerID, delta } = req.data
 
-  const budget = await SELECT.one.from(CustomerBudgets)
+  const budget = await SELECT.one.from(x_CustomerBudgets)
     .columns('maxTotal')
     .where({ customer_ID: customerID })
   if (!budget) return   // no budget on record, nothing to enforce
@@ -385,13 +386,13 @@ The invariant: **validate in `before`, react in `after`.** A reject in `after` s
 
 ### after CREATE: emit a domain event {#after-create}
 
-The canonical `after` reaction is emitting an event so downstream systems can pick up the change asynchronously. `after-CREATE` emits `TravelCreated`, declared as an event in the [extension model](#opening):
+The canonical `after` reaction is emitting an event so downstream systems can pick up the change asynchronously. `after-CREATE` emits `x_TravelCreated`, declared as an event in the [extension model](#opening):
 
 ::: code-group
 
 ```js [srv/TravelService/Travels/after-CREATE.js]
 module.exports = async function afterCreateTravel(result, req) {
-  await this.emit('TravelCreated', {
+  await this.emit('x_TravelCreated', {
     ID:       req.data.ID,
     customer: req.data.Customer_ID,
   })
@@ -400,7 +401,7 @@ module.exports = async function afterCreateTravel(result, req) {
 
 :::
 
-- **Emit only modeled events.** The sandbox rejects `this.emit('X', …)` unless `X` is an event declared in the service model, and it validates the payload against that declaration. Declaring the event is what makes the emit legal; see the `event TravelCreated` in [Opening Entities and Actions](#opening).
+- **Emit only modeled events.** The sandbox rejects `this.emit('X', …)` unless `X` is an event declared in the service model, and it validates the payload against that declaration. Declaring the event is what makes the emit legal; see the `event x_TravelCreated` in [Opening Entities and Actions](#opening).
 - **`await` the emit.** The sandbox await-linter requires it; a bare `this.emit(...)` is flagged.
 - **Read from `req.data`, not `result`.** `req.data` carries the full payload, including the `ID` assigned in `before-CREATE`; under CAP 10 `result` is a minimal projection (typically just key columns).
 

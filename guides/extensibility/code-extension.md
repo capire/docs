@@ -25,9 +25,9 @@ Extension handlers never run as ordinary Node.js modules on the tenant. They run
 | Sandbox    | When                                    | Characteristics                                        |
 |------------|-----------------------------------------|--------------------------------------------------------|
 | **mocked** | local `development` profile (`cds watch`) | in-process, permissive — fast iteration                |
-| **wasm**   | production, and `cds watch --wasm`      | isolated WebAssembly runtime; enforces the runtime restrictions |
+| **wasm**   | production, and `cds watch --profile wasm`      | isolated WebAssembly runtime; enforces the runtime restrictions |
 
-The plugin picks the engine automatically. **Every multitenant setup uses `wasm`** — the realistic push flow always runs the isolated engine. The permissive `mocked` engine is a single-tenant local-development convenience, selected only when `code-extensibility.sandbox` is `mocked` and the app is single-tenant. Because production is always `wasm`, verify under `cds watch --wasm` before pushing.
+The plugin picks the engine automatically. **Every multitenant setup uses `wasm`** — the realistic push flow always runs the isolated engine. The permissive `mocked` engine is a single-tenant local-development convenience, selected only when `code-extensibility.sandbox` is `mocked` and the app is single-tenant. Because production is always `wasm`, verify under `cds watch --profile wasm` before pushing.
 
 ### Debugging and `console` {#debugging}
 
@@ -36,7 +36,7 @@ How you inspect a handler depends on where it runs. The step debugger and `conso
 | Where it runs | Step debugger | `console.log` |
 |---------------|---------------|---------------|
 | **mocked** (local `cds watch`, single-tenant dev) | ✅ breakpoints bind; runs in-process | ✅ prints |
-| **local wasm** (`cds watch --wasm`) | ❌ isolated runtime, no attach point | ✅ prints (forwarded to the host console) |
+| **local wasm** (`cds watch --profile wasm`) | ❌ isolated runtime, no attach point | ✅ prints (forwarded to the host console) |
 | **pushed** (`cds push` to a tenant) | ❌ | ❌ rejected at push (`422`; see [Forbidden Constructs](#forbidden)) |
 
 **Mocked: full debugger.** The `mocked` engine runs each handler **in-process**, executing your handler file as its own source (the sandbox sets the file path as the script's `sourceURL`). That makes handlers debuggable like any other Node.js code:
@@ -49,7 +49,7 @@ Attach your editor's Node debugger (VS Code's JavaScript debugger, Chrome DevToo
 
 **Local wasm: no debugger, but `console` still works.** The `wasm` engine runs handler code in an isolated WebAssembly runtime with no attach point, so breakpoints never bind. `console.log` (and the other `console.*` methods) still works, though: the sandbox forwards it to the host console, so it's your main way to trace logic in the isolated engine locally.
 
-**Pushed: `console` is rejected.** Validation at `cds push` is **static**: it rejects `console` outright, along with the other [forbidden constructs](#forbidden). Because the check is static, it fires even on code that ran fine under `cds watch --wasm`. So treat `console` as a **local-only** aid: trace with it while iterating, then strip it (or switch to `req.info` / `req.warn`, which survive the push) before pushing.
+**Pushed: `console` is rejected.** Validation at `cds push` is **static**: it rejects `console` outright, along with the other [forbidden constructs](#forbidden). Because the check is static, it fires even on code that ran fine under `cds watch --profile wasm`. So treat `console` as a **local-only** aid: trace with it while iterating, then strip it (or switch to `req.info` / `req.warn`, which survive the push) before pushing.
 
 ## Configuration {#config}
 
@@ -144,7 +144,7 @@ Handlers use the standard CAP query language, with a few sandbox rules:
 
 ## Forbidden Constructs {#forbidden}
 
-The following are **rejected at `cds push`** (a `422` validation error) by a **static** check that runs at push and build time only, not during local `cds watch`, in either engine. So code using them can still run locally (notably `console`, which works under both `mocked` and `cds watch --wasm`) yet be refused at push:
+The following are **rejected at `cds push`** (a `422` validation error) by a **static** check that runs at push and build time only, not during local `cds watch`, in either engine. So code using them can still run locally (notably `console`, which works under both `mocked` and `cds watch --profile wasm`) yet be refused at push:
 
 | Not allowed in a handler | Instead |
 |--------------------------|---------|

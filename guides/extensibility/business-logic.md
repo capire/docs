@@ -111,11 +111,17 @@ annotate TravelService.Travels with @flow.status: Status actions {
 
 :::
 
-Then wire the call in your service implementation. Connect to the extension service and invoke it in a `before` handler. If no tenant handler is deployed, the call is a silent no-op and the transition proceeds:
+Then wire the call in your service implementation. Connect to the extension service and invoke it in a `before` handler, and call the new method from `init()` so it registers. If no tenant handler is deployed, the call is a silent no-op and the transition proceeds:
 
 ::: code-group
 
 ```js [srv/travel-service/service.js]
+async init() {
+  // … your existing wiring …
+  await this.extension_points()
+  return super.init()
+}
+
 async extension_points() {
   const ext = await cds.connect.to('TravelExtensionService')
   const { Travels } = this.entities
@@ -232,7 +238,7 @@ cds watch
 
 Call `submitForReview` on a travel over the limit and confirm the `409`; on a cheap one it passes and the status flips to `InReview`.
 
-Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
+Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --profile wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
 
 ::: tip Reproduce provider wiring locally
 `cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Add a local-only _srv/server.js_ that reconnects to `TravelExtensionService` and registers the same `before(submitForReview)` handler shown in [Call the Extension Point](#wire). The [reference logic](customization#reference-wiring) section is the pattern for this kind of local wiring (a read-only _server.js_ that reproduces provider behavior), not the exact handler to copy. On a real tenant this wiring is already there.
@@ -243,28 +249,34 @@ Because the mocked sandbox runs your handler **in-process**, you can debug it li
 The mocked sandbox is permissive; production uses **wasm**, which enforces the real restrictions. Do a one-off check under wasm before pushing:
 
 ```sh
-cds watch --wasm
+cds watch --profile wasm
 ```
 
 If the handler behaves the same here, it will behave the same on the tenant. This is also where forbidden constructs surface early; see [Forbidden Constructs](code-extension#forbidden).
 
 ### 6. Push to the Tenant {#push}
 
-Activate the extension on your tenant:
+Activate the extension on your tenant. Push targets the sidecar as the extension developer, exactly as [`cds pull`](customization#pull-base) did:
 
 ```sh
-cds push
+cds push --to http://localhost:4005 -u bob:
 ```
 
-The push packages only the files under service-named folders (your _srv/TravelExtensionService/_ handler) plus the extension model. Verify against the deployed app: `submitForReview` on an over-limit travel now returns your `409` policy message; a cheap one succeeds.
+The push packages only the files under service-named folders (your _srv/TravelExtensionService/_ handler) plus the extension model.
 
 ::: warning Sidecar needs the plugin too
 If `cds push` fails to process the handler, confirm `@sap/cds-oyster` is installed in the provider's **`mtx/sidecar`**, not only the app; see [step 1](#provider).
 :::
 
+::: warning Upgrade tenants subscribed before code extensibility was enabled
+Adding `@sap/cds-oyster` extends the MTX `Extensions` table with new columns. Tenants that were **already subscribed** before you enabled code extensibility keep the old schema, and the push fails with `table cds_xt_Extensions has no column named cdsOysterVersion`. Upgrade (or unsubscribe + re-subscribe) those tenants once after enabling it; a restart only re-deploys the technical `t0` tenant, not existing subscribers.
+:::
+
+To verify against the **deployed app**, call `submitForReview` as a user authorized for the travel action in that tenant (not the extension developer `bob`, who holds only `cds.ExtensionDeveloper` and is restricted to the extension APIs): an over-limit travel now returns your `409` policy message; a cheap one succeeds.
+
 ## The Sandbox {#sandbox}
 
-Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --wasm` (isolated, enforces the runtime restrictions). Every multitenant setup uses `wasm`, so a quick [`--wasm` run](#verify-wasm) before pushing surfaces isolation issues early. Push then adds a **static** check on top, which rejects constructs like `console` that still run under `--wasm`.
+Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --profile wasm` (isolated, enforces the runtime restrictions). Every multitenant setup uses `wasm`, so a quick [`--profile wasm` run](#verify-wasm) before pushing surfaces isolation issues early. Push then adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
 
 The [Code Extension Reference](code-extension) documents the sandbox in full: [engines](code-extension#sandbox), [configuration](code-extension#config), the [handler-file layout](code-extension#files) and [sandbox API](code-extension#api), [query rules](code-extension#queries), [forbidden constructs](code-extension#forbidden), [quarantine](code-extension#quarantine), and [troubleshooting](code-extension#troubleshooting).
 
@@ -273,7 +285,7 @@ The [Code Extension Reference](code-extension) documents the sandbox in full: [e
 - **Keep handlers small and focused** — one file, one job. Complex logic is hard to diagnose when a runtime error blocks the extension.
 - **Push work down to the database** — filter and scope with `where` clauses and aggregates rather than looping in JavaScript.
 - **Signal outcomes with `req.reject` / `req.error`, never `throw`** — an unhandled throw blocks the extension for the whole tenant until you re-push.
-- **Test in the mocked sandbox, then verify with `cds watch --wasm`** before pushing. The wasm run exercises the isolated engine and catches reliance on globals it doesn't provide; keep in mind that push adds a **static** check on top, which rejects constructs like `console` that still run under `--wasm`.
+- **Test in the mocked sandbox, then verify with `cds watch --profile wasm`** before pushing. The wasm run exercises the isolated engine and catches reliance on globals it doesn't provide; keep in mind that push adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
 
 ## Best Practices for Application Providers {#provider-best-practices}
 
