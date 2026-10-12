@@ -729,7 +729,7 @@ Starting with CAP Java `4.0`, deep authorization is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.deep.enabled: false</Config>.
 
 ::: warning
-The [@cds.search](/guides/services/served-ootb#cds-search) must not include fields of restricted associations. Search through them might reveal content of restricted entities.
+The [@cds.search](/guides/services/served-ootb#cds-search) annotation must not include fields from restricted associations, as searching through them may expose data from restricted entities.
 :::
 
 ### Compositions
