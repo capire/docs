@@ -471,6 +471,49 @@ To expand all first level associations of an entity, use `expand()` on the entit
 Select.from(BOOKS).columns(b -> b.expand());
 ```
 
+#### Expand with `excluding` {#expand-excluding}
+
+To expand all elements of an associated entity _except_ specific ones, chain `excluding` after `expand()`. This is the Java equivalent of the CQL `{ * } excluding { ... }` syntax for [nested expands](../../cds/cql#excluding-clause).
+
+```java
+// static
+Select.from(AUTHORS)
+    .columns(a -> a.name(),
+             a -> a.books().expand()
+                           .excluding(b -> b.isbn()));
+```
+
+```java
+// dynamic
+Select.from("bookshop.Authors")
+    .columns(a -> a.get("name"),
+             a -> a.to("books").expand().excluding("isbn"));
+```
+
+Both queries correspond to the following CQL statement:
+
+```sql
+SELECT from bookshop.Authors { name, books { * } excluding { isbn } }
+```
+
+Multiple elements can be excluded by listing them as additional arguments (static) or passing multiple strings (dynamic):
+
+```java
+// static - exclude multiple elements
+Select.from(BOOKS)
+    .columns(b -> b.title(),
+             b -> b.author().expand()
+                            .excluding(a -> a.dateOfDeath(),
+                                       a -> a.placeOfDeath()));
+
+// dynamic - exclude multiple elements
+Select.from("bookshop.Books")
+    .columns(b -> b.get("title"),
+             b -> b.to("author").expand().excluding("dateOfDeath", "placeOfDeath"));
+```
+
+`excluding` works for both to-one and to-many associations.
+
 ::: warning Don't use distinct together with expand
 The `distinct` clause removes duplicate rows from the root entity and effectively aggregates rows. Expanding child entities from aggregated rows is not well-defined and can lead to issues that can be resolved by removing distinct.
 :::
