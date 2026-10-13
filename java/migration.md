@@ -33,6 +33,10 @@ For any Java related changes of the CAP Java APIs we try to make the transition 
 
 The OpenRewrite Maven plugin and its recipes are published to the [Code Genome Project](https://www.codegenomeproject.org/) repository, which requires explicit configuration in your `~/.m2/settings.xml`.
 
+::: tip SAP Internal
+The OpenRewrite artifacts are available through the internal Maven repository, so no additional repository configuration is required.
+:::
+
 [Learn more about the Code Genome Project repository setup.](https://docs.openrewrite.org/running-recipes/running-rewrite-on-a-maven-project-without-modifying-the-build#configure-the-code-genome-project-repository){.learn-more}
 
 ### Running OpenRewrite Recipes
