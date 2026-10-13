@@ -287,6 +287,13 @@ The [Code Extension Reference](code-extension) documents the sandbox in full: [e
 - **Signal outcomes with `req.reject` / `req.error`, never `throw`** — an unhandled throw blocks the extension for the whole tenant until you re-push.
 - **Test in the mocked sandbox, then verify with `cds watch --profile wasm`** before pushing. The wasm run exercises the isolated engine and catches reliance on globals it doesn't provide; keep in mind that push adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
 
+## Best Practices for Subscribers {#subscriber-best-practices}
+
+A code extension runs tenant-supplied JavaScript on the live application, so the subscriber's organization should treat activating one as a governed step, not a developer convenience. Two practices matter most:
+
+- **Separate authoring from deployment (four eyes).** Writing a handler needs no special authorization: it is just local JavaScript. Activating one does: the `cds push` that deploys an extension to a tenant requires the `cds.ExtensionDeveloper` role. Keep that role, and the push itself, with a **designated deployer** who is not the handler's author, so a second person reviews potentially unsafe logic before it reaches a tenant. This principle applies to every extension and is **essential for code extensions**, where a handler can read and reshape live tenant data.
+- **Never activate a code extension straight to production.** Push it to a **test tenant** first (the `t1-ext` setup in [Customizing SaaS Solutions](customization#prepare-an-extension-tenant)), validate the behavior against representative data there, and only then promote the reviewed extension to the production tenant. The isolated `wasm` engine and the [service fence](code-extension#security) contain what a handler *can* reach; they do not tell you whether its logic is correct for your data.
+
 ## Best Practices for Application Providers {#provider-best-practices}
 
 - **Monitor for quarantined extensions; subscribers aren't notified.** An *unhandled* runtime error in a handler (as opposed to a deliberate `req.reject`/`req.error`) **quarantines** it tenant-wide until the next successful push, and nothing notifies the subscriber. Make it an operations task to watch `cds.xt.Extensions` for blocked extensions and reach out to the extension developer to fix and re-push. See [Quarantine](code-extension#quarantine).
