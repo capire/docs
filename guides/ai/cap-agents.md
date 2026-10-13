@@ -352,9 +352,9 @@ For details on configuring and using audit logging, refer to the documentation a
 
 ### Persistence
 
-The CAP-based harness provides short-term memory for agents by storing conversational and checkpoints in the connected primary database.
+The CAP-based agent harness provides short-term memory out-of-the-box via the connected primary database – that is in _SQLite_ in local dev, _SAP HANA_ in production.
 
-Agents can leverage this short-term memory to maintain context across multiple interactions within a session.
+This allows agents to persist conversational context and workflow checkpoints, so that they can resume sessions seamlessly even after server restarts, as well as boosting scalability in clustered environments. In addition, it provides a foundation for implementing long-term memory, monitoring and analytics on agent interactions.
 
 
 
@@ -406,9 +406,7 @@ The plugin can also export traces to [MLflow](https://mlflow.org/docs/latest/llm
 ```
 :::
 
-When enabled, an _MLflow_ exporter is added as a **second span processor** alongside any existing exporter (Dynatrace, Cloud Logging, Grafana, etc.),
-and the plugin automatically adds the following `mlflow.*` span attributes to existing OTel spans so the MLflow OTLP ingestion endpoint assembles them
-into proper MLflow traces — no additional SDK required.
+When enabled, an _MLflow_ exporter is added as a **second span processor** alongside any existing exporter (Dynatrace, Cloud Logging, Grafana, etc.), and the plugin automatically adds the following `mlflow.*` span attributes to existing OTel spans so the MLflow OTLP ingestion endpoint assembles them into proper MLflow traces — no additional SDK required.
 
 | Attribute                | Source                                                                                                |
 |--------------------------|-------------------------------------------------------------------------------------------------------|
