@@ -677,6 +677,31 @@ Common usage of the MTX services is through REST APIs. Here's an example:
    }
    ```
 
+## Technical Roles {#roles}
+
+The MTX services are **technical endpoints**, not business APIs. Access to them is governed by a small set of **technical roles**. These roles gate tenant lifecycle and extensibility operations; they are not business authorizations, and they must **never be bundled into business roles** (see the warning below).
+
+| Role | Unlocks | Used for |
+| ---- | ------- | -------- |
+| `cds.ExtensionDeveloper` | [ExtensibilityService](#extensibilityservice) (`/-/cds/extensibility/**`) | Reading the base model and pushing, activating, and deleting a tenant's own extensions (both model and code extensions). This is the role that `cds pull` and `cds push` require. It is **tenant-scoped**: a holder may only manage extensions for the tenant they belong to. |
+| `cds.Subscriber` | [DeploymentService](#deploymentservice) (`/-/cds/deployment/**`), [SaasProvisioningService](#saasprovisioningservice) (`/-/cds/saas-provisioning/**`) | Subscribing, upgrading, and unsubscribing tenants. A technical role for the provisioning client (the automation that onboards tenants), never for end users. |
+
+### Technical and Pseudo Roles
+
+Two further roles are presented by platform infrastructure, not assigned to people:
+
+- `mtcallback`: the role the SAP BTP SaaS Provisioning service presents when it calls the [SaasProvisioningService](#saasprovisioningservice) callback during tenant onboarding and offboarding.
+- `internal-user`: a pseudo-role for internal, technical communication inside the [application zone](../security/overview#application-zone), for example the main application calling its own MTX sidecar. It is established by platform trust (a shared XSUAA instance), not granted to users.
+
+::: warning Keep technical roles out of business roles
+Never include technical roles such as `cds.Subscriber` (or callback roles like `mtcallback`) in a business role collection. Doing so would hand tenant lifecycle control to ordinary users. See [Data Protection](../security/data-protection#auth-callback-endpoints-more).
+:::
+
+### When You Need Which Role {#when-roles}
+
+- **Extensions (the common case).** Anyone who runs `cds pull` / `cds push` to develop and activate extensions needs `cds.ExtensionDeveloper` on their tenant. For **code extensions** especially, treat activation as a governed step: keep the role (and the push) with a designated deployer rather than the handler's author, so a second person reviews the code before it reaches a tenant. See [Best Practices for Subscribers](../extensibility/business-logic#subscriber-best-practices).
+- **Tenant provisioning.** `cds.Subscriber` is for the automation that subscribes and upgrades tenants, not for extension developers or business users. Most teams never assign it to a person at all; the platform's provisioning flow uses it.
+
 ## ModelProviderService
 
 The _ModelProviderService_ serves model variants, which may include tenant-specific extensions and/or feature-toggled aspects.

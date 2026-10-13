@@ -583,6 +583,8 @@ In order to test-drive and validate the extension before activating to productio
 
   :::
 
+  The `cds.ExtensionDeveloper` role is what authorizes `cds pull` and `cds push`. Learn more about it, and the other MTX roles, in [Technical Roles](../multitenancy/mtxs#roles).{.learn-more}
+
 ### 3. Start an Extension Project {#start-ext-project}
 
 Extension projects are standard CAP projects extending the subscribed application. SaaS providers usually provide **application-specific templates**, which extension developers can download and open in their editor.
