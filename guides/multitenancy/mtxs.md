@@ -684,7 +684,7 @@ The MTX services are **technical endpoints**, not business APIs. Access to them 
 | Role | Unlocks | Used for |
 | ---- | ------- | -------- |
 | `cds.ExtensionDeveloper` | [ExtensibilityService](#extensibilityservice) (`/-/cds/extensibility/**`) | Reading the base model and pushing, activating, and deleting a tenant's own extensions (both model and code extensions). This is the role that `cds pull` and `cds push` require. It is **tenant-scoped**: a holder may only manage extensions for the tenant they belong to. |
-| `cds.Subscriber` | [DeploymentService](#deploymentservice) (`/-/cds/deployment/**`), [SaasProvisioningService](#saasprovisioningservice) (`/-/cds/saas-provisioning/**`) | Subscribing, upgrading, and unsubscribing tenants. A technical role for the provisioning client (the automation that onboards tenants), never for end users. |
+| `cds.Subscriber` | [DeploymentService](#deploymentservice) (`/-/cds/deployment/**`), [SaasProvisioningService](#saasprovisioningservice) (`/-/cds/saas-provisioning/**`) | Authorizing direct calls to the subscribe / upgrade / unsubscribe endpoints. In practice this is mostly a **local-testing affordance** (for example `cds subscribe` against a sidecar). In a deployed app these endpoints are reached as `internal-user` from inside the [application zone](../security/overview#application-zone), and SaaS onboarding and offboarding arrive via `mtcallback`, so `cds.Subscriber` is rarely assigned productively. |
 
 ### Technical and Pseudo Roles
 
@@ -700,7 +700,7 @@ Never include technical roles such as `cds.Subscriber` (or callback roles like `
 ### When You Need Which Role {#when-roles}
 
 - **Extensions (the common case).** Anyone who runs `cds pull` / `cds push` to develop and activate extensions needs `cds.ExtensionDeveloper` on their tenant. For **code extensions** especially, treat activation as a governed step: keep the role (and the push) with a designated deployer rather than the handler's author, so a second person reviews the code before it reaches a tenant. See [Best Practices for Subscribers](../extensibility/business-logic#subscriber-best-practices).
-- **Tenant provisioning.** `cds.Subscriber` is for the automation that subscribes and upgrades tenants, not for extension developers or business users. Most teams never assign it to a person at all; the platform's provisioning flow uses it.
+- **Tenant provisioning.** In a deployed app, tenant subscribe / upgrade / unsubscribe run from inside the [application zone](../security/overview#application-zone) as `internal-user`, with SaaS onboarding and offboarding arriving via the `mtcallback` role. `cds.Subscriber` exists to authorize those same endpoints when you call them directly, mainly in local testing; it is rarely assigned to anyone in production.
 
 ## ModelProviderService
 
