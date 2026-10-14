@@ -233,8 +233,6 @@ CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#ve
 
 When a CAP Agent handles a request, CAP Java emits a hierarchy of OpenTelemetry spans that follow the request from the inbound A2A request through each LLM round-trip down to the individual tool executions. The span attributes follow the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) (`gen_ai.*`), so traces are directly consumable by standard observability backends (for example SAP Cloud Logging, Dynatrace, or Jaeger) without custom mapping.
 
-The same spans are produced regardless of the underlying AI framework (LangChain4j or Spring AI).
-
 ### Span Hierarchy
 
 A single agent request produces the following nested spans. When the agent is exposed via the [A2A protocol adapter](#agents), the inbound A2A request span wraps the `invoke_agent` span:
