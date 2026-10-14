@@ -90,6 +90,20 @@ The following table lists these minimum versions for various common dependencies
 | Java Logging | 3.7 | [latest](https://central.sonatype.com/artifact/com.sap.hcp.cf.logging/cf-java-logging-support-servlet-jakarta/versions) |
 | Node.js | 22 | 22 |
 
+CAP Java 4.9.x compiles against Spring Boot **3.5.16**, the latest publicly available Spring Boot 3.x version. As Spring Boot 3.x has reached end of life, no further public security patches are available.
+
+::: tip SAP Internal
+Newer Spring Boot 3.x patch versions with security patches are available from the internal SAP artifactory.
+:::
+
+External customers requiring continued Spring Boot 3.x security patches can obtain enterprise support directly from [Spring Boot](https://enterprise.spring.io/lts-releases).
+
+::: warning Migrate to CAP Java 5.2.0
+We recommend all customers on the LTS version 4.9.x to migrate to CAP Java **5.2.0**, which uses Spring Boot 4.x and continues to receive regular updates.
+
+[See the CAP Java 4.x to 5.x migration guide.](migration#four-to-five){.learn-more}
+:::
+
 
 ### Consistent Versions
 
