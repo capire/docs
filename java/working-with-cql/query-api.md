@@ -471,6 +471,49 @@ To expand all first level associations of an entity, use `expand()` on the entit
 Select.from(BOOKS).columns(b -> b.expand());
 ```
 
+#### Expand with `excluding` {#expand-excluding}
+
+To expand all elements of an associated entity _except_ specific ones, chain `excluding` after `expand()`. This is the Java equivalent of the CQL `{ * } excluding { ... }` syntax for [nested expands](../../cds/cql#excluding-clause).
+
+```java
+// static
+Select.from(AUTHORS)
+    .columns(a -> a.name(),
+             a -> a.books().expand()
+                           .excluding(b -> b.isbn()));
+```
+
+```java
+// dynamic
+Select.from("bookshop.Authors")
+    .columns(a -> a.get("name"),
+             a -> a.to("books").expand().excluding("isbn"));
+```
+
+Both queries correspond to the following CQL statement:
+
+```sql
+SELECT from bookshop.Authors { name, books { * } excluding { isbn } }
+```
+
+Multiple elements can be excluded by listing them as additional arguments (static) or passing multiple strings (dynamic):
+
+```java
+// static - exclude multiple elements
+Select.from(BOOKS)
+    .columns(b -> b.title(),
+             b -> b.author().expand()
+                            .excluding(a -> a.dateOfDeath(),
+                                       a -> a.placeOfDeath()));
+
+// dynamic - exclude multiple elements
+Select.from("bookshop.Books")
+    .columns(b -> b.get("title"),
+             b -> b.to("author").expand().excluding("dateOfDeath", "placeOfDeath"));
+```
+
+`excluding` works for both to-one and to-many associations.
+
 ::: warning Don't use distinct together with expand
 The `distinct` clause removes duplicate rows from the root entity and effectively aggregates rows. Expanding child entities from aggregated rows is not well-defined and can lead to issues that can be resolved by removing distinct.
 :::
@@ -1679,26 +1722,18 @@ These methods allow you to compute the difference between timestamps:
 
 #### Vector Functions
 
-Vector functions allow you to compute similarity and distance of [vectors](../cds-data.md#vector-embeddings), as well as [vector embeddings](../../guides/databases/vector-embeddings) of text data directly in the database.
+Vector functions allow you to compute similarity and distance of [vectors](../ai.md#vector-embeddings), as well as [vector embeddings](../../guides/ai/embeddings) of text data directly in the database.
 
-::: warning Not supported with local MTXS on SQLite
-Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite isn't supported.
+::: warning Local MTXS on SQLite
+Using vector functions in [stored calculated elements](../../cds/cdl#on-write) with [local MTXS](../../guides/multitenancy/mtxs#test-drive-locally) on SQLite
+calls the custom functions of the CAP Node.js runtime.
 :::
 
 ##### Computing Vector Embeddings in SAP HANA <Beta />
 
 CAP Java supports the [VECTOR_EMBEDDING](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-sql-reference-guide/vector-embedding-function-vector) function via `CQL.vectorEmbedding` to generate vector embeddings from text data directly in SAP HANA.
 
-To automatically generate vector embeddings on write in the database, you can define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function:
-
-```cds
-extend Incidents with {
-  @cds.api.ignore
-  embedding : Vector = vector_embedding(
-       'title: ' || title || ', summary: ' || summary,
-       'DOCUMENT', 'SAP_GXY.20250407') stored;
-}
-```
+To automatically generate vector embeddings on write, define a calculated element [on-write](../../cds/cdl#on-write) using the `vector_embedding` function — see [Adding Embeddings](../../guides/ai/embeddings#adding-embeddings) in the guide.
 
 In Java queries, use the `CQL.vectorEmbedding` function to compute vector embeddings:
 
@@ -1722,7 +1757,7 @@ On H2 and SQLite, the `vectorEmbedding` function is emulated. You can also use l
 
 ##### Computing Vector Similarity and Distance
 
-You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/databases/vector-embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
+You can use the functions, `CQL.cosineSimilarity`, and `CQL.l2Distance` (Euclidean distance) in queries to compute the similarity and distance of vectors. Distance functions are used in use cases such as finding similar items based on [vector embeddings](../../guides/ai/embeddings), for example to improve the response of an LLM to a user query. To use vector embeddings in functions, wrap them using `CQL.vector`:
 
 ```Java
 CqnVector vec = CQL.vector(embedding);

@@ -128,6 +128,12 @@
       "doc": "Determines, if UI annotations are included in the model."
     },
     {
+      "header": false,
+      "name": "cds.model.includeDocComments",
+      "type": "boolean",
+      "doc": "Determines, if doc comments are included into the in-memory model. Be careful, this increases<br>the model size and memory usage."
+    },
+    {
       "header": true,
       "name": "cds.model.provider",
       "doc": "The model provider configuration."
@@ -702,7 +708,7 @@
       "name": "cds.mcp.callPerActionTool",
       "type": "boolean",
       "default": "false",
-      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call_action tool."
+      "doc": "True, if the MCP server should offer a call tool per action/function, instead of one generic<br>call tool."
     },
     {
       "header": false,
@@ -710,6 +716,19 @@
       "type": "boolean",
       "default": "true",
       "doc": "True, if the MCP server should use TOON format for tool output, otherwise JSON."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.prefix",
+      "type": "String",
+      "doc": "Allows to prefix the tool name with a String. This is useful for clients that don't namespace<br>tools across servers themselves, so use this only as a workaround for clients that don't<br>disambiguate tool names correctly.<br><br><p>To inject the full-qualified service name into the prefix, add \"{service.name}\" to the<br>prefix string at the desired position.<br><br><p>To use the default prefix \"{service.name}-\" set the value to \"true\"."
+    },
+    {
+      "header": false,
+      "name": "cds.mcp.cqlQuery",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Enables CQL-based read query tool."
     },
     {
       "header": true,
@@ -2149,6 +2168,23 @@
       "name": "cds.ucl.x509.certSubject",
       "type": "String",
       "doc": "Subject of the certificate used for client certificate validation."
+    },
+    {
+      "header": true,
+      "name": "cds.telemetry",
+      "doc": "Properties for telemetry configuration."
+    },
+    {
+      "header": true,
+      "name": "cds.telemetry.devOutput",
+      "doc": "Properties for local dev mode telemetry output. Disabled automatically in production."
+    },
+    {
+      "header": false,
+      "name": "cds.telemetry.devOutput.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
     },
     {
       "header": true,

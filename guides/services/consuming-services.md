@@ -517,7 +517,7 @@ External service definitions, like [generated CDS or CSN files during import](#i
 It's best practice to use your own "interface" to the external service and define the relevant fields in a projection in your namespace. Your implementation is then independent of the remote service implementation and you request only the information that you require.
 
 ```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 entity Suppliers as projection on bupa.A_BusinessPartner {
   key BusinessPartner as ID,
@@ -590,7 +590,7 @@ What you need to do depends on [the scenarios](#sample-scenario-from-end-to-end-
 To expose a remote service entity, you add a projection on it to your CAP service:
 
 ```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 extend service RiskService with {
   entity BusinessPartners as projection on bupa.A_BusinessPartner;
@@ -680,7 +680,7 @@ module.exports = cds.service.impl(async function() {
 It's possible to expose associations of a remote service entity. You can adjust the [projection for the association target](#model-projections) and change the name of the association:
 
 ```cds
-using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 extend service RiskService with {
   entity Suppliers as projection on bupa.A_BusinessPartner {

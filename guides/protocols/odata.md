@@ -799,7 +799,7 @@ service S {
 
 In addition, the following functions are supported:
 
-* `$Null()` representing the `null` value [`Null`]([annotation expression](#null-value)).
+* `$Null()` representing the `null` value ([annotation expression](#null-value)).
 * `Div(...)` (or `$Div(...)`) and `Mod(...)` (or `$Mod(...)`) for integer division and modulo
 * [`Has(...)`](https://docs.oasis-open.org/odata/odata/v4.02/csd01/part2-url-conventions/odata-v4.02-csd01-part2-url-conventions.html#Has) (or `$Has(...)`)
 * the functions listed in sections

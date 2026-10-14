@@ -140,7 +140,9 @@ cds build --for postgres
 ]
 ```
 
-> See also the command line help for further details using `cds build --help`.## Test-Run Built Projects Locally {#test-run}
+> See also the command line help for further details using `cds build --help`.
+
+## Test-Run Built Projects Locally {#test-run}
 
 Test the application as it runs on the cloud:
 

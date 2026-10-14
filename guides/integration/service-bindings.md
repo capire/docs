@@ -110,5 +110,123 @@ cds env requires -b
 
 ## Destinations
 
+Destinations provide the connectivity details needed to reach a remote system, essentially a named URL enriched with metadata such as authentication configuration.
+
+CAP supports named destinations from the [SAP BTP Destination service](#btp-destination-service) as well as [application-defined destinations](#application-defined-destinations) configured directly in your project.
+
+### SAP BTP Destination Service {#btp-destination-service}
+
+Named destinations are resolved from the SAP BTP Destination service. Configure the destination name in the `credentials` block of the required service:
+
+```json
+"cds": {
+  "requires": {
+    "API_BUSINESS_PARTNER": {
+      "kind": "odata",
+      "model": "srv/external/API_BUSINESS_PARTNER",
+      "[production]": {
+        "credentials": {
+          "destination": "S4HANA",
+          "path": "/sap/opu/odata/sap/API_BUSINESS_PARTNER"
+        }
+      }
+    }
+  }
+}
+```
+
+Bind the Destination service to your application:
+
+```sh
+cds add destination
+```
+
+#### Native Fetch Client <Beta /> {#native-fetch-destinations}
+
+When the [native fetch client](../../node.js/remote-services#native-fetch) is active, CAP resolves SAP BTP destinations natively without SAP Cloud SDK.
+
+**Supported authentication types:**
+
+| Authentication | Supported |
+|---|:---:|
+| `NoAuthentication` | ✓ |
+| `BasicAuthentication` | ✓ |
+| `OAuth2ClientCredentials` | ✓ |
+
+**Configuration:**
+
+| Property | Default | Description |
+|---|---|---|
+| `timeout` | `'10s'` | Timeout for SAP BTP Destination service and token requests |
+
+```json
+"cds": {
+  "remote": {
+    "native_fetch": true,
+    "timeout": "30s"
+  }
+}
+```
+
+::: warning Proxy type limitation
+Only destinations with proxy type `Internet` are fully supported. On-premise destinations (proxy type `OnPremise`) require SAP Cloud SDK.
+:::
+
+#### SAP Cloud SDK
+
+When the native fetch client isn't active, CAP uses the SAP Cloud SDK to resolve SAP BTP destinations. Additional `destinationOptions` can be passed to control resolution behavior:
+
+```jsonc
+"cds": {
+  "requires": {
+    "API_BUSINESS_PARTNER": {
+      /* ... */
+      "[production]": {
+        "credentials": {
+          /* ... */
+        },
+        "destinationOptions": {
+          "selectionStrategy": "alwaysSubscriber",
+          "useCache": true
+        }
+      }
+    }
+  }
+}
+```
+
+[Learn more about destinations with SAP Cloud SDK.](../services/consuming-services#use-sap-btp-destinations){.learn-more}
+
+### Application-Defined Destinations {#application-defined-destinations}
+
+If you don't want to use SAP BTP destinations, you can define the URL, authentication details, and additional metadata directly in your CAP configuration:
+
+```json
+"cds": {
+  "requires": {
+    "REVIEWS": {
+      "kind": "odata",
+      "model": "srv/external/REVIEWS",
+      "[production]": {
+        "credentials": {
+          "url": "https://reviews.ondemand.com/reviews",
+          "authentication": "BasicAuthentication",
+          "username": "<set from code or env>",
+          "password": "<set from code or env>",
+          "headers": {
+            "my-header": "header value"
+          },
+          "queries": {
+            "my-url-param": "url param value"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+[Learn more about application-defined destinations.](../services/consuming-services#use-application-defined-destinations){.learn-more}
+
 ## Service Keys
 ## Using API Keys

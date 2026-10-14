@@ -30,6 +30,9 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
    main .vp-doc a:has(> img):not(:last-child) {
       margin-right: 1em;
    }
+   main .vp-doc a:has(> img) > img {
+      width: auto;
+   }
 </style>
 
 
@@ -313,7 +316,7 @@ Available for:
 ## Notifications
 
 
-The Notifications plugin provides support for publishing business notifications in SAP Build Work Zone. Notification types are defined by annotating CDS events, which the plugin then intercepts and forwards automatically:
+The Notifications plugin provides support for sending emails and publishing business notifications in SAP Build Work Zone. Define notification types declaratively via `@notification` CDS annotations or JSON config — the plugin intercepts annotated events and forwards them automatically:
 
 ```cds
 @notification: {
@@ -362,7 +365,7 @@ public void afterIncidentCreated(Incidents incident) {
 
 :::
 
-Alternatively, for Java you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
+Alternatively, for both Java and Node you can use declarative `@notifications` on entities to trigger notifications automatically without writing handler code:
 
 ```cds [Java]
 service IncidentService {
@@ -382,22 +385,23 @@ service IncidentService {
 Features:
 
 - CAP service-based API — simple, backend-agnostic
-- Notification types defined via CDS @notification annotations
-- Notification types defined via JSON (Node.js only)
+- Notification types defined via CDS `@notification` annotations — `cds build` compiles them to `notification-types.json`
+- Notification types defined via JSON config
 - Auto-emit: annotated CDS events are forwarded to ANS automatically
-- Email delivery via configurable delivery channels
+- **Email delivery** via `@notification.email.subject` and `@notification.email.html` annotations with Mustache syntax
 - Email HTML templates for rich email notifications
-- Batch notifications — emit multiple notifications in a single call
-- i18n support and dynamic priority for notification types
+- **Batch notifications** — send multiple notifications in a single outbox event
+- **i18n support** via `{i18n>key}` syntax in annotations
+- **Dynamic priority** via `@notification.priority` with runtime expressions
 - Console logging in development — no external service needed
 - Transactional outbox — maximized scalability and resilience
 - Automatic registration and lifecycle management of notification types on startup
-
+- Optional database storage for sent notifications with cooldown to prevent duplicate delivery (Java)
 
 Available for:
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/notifications#readme)
-[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-notifications#readme) <Alpha />
 
 
 ## Telemetry
@@ -433,7 +437,7 @@ This plugin enables generation of [Open Resource Discovery (ORD)](https://open-r
 
 When you adopt ORD, your application gains a single entry point, known as the Service Provider Interface. This interface allows you to discover and gather relevant information or metadata. You can use this information to construct a static metadata catalog or to perform a detailed runtime inspection of your actual system landscapes.
 
-![](./assets/index/ordCLI.png){style="width:450px; box-shadow: 1px 1px 5px #888888" .mute-dark}
+![](./assets/index/ordCLI.png){style="width:450px; box-shadow: 1px 1px 5px #888888" .ignore-dark}
 
 You can get the ORD document in multiple ways, see the readme of the plugin.
 
@@ -531,7 +535,8 @@ The Java version of this plugin is currently in alpha.
 
 Available for:
 
-[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/process)
+[![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
+[![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)
 
 ## SAP Data Privacy Integration <Beta />
 
@@ -541,3 +546,58 @@ For handling personal data learn more about the plugin in the [Information Repor
 For blocking and destructing personal data follow the [Retention Management guide](../guides/security/dpp-drm.md).
 
 [![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy)
+
+## n8n
+
+The n8n plugin lets you trigger and automate [n8n](https://n8n.io) workflows from CAP applications. You can trigger workflows declaratively through annotations or programmatically through the n8n service.
+
+Annotations:
+
+```cds
+annotate AdminService.Books with @n8n.process.start: {
+  on: 'CREATE',
+  path: 'book-created'
+};
+```
+
+Programmatically:
+
+::: code-group
+
+```js [Node.js]
+this.after('CREATE', 'Books', async (books) => {
+  const n8n = await cds.connect.to('n8n')
+  for (const book of books) {
+    await n8n.trigger({ path: 'book-created', payload: { ID: book.ID} })
+  }
+})
+```
+
+```java [Java]
+@Autowired
+private N8nService n8nService;
+
+@After(event = CqnService.EVENT_CREATE, entity = "AdminService.Books")
+public void afterCreateBook(List<Books> books) {
+    books.forEach(book -> {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("ID", book.getId());
+        n8nService.trigger("book-created", payload);
+    });
+}
+```
+
+:::
+
+Features:
+
+- Annotation-driven triggers on CREATE, READ, UPDATE, DELETE, Fiori events, and custom events
+- Programmatic API for direct workflow management
+- Reliable delivery through the CAP persistent outbox with retry logic
+- Console mode for local development
+- API key and webhook authentication (Basic, Header, Bearer)
+
+Available for:
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugins repository.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/n8n#readme)
+[![Java](/logos/java.svg 'Link to the plugins repository.'){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-feature-n8n#readme)

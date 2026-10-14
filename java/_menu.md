@@ -17,6 +17,7 @@
   ## [Request Contexts](event-handlers/request-contexts)
   ## [ChangeSet Contexts](event-handlers/changeset-contexts)
 # [Event Queues](event-queues)
+# [AI Integration](ai)
 # [Fiori Drafts](fiori-drafts)
 # [Messaging](messaging)
 # [Audit Logging](auditlog)

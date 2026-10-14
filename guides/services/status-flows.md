@@ -6,7 +6,7 @@ description: >
 # Status-Transition Flows
 
 
-Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding. – _Status: <Gamma/>_
+Status-transition flows ensure transitions are explicitly modeled, validated, and executed in a controlled and reliable way, thereby eliminating the need for extensive custom coding.
 {.abstract}
 
 

@@ -32,6 +32,7 @@
       <em>ias</em>                          - authentication via IAS
       <em>ams</em>                          - authorization via AMS
       <em>hana</em>                         - database support for SAP HANA
+      <em>hana-serverless</em>              - database support for SAP HANA Cloud serverless
       <em>postgres</em>                     - database support for PostgreSQL
       <em>sqlite</em>                       - database support for SQLite
       <em>liquibase</em>                    - database migration using Liquibase

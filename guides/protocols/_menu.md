@@ -5,4 +5,3 @@
 # [OpenAPI](openapi.md)
 # [AsyncAPI](asyncapi.md)
 # [InA Analytics](../../../guides/protocols/embedded-analytics) <!-- UNRELEASED -->
-# [MCP](mcp.md)
