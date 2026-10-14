@@ -1,6 +1,6 @@
 ---
 description: >
-  Reference for the code-extension sandbox: engines, configuration, handler files, the sandbox API, event scope, query rules, forbidden constructs, and quarantine behavior.
+  Reference for the code-extension sandbox: engines, configuration, handler files, the sandbox API, event scope, query rules, the security model, forbidden constructs, and quarantine behavior.
 ---
 
 # Code Extension Reference
@@ -154,7 +154,21 @@ Handlers use the standard CAP query language, with a few sandbox rules:
 - A handful of fluent clauses aren't exposed (`.groupBy`, `.having`, `.forUpdate`, `.stream`, …); use a ``cql`…` `` tagged template for those.
 - The sandbox adds **no** result-size cap of its own; reads inherit CAP's [implicit pagination](../services/served-ootb#implicit-pagination), a default maximum of 1,000 records. Add an explicit `.limit(n)` when a handler scans a large set: a query that overrides that limit and materializes an oversized result can exhaust `maxMemory`, which aborts the query and **quarantines** the extension tenant-wide until the next successful push.
 
+## Security Model {#security}
+
+Code extensions run **untrusted, tenant-supplied code** on a shared application. The guarantee that one tenant's handler cannot read another tenant's data, reach outside its service, or interfere with the host rests on **runtime isolation**, not on the push-time linter. To guarantee that, these key concepts are in place:
+
+**Isolation is enforced by WebAssembly.** In every multitenant setup the handler runs in the `wasm` engine (`@sap/oyster-runtime`): the handler code is compiled into an isolated WebAssembly runtime that has no shared memory with the host process, no ambient globals, and no access to the filesystem, the network, or Node.js built-ins. The module holds no reference to `cds`, to the database, or to anything belonging to another tenant. There is no path from inside the module to the surrounding process, so a handler cannot break out of its own instance regardless of what it attempts.
+
+**The CDS API inside the WASM is only a mocked copy**, not the real CDS runtime service. It is designed to look exactly like the CDS services API for extension developers, but it is missing a large part of the internal API. No internal methods, no database transaction or other application state beyond the explicitly copied properties are accessible.
+
+**The only bridge to the application is a fixed set of callbacks.** The WebAssembly module and the application never touch each other's memory. They communicate exclusively through a small, named set of callbacks that the runtime registers. A handler can request work only by calling one of these by name with a JSON payload; it cannot invoke anything the runtime did not hand it. That is why the [Sandbox API](#api) is the *whole* surface: everything else is unreachable, not merely discouraged.
+
+**The callbacks are secured by the runtime, not by a static check.** Each callback is implemented on the application side, so the runtime (not the handler) decides what any request is allowed to do. Queries pass CQN as strings to the receiver, which enforces the **service fence**: queries are scoped to that service's own entities (`this.entities`), short names resolve to the service's fully qualified names, and a query that targets a database table, another service, or any entity outside the fence is **rejected at runtime**. Because this check runs on every call against the actual query, it holds even for queries a handler builds dynamically, which a static analyzer could never evaluate ahead of time. Authorization and the data-access fence are therefore properties of the runtime, independent of the linter.
+
 ## Forbidden Constructs {#forbidden}
+
+The static push-time linter below is a **hygiene layer on top of the [Security Model](#security)**, not the mechanism that isolates tenants. Beyond the runtime checks and the WebAssembly isolation, the linter additionally strips a fixed list of constructs that have no legitimate place in a handler, so they never reach the sandbox in the first place. It does not attempt to enumerate every conceivable misuse, and it does not need to: anything it does not catch still runs inside the isolated runtime, behind those callbacks, where unauthorized data access and anything beyond the service fence are rejected regardless. Its goal is simply to avoid code being pushed as extension where we can safely assume in advance that it is either not going to work at all or producing an unnecessary amount of resource consumption.
 
 The following are **rejected at `cds push`** (a `422` validation error) by a **static** check that runs at push and build time only, not during local `cds watch`, in either engine. So code using them can still run locally (notably `console`, which works under both `mocked` and `cds watch --profile wasm`) yet be refused at push:
 

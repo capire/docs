@@ -583,6 +583,8 @@ In order to test-drive and validate the extension before activating to productio
 
   :::
 
+  The `cds.ExtensionDeveloper` role is what authorizes `cds pull` and `cds push`. Learn more about it, and the other MTX roles, in [Technical Roles](../multitenancy/mtxs#roles).{.learn-more}
+
 ### 3. Start an Extension Project {#start-ext-project}
 
 Extension projects are standard CAP projects extending the subscribed application. SaaS providers usually provide **application-specific templates**, which extension developers can download and open in their editor.
@@ -804,6 +806,8 @@ cds push --to http://localhost:4005 -u carol:
 Particularly when extending deployed SaaS apps, refer to [`cds login`](#cds-login) to save project settings and authentication data for later reuse.
 
 :::
+
+Activating an extension changes the tenant's database schema. Model extensions are **additive**: later pushes add fields and entities, but removing or retyping an activated element is constrained, and on SAP HANA removed columns are not dropped. See [Extension Lifecycle and Schema Changes](../multitenancy/mtxs#extension-lifecycle) before you rely on changing or rolling one back.
 
 # Appendices
 
