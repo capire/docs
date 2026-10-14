@@ -240,7 +240,7 @@ A single agent request produces the following nested spans. When the agent is ex
 | Span name              | Span kind  | Description                                                                                   |
 | ---------------------- | ---------- | --------------------------------------------------------------------------------------------- |
 | `invoke_agent <agent>` | `INTERNAL` | One span per agent invocation, covering all LLM round-trips triggered by tool calls.          |
-| `chat <model>`         | `CLIENT`   | One span per LLM call.                                                                         |
+| `chat <model>`         | `CLIENT`   | One child span per LLM call.                                                                         |
 | `execute_tool <tool>`  | `INTERNAL` | One child span per tool call, between the LLM response requesting the tool and its result.    |
 
 ```txt
