@@ -27,6 +27,10 @@ When building CAP Java plugin modules, you need to keep in mind that the generat
 
 Of course, it's up to your project / plugin how you call the corresponding Maven GroupId and Java packages. To avoid confusion and also to make responsibilities clear `com.sap.cds` for GroupId and Java package names are reserved for components maintained by the CAP Java team and must not be used for external plugins. This rule also includes substructures to `com.sap.cds` like `com.sap.cds.foo.plugin`.
 
+::: info Note on the reference plugins
+The example plugins referenced later in this guide (in the [Plugin Conventions](#plugin-conventions) section) are hosted in the [`cap-java` GitHub organization](https://github.com/cap-java). Some of them are maintained and published by the CAP Java team under the `com.sap.cds` namespace — which is why they use that groupId. Others are contributions from SAP teams that should have used their own groupId but didn't. In either case they are cited here for their **layout, registration, and testing patterns** only — not as authorities on Maven groupId choice. As an external plugin author, use your own reverse-domain groupId (for example `com.example.mycorp`).
+:::
+
 
 ## Share CDS Models via Maven Artifacts
 
@@ -164,6 +168,8 @@ When you provide your custom handler as part of a reuse library, external to you
 The decision between the two is straightforward: In case your handler depends on other Spring components, for example relies on dependency injection, you should use the [Spring approach](#spring-autoconfiguration). This applies as soon as you need to access another CAP Service like [`CqnService`](./cqn-services/application-services), [`PersistenceService`](./cqn-services/persistence-services) or to a service using it's [typed service interface](/releases/2023/nov23#typed-service-interfaces).
 
 If your custom handler is isolated and, for example, only performs a validation based on provided data or a calculation, you can stick with the [CAP Java ServiceLoader approach](#service-loader), which is described in the following section.
+
+In practice, the `CdsRuntimeConfiguration` ServiceLoader approach is the norm across plugins — it works without a Spring context and keeps the plugin framework-independent. Spring AutoConfiguration is the better choice when the plugin needs typed `@ConfigurationProperties` classes or `@ConditionalOnProperty`/`@ConditionalOnMissingBean` wiring. See the [Configuration & Enablement](#configuration-enablement) section for more on how real-world plugins use these mechanisms.
 
 ### Load Plugin Code via ServiceLoaders {#service-loader}
 At runtime, CAP Java uses the [`ServiceLoader`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ServiceLoader.html) mechanism to load all implementations of the `CdsRuntimeConfiguration` interface from the application's ClassPath. In order to qualify as a contributor for a given ServiceLoader-enabled interface, we need to place a plain text file, named like the fully qualified name of the interface, in the directory `src/main/resources/META-INF/services` of our reuse model. This file contains the name of one or more implementing classes. For the earlier implemented `CdsRuntimeConfiguration` we need to create a file `src/main/resources/META-INF/services/com.sap.cds.services.runtime.CdsRuntimeConfiguration` with the following content:
@@ -327,7 +333,278 @@ With that, a first iteration of a working CAP Java protocol adapter would be com
 
 One final comment on protocol adapters: even a simple protocol adapter like sketched in this section enables full support of other CAP features like declarative security, i18n and of course custom as well as generic event handlers.
 
-## Putting It All Together
+## Plugin Conventions & Reference Implementations {#plugin-conventions}
+
+The following sections document the patterns followed by the plugins in the [`cap-java` GitHub organization](https://github.com/cap-java). They are presented here to help you write a plugin that fits naturally into the ecosystem. As noted above, use your own groupId — not `com.sap.cds`.
+
+### Reference Plugins
+
+The table below maps each major pattern to a plugin that demonstrates it well. Use these as living examples while reading the sections that follow.
+
+| Pattern | Reference plugin |
+|---|---|
+| Minimal event-handler plugin (annotation-driven, no model) | [`cap-plugin-for-sap-document-ai`](https://github.com/cap-java/cap-plugin-for-sap-document-ai) (`plugin-template-emoji` skeleton) |
+| Full service model + custom `Service` + mock/productive switch | [`cds-feature-print`](https://github.com/cap-java/cds-feature-print) |
+| Annotation-driven handler + binding-driven enablement | [`cds-feature-auditlog-ng`](https://github.com/cap-java/cds-feature-auditlog-ng) |
+| `environment()` hook to inject remote-service config | [`cds-ai`](https://github.com/cap-java/cds-ai) |
+| Reusable CDS model + aspects + i18n + code-list CSV | [`cds-feature-attachments`](https://github.com/cap-java/cds-feature-attachments) |
+| Spring AutoConfiguration + typed `@ConfigurationProperties` | [`cds-feature-n8n`](https://github.com/cap-java/cds-feature-n8n) |
+| Multiple SPIs: servlet adapter + ORD contribution | [`cds-feature-ord`](https://github.com/cap-java/cds-feature-ord), [`cds-feature-event-hub`](https://github.com/cap-java/cds-feature-event-hub) |
+
+### Recommended Project Layout
+
+Use a multi-module Maven reactor with a root aggregator POM and a dedicated plugin JAR module. Larger plugins add `integration-tests` and `coverage-report` modules.
+
+```
+my-plugin-root/              ← aggregator (packaging=pom, artifactId=cds-feature-myplugin-root)
+  pom.xml
+  cds-feature-myplugin/      ← the plugin JAR (artifactId=cds-feature-myplugin)
+    pom.xml
+    package.json             ← pins @sap/cds-dk for the cds-maven-plugin build
+    src/main/java/
+      com/example/myplugin/
+        configuration/       ← CdsRuntimeConfiguration implementation
+        service/             ← optional: custom Service interface + impl
+        handler/             ← EventHandler implementations
+    src/main/resources/
+      META-INF/services/     ← ServiceLoader registration file
+      cds/com.example/cds-feature-myplugin/  ← optional: CDS model
+  integration-tests/         ← optional: test-app Maven module
+    pom.xml
+    src/main/…               ← runnable CAP app depending on cds-feature-myplugin
+  coverage-report/           ← optional: JaCoCo aggregation module
+```
+
+Place plugin implementation classes under a Java package that corresponds to your Maven groupId, for example `com.example.myplugin`.
+
+### Maven Skeleton
+
+Use CI-friendly versioning (`${revision}`) with the `flatten-maven-plugin` so your version is set on the command line (`mvn … -Drevision=1.0.0`) without having to maintain it in every module POM. Import the `cds-services-bom` in `<dependencyManagement>` and declare `cds-services-api` without an explicit version.
+
+::: code-group
+```xml [Root pom.xml — version & BOM]
+<properties>
+  <revision>0.0.1-SNAPSHOT</revision>
+  <cds.services.version><!-- choose current LTS, e.g. 3.7.1 --></cds.services.version>
+  <java.version>17</java.version>
+</properties>
+
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.sap.cds</groupId>
+      <artifactId>cds-services-bom</artifactId>
+      <version>${cds.services.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>flatten-maven-plugin</artifactId>
+      <configuration><updatePomFile>true</updatePomFile>
+        <flattenMode>resolveCiFriendliesOnly</flattenMode></configuration>
+      <executions>
+        <execution><id>flatten</id><phase>process-resources</phase>
+          <goals><goal>flatten</goal></goals></execution>
+        <execution><id>flatten.clean</id><phase>clean</phase>
+          <goals><goal>clean</goal></goals></execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-enforcer-plugin</artifactId>
+      <executions>
+        <execution><id>enforce</id><goals><goal>enforce</goal></goals>
+          <configuration><rules>
+            <banDuplicatePomDependencyVersions/>
+            <requireJavaVersion><version>[17,)</version></requireJavaVersion>
+          </rules></configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
+```
+```xml [Plugin module pom.xml — dependencies]
+<dependencies>
+  <dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-services-api</artifactId>   <!-- no version: managed by BOM -->
+  </dependency>
+  <dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-services-utils</artifactId>
+  </dependency>
+
+  <!-- test: spin up a real CdsRuntime without Spring -->
+  <dependency>
+    <groupId>com.sap.cds</groupId>
+    <artifactId>cds-services-impl</artifactId>
+    <scope>test</scope>
+  </dependency>
+</dependencies>
+
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.sap.cds</groupId>
+      <artifactId>cds-maven-plugin</artifactId>
+      <version>${cds.services.version}</version>
+      <!-- add executions for install-node, generate, etc. when shipping a CDS model -->
+    </plugin>
+  </plugins>
+</build>
+```
+```json [package.json — hermetic cds-dk]
+{
+  "name": "cds-feature-myplugin",
+  "private": true,
+  "description": "Local @sap/cds-dk for cds-maven-plugin build",
+  "devDependencies": {
+    "@sap/cds-dk": "^10"
+  }
+}
+```
+:::
+
+When your plugin ships a CDS model, add the `install-node`, `npm ci`, `cds build --for java`, and `generate` executions to the `cds-maven-plugin` — see the existing [Maven plugin reference](developing-applications/building#cds-maven-plugin) for details.
+
+### Choosing a Registration Hook {#registration-hook}
+
+All `CdsRuntimeConfiguration` hooks are optional — override only the ones you need. The table below shows which hook each pattern uses and a reference plugin.
+
+| Hook | Use when | Reference |
+|---|---|---|
+| `environment(configurer)` | You need to inject a remote-service config or additional CSV data paths into `CdsProperties` *before* services start | `cds-ai` (`AICoreServiceConfiguration`), `cds-feature-notifications` |
+| `services(configurer)` | Your plugin provides a new CAP service (e.g. `PrintService`, a messaging service) via `configurer.service(...)` | `cds-feature-print`, `cds-feature-event-hub` |
+| `eventHandlers(configurer)` | Your plugin registers event handlers via `configurer.eventHandler(...)` | `cds-feature-auditlog-ng`, `cds-feature-attachments` |
+| `providers(configurer)` | Your plugin contributes resource providers (ORD, custom adapters) | `cds-feature-ord` |
+| `order()` | You need to control initialization order relative to other plugins | `cds-feature-console` (returns `Integer.MAX_VALUE`) |
+
+Hooks are not mutually exclusive — many plugins override both `services()` and `eventHandlers()`.
+
+When you need Spring features (typed `@ConfigurationProperties`, `@ConditionalOnProperty`, `@ConditionalOnMissingBean`), use [Spring AutoConfiguration](#spring-autoconfiguration) instead of — or in addition to — `CdsRuntimeConfiguration`. Declare the config class in `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` and annotate it with `@Configuration`. The `cds-feature-n8n` plugin demonstrates this approach with `N8nAutoConfiguration`.
+
+### Custom Services and Event Contexts
+
+When your plugin exposes its own service (rather than adding handlers to existing services), define a `Service` interface and an implementation, and register both via `configurer.service(...)` in the `services()` hook. The interface should declare a `DEFAULT_NAME` constant that other components can use to look up the service from the `ServiceCatalog`.
+
+```java
+// Service interface
+public interface PrintService extends Service {
+    String DEFAULT_NAME = "PrintService";
+    // define actions / event names as constants
+    String EVENT_PRINT = "print";
+}
+
+// Register in CdsRuntimeConfiguration
+@Override
+public void services(CdsRuntimeConfigurer configurer) {
+    configurer.service(new PrintServiceImpl(runtime));
+}
+```
+
+For typed event handling, define a custom `EventContext` interface extending `EventContext` and annotate handler methods with it:
+
+```java
+@ServiceName(value = "*", type = PrintService.class)
+public class MyPrintHandler implements EventHandler {
+
+    @On(event = PrintService.EVENT_PRINT)
+    public void onPrint(PrintEventContext context) {
+        // access strongly-typed request payload
+    }
+}
+```
+
+This pattern appears in `cds-feature-print` (`PrintService`, `PrintEventContext`) and `cds-feature-attachments` (`AttachmentService`, `AttachmentCreateEventContext`).
+
+### Configuration & Enablement {#configuration-enablement}
+
+There is no `cds.<feature>.enabled` convention across the ecosystem. Enablement is handled in one of two ways:
+
+**Binding-driven enablement (ServiceLoader plugins):** Check at registration time whether the expected service binding is present. If not, skip registering the handler or service — the plugin becomes a no-op. This keeps consuming apps configuration-free for the common case.
+
+```java
+@Override
+public void eventHandlers(CdsRuntimeConfigurer configurer) {
+    boolean hasBinding = configurer.getCdsRuntime()
+        .getEnvironment().getServiceBindings().stream()
+        .anyMatch(b -> ServiceBindingUtils.matches(b, "my-service-label"));
+
+    if (hasBinding) {
+        configurer.eventHandler(new ProductionHandler(...));
+    } else {
+        configurer.eventHandler(new MockHandler(...));  // dev/test fallback
+    }
+}
+```
+
+The **mock-vs-productive handler switch** based on binding presence is a particularly common pattern: `cds-feature-print` (`BtpPrintHandler` vs `ConsolePrintHandler`), `cds-ai` (`AICoreApiHandler` vs `MockAICoreApiHandler`), `cds-feature-notifications` (`ProductionHandler` vs `LocalHandler`).
+
+**Spring conditional wiring:** When the plugin uses Spring AutoConfiguration, lean on `@ConditionalOnProperty`, `@ConditionalOnMissingBean`, and `@ConditionalOnClass` to select beans. Pair this with a typed `@ConfigurationProperties` class so consumers configure the plugin via `application.yaml` under a stable prefix. See `cds-feature-n8n` (`N8nProperties`, `N8nAutoConfiguration`) for a complete example.
+
+In both cases, if optional functionality depends on a dependency that may not be on the classpath (for example, an SAP Cloud SDK class), guard the code with `@ConditionalOnClass` or a programmatic `ClassUtils.isPresent(...)` check so a missing dependency causes a clean "feature disabled" outcome, not a `NoClassDefFoundError`.
+
+### Testing a Plugin {#testing-plugin}
+
+A plugin unit test can boot a real `CdsRuntime` without Spring by putting `cds-services-impl` on the test classpath and calling `CdsRuntime.create(...)` directly. This keeps tests fast and free of Spring context overhead.
+
+```xml
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-services-impl</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+For end-to-end coverage, add a dedicated `integration-tests` Maven module. That module is a minimal CAP Spring Boot application (`Application.java`, a small `test-service.cds`, `application.yaml`) that depends on the plugin JAR via `${revision}`. Running it under `maven-failsafe-plugin` (`**/*IT.java`) exercises the plugin in a real application context.
+
+Key configuration for the test application:
+
+```yaml
+# integration-tests/src/main/resources/application.yaml
+spring:
+  sql:
+    init:
+      platform: h2
+cds:
+  security:
+    mock:
+      users:
+        - name: test-user
+          roles: [admin]
+```
+
+To avoid taking a dependency on live external services (SAP BTP Alert Notification, print service, and so on), replace external calls with CDS mock handlers. The mock handler implements the same service interface as the production adapter but returns canned responses:
+
+```java
+@ServiceName(value = "*", type = MyExternalService.class)
+public class MyExternalServiceMockHandler implements EventHandler {
+    @On(event = "*")
+    public void handleAll(EventContext ctx) {
+        ctx.setResult(/* canned response */);
+        ctx.setCompleted();
+    }
+}
+```
+
+Register the mock in the test app's `CdsRuntimeConfiguration` (or as a `@Component` in the Spring test context) and activate it when the production binding is absent — the same mock-vs-productive switch described above doubles as your test strategy.
+
+### Repository Hygiene
+
+The plugins in `cap-java` share a common set of repository conventions worth adopting:
+
+- **Licensing:** Apache 2.0, with [REUSE](https://reuse.software)-compliant `REUSE.toml` and `LICENSES/Apache-2.0.txt`. Source files carry a standard SAP copyright header enforced by Spotless or Checkstyle.
+- **CI/CD:** GitHub Actions workflows for PR builds, main-branch builds, and release publishing. Publishing to Maven Central uses `central-publishing-maven-plugin` (Sonatype Central Portal) with GPG signing under a `deploy-release` Maven profile. Snapshots go to an internal Artifactory instance.
+- **Dependency maintenance:** Dependabot or Renovate keeps BOM and build-tool versions current. Pinning transitive versions with comments that cite the CVE or Black Duck finding is a common pattern for security-sensitive dependencies.
+
+
 
 As you've learned in this guide, there are various ways to extend the CAP Java framework. You can use one or more of the mentioned techniques and combine them in one or more Maven modules. This totally depends on your needs and requirements.
 
