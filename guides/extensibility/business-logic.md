@@ -35,14 +35,24 @@ Add the `@sap/cds-oyster` plugin to **both** your application and its MTX sideca
 
 ::: code-group
 
-```sh [app]
+```sh [Node.js]
 npm add @sap/cds-oyster
 ```
-
+```xml [Java (srv/pom.xml)]
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-feature-code-extensions</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+```yaml [Java (srv/main/resources/application.yaml)]
+cds:
+  code-extensions:
+    enabled: true
+```
 ```sh [mtx/sidecar]
 npm add @sap/cds-oyster --prefix mtx/sidecar
 ```
-
 :::
 
 That's all the configuration you need. The plugin registers a `code-extensibility` service with sensible sandbox defaults per profile: **mocked** for local development, and **wasm** in production. See [The Sandbox](#sandbox) for what those mean and when to override them.
@@ -136,7 +146,27 @@ async extension_points() {
   })
 }
 ```
+```java [srv/handlers/SubmitForReviewHandler.java]
+@Component
+@ServiceName(TravelService_.CDS_NAME)
+class SubmitForReviewHandler implements EventHandler {
 
+  private final TravelExtensionService extension;
+  private final UserInfo user;
+
+  SubmitForReviewHandler(TravelExtensionService extension, UserInfo user) {
+    this.extension = extension;
+    this.user = user;
+  }
+
+  @Before
+  void beforeSubmitForReview_callExtension(
+      TravelsSubmitForReviewContext i, TravelService service, Travels_ ref) {
+    Travels travel = service.run(Select.from(ref).columns(t -> t.ID())).single();
+    extension.validateReview(travel.getId(), user.getName(), Instant.now().toString());
+  }
+}
+```
 :::
 
 ::: tip Provider decides the contract, tenant decides the policy
@@ -277,6 +307,8 @@ To verify against the **deployed app**, call `submitForReview` as a user authori
 ## The Sandbox {#sandbox}
 
 Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --profile wasm` (isolated, enforces the runtime restrictions). Every multitenant setup uses `wasm`, so a quick [`--profile wasm` run](#verify-wasm) before pushing surfaces isolation issues early. Push then adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
+
+CAP Java supports always executes extension handlers in the sandbox.
 
 The [Code Extension Reference](code-extension) documents the sandbox in full: [engines](code-extension#sandbox), [configuration](code-extension#config), the [handler-file layout](code-extension#files) and [sandbox API](code-extension#api), [query rules](code-extension#queries), [forbidden constructs](code-extension#forbidden), [quarantine](code-extension#quarantine), and [troubleshooting](code-extension#troubleshooting).
 

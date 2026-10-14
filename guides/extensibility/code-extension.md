@@ -29,6 +29,8 @@ Extension handlers never run as ordinary Node.js modules on the tenant. They run
 
 The plugin picks the engine automatically. **Every multitenant setup uses `wasm`** — the realistic push flow always runs the isolated engine. The permissive `mocked` engine is a single-tenant local-development convenience, selected only when `code-extensibility.sandbox` is `mocked` and the app is single-tenant. Because production is always `wasm`, verify under `cds watch --profile wasm` before pushing.
 
+CAP Java always executes extension handlers in the sandbox.
+
 ### Debugging and `console` {#debugging}
 
 How you inspect a handler depends on where it runs. The step debugger and `console` are available in different combinations across the three ways a handler executes:
@@ -74,10 +76,20 @@ The plugin auto-registers `cds.requires.code-extensibility` with profile-aware d
   }
 }
 ```
-
+```yaml [srv/main/resources/application.yaml]
+cds:
+  code-extensions:
+    enabled: true # main switch
+    allowWriteStatements: true # switch to enable support for CUD statements
+    limits:
+      max-callback-calls: 100       # max callback invocations (default 100)
+      max-execution-time: PT3S      # per-call time budget as duration (default 3000 ms)
+      max-allocated-memory: 2153000 # memory budget in bytes (default 4MB)
+      max-call-stack-depth: 10      # max nested sandbox calls (default 10)
+```
 :::
 
-::: warning Don't add this block just to enable the feature
+::: warning Node.js: Don't add this block just to enable the feature
 This block only *customizes* an already-registered service. Adding it for the default case (e.g. `"code-extensibility": true`) overrides the plugin's profile-aware defaults.
 :::
 
