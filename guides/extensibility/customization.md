@@ -807,7 +807,7 @@ Particularly when extending deployed SaaS apps, refer to [`cds login`](#cds-logi
 
 :::
 
-Activating an extension changes the tenant's database schema. Model extensions are **additive**: later pushes add fields and entities, but removing or retyping an activated element is constrained, and on SAP HANA removed columns are not dropped. See [Extension Lifecycle and Schema Changes](../multitenancy/mtxs#extension-lifecycle) before you rely on changing or rolling one back.
+Activating an extension changes the tenant's database schema. Model extensions are **additive**: later pushes add fields and entities, but removing or retyping an activated element is constrained. On SAP HANA, removing a field drops its column and the data in it; a removed entity leaves its table in place. See [Extension Lifecycle and Schema Changes](../multitenancy/mtxs#extension-lifecycle) before you rely on changing or rolling one back.
 
 # Appendices
 

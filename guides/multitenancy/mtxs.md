@@ -1244,12 +1244,13 @@ Every push, update, or delete recompiles the whole tenant model and deploys it. 
 
 ### Removing or Shrinking an Extension {#removing}
 
-Remove a field or entity by deleting the extension ([`DELETE Extensions/<ID>`](#delete-extensions)) or pushing a smaller version of its tag. The object leaves the model and OData surface. The table reacts differently per database:
+Remove a field or entity by deleting the extension ([`DELETE Extensions/<ID>`](#delete-extensions)) or pushing a smaller version of its tag. The object leaves the model and OData surface. The table reacts differently per database and per removed object:
 
 - **SQLite (local, `schema_evolution: 'auto'`):** dropping a column or table is lossy and not performed. The deployment fails (`def-unsupported-element-drop`, `def-unsupported-table-drop`) and rolls back. You cannot remove activated schema locally.
-- **SAP HANA (production):** HDI never undeploys automatically (see [Undeploying Artifacts](../databases/hana#undeploying-artifacts)). The deployment succeeds, but the column or table and its data remain as orphans.
+- **SAP HANA, removed field:** the modified table is redeployed and the column is dropped together with its data. There is no local safeguard that catches this.
+- **SAP HANA, removed entity:** HDI does not undeploy artifacts missing from the deploy set, so the table stays behind as an orphan. It is only dropped if it matches a pattern in [`undeploy.json`](../databases/hana#undeploying-artifacts) or if `auto_undeploy` is enabled.
 
-Activated schema is sticky: the model stops exposing it, storage is not reclaimed. Only `unsubscribe` and `resubscribe` clear it, by provisioning a fresh container.
+To reclaim an orphan table without `auto_undeploy`, either list it in `undeploy.json` or `unsubscribe` and `resubscribe` the tenant to provision a fresh container.
 
 ### Changing a Field's Type {#type-changes}
 
@@ -1262,12 +1263,9 @@ Giving an existing field a new type recompiles cleanly, but schema evolution the
 
 On SAP HANA every type change is rejected: there is no safe-widening allow-list. Add a new field instead of retyping.
 
-### Reusing a Canonical Column Name on SAP HANA {#orphan-columns}
+### Reusing a Dropped Entity Name {#orphan-entities}
 
-Since removed columns are not dropped on HANA, a new extension field can hit a canonical column name still present from a removed one. CAP flattens elements and associations to names like `addr_street` or `toAgency_ID`, so collisions can also span differently named elements.
-
-- Same type as the orphan: the deployment succeeds and the field reuses the existing column, including any residual data.
-- Different type: `422`, like any incompatible type change.
+Because HDI leaves the table behind when an entity is removed (see [above](#removing)), re-adding an extension entity with the same name on the same tenant hits the surviving table. If the new shape is compatible, deployment reuses the table and any residual rows; otherwise it fails with `422`. Drop the orphan via [`undeploy.json`](../databases/hana#undeploying-artifacts) before re-pushing when the data must not be reused.
 
 ### Configuration {#lifecycle-config}
 
@@ -1278,7 +1276,7 @@ The defaults above are deliberately safe. You can change them for narrow use cas
 :::
 
 - `cds.requires.'cds.xt.DeploymentService'.hdi.deploy` — [HDI deployer options](#deployment-config) such as `auto_undeploy` (off by default); also per tenant via `.for.<tenant>.hdi.deploy`, or per request via `options._.hdi.deploy`.
-- [`undeploy.json`](../databases/hana#undeploying-artifacts) — allowlist for views, indexes, and constraints. Never list `.hdbtable` files: that drops the table and its data.
+- [`undeploy.json`](../databases/hana#undeploying-artifacts) — allowlist of artifacts to undeploy when they leave the deploy set. Listing `.hdbtable` entries drops the table and its data; use it when a removed entity's orphan has to go.
 - `cds.requires.'cds.xt.DeploymentService'.upgrade.skipExtensionCheck: true` — skips the guard blocking a base-model upgrade when extensions exist but extensibility is off. A data-loss escape hatch.
 - `cds.requires.db.schema_evolution: 'auto'` — additive-only evolution locally; without it, `cds deploy` drop-creates (development only).
 
@@ -1286,13 +1284,12 @@ The defaults above are deliberately safe. You can change them for narrow use cas
 
 | Scenario | Local (SQLite `auto`) | Production (SAP HANA) |
 | -------- | --------------------- | --------------------- |
-| Delete an activated extension | `422`, rolled back | Succeeds; column/table and data remain as orphans |
-| Push a version that drops an object | `422` | Succeeds; orphan remains |
+| Delete or shrink an activated extension, field removed | `422`, rolled back | Column and its data dropped |
+| Delete or shrink an activated extension, entity removed | `422`, rolled back | Table remains unless matched by `undeploy.json` or `auto_undeploy` is set |
 | Field type change, incompatible | `422` | `422` (HANA rejects all type changes) |
 | Field type change, safe widening | Applied | Applied |
-| Re-add a field, orphan column exists, same type | not reachable | Succeeds; reuses the existing column and its data |
-| Re-add a field, orphan column exists, different type | not reachable | `422` |
-| Truly reclaim activated storage | reprovision the database | `unsubscribe` then `resubscribe` |
+| Re-add an entity whose table still exists | not reachable | Succeeds if the new shape is compatible, `422` otherwise |
+| Truly reclaim activated storage | reprovision the database | `undeploy.json` and redeploy, or `unsubscribe` then `resubscribe` |
 
 ## DeploymentService
 
