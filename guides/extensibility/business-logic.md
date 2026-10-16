@@ -22,8 +22,9 @@ An extension project can carry model extensions *and* handler code at the same t
 
 ## Prerequisites {#prerequisites}
 
-- A **CAP-based [multitenant SaaS application](../multitenancy/)** with [extensibility enabled](customization#prep-as-provider), since code extensibility builds on the same MTX sidecar. This guide continues with the [XTravels](https://github.com/capire/xtravels) sample from the [customization guide](customization#prerequisites).
-- The `@sap/cds-oyster` plugin, added in the next step. It is only active in **multitenant** setups.
+This guide continues with the **XTravels** sample (`github.com/capire/xtravels`) from the [model-extensibility guide](customization). Work through that guide's [SaaS Provider walkthrough](customization#prep-as-provider) first, up to and including [Provide Reference Logic for Local Runs](customization#reference-wiring): it creates an extension project template and runs it locally, with the base model, test data, and reference wiring that a standalone `cds watch` needs. You can skip its guide-publishing and deployment steps.
+
+One addition is specific to code extensibility: the `@sap/cds-oyster` plugin, added in the next step. It is only active in **multitenant** setups.
 
 ## As a SaaS Provider {#provider}
 
@@ -50,9 +51,28 @@ cds:
   code-extensions:
     enabled: true
 ```
-```sh [mtx/sidecar]
-npm add @sap/cds-oyster --prefix mtx/sidecar
+```json [mtx/sidecar/package.json]
+{
+  "dependencies": {
+    "@sap/cds-oyster": "^0.5.5"
+  }
+}
 ```
+:::
+
+::: warning Never run `npm` inside `mtx/sidecar`
+`mtx/sidecar` is **not** a member of the samples npm workspace, so running `npm install` or `npm add` inside it creates a nested `mtx/sidecar/node_modules` with its **own second copy of `@sap/cds`**. Two `@sap/cds` instances break the sidecar (its model-provider calls start failing). So **add the dependency to `mtx/sidecar/package.json` by hand** (as above) rather than installing it. The app's `npm add @sap/cds-oyster` already hoisted `@sap/cds-oyster` to the workspace root, and the sidecar resolves its dependencies from that parent. Keep `mtx/sidecar` free of its own `node_modules`.
+:::
+
+::: warning Re-subscribe tenants after adding the plugin
+`@sap/cds-oyster` extends the tenant database schema. Any tenant you subscribed **before** adding it (for example `t1` and `t1-ext` from the local setup) is still on the old schema. Re-provision each one so it redeploys with the plugin's schema. Locally, drop and re-subscribe the tenant:
+
+```sh
+cds unsubscribe t1-ext --from http://localhost:4005 -u yves:
+cds subscribe t1-ext --to http://localhost:4005 -u yves:
+```
+
+On a deployed tenant you can't drop it, so run a tenant upgrade to apply the change instead. Otherwise the tenant stays on the old schema and a schema migration would be needed before code extensions work.
 :::
 
 That's all the configuration you need. The plugin registers a `code-extensibility` service with sensible sandbox defaults per profile: **mocked** for local development, and **wasm** in production. See [The Sandbox](#sandbox) for what those mean and when to override them.
@@ -76,7 +96,7 @@ using { sap.capire.travels as our } from '../db/schema';
 service TravelExtensionService {
 
   // Extension point: called before a travel goes from Open to InReview.
-  // Declared without an implementation — unimplemented calls are silent no-ops.
+  // Declared without an implementation, unimplemented calls are silent no-ops.
   action validateReview(travelID: Integer, user: String, timestamp: String);
 
   // Read-only projections handlers may query via `this.entities`.
@@ -179,7 +199,7 @@ You'll implement `validateReview` with a policy of your own: reject any travel w
 
 ### 1. Start from the Template
 
-Extension code lives in a standard extension project. Set one up exactly as in the [customization guide](customization#start-ext-project): run `cds init` and `cds add extension`, point `extends` at `@capire/xtravels`, then run [`cds pull`](customization#pull-base) and `npm install` to fetch the base model.
+Extension code lives in a standard extension project. If you completed the [provider walkthrough](customization#prep-as-provider) in the prerequisites, you already have the template, with its base model pulled. If not, set it up now.
 
 Two additions specific to code extensions:
 
@@ -230,7 +250,7 @@ module.exports = async function (req) {
 
 :::
 
-That header drives editor code completion for exactly what the sandbox exposes, and nothing more: `req` is narrowed to the sandbox request surface, with `req.data` typed from the action's own parameters; `this.entities` and the CRUD methods (`this.read`, `this.update`, …) are scoped to the extension service's entities; and the leading triple-slash reference pulls in the sandbox globals (`SELECT`, `cql`, `utils`). Completion relies on the generated `#cds-models` types (produced by `@cap-js/cds-typer`), which the extension template from [step 1](customization#start-ext-project) already sets up — so IntelliSense works as soon as you open the file.
+That header drives editor code completion for exactly what the sandbox exposes, and nothing more: `req` is narrowed to the sandbox request surface, with `req.data` typed from the action's own parameters; `this.entities` and the CRUD methods (`this.read`, `this.update`, …) are scoped to the extension service's entities; and the leading triple-slash reference pulls in the sandbox globals (`SELECT`, `cql`, `utils`). Completion relies on the generated `#cds-models` types (produced by `@cap-js/cds-typer`), which the extension template from [step 1](customization#start-ext-project) already sets up, so IntelliSense works as soon as you open the file.
 
 ::: tip Scope the generation
 Without `--filter`, `cds add ext-handler` generates stubs for *every* entity and action in the whole base model, including services that aren't `@extensible.code`. Those won't push. Filter to the extension point you're implementing, or delete the extras.
@@ -249,7 +269,7 @@ module.exports = async function validateReview(req) {
 
   const travel = await SELECT.one.from(Travels).where({ ID: travelID })
   if (travel?.TotalPrice > 10000) {
-    req.reject(409, `Total price ${travel.TotalPrice} exceeds the 10000 policy limit — cannot submit for review.`)
+    req.reject(409, `Total price ${travel.TotalPrice} exceeds the 10000 policy limit, cannot submit for review.`)
   }
 }
 ```
@@ -260,7 +280,11 @@ module.exports = async function validateReview(req) {
 
 ### 4. Test-Drive Locally {#test-locally}
 
-Run the extension standalone with `cds watch`. Under the `development` profile the handler runs in the **mocked** sandbox, a plain in-process execution that's quick to iterate on:
+Run the extension standalone with `cds watch`. Under the `development` profile the handler runs in the **mocked** sandbox, a plain in-process execution that's quick to iterate on.
+
+First, reproduce the provider wiring locally. `cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Without it, `submitForReview` is a silent no-op and your handler never runs. Add a local-only _srv/server.js_ that reconnects to `TravelExtensionService` and registers the same `before(submitForReview)` handler shown in [Call the Extension Point](#wire). This follows the [reference-logic pattern](customization#reference-wiring) (a read-only _server.js_ that reproduces provider behavior); it is only for local runs, since on a real tenant the wiring is already there.
+
+Then run it:
 
 ```sh
 cds watch
@@ -269,10 +293,6 @@ cds watch
 Call `submitForReview` on a travel over the limit and confirm the `409`; on a cheap one it passes and the status flips to `InReview`.
 
 Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --profile wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
-
-::: tip Reproduce provider wiring locally
-`cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Add a local-only _srv/server.js_ that reconnects to `TravelExtensionService` and registers the same `before(submitForReview)` handler shown in [Call the Extension Point](#wire). The [reference logic](customization#reference-wiring) section is the pattern for this kind of local wiring (a read-only _server.js_ that reproduces provider behavior), not the exact handler to copy. On a real tenant this wiring is already there.
-:::
 
 ### 5. Verify Against the Production Sandbox {#verify-wasm}
 
@@ -314,9 +334,9 @@ The [Code Extension Reference](code-extension) documents the sandbox in full: [e
 
 ## Best Practices for Extension Developers {#best-practices}
 
-- **Keep handlers small and focused** — one file, one job. Complex logic is hard to diagnose when a runtime error blocks the extension.
-- **Push work down to the database** — filter and scope with `where` clauses and aggregates rather than looping in JavaScript.
-- **Signal outcomes with `req.reject` / `req.error`, never `throw`** — an unhandled throw blocks the extension for the whole tenant until you re-push.
+- **Keep handlers small and focused**: one file, one job. Complex logic is hard to diagnose when a runtime error blocks the extension.
+- **Push work down to the database**: filter and scope with `where` clauses and aggregates rather than looping in JavaScript.
+- **Signal outcomes with `req.reject` / `req.error`, never `throw`**: an unhandled throw blocks the extension for the whole tenant until you re-push.
 - **Test in the mocked sandbox, then verify with `cds watch --profile wasm`** before pushing. The wasm run exercises the isolated engine and catches reliance on globals it doesn't provide; keep in mind that push adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
 
 ## Best Practices for Subscribers {#subscriber-best-practices}
@@ -329,11 +349,11 @@ A code extension runs tenant-supplied JavaScript on the live application, so the
 ## Best Practices for Application Providers {#provider-best-practices}
 
 - **Monitor for quarantined extensions; subscribers aren't notified.** An *unhandled* runtime error in a handler (as opposed to a deliberate `req.reject`/`req.error`) **quarantines** it tenant-wide until the next successful push, and nothing notifies the subscriber. Make it an operations task to watch `cds.xt.Extensions` for blocked extensions and reach out to the extension developer to fix and re-push. See [Quarantine](code-extension#quarantine).
-- **Be sparse with `@extensible.code`.** A **service-level** annotation opens the *entire* service — every entity, action, and event — to tenant handlers. Prefer the narrowest scope: annotate individual entities or actions, and set `@extensible.code: false` on anything you don't want reachable (helper entities, internal actions, sensitive projections). A dedicated extension service with a single action — the [pre-defined extension point](#extension-point) shown above — is the tightest option.
+- **Be sparse with `@extensible.code`.** A **service-level** annotation opens the *entire* service (every entity, action, and event) to tenant handlers. Prefer the narrowest scope: annotate individual entities or actions, and set `@extensible.code: false` on anything you don't want reachable (helper entities, internal actions, sensitive projections). A dedicated extension service with a single action, the [pre-defined extension point](#extension-point) shown above, is the tightest option.
 - **Pass identity and context explicitly.** The sandbox does not expose `req.user`. If a handler needs the acting user, tenant, or locale, pass it as an **action parameter** (as `validateReview` does with `user` and `timestamp`); never assume ambient request state.
 - **Expose the minimum data surface.** Everything reachable from the annotated service is in scope for handlers. Expose only the projections a handler genuinely needs, mark them `@readonly` unless writes are required, and keep the fence as small as the use-case allows.
 - **Set sandbox limits for your risk profile.** The defaults (`maxTime`, `maxMemory`, `maxCallbacks`, `maxDepth`) are conservative but generic: tighten them for less-trusted code, and decide deliberately whether `continueOnError` should keep the app running when a handler faults. See [Configuration](code-extension#config).
 
 ## Learn More
 
-This guide covers the recommended scenario: a **pre-defined extension point**, an action the app calls at a well-known place, implemented by tenant handlers. When you also control *which* extensions reach *which* tenant — reviewed partner code, tier-gated toggles, a scratch space, or a separate microservice — you can safely open much more: CRUD events on regular entities, after-READ enrichment, and cross-record validation. See [Opening Regular Services](business-logic-advanced).
+This guide covers the recommended scenario: a **pre-defined extension point**, an action the app calls at a well-known place, implemented by tenant handlers. When you also control *which* extensions reach *which* tenant (reviewed partner code, tier-gated toggles, a scratch space, or a separate microservice) you can safely open much more: CRUD events on regular entities, after-READ enrichment, and cross-record validation. See [Opening Regular Services](business-logic-advanced).
