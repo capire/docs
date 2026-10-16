@@ -1,2 +1,5 @@
 # [Extending SaaS Apps](customization)
+# [Business Logic Extensibility](business-logic)
+# [Opening Regular Services](business-logic-advanced)
 # [Feature Toggles](feature-toggles)
+# [Code Extension Reference](code-extension)
