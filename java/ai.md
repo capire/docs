@@ -230,7 +230,6 @@ In CDS QL queries, elements of type `Vector` are excluded from the select list b
 CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Tracing Agents <Alpha />
-
 ###### tracing-agents
 
 When a CAP Agent handles a request, CAP Java emits a hierarchy of OpenTelemetry spans that follow the request from the inbound A2A request through each LLM round-trip down to the individual tool executions. The span attributes follow the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) (`gen_ai.*`), so traces are directly consumable by standard observability backends (for example SAP Cloud Logging, Dynatrace, or Jaeger) without custom mapping.
@@ -264,8 +263,8 @@ The spans carry the following `gen_ai.*` attributes (omitted when the correspond
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `invoke_agent`  | `gen_ai.operation.name`, `gen_ai.agent.name`, `gen_ai.conversation.id`, `cds.ai.service.method`, `cds.ai.agent.outcome`               |
 | `chat`          | `gen_ai.operation.name`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.request.temperature`, `gen_ai.request.top_p`, `gen_ai.request.max_tokens`, `gen_ai.response.model`, `gen_ai.response.id`, `gen_ai.response.finish_reasons`, `gen_ai.usage.input_tokens`, `gen_ai.usage.output_tokens` |
-| `execute_tool`  | `gen_ai.operation.name`, `gen_ai.tool.call.name`, `gen_ai.tool.call.id`, `gen_ai.tool.call.outcome`, `gen_ai.tool.call.arguments`<sup>*</sup>, `gen_ai.tool.call.result`<sup>*</sup> |
+| `execute_tool`  | `gen_ai.operation.name`, `gen_ai.tool.call.name`, `gen_ai.tool.call.id`, `gen_ai.tool.call.outcome`, `gen_ai.tool.call.arguments`<sup>1</sup>, `gen_ai.tool.call.result`<sup>1</sup> |
 
 Errors are recorded on the affected span, and any tool spans still open when an invocation fails are closed and marked with outcome `error`.
 
-<sup>*</sup> Tool-call arguments and results are potentially sensitive and are only recorded when the [`cds.security.logPotentiallySensitive`](./developing-applications/properties#cds-security-logpotentiallysensitive) setting is enabled. By default they are omitted.
+<sup>1</sup> Tool-call arguments and results are potentially sensitive and are only recorded when the [`cds.security.logPotentiallySensitive`](./developing-applications/properties#cds-security-logpotentiallysensitive) setting is enabled. By default they are omitted.
