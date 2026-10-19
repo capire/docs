@@ -92,10 +92,6 @@ The following table lists these minimum versions for various common dependencies
 
 CAP Java 4.9.x compiles against Spring Boot **3.5.16**, the latest publicly available Spring Boot 3.x version. As Spring Boot 3.x has reached end of life, no further public security patches are available.
 
-::: tip SAP Internal
-Newer Spring Boot 3.x patch versions with security patches are available from the internal SAP artifactory.
-:::
-
 If you require continued Spring Boot 3.x security patches, you can obtain enterprise support directly from [Spring Boot](https://enterprise.spring.io/lts-releases). For SAP-internal usage those patches are available.
 
 ::: warning Migrate to CAP Java 5.2.0
