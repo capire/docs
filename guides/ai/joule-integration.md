@@ -1,8 +1,6 @@
 # Integrating XTravels with Joule
 
 <style scoped>
-  table { width: calc(100% - 40px) !important; margin-left: 40px !important; margin-right: 0 !important; table-layout: fixed; }
-  table code { white-space: normal; overflow-wrap: anywhere; }
   div[class*='language-']:has(code > .line:only-child) { overflow-y: hidden; }
   div[class*='language-']:has(code > .line:only-child) > button.copy { top: 50%; transform: translateY(-50%); }
 </style>
@@ -16,12 +14,11 @@ Follows the [**Bring Your Own Agent**](https://architecture.learning.sap.com/doc
 
 ## Start with XTravels
 
-Clone the CAP XTravels sample and install its dependencies:
+Clone the CAP XTravels sample:
 
 ```zsh
 git clone https://github.com/capire/xtravels
 cd xtravels
-npm install
 ```
 
 The sample's [`HotelsService`](https://github.com/capire/xtravels/blob/main/srv/hotels/services.cds) is annotated with `@agent`, which exposes it through A2A.
@@ -33,30 +30,37 @@ For installing the `@capire` packages, follow the sample's [GitHub Packages setu
 
 ## Prerequisites
 
+This guide assumes you already have an IAS tenant for your organization.
+
+[Learn how to request tenant for SAP Cloud Identity Services](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant){.learn-more}
+
 ### Register the IAS Tenant
 
-
 In the **global account**…
+
 ::: tip Skip this if the IAS tenant is already listed under *System Landscape* → *Systems*.
 :::
+
 1. Choose **System Landscape** → **Systems** → **Service Owner View**.
 2. Choose **Add** → **Add via CLD Discovery** → **Next Step**.
-3. Select **System Type: SAP Cloud Identity Services** and enter the **CLD Tenant ID**.
-   > For an IAS URL like `https://xxx.accounts400.ondemand.com`, the tenant is `xxx`.
+3. Select **System Type: SAP Cloud Identity Services** and enter its numeric **CLD Tenant ID**.
+   Look it up under [**Working with SPC** → **Cloud Landscape Directory** → **Tenants**](https://spc.ondemand.com/)
+   by the IAS URL or local tenant ID.
 4. Choose **Next Step** → **Create**.
-
 
 ### Assign the Joule Entitlement
 
 In the **provider subaccount**…
-1. Choose **Entitlements** → **Edit** → **Add Service Plans**.
-2. Choose **Joule Development** → **standard (Application)** → **Add 1 Service Plan**.
-3. Choose **Save**.
 
+1. Choose **Entitlements** → **Edit** → **Add Service Plans**.
+2. Select **Joule Development** → **standard (Application)**.
+3. Select **Joule** → **designer**.
+4. **Add 2 Service Plans** and **Save**.
 
 ### Subscribe to Joule in BTP
 
 In the **provider subaccount**…
+
 1. Choose **Services** → **Instances and Subscriptions** → **Create**.
 2. Select **Service: Joule Development** and **Plan: standard**.
 3. Choose **Create** and wait until the subscription status is **Subscribed**.
@@ -64,19 +68,20 @@ In the **provider subaccount**…
 ### Create the Formation
 
 In the **global account**…
+
 1. Choose **System Landscape** → **Formations** → **Create Formation**.
-2. Enter a **Formation Name**, select **Formation Type: Integrate with Joule Development**
-3. Select **Next Step**.
-4. Under **Include Systems**, select **Joule Dev** and the IAS system for XTravels.
-5. Choose **Next Step** → **Create** and wait until the formation status is **Ready**.
+2. Enter a **Formation Name**, select **Formation Type: Integrate with Joule Development** → **Next Step**.
+3. Select **Joule Dev** and the IAS system you registered before.
+4. Choose **Next Step** → **Create** and wait until the formation is **Ready**.
 
-### Install the Joule Studio CLI
+### Install the CLIs
 
-Install the Joule Studio CLI and verify the installation:
+Install the Joule Studio CLI and the [SAP BTP CLI](https://help.sap.com/docs/btp/sap-business-technology-platform/download-and-start-using-btp-cli), then verify both:
 
 ```zsh
 npm install -g @sap/joule-studio-cli
 joule --version
+btp --version
 ```
 
 Create the Joule CLI service key in the target Cloud Foundry space:
@@ -84,23 +89,27 @@ Create the Joule CLI service key in the target Cloud Foundry space:
 ```zsh
 cf login --sso
 
-cf create-service-key joule-designer joule-agent-cli
-cf service-key joule-designer joule-agent-cli
+cf create-service das-service-canary designer joule-designer --wait
+cf create-service-key joule-designer joule-agent-cli --wait
 ```
 
-Create an X.509 key for the IAS service instance that protects XTravels:
+### Assign the Compiler Role
 
-```zsh
-cf create-service-key xtravels-auth xtravels-a2a-x509 \
-  -c '{"credential-type":"X509_GENERATED"}'
-```
+In the **provider subaccount**…
+
+1. Choose **Security** → **Role Collections** → **Create**, enter `Joule`, and choose **Create**.
+2. Open **Joule** → **Edit** → **Show Value Help** next to **Role Name**.
+3. Filter **Application Identifier** by the output of `cf service-key joule-designer joule-agent-cli | tail -n +2 | jq -r .credentials.uaa.xsappname`.
+4. Select **capability_developer** → **Add** → **Save**.
+5. Open **Users** → **Edit**, add your user from the IAS tenant, and choose **Save**.
 
 ## Create the Joule Capability
 
-Add Joule capabilities to your CAP project:
+Configure IAS authentication and add a Joule capability to your CAP project:
 
 ```zsh
 cds add joule
+npm install
 ```
 
 ::: details Files generated by `cds add joule`
@@ -122,23 +131,18 @@ joule/
 In `da.sapdas.yaml`, reference the local capability:
 
 ```yaml
-schema_version: 1.5.0-beta
+schema_version: 1.9.0
 name: xtravels_a2a
 capabilities:
   - type: local
     name: xtravels_a2a
     folder: ./xtravels-agent
-
-enable_native_agenticness: false
-
-conversational_search:
-  enabled: false
 ```
 
 In `capability.sapdas.yaml`, map a system alias to the destination:
 
 ```yaml
-schema_version: 3.27.0
+schema_version: 3.32.0
 
 metadata:
   namespace: com.sap.cap
@@ -224,48 +228,12 @@ capability_context:
 
 :::
 
-## Create the Destination
-
-1. Convert the IAS certificate and private key into a temporary PKCS#12 key store:
-
-```zsh
-openssl pkcs12 -export \
-  -in <(
-    cf service-key xtravels-auth xtravels-a2a-x509 --json |
-      jq -r '.certificate, .key'
-  ) \
-  -out ias-client.p12 \
-  -name ias-client
-```
-
-2. In the **provider subaccount**, choose **Connectivity** → **Destinations** → **Create** → **From Scratch** → **Create**.
-3. Enter these properties:
-
-| Property | Value |
-| --- | --- |
-| Name | `XTRAVELS_A2A` |
-| Type | `HTTP` |
-| URL | The `url` from the agent card, for example<br>`https://<app-route>/a2a/hotels` |
-| Proxy Type | `Internet` |
-| Authentication | `OAuth2ClientCredentials` |
-| Client ID | Output of `cf service-key xtravels-auth xtravels-a2a-x509 --json \| jq -r .clientid` |
-| Use mTLS for token retrieval | Enabled |
-| Token Service URL | `<ias-url>/oauth2/token` |
-| Token Service URL Type | `Dedicated` |
-| Use default client trust store | Enabled |
-
-4. Upload `ias-client.p12` as the **Token Service Key Store Location** and enter its export password as the **Token Service Key Store Password**.
-5. Choose **Create**, then delete the temporary key store with `rm ias-client.p12`.
-
-::: danger Never commit the key store, certificates, or private keys.
-:::
-
 ## Deploy
 
-Log in with the `joule-agent-cli` service-key values and a fresh SSO passcode:
+Log in to the Joule Development tenant:
 
 ```zsh
-joule login --sso-passcode --app-tid
+joule login --sso --apiurl https://<joule-dev-system>
 ```
 
 Deploy XTravels and its Joule capability:
@@ -281,6 +249,58 @@ cds up
 3. Runs `joule deploy -c -n xtravels_a2a` from *./joule* to compile and deploy the capability.
 
 :::
+
+## Create the Destination
+
+Log in to BTP and target the subaccount that contains the Cloud Foundry space:
+
+```zsh
+btp login
+btp target --subaccount <subaccount-id>
+```
+
+Create an X.509 service key, upload its PEM key pair, and create the destination:
+
+```zsh
+cf create-service-key xtravels-ias joule-a2a-destination \
+  -c '{"credential-type":"X509_GENERATED"}' --wait
+
+(
+  set -e
+  umask 077
+  key_store=$(mktemp -d)/xtravels-ias.pem
+  trap 'rm -r "${key_store:h}"' EXIT
+
+  cf service-key xtravels-ias joule-a2a-destination --json |
+    jq -r '.credentials | .certificate, .key' > "$key_store"
+  btp create connectivity/destination-certificate \
+    --subaccount --file "$key_store"
+
+  agent_url=$(
+    cf curl "/v3/apps/$(cf app xtravels-srv --guid)/routes" |
+      jq -r '[.resources[].url | select(contains(".cert.") | not)][0] |
+        "https://\(.)/a2a/hotels"'
+  )
+  btp create connectivity/destination --subaccount --configuration "$(
+    cf service-key xtravels-ias joule-a2a-destination --json |
+      jq -c --arg url "$agent_url" --arg key_store "${key_store:t}" '{
+        Name: "XTRAVELS_A2A",
+        Type: "HTTP",
+        ProxyType: "Internet",
+        URL: $url,
+        Authentication: "OAuth2ClientCredentials",
+        clientId: .credentials.clientid,
+        tokenServiceURL: (.credentials.url | rtrimstr("/")) + "/oauth2/token",
+        tokenServiceURLType: "Dedicated",
+        "tokenService.KeyStoreLocation": $key_store
+      }'
+  )"
+)
+
+btp get connectivity/destination --subaccount --name XTRAVELS_A2A
+```
+
+The subshell deletes the local PEM file even if a command fails. Never commit certificates or private keys.
 
 ## Launch and Verify
 
