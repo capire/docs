@@ -550,17 +550,17 @@ cds:
 ```
 :::
 
-| Kind     | Description                                                                 |
-|----------|-----------------------------------------------------------------------------|
-| `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core          |
-| `auto`   | The default for `development`, using local Claude or OpenCode configuration |
-| `mock`   | A pure mock for `development`, provides dummy responses when called         |
+| Kind     | Description                                                                        |
+|----------|------------------------------------------------------------------------------------|
+| `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core                 |
+| `auto`   | The default for `development`, using local Claude, Codex or OpenCode configuration |
+| `mock`   | A pure mock for `development`, provides dummy responses when called                |
 
 See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.
 
 
 > [!tip] Automatically Fetching Credentials
-> In development profile, with the pre-configured `auto` kind, the plugin tries to fetch missing credentials from local installation of [Claude Code](https://claude.ai) or [OpenCode](https://opencode.ai).
+> In development profile, with the pre-configured `auto` kind, the plugin tries to fetch missing credentials from local installation of [Claude Code](https://claude.ai), [Codex](https://openai.com/codex/) or [OpenCode](https://opencode.ai).
 > This allows you to work with local LLM instances without providing any additional config at all.
 
 
