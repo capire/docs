@@ -94,8 +94,8 @@ CAP Java 4.9.x compiles against Spring Boot **3.5.16**, the latest publicly avai
 
 If you require continued Spring Boot 3.x security patches, you can obtain enterprise support directly from [Spring Boot](https://enterprise.spring.io/lts-releases). For SAP-internal usage those patches are available.
 
-::: warning Migrate to CAP Java 5.2.0
-We recommend all customers on the LTS version 4.9.x to migrate to CAP Java **5.2.0**, which uses Spring Boot 4.x and continues to receive regular updates.
+::: tip Migrate to CAP Java 5.2.0
+We recommend to migrate to CAP Java **5.2.0**, which uses Spring Boot 4.x and continues to receive regular updates.
 
 [See the CAP Java 4.x to 5.x migration guide.](migration#four-to-five){.learn-more}
 :::
