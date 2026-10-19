@@ -230,6 +230,7 @@ In CDS QL queries, elements of type `Vector` are excluded from the select list b
 CAP Java supports multiple [vector functions](./working-with-cql/query-api.md#vector-functions) that allow you to compute vector embeddings, similarity, and distance directly in the database.
 
 ## Tracing Agents <Alpha />
+
 ###### tracing-agents
 
 When a CAP Agent handles a request, CAP Java emits a hierarchy of OpenTelemetry spans that follow the request from the inbound A2A request through each LLM round-trip down to the individual tool executions. The span attributes follow the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) (`gen_ai.*`), so traces are directly consumable by standard observability backends (for example SAP Cloud Logging, Dynatrace, or Jaeger) without custom mapping.
