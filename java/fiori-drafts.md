@@ -100,6 +100,48 @@ The `DRAFT_CREATE` is an internal event that is not triggered by OData requests 
 
 For more examples, see the [Bookshop sample application](https://github.com/SAP-samples/cloud-cap-samples-java/tree/master/srv/src/main/java/my/bookshop/handlers/AdminServiceHandler.java).
 
+## Deleting Drafts { #draft-deletion-in-cap-java }
+
+When a draft is deleted — whether by user cancellation, during activation, or by garbage collection — CAP Java removes the draft rows from the database. The deletion strategy is controlled via:
+
+```yaml
+cds.drafts.deleteStrategy: flat
+```
+
+Three strategies are available:
+
+| Strategy | Behaviour | Performance |
+|---|---|---|
+| `flat` *(default)* | Deletes each draft table's rows individually by draft UUID. | Fast |
+| `deep` | Issues a delete on the draft root; the runtime [cascades it along compositions](./working-with-cql/query-api#delete), removing child rows without explicit per-table statements. | Slow |
+| `dad` | Deletes only the `DraftAdministrativeData` record and relies on database `ON DELETE CASCADE` constraints to remove the associated draft rows. | Fastest |
+
+### Cascade Deletion on Database { #draft-deletion-dad }
+
+The `dad` strategy avoids separate deletion operations for each draft table. Before enabling it, the database must have `ON DELETE CASCADE` constraints on each draft table's `DraftAdministrativeData_DraftUUID` foreign key. Generate these constraints by enabling:
+
+```yaml
+cds.fiori.draft_admin_integrity: true
+```
+
+On SAP HANA and PostgreSQL, the constraints are deployed with `NOT VALIDATED` / `NOT VALID`, so existing data is not checked and no orphan cleanup is required before deploying.
+
+Once the constraints are deployed, switch to the `dad` strategy:
+
+```yaml
+cds.drafts.deleteStrategy: dad
+```
+
+::: warning Check Custom Handlers
+Switching strategies changes which event handlers are called during draft deletion. Verify the behavior of your custom handlers before adopting `dad`.
+:::
+
+::: tip Retain `flat` Until Migration Is Complete
+Keep `cds.drafts.deleteStrategy: flat` on existing databases until the cascade constraints have been deployed.
+:::
+
+[Learn more about the shared migration requirements for CAP Node.js and CAP Java.](../releases/2026/oct26#optimized-draft-deletion){.learn-more}
+
 ## Activating Drafts
 
 When you finish editing drafts by pressing the *Save* button, a draft gets activated. That means, either a single `CREATE` or `UPDATE` event is triggered to create or update the active entity with all of its compositions through a deeply structured document. You can register to these events to validate the activated data.
@@ -115,6 +157,27 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
+
+### Delta Save Mode { #draft-delta-save-mode }
+
+By default, draft activation sends the full document tree to the `CREATE` or `UPDATE` handler (`saveMode: full`). With delta save mode enabled, CAP Java performs a deep comparison of the draft against the active image and issues update operations only for entities that were actually changed — entities on an unchanged path are skipped entirely, resulting in more efficient database operations for large documents.
+
+Enable delta save mode via:
+
+```yaml
+cds.drafts.saveMode: delta
+```
+
+Compared to the default `full` mode, the observable impact is:
+
+- **Update handlers** receive only the [delta representation](../working-with-cql/query-api#deep-update-delta) — the changed subtree — rather than the full document. Nested composition collections are delivered as delta lists.
+- **Managed timestamps** (`modifiedAt`, `createdAt`) are updated only for nodes on the changed path, accurately reflecting which parts of the document were touched.
+
+::: warning Check Custom Update Handlers
+Make sure your `UPDATE` handlers can deal with a delta payload. Handlers that assume they always receive the full document need to be adapted. Retain `cds.drafts.saveMode: full` (the default) if your handlers require the complete document.
+:::
+
+[Learn more about processing delta payloads in a handler.](../working-with-cql/query-api#deep-update-delta-processing){.learn-more}
 
 ## Read-Only Fields in Drafts { #readonly-in-drafts }
 
@@ -212,7 +275,7 @@ cds.security.authorization.draftProtection.enabled: false
 
 ## Draft Garbage Collection { #draft-gc }
 
-Stale drafts are automatically deleted after a timeout (30 days default). You can configure the timeout with the following application configuration property:
+Stale drafts are automatically deleted after a timeout (30 days default). The [deletion strategy](#draft-deletion-in-cap-java) configured via `cds.drafts.deleteStrategy` also applies during garbage collection. You can configure the timeout with the following application configuration property:
 
 ```yaml
 cds.drafts.deletionTimeout: 8w
