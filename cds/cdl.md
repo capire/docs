@@ -2084,6 +2084,16 @@ service MyOrders {
 }
 ```
 
+Auto-exposure of entities annotated with `@cds.autoexpose` can be switched off for a
+particular service by annotating the service with `@cds.autoexpose: false`:
+```cds
+@cds.autoexpose: false
+service Zoo {
+  // ...
+  // Bar and Car are not auto-exposed in this service
+}
+```
+
 [Learn more about **CodeLists in `@sap/cds/common`**.](./common#code-lists){.learn-more}
 
 
