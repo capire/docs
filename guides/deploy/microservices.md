@@ -36,7 +36,8 @@ This guide describes a way to manage development and deployment via *[monorepos]
 
 2. Add the previously mentioned projects as `git` submodules:
 
-   ```sh
+   ::: code-group
+   ```sh [Node.js]
    git init
    git submodule add https://github.com/capire/bookstore
    git submodule add https://github.com/capire/reviews
@@ -46,6 +47,17 @@ This guide describes a way to manage development and deployment via *[monorepos]
    git submodule add https://github.com/capire/data-viewer
    git submodule update --init
    ```
+   ```sh [Java]
+   git init
+   git submodule add https://github.com/capire/bookstore-java bookstore
+   git submodule add https://github.com/capire/reviews-java reviews
+   git submodule add https://github.com/capire/orders-java orders
+   git submodule add https://github.com/capire/common
+   git submodule add https://github.com/capire/bookshop-java bookshop
+   git submodule add https://github.com/capire/data-viewer
+   git submodule update --init
+   ```
+   :::
 
    Add a _.gitignore_ file with the following content:
    ```txt
@@ -53,30 +65,26 @@ This guide describes a way to manage development and deployment via *[monorepos]
    gen
    ```
    > The outcome of this looks and behaves exactly as the monorepo layout in *[cap/samples](https://github.com/capire/samples)*,  so we can exercise the subsequent steps in there...
-
 3. Test-drive locally:
-   ```sh
-   npm install
-   ```
 
-   ```sh
+   ::: code-group
+   ```sh [Node.js]
+   npm install
    cds w bookshop
    ```
-
-   ```sh
-   cds w bookstore
+   ```sh [Java]
+   npm install
+   cd bookshop
+   mvn cds:watch
    ```
-
-   Each microservice can be started independently. If you start each microservice, one after the other in a different terminal, the connection is already established.
-
-   [Learn more about Automatic Bindings by `cds watch`](../integration/reuse-and-compose#bindings-via-cds-watch){.learn-more}
+   :::
 
 
 ::: details The project structure
 
 The project structure used here is as follows:
 
-```txt
+```
 <PROJECT-ROOT>/
 ├─ bookstore/
 ├─ orders/
@@ -133,54 +141,22 @@ These are the (not so beneficial) side effects you when using a shared persisten
    npm add --workspace shared-db @capire/bookstore
    npm add --workspace shared-db @capire/reviews
    npm add --workspace shared-db @capire/orders
+   npm install
    ```
 
    > Note how *NPM workspaces* allows us to use the package names of the projects, and nicely creates symlinks in *node_modules* accordingly.
 
 2. Add a `shared-db/db/schema.cds` file as a mashup to actually collect the models:
 
-  ::: code-group
-   ```cds [shared-db/db/schema.cds]
+   ```cds
    using from '@capire/bookstore';
    using from '@capire/reviews';
    using from '@capire/orders';
    ```
-   :::
 
    > Note: the `using` directives refer to `index.cds` files existing in the target packages. Your projects may have different entry points.
 
-::: details Try it out
-
-With that we're basically done with the setup of the collector project. In sum, it's just another CAP project with some cds models in it, which we can handle as usual. We can test whether it all works as expected, for example, we can test-compile and test-deploy it to sqlite and hana, build it, and deploy it to the cloud as usual:
-
-```sh
-cd shared-db
-```
-
-```sh
-cds compile db -2 sql
-```
-```sh
-cds compile db -2 hana
-```
-
-```sh
-cds deploy -2 sqlite
-```
-```sh
-cds build --for hana
-```
-
-```sh
-cd ..
-```
-
-> Note: As we can see in the output for `cds deploy` and `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files.
-:::
-
-::: details Other project structures
-
-The project structure used here is as follows:
+::: details The project structure
 
 ```txt
 <PROJECT-ROOT>/
@@ -198,6 +174,19 @@ The project structure used here is as follows:
 The `shared-db` module is simply another CAP project, with only database content. The dependencies are installed via NPM, so it's still possible to install via an NPM registry if used outside of the monorepo setup.
 
 :::
+::: details Try it out
+
+Run a build like in any other CAP project:
+
+```sh
+cd shared-db
+cds build --for hana
+cd ..
+```
+
+> Note: As we can see in the output for `cds build`, it also correctly collects and adds all initial data from enclosed `.csv` files.
+:::
+
 
 ## All-in-one Deployment
 
@@ -205,7 +194,7 @@ This section is about how to deploy all 3+1 projects at once with a common _mta.
 
 ![component diagram with synchronous and event communication for orders](./assets/microservices/bookstore.excalidraw.svg)
 
-[@capire/samples](https://github.com/capire/samples#readme) already has an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
+The repositories [@capire/samples](https://github.com/capire/samples#readme) for CAP Node.js and [@capire/samples-java](https://github.com/capire/samples-java#readme) for CAP Java already have an all-in-one deployment implemented. Similar steps are necessary to convert projects with multiple CAP applications into a shared database deployment.
 
 ### Deployment Descriptor
 
@@ -223,12 +212,6 @@ Add initial database configuration using the command:
 
 ```shell
 cds add hana
-```
-
-Delete the generated _db_ folder as we don't need it on the root level:
-
-```shell
-rm -r db
 ```
 
 Update the `db-deployer` path to use our `shared-db` project [created previously](#using-a-shared-database):
@@ -255,25 +238,32 @@ build-parameters:
 ```
 :::
 
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
+
 The preceding steps only added configuration to the workspace root.
 
-Additionally add database configuration to each module that we want to deploy - bookstore, orders, and reviews:
+Additionally [add database configuration](../databases/hana#setup--configuration) to each module that we want to deploy - bookstore, orders, and reviews:
 
 ```shell
 npm i @cap-js/hana --workspace bookstore
 npm i @cap-js/hana --workspace orders
 npm i @cap-js/hana --workspace reviews
 ```
+
 :::
 
+::: details Java: Configure each app for cloud readiness
+
+For each project [add the cds-feature-hana dependency](../databases/hana#setup--configuration) or the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
+
+:::
 
 ### Applications
 
 Replace the MTA module for `samples-srv` with versions for each CAP service and adjust `name`, `path`, and `provides[0].name` to match the module name. Also change the `npm-ci` builder to the `npm` builder.
 
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 modules:
   - name: bookstore-srv # [!code focus]
     type: nodejs
@@ -282,7 +272,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
     provides: # [!code focus]
       - name: bookstore-api # [!code focus]
         properties:
@@ -300,7 +290,7 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
     provides: # [!code focus]
       - name: orders-api # [!code focus]
         properties:
@@ -318,7 +308,78 @@ modules:
       instances: 1
       buildpack: nodejs_buildpack
     build-parameters:
-      builder: npm # [!code focus]
+      builder: npm-ci # [!code focus]
+    provides: # [!code focus]
+      - name: reviews-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+...
+```
+```yaml [Java (mta.yaml)]
+modules:
+
+  - name: bookstore-srv # [!code focus]
+    type: java
+    path: bookstore/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud,sandbox
+      JBP_CONFIG_COMPONENTS: "jres: ['com.sap.xs.java.buildpack.jre.SAPMachineJRE']"
+      JBP_CONFIG_SAP_MACHINE_JRE: '{ version: 21.+ }'
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
+    provides: # [!code focus]
+      - name: bookstore-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+
+  - name: orders-srv # [!code focus]
+    type: java
+    path: orders/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
+    provides: # [!code focus]
+      - name: orders-api # [!code focus]
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: samples-db
+      - name: samples-auth
+      - name: samples-messaging
+      - name: samples-destination
+
+  - name: reviews-srv # [!code focus]
+    type: java
+    path: reviews/srv # [!code focus]
+    parameters:
+      instances: 1
+      buildpack: sap_java_buildpack_jakarta
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true --batch-mode
+      build-result: target/*-exec.jar
     provides: # [!code focus]
       - name: reviews-api # [!code focus]
         properties:
@@ -332,10 +393,10 @@ modules:
 ```
 :::
 
-Add build commands for each module to be deployed:
+In Node.js, add build commands for each module to be prepared for deployment:
 
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 build-parameters:
   before-all:
     - builder: custom
@@ -381,7 +442,7 @@ Add the admin role
 ```
 :::
 
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
 Add NPM dependency `@sap/xssec`:
 
 ```shell
@@ -391,9 +452,16 @@ npm i @sap/xssec --workspace reviews
 ```
 :::
 
+::: details Java: Configure each app for cloud readiness
+
+For each project, add the [cds-starter-cloudfoundry starter bundle](../../java/developing-applications/building#starter-bundles).
+:::
+
 ### Messaging
 
 The messaging service is used to organize asynchronous communication between the CAP services.
+
+#### In Node.js
 
 ```shell
 cds add enterprise-messaging
@@ -480,6 +548,62 @@ Enable messaging for the modules that use it:
 
 :::
 
+#### In CAP Java
+
+Create a new file named event-mesh.json to store the configuration for enterprise messaging. Skip the `emname` and `namespace` properties because the mta.yaml file parameterizes these dynamically:
+
+::: code-group
+```json [event-mesh.json]
+{
+  "version": "1.1.0",
+  "emname": "samples-emname", // [!code --]
+  "namespace": "default/samples/1", // [!code --]
+  "options": {
+    "management": true,
+    "messagingrest": true,
+    "messaging": true
+  },
+  "rules": {
+    "topicRules": {
+      "publishFilter": [
+        "*"
+      ],
+      "subscribeFilter": [
+        "*"
+      ]
+    },
+    "queueRules": {
+      "publishFilter": [
+        "${namespace}/*"
+      ],
+      "subscribeFilter": [
+        "${namespace}/*"
+      ]
+    }
+  },
+  "authorities": [
+    "$ACCEPT_GRANTED_AUTHORITIES"
+  ]
+}
+```
+:::
+
+Add a messaging resource in mta.yaml with parameterized `emname` and `namespace` properties:
+
+::: code-group
+```yaml [mta.yaml]
+resources:
+  - name: samples-messaging
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: enterprise-messaging
+      service-plan: default
+      path: ./event-mesh.json
+      config: # [!code ++]
+        emname: bookstore-${org}-${space}  # [!code ++]
+        namespace: cap/samples/${space}    # [!code ++]
+```
+:::
 
 ### Destinations
 
@@ -532,7 +656,7 @@ modules:
 Use the destinations in the bookstore application:
 
 ::: code-group
-```yaml [mta.yaml]
+```yaml [Node.js (mta.yaml)]
 modules:
   - name: bookstore-srv
     ...
@@ -540,9 +664,33 @@ modules:
       cds_requires_ReviewsService_credentials: {"destination": "reviews-dest","path": "/odata/v4/reviews"} # [!code ++]
       cds_requires_OrdersService_credentials: {"destination": "orders-dest","path": "/odata/v4/orders"} # [!code ++]
 ```
+```yaml [Java (bookstore/srv/src/main/resources/application.yaml)]
+spring:
+  config.activate.on-profile: cloud
+cds:
+  odataV4.endpoint.path: /
+  messaging.services:
+    samples-messaging:
+      kind: enterprise-messaging
+  remote.services: # [!code ++]
+    OrdersService: # [!code ++]
+      name: OrdersService # [!code ++]
+      type: "odata-v4" # [!code ++]
+      http: # [!code ++]
+        suffix: "/odata/v4" # [!code ++]
+      destination: # [!code ++]
+        name: "orders-dest" # [!code ++]
+    ReviewsService: # [!code ++]
+      name: ReviewsService # [!code ++]
+      type: "odata-v4" # [!code ++]
+      http: # [!code ++]
+        suffix: "/odata/v4" # [!code ++]
+      destination: # [!code ++]
+        name: "reviews-dest" # [!code ++]
+```
 :::
 
-::: details Configure each app for cloud readiness
+::: details Node.js: Configure each app for cloud readiness
 
 Add `@sap-cloud-sdk/http-client` and `@sap-cloud-sdk/resilience` for each module utilizing the destinations:
 
@@ -550,6 +698,31 @@ Add `@sap-cloud-sdk/http-client` and `@sap-cloud-sdk/resilience` for each module
 npm i @sap-cloud-sdk/http-client --workspace bookstore
 npm i @sap-cloud-sdk/resilience --workspace bookstore
 ```
+:::
+
+::: details CAP Java: Configure each app for cloud readiness
+
+To access remote OData services, add a dependency to the *cds-feature-remote-odata* [application plugin](https://cap.cloud.sap/docs/java/developing-applications/building#standard-modules) and provide the latest available version. Additionally, to retrieve destination configurations using the destination service, include a *com.sap.cloud.sdk.cloudplatform* dependency with the *scp-cf* artifact ID, as described in [Cloud SDK Integration](https://cap.cloud.sap/docs/java/cqn-services/remote-services#cloud-sdk-dependencies).
+
+::: code-group
+```xml [bookstore/srv/pom.xml]
+...
+	<dependencies>
+...
+		<dependency>
+			<groupId>com.sap.cds</groupId>
+			<artifactId>cds-feature-remote-odata</artifactId>
+			<scope>runtime</scope>
+			<version>5.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sap.cloud.sdk.cloudplatform</groupId>
+			<artifactId>scp-cf</artifactId>
+		</dependency>
+...
+```
+
 :::
 
 ### App Router
@@ -561,25 +734,6 @@ cds add approuter
 ```
 
 The App Router serves the UIs and acts as a proxy for requests toward the different apps.
-
-Since the App Router folder is only necessary for deployment, we move it into a `.deploy` folder.
-
-```shell
-mkdir .deploy
-mv app/router .deploy/app-router
-```
-
-::: code-group
-```yaml [mta.yaml]
-modules:
-  ...
-  - name: samples
-    type: approuter.nodejs
-    path: app/router # [!code --]
-    path: .deploy/app-router # [!code ++]
-  ...
-```
-:::
 
 #### Static Content
 
@@ -611,10 +765,10 @@ modules:
     type: approuter.nodejs
     ....
     requires:
-      - name: service-api # [!code --]
+      - name: srv-api # [!code --]
         group: destinations  # [!code --]
         properties:  # [!code --]
-          name: service-api  # [!code --]
+          name: srv-api  # [!code --]
           url: ~{srv-url}  # [!code --]
           forwardAuthToken: true  # [!code --]
       - name: orders-api # [!code ++]
@@ -638,10 +792,10 @@ modules:
 ```
 :::
 
-The _xs-app.json_ file describes how to forward incoming request to the API endpoint / OData services and is located in the _.deploy/app-router_ folder. Each exposed CAP Service endpoint needs to be directed to the corresponding application which is providing this CAP service.
+The _xs-app.json_ file describes how to forward incoming request to the API endpoint / OData services and is located in the _.deploy/app-router_ folder. Each exposed CAP Service endpoint needs to be directed to the corresponding application that provides this CAP service. Modify the _.deploy/app-router/xs-app.json_ file as follows:
 
 ::: code-group
-```json [.deploy/app-router/xs-app.json]
+```json [Node.js]
 {
   "routes": [
     { // [!code --]
@@ -667,6 +821,38 @@ The _xs-app.json_ file describes how to forward incoming request to the API endp
     }, // [!code ++]
     { // [!code ++]
       "source": "^/odata/v4/reviews/", // [!code ++]
+      "destination": "reviews-api", // [!code ++]
+      "csrfProtection": true // [!code ++]
+    } // [!code ++]
+  ]
+}
+```
+```json [Java]
+{
+  "routes": [
+    { // [!code --]
+      "source": "^/(.*)$", // [!code --]
+      "target": "$1", // [!code --]
+      "destination": "srv-api", // [!code --]
+      "csrfProtection": true // [!code --]
+    } // [!code --]
+    { // [!code ++]
+      "source": "^/admin/", // [!code ++]
+      "destination": "bookstore-api", // [!code ++]
+      "csrfProtection": true // [!code ++]
+    }, // [!code ++]
+    { // [!code ++]
+      "source": "^/browse/", // [!code ++]
+      "destination": "bookstore-api", // [!code ++]
+      "csrfProtection": true // [!code ++]
+    }, // [!code ++]
+    { // [!code ++]
+      "source": "^/odata/v4/OrdersService/", // [!code ++]
+      "destination": "orders-api", // [!code ++]
+      "csrfProtection": true // [!code ++]
+    }, // [!code ++]
+    { // [!code ++]
+      "source": "^/odata/v4/ReviewsService/", // [!code ++]
       "destination": "reviews-api", // [!code ++]
       "csrfProtection": true // [!code ++]
     } // [!code ++]
