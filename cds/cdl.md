@@ -2070,8 +2070,8 @@ service Zoo {
 
 ```cds
 extend service Zoo with { // auto-exposed entities:
-   @readonly entity Foo_bar as projection on Bar;
-   @readonly entity Foo_car as projection on Car;
+   entity Bar as projection on my.Bar;
+   entity Car as projection on my.Car;
 }
 ```
 
@@ -2093,6 +2093,42 @@ service Zoo {
   // Bar and Car are not auto-exposed in this service
 }
 ```
+
+In addition to entities annotated with `@cds.autoexpose`, composition targets are auto-exposed, too.
+
+Example:
+```cds
+// schema.cds
+namespace travels;
+entity Travels {
+  key id : Integer;
+  bookings : Composition of many Bookings on Bookings.Travel = $self;
+}
+entity Bookings {
+  key Travel      : Association to Travels;
+  key Pos         : Integer;
+}
+```
+
+When `Travels` is exposed in a service ...
+
+```cds
+using { travels } from './schema.cds';
+service TravelService {
+  entity Travels as projection on travels.Travels
+}
+```
+
+... the composition target `Bookings` is auto-exposed, like
+
+```cds
+extend service TravelService with { // auto-exposed entity:
+   entity Bookings as projection on travels.Bookings;
+}
+```
+
+This auto-exposure of composition targets is not affected by annotating
+service `TravelService` with `@cds.autoexpose: false`. 
 
 [Learn more about **CodeLists in `@sap/cds/common`**.](./common#code-lists){.learn-more}
 
