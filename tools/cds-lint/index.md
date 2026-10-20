@@ -1,8 +1,6 @@
 ---
-label: cds-lint
-synopsis: >
+description: >
   This page explains the ESLint plugin for CDS in depth.
-status: released
 ---
 
 # CDS Lint

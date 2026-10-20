@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section describes various options how to run CAP Java applications locally
 
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
@@ -43,7 +43,7 @@ The fastest way to run the CAP Java application is with the IDE that can run and
 
 The `auto-build` goal of the CDS Maven Plugin reacts on any CDS file change and performs a rebuild of your application CDS model. When you restart the application in the IDE or re-run tests, the updated model is picked up your application.
 
-Run this in your terminal and leave it open: 
+Run this in your terminal and leave it open:
 
 ```sh
 mvn cds:auto-build
@@ -75,15 +75,15 @@ Run this in your terminal:
 mvn cds:watch
 ```
 
-The `watch` goal uses the `spring-boot-maven-plugin` internally to start the application with the goal `run` (this also includes a CDS build). 
-When you add the [Spring Boot Devtools](../developing-applications/running#spring-boot-devtools) to your project, the `watch` goal can take advantage of the reload mechanism. 
+The `watch` goal uses the `spring-boot-maven-plugin` internally to start the application with the goal `run` (this also includes a CDS build).
+When you add the [Spring Boot Devtools](../developing-applications/running#spring-boot-devtools) to your project, the `watch` goal can take advantage of the reload mechanism.
 In case your application doesn't use the Spring Boot Devtools, the `watch` goal performs a complete restart of the application after CDS model changes, which is slower.
 
 ::: warning
 On Windows, the `watch` goal only works if the Spring Boot Devtools are enabled.
 :::
 
-You can customize the goals that are executed when the application is restarted after the change to get even faster feedback: 
+You can customize the goals that are executed when the application is restarted after the change to get even faster feedback:
 
 - Use the following command to execute the CDS build and code generator to regenerate [accessor interfaces](../cds-data#generated-accessor-interfaces):
 
@@ -110,7 +110,7 @@ See [the _Multitenancy_ guide](../../guides/multitenancy/index#test-drive-locall
 
 You can debug Java applications locally and remotely.
 
-- For local applications, it's best to start the application using the integrated debugger of your [preferred IDE](../../tools/cds-editors). 
+- For local applications, it's best to start the application using the integrated debugger of your [preferred IDE](../../tools/cds-editors).
 - You can also enable debugger using JVM arguments and attach to it from your IDE.
 - Especially for remote applications, we recommend [`cds debug`](../../tools/cds-cli#java-applications) to turn on debugging.
 

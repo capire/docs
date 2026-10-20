@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   APIs of the <code>@sap/cds-dk</code> package like <code>cds.import</code>.
 ---
 
@@ -22,7 +22,7 @@ cds.import(...)
 ```
 
 > [!important] Don't load cds-dk code at runtime
-> Note that `@sap/cds-dk` is a design-time dependency that runs locally or in continuous integration (CI) pipelines. 
+> Note that `@sap/cds-dk` is a design-time dependency that runs locally or in continuous integration (CI) pipelines.
 > Avoid loading the previously shown code at application runtime in deployed applications.
 
 <script setup>

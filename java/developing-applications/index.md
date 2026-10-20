@@ -1,13 +1,12 @@
 ---
-synopsis: >
+description: >
   Learn here about developing a CAP Java application.
 
-status: released
 ---
 
 # Developing CAP Java Applications
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 <script setup>
 import { data as pages } from './index.data.ts'

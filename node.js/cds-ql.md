@@ -1,5 +1,6 @@
 ---
-status: released
+description: >
+  Reference for `cds.ql`, the module for constructing CQN queries in Node.js using fluent API and tagged template literal styles.
 ---
 
 
@@ -17,29 +18,28 @@ Module `cds.ql` provides facilities to construct queries in [*Core Query Notatio
 
 1. Fluent API style, with query-by-example objects for where clauses and order by clauses:
 
-```js
+```js live
 let q = SELECT.from('Books').where({ID:201}).orderBy({title:1})
 ```
 
 2. Using with [tagged template literals (TTL)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates):
 
-```js
+```js live
 let q = cds.ql `SELECT from Books where ID=${201} order by title`
 ```
 
 3. Fluent API with interspersed [tagged template literals (TTL)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates):
 
-```js
+```js live
 let q = SELECT.from `Books where ID=${201} order by title`
 let p = SELECT.from `Books`.where`ID=${201}`.orderBy`title`
 ```
 
 4. Manually constructing CQN objects:
 
-```js
+```js live
 const { expr, ref, val, columns, expand, where, orderBy } = cds.ql
-```
-```js
+
 let q = {
   SELECT: {
     from: ref`Books`,
@@ -48,7 +48,9 @@ let q = {
   }
 }
 ```
-```js
+```js live
+const { expr, ref, val, columns, expand, where, orderBy } = cds.ql
+
 let q = {
   SELECT: {
     from: ref`Authors`,
@@ -77,12 +79,12 @@ const { SELECT, INSERT, UPDATE, DELETE } = cds.ql
 
 It is recommended best practice to use entity definitions reflected from a service's model to construct queries. Doing so simplifies code as it avoids repeating namespaces all over the place.
 
-```js
+```js live
 const { Books } = cds.entities
 let q1 = SELECT.from (Books) .where `ID=${201}`
 ```
 
-[Learn more about using reflected definitions from a service's model](core-services#entities){.learn-more}
+[Learn more about using reflected definitions from a service's model](core-services#-entities){.learn-more}
 
 ####  Not Locked in to SQL
 
@@ -95,30 +97,32 @@ While both [CQL](../cds/cql) / [CQN](../cds/cqn) as well as the fluent API of `c
 
 Queries are executed by passing them to a service's [`srv.run()`](core-services#srv-run-query) method, for example, to the primary database:
 
-```js
+```js live
 let query = SELECT `ID,title` .from `Books`
 let books = await cds.db.run (query)
 ```
 
 Alternatively, you can just `await` a constructed query, which by default passes the query to `cds.db.run()`. So, the following is equivalent to the above:
 
-```js
+```js live
 let books = await SELECT `ID,title` .from `Books`
 ```
 Instead of a database service, you can also send queries to other services, local or remote ones. For example:
 
-```js
+```js live
 const cats = await cds.connect.to ('CatalogService')
+let query = SELECT `ID,title` .from `Books`
 let books = await cats.run (query)
+return {query, books}
 ```
 
 > `CatalogService` might be a remote service connected via OData. In this case, the query would be translated to an OData request sent via HTTP.
 
-The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), e.g.:
+The APIs are also available through [`cds.Service`'s CRUD-style Convenience API](core-services#crud-style-api), for example:
 
-```js
+```js live
 const db = cds.db
-let books = await db.read`Books`.where`ID=${201}`.orderBy`title`
+await db.read`Books`.where`ID=${201}`.orderBy`title`
 ```
 
 
@@ -127,10 +131,10 @@ let books = await db.read`Books`.where`ID=${201}`.orderBy`title`
 
 Constructing queries doesn't execute them immediately, but just captures the given query information. Very much like functions in JavaScript, queries are first-class objects, which can be assigned to variables, modified, passed as arguments, or returned from functions. Let's investigate this somewhat more, given this example:
 
-```js
-let cats = await cds.connect.to('CatalogService') //> connected via OData
-let PoesBooks = SELECT.from (Books) .where `name like '%Poe%'`
-let books = await cats.get (PoesBooks)
+```js live
+cats = await cds.connect.to('CatalogService')//> connected via OData
+PoesBooks = SELECT.from ('Books') .where `author like '%Poe%'`
+books = await cats.get (PoesBooks)
 ```
 
 This is what happens behind the scenes:
@@ -149,24 +153,26 @@ This is what happens behind the scenes:
 
 You can also combine queries much like sub selects in SQL to form more complex queries as shown in this example:
 
-```sql
+```js live
 let input = '%Brontë%'
 let Authors = SELECT `ID` .from `Authors` .where `name like ${ input }`
 let Books = SELECT.from `Books` .where `author_ID in ${ Authors }`
-```
-```js
 await cds.run (Books) //> late/no materialization of Authors
+// TODO fails with 'Authors not found'
 ```
 
 With that we leverage late materialization, offered by SQL databases.
 Compare that to inferior imperative programming:
 
-```js
+```js live
 let input = '%Brontë%'
 let Authors = await SELECT `ID` .from `Authors` .where `name like ${ input }`
-for (let a of Authors) { //> looping over eagerly materialized Authors
-  let Books = await SELECT.from `Books` .where `author_ID = ${ a.ID }`
-}
+// looping over eagerly materialized Auxthors
+let books = []
+for (let a of Authors) { books.push (
+  ...await SELECT.from `Books` .where `author_ID = ${ a.ID }`
+)}
+return books
 ```
 
 
@@ -176,7 +182,7 @@ for (let a of Authors) { //> looping over eagerly materialized Authors
 ## Avoiding SQL Injection
 All the APIs are designed to avoid [SQL Injection](https://wikipedia.org/wiki/SQL_injection) by default. For example, let's see how the following code would be executed:
 
-```js
+```js live
 let input = 201 //> might be entered by end users
 let books = await SELECT.from `Books` .where `ID=${input}`
 ```
@@ -200,19 +206,18 @@ dbc.run (sql, [201])
 
 The only mistake you could make is to imperatively concatenate user input with CQL or SQL fragments, instead of using the tagged strings or other options promoted by `cds.ql`. For example, assumed you had written the above code sample like that:
 
-```js
+```js live
 let input = 201 //> might be entered by end users
-let books = await SELECT.from `Books` .where ('ID='+input)
-let bookz = await SELECT.from `Books` .where (`ID=${input}`)
+let books = await SELECT.from `Books` .where ('ID='+input)   // BAD
+let bookz = await SELECT.from `Books` .where (`ID=${input}`) // BAD
 ```
-> **Note** also that tagged template strings never have surrounding parentheses! I.e., the third line above does the very same string concatenation as the second line.
+> **Note** also that tagged template strings never have surrounding parentheses! That means, the third line above does the very same string concatenation as the second line.
 
 
 A malicious user might enter some SQL code fragment like that:
 ```sql
 0; DELETE from Books; -- gotcha!
 ```
-{style="margin: 10px 40px"}
 
 In effect, your generated SQL statements would effectively look like that:
 
@@ -362,7 +367,7 @@ q2 = cds.ql.clone (q1)
 ```
 We can then modify `q2` without changing `q1`, for example like this:
 ```js
-// Override where clause 
+// Override where clause
 q2.SELECT.where = cds.ql.predicate`author.name = 'Emily%'`
 ```
 ```js

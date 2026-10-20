@@ -5,8 +5,8 @@
 {
   impl: <em>'@cap-js/sqlite'</em>,
   credentials: { url: <em>':memory:'</em> },
+  pool: { evictionRunIntervalMillis: <em>0</em>, min: <em>1</em>, max: <em>1</em> },
   data: [ <em>'db/data'</em>, <em>'db/csv'</em>, <em>'test/data'</em> ],
-  pool: { max: <em>1</em> },
   kind: <em>'sqlite'</em>
 }
 </pre>

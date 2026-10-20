@@ -1,6 +1,5 @@
 ---
-shorty: MTX Migration
-synopsis: >
+description: >
   Explains how to migrate from <code>@sap/cds-mtx</code> (aka Old MTX) to 'streamlined' <code>@sap/cds-mtxs</code>.
 sitemap: false
 impl-variants: true
@@ -11,7 +10,7 @@ impl-variants: true
 Towards new multitenancy capabilities
 {.subtitle}
 
-<div v-html="$frontmatter?.synopsis" />
+<div v-html="$frontmatter?.description" />
 
 <ImplVariantsHint />
 

@@ -1,12 +1,10 @@
 ---
-label: cds-typer
-synopsis: >
+description: >
   This page explains the package cds-typer in depth.
 typedModels:
   bookshop: assets/bookshop
   farm: assets/animal-farm
   incidents: assets/incidents
-status: released
 ---
 
 # CDS Typer {#cds-typer}
@@ -455,7 +453,7 @@ const { Books } = require('../@cds-models/sap/capire/bookshop')
 const { Books } = require('#cds-models/sap/capire/bookshop')
 ```
 
-These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.js/cds-reflect#entities) during runtime, but offer you code completion and type hinting at design time:
+These imports will behave like [`cds.entities('sap.capire.bookshop')`](../node.js/cds-reflect#-entities) during runtime, but offer you code completion and type hinting at design time:
 
 ```js twoslash
 // @noErrors

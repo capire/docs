@@ -11,7 +11,7 @@
   <dl class="index" v-else>
     <template v-for="p in pages" :key="p.url">
       <dt><a :href="p.url">{{ p.title }}</a></dt>
-      <dd v-html="p.frontmatter?.synopsis || ''"></dd>
+      <dd v-html="p.frontmatter?.description || ''"></dd>
     </template>
   </dl>
 </template>

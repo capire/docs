@@ -1,10 +1,9 @@
 ---
-synopsis: >
+description: >
   Using SAP Cloud Application Event Hub service on SAP Business Technology Platform (BTP) as a messaging channel in CAP applications.
-status: released
 ---
 
-# Messaging via SAP Cloud Application Event Hub 
+# Messaging via SAP Cloud Application Event Hub
 
 [SAP Cloud Application Event Hub](https://help.sap.com/docs/event-broker) is the new default offering for messaging in SAP Business Technology Platform (SAP BTP).
 CAP provides out-of-the-box support for SAP Cloud Application Event Hub, and automatically handles many things behind the scenes, so that application coding stays agnostic and focused on conceptual messaging.
@@ -106,6 +105,7 @@ modules:
       - name: incidents-srv-api
         properties:
           url: ${default-url} #> needed in references below
+          cert-url: '${protocol}://${default-host}.cert.${default-domain}' #> needed in references below to support mutual TLS
 ```
 :::
 
@@ -129,7 +129,7 @@ resources:
         # unique identifier for this event broker instance
         # should start with own namespace (i.e., "foo.bar") and may not be longer than 15 characters
         systemNamespace: cap.incidents
-        webhookUrl: ~{incidents-srv-api/url}/-/cds/event-broker/webhook
+        webhookUrl: ~{incidents-srv-api/cert-url}/-/cds/event-broker/webhook
 
 ```
 
@@ -144,7 +144,7 @@ resources:
         # unique identifier for this event broker instance
         # should start with own namespace (i.e., "foo.bar") and may not be longer than 15 characters
         systemNamespace: cap.incidents
-        webhookUrl: ~{incidents-srv-api/url}/messaging/v1.0/eb
+        webhookUrl: ~{incidents-srv-api/cert-url}/messaging/v1.0/eb
       requires:
         - name: incidents-srv-api
 ```
@@ -192,7 +192,7 @@ modules:
     provides:
       - name: incidents-srv-api
         properties:
-          url: ${default-url} 
+          url: ${default-url}
     requires: #[!code focus:10]
       - name: incidents-ias #[!code ++]
         parameters: #[!code ++]

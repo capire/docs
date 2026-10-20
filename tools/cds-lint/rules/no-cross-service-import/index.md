@@ -1,6 +1,3 @@
----
-status: released
----
 
 <script setup>
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
@@ -21,7 +18,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 
 The imported entity belongs to `AdminService` and is used within the implementation of `AdminService` itself. This is the recommended approach:
 ::: code-group
-<<< correct/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]
+<<< correct/srv/AdminService.js{js:line-numbers} [srv/AdminService.js]
 :::
 <PlaygroundBadge
   name="no-cross-service-import"
@@ -34,7 +31,7 @@ The imported entity belongs to `AdminService` and is used within the implementat
 An entity from `CatalogService` is imported into the implementation of `AdminService`. This cross-service import is discouraged because it can lead to confusion and maintenance issues:
 
 ::: code-group
-<<< incorrect/srv/AdminService.js#snippet{js:line-numbers} [srv/AdminService.js]
+<<< incorrect/srv/AdminService.js{js:line-numbers} [srv/AdminService.js]
 :::
 <PlaygroundBadge
   name="no-cross-service-import"

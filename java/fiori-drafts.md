@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   This section describes which events occur in combination with SAP Fiori Drafts.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
@@ -12,7 +12,7 @@ uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/
   }
 </style>
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ## Overview { #draftevents}
 
@@ -80,7 +80,7 @@ Draft-enabled entities have an extra key `IsActiveEntity` by which you can acces
 | DELETE with key `IsActiveEntity=false`                                 | `DraftService.EVENT_DRAFT_CANCEL`  | Deletes an existing draft.                                                                                                  |
 | DELETE with key `IsActiveEntity=true`                                  | `CqnService.EVENT_DELETE`          | Deletes an active entity *and* the corresponding draft.                                                                     |
 | POST with `draftPrepare` action                                        | `DraftService.EVENT_DRAFT_PREPARE` | Empty implementation.                                                                                                       |
-| POST with `draftPrepare` action and `$select=DraftMessages`            | `DraftService.EVENT_DRAFT_PREPARE`        | Simulates the draft activation to validate your document completely. The system triggers a `draftActivate` operation (`CREATE` or `UPDATE` event) in an isolated transaction and then rolls it back.        | 
+| POST with `draftPrepare` action and `$select=DraftMessages`            | `DraftService.EVENT_DRAFT_PREPARE`        | Simulates the draft activation to validate your document completely. The system triggers a `draftActivate` operation (`CREATE` or `UPDATE` event) in an isolated transaction and then rolls it back.        |
 | POST with `draftEdit` action                                           | `DraftService.EVENT_DRAFT_EDIT`    | Creates a new draft from an active entity. Internally triggers `DRAFT_CREATE`.                                              |
 | POST with `draftActivate` action                                       | `DraftService.EVENT_DRAFT_SAVE`    | Activates a draft and updates the active entity. Triggers an `CREATE` or `UPDATE` event on the affected entity.             |
 | n/a                                                                    | `DraftService.EVENT_DRAFT_CREATE`  | Stores a new draft in the database.                                                                                         |
@@ -115,6 +115,40 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
+
+## Read-Only Fields in Drafts { #readonly-in-drafts }
+
+By default, `@readonly` and `@Core.Computed` fields are only enforced when a draft is activated, that means during the `CREATE` or `UPDATE` event on the active entity. Until then, such fields can still be changed on the draft, for example through an OData `PATCH` request.
+
+To enforce these annotations on the draft before activation, during the `DRAFT_NEW` and `DRAFT_PATCH` events, set the [`cds.drafts.enforceReadonly`](./developing-applications/properties#cds-drafts-enforcereadonly) property (default `false`):
+
+```yaml
+cds.drafts.enforceReadonly: true
+```
+
+With this property enabled, values sent for `@readonly` or `@Core.Computed` fields are ignored when a draft is created or patched, so these fields can no longer be modified through OData requests on the draft.
+
+### Determined Read-Only Fields { #readonly-determinations }
+
+Read-only fields are often filled by custom code, for example in a determination that computes a value from other fields. With the default behavior (`cds.drafts.enforceReadonly: false`), such a determination effectively runs when the draft is activated, during the `CREATE` or `UPDATE` event. You can additionally run it while the draft is being edited, for example on the `DRAFT_CREATE` event, so that the computed value is already shown in the UI. In this case the value is only a preview: it's recomputed during activation and the value stored on the active entity is the one determined then.
+
+This matters for determinations that aren't fully deterministic. If a determination produces a different value each time it runs, for example when generating a random UUID, the value shown on the draft and the value stored on the active entity can differ.
+
+Setting `cds.drafts.enforceReadonly: true` avoids this: read-only fields are no longer evaluated during activation, so the value computed while editing the draft is carried over unchanged to the active entity. Use this when the value determined in draft mode must be exactly the one that gets persisted.
+
+### Writing Read-Only Fields from Custom Code { #readonly-hint }
+
+When `cds.drafts.enforceReadonly` is enabled, the read-only enforcement also applies to `Update` or `Insert` statements that your own event handlers run against the draft entity through the application service, for example in a determination. As a result, values for `@readonly` and `@Core.Computed` fields are removed from these statements as well.
+
+To intentionally write such fields from trusted custom code, add the `@readonly` hint with value `false` to the statement. This disables the read-only enforcement for that single statement:
+
+```java
+Update.entity(Books_.class).data(book).hint("@readonly", false);
+```
+
+::: warning Use the hint only for trusted data
+The `@readonly` hint disables the read-only field protection for the affected statement. Only use it in server-side code where the values are computed or validated by your application, never with unvalidated client input. Managed fields (`@cds.on.insert`, `@cds.on.update`) are always enforced and are not affected by this hint. `@Core.Immutable` fields are not affected by this hint when updating an already-active entity; on the first activation of a new draft their value is retained.
+:::
 
 ## Working with Draft-Enabled Entities
 
@@ -152,7 +186,10 @@ These events have the same semantics as described in section [Handling CRUD even
 
 
 ::: tip POST Behavior with Direct CRUD
-With the 4.9.0 release, CAP Java introduced a mode where `POST` without a value for `IsActiveEntity` in the payload results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is automatically active when the entity is annotated with `@Common.DraftRoot.NewAction`, which is generated by the CDS compiler when the `cds_fiori_direct__crud` flag is set. It can also be added via explicit modeling. The annotation value needs to be the name of a bound action in the same service. If the entity has a key of type `UUID`, the action needs no further parameters. Otherwise, the action needs the key values of the entity as parameters. The behavior can be overridden via the `cds.drafts.post-active` property set to `false`.
+
+With the 4.9.0 release, CAP Java introduced a mode where `POST` without a value for `IsActiveEntity` in the payload results in the `CqnService.EVENT_CREATE` (creation of an active entity) for the given entity. This mode is automatically active when the entity is annotated with `@Common.DraftRoot.NewAction`, which is generated by the CDS compiler when the `cds_fiori_draft_new_action` (before cds 10, `cds_fiori_direct_crud`) flag is set. It can also be added via explicit modeling.
+
+The annotation value needs to be the name of a bound action in the same service. If the entity has a key of type `UUID`, the action needs no further parameters. Otherwise, the action needs the key values of the entity as parameters. The behavior can be overridden by setting the `cds.drafts.post-active` property to `false`.
 :::
 
 ::: warning Draft locks still apply
@@ -230,6 +267,51 @@ public void createDraft(CreateDraftContext context) {
     context.setResult(adminService.newDraft(Insert.into(Orders_.class).entry(order)).single(Orders.class));
 }
 ```
+
+## Showing a Custom User Description { #draft-user-description}
+
+By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
+
+**1. Enable the compiler option** in your `.cdsrc.json`:
+
+```json
+{
+  "cdsc": {
+    "draftUserDescription": true
+  }
+}
+```
+
+The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
+
+**2. Register a `@Before` handler** on `DRAFT_CREATE` across all draft services to populate the field:
+
+```java
+@Component
+@ServiceName(value = "*", type = DraftService.class)
+public class UserDescriptionHandler implements EventHandler {
+
+    @Autowired private UserInfo userInfo;
+
+    @Before
+    protected void addDraftFields(DraftCreateEventContext context, List<CdsData> entries) {
+        CdsDataProcessor.Filter filter =
+            (path, element, type) -> "InProcessByUserDescription".equals(element.getName());
+        CdsDataProcessor.Generator generator = (path, element, isNull) -> description();
+        CdsDataProcessor.create().addGenerator(filter, generator).process(entries, context.getTarget());
+    }
+
+    private String description() {
+        return userInfo.getAdditionalAttribute("given_name")
+            + " "
+            + userInfo.getAdditionalAttribute("family_name");
+    }
+}
+```
+
+::: tip
+The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
+:::
 
 ## Consuming Draft Services { #draftservices}
 

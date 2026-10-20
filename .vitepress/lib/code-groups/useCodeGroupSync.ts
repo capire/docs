@@ -12,6 +12,7 @@ import {
   addActiveTab,
   getActiveTabsByDimension,
   getBestTab,
+  getTabDimension,
   setActiveTab,
   tabsMatch
 } from './shared.js'
@@ -47,6 +48,11 @@ function findCodeGroups(): CodeGroupInfo[] {
 
 function applyPreference(codeGroup: CodeGroupInfo): void {
   const { element, tabs } = codeGroup
+
+  // Skip code groups unrelated to the OS/runtime/cloud-runtime dimensions (e.g. file-path
+  // tabs), otherwise they'd be forced back to their first tab on every re-init.
+  if (!tabs.some((tab) => getTabDimension(tab))) return
+
   const selectedTab = getBestTab(
     tabs,
     getActiveTabsByDimension((window as any).__CODE_GROUP_ACTIVE_TABS__)
@@ -87,6 +93,12 @@ function handleDocumentClick(event: Event): void {
 
   const tabLabel = (label.textContent || '').trim()
   if (!tabLabel) return
+
+  // Only tabs that belong to a recognized dimension (OS/runtime/cloud-runtime) should be
+  // synced across the page. Otherwise unrelated code groups sharing a "/" path segment
+  // (e.g. "srv/admin-service.cds" vs. "srv/cat-service.cds") get fuzzy-matched and forced
+  // into the wrong active tab.
+  if (!getTabDimension(tabLabel)) return
 
   const clickedRect = label.getBoundingClientRect()
 

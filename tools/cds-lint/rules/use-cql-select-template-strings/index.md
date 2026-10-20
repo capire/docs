@@ -1,6 +1,3 @@
----
-status: released
----
 
 <script setup>
   import PlaygroundBadge from '../../components/PlaygroundBadge.vue'
@@ -22,7 +19,7 @@ This rule was introduced in `@sap/eslint-plugin-cds 4.0.2`.
 In the following example, the `where` clause is a proper tagged template literal, so that the `req.data.name` expression can be validated before the SELECT is executed:
 
 ::: code-group
-<<< correct/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< correct/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="use-cql-select-template-strings"
@@ -35,7 +32,7 @@ In the following example, the `where` clause is a proper tagged template literal
 In the following example, the `where` clause is *not* a proper tagged template literal as it's enclosed by parentheses. In consequence, the `req.data.name` expression *cannot* be validated but is added as is to the SELECT statement. This is prone to SQL injection attacks.
 
 ::: code-group
-<<< incorrect/srv/admin-service.js#snippet{js:line-numbers} [srv/admin-service.js]
+<<< incorrect/srv/admin-service.js{js:line-numbers} [srv/admin-service.js]
 :::
 <PlaygroundBadge
   name="use-cql-select-template-strings"

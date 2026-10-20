@@ -1,14 +1,14 @@
 ---
-synopsis: >
-  This guide teaches how to how to develop, deploy and operate CAP applications in a secure way.
+description: >
+  This guide teaches how to develop, deploy and operate CAP applications in a secure way.
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/9186ed9ab00842e1a31309ff1be38792.html
 ---
 
 # CAP Security and Data Privacy
 
-Security, data protection and data privacy are critical aspects of modern application development, 
+Security, data protection and data privacy are critical aspects of modern application development,
 with significant legal and ethical implications. \
-The guides in this section are for developers, operators, administrators, and security professionals 
+The guides in this section are for developers, operators, administrators, and security professionals
 who need to understand how to develop, deploy and operate secure and compliant CAP applications.
 {.abstract}
 

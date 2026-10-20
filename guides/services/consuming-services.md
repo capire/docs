@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Learn how to use uniform APIs to consume local or remote services.
 impl-variants: true
 ---
@@ -146,7 +146,7 @@ This adds the API in CDS format to the _srv/external_ folder and also copies the
 
 <div class="impl node">
 
-Further, it adds the API as an external service to your _package.json_. You use this declaration later to connect to the remote service [using a destination](#use-destinations-with-node-js).
+Further, it adds the API as an external service to your _package.json_. You use this declaration later to connect to the remote service [using a destination](#use-destinations-with-nodejs).
 
 ```json
 "cds": {
@@ -517,7 +517,7 @@ External service definitions, like [generated CDS or CSN files during import](#i
 It's best practice to use your own "interface" to the external service and define the relevant fields in a projection in your namespace. Your implementation is then independent of the remote service implementation and you request only the information that you require.
 
 ```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 entity Suppliers as projection on bupa.A_BusinessPartner {
   key BusinessPartner as ID,
@@ -590,7 +590,7 @@ What you need to do depends on [the scenarios](#sample-scenario-from-end-to-end-
 To expose a remote service entity, you add a projection on it to your CAP service:
 
 ```cds
-using {  API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 extend service RiskService with {
   entity BusinessPartners as projection on bupa.A_BusinessPartner;
@@ -680,7 +680,7 @@ module.exports = cds.service.impl(async function() {
 It's possible to expose associations of a remote service entity. You can adjust the [projection for the association target](#model-projections) and change the name of the association:
 
 ```cds
-using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
+using { API_BUSINESS_PARTNER as bupa } from '../srv/external/API_BUSINESS_PARTNER';
 
 extend service RiskService with {
   entity Suppliers as projection on bupa.A_BusinessPartner {
@@ -1501,7 +1501,7 @@ You can change the destination lookup behavior as follows:
 ```
 
 
-Setting the [`selectionStrategy`](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destination#multi-tenancy) property for the [destination options](#use-destinations-with-node-js) to `alwaysProvider`, you can ensure that the destination is always read from your provider subaccount. With that you ensure that a subscriber cannot overwrite your destination.
+Setting the [`selectionStrategy`](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destination#multi-tenancy) property for the [destination options](#use-destinations-with-nodejs) to `alwaysProvider`, you can ensure that the destination is always read from your provider subaccount. With that you ensure that a subscriber cannot overwrite your destination.
 
 Set the destination option `jwt` to `null`, if you don't want to pass the request's JWT to SAP Cloud SDK. Passing the request's JWT to SAP Cloud SDK has implications on, amongst others, the effective defaults for selection strategy and isolation level. In rare cases, these defaults are not suitable, for example when the request to the upstream server does not depend on the current user. Please see [Authentication and JSON Web Token (JWT) Retrieval](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations#authentication-and-json-web-token-jwt-retrieval) for more details.
 

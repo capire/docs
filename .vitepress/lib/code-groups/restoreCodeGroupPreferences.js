@@ -44,6 +44,10 @@
 
     if (tabs.length === 0) return
 
+    // Skip code groups unrelated to the OS/runtime/cloud-runtime dimensions (e.g. file-path
+    // tabs), otherwise they'd be forced back to their first tab on every re-init.
+    if (!tabs.some((tab) => getTabDimension(tab))) return // eslint-disable-line no-undef
+
     const selectedTab = getBestTab(tabs, activeTabs) // eslint-disable-line no-undef
     const selectedIndex = tabs.indexOf(selectedTab)
 
@@ -85,13 +89,19 @@
   }
 
   const restoreHashScroll = () => {
-    if (hashScrollPending) {
-      history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
-      requestAnimationFrame(() => {
-        scrollToHash(initialHash)
-        hashScrollPending = false
-      })
-    }
+    if (!hashScrollPending) return
+
+    // Put the hash back into the URL as soon as we start handling it, so it
+    // survives even if the target element hasn't been rendered yet.
+    history.replaceState(null, '', window.location.pathname + window.location.search + initialHash)
+
+    // Don't finish until the target actually exists; the page content may still
+    // be hydrating. Until then, keep hashScrollPending so later retries can scroll.
+    const target = document.getElementById(decodeURIComponent(initialHash).slice(1))
+    if (!target) return
+
+    hashScrollPending = false
+    requestAnimationFrame(() => scrollToHash(initialHash))
   }
 
   const initialCodeGroupCount = applyToAllCodeGroups()
@@ -133,13 +143,34 @@
     }
   }
 
+  // Guarantee the hash is restored and scrolled to, even on pages that have no
+  // code groups (where the MutationObserver above never fires) and regardless of
+  // readyState when this inline head script runs. Retries each frame until the
+  // target has hydrated, then stops.
+  const pollRestore = () => {
+    const deadline = Date.now() + 3000
+    const tick = () => {
+      applyToAllCodeGroups()
+      restoreHashScroll()
+      if (hashScrollPending && Date.now() < deadline) {
+        requestAnimationFrame(tick)
+      } else {
+        stopObserving()
+      }
+    }
+    requestAnimationFrame(tick)
+  }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       applyToAllCodeGroups()
       restoreHashScroll()
-      stopObserving()
+      if (hashScrollPending) pollRestore()
+      else stopObserving()
     })
-  } else if (!hashScrollPending) {
+  } else if (hashScrollPending) {
+    pollRestore()
+  } else {
     stopObserving()
   }
 })()

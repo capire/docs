@@ -1,14 +1,6 @@
 ---
-# layout: cookbook
-shorty: Extend SaaS Apps
-synopsis: >
+description: >
   This guide explains how subscribers of SaaS applications can extend these on tenant level, thereby customizing them for their specific needs.
-breadcrumbs:
-  - Cookbook
-  - Extensibility
-  - Extending SaaS Apps
-#notebook: true
-status: released
 ---
 
 # Extending SaaS Applications
@@ -83,8 +75,8 @@ npm add @sap/cds-mtxs
   "version": "1.0.0",
   "dependencies": {
     "@capire/common": "*",
-    "@sap/cds": ">=9",
-    "@sap/cds-mtxs": "^3"
+    "@sap/cds": "^10",
+    "@sap/cds-mtxs": "^4"
   },
   "cds": {
     "requires": {

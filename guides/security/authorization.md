@@ -1,8 +1,7 @@
 ---
-synopsis: >
+description: >
   This guide explains how to restrict access to data by adding respective declarations to CDS models, which are then enforced by CAP's generic service providers.
 uacp: Used as link target from SAP Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/e4a7559baf9f4e4394302442745edcd9.html
-impl-variants: true
 ---
 
 <script setup>
@@ -20,8 +19,6 @@ impl-variants: true
 
 # CAP-level Authorization { #authorization }
 
-<ImplVariantsHint />
-
 This guide explains how to restrict access to data by adding respective declarations to CDS models, that are then enforced by CAP's generic service providers.
 
 [[toc]]
@@ -30,7 +27,7 @@ This guide explains how to restrict access to data by adding respective declarat
 ## Declarative Access Control { #restrictions}
 
 In essence, [authentication](./authentication#authentication) verifies the user's identity and the presented claims. Briefly, authentication reveals _who_ is using the service.
-In contrast, **authorization controls _how_ the user may interact with the application's resources**. 
+In contrast, **authorization controls _how_ the user may interact with the application's resources**.
 As access control depends on user information, authentication is a prerequisite for authorization.
 
 ![Authorization with CAP](./assets/authorization.drawio.svg){width="450px"}
@@ -56,7 +53,7 @@ Finally, according to the key concept [Customizable Security](./overview#key-con
 
 ### Internal Services
 
-CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters. 
+CDS services that are only meant for *internal* usage shouldn't be exposed via protocol adapters.
 To prevent access from *any* external clients, annotate those services with `@protocol: 'none'`:
 
 ```cds
@@ -149,7 +146,7 @@ CodeLists such as `Languages`, `Currencies`, and `Countries` from `sap.common` a
 
 ## Role-Based Access Control { #role-based-access-control }
 
-To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations. 
+To protect resources according to your business needs, you can declaratively restrict access according to a [CAP role](./cap-users#roles) by adding [@requires](#requires) or [@restrict](#restrict-annotation) annotations.
 
 Restrictions can be defined on *different CDS resources*:
 
@@ -157,9 +154,9 @@ Restrictions can be defined on *different CDS resources*:
 - Entities
 - (Un)bound actions and functions
 
-You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model. 
-For instance, a restriction on the service level applies to all entities in the service. 
-Additional restrictions on entities or actions can further limit authorized requests. 
+You can influence the scope of a restriction by choosing an adequate hierarchy level in the CDS model.
+For instance, a restriction on the service level applies to all entities in the service.
+Additional restrictions on entities or actions can further limit authorized requests.
 See [combined restrictions](#combined-restrictions) for more details.
 
 Beside the scope, restrictions can limit access to resources with regards to *different dimensions*:
@@ -180,7 +177,7 @@ annotate ShopService.ReplicationAction with @(requires: 'system-user');
 
 In this example, the `BrowseBooksService` service is open for authenticated but not for anonymous users. A user who has the `Vendor` _or_ `ProcurementManager` role is allowed to access the `ShopService.Books` entity. Unbound action `ShopService.ReplicationAction` can only be triggered by a technical user.
 ::: tip
-When restricting service access through `@requires`, the service's metadata endpoints (that is, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#add-mw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
+When restricting service access through `@requires`, the service's metadata endpoints (that is, `/$metadata` as well as the service root `/`) are restricted by default as well. If you require public metadata, you can disable the check with [a custom express middleware](../../node.js/cds-serve#addmw-pos) using the [privileged user](../../node.js/authentication#privileged-user) (Node.js) or through config <Config java>cds.security.authentication.authenticateMetadataEndpoints = false</Config> (Java), respectively. Please be aware that the `/$metadata` endpoint is *not* checking for authorizations implied by `@restrict` annotation.
 :::
 
 
@@ -257,14 +254,21 @@ Here, users can read and write orders they've created, and `Auditor` users can r
 
 Restrictions can be defined on different types of CDS resources, but there are some limitations with regards to supported privileges:
 
-| CDS Resource    | `grant` | `to` |      `where`      | Remark        |
-|-----------------|:-------:|:----:|:-----------------:|---------------|
-| service         |  <Na/>  | <Y/> |       <Na/>       | = `@requires` |
-| entity          |  <Y/>   | <Y/> | <Y/><sup>1</sup>  |               |
-| action/function |  <Na/>  | <Y/> | <Na/><sup>2</sup> | = `@requires` |
+| CDS Resource          | `grant` | `to` |       `where`       | Remark        |
+|-----------------------|:-------:|:----:|:-------------------:|---------------|
+| service               |  <Na/>  | <Y/> |        <Na/>        | = `@requires` |
+| entity                |  <Y/>   | <Y/> |        <Y/>         |               |
+| action/function       |  <Na/>  | <Y/> | <Na/><sup>1,2</sup> | = `@requires` |
 
-> <sup>1</sup>For bound actions and functions that are not bound against a collection, Node.js supports instance-based authorization at the entity level. For example, you can use `where` clauses that *contain references to the model*, such as `where: CreatedBy = $user`. For all bound actions and functions, Node.js supports simple static expressions at the entity level that *don't have any reference to the model*, such as `where: $user.level = 2`.
-> <sup>2</sup> For unbound actions and functions, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+> <sup>1</sup> For [bound actions and functions](../../cds/cdl#bound-actions) that are <u>not</u> *bound to a collection of instances*, Node.js supports instance-based authorization.
+> Example:
+> ```cds
+> entity Orders @(restrict: [
+>     { grant: 'cancel', where: (CreatedBy = $user) },
+>   ]) {/*...*/}
+> ```
+
+> <sup>2</sup> For actions and functions that are either *unbound* or *bound to a collection of instances*, Node.js supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
 
 Unsupported privilege properties are ignored by the runtime. Especially, for bound or unbound actions, the `grant` property is implicitly removed (assuming `grant: '*'` instead). The same also holds for functions:
 
@@ -314,7 +318,7 @@ The resulting authorizations are illustrated in the following access matrix:
 | `CustomerService.Orders` (*)         |   <X/>   | <Y/><sup>1</sup> |         <X/>         | <X/>              |
 | `CustomerService.monthlyBalance`     |   <Y/>   |       <X/>       |         <X/>         | <X/>              |
 
-> <sup>1</sup> A `Vendor` user can only access the instances that they created. <br>
+> <sup>1</sup> A `Customer` user can only access the instances that they created. <br>
 
 The example models access rules for different roles in the same service. In general, this is _not recommended_ due to the high complexity. See [best practices](#dedicated-services) for information about how to avoid this.
 
@@ -409,8 +413,8 @@ So, the authorization for the requests in the example is delegated as follows:
 
 ## Instance-Based Access Control { #instance-based-auth }
 
-The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles. 
-In addition, you can define a `where`-condition that further limits the set of accessible instances. 
+The [restrict annotation](#restrict-annotation) for an entity allows you to enforce authorization checks that statically depend on the event type and user roles.
+In addition, you can define a `where`-condition that further limits the set of accessible instances.
 This condition, that acts like a filter, establishes *instance-based authorization*.
 
 ### Filter Conditions
@@ -433,20 +437,22 @@ annotate Articles with @(restrict: [
 Filter conditions declared as **compiler expressions** ensure validity at compile time and therefore strengthen security.
 :::
 
-The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims). 
-Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*. 
+The condition defined in the `where` clause typically associates domain data with static [user claims](cap-users#claims).
+Basically, it *either filters the result set in queries or accepts only write operations on instances that meet the condition*.
 This means that, the condition applies to following standard CDS events only:
 - `READ` (as result filter)
 - `UPDATE` (as reject condition)
 - `DELETE` (as reject condition)
 
-<div class="impl java">
-
-In addition, the runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
+::: tip Java
+In addition, the Java runtime [checks the filter condition of the input data](#input-data-auth) for following standard CDS events:
 - `CREATE` (input filter)
 - `UPDATE` (input filer)
+:::
 
-</div>
+::: tip Node.js
+In addition, for `CREATE` as well as unbound actions and functions and actions and functions bound to a *collection* of instances, the Node.js runtime supports simple static expressions that *don't have any reference to the model*, such as `where: $user.level = 2`.
+:::
 
 You can define filter conditions in the `where`-clause of restrictions based on [CQL](/cds/cql)-predicates, declared as [compiler expressions](../../cds/cdl#expressions-as-annotation-values):
 
@@ -454,12 +460,7 @@ You can define filter conditions in the `where`-clause of restrictions based on 
 * Combining predicates to expressions with `and` and `or` logical operators.
 * Value references to constants, [user attributes](#user-attrs), and entity data (elements including [association paths](#association-paths))
 * [Exists predicate](#exists-predicate) based on subselects.
-
-<div class="impl java">
-
-* [Exists with a subquery](#exists-subquery) for access to ACL like entities.
-
-</div>
+* [Exists with a subquery](#exists-subquery) for access to Access Control list like entities. _(Java only)_
 
 
 At runtime you'll find filter predicates attached to the appropriate CQN queries matching the instance-based condition.
@@ -607,14 +608,9 @@ service SalesOrderService @(requires: 'authenticated-user') {
 Paths on 1:n associations (`Association to many`) evaluate to `true`, _if the condition selects at most one associated instance_ (`exists` semantic).
 
 
-<div class="impl java">
+<div id="exists-subquery"></div>
 
-<div id="exists-subquery" />
-
-</div>
-
-
-### Checking Input Data { #input-data-auth .java}
+### Checking Input Data in Java { #input-data-auth }
 
 Input data of `CREATE` and `UPDATE` events is also validated with regards to instance-based authorization conditions.
 Invalid input that does not meet the condition is rejected with response code `400`.
@@ -629,32 +625,52 @@ annotate Orders with @(restrict: [
 A user with accounting areas `[Development, Research]` is not able to send an `UPDATE` request, that changes `accountingArea` from `Research` or `Development` to `CarFleet`, for example.
 Note that the `UPDATE` on instances _not matching the request user's accounting areas_ (for example, `CarFleet`) are rejected by standard instance-based authorization checks.
 
-Starting with CAP Java `4.0`, deep authorization is active by default.
-It can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
+::: hint
+Input data is not checked for entities which misses key elements; such entities must be protected at the application model level.
+:::
+
+The feature can be disabled by setting <Config java>cds.security.authorization.instanceBased.checkInputData: false</Config>.
 
 
-### Rejected Entity Selection { #reject-403 .java}
+### Simple Static Checks in Node.js { #simple-static-checks }
+
+Most instance-based [`@restrict.where`](#restrict-annotation) conditions reference business data (for example, `where: 'createdBy = $user'`) and can only be enforced against persisted data — pushed into the query for `READ`, or verified with a `COUNT` for `UPDATE`/`DELETE`.
+
+Some conditions, though, reduce to a plain comparison of literals once [user attributes](#user-attrs) are resolved:
+
+```cds
+entity Reviews @(restrict: [
+    { grant: 'CREATE', where: '$user.level >= 2' }
+  ]) {/*...*/}
+```
+
+For a user with `level = 3`, this becomes `3 >= 2`, which the runtime evaluates in memory — granting or rejecting with `403` without any database access. Such _simple static checks_ apply to `CREATE` (and its draft variant `NEW`), to unbound actions and functions, and to actions and functions bound to a *collection* of instances — everywhere there's no single persisted instance to query. They're only recognized for a single binary comparison (`=`, `!=`, `<`, `<=`, `>`, `>=`) with no reference to entity elements.
+
+
+### Rejected Entity Selection { #reject-403 }
 
 Entities that have an instance-based authorization condition, that is [`@restrict.where`](/guides/security/authorization#restrict-annotation),
-are guarded by the CAP Java runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
+are guarded by the runtime by adding a filter condition to the DB query **excluding not matching instances from the result**.
 Hence, if the user isn't authorized to query an entity, requests targeting a *single* entity return *404 - Not Found* response and not *403 - Forbidden*.
 
-To allow the UI to distinguish between *not found* and *forbidden*, CAP Java can detect this situation and rejects `UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
+To allow the UI to distinguish between *not found* and *forbidden*, the runtime detects this situation and rejects `UPDATE` and `DELETE` requests to single entities with forbidden accordingly.
 The additional authorization check might affect performance.
 
 ::: warning Avoid enumerable keys
 To avoid disclosure of the existence of such entities to unauthorized users, make sure that the key is not efficiently enumerable or add custom code to overrule the default behavior otherwise.
 :::
 
+::: tip Java
 Starting with CAP Java `4.0`, the reject behaviour is active by default.
 It can be disabled by setting <Config java>cds.security.authorization.instance-based.reject-selected-unauthorized-entity.enabled: false</Config>.
+:::
 
 
 
-## Limitations {.node}
+## Limitations in Node.js
 
-Currently, the security annotations **are only evaluated on the target entity of the request**. 
-Restrictions on associated entities touched by the operation are not regarded. 
+Currently, the security annotations **are only evaluated on the target entity of the request**.
+Restrictions on associated entities touched by the operation are not regarded.
 This has the following implications:
 - Restrictions of (recursively) expanded or inlined entities of a `READ` request aren't checked.
 - Deep inserts and updates are checked on the root entity only.
@@ -662,7 +678,7 @@ This has the following implications:
 See [solution sketches](#limitation-deep-authorization) for information about how to deal with that.
 
 
-## Deep Authorizations { #deep-auth .java}
+## Deep Authorizations in Java { #deep-auth }
 
 ### Associations
 
@@ -698,7 +714,7 @@ Select.from(Orders_.class,
 ```
 
 For modification statements with associated entities used in infix filters or where clauses,
-role-based authorizations are checked as well. 
+role-based authorizations are checked as well.
 Associated entities require `READ` authorization, in contrast to the target of the statement itself.
 
 The following statement requires `UPDATE` authorization on `Orders` and `READ` authorization on `Books`

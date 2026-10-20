@@ -1,14 +1,13 @@
 ---
-synopsis: >
+description: >
     This guide discusses how CAP helps applications to comply with data privacy regulations imposed by various laws and standards.
-status: released
 ---
 
 
 
 # Data Privacy Overview
 
-{{ $frontmatter.synopsis }}
+{{ $frontmatter.description }}
 
 ::: warning
 SAP does not give any advice on whether the features and functions provided to facilitate meeting data privacy obligations are the best method to support company, industry, regional, or country/region-specific requirements. Furthermore, this information should not be taken as advice or a recommendation regarding additional features that would be required in specific IT environments. Decisions related to data protection must be made on a case-by-case basis, considering the given system landscape and the applicable legal requirements.
@@ -95,17 +94,17 @@ The [SAP Data Retention Manager](https://help.sap.com/docs/data-retention-manage
 
 CAP doesn't store or manage any personal data on its own with some exceptions, which are mandatory to operate the applications properly:
 
-- Log outputs on verbose level might contain personal data such as user names and IP addresses. 
+- Log outputs on verbose level might contain personal data such as user names and IP addresses.
 Connect an adequate logging service to meet compliance requirements such as [SAP Application Logging Service](https://help.sap.com/docs/application-logging-service/sap-application-logging-service/sap-application-logging-service-for-cloud-foundry-environment).
 
 - Draft-enabled entities store user information for the time periods when drafts are created or modified.
 
 - When using the [managed](../domain/index#managed-data) aspect, you decided to store metadata such as who created or modified an entity instance.
 
-- Messages temporarily written to transaction outbox might contain personal data. 
+- Messages temporarily written to transaction outbox might contain personal data.
 If necessary, applications can process these messages by standard CAP functionality (CDS model `@sap/cds/srv/outbox`).
 
-Also refer to related guides of most important platform services: 
+Also refer to related guides of most important platform services:
 
 [SAP Cloud Identity Services - Configuring Privacy Policies](https://help.sap.com/docs/IDENTITY_AUTHENTICATION/6d6d63354d1242d185ab4830fc04feb1/ed48466d770f4519aa23bba754851fbd.html){.learn-more}
 [SAP HANA Cloud - Data Protection and Privacy](https://help.sap.com/docs/HANA_CLOUD_DATABASE/c82f8d6a84c147f8b78bf6416dae7290/ad9588189e844092910103f2f7b1c968.html){.learn-more}

@@ -3,7 +3,7 @@
 > cds add --help
 
 <strong>SYNOPSIS</strong>
-    <em>cds add</em> &lt;feature | comma-separated list of features&gt;
+    <em>cds add</em> &lt;feature&gt; [&lt;feature&gt; ...]
 
     Add one or more features to an existing project - grow as you go.
 
@@ -12,7 +12,7 @@
       <em>completion</em>                   - shell completion for cds commands
       <em>java</em>                         - creates a Java-based project
       <em>nodejs</em>                       - creates a Node.js-based project
-      <em>esm</em>                          - ESM-compatible Node.js project
+      <em>cjs</em>                          - CommonJS-compatible Node.js project
       <em>typer</em>                        - type generation for CDS models
       <em>typescript</em>                   - minimum configuration for a bare TypeScript project
       <em>extension</em>                    - extension project
@@ -27,6 +27,7 @@
       <em>ias</em>                          - authentication via IAS
       <em>ams</em>                          - authorization via AMS
       <em>hana</em>                         - database support for SAP HANA
+      <em>hana-serverless</em>              - database support for SAP HANA Cloud serverless
       <em>postgres</em>                     - database support for PostgreSQL
       <em>sqlite</em>                       - database support for SQLite
       <em>liquibase</em>                    - database migration using Liquibase
@@ -40,14 +41,17 @@
       <em>approuter</em>                    - dynamic routing using @sap/approuter
       <em>local-messaging</em>              - messaging via local event bus
       <em>file-based-messaging</em>         - messaging via file system
-      <em>enterprise-messaging</em>         - messaging via SAP Enterprise Messaging
-      <em>enterprise-messaging-shared</em>  - messaging via shared SAP Enterprise Messaging
+      <em>enterprise-messaging</em>         - messaging via SAP Event Mesh
+      <em>enterprise-messaging-shared</em>  - messaging via shared SAP Event Mesh
+      <em>event-mesh</em>                   - messaging via Event Mesh of SAP Integration Suite
+      <em>event-mesh-shared</em>            - messaging via shared Event Mesh of SAP Integration Suite
       <em>redis-messaging</em>              - messaging via Redis
       <em>kafka</em>                        - messaging via Apache Kafka
       <em>attachments</em>                  - SAP BTP Object Store Service
       <em>malware-scanner</em>              - SAP BTP Malware Scanning Service
       <em>connectivity</em>                 - SAP BTP Connectivity Service
       <em>destination</em>                  - SAP BTP Destination Service
+      <em>ai</em>                           - SAP BTP AI Core
       <em>html5-repo</em>                   - SAP BTP HTML5 Application Repository
       <em>app-frontend</em>                 - SAP BTP Application Frontend service
       <em>portal</em>                       - SAP BTP Portal Service
@@ -80,6 +84,13 @@
 
 
 <strong>FEATURE OPTIONS</strong>
+    <em>cds add ai</em>
+
+      --plan
+
+        Specify the service plan.
+
+
     <em>cds add audit-logging</em>
 
       --plan
@@ -123,6 +134,10 @@
 
         The number of records to be created for each entity.
 
+      --composition-records
+
+        The number of records to be created per to-many composition (default 2).
+
       --content-type | -c
 
         The content type of the data. One of "json" or "csv".
@@ -130,6 +145,12 @@
       --out | -o
 
         The output target folder.
+
+      --keys-only
+
+        Only fill key values into the generated CSV records, leaving all
+        other columns empty. Requires '--records'. Useful to generate placeholder
+        rows for an agent or human to fill in later.
 
 
     <em>cds add enterprise-messaging</em>
@@ -140,6 +161,20 @@
 
 
     <em>cds add enterprise-messaging-shared</em>
+
+      --cloudevents | -c
+
+        Use CloudEvents formatting.
+
+
+    <em>cds add event-mesh</em>
+
+      --cloudevents | -c
+
+        Use CloudEvents formatting.
+
+
+    <em>cds add event-mesh-shared</em>
 
       --cloudevents | -c
 
@@ -202,7 +237,7 @@
 
       --into | -i
 
-        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
 
 
     <em>cds add test</em>
@@ -222,7 +257,7 @@
 
       --into | -i
 
-        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'.
+        Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
 
 
     <em>cds add xsuaa</em>
@@ -234,14 +269,15 @@
 
 <strong>EXAMPLES</strong>
   <em>cds add</em> sample
+  <em>cds add</em> multitenancy hana xsuaa
   <em>cds add</em> multitenancy,hana,xsuaa
   <em>cds add</em> data --filter my.namespace.MyEntity
   <em>cds add</em> mta
-  <em>cds add</em> helm
+  <em>cds add</em> kyma
 
 <strong>SEE ALSO</strong>
   <em>cds init</em>
 
 <strong>SUMMARY</strong>
-  <em>cds add</em> &lt;feature | comma-separated list of features&gt;
+  <em>cds add</em> &lt;feature&gt; [&lt;feature&gt; ...]
 </pre>

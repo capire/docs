@@ -1,5 +1,5 @@
 ---
-synopsis: >
+description: >
   Programmatically use <code>cds.import</code>.
 ---
 
@@ -48,6 +48,7 @@ It accepts a list of namespaces whose attributes are to be retained in the CSN /
 <br>
 
 ## cds.import.from.edmx() {.method}
+###### from-edmx
 
 This API can be used to convert the OData specification file (EDMX / XML) into CSN.
 The API signature looks like this:
@@ -59,6 +60,7 @@ const csn = await cds.import.from.edmx(ODATA_EDMX_file, options)
 <br>
 
 ## cds.import.from.openapi() {.method}
+###### from-openapi
 
 This API can be used to convert the OpenAPI specification file (JSON) into CSN.
 The API signature looks like this:
@@ -70,6 +72,7 @@ const csn = await cds.import.from.openapi(OpenAPI_JSON_file)
 [Learn more about OpenAPI to OData Mapping.](#openapi-to-cds-odata-csn-conversion-mapping){.learn-more}
 
 ## cds.import.from.asyncapi() {.method}
+###### from-asyncapi
 
 This API can be used to convert the AsyncAPI specification file (JSON) into CSN.
 The API signature looks like this:
