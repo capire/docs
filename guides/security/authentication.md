@@ -286,7 +286,8 @@ Integration tests running in production profile should verify that unauthenticat
 
 
 > [!caution]
-> SAP Identity Authentication Service for **multitenant applications** is only available internally at SAP.
+> SAP Identity Authentication Service is only available for **single tenant applications**.
+> SAP-internal also multitenant applications are supported. <!-- INTERNAL -->
 
 [SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing the following features:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
