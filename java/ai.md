@@ -41,19 +41,13 @@ Add the agent adapter to your `srv/pom.xml`:
 </dependency>
 ```
 
-Add the `agent-memory` model to your project's `package.json`:
+Import the `agent-memory` model into your project's CDS model:
 
-```json
-{
-  "cds": {
-    "requires": {
-      "agent-memory": {
-        "model": "com.sap.cds/ai/agent-memory"
-      }
-    }
-  }
-}
+```cds
+using from 'com.sap.cds/ai/agent-memory';
 ```
+
+and use the [resolve](./building-plugins#reference-the-new-cds-model-in-an-existing-cap-java-project) goal of the CDS Maven Plugin.
 
 > [!warning] Persistent Agent Memory
 > There is no automatic cleanup yet. Clear the session table periodically.
