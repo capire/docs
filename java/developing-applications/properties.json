@@ -161,14 +161,14 @@
     {
       "header": true,
       "name": "cds.model.provider.cache",
-      "doc": "Properties for the CDS model and EDMX metadata caches."
+      "doc": "Configuration for the model provider caches."
     },
     {
       "header": false,
       "name": "cds.model.provider.cache.maxSize",
       "type": "int",
       "default": "20",
-      "doc": "The number of entries in the CDS model and EDMX metadata caches."
+      "doc": "The default maximum number of entries held in any model provider cache. For EDMX and i18n<br>caches this value is multiplied by the number of OData services."
     },
     {
       "header": false,
@@ -183,6 +183,24 @@
       "type": "int",
       "default": "60",
       "doc": "The time in seconds after which a cached entry is refreshed."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.maxSizeCdsModel",
+      "type": "Integer",
+      "doc": "Overrides the maximum number of entries in the CDS model cache. When not set, the<br>effective size equals `maxSize`."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.maxSizeEdmx",
+      "type": "Integer",
+      "doc": "Overrides the maximum number of entries in the OData V4 and V2 EDMX caches. When not set,<br>the effective size equals `maxSize`."
+    },
+    {
+      "header": false,
+      "name": "cds.model.provider.cache.maxSizeI18n",
+      "type": "Integer",
+      "doc": "Overrides the maximum number of entries in the EDMX i18n cache. When not set, the<br>effective size equals `maxSize`."
     },
     {
       "header": true,
@@ -235,6 +253,13 @@
       "type": "String",
       "default": "X-Forwarded-Client-Cert",
       "doc": "Header name for forwarded client certificates."
+    },
+    {
+      "header": false,
+      "name": "cds.security.authentication.enforceProviderTenantForInternalUser",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines if internal user access is only granted on provider level tenant."
     },
     {
       "header": true,
@@ -591,13 +616,25 @@
     {
       "header": true,
       "name": "cds.odataV4.lazyI18n",
-      "doc": "Determines, if localization is applied to the EDMX lazily, saving memory resources."
+      "doc": "Determines if localization is applied to the EDMX lazily, saving memory resources."
     },
     {
       "header": false,
       "name": "cds.odataV4.lazyI18n.enabled",
       "type": "boolean",
       "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
+      "header": true,
+      "name": "cds.odataV4.cdsToEdm",
+      "doc": "Determines if the EDM model used for non-$metadata requests is derived from the CdsModel so<br>that the EMDX model cache is bypassed."
+    },
+    {
+      "header": false,
+      "name": "cds.odataV4.cdsToEdm.enabled",
+      "type": "boolean",
+      "default": "false",
       "doc": "Determines, if it is enabled."
     },
     {
@@ -1055,7 +1092,7 @@
     {
       "header": true,
       "name": "cds.multiTenancy.serviceManager",
-      "doc": "Properties for the service-manager client."
+      "doc": "Properties for the service-manager client. Set<br>`cds.multiTenancy.serviceManager.enabled=false` to ignore bindings to the Service Manager<br>(service {@code service-manager} with plan {@code container} or {@code container-large}) when<br>creating multitenant-aware datasources."
     },
     {
       "header": false,
@@ -1072,6 +1109,13 @@
       "doc": "The oauth token retrieval timeout (as Duration)."
     },
     {
+      "header": false,
+      "name": "cds.multiTenancy.serviceManager.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
+    },
+    {
       "header": true,
       "name": "cds.multiTenancy.serviceManager.v2",
       "doc": "Determines, if the Service Manager V2 API is used."
@@ -1086,7 +1130,7 @@
     {
       "header": true,
       "name": "cds.multiTenancy.hanaMtService",
-      "doc": "Properties for the Hana multi tenant service"
+      "doc": "Properties for the Hana multi tenant service. Set<br>`cds.multiTenancy.hanaMtService.enabled=false` to ignore bindings to the HANA multitenancy<br>service (TMSv2, service {@code hana-cloud} with plan {@code hana-multitenancy}) when creating<br>multitenant-aware datasources."
     },
     {
       "header": false,
@@ -1100,6 +1144,13 @@
       "name": "cds.multiTenancy.hanaMtService.hanaTenantPrefix",
       "type": "String",
       "doc": "Optional prefix for HANA tenant id calculation as hash from <hanaTenantPrefix>-<btp tenant<br>id>"
+    },
+    {
+      "header": false,
+      "name": "cds.multiTenancy.hanaMtService.enabled",
+      "type": "boolean",
+      "default": "true",
+      "doc": "Determines, if it is enabled."
     },
     {
       "header": true,
@@ -1530,7 +1581,7 @@
       "name": "cds.remote.services.<key>.destination.onBehalfOf",
       "type": "String",
       "default": "currentUser",
-      "doc": "Determines the user and tenant context that is used for IAS app-2-app destinations.<br>Possible values are: {@code currentUser}, {@code systemUser} and {@code<br>systemUserProvider}"
+      "doc": "Determines the user and tenant context that is used for IAS app-2-app destinations.<br>Possible values are: `currentUser`, `systemUser` and `systemUserProvider`."
     },
     {
       "header": true,
@@ -1678,7 +1729,21 @@
       "header": false,
       "name": "cds.drafts.postActive",
       "type": "boolean",
-      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined. If not set, defaults to {@code true} when the<br>entity has a draft-new action and to {@code false} otherwise."
+      "doc": "When enabled, a plain POST request on a draft-enabled entity without an explicit<br>IsActiveEntity value creates an active entity instead of a draft. The draft-enabled entity<br>must also have a draft new action defined. If not set, defaults to `true` when the entity has<br>a draft-new action and to `false` otherwise."
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.deleteStrategy",
+      "type": "String",
+      "default": "flat",
+      "doc": "The strategy for deletion of draft documents during draftActivate and cancel: `flat`<br>(default): the entities that are part of the draft document are deleted non-cascading based<br>on their `DraftUUID`, `dad`: only the `DraftAdministrativeData` is deleted, assuming an<br>on-delete cascade constraint exists for each drafts table to `DraftAdministrativeData` so<br>that the delete is cascaded on the database, `deep`: the draft is deleted through a standard<br>deep delete of the draft root, which is cascaded by the runtime"
+    },
+    {
+      "header": false,
+      "name": "cds.drafts.saveMode",
+      "type": "String",
+      "default": "full",
+      "doc": "The representation of the inactive document used during draft activation (save) to update the<br>active version. `full` (default): the complete inactive document. `delta`: the changed part<br>of the inactive document, i.e. entities with changed elements, or added, changed or removed<br>children (with delta List and forRemoval markers)."
     },
     {
       "header": true,
@@ -1891,7 +1956,7 @@
       "name": "cds.auditLog.personalData.throwOnMissingDataSubject",
       "type": "boolean",
       "default": "true",
-      "doc": "If set to {@code true} and the data subject is missing, a `ServiceException` is thrown."
+      "doc": "If set to `true` and the data subject is missing, a `ServiceException` is thrown."
     },
     {
       "header": false,
@@ -1903,7 +1968,7 @@
     {
       "header": true,
       "name": "cds.auditLog.personalData.logRead",
-      "doc": "If set to {@code true}, audit logging of access to sensitive personal data is enabled."
+      "doc": "If set to `true`, audit logging of access to sensitive personal data is enabled."
     },
     {
       "header": false,
