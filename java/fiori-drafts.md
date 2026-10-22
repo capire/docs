@@ -170,14 +170,14 @@ cds.drafts.saveMode: delta
 
 Compared to the default `full` mode, the observable impact is:
 
-- **Update handlers** receive only the [delta representation](../working-with-cql/query-api#deep-update-delta) — the changed subtree — rather than the full document. Nested composition collections are delivered as delta lists.
+- **Update handlers** receive only the [delta representation](./working-with-cql/query-api#deep-update-delta) — the changed subtree — rather than the full document. Nested composition collections are delivered as delta lists.
 - **Managed timestamps** (`modifiedAt`, `createdAt`) are updated only for nodes on the changed path, accurately reflecting which parts of the document were touched.
 
 ::: warning Check Custom Update Handlers
 Make sure your `UPDATE` handlers can deal with a delta payload. Handlers that assume they always receive the full document need to be adapted. Retain `cds.drafts.saveMode: full` (the default) if your handlers require the complete document.
 :::
 
-[Learn more about processing delta payloads in a handler.](../working-with-cql/query-api#deep-update-delta-processing){.learn-more}
+[Learn more about processing delta payloads in a handler.](./working-with-cql/query-api#deep-update-delta-processing){.learn-more}
 
 ## Read-Only Fields in Drafts { #readonly-in-drafts }
 
