@@ -2040,7 +2040,9 @@ service AdminService {
 ### Auto-Exposed Entities
 {#auto-expose}
 
-Annotate entities with `@cds.autoexpose` to automatically expose them in services containing entities with associations referring to them.
+Annotate entities with `@cds.autoexpose` to automatically expose them in services containing entities with associations referring to them. Composition targets are auto-exposed without the need for an annotation.
+
+#### Using @cds.autoexpose
 
 For example, given the following entity definitions:
 
@@ -2084,15 +2086,7 @@ service MyOrders {
 }
 ```
 
-Auto-exposure of entities annotated with `@cds.autoexpose` can be switched off for a
-particular service by annotating the service with `@cds.autoexpose: false`:
-```cds
-@cds.autoexpose: false
-service Zoo {
-  // ...
-  // Bar and Car are not auto-exposed in this service
-}
-```
+#### Using Compositions
 
 In addition to entities annotated with `@cds.autoexpose`, composition targets are auto-exposed, too.
 
@@ -2127,11 +2121,24 @@ extend service TravelService with { // auto-exposed entity:
 }
 ```
 
-This auto-exposure of composition targets is not affected by annotating
-service `TravelService` with `@cds.autoexpose: false`. 
-
 [Learn more about **CodeLists in `@sap/cds/common`**.](./common#code-lists){.learn-more}
 
+
+#### Switch Off Auto-Exposure
+
+Auto-exposure of entities annotated with `@cds.autoexpose` can be switched off for a
+particular service by annotating the service with `@cds.autoexpose: false`:
+```cds
+@cds.autoexpose: false
+service Zoo {
+  // ...
+  // Bar and Car are not auto-exposed in this service
+}
+```
+
+>[!important] Not valid for compositions
+> Auto-exposure of composition targets is not affected by annotating the
+service with `@cds.autoexpose: false`. 
 
 
 ### Custom Actions and Functions {#actions}
