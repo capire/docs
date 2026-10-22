@@ -118,7 +118,7 @@ Three strategies are available:
 
 ### Cascade Deletion on Database { #draft-deletion-dad }
 
-The `dad` strategy avoids separate deletion operations for each draft table. Before enabling it, the database must have `ON DELETE CASCADE` constraints on each draft table's `DraftAdministrativeData_DraftUUID` foreign key. Generate these constraints by enabling:
+The `dad` strategy avoids separate deletion operations for each draft table. Before enabling it, the database must have [ON DELETE CASCADE](../guides/databases/cdl-to-ddl#on-delete-cascade) constraints on each draft table's `DraftAdministrativeData_DraftUUID` foreign key. Generate these constraints by enabling:
 
 ```yaml
 cds.fiori.draft_admin_integrity: true
