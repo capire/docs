@@ -118,9 +118,9 @@ In case the create or update operation raises an error, the transaction is rolle
 
 ### Delta Draft Activation <Beta /> { #delta-draft }
 
-By default, when a draft is activated, the entire draft document — including every composition child at every level — is written back to the active tables unconditionally. This *full* mode is simple and safe, but it means that every child entity receives a new `modifiedAt` timestamp even when nothing about it actually changed.
+By default, when a draft is activated, the entire draft document, including every composition child at every level, is written back to the active tables unconditionally. This *full* mode is simple and safe, but it means that every child entity receives a new `modifiedAt` timestamp even when nothing about it actually changed.
 
-*Delta* mode changes the activation process. Before writing, the draft image is compared to the current active image. Only entities on a *changed path* — entities that have changed fields, or that are ancestors of added or removed children — are included in the database update. Unchanged siblings are left out and their `modifiedAt` stays at its previous value.
+*Delta* mode changes the activation process. Before writing, the draft image is compared to the current active image. Only entities on a *changed path*, that is, entities that have changed fields or that are ancestors of added or removed children, are included in the database update. Unchanged siblings are left out and their `modifiedAt` stays at its previous value.
 
 Enable delta mode with the `cds.drafts.save-mode` property:
 
@@ -130,7 +130,7 @@ cds:
     save-mode: delta
 ```
 
-#### Effect on the database
+#### Effect on the Database
 
 Only entities on a *changed path* are written. These entities include the changed node itself, and all its ancestors up to the root. Unchanged siblings are left out and their `modifiedAt` stays at its previous value. Added children are inserted and removed children are deleted. Managed fields (Like `modifiedAt`) are stamped on every node that is written.
 
@@ -138,9 +138,9 @@ For example, in a `Travel → Booking → BookingSupplement` document, patching 
 
 If the active counterpart of a draft root can't be found at activation time, delta mode falls back to a full insert for that root.
 
-#### Effect on event handlers
+#### Effect on Event Handlers
 
-From a handler's perspective, delta mode is transparent: the same `CREATE` and `UPDATE` events fire as in full mode, and the `DraftSaveEventContext.getResult()` returns the same flat root row (keys plus draft virtual fields such as `IsActiveEntity`). Composition children are stripped from the result by the framework, as in full mode — the OData adapter re-reads the full document to build the response sent to the UI.
+From a handler's perspective, delta mode is transparent: the same `CREATE` and `UPDATE` events fire as in full mode, and the `DraftSaveEventContext.getResult()` returns the same flat root row (keys plus draft virtual fields such as `IsActiveEntity`). Composition children are stripped from the result by the framework, as in full mode, the OData adapter re-reads the full document to build the response sent to the UI.
 
 ```java
 @After(event = DraftService.EVENT_DRAFT_SAVE)
@@ -153,7 +153,7 @@ public void afterSave(DraftSaveEventContext context) {
 
 The key difference is that in delta mode, the `UPDATE` event receives only the changed subgraph as its payload. Your custom `@Before` or `@On` handlers that inspect `context.getCqn()` sees a deeply structured update restricted to the changed nodes, not the full document. `@After` handlers on the individual `CREATE` / `UPDATE` events see only the rows that were written.
 
-In delta mode, `DraftSaveEventContext.getDelta()` provides the changed subgraph as a `Result` — the same deeply structured rows that were written, including composition children. Ancestors on the changed path are included even if their own scalar fields didn't change (managed-field stamping makes them non-NOP). Unchanged siblings absent from the update aren't present. `getDelta()` returns `null` in full mode.
+In delta mode, `DraftSaveEventContext.getDelta()` provides the changed subgraph as a `Result`, the same deeply structured rows that were written, including composition children. Ancestors on the changed path are included even if their own scalar fields didn't change (due to updates made by managed-field stamping). Unchanged siblings absent from the update aren't present. `getDelta()` returns `null` in full mode.
 
 ## Read-Only Fields in Drafts { #readonly-in-drafts }
 
