@@ -2040,7 +2040,9 @@ service AdminService {
 ### Auto-Exposed Entities
 {#auto-expose}
 
-Annotate entities with `@cds.autoexpose` to automatically expose them in services containing entities with associations referring to them.
+Annotate entities with `@cds.autoexpose` to auto-expose them in services that contain entities with associations referring to them. Composition targets are auto-exposed without an annotation.
+
+#### Using @cds.autoexpose
 
 For example, given the following entity definitions:
 
@@ -2066,16 +2068,16 @@ service Zoo {
 }
 ```
 
-... would result in the service being automatically extended like this:
+... results in the service being automatically extended like this:
 
 ```cds
 extend service Zoo with { // auto-exposed entities:
-   @readonly entity Foo_bar as projection on Bar;
-   @readonly entity Foo_car as projection on Car;
+   entity Bar as projection on my.Bar;
+   entity Car as projection on my.Car;
 }
 ```
 
-You can still expose such entities explicitly, for example, to make them read-write:
+You can still expose such entities directly, for example, to make them read-write:
 
 ```cds
 service MyOrders {
@@ -2084,8 +2086,57 @@ service MyOrders {
 }
 ```
 
+#### Using Compositions
+
+Besides entities annotated with `@cds.autoexpose`, composition targets are auto-exposed.
+
+Example:
+```cds
+// schema.cds
+namespace travels;
+entity Travels {
+  key id : Integer;
+  bookings : Composition of many Bookings on Bookings.Travel = $self;
+}
+entity Bookings {
+  key Travel      : Association to Travels;
+  key Pos         : Integer;
+}
+```
+
+When `Travels` is exposed in a service ...
+
+```cds
+using { travels } from './schema.cds';
+service TravelService {
+  entity Travels as projection on travels.Travels
+}
+```
+
+... the composition target `Bookings` is auto-exposed as follows:
+
+```cds
+extend service TravelService with { // auto-exposed entity:
+   entity Bookings as projection on travels.Bookings;
+}
+```
+
 [Learn more about **CodeLists in `@sap/cds/common`**.](./common#code-lists){.learn-more}
 
+
+#### Switch Off Auto-Exposure
+
+To switch off auto-exposure of entities annotated with `@cds.autoexpose` in a service, annotate the service with `@cds.autoexpose: false`:
+```cds
+@cds.autoexpose: false
+service Zoo {
+  // ...
+  // Bar and Car are not auto-exposed in this service
+}
+```
+
+>[!important] Not valid for compositions
+> The `@cds.autoexpose: false` annotation does not affect auto-exposure of composition targets.
 
 
 ### Custom Actions and Functions {#actions}

@@ -27,10 +27,8 @@ client can talk to them.
 For compatibility reasons with Joule and Agent Gateway, version 0.3.0 of the A2A protocol is used by default.
 :::
 
-
-::: warning In-Memory Chat History Only
-CAP Java doesn't yet have a persistent chat history. Instead, it stores conversation history in volatile memory. Hence, you need to send all follow-up prompts to the same server instance.
-:::
+> [!warning] Alpha — Not for Production
+> CAP Java agents are under active development. The data model and APIs may change.
 
 ### Adding the Dependency
 
@@ -42,6 +40,17 @@ Add the agent adapter to your `srv/pom.xml`:
   <artifactId>cds-adapter-agent</artifactId>
 </dependency>
 ```
+
+Import the `agent-memory` model into your project's CDS model:
+
+```cds
+using from 'com.sap.cds/ai/agent-memory';
+```
+
+and use the [resolve](./building-plugins#reference-the-new-cds-model-in-an-existing-cap-java-project) goal of the CDS Maven Plugin.
+
+> [!warning] Persistent Agent Memory
+> There is no automatic cleanup yet. Clear the session table periodically.
 
 ### Defining an Agent
 
