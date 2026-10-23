@@ -285,7 +285,7 @@ cds:
 
 #### Configuring Event Mesh in SAP Integration Suite Support <Beta />
 
-Support for [Event Mesh in SAP Integration Suite](https://www.sap.com/products/technology-platform/integration-suite.html) is served by the same `cds-feature-enterprise-messaging` plugin, so no additional dependency is needed. Bind a service instance of type `event-mesh-message-client` and choose one of two kinds, `event-mesh` or `event-mesh-shared`. In CAP Java both connect to the broker over AMQP and behave identically — the `-shared` suffix mirrors the classic `enterprise-messaging` / `enterprise-messaging-shared` naming.
+[Event Mesh in SAP Integration Suite](https://www.sap.com/products/technology-platform/integration-suite.html) is supported through the same `cds-feature-enterprise-messaging` plugin, so no additional dependency is needed. Bind a service instance of type `event-mesh-message-client` and choose one of two kinds, `event-mesh` or `event-mesh-shared`. In CAP Java both behave identically and connect to the broker over AMQP, the `-shared` suffix mirrors the classic `enterprise-messaging` / `enterprise-messaging-shared` naming. Note that the kind is used to look up the config so use it consistently.
 
 ::: code-group
 ```xml [srv/pom.xml]
