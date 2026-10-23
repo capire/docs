@@ -29,6 +29,16 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 For any Java related changes of the CAP Java APIs we try to make the transition from the old version to the new version as smooth as possible. Consequently, we provide [OpenRewrite recipes](https://docs.openrewrite.org) with migrations for our API changes so that larger projects can easily consume them.
 
+### Setting Up the Maven Repository
+
+The OpenRewrite Maven plugin and its recipes are published to the [Code Genome Project](https://www.codegenomeproject.org/) repository, which requires explicit configuration in your `~/.m2/settings.xml`.
+
+::: tip SAP Internal <!-- INTERNAL -->
+The OpenRewrite artifacts are available through the internal Maven repository, so no additional repository configuration is required. <!-- INTERNAL -->
+::: <!-- INTERNAL -->
+
+[Learn more about the Code Genome Project repository setup.](https://docs.openrewrite.org/running-recipes/running-rewrite-on-a-maven-project-without-modifying-the-build#configure-the-code-genome-project-repository){.learn-more}
+
 ### Running OpenRewrite Recipes
 
 As migration is a one-time operation, run the OpenRewrite `recipes` as a command through Maven. Take this call as an example:
