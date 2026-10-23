@@ -471,6 +471,49 @@ To expand all first level associations of an entity, use `expand()` on the entit
 Select.from(BOOKS).columns(b -> b.expand());
 ```
 
+#### Expand with `excluding` {#expand-excluding}
+
+To expand all elements of an associated entity _except_ specific ones, chain `excluding` after `expand()`. This is the Java equivalent of the CQL `{ * } excluding { ... }` syntax for [nested expands](../../cds/cql#excluding-clause).
+
+```java
+// static
+Select.from(AUTHORS)
+    .columns(a -> a.name(),
+             a -> a.books().expand()
+                           .excluding(b -> b.isbn()));
+```
+
+```java
+// dynamic
+Select.from("bookshop.Authors")
+    .columns(a -> a.get("name"),
+             a -> a.to("books").expand().excluding("isbn"));
+```
+
+Both queries correspond to the following CQL statement:
+
+```sql
+SELECT from bookshop.Authors { name, books { * } excluding { isbn } }
+```
+
+Multiple elements can be excluded by listing them as additional arguments (static) or passing multiple strings (dynamic):
+
+```java
+// static - exclude multiple elements
+Select.from(BOOKS)
+    .columns(b -> b.title(),
+             b -> b.author().expand()
+                            .excluding(a -> a.dateOfDeath(),
+                                       a -> a.placeOfDeath()));
+
+// dynamic - exclude multiple elements
+Select.from("bookshop.Books")
+    .columns(b -> b.get("title"),
+             b -> b.to("author").expand().excluding("dateOfDeath", "placeOfDeath"));
+```
+
+`excluding` works for both to-one and to-many associations.
+
 ::: warning Don't use distinct together with expand
 The `distinct` clause removes duplicate rows from the root entity and effectively aggregates rows. Expanding child entities from aggregated rows is not well-defined and can lead to issues that can be resolved by removing distinct.
 :::
@@ -1297,6 +1340,8 @@ See the result of the updated *Order*:
 In **delta** representation, nested entity collections in the update data can be partial: the runtime only processes entities that are contained in the collection but entities that aren't contained remain untouched.
 Entities that shall be removed need to be included in the list and explicitly _marked for removal_.
 
+##### Creating a Delta Representation
+
 Using the same sample _Order_ as in the previous full-set chapter, do a deep delta update with the following update data:
 
 ```java
@@ -1316,9 +1361,46 @@ order.setItems(delta(item1, item2.forRemoval(), item4));
 
 Update.entity(ORDER).data(order);
 ```
-> Create delta collections via `CdsList` and `CdsData`.
+> Create delta collections via `CdsList.delta()` and `CdsData.forRemoval()`.
 
 The deep update with order items in delta representation has similar effects as the update with items in full set representation. The only difference is that `OrderItem 3` is not deleted.
+
+##### Processing a Delta Representation in a Custom Handler { #deep-update-delta-processing}
+
+Custom handlers registered on the `UPDATE` event receive a delta payload when there is an explicit `CdsList.delta()` update statement, or from draft activation when [`cds.drafts.saveMode: delta`](../fiori-drafts#draft-delta-save-mode) is enabled. Such a handler needs to inspect the nested collections to distinguish delta lists from full-set lists, and to tell apart entries to be removed from entries to be created or updated.
+
+Two API methods are relevant:
+
+- [**`CdsList.isDelta()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsList.html#isDelta()): Returns `true` if a nested collection is a delta list. To call it, cast the collection to `CdsList`. If the list isn't a delta list, it's a full-set list and all pre-existing items not contained in it are deleted.
+
+- [**`CdsData.isForRemoval()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsData.html#isForRemoval()): Returns `true` if an individual entry in a delta list is marked for removal. Entries not marked for removal are to be created or updated.
+
+The following example shows how to handle both cases in a `@Before` handler:
+
+```java
+@Before
+public void beforeUpdateOrder(CdsUpdateEventContext context, List<Orders> orders) {
+    for (Orders order : orders) {
+        List<OrderItem> items = order.getItems();
+        if (items instanceof CdsList<?> cdsList && cdsList.isDelta()) {
+            // delta list: only the changed subset is present
+            for (OrderItem item : items) {
+                if (item.isForRemoval()) {
+                    // item is marked for removal
+                } else {
+                    // item is to be created or updated
+                }
+            }
+        } else if (items != null) {
+            // full-set list: pre-existing items not in this list will be deleted
+        }
+    }
+}
+```
+
+::: warning Adapt handlers when using delta save mode
+Handlers that assume the full document is always present must be adapted before enabling `cds.drafts.saveMode: delta`. Retain `cds.drafts.saveMode: full` (the default) if your handlers require the complete document.
+:::
 
 
 ### Bulk Update: Update Multiple Entity Records with Individual Data {#bulk-update}

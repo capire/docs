@@ -70,7 +70,7 @@ annotate CatalogService.submitOrder with @agent.hitl; // [!code focus]
 When the agent decides to call the action, the task pauses and transitions to the A2A [`input-required`](https://a2a-protocol.org/latest/specification/#413-taskstate) state instead of running the action immediately.
 
 > [!warning] Only supported by CAP Node.js
-> `@agent.hitl` is not yet supported by CAP Java
+> `@agent.hitl` is not yet supported by CAP Java.
 
 
 
@@ -248,7 +248,7 @@ DEBUG=agents cds watch
 > The plugin can automatically fetch required/missing credentials from local installations of supported LLMs, allowing you to work with zero additional configuration.
 
 > [!warning] CAP Node.js only
-> Auto configuration from local Claude and OpenCode installations is not supported by CAP Java
+> Auto configuration from local Claude and OpenCode installations is not supported by CAP Java.
 
 ### Using Chat Preview <Alpha/>
 
@@ -269,7 +269,7 @@ Also answer the questions that the agent asks you back.
 ![Chat conversation in Chat Preview](chat-preview-bookshop.png)
 
 > [!tip] Embedded with the CAP application
-> Essentially we see that the CAP-level agent accomplishes the same functionality than the generic agent that comes with _OpenCode_. The main difference is that it is tightly integrated with the CAP application, allowing for more seamless interaction with the underlying services and data models. Also the end user doesn't need any local AI client like _OpenCode_, nor do they need access to an LLM directly.
+> Essentially we see that the CAP-level agent accomplishes the same functionality as the generic agent that comes with _OpenCode_. The main difference is that it is tightly integrated with the CAP application, allowing for more seamless interaction with the underlying services and data models. Also the end user doesn't need any local AI client like _OpenCode_, nor do they need access to an LLM directly.
 
 
 ## Served out of the box
@@ -352,9 +352,9 @@ For details on configuring and using audit logging, refer to the documentation a
 
 ### Persistence
 
-The CAP-based harness provides short-term memory for agents by storing conversational and checkpoints in the connected primary database.
+The CAP-based agent harness provides short-term memory out-of-the-box via the connected primary database – that is in _SQLite_ in local dev, _SAP HANA_ in production.
 
-Agents can leverage this short-term memory to maintain context across multiple interactions within a session.
+This allows agents to persist conversational context and workflow checkpoints, so that they can resume sessions seamlessly even after server restarts, as well as boosting scalability in clustered environments. In addition, it provides a foundation for implementing long-term memory, monitoring and analytics on agent interactions.
 
 
 
@@ -406,9 +406,7 @@ The plugin can also export traces to [MLflow](https://mlflow.org/docs/latest/llm
 ```
 :::
 
-When enabled, an _MLflow_ exporter is added as a **second span processor** alongside any existing exporter (Dynatrace, Cloud Logging, Grafana, etc.),
-and the plugin automatically adds the following `mlflow.*` span attributes to existing OTel spans so the MLflow OTLP ingestion endpoint assembles them
-into proper MLflow traces — no additional SDK required.
+When enabled, an _MLflow_ exporter is added as a **second span processor** alongside any existing exporter (Dynatrace, Cloud Logging, Grafana, etc.), and the plugin automatically adds the following `mlflow.*` span attributes to existing OTel spans so the MLflow OTLP ingestion endpoint assembles them into proper MLflow traces — no additional SDK required.
 
 | Attribute                | Source                                                                                                |
 |--------------------------|-------------------------------------------------------------------------------------------------------|
@@ -552,17 +550,17 @@ cds:
 ```
 :::
 
-| Kind     | Description                                                                 |
-|----------|-----------------------------------------------------------------------------|
-| `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core          |
-| `auto`   | The default for `development`, using local Claude or OpenCode configuration |
-| `mock`   | A pure mock for `development`, provides dummy responses when called         |
+| Kind     | Description                                                                        |
+|----------|------------------------------------------------------------------------------------|
+| `aicore` | The default for `production` and `hybrid`, connects to SAP AI Core                 |
+| `auto`   | The default for `development`, using local Claude, Codex or OpenCode configuration |
+| `mock`   | A pure mock for `development`, provides dummy responses when called                |
 
-See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.vite
+See [SAP AI Core → Create a Service Instance](https://help.sap.com/docs/sap-ai-core/sap-ai-core-service-guide/create-service-instance) for how to create an instance.
 
 
 > [!tip] Automatically Fetching Credentials
-> In development profile, with the pre-configured `auto` kind, the plugin tries to fetch missing credentials from local installation of [Claude Code](https://claude.ai) or [OpenCode](https://opencode.ai).
+> In development profile, with the pre-configured `auto` kind, the plugin tries to fetch missing credentials from local installation of [Claude Code](https://claude.ai), [Codex](https://openai.com/codex/) or [OpenCode](https://opencode.ai).
 > This allows you to work with local LLM instances without providing any additional config at all.
 
 
@@ -581,5 +579,5 @@ See section [_Quotas_](#quotas) above for details.
 ## SAP API Policy
 
 > [!caution]
-> CAP-level agents as documented herein must not be used as gateways or proxies for SAP Application APIs. The _cap/agents_ plugins are not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
+> CAP-level agents as documented herein must not be used as gateways or proxies for SAP Application APIs. The `@cap-js/agents` plugin is not an SAP-endorsed architecture, data service, or service-specific pathway under section 2.2.2 of the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy) and is not an endorsed mechanism for exposing, proxying, or providing agentic access to SAP Application APIs.
 > Any use of SAP Application APIs must be in accordance with the [_SAP API Policy_](https://help.sap.com/docs/business-accelerator-hub/sap-business-accelerator-hub/sap-api-policy). For SAP-endorsed patterns on agentic access to SAP Application APIs, consult the [_SAP Architecture Center_](https://architecture.learning.sap.com/docs/ref-arch/98efa0) reference architectures.
