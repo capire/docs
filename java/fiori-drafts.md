@@ -100,6 +100,48 @@ The `DRAFT_CREATE` is an internal event that is not triggered by OData requests 
 
 For more examples, see the [Bookshop sample application](https://github.com/SAP-samples/cloud-cap-samples-java/tree/master/srv/src/main/java/my/bookshop/handlers/AdminServiceHandler.java).
 
+## Deleting Drafts { #draft-deletion-in-cap-java }
+
+When a draft is deleted through user cancellation, activation, or garbage collection, CAP Java removes the draft rows from the database. Configure the deletion strategy with the following property:
+
+```yaml
+cds.drafts.deleteStrategy: flat
+```
+
+Three strategies are available:
+
+| Strategy | Behavior | Performance |
+|---|---|---|
+| `flat` *(default)* | Deletes each draft table's rows individually by draft UUID. | Fast |
+| `deep` | Issues a delete on the draft root. The runtime [cascades the deletion along compositions](./working-with-cql/query-api#delete) and removes child rows without explicit per-table statements. | Slow |
+| `dad` | Deletes only the `DraftAdministrativeData` record and relies on database `ON DELETE CASCADE` constraints to remove the associated draft rows. | Fastest |
+
+### Cascade Deletion on Database { #draft-deletion-dad }
+
+The `dad` strategy avoids separate deletion operations for each draft table. Before enabling it, the database must have [ON DELETE CASCADE](../guides/databases/cdl-to-ddl#on-delete-cascade) constraints on each draft table's `DraftAdministrativeData_DraftUUID` foreign key. Generate these constraints by enabling:
+
+```yaml
+cds.fiori.draft_admin_integrity: true
+```
+
+On SAP HANA, the constraints are deployed with `NOT VALIDATED`. On PostgreSQL, they are deployed with `NOT VALID`. These options skip checks of existing data, so you do not need to clean up orphaned data before deployment.
+
+Once the constraints are deployed, switch to the `dad` strategy:
+
+```yaml
+cds.drafts.deleteStrategy: dad
+```
+
+::: warning Check Custom Handlers
+Switching strategies changes which event handlers are called during draft deletion. Verify the behavior of your custom handlers before adopting `dad`.
+:::
+
+::: tip Retain `flat` Until Migration Is Complete
+Keep `cds.drafts.deleteStrategy: flat` on existing databases until the cascade constraints have been deployed.
+:::
+
+[Learn more about the shared migration requirements for CAP Node.js and CAP Java.](../releases/2026/oct26#optimized-draft-deletion){.learn-more}
+
 ## Activating Drafts
 
 When you finish editing drafts by pressing the *Save* button, a draft gets activated. That means, either a single `CREATE` or `UPDATE` event is triggered to create or update the active entity with all of its compositions through a deeply structured document. You can register to these events to validate the activated data.
@@ -116,44 +158,26 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
 
-### Delta Draft Activation <Beta /> { #delta-draft }
+### Delta Save Mode { #draft-delta-save-mode }
 
-By default, when a draft is activated, the entire draft document, including every composition child at every level, is written back to the active tables unconditionally. This *full* mode is simple and safe, but it means that every child entity receives a new `modifiedAt` timestamp even when nothing about it actually changed.
+By default, draft activation sends the full document tree to the `CREATE` or `UPDATE` handler (`saveMode: full`). With delta save mode enabled, CAP Java compares the draft with the active image. It updates only entities on changed paths and skips entities on unchanged paths. This behavior reduces database operations for large documents.
 
-*Delta* mode changes the activation process. Before writing, the draft image is compared to the current active image. Only entities on a *changed path*, that is, entities that have changed fields or that are ancestors of added or removed children, are included in the database update. Unchanged siblings are left out and their `modifiedAt` stays at its previous value.
-
-Enable delta mode with the `cds.drafts.save-mode` property:
+Enable delta save mode via:
 
 ```yaml
-cds:
-  drafts:
-    save-mode: delta
+cds.drafts.saveMode: delta
 ```
 
-#### Effect on the Database
+Compared to the default `full` mode, the observable impact is:
 
-Only entities on a *changed path* are written. These entities include the changed node itself, and all its ancestors up to the root. Unchanged siblings are left out and their `modifiedAt` stays at its previous value. Added children are inserted and removed children are deleted. Managed fields (Like `modifiedAt`) are stamped on every node that is written.
+- **Update handlers** receive only the [delta representation](./working-with-cql/query-api#deep-update-delta) — the changed subtree — rather than the full document. Nested composition collections are delivered as delta lists.
+- **Managed timestamps** (`modifiedAt`, `createdAt`) are updated only for nodes on the changed path, accurately reflecting which parts of the document were touched.
 
-For example, in a `Travel → Booking → BookingSupplement` document, patching `Booking 1.price` updates `Booking 1` and `Travel`, but leaves `Booking 2` and all `BookingSupplements` untouched.
+::: warning Check Custom Update Handlers
+Make sure your `UPDATE` handlers can deal with a delta payload. Handlers that assume they always receive the full document need to be adapted. Retain `cds.drafts.saveMode: full` (the default) if your handlers require the complete document.
+:::
 
-If the active counterpart of a draft root can't be found at activation time, delta mode falls back to a full insert for that root.
-
-#### Effect on Event Handlers
-
-From a handler's perspective, delta mode is transparent: the same `CREATE` and `UPDATE` events fire as in full mode, and the `DraftSaveEventContext.getResult()` returns the same flat root row (keys plus draft virtual fields such as `IsActiveEntity`). Composition children are stripped from the result by the framework, as in full mode, the OData adapter re-reads the full document to build the response sent to the UI.
-
-```java
-@After(event = DraftService.EVENT_DRAFT_SAVE)
-public void afterSave(DraftSaveEventContext context) {
-    // context.getResult() contains a flat root row with IsActiveEntity = true.
-    // Composition children are absent from the result in both full and delta mode.
-    context.getResult().forEach(row -> { /* ... */ });
-}
-```
-
-The key difference is that in delta mode, the `UPDATE` event receives only the changed subgraph as its payload. Your custom `@Before` or `@On` handlers that inspect `context.getCqn()` sees a deeply structured update restricted to the changed nodes, not the full document. `@After` handlers on the individual `CREATE` / `UPDATE` events see only the rows that were written.
-
-In delta mode, `DraftSaveEventContext.getDelta()` provides the changed subgraph as a `Result`, the same deeply structured rows that were written, including composition children. Ancestors on the changed path are included even if their own scalar fields didn't change (due to updates made by managed-field stamping). Unchanged siblings absent from the update aren't present. `getDelta()` returns `null` in full mode.
+[Learn more about processing delta payloads in a handler.](./working-with-cql/query-api#deep-update-delta-processing){.learn-more}
 
 ## Read-Only Fields in Drafts { #readonly-in-drafts }
 
@@ -251,7 +275,7 @@ cds.security.authorization.draftProtection.enabled: false
 
 ## Draft Garbage Collection { #draft-gc }
 
-Stale drafts are automatically deleted after a timeout (30 days default). You can configure the timeout with the following application configuration property:
+Stale drafts are automatically deleted after a timeout (30 days default). The [deletion strategy](#draft-deletion-in-cap-java) configured via `cds.drafts.deleteStrategy` also applies during garbage collection. You can configure the timeout with the following application configuration property:
 
 ```yaml
 cds.drafts.deletionTimeout: 8w
