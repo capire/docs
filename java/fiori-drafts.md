@@ -102,7 +102,7 @@ For more examples, see the [Bookshop sample application](https://github.com/SAP-
 
 ## Deleting Drafts { #draft-deletion-in-cap-java }
 
-When a draft is deleted — whether by user cancellation, during activation, or by garbage collection — CAP Java removes the draft rows from the database. The deletion strategy is controlled via:
+When a draft is deleted through user cancellation, activation, or garbage collection, CAP Java removes the draft rows from the database. Configure the deletion strategy with the following property:
 
 ```yaml
 cds.drafts.deleteStrategy: flat
@@ -110,10 +110,10 @@ cds.drafts.deleteStrategy: flat
 
 Three strategies are available:
 
-| Strategy | Behaviour | Performance |
+| Strategy | Behavior | Performance |
 |---|---|---|
 | `flat` *(default)* | Deletes each draft table's rows individually by draft UUID. | Fast |
-| `deep` | Issues a delete on the draft root; the runtime [cascades it along compositions](./working-with-cql/query-api#delete), removing child rows without explicit per-table statements. | Slow |
+| `deep` | Issues a delete on the draft root. The runtime [cascades the deletion along compositions](./working-with-cql/query-api#delete) and removes child rows without explicit per-table statements. | Slow |
 | `dad` | Deletes only the `DraftAdministrativeData` record and relies on database `ON DELETE CASCADE` constraints to remove the associated draft rows. | Fastest |
 
 ### Cascade Deletion on Database { #draft-deletion-dad }
@@ -124,7 +124,7 @@ The `dad` strategy avoids separate deletion operations for each draft table. Bef
 cds.fiori.draft_admin_integrity: true
 ```
 
-On SAP HANA and PostgreSQL, the constraints are deployed with `NOT VALIDATED` / `NOT VALID`, so existing data is not checked and no orphan cleanup is required before deploying.
+On SAP HANA, the constraints are deployed with `NOT VALIDATED`. On PostgreSQL, they are deployed with `NOT VALID`. These options skip checks of existing data, so you do not need to clean up orphaned data before deployment.
 
 Once the constraints are deployed, switch to the `dad` strategy:
 
@@ -160,7 +160,7 @@ In case the create or update operation raises an error, the transaction is rolle
 
 ### Delta Save Mode { #draft-delta-save-mode }
 
-By default, draft activation sends the full document tree to the `CREATE` or `UPDATE` handler (`saveMode: full`). With delta save mode enabled, CAP Java performs a deep comparison of the draft against the active image and issues update operations only for entities that were actually changed — entities on an unchanged path are skipped entirely, resulting in more efficient database operations for large documents.
+By default, draft activation sends the full document tree to the `CREATE` or `UPDATE` handler (`saveMode: full`). With delta save mode enabled, CAP Java compares the draft with the active image. It updates only entities on changed paths and skips entities on unchanged paths. This behavior reduces database operations for large documents.
 
 Enable delta save mode via:
 
