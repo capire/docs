@@ -284,16 +284,21 @@ Integration tests running in production profile should verify that unauthenticat
 
 ## IAS Authentication { #ias-auth }
 
-::: tip
-**Start new projects with IAS** to take advantage of the best integration options.
-IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
-:::
+
+> [!caution]
+> SAP Identity Authentication Service is only available for **single tenant applications**.
+> SAP-internal also multitenant applications are supported. <!-- INTERNAL -->
 
 [SAP Identity Authentication Service (IAS)](https://help.sap.com/docs/cloud-identity-services) is the preferred platform service for identity management providing the following features:
  - best of breed authentication mechanisms (single sign-on, multi-factor enforcement)
  - federation of corporate identity providers (multiple user stores)
  - cross-landscape user propagation (including on-premise)
  - streamlined SAP and non-SAP system [integration](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/integrating-service) (due to [OpenId Connect](https://openid.net/connect/) compliance)
+
+::: tip
+**Start new projects with IAS** to take advantage of the best integration options.
+IAS offers a cross-consumption mode that allows IAS users to consume legacy XSUAA services.
+:::
 
 You can best configure and test IAS authentication in the Cloud, so let's enhance the [previously started bookshop sample application](#mock-user-authentication) with a deployment descriptor for SAP BTP, Cloud Foundry Runtime (CF).
 
