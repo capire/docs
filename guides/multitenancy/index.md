@@ -1020,6 +1020,36 @@ Example:
 ```
 If you set the `CDS_ENV` environment variable to `hanatms`, the application uses HANA TMS v2 after the next restart.
 
+You can also use the `hanatms` profile to set `hana_tenant_prefix` and `database_id` in an [MTA deployment descriptor](#configure-mtxs-for-tenant-management-service), such as `mta.yaml` or `mtaext.yaml`:
+```yaml
+- name: application-mtx
+  ...
+  properties:
+    CDS_CONFIG: |
+        {
+          "requires": {
+              "[hanatms]": {
+                "cds.xt.DeploymentService": {
+                  "hdi": {
+                    "create": {
+                      "hana_tenant_prefix": "application-prefix",
+                      "database_id": "..."
+                    }
+                  }
+                }
+              },
+              "cds.xt.DeploymentService": {
+                "hdi": {
+                  "create": {
+                    "database_id": "..."
+                  }
+                }
+              }
+            }
+          }
+...
+```
+
 ## SaaS Dependencies {#saas-dependencies}
 Some of the xsuaa-based services your application consumes need to be registered as _reuse services_ to work in multitenant environments. This holds true for the usage of both the SaaS Registry service and the Subscription Manager Service (SMS).
 
