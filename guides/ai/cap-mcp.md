@@ -125,9 +125,9 @@ Instead of annotating an existing service with `@mcp` and exposing all its entit
 
 ::: code-group
 ```cds [srv/mcp-service.cds]
-using { CatalogService } from './cat-service';
+using { AdminService } from './admin-service';
 
-@agent service BookshopService {
+@mcp service BooksService {
 
   @readonly entity Authors as projection on AdminService.Authors excluding {
     createdBy, modifiedBy,
@@ -139,9 +139,6 @@ using { CatalogService } from './cat-service';
     genre.name as genre,
     currency.name as currency,
   }
-
-  @agent.hitl
-  action submitOrder ( book: Books:ID, quantity: Integer );
 }
 ```
 :::
