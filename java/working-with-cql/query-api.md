@@ -1367,13 +1367,13 @@ The deep update with order items in delta representation has similar effects as 
 
 ##### Processing a Delta Representation in a Custom Handler { #deep-update-delta-processing}
 
-Custom handlers registered on the `UPDATE` event may receive a delta payload — either from an explicit `CdsList.delta()` update statement, or from draft activation when [`cds.drafts.saveMode: delta`](../fiori-drafts#draft-delta-save-mode) is enabled. Such a handler needs to inspect the nested collections to distinguish delta lists from full-set lists, and to tell apart entries to be removed from entries to be created or updated.
+Custom handlers registered on the `UPDATE` event receive a delta payload when there is an explicit `CdsList.delta()` update statement, or from draft activation when [`cds.drafts.saveMode: delta`](../fiori-drafts#draft-delta-save-mode) is enabled. Such a handler needs to inspect the nested collections to distinguish delta lists from full-set lists, and to tell apart entries to be removed from entries to be created or updated.
 
 Two API methods are relevant:
 
-- [**`CdsList.isDelta()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsList.html#isDelta()) — Returns `true` if a nested collection is a delta list. To call it, cast the collection to `CdsList`. If the list is not a delta list, it is a full-set list and all pre-existing items not contained in it will be deleted.
+- [**`CdsList.isDelta()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsList.html#isDelta()): Returns `true` if a nested collection is a delta list. To call it, cast the collection to `CdsList`. If the list isn't a delta list, it's a full-set list and all pre-existing items not contained in it are deleted.
 
-- [**`CdsData.isForRemoval()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsData.html#isForRemoval()) — Returns `true` if an individual entry in a delta list is marked for removal. Entries not marked for removal are to be created or updated.
+- [**`CdsData.isForRemoval()`**](https://javadoc.io/doc/com.sap.cds/cds4j-api/latest/com/sap/cds/CdsData.html#isForRemoval()): Returns `true` if an individual entry in a delta list is marked for removal. Entries not marked for removal are to be created or updated.
 
 The following example shows how to handle both cases in a `@Before` handler:
 
@@ -1383,7 +1383,7 @@ public void beforeUpdateOrder(CdsUpdateEventContext context, List<Orders> orders
     for (Orders order : orders) {
         List<OrderItem> items = order.getItems();
         if (items instanceof CdsList<?> cdsList && cdsList.isDelta()) {
-            // delta list — only the changed subset is present
+            // delta list: only the changed subset is present
             for (OrderItem item : items) {
                 if (item.isForRemoval()) {
                     // item is marked for removal
@@ -1392,7 +1392,7 @@ public void beforeUpdateOrder(CdsUpdateEventContext context, List<Orders> orders
                 }
             }
         } else if (items != null) {
-            // full-set list — pre-existing items not in this list will be deleted
+            // full-set list: pre-existing items not in this list will be deleted
         }
     }
 }
