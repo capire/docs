@@ -87,6 +87,43 @@ Refer to the [Test Code section of the Spring Boot 4.0 Migration Guide](https://
 
 These package renames are already covered by the [OpenRewrite community recipes](https://docs.openrewrite.org/recipes/java/spring/boot4) for Spring Boot 4, so you can apply them automatically together with the [CAP Java OpenRewrite migrations](#automatic-cap-java-migrations-with-openrewrite) above. The same applies to the commercial recipes offered by the [Moderne platform](https://www.moderne.ai/).
 
+### Harmonized Search
+
+CAP Java 5 harmonizes search behavior with CAP Node.js and RAP. By default, search now uses the SAP HANA [search syntax](#search-syntax). Moreover, fuzzy search is now enabled by default on SAP HANA.
+
+#### Search Syntax
+
+CAP Java now adds full support for the SAP HANA search syntax, harmonizing the user experience with CAP Node.js and RAP. This is now the default. Alternatively, the OData search syntax is still supported by configuration. The syntaxes differ in how expressions are composed:
+
+| operator | SAP HANA | OData |
+|---|---|---|
+| conjunction | &lt;space&gt; | &lt;space&gt; or `AND` |
+| disjunction | `OR` | `OR` |
+| negation | `-`| `NOT` |
+| grouping | n/a | `(`, `)` |
+| precedence | OR has precedence over AND (!) | AND has precedence over OR |
+
+::: warning HANA Syntax
+`AND`, `NOT` and brackets don't have special meaning and are treated as part of the search term.
+:::
+
+Example - _search for books on plants but not palm trees_:
+
+- SAP HANA search string: `plant -"palm tree"`
+- OData search string: `plant AND NOT "palm tree"`
+
+On H2, SQLite, and Postgres, the SAP HANA syntax is emulated so that you can use search consistently in local development and CI.
+
+The per-protocol search mode properties have been replaced by the unified <Config java>cds.sql.search.syntax</Config> property with options `HANA` (default) and `ODATA`.
+
+To switch back to OData search syntax, set `cds.sql.search.syntax: ODATA`.
+
+#### Fuzzy Search
+
+[Fuzzy search](/@external/guides/services/served-ootb#fuzzy-search) is now enabled by default on SAP HANA, with improved support for UUIDs and large strings. Fuzzy search is now also available in hierarchy queries.
+
+To switch back to exact (containment) search, set `cds.sql.hana.search.fuzzy: false`
+
 ### Minimum Versions
 
 CAP Java 5.0 increased some minimum required versions:
