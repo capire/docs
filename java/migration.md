@@ -116,13 +116,13 @@ On H2, SQLite, and Postgres, the SAP HANA syntax is emulated so that you can use
 
 The per-protocol search mode properties have been replaced by the unified <Config java>cds.sql.search.syntax</Config> property with options `HANA` (default) and `ODATA`.
 
-To switch back to OData search syntax, set `cds.sql.search.syntax: ODATA`.
+To switch back to OData search syntax, set <Config java>cds.sql.search.syntax: ODATA</Config>.
 
 #### Fuzzy Search
 
 [Fuzzy search](/@external/guides/services/served-ootb#fuzzy-search) is now enabled by default on SAP HANA, with improved support for UUIDs and large strings. Fuzzy search is now also available in hierarchy queries.
 
-To switch back to exact (containment) search, set `cds.sql.hana.search.fuzzy: false`
+To switch back to exact (containment) search, set <Config java>cds.sql.hana.search.fuzzy: false</Config>.
 
 ### Minimum Versions
 
