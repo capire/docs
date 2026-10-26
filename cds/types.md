@@ -15,7 +15,7 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 |------------------------|------------------------------------------------------------------------|----------------|
 | `UUID`                 | [RFC 4122](https://tools.ietf.org/html/rfc4122)-compliant UUIDs        | _NVARCHAR(36)_ |
 | `Boolean`              | Values: `true`, `false`, `null`, `0`, `1`                              | _BOOLEAN_      |
-| `Integer`              | Same as `Int32                                                         | _INTEGER_      |
+| `Integer`              | Same as `Int32`                                                        | _INTEGER_      |
 | `Int16`                | Signed 16-bit integer, range *[ -2<sup>15</sup> ... +2<sup>15</sup> )* | _SMALLINT_     |
 | `Int32`                | Signed 32-bit integer, range *[ -2<sup>31</sup> ... +2<sup>31</sup> )* | _INTEGER_      |
 | `Int64`                | Signed 64-bit integer, range *[ -2<sup>63</sup> ... +2<sup>63</sup> )* | _BIGINT_       |
