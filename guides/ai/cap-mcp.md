@@ -476,14 +476,94 @@ By default, the [`query`](#-query-entity) tool expects queries in [CQL](../../cd
 
 By default, multiple actions may share the same generic [`call`](#-call-action) tool, which has advantages in regarding context windows by reducing the number of tools within the MCP ecosystem. Set <Config>cds.mcp.per_action_tool: true</Config> to configure that each action gets its own dedicated tool.
 
+## Authorization for native MCP Clients
+
+> [!note] Node.js only
+> This feature is implemented in `@cap-js/mcp` version xxx. Java will follow up at some point.
+
+
+MCP clients expect the server to implement [OAuth 2.1](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/authorization). The plugin provides this as a stop-gap: we expect the platform gateways to cover it in the future, so be prepared for this to be removed again later.
+
+The plugin automatically detects the current [authentication configuration](../security/authentication.md) and applies it to above authentication flow.
+
+It is recommended to adopt **IAS** as it is future-ready and also required for SAP Joule integration.
+TODO: Links on setup and migration
+
+### Configuration
+
+Opt in via <Config>cds.protocols.mcp.auth</Config>.
+
+::: code-group
+```yaml [.cdsrc.yaml]
+cds:
+  protocols:
+    mcp:
+      auth:
+        base_url: ...
+```
+```json [package.json]
+{
+  "cds": {
+    "protocols": {
+      "mcp": {
+        "auth": {
+          "base_url": "..."
+        }
+      }
+    }
+  }
+}
+```
+:::
+
+Optional settings:
+- `base_url` *(recommended)* – The URL the application is served at. Provide it via the deployment descriptor; otherwise it is looked up from the CF environment.
+
+```yaml
+  properties:
+    CDS_PROTOCOLS_MCP_AUTH_BASE__URL: "${default-url}"
+```
+
+- `xsuaa_exchange` *(XSUAA only, default `true`)* – exchanges the ID token for one that includes the app scopes at runtime.
+- `static_client_registration` *(XSUAA only, default `false`)* – TODO: document this?
+
+### Preconditions
+
+**IAS**
+- Register the loopback URIs that your MCP client expects.
+- Configure IAS as a public client.
+
+```yaml
+  config:
+    ...
+    oauth2-configuration:
+      public-client: true
+      ...
+      redirect-uris:
+        - http://localhost:*/callback # joule work desktop
+        - http://localhost:*/mcp-callback # joule work desktop
+```
+
+**XSUAA**
+- Register the loopback URIs that your MCP client expects.
+- Add the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant for token exchange.
+
+```yaml
+  config:
+    ...
+    oauth2-configuration:
+      grant-types:
+        - ...
+        - authorization_code
+        - refresh_token
+        - urn:ietf:params:oauth:grant-type:jwt-bearer
+      redirect-uris:
+        - ...
+        - http://localhost:*/callback # claude code
+        - http://localhost:*/mcp-callback # joule work desktop
+```
 
 ## Current Limitations
-
-### Authorization with XSUAA
-
-> [!important]
-> We are currently working on providing out-of-the-box support for authorization with XSUAA, with PKCE, but it is not fully implemented yet.
-
 
 ### Query and Actions Only
 
