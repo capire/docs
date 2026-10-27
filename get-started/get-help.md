@@ -143,7 +143,7 @@ The `served` lifecycle event is a known accumulation point: CAP plugins, (i.e. `
 More than the default 10 listeners being registered is to be expected and harmless. 
 
 **Unless** additional listeners are added at runtime - in a loop or as a reaction to external calls, there is little risk of any memory-leakage occuring.
-To get rid of the associated warning, we suggest to increase the maximum number of listeners allowed, in a [custom `server.js`](../node.js/cds-serve#custom-server-js).
+To get rid of the associated warning, we suggest to increase the maximum number of listeners allowed, in a [custom `server.js`](../node.js/cds-serve#custom-serverjs).
 
 **Investigate first.**
 Check the listener count before suppressing the warning.
@@ -151,7 +151,7 @@ If the count keeps growing or you encounter the warning outside of startup logic
 you will have to fix that specific code path, to prevent harmfull memory leaks.
 
 **Suppress if benign.**
-Raise the limit in your [custom `server.js`](../node.js/cds-serve#custom-server-js):
+Raise the limit in your [custom `server.js`](../node.js/cds-serve#custom-serverjs):
 
 ```js [server.js]
 const cds = require('@sap/cds')
