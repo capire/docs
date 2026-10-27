@@ -30,6 +30,9 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
    main .vp-doc a:has(> img):not(:last-child) {
       margin-right: 1em;
    }
+   main .vp-doc a:has(> img) > img {
+      width: auto;
+   }
 </style>
 
 
@@ -434,7 +437,7 @@ This plugin enables generation of [Open Resource Discovery (ORD)](https://open-r
 
 When you adopt ORD, your application gains a single entry point, known as the Service Provider Interface. This interface allows you to discover and gather relevant information or metadata. You can use this information to construct a static metadata catalog or to perform a detailed runtime inspection of your actual system landscapes.
 
-![](./assets/index/ordCLI.png){style="width:450px; box-shadow: 1px 1px 5px #888888" .mute-dark}
+![](./assets/index/ordCLI.png){style="width:450px; box-shadow: 1px 1px 5px #888888" .ignore-dark}
 
 You can get the ORD document in multiple ways, see the readme of the plugin.
 

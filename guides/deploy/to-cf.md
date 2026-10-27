@@ -117,25 +117,31 @@ cds add hana
 
 ### 2. Authorization/Authentication
 
-Configure your app for XSUAA-based authentication:
+Choose IAS with AMS authorization, or XSUAA:
 
-```sh
+::: code-group
+```sh [IAS]
+cds add ias
+cds add ams
+```
+```sh [XSUAA]
 cds add xsuaa
 ```
-
-::: tip This will also generate an `xs-security.json` file
-The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [_Security_ guide](../security/cap-users#xsuaa-roles) whenever there are changes to these annotations.
 :::
 
+::: tip XSUAA roles
+`cds add xsuaa` generates an `xs-security.json` file from authorization annotations in your CDS models. Rerun `cds compile --to xsuaa` when these annotations change.
+:::
+
+[Learn more about IAS authentication.](../security/authentication#ias-auth){.learn-more}
+[Learn more about AMS authorization.](../security/cap-users#roles-assignment-ams){.learn-more}
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
 ### 3. Remote Service Consumption {#remote-services}
 
-CAP supports two HTTP clients for remote service calls.
+CAP supports two HTTP clients for remote service calls: [SAP Cloud SDK](../../node.js/remote-services#sap-cloud-sdk) and CAP's built-in [native fetch client](../../node.js/remote-services#native-fetch).
 
-#### SAP Cloud SDK {#add-cloud-sdk}
-
-If you intend to consume remote services in production, for example, via [BTP Destinations](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/destination-service), add the requisite SAP Cloud SDK packages, like that for Node.js:
+If you need full SAP BTP Destination service support including on-premise connectivity, add the SAP Cloud SDK packages:
 
 ```shell
 npm add @sap-cloud-sdk/connectivity
@@ -145,19 +151,9 @@ npm add @sap-cloud-sdk/resilience
 
 [Learn more about consuming remote services with SAP Cloud SDK.](https://sap.github.io/cloud-sdk/docs/js/overview){.learn-more}
 
-#### Native Fetch Client <Beta /> {#native-fetch}
+Alternatively, CAP's built-in native fetch client supports SAP BTP destinations without SAP Cloud SDK.
 
-CAP provides a built-in remote client that uses the native Node.js `fetch` API. For limitations, see the warning below. During local development, you don't need SAP Cloud SDK, but you can still use it. For production, you still need SAP Cloud SDK. For example, you use it to resolve named destinations through the SAP BTP Destination service.
-
-CAP selects the native fetch client for each outgoing request according to the following rules:
-
-1. If the destination requires features only available in SAP Cloud SDK (for example, SAP BTP Destination service resolution or non-basic authentication), CAP always uses SAP Cloud SDK.
-2. If you explicitly set <Config>cds.remote.native_fetch</Config> to `true` or `false`, CAP uses that setting.
-3. Otherwise, CAP uses native fetch when you haven't installed `@sap-cloud-sdk/http-client`.
-
-::: warning Current limitations
-The native fetch client does not yet support named destinations using the SAP BTP Destination service. It supports only [application-defined destinations](../services/consuming-services#use-application-defined-destinations). In addition, it limits authentication to `NoAuthentication` and `BasicAuthentication`.
-:::
+[Learn more about the native fetch client.](../../node.js/remote-services#native-fetch){.learn-more}
 
 
 ### 4. MTA-Based Deployment {#add-mta-yaml}
@@ -172,15 +168,15 @@ cds add mta
 
 ### 5. User Interfaces {#add-ui}
 
-#### Option A: SAP Cloud Portal
+#### Option A: App Router
 
-If you intend to deploy **multitenant** applications with a UI, set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+To serve your UI through an App Router:
 
 ```sh
-cds add portal
+cds add approuter
 ```
 
-::: tip `cds add portal` adds an _App Router_ configuration to your project
+::: tip `cds add approuter` adds an _App Router_ configuration to your project
 The App Router acts as a single point-of-entry gateway to route requests to.
 In particular, it ensures user login and authentication in combination with XSUAA or IAS.
 :::
@@ -206,7 +202,7 @@ This approach uses the **managed App Router** provided by SAP Fiori Launchpad â€
 
 <br>
 
-You might also use a custom App Router setup without SAP BTP Cloud Portal service:
+You can also customize the App Router setup:
 
 ```sh
 cds add approuter
@@ -323,7 +319,9 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 ![The screenshot shows the SAP BTP cockpit, when a user navigates to their dev space in the trial account and views all deployed applications.](./assets/apps-cockpit.png)
 
 ::: tip Next up: Assign the _admin_ role
-To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin (\<app\> \<org\>-\<space\>)_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
+With IAS and AMS, assign the `cap.admin` policy to your user in the [IAS Administration Console](../security/cap-users#ams-deployment).
+
+With XSUAA, CAP creates a **role collection** named _admin (\<app\> \<org\>-\<space\>)_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to access the admin APIs.
 :::
 
 ### Use MTA Extensions with `cds up`

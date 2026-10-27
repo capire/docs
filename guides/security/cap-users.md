@@ -1018,21 +1018,13 @@ In particular, the following happens automatically behind-the-scenes upon build:
 
 Derive scopes, attributes, and role templates from the CDS model:
 
-<div class="impl java">
+::: code-group
 
 ```sh
 cds add xsuaa
 ```
 
-</div>
-
-<div class="impl node">
-
-```sh
-cds add xsuaa --for production
-```
-
-</div>
+:::
 
 This generates an _xs-security.json_ file:
 
