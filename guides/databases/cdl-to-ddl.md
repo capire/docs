@@ -536,7 +536,7 @@ entity Books { ...
 
 ### Unique Constraints
 
-Annotate an entity with `@assert.unique.<constraint>` to express one or more named uniqueness checks on combinations of columns. These will be translated to SQL `UNIQUE` constraints in the generated DDL.
+Annotate an entity with `@assert.unique.<constraint>` to express one or more named uniqueness checks on combinations of columns. These checks translate to SQL `UNIQUE` constraints in the generated DDL.
 
 For example, given an entity definition like this:
 ```cds
