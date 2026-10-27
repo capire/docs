@@ -208,7 +208,7 @@ For Contacts use `crm-contacts-${space}`; for Sales Orders use `crm-orders-${spa
 
 In the existing `bookshop-ias` resource, set `parameters.config.display-name` to `CRM Bookshop (${space})`. This makes the three IAS applications easy to distinguish when assigning AMS policies. Give the other apps their own corresponding display names.
 
-For the other CRM apps, use their repository names when running `cds init`, for example `cds init crm-contacts --nodejs` or `cds init crm-orders --nodejs`. Develop their models and UI following [Domain Modeling](../../guides/domain-modeling), then add the same production facets. Their unique package names become distinct MTA IDs, so deploying one app does not replace another.
+For the other CRM apps, use their repository names when running `cds init`, for example `cds init crm-contacts --nodejs` or `cds init crm-orders --nodejs`. Develop their models and UI following [Domain Modeling](../domain/), then add the same production facets. Their unique package names become distinct MTA IDs, so deploying one app does not replace another.
 
 Use the org and space names from `terraform output`. This first run tests the same app in all three new stages:
 
