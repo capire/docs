@@ -36,7 +36,8 @@ bash -c "$( curl https://raw.githubusercontent.com/homebrew/install/HEAD/install
 
 ::: code-group
 ```shell [macOS/Linux]
-brew install node     # Node.js LTS
+brew install node@24  # Node.js LTS supported by CAP
+brew link --force node@24
 npm i -g @sap/cds-dk  # install CAP's cds-dk globally
 ```
 ```PowerShell [Windows]
@@ -56,6 +57,30 @@ sqlite3 -version
 # done
 ```
 :::
+
+### Terraform and BTP CLI {.optional #terraform-and-btp-cli}
+
+For [team landscape provisioning](../guides/deploy/team-onboarding), install [Terraform](https://developer.hashicorp.com/terraform/install) and the [SAP BTP CLI](https://tools.hana.ondemand.com/#cloud-btpcli).
+
+On macOS, install Terraform with Homebrew:
+
+~~~sh
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+~~~
+
+Download the BTP CLI archive matching your Mac's processor (Apple silicon or Intel), extract it, and put the `btp` executable in a directory on your PATH. For example, if you extracted it into `~/Downloads/btp-cli`:
+
+~~~sh
+mkdir -p ~/.local/bin
+install -m 755 ~/Downloads/btp-cli/btp ~/.local/bin/btp
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zprofile
+exec zsh -l
+btp --info
+terraform version
+~~~
+
+Adjust the source path if you extracted the archive elsewhere. `btp --info` works before login and shows the CLI version. Installation of [CF CLI and its plugins](../guides/deploy/to-cf#cf-cli) and [MTA Build Tool](../guides/deploy/to-cf#mbt) is covered by the deployment guide.
 
 ### Java and Maven {.optional}
 
