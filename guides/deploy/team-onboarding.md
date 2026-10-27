@@ -24,7 +24,25 @@ The three stages have separate subaccounts, CF orgs, spaces, and databases. **Sa
 
 Follow [Initial Setup](../../get-started/#initial-setup) for Homebrew, Node.js, `cds-dk`, Git, and optionally VS Code. Finish Homebrew's printed PATH setup instructions and open a new terminal.
 
-Install [Terraform and the BTP CLI](../../get-started/#terraform-and-btp-cli), the [MTA Build Tool](to-cf#mbt), and the [CF CLI and its MTA and HTML5 plugins](to-cf#cf-cli). Verify:
+Install the [MTA Build Tool](to-cf#mbt) and the [CF CLI and its MTA and HTML5 plugins](to-cf#cf-cli).
+
+For landscape provisioning, install [Terraform](https://developer.hashicorp.com/terraform/install) with Homebrew:
+
+~~~sh
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+~~~
+
+Download the [SAP BTP CLI](https://tools.hana.ondemand.com/#cloud-btpcli) archive matching your Mac's processor (Apple silicon or Intel), extract it, and put the `btp` executable on your PATH. For example, if you extracted it into `~/Downloads/btp-cli`:
+
+~~~sh
+mkdir -p ~/.local/bin
+install -m 755 ~/Downloads/btp-cli/btp ~/.local/bin/btp
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zprofile
+exec zsh -l
+~~~
+
+Adjust the source path if you extracted the archive elsewhere. `btp --info` works before login and shows the CLI version. Verify all tools:
 
 ~~~sh
 node --version
