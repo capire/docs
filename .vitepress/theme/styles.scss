@@ -378,6 +378,18 @@ img, video.bright {
 
 
 
+:root {
+  // --vp-sidebar-bg-color: var(--vp-c-bg-alt);
+  --vp-sidebar-bg-color: var(--vp-c-bg);
+}
+.VPNav {
+  border-bottom: 1px solid var(--vp-c-divider);
+  .VPNavBarTitle .title { border: none}
+}
+.VPDoc {
+  border-left: 1px solid var(--vp-c-divider);
+}
+
 // Menu Sidebar
 .VPSidebar {
   .group {

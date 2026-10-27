@@ -43,7 +43,7 @@
 - [guides/databases-hana](guides/databases/hana)
 - [guides/databases-postgres](guides/databases/postgres)
 - [guides/databases-sqlite](guides/databases/sqlite)
-- [guides/protocols/mcp](guides/ai/mcp)
+- [guides/protocols/mcp](guides/ai/cap-mcp)
 
 - [security](guides/security/)
 - [security/aspects](guides/security/overview)
