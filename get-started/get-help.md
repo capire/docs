@@ -136,7 +136,7 @@ cds.on('served', async ()=>{
 })
 ```
 
-### Why do I get a `MaxListenersExceeded` Warning? {#max-listeners-exceeded}
+### Why do I get a `MaxListenersExceededWarning`? {#max-listeners-exceeded}
 
 Node.js emits this warning when more than (by default) 10 listeners are registered on the same event.
 The `served` lifecycle event is a known accumulation point: CAP plugins, (i.e. `cds-plugin.js` files), custom code (e.g. in`server.js` handlers), the CAP runtime itself or `mtx-sidecar` implementations may call `cds.on('served', ...)` during bootstrap.
