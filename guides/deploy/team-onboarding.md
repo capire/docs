@@ -184,7 +184,7 @@ terraform apply
 Applying the configuration creates the subaccounts, runtime, admin access, IAS trust, and a HANA database per stage. For Kyma, it also prepares the namespaces, service operator, and HANA mappings.
 
 ::: tip Allow time for provisioning
-Provisioning HANA usually takes around 20–30 minutes, and you may be asked to sign in through your browser.
+Provisioning HANA usually takes around 20–30 minutes. When setting up Kyma, you may be asked to sign in through your browser for cluster access.
 :::
 
 ## 5. Deploy to Sandbox
