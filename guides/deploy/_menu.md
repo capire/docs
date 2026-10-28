@@ -1,7 +1,7 @@
 
 # [Team Onboarding](team-onboarding)
 # [Deploy to Cloud Foundry](to-cf)
-# [Deploy to Kyma](to-kyma)
+# [Deploy to Kyma/K8S](to-kyma)
 # [Deploy with CI/CD](cicd)
 # [Deploy with Confidence](../../../guides/deploy/dwc) <!-- INTERNAL -->
 # [Microservice Architectures](microservices)
