@@ -12,7 +12,7 @@ status: released
 
 ## Overview
 
-Assume your team is developing a complex CRM solution with multiple apps and services.
+Assume your team is developing a complex CRM solution with multiple apps and services that share three subaccounts, one for each stage:
 
 ::: info A subaccount for each stage
 
