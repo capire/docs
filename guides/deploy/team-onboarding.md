@@ -14,7 +14,8 @@ status: released
 
 Assume your team is developing a complex CRM solution with multiple apps and services.
 
-::: tip Three stages
+::: tip A subaccount for each stage
+
 - **Sandbox** for development and experiments.
 - **Staging** for integration checks.
 - **Production** for releases to users.
@@ -22,7 +23,7 @@ Assume your team is developing a complex CRM solution with multiple apps and ser
 
 Each app has its own repository and release pipeline. We'll set up the shared landscape with Terraform so you can deploy your apps with a simple `cds up`.
 
-## 1. Choose Your Deployment Runtime
+## 1. Choose Runtime
 
 Choose the runtime that fits your team before provisioning the landscape:
 
@@ -32,13 +33,13 @@ Cloud Foundry is an opinionated runtime where the platform manages buildpacks, r
 
 [Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
 
-### Kyma/K8s
+### Kyma
 
-Kyma/K8s is a managed Kubernetes runtime where you own the container images, manifests, and networking. Choose it when you need more control or already work with Kubernetes.
+Kyma is a managed Kubernetes runtime where you own the container images, manifests, and networking. Choose it when you need more control or already work with Kubernetes.
 
-[Learn more in Deploy to Kyma/K8s.](to-kyma){.learn-more}
+[Learn more in Deploy to Kyma.](to-kyma){.learn-more}
 
-## 2. Install Deployment Tools
+## 2. Install Tools
 
 We assume you've installed the basic tooling from [Getting Started](../../get-started/#initial-setup). Install Terraform and the BTP CLI, then the tools for your chosen runtime:
 
@@ -66,7 +67,7 @@ winget install --silent SAP.btp
 
 > On Windows, open a new terminal after installation. For WSL, follow the Linux steps.
 
-::: details Cloud Foundry tools
+### Cloud Foundry Tools
 
 ::: code-group
 ~~~sh [macOS/Linux]
@@ -86,9 +87,8 @@ cf add-plugin-repo CF-Community https://plugins.cloudfoundry.org
 cf install-plugin -f multiapps
 cf install-plugin -f html5-plugin
 ~~~
-:::
 
-::: details Kyma/K8s tools
+### Kyma Tools
 
 ::: code-group
 ~~~sh [macOS/Linux]
@@ -105,15 +105,14 @@ Expand-Archive pack.zip -DestinationPath "$env:LOCALAPPDATA\Microsoft\WinGet\Lin
 :::
 
 For app deployment, you also need [Docker](https://docs.docker.com/get-docker/) and a [container registry](to-kyma#get-access-to-a-container-registry).
-:::
 
-## 3. Prepare Your Global Account
+## 3. Global Account
 
 [Request a global account](https://help.sap.com/docs/btp/sap-business-technology-platform/getting-global-account) and an IAS tenant from your BTP admin. You need **Global Account Administrator** access and permission to assign IAS authorization policies.
 
 Note your global-account subdomain and IAS hostname. This example uses `eu10`.
 
-## 4. Provision the Team Landscape
+## 4. Provision Landscape
 
 Log in and create a directory for your team:
 
@@ -130,11 +129,10 @@ Choose the matching variant:
 cf login --sso -a https://api.cf.eu10.hana.ondemand.com
 cds add terraform --cf
 ~~~
-~~~sh [Kyma/K8s]
+~~~sh [Kyma]
 cds add terraform --k8s
 ~~~
 :::
-
 
 You will be prompted for some inputs:
 
@@ -145,6 +143,8 @@ You will be prompted for some inputs:
 | `idp_origin_key` | Leave empty for SAP's default identity provider; otherwise use your administrative identity provider's origin key |
 | Email(s) | Team admin emails, with your login email first |
 | IAS tenant hostname | Your team's IAS hostname for application trust, without `https://` |
+
+<br>
 
 The command creates the Terraform configuration in `crm/` for these stages:
 
@@ -183,7 +183,7 @@ HANA takes about 20–30 minutes. Kyma clusters can take longer. Complete browse
 
 ## 5. Deploy to Sandbox
 
-Select Sandbox, then follow the deployment guide for your runtime:
+Select Sandbox from `crm/` to deploy your first app:
 
 ::: code-group
 ~~~sh [Cloud Foundry]
@@ -199,8 +199,10 @@ kubectl config set-context --current --namespace=team
 ~~~
 :::
 
+Keep the app in its own repository, adding HANA, IAS, and an App Router with `cds add`. The runtime guides show how to prepare the deployment configuration and deploy with `cds up`.
+
 [Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
-[Learn more in Deploy to Kyma/K8s.](to-kyma){.learn-more}
+[Learn more in Deploy to Kyma.](to-kyma){.learn-more}
 
 ## 6. Set Up CI/CD
 
