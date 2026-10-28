@@ -199,10 +199,8 @@ kubectl config set-context --current --namespace=team
 ~~~
 :::
 
-Keep the app in its own repository, adding HANA, IAS, and an App Router with `cds add`. The runtime guides show how to prepare the deployment configuration and deploy with `cds up`.
-
-[Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
-[Learn more in Deploy to Kyma.](to-kyma){.learn-more}
+- [**Deploy to Cloud Foundry**](to-cf)
+- [**Deploy to Kyma**](to-kyma)
 
 ## 6. Set Up CI/CD
 
