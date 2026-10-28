@@ -193,13 +193,13 @@ Deploy your first app to *Sandbox* using the guide for your runtime:
 
 ### Cloud Foundry
 
-Prepare and deploy your app with `cds up`.
+Prepare and deploy your app with `cds up --to cf`.
 
 [Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
 
 ### Kyma
 
-Build container images and deploy your app using CAP's Helm charts.
+Prepare and deploy your app with `cds up --to k8s`.
 
 [Learn more in Deploy to Kyma.](to-kyma){.learn-more}
 
