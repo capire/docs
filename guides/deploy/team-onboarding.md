@@ -148,7 +148,6 @@ You will be prompted for some inputs:
 | `idp_origin_key` | Leave empty for SAP's default identity provider; otherwise use your administrative identity provider's origin key |
 | Email(s) | One or more team admin emails separated by commas, with your login email first |
 | IAS tenant hostname | Your team's IAS hostname for application trust, without `https://` |
-| CF CI user | Your workflows' `CF_USERNAME`, or leave empty to set `cf_ci_user` in `terraform.tfvars` later |
 
 <br>
 
@@ -208,8 +207,6 @@ Prepare and deploy your app with `cds up --to k8s`.
 ## 6. Set Up CI/CD
 
 Once your app runs in *Sandbox*, set up CI/CD to roll out changes to *Staging* and *Production*.
-
-For CF, Terraform grants your CI user deployment access in all three spaces. Set `cf_ci_origin` in `terraform.tfvars` if it uses a different identity provider from the team.
 
 ::: tip Release flow
 Pushes to `main` deploy to *Staging*. Published GitHub releases deploy to *Production*.
