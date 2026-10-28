@@ -21,7 +21,12 @@ Assume your team is developing a complex CRM solution with multiple apps and ser
 - **Production** for releases to users.
 :::
 
-Each app has its own repository and release pipeline. Typically, one operator sets up the shared landscape with Terraform so the whole team can deploy apps with `cds up` without repeating the setup.
+Each app has its own repository and release pipeline.
+
+::: tip Shared Setup
+
+Typically, one operator sets up the shared landscape with Terraform so the whole team can deploy apps with `cds up` without repeating the setup.
+:::
 
 ## 1. Choose Runtime
 
@@ -104,7 +109,9 @@ For app deployment, you also need [Docker](https://docs.docker.com/get-docker/) 
 
 ## 3. Global Account
 
-[Request a global account](https://help.sap.com/docs/btp/sap-business-technology-platform/getting-global-account) and an IAS tenant from your BTP admin. You need **Global Account Administrator** access and permission to assign IAS authorization policies.
+[Request a global account](https://help.sap.com/docs/btp/sap-business-technology-platform/getting-global-account) and [an IAS tenant](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant) from your BTP admin. You need **Global Account Administrator** access and permission to assign IAS authorization policies.
+
+<span id="team-account-requests" />
 
 Note your global-account subdomain and IAS hostname. This example uses `eu10`.
 
