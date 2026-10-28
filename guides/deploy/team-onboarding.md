@@ -25,10 +25,10 @@ Each app has its own repository and release pipeline.
 
 ::: tip Shared Setup
 
-Typically, one operator sets up the shared landscape with Terraform so the whole team can deploy apps with `cds up` without repeating the setup.
+Typically, one operator sets up the shared landscape so the whole team can deploy apps with `cds up` without repeating the setup.
 :::
 
-## 1. Choose Runtime
+## 1. Choose a Runtime
 
 Choose the runtime that fits your team before provisioning the landscape:
 
@@ -40,7 +40,7 @@ Cloud Foundry is an opinionated runtime where the platform manages buildpacks, r
 
 Kyma is a managed Kubernetes runtime where you own the container images, manifests, and networking. Choose it when you need more control or already work with Kubernetes.
 
-## 2. Install Tools
+## 2. Install the Tools
 
 We assume you've installed the basic tooling from [Getting Started](../../get-started/#initial-setup). Install Terraform and the BTP CLI, then the tools for your chosen runtime:
 
@@ -63,10 +63,11 @@ sudo install -m 755 "linux-$btp_arch/btp" /usr/local/bin/btp
 ~~~powershell [Windows]
 winget install --silent Hashicorp.Terraform
 winget install --silent SAP.btp
+
+# Open a new terminal after installation.
+# For WSL, follow the Linux steps.
 ~~~
 :::
-
-> On Windows, open a new terminal after installation. For WSL, follow the Linux steps.
 
 ### Cloud Foundry Tools
 
@@ -107,17 +108,17 @@ Expand-Archive pack.zip -DestinationPath "$env:LOCALAPPDATA\Microsoft\WinGet\Lin
 
 For app deployment, you also need [Docker](https://docs.docker.com/get-docker/) and a [container registry](to-kyma#get-access-to-a-container-registry).
 
-## 3. Global Account
+## 3. Get a Global Account
 
 [Request a global account](https://help.sap.com/docs/btp/sap-business-technology-platform/getting-global-account) and [an IAS tenant](https://help.sap.com/docs/cloud-identity-services/cloud-identity-services/get-your-tenant) from your BTP admin. You need **Global Account Administrator** access and permission to assign IAS authorization policies.
 
 <span id="team-account-requests" />
 
-Note your global-account subdomain and IAS hostname.
+Note your global account subdomain and IAS hostname.
 
-## 4. Provision Landscape
+## 4. Provision the Landscape
 
-Log in and create a directory for your team:
+Log in to BTP and create a directory for your team:
 
 ~~~sh
 btp login --sso
@@ -141,7 +142,7 @@ You will be prompted for some inputs:
 
 | Prompt | Enter |
 | --- | --- |
-| Global account subdomain | Your global-account subdomain |
+| Global account subdomain | Your global account subdomain |
 | Region | Your region, for example `eu10` |
 | `idp_origin_key` | Leave empty for SAP's default identity provider; otherwise use your administrative identity provider's origin key |
 | Email(s) | Team admin emails, with your login email first |
@@ -170,7 +171,7 @@ $env:USE_BTPCLI_SESSION = 'true'
 ~~~
 :::
 
-Terraform prompts for the HANA SYSTEM password:
+Initialize the configuration, review the plan, then apply it:
 
 ~~~sh
 terraform init
@@ -178,22 +179,36 @@ terraform plan
 terraform apply
 ~~~
 
-Terraform creates the subaccounts, runtime, admin access, IAS trust, and a HANA database per stage. For Kyma, it also prepares the namespaces, service operator, and HANA mappings.
+> You'll be prompted for the HANA SYSTEM password.
+
+Applying the configuration creates the subaccounts, runtime, admin access, IAS trust, and a HANA database per stage. For Kyma, it also prepares the namespaces, service operator, and HANA mappings.
 
 ::: tip Allow time for provisioning
-HANA takes about 20–30 minutes. Kyma clusters can take longer. Complete browser sign-in when prompted.
+Provisioning HANA usually takes around 20–30 minutes, and you may be asked to sign in through your browser.
 :::
 
 ## 5. Deploy to Sandbox
 
-Follow [Deploy to Cloud Foundry](to-cf) or [Deploy to Kyma](to-kyma) to prepare your app for production and deploy it to Sandbox with `cds up`.
+Deploy your first app to *Sandbox* using the guide for your runtime:
+
+### Cloud Foundry
+
+Prepare and deploy your app with `cds up`.
+
+[Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
+
+### Kyma
+
+Build container images and deploy your app using CAP's Helm charts.
+
+[Learn more in Deploy to Kyma.](to-kyma){.learn-more}
 
 ## 6. Set Up CI/CD
 
-Once your app runs in Sandbox, set up CI/CD to roll out changes to Staging and Production.
+Once your app runs in *Sandbox*, set up CI/CD to roll out changes to *Staging* and *Production*.
 
 ::: tip Release flow
-Pushes to `main` deploy to Staging. Published GitHub releases deploy to Production.
+Pushes to `main` deploy to *Staging*. Published GitHub releases deploy to *Production*.
 :::
 
 [Learn more in Deploy with CI/CD.](cicd){.learn-more}
