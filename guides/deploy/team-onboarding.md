@@ -113,7 +113,7 @@ For app deployment, you also need [Docker](https://docs.docker.com/get-docker/) 
 
 <span id="team-account-requests" />
 
-Note your global-account subdomain and IAS hostname. This example uses `eu10`.
+Note your global-account subdomain and IAS hostname.
 
 ## 4. Provision Landscape
 
