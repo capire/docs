@@ -24,6 +24,8 @@ cds add github-actions
 
 <span id="github-actions-internal" />
 
+> If your Node.js project has no tests yet, run `cds add test` to generate service tests.
+
 ### Deploy to Staging
 
 The created workflows do a _Staging_ deployment for pushes on the `main` branch, usually after merging pull requests.

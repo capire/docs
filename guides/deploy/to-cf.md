@@ -170,7 +170,7 @@ cds add mta
 
 #### Option A: App Router
 
-To serve your UI through an App Router:
+Add an App Router to your project:
 
 ```sh
 cds add approuter
@@ -180,6 +180,10 @@ cds add approuter
 The App Router acts as a single point-of-entry gateway to route requests to.
 In particular, it ensures user login and authentication in combination with XSUAA or IAS.
 :::
+
+For the UI from `cds add sample`, the build includes its static files and uses `/fiori-apps.html` as the welcome page.
+
+[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
 
 #### Option B: SAP BTP Application Frontend <Beta />
 
@@ -200,19 +204,6 @@ cds add workzone
 
 This approach uses the **managed App Router** provided by SAP Fiori Launchpad — you don't need to deploy your own. Instead, destinations are configured.
 
-<br>
-
-You can also customize the App Router setup:
-
-```sh
-cds add approuter
-```
-[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
-<br>
-However, in this case, you need to create symlinks from your _app_ folders to make them visible to the deployed App Router.
-The [samples _modulith_](https://github.com/capire/samples) project uses this setup for serving a static _index.html_ consuming Vue.js via CDN.
-
-[Find the symlink directory in the App Router's _resources_ folder](https://github.com/capire/samples/tree/main/.deploy/app-router/resources){.learn-more}
 :::
 
 ### 6. Optional: Multitenancy { #add-multitenancy }
