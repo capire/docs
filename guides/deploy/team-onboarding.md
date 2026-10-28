@@ -14,14 +14,14 @@ status: released
 
 Assume your team is developing a complex CRM solution with multiple apps and services.
 
-::: tip A subaccount for each stage
+::: info A subaccount for each stage
 
 - **Sandbox** for development and experiments.
 - **Staging** for integration checks.
 - **Production** for releases to users.
 :::
 
-Each app has its own repository and release pipeline. We'll set up the shared landscape with Terraform so you can deploy your apps with a simple `cds up`.
+Each app has its own repository and release pipeline. Typically, one operator sets up the shared landscape with Terraform so the whole team can deploy apps with `cds up` without repeating the setup.
 
 ## 1. Choose Runtime
 
@@ -31,13 +31,9 @@ Choose the runtime that fits your team before provisioning the landscape:
 
 Cloud Foundry is an opinionated runtime where the platform manages buildpacks, routing, and bound services. It fits teams that want to focus on application code.
 
-[Learn more in Deploy to Cloud Foundry.](to-cf){.learn-more}
-
 ### Kyma
 
 Kyma is a managed Kubernetes runtime where you own the container images, manifests, and networking. Choose it when you need more control or already work with Kubernetes.
-
-[Learn more in Deploy to Kyma.](to-kyma){.learn-more}
 
 ## 2. Install Tools
 
@@ -183,24 +179,7 @@ HANA takes about 20–30 minutes. Kyma clusters can take longer. Complete browse
 
 ## 5. Deploy to Sandbox
 
-Select Sandbox from `crm/` to deploy your first app:
-
-::: code-group
-~~~sh [Cloud Foundry]
-cf target -o crm-sandbox -s team
-~~~
-~~~sh [Kyma macOS/Linux]
-export KUBECONFIG="$PWD/crm-sandbox.kubeconfig"
-kubectl config set-context --current --namespace=team
-~~~
-~~~powershell [Kyma Windows]
-$env:KUBECONFIG = "$PWD/crm-sandbox.kubeconfig"
-kubectl config set-context --current --namespace=team
-~~~
-:::
-
-- [**Deploy to Cloud Foundry**](to-cf)
-- [**Deploy to Kyma**](to-kyma)
+Follow [Deploy to Cloud Foundry](to-cf) or [Deploy to Kyma](to-kyma) to prepare your app for production and deploy it to Sandbox with `cds up`.
 
 ## 6. Set Up CI/CD
 
