@@ -144,7 +144,7 @@ You will be prompted for some inputs:
 | Prompt | Enter |
 | --- | --- |
 | Global account subdomain | Your global account subdomain |
-| Region | Your region, for example `eu10`. [Learn more about regions.](https://help.sap.com/docs/btp/sap-business-technology-platform/regions){.learn-more} |
+| Region | Your region, for example `eu10`. [Learn more about regions in BTP.](https://help.sap.com/docs/btp/sap-business-technology-platform/regions){.learn-more style="margin-top:5px"} |
 | `idp_origin_key` | Leave empty for SAP's default identity provider; otherwise use your administrative identity provider's origin key |
 | Email(s) | One or more team admin emails separated by commas, with your login email first |
 | IAS tenant hostname | Your team's IAS hostname for application trust, without `https://` |
