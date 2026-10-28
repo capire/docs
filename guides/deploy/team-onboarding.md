@@ -123,8 +123,8 @@ Log in to BTP and create a directory for your team:
 
 ~~~sh
 btp login --sso
-mkdir crm
-cd crm
+mkdir CRM
+cd CRM
 ~~~
 
 Choose the matching variant:
@@ -151,7 +151,7 @@ You will be prompted for some inputs:
 
 <br>
 
-The command creates the Terraform configuration in `crm/` for these stages:
+The command creates the Terraform configuration in `CRM/` for these stages:
 
 | Subaccount | CF org / Kyma cluster | Space / Namespace |
 | --- | --- | --- |

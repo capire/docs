@@ -22,6 +22,8 @@ cds add github-actions
 ```
 > You can also use `cds add gha` as a shortcut.
 
+<span id="github-actions-internal" />
+
 ### Deploy to Staging
 
 The created workflows do a _Staging_ deployment for pushes on the `main` branch, usually after merging pull requests.
