@@ -9,7 +9,7 @@ description: >
 
 ## Introduction & Overview
 
-Subscribers (customers) of SaaS solutions frequently need to tailor these to their specific needs, for example, by adding specific extension fields and entities. All CAP-based applications intrinsically support such **SaaS extensions** out of the box.
+CAP-based applications have built-in support for **SaaS extensions** out of the box. Extensibility allows subscribers (customers) of SaaS solutions to tailor it to their specific needs, for example, by adding specific extension fields and entities.
 
 The overall process is depicted in the following figure:
 
@@ -117,7 +117,7 @@ npm i
 
 ### 2. Restrict Extension Points { #restrictions }
 
-Normally, you'll want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Take a look at the following configuration:
+You'll want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Add the requires block to the `package.json`:
 
 ::: code-group
 
@@ -146,16 +146,16 @@ Normally, you'll want to restrict which services or entities your SaaS customers
 
 :::
 
-This enforces the following restrictions:
+Looking at the configuration, it enforces the following restrictions:
 
 - All new elements have to start with `x_` → to avoid naming conflicts.
 - Only entities in namespace `sap.capire.travels` can be extended, with a maximum 2 new fields allowed.
 - Only the `TravelService` can be extended, with a maximum of 2 new entities allowed.
 
-::: tip Why the allowlist stops at the app's own model
-This is a deliberate scoping choice, not a framework limitation. An entity is off-limits only because it (or its namespace) isn't in the `extension-allowlist`; the provider could add it, and subscribers could then extend it.
+::: tip Explicitly restrict extensibility to the app's own model
+The provider could add any entity, and subscribers could then extend it. Only having XTravels' own `sap.capire.travels` entities and `TravelService` in scope is a deliberate scoping choice, not a framework limitation.
 
-The reuse modules are left out on purpose: `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems, so there are no XTravels-owned fields for a subscriber to add to. Only XTravels' own `sap.capire.travels` entities and `TravelService` are in scope.
+In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems. As there are no XTravels-owned fields in the reuse modules for a subscriber to add to, they are left out on purpose.
 :::
 
 [Learn more about extension restrictions.](../multitenancy/mtxs#extension-restrictions){.learn-more}
@@ -190,7 +190,7 @@ xtravels-ext/
 ```
 
 ::: tip Keep it simple
-Put all your model content into `./app`. `cds add extension` trims the scaffold to a model-only layout (no `./db` by default); add `./db/data` only to ship **configuration data** such as a code list (see [Add Data](#add-data)). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
+Put all your model content into `./app`. `cds add extension` trims the scaffold to a model-only layout (no `./db` by default); add `./db/data` only to ship **configuration data** such as code lists (see [Add Data](#add-data)). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
 :::
 
 #### Create an Extension Project (Template)
@@ -200,7 +200,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 1. Create a new CAP project and add the extension facet (`xtravels-ext` in our walkthrough):
 
    ::: warning Create the extension project outside the base app's workspace
-   Create `xtravels-ext` next to `samples/`, not inside it (that's what the `cd ../..` below does). An extension project is its own workspace root: it maps `@capire/xtravels` to the pulled base model in `.base`. If it sat inside the `samples` workspace, that name would instead resolve to the base-app **sources**, and the extension would not compile.
+   Create `xtravels-ext` next to `samples/`, not inside it. An extension project is its own workspace root and the extension project will map `@capire/xtravels` to the base model in `.base`. If it sat inside the `samples` workspace, `@capire/xtravels` would instead resolve to the base-app **sources**, and the extension would not compile.
    :::
 
    ```sh
@@ -214,7 +214,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
    `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder that will hold the pulled base model.
 
    ::: info `cds add extension` writes a bookshop placeholder
-   It also writes a small **bookshop** placeholder that you don't keep: it sets `extends` to `@capire/bookshop` and writes `.base/package.json` as `{ "name": "@capire/bookshop" }`. You don't hand-edit the latter: point `extends` at your app (next step), and [`cds pull`](#pull-base) overwrites `.base/` with your real base model, so its name becomes `@capire/xtravels` on its own.
+   It also writes a small **bookshop** placeholder that you don't keep: it sets `extends` to `@capire/bookshop` and writes `.base/package.json` as `{ "name": "@capire/bookshop" }`. You don't hand-edit the latter: point `extends` at your app (next step), and later [when you run `cds pull`](#pull-base) it overwrites `.base/` with your real base model, so its name becomes `@capire/xtravels` on its own.
    :::
 
 2. `cds add extension` sets `extends` to a placeholder, point it at your SaaS app and add the two focused settings below to your _package.json_:
