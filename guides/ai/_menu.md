@@ -1,4 +1,6 @@
-# [CAP-level Agents](agents.md)
-# [CAP-level MCP](mcp.md)
-# [Embeddings](embeddings.md)
-# [Joule Integration](joule-integration.md)
+
+# [ Vector Embeddings ](embeddings.md)
+# [ MCP Services ](cap-mcp.md)
+# [ CAP Agents ](cap-agents.md)
+# [ The Xtravels Sample ](xtravels-sample.md)
+# [ Joule Integration ](joule-integration.md)

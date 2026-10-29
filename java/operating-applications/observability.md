@@ -504,6 +504,10 @@ By default, instrumentation for CAP-specific components is disabled, so that no 
 | `com.sap.cds.otel.span.CQN`                    | `INFO`         | Spans for executed CQN statement.                          |
 | `com.sap.cds.otel.span.OutboxCollector`        | `INFO`         | Spans for execution of the transactional outbox collector. |
 | `com.sap.cds.otel.span.DraftGarbageCollection` | `INFO`         | Spans for execution of the draft garbage collection.       |
+| `com.sap.cds.otel.span.ChatModel`              | `INFO`         | Spans for individual LLM chat model calls (AI integration). |
+| `com.sap.cds.otel.span.Agent`                  | `INFO`         | Spans for AI agent invocations (AI integration).           |
+| `com.sap.cds.otel.span.ToolExecution`          | `INFO`         | Spans for tool executions during an agent invocation (AI integration). |
+| `com.sap.cds.otel.span.McpServer`              | `INFO`         | Spans for inbound MCP server requests.                     |
 | `com.sap.cds.otel.span.RequestContext`         | `DEBUG`        | Spans for each Request Context.                            |
 | `com.sap.cds.otel.span.ChangeSetContext`       | `DEBUG`        | Spans for each ChangeSet Context.                          |
 | `com.sap.cds.otel.span.Emit`                   | `DEBUG`        | Spans for dispatching events in the CAP runtime.           |

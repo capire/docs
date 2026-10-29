@@ -105,6 +105,7 @@ modules:
       - name: incidents-srv-api
         properties:
           url: ${default-url} #> needed in references below
+          cert-url: '${protocol}://${default-host}.cert.${default-domain}' #> needed in references below to support mutual TLS
 ```
 :::
 
@@ -128,7 +129,7 @@ resources:
         # unique identifier for this event broker instance
         # should start with own namespace (i.e., "foo.bar") and may not be longer than 15 characters
         systemNamespace: cap.incidents
-        webhookUrl: ~{incidents-srv-api/url}/-/cds/event-broker/webhook
+        webhookUrl: ~{incidents-srv-api/cert-url}/-/cds/event-broker/webhook
 
 ```
 
@@ -143,7 +144,7 @@ resources:
         # unique identifier for this event broker instance
         # should start with own namespace (i.e., "foo.bar") and may not be longer than 15 characters
         systemNamespace: cap.incidents
-        webhookUrl: ~{incidents-srv-api/url}/messaging/v1.0/eb
+        webhookUrl: ~{incidents-srv-api/cert-url}/messaging/v1.0/eb
       requires:
         - name: incidents-srv-api
 ```

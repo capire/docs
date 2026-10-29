@@ -100,6 +100,48 @@ The `DRAFT_CREATE` is an internal event that is not triggered by OData requests 
 
 For more examples, see the [Bookshop sample application](https://github.com/SAP-samples/cloud-cap-samples-java/tree/master/srv/src/main/java/my/bookshop/handlers/AdminServiceHandler.java).
 
+## Deleting Drafts { #draft-deletion-in-cap-java }
+
+When a draft is deleted through user cancellation, activation, or garbage collection, CAP Java removes the draft rows from the database. Configure the deletion strategy with the following property:
+
+```yaml
+cds.drafts.deleteStrategy: flat
+```
+
+Three strategies are available:
+
+| Strategy | Behavior | Performance |
+|---|---|---|
+| `flat` *(default)* | Deletes each draft table's rows individually by draft UUID. | Fast |
+| `deep` | Issues a delete on the draft root. The runtime [cascades the deletion along compositions](./working-with-cql/query-api#delete) and removes child rows without explicit per-table statements. | Slow |
+| `dad` | Deletes only the `DraftAdministrativeData` record and relies on database `ON DELETE CASCADE` constraints to remove the associated draft rows. | Fastest |
+
+### Cascade Deletion on Database { #draft-deletion-dad }
+
+The `dad` strategy avoids separate deletion operations for each draft table. Before enabling it, the database must have [ON DELETE CASCADE](../guides/databases/cdl-to-ddl#on-delete-cascade) constraints on each draft table's `DraftAdministrativeData_DraftUUID` foreign key. Generate these constraints by enabling:
+
+```yaml
+cds.fiori.draft_admin_integrity: true
+```
+
+On SAP HANA, the constraints are deployed with `NOT VALIDATED`. On PostgreSQL, they are deployed with `NOT VALID`. These options skip checks of existing data, so you do not need to clean up orphaned data before deployment.
+
+Once the constraints are deployed, switch to the `dad` strategy:
+
+```yaml
+cds.drafts.deleteStrategy: dad
+```
+
+::: warning Check Custom Handlers
+Switching strategies changes which event handlers are called during draft deletion. Verify the behavior of your custom handlers before adopting `dad`.
+:::
+
+::: tip Retain `flat` Until Migration Is Complete
+Keep `cds.drafts.deleteStrategy: flat` on existing databases until the cascade constraints have been deployed.
+:::
+
+[Learn more about the shared migration requirements for CAP Node.js and CAP Java.](../releases/2026/oct26#optimized-draft-deletion){.learn-more}
+
 ## Activating Drafts
 
 When you finish editing drafts by pressing the *Save* button, a draft gets activated. That means, either a single `CREATE` or `UPDATE` event is triggered to create or update the active entity with all of its compositions through a deeply structured document. You can register to these events to validate the activated data.
@@ -115,6 +157,61 @@ public void validateOrderItem(CdsCreateEventContext context, OrderItems orderIte
 
 During activation the draft data is deleted from the database. This happens before the active entity is created or updated within the same transaction.
 In case the create or update operation raises an error, the transaction is rolled back and the draft data is restored.
+
+### Delta Save Mode { #draft-delta-save-mode }
+
+By default, draft activation sends the full document tree to the `CREATE` or `UPDATE` handler (`saveMode: full`). With delta save mode enabled, CAP Java compares the draft with the active image. It updates only entities on changed paths and skips entities on unchanged paths. This behavior reduces database operations for large documents.
+
+Enable delta save mode via:
+
+```yaml
+cds.drafts.saveMode: delta
+```
+
+Compared to the default `full` mode, the observable impact is:
+
+- **Update handlers** receive only the [delta representation](./working-with-cql/query-api#deep-update-delta) — the changed subtree — rather than the full document. Nested composition collections are delivered as delta lists.
+- **Managed timestamps** (`modifiedAt`, `createdAt`) are updated only for nodes on the changed path, accurately reflecting which parts of the document were touched.
+
+::: warning Check Custom Update Handlers
+Make sure your `UPDATE` handlers can deal with a delta payload. Handlers that assume they always receive the full document need to be adapted. Retain `cds.drafts.saveMode: full` (the default) if your handlers require the complete document.
+:::
+
+[Learn more about processing delta payloads in a handler.](./working-with-cql/query-api#deep-update-delta-processing){.learn-more}
+
+## Read-Only Fields in Drafts { #readonly-in-drafts }
+
+By default, `@readonly` and `@Core.Computed` fields are only enforced when a draft is activated, that means during the `CREATE` or `UPDATE` event on the active entity. Until then, such fields can still be changed on the draft, for example through an OData `PATCH` request.
+
+To enforce these annotations on the draft before activation, during the `DRAFT_NEW` and `DRAFT_PATCH` events, set the [`cds.drafts.enforceReadonly`](./developing-applications/properties#cds-drafts-enforcereadonly) property (default `false`):
+
+```yaml
+cds.drafts.enforceReadonly: true
+```
+
+With this property enabled, values sent for `@readonly` or `@Core.Computed` fields are ignored when a draft is created or patched, so these fields can no longer be modified through OData requests on the draft.
+
+### Determined Read-Only Fields { #readonly-determinations }
+
+Read-only fields are often filled by custom code, for example in a determination that computes a value from other fields. With the default behavior (`cds.drafts.enforceReadonly: false`), such a determination effectively runs when the draft is activated, during the `CREATE` or `UPDATE` event. You can additionally run it while the draft is being edited, for example on the `DRAFT_CREATE` event, so that the computed value is already shown in the UI. In this case the value is only a preview: it's recomputed during activation and the value stored on the active entity is the one determined then.
+
+This matters for determinations that aren't fully deterministic. If a determination produces a different value each time it runs, for example when generating a random UUID, the value shown on the draft and the value stored on the active entity can differ.
+
+Setting `cds.drafts.enforceReadonly: true` avoids this: read-only fields are no longer evaluated during activation, so the value computed while editing the draft is carried over unchanged to the active entity. Use this when the value determined in draft mode must be exactly the one that gets persisted.
+
+### Writing Read-Only Fields from Custom Code { #readonly-hint }
+
+When `cds.drafts.enforceReadonly` is enabled, the read-only enforcement also applies to `Update` or `Insert` statements that your own event handlers run against the draft entity through the application service, for example in a determination. As a result, values for `@readonly` and `@Core.Computed` fields are removed from these statements as well.
+
+To intentionally write such fields from trusted custom code, add the `@readonly` hint with value `false` to the statement. This disables the read-only enforcement for that single statement:
+
+```java
+Update.entity(Books_.class).data(book).hint("@readonly", false);
+```
+
+::: warning Use the hint only for trusted data
+The `@readonly` hint disables the read-only field protection for the affected statement. Only use it in server-side code where the values are computed or validated by your application, never with unvalidated client input. Managed fields (`@cds.on.insert`, `@cds.on.update`) are always enforced and are not affected by this hint. `@Core.Immutable` fields are not affected by this hint when updating an already-active entity; on the first activation of a new draft their value is retained.
+:::
 
 ## Working with Draft-Enabled Entities
 
@@ -178,7 +275,7 @@ cds.security.authorization.draftProtection.enabled: false
 
 ## Draft Garbage Collection { #draft-gc }
 
-Stale drafts are automatically deleted after a timeout (30 days default). You can configure the timeout with the following application configuration property:
+Stale drafts are automatically deleted after a timeout (30 days default). The [deletion strategy](#draft-deletion-in-cap-java) configured via `cds.drafts.deleteStrategy` also applies during garbage collection. You can configure the timeout with the following application configuration property:
 
 ```yaml
 cds.drafts.deletionTimeout: 8w

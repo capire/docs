@@ -194,7 +194,7 @@ cds build --production
 
 # Buildpack commands
 pack build bookshop-srv:latest --path gen/srv --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
-pack build bookshop-html5-deployer:latest --path app/html5-deployer --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
+pack build bookshop-html5-deployer:latest --path .deploy/html5-deployer --builder builder-jammy-base --env BP_NODE_RUN_SCRIPTS=""
 
 # Final assembly and deployment, e.g.
 helm upgrade --install bookshop ./gen/chart --namespace bookshop --wait --wait-for-jobs --timeout=10m
