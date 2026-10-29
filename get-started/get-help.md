@@ -138,20 +138,11 @@ cds.on('served', async ()=>{
 
 ### Why do I get a `MaxListenersExceededWarning`? {#max-listeners-exceeded}
 
-Node.js emits this warning when more than (by default) 10 listeners are registered on the same event.
-The `served` lifecycle event is a known accumulation point: CAP plugins, (i.e. `cds-plugin.js` files), custom code (e.g. in`server.js` handlers), the CAP runtime itself or `mtx-sidecar` implementations may call `cds.on('served', ...)` during bootstrap.
-More than the default 10 listeners being registered is to be expected and harmless. 
-
+Node.js emits this warning when more than (by default) 10 listeners are registered on the same emitter.
+This warning may be expected during startup, when more listeners are registered on `cds` (e.g. for `served`).
 **Unless** additional listeners are added at runtime - in a loop or as a reaction to external calls, there is little risk of any memory-leakage occuring.
-To get rid of the associated warning, we suggest to increase the maximum number of listeners allowed, in a [custom `server.js`](../node.js/cds-server#custom-serverjs).
 
-**Investigate first.**
-Check the listener count before suppressing the warning.
-If the count keeps growing or you encounter the warning outside of startup logic,
-you will have to fix that specific code path, to prevent harmfull memory leaks.
-
-**Suppress if benign.**
-Raise the limit in your [custom `server.js`](../node.js/cds-server#custom-serverjs):
+In such cases, the warning can be suppressed by gradually increasing the limit from within a [custom `server.js`](../node.js/cds-server#custom-serverjs):
 
 ```js [server.js]
 const cds = require('@sap/cds')
@@ -159,10 +150,6 @@ cds.setMaxListeners(20) // adjust to the observed count
 module.exports = cds.server
 ```
 
-Set a concrete number rather than `0` - a finite limit preserves the warning as a guard against future leaks.
-Note that `setMaxListeners` applies to the entire emitter; Node.js has no per-event listener limit.
-
-[Learn more about CDS plugins and `served` handlers.](../node.js/cds-plugins){.learn-more}
 [Learn more about CDS lifecycle events.](../node.js/cds-facade#lifecycle-events){.learn-more}
 
 ### Why does my app not show up in Dynatrace?
