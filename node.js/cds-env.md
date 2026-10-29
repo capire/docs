@@ -325,7 +325,7 @@ add them to the `cds.requires` section.
 
 ### In `cds.requires.<service>` Settings
 
-Here, you can configure the services. Find details about the individual options in the documentation of [`cds.connect`](cds-connect#cds-env-requires).
+Here, you can configure the services. Find details about the individual options in the documentation of [`cds.connect`](cds-connect#cds-env-requires), including the [`vcap` property](cds-connect#vcap-services) for influencing how credentials are looked up in `VCAP_SERVICES`.
 
 ### Prototype-Chained Along `.kind` References
 
