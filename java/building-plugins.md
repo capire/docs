@@ -505,7 +505,7 @@ public interface PrintService extends Service {
 // Register in CdsRuntimeConfiguration
 @Override
 public void services(CdsRuntimeConfigurer configurer) {
-    configurer.service(new PrintServiceImpl(runtime));
+    configurer.service(new PrintServiceImpl(configurer.getCdsRuntime()));
 }
 ```
 
