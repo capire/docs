@@ -385,7 +385,7 @@ Use CI-friendly versioning (`${revision}`) with the `flatten-maven-plugin` so yo
 ```xml [Root pom.xml — version & BOM]
 <properties>
   <revision>0.0.1-SNAPSHOT</revision>
-  <cds.services.version><!-- choose current LTS, e.g. 3.7.1 --></cds.services.version>
+  <cds.services.version>{{ versions.java_services }}</cds.services.version>
   <java.version>17</java.version>
 </properties>
 
@@ -492,7 +492,7 @@ When you need Spring features (typed `@ConfigurationProperties`, `@ConditionalOn
 
 ### Custom Services and Event Contexts
 
-When your plugin exposes its own service (rather than adding handlers to existing services), define a `Service` interface and an implementation, and register both via `configurer.service(...)` in the `services()` hook. The interface should declare a `DEFAULT_NAME` constant that other components can use to look up the service from the `ServiceCatalog`.
+When your plugin exposes its own service (rather than adding handlers to existing services), define a `Service` interface and an implementation, and register both via `configurer.service(...)` in the `services()` hook. The interface should declare a `DEFAULT_NAME` constant that other components can use to look up the service from the `ServiceCatalog`. If your plugin ships a CDS model and compiles it, you can also use the generated service interface instead of writing one manually.
 
 ```java
 // Service interface
@@ -506,6 +506,11 @@ public interface PrintService extends Service {
 @Override
 public void services(CdsRuntimeConfigurer configurer) {
     configurer.service(new PrintServiceImpl(configurer.getCdsRuntime()));
+}
+
+@Override
+public void eventHandlers(CdsRuntimeConfigurer configurer) {
+    configurer.eventHandler(new MyPrintHandler());
 }
 ```
 
@@ -551,19 +556,7 @@ The **mock-vs-productive handler switch** based on binding presence is a particu
 
 In both cases, if optional functionality depends on a dependency that may not be on the classpath (for example, an SAP Cloud SDK class), guard the code with `@ConditionalOnClass` or a programmatic `ClassUtils.isPresent(...)` check so a missing dependency causes a clean "feature disabled" outcome, not a `NoClassDefFoundError`.
 
-### Testing a Plugin {#testing-plugin}
-
-A plugin unit test can boot a real `CdsRuntime` without Spring by putting `cds-services-impl` on the test classpath and calling `CdsRuntime.create(...)` directly. This keeps tests fast and free of Spring context overhead.
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-services-impl</artifactId>
-  <scope>test</scope>
-</dependency>
-```
-
-For end-to-end coverage, add a dedicated `integration-tests` Maven module. That module is a minimal CAP Spring Boot application (`Application.java`, a small `test-service.cds`, `application.yaml`) that depends on the plugin JAR via `${revision}`. Running it under `maven-failsafe-plugin` (`**/*IT.java`) exercises the plugin in a real application context.
+**Local testing with the plugin:** Add a dedicated `integration-tests` Maven module — a minimal CAP Spring Boot application (`Application.java`, a small `test-service.cds`, `application.yaml`) that depends on the plugin JAR via `${revision}`. This lets consumers verify the plugin locally before publishing. Running it under `maven-failsafe-plugin` (`**/*IT.java`) exercises the plugin in a real application context.
 
 Key configuration for the test application:
 
@@ -579,6 +572,18 @@ cds:
       users:
         - name: test-user
           roles: [admin]
+```
+
+### Testing a Plugin {#testing-plugin}
+
+A plugin unit test can boot a real `CdsRuntime` without Spring by putting `cds-services-impl` on the test classpath and calling `CdsRuntime.create(...)` directly. This keeps tests fast and free of Spring context overhead.
+
+```xml
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-services-impl</artifactId>
+  <scope>test</scope>
+</dependency>
 ```
 
 To avoid taking a dependency on live external services (SAP BTP Alert Notification, print service, and so on), replace external calls with CDS mock handlers. The mock handler implements the same service interface as the production adapter but returns canned responses:
@@ -601,8 +606,10 @@ Register the mock in the test app's `CdsRuntimeConfiguration` (or as a `@Compone
 The plugins in `cap-java` share a common set of repository conventions worth adopting:
 
 - **Licensing:** Apache 2.0, with [REUSE](https://reuse.software)-compliant `REUSE.toml` and `LICENSES/Apache-2.0.txt`. Source files carry a standard SAP copyright header enforced by Spotless or Checkstyle.
-- **CI/CD:** GitHub Actions workflows for PR builds, main-branch builds, and release publishing. Publishing to Maven Central uses `central-publishing-maven-plugin` (Sonatype Central Portal) with GPG signing under a `deploy-release` Maven profile. Snapshots go to an internal Artifactory instance.
-- **Dependency maintenance:** Dependabot or Renovate keeps BOM and build-tool versions current. Pinning transitive versions with comments that cite the CVE or Black Duck finding is a common pattern for security-sensitive dependencies.
+- **CI/CD:** GitHub Actions workflows for PR builds, main-branch builds, and release publishing. Publishing to Maven Central uses `central-publishing-maven-plugin` (Sonatype Central Portal) with GPG signing under a `deploy-release` Maven profile.
+- **Dependency maintenance:** Dependabot or Renovate keeps BOM and build-tool versions current.
+
+<span id="building-plugins-repo-hygiene-internal"></span>
 
 
 
