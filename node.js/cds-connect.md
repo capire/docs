@@ -503,6 +503,160 @@ cds env get requires.<servicename>
 ```
 :::
 
+#### User-Provided Service Instances { #vcap-upsi }
+
+[User-Provided Service Instances (UPSIs)](https://docs.cloudfoundry.org/devguide/services/user-provided.html) always appear in `VCAP_SERVICES` under the `"user-provided"` key, regardless of what service they hold credentials for. A common use case is cross-account service instance sharing.
+
+Because all UPSIs share the same key, matching by kind label or type does not apply — only name and tag matching works. Use an explicit `vcap` config to override auto-matching:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {}
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user-provided": [{
+    "name": "my-service",
+    "tags": []
+  }]
+}
+```
+</td>
+</tr>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {}
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user-provided": [{
+    "name": "my-upsi",
+    "tags": ["cds:my-service"]
+  }]
+}
+```
+</td>
+</tr>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {
+        "kind": "my-kind"
+      }
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user-provided": [{
+    "name": "my-upsi",
+    "tags": ["my-kind"]
+  }]
+}
+```
+</td>
+</tr>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {
+        "vcap": { "name": "my-upsi" }
+      }
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user-provided": [{
+    "name": "my-upsi",
+    "tags": []
+  }]
+}
+```
+</td>
+</tr>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {
+        "vcap": { "tag": "my-tag" }
+      }
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "user-provided": [
+    { "name": "other-upsi", "tags": ["other-tag"] },
+    { "name": "my-upsi",   "tags": ["my-tag"] }
+  ]
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
 ### In Kubernetes / Kyma { #in-kubernetes-kyma}
 
 CAP supports [servicebinding.io](https://servicebinding.io/) service bindings and SAP BTP service bindings created by the [SAP BTP Service Operator](https://github.com/SAP/sap-btp-service-operator).
