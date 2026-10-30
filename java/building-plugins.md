@@ -556,6 +556,33 @@ The **mock-vs-productive handler switch** based on binding presence is a particu
 
 In both cases, if optional functionality depends on a dependency that may not be on the classpath (for example, an SAP Cloud SDK class), guard the code with `@ConditionalOnClass` or a programmatic `ClassUtils.isPresent(...)` check so a missing dependency causes a clean "feature disabled" outcome, not a `NoClassDefFoundError`.
 
+To avoid taking a dependency on live external services (SAP BTP Alert Notification, print service, and so on), replace external calls with CDS mock handlers. The mock handler implements the same service interface as the production adapter but returns canned responses:
+
+```java
+@ServiceName(value = "*", type = MyExternalService.class)
+public class MyExternalServiceMockHandler implements EventHandler {
+    @On(event = "*")
+    public void handleAll(EventContext ctx) {
+        ctx.setResult(/* canned response */);
+        ctx.setCompleted();
+    }
+}
+```
+
+Register the mock in the test app's `CdsRuntimeConfiguration` (or as a `@Component` in the Spring test context) and activate it when the production binding is absent. This is a very common pattern for CAP plugins as well as core parts of the CAP framework. This enables local development as well as efficient testing without the need to adapt the application code.
+
+### Testing a Plugin {#testing-plugin}
+
+A plugin unit test can boot a real `CdsRuntime` without Spring by putting `cds-services-impl` on the test classpath and calling `CdsRuntime.create(...)` directly. This keeps tests fast and free of Spring context overhead.
+
+```xml
+<dependency>
+  <groupId>com.sap.cds</groupId>
+  <artifactId>cds-services-impl</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
 **Local testing with the plugin:** Add a dedicated `integration-tests` Maven module — a minimal CAP Spring Boot application (`Application.java`, a small `test-service.cds`, `application.yaml`) that depends on the plugin JAR via `${revision}`. This lets consumers verify the plugin locally before publishing. Running it under `maven-failsafe-plugin` (`**/*IT.java`) exercises the plugin in a real application context.
 
 Key configuration for the test application:
@@ -573,33 +600,6 @@ cds:
         - name: test-user
           roles: [admin]
 ```
-
-### Testing a Plugin {#testing-plugin}
-
-A plugin unit test can boot a real `CdsRuntime` without Spring by putting `cds-services-impl` on the test classpath and calling `CdsRuntime.create(...)` directly. This keeps tests fast and free of Spring context overhead.
-
-```xml
-<dependency>
-  <groupId>com.sap.cds</groupId>
-  <artifactId>cds-services-impl</artifactId>
-  <scope>test</scope>
-</dependency>
-```
-
-To avoid taking a dependency on live external services (SAP BTP Alert Notification, print service, and so on), replace external calls with CDS mock handlers. The mock handler implements the same service interface as the production adapter but returns canned responses:
-
-```java
-@ServiceName(value = "*", type = MyExternalService.class)
-public class MyExternalServiceMockHandler implements EventHandler {
-    @On(event = "*")
-    public void handleAll(EventContext ctx) {
-        ctx.setResult(/* canned response */);
-        ctx.setCompleted();
-    }
-}
-```
-
-Register the mock in the test app's `CdsRuntimeConfiguration` (or as a `@Component` in the Spring test context) and activate it when the production binding is absent — the same mock-vs-productive switch described above doubles as your test strategy.
 
 ### Repository Hygiene
 
