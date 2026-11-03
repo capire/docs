@@ -315,6 +315,10 @@ cds subscribe t1 --to http://localhost:4005 -u yves:
 cds subscribe t1-ext --to http://localhost:4005 -u yves:
 ```
 
+::: info The Mock User `yves`
+`yves` is a predefined mock user that simulates a technical caller. Its `internal-user` pseudo-role authorizes tenant provisioning. You specify the target tenant in the command, so `yves` needs no tenant assignment. In production, provisioning uses authenticated platform callbacks and technical communication, as described in [Technical Roles](../multitenancy/mtxs#roles).
+:::
+
 ##### Pull the Base Model {#pull-base}
 
 In your third terminal, from `xtravels-ext`, pull the latest base model as user `bob`:
