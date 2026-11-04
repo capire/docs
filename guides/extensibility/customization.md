@@ -119,9 +119,11 @@ npm i
 
 You'll want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Add the requires block to the `package.json`:
 
+Use a dedicated namespace for subscriber-owned entities, such as `x_travels.ext` in this example. Allow that namespace once so extension developers can create entities and ship their initial data without requiring the provider to list each entity name.
+
 ::: code-group
 
-```jsonc [mtx/sidecar/package.json]
+```json [mtx/sidecar/package.json]
 {
   "cds": {
     "requires": {
@@ -136,6 +138,11 @@ You'll want to restrict which services or entities your SaaS customers are allow
           {
             "for": ["TravelService"],
             "new-entities": 2
+          },
+          {
+            "for": ["x_travels.ext"],
+            "kind": "entity",
+            "new-fields": 0
           }
         ]
       }
@@ -151,9 +158,12 @@ Looking at the configuration, it enforces the following restrictions:
 - All new elements have to start with `x_` → to avoid naming conflicts.
 - Only entities in namespace `sap.capire.travels` can be extended, with a maximum 2 new fields allowed.
 - Only the `TravelService` can be extended, with a maximum of 2 new entities allowed.
+- Entities in `x_travels.ext`, including nested namespaces, can receive initial-data uploads. This namespace entry grants no additional fields through this rule.
+
+Namespace entries match all entity names beneath that namespace. Use `x_travels.ext` as the prefix, without appending `.*`. For the matching rules, see [Restrict Entities and Fields](../multitenancy/mtxs#restrict-entities-and-fields).
 
 ::: tip Explicitly restrict extensibility to the app's own model
-The provider could add any entity, and subscribers could then extend it. Only having XTravels' own `sap.capire.travels` entities and `TravelService` in scope is a deliberate scoping choice, not a framework limitation.
+The provider could add any entity, and subscribers could then extend it. The rules for extending existing entities and services focus on XTravels' own `sap.capire.travels` entities and `TravelService`.
 
 In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems. As there are no XTravels-owned fields in the reuse modules for a subscriber to add to, they are left out on purpose.
 :::
@@ -192,6 +202,8 @@ xtravels-ext/
 ::: tip Keep it simple
 Put all your model content into `./app`. `cds add extension` trims the scaffold to a model-only layout (no `./db` by default); add `./db/data` only to ship **configuration data** such as code lists (see [Add Data](#add-data)). Keep `./srv` only for the optional [reference logic](#reference-wiring) that makes local test-drives behave like the deployed app.
 :::
+
+Declare new entities in the dedicated extension namespace agreed with the provider, `x_travels.ext` in this walkthrough. Keep this convention in your template and its readme.
 
 #### Create an Extension Project (Template)
 
@@ -611,7 +623,7 @@ Give your customers a short guide to extending *your* app. Keep it focused on wh
 
 The app-specific parts worth documenting:
 
-- **What can be extended**: which services and entities, and to what degree. See [extension restrictions](#restrictions) and [About Extension Models](#about-extension-models).
+- **What can be extended**: which services and entities, to what degree, and which namespace to use for new entities. See [extension restrictions](#restrictions) and [About Extension Models](#about-extension-models).
 - **Where to connect**: the URLs of your deployed test and production tenants, and how customers obtain them.
 - **In-model documentation**: add [doc comments](../../cds/cdl#doc-comments) on the extensible services and entities, so they are self-describing in the extension developer's editor.
 
@@ -631,6 +643,8 @@ Ideally you start from an **application-specific template** the provider ships (
 ::: details On BTP…
 
 To extend a SaaS app deployed to BTP, you first subscribe to it [through the BTP cockpit](../multitenancy/index#subscribe-via-btp-cockpit), and your tenant admin assigns you the `cds.ExtensionDeveloper` role. Refer to the [Deployment Guide](../deploy/to-cf) for more details on remote deployments.
+
+For the test-to-production workflow, prepare separate test and production subscriptions using the same subscription steps.
 
 In the `cds` commands below, replace the local sidecar URL with the URL of the deployed App Router, and authenticate with a passcode. See [`cds login`](#cds-login) for a simplified workflow that saves you from repeating options and passcodes.
 
@@ -670,6 +684,8 @@ Pulling downloads the base model as a package into the npm workspace folder `.ba
 ### 3. Write the Extension {#write-extension }
 
 Edit the file _app/extensions.cds_ and replace its content with the following:
+
+Put new entities in `x_travels.ext`, the dedicated namespace allowed by the provider. You choose the entity names within this namespace.
 
 ::: code-group
 
@@ -769,6 +785,8 @@ Open the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelServ
 
 ![Travels Fiori preview with high and low Priority, Cost Centers Travel & Expenses and Sales, customer and agency names, and Open travel status.](assets/xtravels-fiori-preview-ext.png){.mute-dark}
 
+> The table adapts to the available width. If _Cost Center_ is hidden, widen the browser window to display it.
+
 > Note: the two rows shown come from your local `test/data/Travels`, and their _Cost Center_ labels resolve against the `x_CostCenters` code list.
 
 The Travels rows stay in the local sandbox and are not processed during activation to the tenant; the `x_CostCenters` code list under `db/data/`, however, ships with the extension, see [Add Data](#add-data).
@@ -808,11 +826,15 @@ Verify your extensions are applied correctly by opening the [XTravels UI](http:/
 
 ![Deployed XTravels Fiori UI with extension columns Priority, set to the default value medium, and Cost Center, set to the default value Travel & Expenses for every travel.](assets/xtravels-deployed-ext.png){.mute-dark}
 
+As in the [local preview](#test-locally), widen the browser window if _Cost Center_ is hidden.
+
 ### 6. Add Data {#add-data}
 
 You already shipped data with your extension: the `x_CostCenters` code list under `db/data/`. That's why _Cost Center_ shows the label _Travel & Expenses_ rather than the raw code `TRAVEL` on the tenant, the code list traveled with the `cds push` and provides the **value help** that labels the codes and lets users re-classify travels.
 
 Files under `db/data/` are your extension's [_(real) initial data_](../databases/initial-data#initial-vs-test-data): they load locally _and_ activate on the tenant. Restrict this to **configuration data** that users don't change through the app, such as a code list. Anything under `test/data/` (like your local `Travels` rows) stays on your machine and never reaches the tenant.
+
+The [provider's namespace allowance](#restrictions) permits these uploads for entities in `x_travels.ext`. Name each CSV after its fully qualified entity name, for example, `x_travels.ext-x_CostCenters.csv` for `x_travels.ext.x_CostCenters`.
 
 ::: warning Ship only configuration data, never writeable data
 It's tempting to also pre-fill the _Cost Center_ of individual travels by shipping a `db/data/sap.capire.travels-Travels.csv`. Don't do that for production. `Travels` is writeable transactional data, and on SAP HANA shipped CSVs [are deployed as `.hdbtabledata`, exclusively owned by the deployment and **overwritten on every redeployment**](../databases/hana#csv-data-gets-overridden), which would reset whatever users entered. Only ship data that can't be changed through the app, such as code lists. To pre-populate a writeable column, use a model `default` (as `x_CostCenter` does), it's applied once when the column is added and never overwrites later edits. Let users take it from there through the value help.
@@ -881,11 +903,13 @@ Following [the extend directive](../../cds/cdl#extend) it is pretty straightforw
 - Define a mandatory check on new or existing fields.
 - Define new unique constraints on new or existing entities.
 
+Import common types and aspects from the pulled base-model package, which already contains their definitions:
+
 ```cds
-using { sap.capire.travels } from '@capire/xtravels';
 using {
+  sap.capire.travels,
   cuid, managed, Country, sap.common.CodeList
-} from '@sap/cds/common';
+} from '@capire/xtravels';
 
 namespace x_travels.ext;
 
@@ -1169,13 +1193,27 @@ To externalize translatable texts, use the same approach as for standard applica
 ```properties [i18n/i18n.properties]
 CostCenter_name_col = Cost Center
 Travels_priority_col = Priority
-...
 ```
 
 :::
 
-Then replace texts with the corresponding `{i18n>...}` keys from the properties file.
-Make sure to run `cds build` again.
+Replace the corresponding titles in _app/extensions.cds_ with the keys from the properties file:
+
+```cds [app/extensions.cds]
+annotate sap.capire.travels.Travels:x_priority
+  with @title: '{i18n>Travels_priority_col}';
+annotate x_travels.ext.x_CostCenters:name
+  with @title: '{i18n>CostCenter_name_col}';
+```
+
+Build the updated extension and [push it to your test tenant](#push-extension). For a cloud test subscriber with a [saved login](#cds-login), run:
+
+```sh
+cds build
+cds push --to <test-app-url> -s <test-subdomain>
+```
+
+Open the test tenant's application UI in a new private browser window and confirm that the column titles resolve to _Priority_ and _Cost Center_.
 
 Properties files must be placed in the `i18n` folder.  If an entry with the same key exists in the SaaS application, the translation of the extension has preference.
 
@@ -1188,7 +1226,7 @@ Properties files must be placed in the `i18n` folder.  If an entry with the same
 As a SaaS extension developer, you have the option to log in to the SaaS app and thus authenticate only once.
 This allows you to re-run `cds pull` and `cds push` against the app without repeating the same options over and over again – and you can avoid generating a passcode every time.
 
-Achieve this by running `cds login` once. This command fetches tokens using OAuth2 from XSUAA and saves them for later use. For convenience, further settings for the current project are also stored, so you don't have to provide them again (such as the app URL and tenant subdomain).
+Run `cds login --save-refresh-token` once to save both the access token and refresh token for later use. The command fetches tokens using OAuth2 from XSUAA. It also stores settings for the current project, such as the app URL and tenant subdomain.
 
 ### Where Tokens Are Stored
 
@@ -1224,31 +1262,32 @@ If you work with Cloud Foundry (CF) and you have got the `cf` client installed, 
 To log in to the SaaS app in this way, first change to the folder you want to use for your extension project. Then run the following command (the one-time passcode will be prompted interactively if omitted):
 
 ```sh
-cds login [-p <passcode>]
+cds login --save-refresh-token [-p <passcode>]
 ```
 
 :::details Advanced options
 
 If you need to call `cds login` automatically without user interaction, you may use the [Client Credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) grant, which does not require a passcode.
 
-You can then omit the `-p <passcode>` option but will instead have to provide the Client ID and a specific form of client secret to authenticate.
+Provide the client ID with either a client secret or a certificate and private key.
 
-Obtain these two from the `VCAP_SERVICES` environment variable in your deployed MTX server (`@sap/cds-mtxs`). In the JSON value, navigate to `xsuaa[0].credentials`.
+Obtain the credentials from the `VCAP_SERVICES` environment variable in your deployed MTX server (`@sap/cds-mtxs`). In the JSON value, navigate to `xsuaa[0].credentials`.
 
-- If you find a `key` property (Private Key of the Client Certificate), XSUAA is configured to use X.509 (mTLS). Use this Private Key by specifying `cds login … -m <clientid>[:key]`.
+- For X.509 (mTLS), set `CDS_LOGIN_CLIENT_CERT` and `CDS_LOGIN_CLIENT_KEY` to the PEM contents of the certificate and private key from the `certificate` and `key` properties. Pass only the client ID to `--mtls`:
 
-- Otherwise, find the Client Secret in the `clientsecret` property and use `cds login … -c <clientid>[:<clientsecret>]` in an analogous way.
+  ```sh
+  cds login <app-url> -s <subdomain> --mtls <clientid>
+  ```
+
+- For a client secret, use the `clientsecret` property. Set `CDS_LOGIN_CLIENT_SECRET` for automated login, or omit it to enter the secret at the prompt:
+
+  ```sh
+  cds login <app-url> -s <subdomain> --client <clientid>
+  ```
 
 **Note:** The `key` and `clientsecret` properties are secrets that should not be stored in an unsafe location in productive scenarios!
 
-[Learn more about environment variables / `VCAP_Services`.](../../node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
-
-If you leave out the respective secret (enclosed in square brackets above), you will be prompted to enter it interactively.
-This can be used to feed the secret from the environment to `cds login` via standard input, like so:
-
-```sh
-echo $MY_KEY | cds login … -m <clientid>
-```
+[Learn more about environment variables / `VCAP_SERVICES`.](../../node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
 
 :::
 
@@ -1259,7 +1298,7 @@ For a synopsis of all options, run `cds help login`.
 If you don't work with CF CLI, additionally provide the application URL and the subdomain as these can't be determined automatically:
 
 ```sh
-cds login [<auth-options>] -s <subdomain> <app-url>
+cds login <app-url> -s <subdomain> --save-refresh-token
 ```
 
 The `<app-url>` is the URL that you get in your subscriber account when you subscribe to an application. You find the `<subdomain>` in the overview page of your subaccount in the SAP BTP Cockpit:
@@ -1271,6 +1310,13 @@ The `<app-url>` is the URL that you get in your subscriber account when you subs
 ::: tip Multiple targets
 Should you later want to extend other SaaS applications, you can log in to them as well, and it won't affect your other logins.
 Logins are independent of each other, and `cds pull` etc. will be authenticated based on the requested target.
+
+For a test-to-production workflow, log in to production first and test last to keep test as the project's saved target:
+
+```sh
+cds login <production-app-url> -s <production-subdomain> --save-refresh-token
+cds login <test-app-url> -s <test-subdomain> --save-refresh-token
+```
 :::
 
 ### Simplified Workflow
@@ -1287,13 +1333,18 @@ cds push
 ```
 
 ::: tip Override saved values with options
-For example, run `cds push -s <otherSubdomain> -p <otherPasscode>` to activate your extension in another subdomain.
-This usage of `cds push` may be considered a kind of cross-client transport mechanism.
+With a saved production login, activate your extension in production by specifying both target values:
+
+```sh
+cds push --to <production-app-url> -s <production-subdomain>
+```
+
+These options override the saved target for this command. Subsequent commands without target options continue to use the saved test target.
 :::
 
 ### Refreshing Tokens
 
-Tokens have a certain lifespan, after which they lose validity. To save you the hassle, `cds login` also stores the refresh token sent by XSUAA alongside the token (depending on configuration) and uses it to automatically renew the token after it has expired. By default, refresh tokens expire much later than the token itself, allowing you to work without re-entering passcodes for multiple successive days.
+Access tokens expire after a certain time. Pass `--save-refresh-token` when logging in to store the refresh token alongside the access token. Subsequent commands can use it to obtain a new access token after expiry. When the refresh token expires, log in again.
 
 ### Cleaning Up
 
@@ -1304,7 +1355,7 @@ Append `--delete-settings` to include saved project settings for the current pro
 `cds help logout` is available for more details.
 
 ::: tip Re-authenticate when your role-collection assignments have changed
-Run `cds logout` followed by `cds login` in order to fetch a token with the new scopes.
+Run `cds logout` followed by `cds login --save-refresh-token` to fetch a token with the new scopes and retain refresh-token storage.
 :::
 
 ### Debugging
