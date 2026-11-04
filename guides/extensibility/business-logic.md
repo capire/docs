@@ -60,24 +60,18 @@ cds:
 ```
 :::
 
-::: warning Never run `npm` inside `mtx/sidecar`
-`mtx/sidecar` is **not** a member of the samples npm workspace, so running `npm install` or `npm add` inside it creates a nested `mtx/sidecar/node_modules` with its **own second copy of `@sap/cds`**. Two `@sap/cds` instances break the sidecar (its model-provider calls start failing). So **add the dependency to `mtx/sidecar/package.json` by hand** (as above) rather than installing it. The app's `npm add @sap/cds-oyster` already hoisted `@sap/cds-oyster` to the workspace root, and the sidecar resolves its dependencies from that parent. Keep `mtx/sidecar` free of its own `node_modules`.
+::: details Never run `npm` inside `mtx/sidecar`
+`mtx/sidecar` is **not** a member of the samples npm workspace, so running `npm install` or `npm add` inside it creates a nested `mtx/sidecar/node_modules` with its **own second copy of `@sap/cds`**. 
+
+Having two `@sap/cds` instances breaks the sidecar (its model-provider calls start failing). So **add the dependency to `mtx/sidecar/package.json` by hand** (as instructed) to keep `mtx/sidecar` free of its own `node_modules`. 
+
+The base app's `npm add @sap/cds-oyster` already hoisted `@sap/cds-oyster` to the workspace root, and the sidecar resolves its dependencies from that parent. 
 :::
 
-::: warning Re-subscribe tenants after adding the plugin
-`@sap/cds-oyster` extends the tenant database schema. Any tenant you subscribed **before** adding it (for example `t1` and `t1-ext` from the local setup) is still on the old schema. Re-provision each one so it redeploys with the plugin's schema. Locally, drop and re-subscribe the tenant:
-
-```sh
-cds unsubscribe t1-ext --from http://localhost:4005 -u yves:
-cds subscribe t1-ext --to http://localhost:4005 -u yves:
-```
-
-On a deployed tenant you can't drop it, so run a tenant upgrade to apply the change instead. Otherwise the tenant stays on the old schema and a schema migration would be needed before code extensions work.
-:::
 
 That's all the configuration you need. The plugin registers a `code-extensibility` service with sensible sandbox defaults per profile: **mocked** for local development, and **wasm** in production. See [The Sandbox](#sandbox) for what those mean and when to override them.
 
-::: warning Don't hand-configure the default case
+::: details Don't hand-configure the default case
 The plugin auto-registers `cds.requires.code-extensibility` for you. Adding your own `"code-extensibility": true` block **overrides** that registration and discards the profile-aware defaults. Only add a block to *customize* limits (see [Configuration](code-extension#config)).
 :::
 
@@ -219,6 +213,17 @@ Two additions specific to code extensions:
 
     :::
 
+
+3. In the previous section, `@sap/cds-oyster` extends the tenant database schema. Any tenant you subscribed **before** adding it (for example `t1` and `t1-ext` from the local setup) is still on the old schema. Re-provision each one so it redeploys with the plugin's schema. Locally, drop and re-subscribe the tenant:
+
+    ```sh
+    cd ../../xtravels-ext
+    cds unsubscribe t1-ext --from http://localhost:4005 -u yves:
+    cds subscribe t1-ext --to http://localhost:4005 -u yves:
+    ```
+    
+    On a deployed tenant you can't drop it, so run a tenant upgrade to apply the change instead. Otherwise the tenant stays on the old schema and a schema migration would be needed before code extensions work.
+    
 ::: warning Handlers are CommonJS
 If `cds add extension` added `"type": "module"` to your _package.json_, **remove it**: handler files use `module.exports`, and ESM mode breaks them.
 :::
