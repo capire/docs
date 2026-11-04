@@ -197,10 +197,12 @@ Extension code lives in a standard extension project. If you completed the [prov
 
 Two additions specific to code extensions:
 
-1. Add the sandbox plugin as a dependency:
+1. Add the sandbox plugin as a dependency and pull the base model again:
 
     ```sh
+    cd ../../xtravels-ext
     npm add @sap/cds-oyster
+    cds pull --from http://localhost:4005 -u bob: -s t1-ext
     ```
 
 2. Make sure a local _.cds_ file imports the base model, so the toolchain can resolve it. Even an otherwise-empty file will do:
@@ -217,7 +219,6 @@ Two additions specific to code extensions:
 3. In the previous section, `@sap/cds-oyster` extends the tenant database schema. Any tenant you subscribed **before** adding it (for example `t1` and `t1-ext` from the local setup) is still on the old schema. Re-provision each one so it redeploys with the plugin's schema. Locally, drop and re-subscribe the tenant:
 
     ```sh
-    cd ../../xtravels-ext
     cds unsubscribe t1-ext --from http://localhost:4005 -u yves:
     cds subscribe t1-ext --to http://localhost:4005 -u yves:
     ```
