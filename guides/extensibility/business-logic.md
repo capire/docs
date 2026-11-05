@@ -34,6 +34,8 @@ As a provider, you decide *where* extension code may run: you declare the extens
 
 Add the `@sap/cds-oyster` plugin to **both** your application and its MTX sidecar. The sidecar processes `cds push` requests, while the app runs the deployed handlers:
 
+#### Base Application
+
 ::: code-group
 
 ```sh [Node.js]
@@ -51,6 +53,11 @@ cds:
   code-extensions:
     enabled: true
 ```
+:::
+
+#### Sidecar
+
+::: code-group
 ```json [mtx/sidecar/package.json]
 {
   "dependencies": {
