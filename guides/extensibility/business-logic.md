@@ -24,7 +24,7 @@ An extension project can carry model extensions *and* handler code at the same t
 
 This guide continues with the **XTravels** sample (`github.com/capire/xtravels`) from the [model-extensibility guide](customization). Work through that guide's [SaaS Provider walkthrough](customization#prep-as-provider) first, up to and including [Provide Reference Logic for Local Runs](customization#reference-wiring): it creates an extension project template and runs it locally, with the base model, test data, and reference wiring that a standalone `cds watch` needs. You can skip its guide-publishing and deployment steps.
 
-One addition is specific to code extensibility: the `@sap/cds-oyster` plugin, added in the next step. It is only active in **multitenant** setups.
+One addition is specific to code extensibility: the `@sap/cds-oyster` plugin, added in the next step. The SaaS provider runs a multitenant application. The extension developer can also test handlers in a standalone local project.
 
 ## As a SaaS Provider {#provider}
 
@@ -69,7 +69,15 @@ The base app's `npm add @sap/cds-oyster` already hoisted `@sap/cds-oyster` to th
 :::
 
 
-That's all the configuration you need. The plugin registers a `code-extensibility` service with sensible sandbox defaults per profile: **mocked** for local development, and **wasm** in production. See [The Sandbox](#sandbox) for what those mean and when to override them.
+The plugin configures the **sandbox runtime** through `cds.requires.code-extensibility`. It uses **mocked** execution for standalone local development and **wasm** for multitenant execution. The `TravelExtensionService` declared in the next step is the service exposed in the application model.
+
+To inspect the runtime configuration, run this in `samples/xtravels` with the same profile as the host:
+
+```sh
+cds env get requires.code-extensibility --profile with-mtx
+```
+
+The output includes `sandbox: "wasm"`. See [The Sandbox](#sandbox) for the engine behavior.
 
 ::: details Don't hand-configure the default case
 The plugin auto-registers `cds.requires.code-extensibility` for you. Adding your own `"code-extensibility": true` block **overrides** that registration and discards the profile-aware defaults. Only add a block to *customize* limits (see [Configuration](code-extension#config)).
@@ -113,7 +121,7 @@ Add the action and wire it into the status flow, where `submitForReview` opens t
 
 ::: code-group
 
-```cds{4} [srv/travel-service/service.cds]
+```cds{3} [srv/travel-service/service.cds]
 entity Travels as projection on our.Travels actions {
   action deductDiscount( percent: Percentage not null ) returns Travels;
   action submitForReview();
@@ -134,6 +142,48 @@ annotate TravelService.Travels with @flow.status: Status actions {
 ```
 
 :::
+
+Grant the new action to the reviewer by adding it to the existing rule in `srv/travel-service/access-control.cds`:
+
+::: code-group
+
+```cds{5} [srv/travel-service/access-control.cds]
+using { TravelService.Travels } from './service';
+
+annotate Travels with @(restrict: [
+  { grant: 'READ', to: 'authenticated-user' },
+  { grant: ['submitForReview','rejectTravel','acceptTravel','deductDiscount'], to: 'reviewer' },
+  { grant: ['*'], to: 'processor' },
+  { grant: ['*'], to: 'admin' }
+]);
+```
+
+:::
+
+For local tests, assign `alice` as a business reviewer in the test tenant `t1-ext`. Merge this user into `samples/xtravels/package.json`, keeping `bob` and any other users:
+
+::: code-group
+
+```json [samples/xtravels/package.json]
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "users": {
+          "alice": {
+            "tenant": "t1-ext",
+            "roles": ["reviewer"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+:::
+
+`alice` tests business actions. `bob` pulls and pushes extensions. On SAP BTP, assign the corresponding business role to a user of the subscriber tenant.
 
 Then wire the call in your service implementation. Connect to the extension service and invoke it in a `before` handler, and call the new method from `init()` so it registers. If no tenant handler is deployed, the call is a silent no-op and the transition proceeds:
 
@@ -195,9 +245,9 @@ You'll implement `validateReview` with a policy of your own: reject any travel w
 
 Extension code lives in a standard extension project. If you completed the [provider walkthrough](customization#prep-as-provider) in the prerequisites, you already have the template, with its base model pulled. If not, set it up now.
 
-Two additions specific to code extensions:
+Prepare the extension project with the provider's updated model:
 
-1. Add the sandbox plugin as a dependency and pull the base model again:
+1. Restart the sidecar and host after the provider changes, using the [local setup](customization#prepare-an-extension-tenant). Then, from `samples/xtravels`, return to the extension project, add the sandbox plugin, and refresh the base model:
 
     ```sh
     cd ../../xtravels-ext
@@ -225,13 +275,13 @@ Two additions specific to code extensions:
     
     On a deployed tenant you can't drop it, so run a tenant upgrade to apply the change instead. Otherwise the tenant stays on the old schema and a schema migration would be needed before code extensions work.
     
-::: warning Handlers are CommonJS
-If `cds add extension` added `"type": "module"` to your _package.json_, **remove it**: handler files use `module.exports`, and ESM mode breaks them.
+::: tip Module format for these examples
+The handler and local reference file below use **CommonJS**. Remove `"type": "module"` from `xtravels-ext/package.json`, and replace the ES-module `srv/server.js` from the model-extensibility template with the CommonJS example in [Test-Drive Locally](#test-locally).
 :::
 
 ### 2. Generate the Handler Stub
 
-Scaffold an inactive stub for the extension point:
+Run this in `xtravels-ext` after installing `@sap/cds-oyster` and pulling the updated model. The plugin registers the `ext-handler` generator, which creates stubs for matching operations in the loaded model:
 
 ```sh
 cds add ext-handler --filter validateReview
@@ -286,39 +336,126 @@ module.exports = async function validateReview(req) {
 
 ### 4. Test-Drive Locally {#test-locally}
 
-Run the extension standalone with `cds watch`. Under the `development` profile the handler runs in the **mocked** sandbox, a plain in-process execution that's quick to iterate on.
+Run the extension standalone with `cds watch`. Under the `development` profile the handler runs in the **mocked** sandbox.
 
-First, reproduce the provider wiring locally. `cds pull` delivers the base *model*, not the provider's handler code, so the `before(submitForReview)` call that triggers your handler isn't present in a standalone run. Without it, `submitForReview` is a silent no-op and your handler never runs. Add a local-only _srv/server.js_ that reconnects to `TravelExtensionService` and registers the same `before(submitForReview)` handler shown in [Call the Extension Point](#wire). This follows the [reference-logic pattern](customization#reference-wiring) (a read-only _server.js_ that reproduces provider behavior); it is only for local runs, since on a real tenant the wiring is already there.
+The base model pulled in [step one](#developer) contains the services, actions, and status-flow annotations, but the provider's JavaScript wiring stays with the provider. Reproduce that wiring locally so `submitForReview` calls your `validateReview` handler before changing the status.
 
-Then run it:
+Replace the template's `srv/server.js` with this CommonJS reference file. It retains local key generation and adds the extension-point call. CAP handles the annotated status transitions from the pulled model:
+
+::: code-group
+
+```js [srv/server.js]
+// Reference wiring for standalone local tests.
+const cds = require('@sap/cds')
+
+cds.once('served', async () => {
+  const { TravelService } = cds.services
+  const { Travels } = TravelService.entities
+  const ext = await cds.connect.to('TravelExtensionService')
+
+  const nextTravelId = async () => {
+    const [active, draft] = await Promise.all([
+      SELECT.one.from(Travels).columns('max(ID) as maxID'),
+      SELECT.one.from(Travels.drafts).columns('max(ID) as maxID'),
+    ])
+    return Math.max(active?.maxID ?? 0, draft?.maxID ?? 0) + 1
+  }
+  TravelService.before('CREATE', Travels, async req => {
+    req.data.ID ??= await nextTravelId()
+  })
+  TravelService.before('NEW', Travels.drafts, async req => {
+    req.data.ID ??= await nextTravelId()
+  })
+
+  TravelService.before('submitForReview', Travels, async req => {
+    await ext.validateReview({
+      travelID: req.params[0].ID,
+      user: req.user.id,
+      timestamp: req.timestamp?.toISOString(),
+    })
+  })
+
+  // Keep the unrelated discount action clickable in local previews.
+  TravelService.on('deductDiscount', Travels, req => req.data ?? {})
+})
+
+module.exports = cds.server
+```
+
+:::
+
+Keep this file directly under `srv/`. It runs as local application wiring. The sandbox executes handlers in service-named folders such as `srv/TravelExtensionService/`. The deployed provider already contains the real wiring.
+
+Merge the same `alice` test user into `xtravels-ext/package.json` so standalone business requests use the reviewer role:
+
+::: code-group
+
+```json [xtravels-ext/package.json]
+{
+  "cds": {
+    "requires": {
+      "auth": {
+        "users": {
+          "alice": {
+            "tenant": "t1-ext",
+            "roles": ["reviewer"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+:::
+
+After completing the pull and tenant preparation, stop the host and sidecar in their terminals. In `xtravels-ext`, inspect the standalone runtime configuration and start the extension:
 
 ```sh
+cds env get requires.code-extensibility
 cds watch
 ```
 
-Call `submitForReview` on a travel over the limit and confirm the `409`; on a cheap one it passes and the status flips to `InReview`.
+The configuration shows `sandbox: "mocked"`. Use the copied sample Travels data for the following checks: travel `159` has total price `48264`, above the `10000` limit, and travel `723` has total price `162`, below it.
+
+In another terminal, call the bound action on each **active** travel as `alice`:
+
+```sh
+curl -i -u alice: -X POST \
+  'http://localhost:4006/odata/v4/travel/Travels(ID=159,IsActiveEntity=true)/TravelService.submitForReview' \
+  -H 'Content-Type: application/json' -d '{}'
+
+curl -i -u alice: -X POST \
+  'http://localhost:4006/odata/v4/travel/Travels(ID=723,IsActiveEntity=true)/TravelService.submitForReview' \
+  -H 'Content-Type: application/json' -d '{}'
+
+curl -u alice: \
+  'http://localhost:4006/odata/v4/travel/Travels(ID=723,IsActiveEntity=true)?$select=ID,Status_code'
+```
+
+The first call returns **409** with your policy message and leaves the travel `Open`. The second returns **204**. The final read shows `Status_code: "P"` (`InReview`). The sample UI has no `submitForReview` button, so these requests provide the action test. You can send the same requests from a REST client.
 
 Because the mocked sandbox runs your handler **in-process**, you can debug it like ordinary code. Start with `cds watch --debug` (or `--inspect-brk` to break on the first line), then set breakpoints straight in your handler file to step through and inspect `req`, `req.data`, and `this.entities`. The production `wasm` sandbox runs isolated, so breakpoints don't bind there, but `console.log` still works under `cds watch --profile wasm` (the sandbox forwards it to the host), so it's your fallback for tracing in the isolated engine. Note that `console` is **rejected at `cds push`**: keep it to local runs and switch to `req.info` / `req.warn` for anything that must ship. See [Debugging and `console`](code-extension#debugging) for the full story.
 
 ### 5. Verify Against the Production Sandbox {#verify-wasm}
 
-The mocked sandbox is permissive; production uses **wasm**, which enforces the real restrictions. Do a one-off check under wasm before pushing:
+The mocked sandbox is permissive; production uses **wasm**, which enforces the real restrictions. Stop the standalone server, then restart it under wasm before pushing:
 
 ```sh
 cds watch --profile wasm
 ```
 
-If the handler behaves the same here, it will behave the same on the tenant. This is also where forbidden constructs surface early; see [Forbidden Constructs](code-extension#forbidden).
+Repeat the action requests from [Test-Drive Locally](#test-locally). The standalone in-memory database reloads the sample rows on restart, so both travels start `Open` again. Confirm the same **409** and **204** outcomes. This checks runtime isolation. The later push also checks the [Forbidden Constructs](code-extension#forbidden).
 
 ### 6. Push to the Tenant {#push}
 
-Activate the extension on your tenant. Push targets the sidecar as the extension developer, exactly as [`cds pull`](customization#pull-base) did:
+Stop the standalone server and restart the sidecar and host using the [local setup](customization#prepare-an-extension-tenant). From `xtravels-ext`, activate the extension on `t1-ext` as `bob`, the extension developer:
 
 ```sh
 cds push --to http://localhost:4005 -u bob:
 ```
 
-The push packages only the files under service-named folders (your _srv/TravelExtensionService/_ handler) plus the extension model.
+The archive contains the extension model and the handler under _srv/TravelExtensionService/_. It can also include _srv/server.js_, but Oyster activates handlers from service-named folders. The local reference file is not executed on the tenant.
 
 ::: warning Sidecar needs the plugin too
 If `cds push` fails to process the handler, confirm `@sap/cds-oyster` is installed in the provider's **`mtx/sidecar`**, not only the app; see [step 1](#provider).
@@ -328,7 +465,22 @@ If `cds push` fails to process the handler, confirm `@sap/cds-oyster` is install
 Adding `@sap/cds-oyster` extends the MTX `Extensions` table with new columns. Tenants that were **already subscribed** before you enabled code extensibility keep the old schema, and the push fails with `table cds_xt_Extensions has no column named cdsOysterVersion`. Upgrade (or unsubscribe + re-subscribe) those tenants once after enabling it; a restart only re-deploys the technical `t0` tenant, not existing subscribers.
 :::
 
-To verify against the **deployed app**, call `submitForReview` as a user authorized for the travel action in that tenant (not the extension developer `bob`, who holds only `cds.ExtensionDeveloper` and is restricted to the extension APIs): an over-limit travel now returns your `409` policy message; a cheap one succeeds.
+Verify the activated handler against the **multitenant host** as `alice`, the reviewer you assigned to `t1-ext`. The host uses the provider's own wiring, so this also checks that the handler works without the local reference file:
+
+```sh
+curl -i -u alice: -X POST \
+  'http://localhost:4114/odata/v4/travel/Travels(ID=159,IsActiveEntity=true)/TravelService.submitForReview' \
+  -H 'Content-Type: application/json' -d '{}'
+
+curl -i -u alice: -X POST \
+  'http://localhost:4114/odata/v4/travel/Travels(ID=723,IsActiveEntity=true)/TravelService.submitForReview' \
+  -H 'Content-Type: application/json' -d '{}'
+
+curl -u alice: \
+  'http://localhost:4114/odata/v4/travel/Travels(ID=723,IsActiveEntity=true)?$select=ID,Status_code'
+```
+
+Expect **409** for travel `159`, **204** for travel `723`, and `Status_code: "P"` on the final read. `bob` holds the extension-developer role. Use the business reviewer for these action requests.
 
 ## The Sandbox {#sandbox}
 
