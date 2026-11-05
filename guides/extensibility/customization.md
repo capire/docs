@@ -117,13 +117,13 @@ npm i
 
 ### 2. Restrict Extension Points { #restrictions }
 
-You'll want to restrict which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Add the requires block to the `package.json`:
+Control which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Add a dedicated namespace for subscriber-owned entities to the `allowlist` (`x_travels.ext`, for example) to let extension developers create entities and ship their initial data without requiring the provider to list each entity name.
 
-Use a dedicated namespace for subscriber-owned entities, such as `x_travels.ext` in this example. Allow that namespace once so extension developers can create entities and ship their initial data without requiring the provider to list each entity name.
+Add the requires block to the `cds` section of the `package.json`:
 
 ::: code-group
 
-```json [mtx/sidecar/package.json]
+```json{3-23} [mtx/sidecar/package.json]
 {
   "cds": {
     "requires": {
@@ -162,7 +162,7 @@ Looking at the configuration, it enforces the following restrictions:
 
 Namespace entries match all entity names beneath that namespace. Use `x_travels.ext` as the prefix, without appending `.*`. For the matching rules, see [Restrict Entities and Fields](../multitenancy/mtxs#restrict-entities-and-fields).
 
-::: tip Explicitly restrict extensibility to the app's own model
+::: details Explicitly restrict extensibility to the app's own model
 The provider could add any entity, and subscribers could then extend it. The rules for extending existing entities and services focus on XTravels' own `sap.capire.travels` entities and `TravelService`.
 
 In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems. As there are no XTravels-owned fields in the reuse modules for a subscriber to add to, they are left out on purpose.
@@ -183,7 +183,8 @@ The template we build in the following steps has this structure:
 ```zsh
 xtravels-ext/
 ├── app/
-│   └── extensions.cds       # your extensions (fields, entities, annotations)
+│   ├── extensions.cds       # your extensions (fields, entities)
+│   └── fiori.cds            # UI annotations
 ├── srv/
 │   └── server.js            # optional: plumbing and initial logic for local test-drives
 ├── db/
@@ -205,15 +206,15 @@ Put all your model content into `./app`. `cds add extension` trims the scaffold 
 
 Declare new entities in the dedicated extension namespace agreed with the provider, `x_travels.ext` in this walkthrough. Keep this convention in your template and its readme.
 
-#### Create an Extension Project (Template)
+#### 3.1 Create an Extension Project (Template)
+
+::: warning Create the extension project outside the base app's workspace
+Create `xtravels-ext` next to `samples/`, not inside it. An extension project is its own workspace root and the extension project will map `@capire/xtravels` to the base model in `.base`. If it sat inside the `samples` workspace, `@capire/xtravels` would instead resolve to the base-app **sources**, and the extension would not compile.
+:::
 
 Extension projects are standard CAP projects extending the SaaS application. Create one for your SaaS app following these steps:
 
 1. Create a new CAP project and add the extension facet (`xtravels-ext` in our walkthrough):
-
-   ::: warning Create the extension project outside the base app's workspace
-   Create `xtravels-ext` next to `samples/`, not inside it. An extension project is its own workspace root and the extension project will map `@capire/xtravels` to the base model in `.base`. If it sat inside the `samples` workspace, `@capire/xtravels` would instead resolve to the base-app **sources**, and the extension would not compile.
-   :::
 
    ```sh
    cd ../..   # leave the samples workspace, back to the cap/ folder
@@ -225,11 +226,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
    `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder that will hold the pulled base model.
 
-   ::: info `cds add extension` writes a bookshop placeholder
-   It sets `extends` in `xtravels-ext/package.json` to `@capire/bookshop` and writes `.base/package.json` as `{ "name": "@capire/bookshop" }`. Change `extends` in the extension project's root _package.json_ in the next step. Leave `.base/package.json` unchanged: [Pull the Base Model](#pull-base) replaces it with a package named `@capire/xtravels`.
-   :::
-
-2. In `xtravels-ext/package.json`, change `extends` from `@capire/bookshop` to `@capire/xtravels`:
+2. `cds add extension` writes `@capire/bookshop` as a placeholder in `xtravels-ext/package.json`, change the `extends` to `@capire/xtravels`:
 
     ::: code-group
 
@@ -247,6 +244,10 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
     }
     ```
 
+    :::
+
+    ::: info Leave `.base/package.json` unchanged
+    The generated `.base/package.json` has `{ "name": "@capire/bookshop" }`. Leave it unchanged. The later section, [Pull the Base Model](#pull-base) replaces it with `@capire/xtravels`.
     :::
 
 ::: details Generated project settings
@@ -267,12 +268,11 @@ You use the `extends` property as the name of the base model in your extension p
 
 :::
 
-#### Set Up the Extension Project Locally {#local-setup}
+#### 3.2 Set Up the Extension Project Locally {#local-setup}
 
-Your extension needs the base model to resolve `using … from '@capire/xtravels'`. The steps below start the SaaS app and its sidecar, prepare the tenants, and then [pull the base model](#pull-base). After that, you can run the extension **standalone**. You only need the host and sidecar again to refresh the model or push an extension.
+You need the host and sidecar to pull/refresh the model and to push an extension. Extensions need the base model, otherwise `using … from '@capire/xtravels'` statements won't resolve. To run the extension **standalone**, start the SaaS app and its sidecar, prepare the tenants, and then [pull the base model](#pull-base).
 
-Before starting the servers, assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`. The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar:
-
+1. Assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`. The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar:
 ::: code-group
 
 ```json [samples/xtravels/package.json]
@@ -320,7 +320,7 @@ The host serves the SaaS app on **:4114**. The sidecar must already be up, becau
 
 ##### Subscribe the Tenants {#prepare-an-extension-tenant}
 
-You work with two tenants: a **production tenant** `t1` (where end users such as `carol` work) and a dedicated **test tenant** `t1-ext`, where you validate an extension before activating it to production. In your local setup you simulate both subscriptions with the [mock user](../../node.js/authentication#mock-users) `yves`, against the sidecar:
+You work with two tenants: a **production tenant** `t1` and a dedicated **test tenant** `t1-ext`, where you validate an extension before activating it to production. In your local setup, simulate both subscriptions through the sidecar using the [mock user](../../node.js/authentication#mock-users) `yves`:
 
 ```sh
 cds subscribe t1 --to http://localhost:4005 -u yves:
@@ -333,7 +333,7 @@ cds subscribe t1-ext --to http://localhost:4005 -u yves:
 
 ##### Pull the Base Model {#pull-base}
 
-In your third terminal, from `xtravels-ext`, pull the latest base model as user `bob`:
+In your third terminal, from `xtravels-ext`, pull the latest base model as [user `bob`](#local-setup):
 
 ```sh
 cds pull --from http://localhost:4005 -u bob: -s t1-ext
@@ -447,7 +447,6 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
 Two groups still need care, both covered in the next section: `Currencies` has extra columns to trim, and the external **flights** and **customers** data has filenames to derive.
-:::
 
 #### External & Federated Test Data {#external-test-data}
 
@@ -557,7 +556,7 @@ Boot the extension on its own. The pre-filled `.base/` model and the test data i
     npm install
     cds watch          # → http://localhost:4006
 
-Edit `./app/extensions.cds`, save, and `cds watch` reloads.
+Edit `./app/extensions.cds` or `./app/fiori.cds`, save, and `cds watch` reloads.
 
 **B: Push to a tenant**
 
@@ -697,7 +696,7 @@ Pulling downloads the base model as a package into the npm workspace folder `.ba
 
 ### 3. Write the Extension {#write-extension }
 
-Edit the file _app/extensions.cds_ and replace its content with the following:
+Edit the files _app/extensions.cds_ and _app/fiori.cds_ and replace their content with the following:
 
 Put new entities in `x_travels.ext`, the dedicated namespace allowed by the provider. You choose the entity names within this namespace.
 
@@ -705,7 +704,7 @@ Put new entities in `x_travels.ext`, the dedicated namespace allowed by the prov
 
 ```cds [app/extensions.cds]
 namespace x_travels.ext; // for new entities like x_CostCenters below
-using { TravelService, sap, sap.capire.travels.Travels } from '@capire/xtravels';
+using { sap, sap.capire.travels.Travels } from '@capire/xtravels';
 
 extend Travels with { // 2 new fields....
   x_priority   : String enum {high; medium; low} default 'medium';
@@ -715,10 +714,12 @@ extend Travels with { // 2 new fields....
 entity x_CostCenters : sap.common.CodeList { // Value Help
   key code : String(10);
 }
+```
 
-
-// -------------------------------------------
-// Fiori Annotations
+```cds [app/fiori.cds]
+namespace x_travels.ext; // only applies to new entities defined below
+using { TravelService, sap.capire.travels.Travels } from '@capire/xtravels';
+using from './extensions';
 
 annotate Travels:x_priority with @title: 'Priority';
 annotate x_CostCenters:name with @title: 'Cost Center';
@@ -1211,14 +1212,18 @@ Travels_priority_col = Priority
 
 :::
 
-Replace the corresponding titles in _app/extensions.cds_ with the keys from the properties file:
+Replace the corresponding titles in _app/fiori.cds_ with the keys from the properties file:
 
-```cds [app/extensions.cds]
+::: code-group
+
+```cds [app/fiori.cds]
 annotate sap.capire.travels.Travels:x_priority
   with @title: '{i18n>Travels_priority_col}';
 annotate x_travels.ext.x_CostCenters:name
   with @title: '{i18n>CostCenter_name_col}';
 ```
+
+:::
 
 Build the updated extension and [push it to your test tenant](#push-extension). For a cloud test subscriber with a [saved login](#cds-login), run:
 
