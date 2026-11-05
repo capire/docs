@@ -93,7 +93,7 @@ CAP Java 5 harmonizes search behavior with CAP Node.js and RAP. By default, sear
 
 #### Search Syntax
 
-CAP Java now adds full support for the SAP HANA search syntax, harmonizing the user experience with CAP Node.js and RAP. This is now the default. Alternatively, the OData search syntax is still supported by configuration. The syntaxes differ in how expressions are composed:
+CAP Java now adds full support for the SAP HANA search syntax, harmonizing the user experience with CAP Node.js and RAP. This syntax is now the default. Alternatively, the OData search syntax is still supported by configuration. The syntaxes differ in how expressions are composed:
 
 | operator | SAP HANA | OData |
 |---|---|---|
@@ -104,7 +104,7 @@ CAP Java now adds full support for the SAP HANA search syntax, harmonizing the u
 | precedence | OR has precedence over AND (!) | AND has precedence over OR |
 
 ::: warning HANA Syntax
-`AND`, `NOT` and brackets don't have special meaning and are treated as part of the search term.
+`AND`, `NOT`, and brackets don't have special meaning and are treated as part of the search term.
 :::
 
 Example - _search for books on plants but not palm trees_:
@@ -114,7 +114,7 @@ Example - _search for books on plants but not palm trees_:
 
 On H2, SQLite, and Postgres, the SAP HANA syntax is emulated so that you can use search consistently in local development and CI.
 
-The per-protocol search mode properties have been replaced by the unified <Config java>cds.sql.search.syntax</Config> property with options `HANA` (default) and `ODATA`.
+The individual search mode properties that were per-protocol have been replaced by the unified <Config java>cds.sql.search.syntax</Config> property with options `HANA` (default) and `ODATA`.
 
 To switch back to OData search syntax, set <Config java>cds.sql.search.syntax: ODATA</Config>.
 
