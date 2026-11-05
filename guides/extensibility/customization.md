@@ -385,6 +385,7 @@ using { sap.capire.travels.Travels } from '@capire/xtravels';
 extend Travels with {
   x_new_field : String;
 }
+```
 
 :::
 
@@ -431,7 +432,7 @@ Data under `test/data/` is loaded **only** during local `cds watch`, it stays sc
 :::
 
 ::: tip Provide a complete set of test data
-To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. A `test/data/sap.capire.travels-Travels.csv` has this shape (the complete, real data you copy in the next step replaces this illustrative sample, so you don't need to hand-write it):
+To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. A `test/data/sap.capire.travels-Travels.csv` has this shape (the earlier copy commands already provide the complete sample data, so you don't need to hand-write it):
 
 ::: code-group
 
@@ -446,6 +447,7 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
 Two groups still need care, both covered in the next section: `Currencies` has extra columns to trim, and the external **flights** and **customers** data has filenames to derive.
+:::
 
 #### External & Federated Test Data {#external-test-data}
 
