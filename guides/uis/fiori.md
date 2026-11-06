@@ -484,10 +484,6 @@ Can be disabled with <Config>cds.fiori.draft_messages: false</Config>.
 
 ### Showing a Custom User Description { #draft-user-description}
 
-::: warning Only Java
-This feature is currently supported only on the Java runtime.
-:::
-
 By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
 
 **1. Enable the compiler option** in your `.cdsrc.json`:
@@ -502,7 +498,9 @@ By default, the SAP Fiori draft UI displays the unique user name in fields such 
 
 The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
 
-**2. Register a `@Before` handler** on `DRAFT_CREATE` across all draft services to populate the field:
+**2. Register a handler** on draft events across all draft services to populate the field:
+
+This is how the handler could look for CAP Java:
 
 ```java
 @Component
@@ -512,11 +510,8 @@ public class UserDescriptionHandler implements EventHandler {
     @Autowired private UserInfo userInfo;
 
     @Before
-    protected void addDraftFields(DraftCreateEventContext context, List<CdsData> entries) {
-        CdsDataProcessor.Filter filter =
-            (path, element, type) -> "InProcessByUserDescription".equals(element.getName());
-        CdsDataProcessor.Generator generator = (path, element, isNull) -> description();
-        CdsDataProcessor.create().addGenerator(filter, generator).process(entries, context.getTarget());
+    protected void addDraftFields(DraftCreateEventContext context, List<Order> orders) {
+        orders.forEach(o -> o.setInProcessByUserDescription(description()));
     }
 
     private String description() {
@@ -526,6 +521,15 @@ public class UserDescriptionHandler implements EventHandler {
     }
 }
 ```
+
+This is the corresponding handler for CAP node.js: 
+
+```javascript
+srv.on('PATCH', Order, req => {
+  req.data.LastChangedByUserDescription = req.user.attr.firstName + ' ' + req.user.attr.lastName
+})
+```
+
 
 ::: tip
 The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
