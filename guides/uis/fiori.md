@@ -510,14 +510,9 @@ public class UserDescriptionHandler implements EventHandler {
     @Autowired private UserInfo userInfo;
 
     @Before
-    protected void addDraftFields(DraftCreateEventContext context, List<Order> orders) {
-        orders.forEach(o -> o.setInProcessByUserDescription(description()));
-    }
-
-    private String description() {
-        return userInfo.getAdditionalAttribute("given_name")
-            + " "
-            + userInfo.getAdditionalAttribute("family_name");
+    protected void addDraftFields(DraftPatchEventContext context, Order order) {
+        order.setInProcessByUserDescription(userInfo.getAdditionalAttribute("given_name") + " "
+            + userInfo.getAdditionalAttribute("family_name")description());
     }
 }
 ```
@@ -526,7 +521,7 @@ This is the corresponding handler for CAP node.js:
 
 ```javascript
 srv.on('PATCH', Order, req => {
-  req.data.LastChangedByUserDescription = req.user.attr.firstName + ' ' + req.user.attr.lastName
+  req.data.LastChangedByUserDescription = req.user.attr.firstName + ' ' + req.user.attr.givenName
 })
 ```
 
