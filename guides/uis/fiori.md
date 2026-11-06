@@ -482,6 +482,55 @@ You can override generated side-effect annotations per entity, for example:
 Can be disabled with <Config>cds.fiori.draft_messages: false</Config>.
 :::
 
+### Showing a Custom User Description { #draft-user-description}
+
+By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
+
+**1. Enable the compiler option** in your `.cdsrc.json`:
+
+```json
+{
+  "cdsc": {
+    "draftUserDescription": true
+  }
+}
+```
+
+The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
+
+**2. Register a handler** on draft events across all draft services to populate the field:
+
+This is how the handler could look for CAP Java:
+
+```java
+@Component
+@ServiceName(value = "*", type = DraftService.class)
+public class UserDescriptionHandler implements EventHandler {
+
+    @Autowired private UserInfo userInfo;
+
+    @Before
+    protected void addDraftFields(DraftPatchEventContext context, Order order) {
+        order.setInProcessByUserDescription(userInfo.getAdditionalAttribute("given_name") + " "
+            + userInfo.getAdditionalAttribute("family_name")description());
+    }
+}
+```
+
+This is the corresponding handler for CAP node.js: 
+
+```javascript
+srv.on('PATCH', Order, req => {
+  req.data.InProcessByUserDescription = req.user.attr.givenName + ' ' + req.user.attr.familyName
+})
+```
+
+
+::: tip
+The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
+:::
+
+
 ### Draft for Localized Data
 
 Annotate the underlying base entity in the base model with `@fiori.draft.enabled` to also support drafts for [localized data](./localized-data):
