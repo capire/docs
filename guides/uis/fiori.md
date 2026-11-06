@@ -521,7 +521,7 @@ This is the corresponding handler for CAP node.js:
 
 ```javascript
 srv.on('PATCH', Order, req => {
-  req.data.LastChangedByUserDescription = req.user.attr.firstName + ' ' + req.user.attr.givenName
+  req.data.InProcessByUserDescription = req.user.attr.givenName + ' ' + req.user.attr.familyName
 })
 ```
 
