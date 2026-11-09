@@ -500,7 +500,7 @@ The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, 
 
 **2. Register a handler** on draft events across all draft services to populate the field:
 
-This is how the handler could look for CAP Java that fills in the user decription for the draft-enabled entity `Orders`:
+For example, a CAP Java handler that fills in the user description for the draft-enabled entity `Orders`:
 
 ```java
 @Component
@@ -517,7 +517,7 @@ public class UserDescriptionHandler implements EventHandler {
 }
 ```
 
-This is the corresponding handler for CAP node.js: 
+The corresponding handler for CAP node.js: 
 
 ```javascript
 srv.on('PATCH', Order, req => {
