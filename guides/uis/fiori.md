@@ -500,7 +500,7 @@ The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, 
 
 **2. Register a handler** on draft events across all draft services to populate the field:
 
-This is how the handler could look for CAP Java:
+This is how the handler could look for CAP Java that fills in the user decription for the draft-enabled entity `Orders`:
 
 ```java
 @Component
