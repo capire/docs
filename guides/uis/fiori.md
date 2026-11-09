@@ -500,9 +500,10 @@ The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, 
 
 **2. Register a handler** on draft events across all draft services to populate the field:
 
-For example, a CAP Java handler that fills in the user description for the draft-enabled entity `Orders`:
+For example, a handler that fills in the user description for the draft-enabled entity `Orders`:
+::: code-group
 
-```java
+```java [Java]
 @Component
 @ServiceName(value = "*", type = DraftService.class)
 public class UserDescriptionHandler implements EventHandler {
@@ -517,14 +518,13 @@ public class UserDescriptionHandler implements EventHandler {
 }
 ```
 
-The corresponding handler for CAP node.js: 
-
-```javascript
+```javascript [Node.js]
 srv.on('PATCH', Order, req => {
   req.data.InProcessByUserDescription = req.user.attr.givenName + ' ' + req.user.attr.familyName
 })
 ```
 
+:::
 
 ::: tip
 The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
