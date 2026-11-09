@@ -512,7 +512,7 @@ public class UserDescriptionHandler implements EventHandler {
     @Before
     protected void addDraftFields(DraftPatchEventContext context, Order order) {
         order.setInProcessByUserDescription(userInfo.getAdditionalAttribute("given_name") + " "
-            + userInfo.getAdditionalAttribute("family_name")description());
+            + userInfo.getAdditionalAttribute("family_name"));
     }
 }
 ```
