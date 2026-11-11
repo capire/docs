@@ -136,6 +136,22 @@ cds.on('served', async ()=>{
 })
 ```
 
+### Why do I get a `MaxListenersExceededWarning`? {#max-listeners-exceeded}
+
+Node.js emits this warning when more than (by default) 10 listeners are registered on the same emitter.
+This warning may be expected during startup, when more listeners are registered on `cds` (e.g. for `served`).
+**Unless** additional listeners are added at runtime - in a loop or as a reaction to external calls, there is little risk of any memory-leakage occuring.
+
+In such cases, the warning can be suppressed by gradually increasing the limit from within a [custom `server.js`](../node.js/cds-server#custom-serverjs):
+
+```js [server.js]
+const cds = require('@sap/cds')
+cds.setMaxListeners(20) // adjust to the observed count
+module.exports = cds.server
+```
+
+[Learn more about CDS lifecycle events.](../node.js/cds-facade#lifecycle-events){.learn-more}
+
 ### Why does my app not show up in Dynatrace?
 
 Requirements:
