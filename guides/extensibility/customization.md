@@ -272,10 +272,10 @@ You use the `extends` property as the name of the base model in your extension p
 
 You need the host and sidecar to pull/refresh the model and to push an extension. Extensions need the base model, otherwise `using … from '@capire/xtravels'` statements won't resolve. To run the extension **standalone**, start the SaaS app and its sidecar, prepare the tenants, and then [pull the base model](#pull-base).
 
-1. Assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`. The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar:
+Assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`. The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar:
 ::: code-group
 
-```json [samples/xtravels/package.json]
+```json{3-12} [samples/xtravels/package.json]
 {
   "cds": {
     "requires": {
@@ -347,6 +347,12 @@ This downloads the base model as an npm workspace package into the `.base` folde
 npm install
 ```
 
+::: tip
+
+`cds pull` only writes the `.base/` folder and a few `package.json` entries, it never touches your `app/`, `test/data/`, or `db/data/`, so it won't overwrite the template you've built so far.
+
+:::
+
 ::: details See what `cds pull` does…
 
 1. Gets the base-model name from the extension _package.json_, property `extends`.
@@ -371,7 +377,7 @@ With the base model pulled, day-to-day development happens in the extension proj
 If you run `cds watch` before adding any extension, you'll see `No models found … Waiting for some to arrive`. That's expected, not an error: add an extension model first (next section), then `cds watch` serves it on :4006.
 :::
 
-#### Add Sample Content
+#### 3.3 Add Sample Content
 
   1. Create a new file _app/extensions.cds_ and fill in this content:
 
@@ -409,9 +415,40 @@ annotate TravelService.Travels with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-#### Add Test Data
+#### 3.4 Adding Test Data
 
-You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across.
+A bare `Travels` table isn't browseable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells.
+
+::: tip Provide a complete set of test data
+To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, provide some test data. For our example, `test/data/sap.capire.travels-Travels.csv` will look like this:
+
+::: code-group
+
+```csv [test/data/sap.capire.travels-Travels.csv]
+ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,Customer_ID
+1,"Business Trip for Christine, Pierre",2026-08-04,2026-08-04,20,USD,O,070007,000608
+2,Vacation,2026-08-04,2027-06-02,80,USD,O,070046,000093
+```
+
+:::
+
+You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across. They will need some care after copying due to two factors:
+
+##### 1. Models included in the base app
+
+When you use `cds pull` the model is **minified** (`@cds.minify`), external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …` and if it targets an entity that was dropped entirely, you will get errors like `no such table`.
+
+In our example, you will copy xtravels' own data and code lists. Then, you will trim the extra columns from `Currencies`.
+
+##### 2. Models for federated entities from remote services
+
+Not all the data your app uses comes from its own tables. XTravels shows `Customers` and the `Flights`/`Supplements` data behind each booking which are **projections over external services**: SAP S/4HANA business partners (served by `@capire/s4`) and the flights microservice (`@capire/xflights`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it, and a standalone `cds watch` starts with those tables **empty**, so the Fiori list shows blank _Customer_ and _Flight_ cells.
+
+In our example, you will derive the filenames to add the the external **flights** and **customers** data.
+
+##### 3.4.1  Copy Test Data
+
+To make the template **browseable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
   1. From the `xtravels-ext` folder:
   ```sh
@@ -431,40 +468,36 @@ You assemble this template from the base app and its reuse modules. They live in
 Data under `test/data/` is loaded **only** during local `cds watch`, it stays scoped to development and is _not_ deployed when the extension is activated to a tenant. Put initial data that must ship to production under `db/data/` instead (see [Add Data](#add-data)).
 :::
 
-::: tip Provide a complete set of test data
-To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, add some test data. A `test/data/sap.capire.travels-Travels.csv` has this shape (the earlier copy commands already provide the complete sample data, so you don't need to hand-write it):
+**Copy only the code lists you need.** The commands above include the code lists needed for this walkthrough. Before copying other data, make sure that its target entity is present in the pulled model to avoid deployment errors.
+
+  ::: tip Quickly find the target entity
+  Open the [pulled base model's](#pull-base) `.base/index.csn` (created by `cds pull`) to check an entity. Its `projection` or `query` shows the source it reads from. Check for any listed aspects for the fields your CSV may contain in its `elements` and `includes`. If the definition is absent, there is no entity to load data into.
+  :::
+
+##### 3.4.2 Match the columns to the pulled model.
+
+The earlier copy command leaves out `sap.common-Currencies.csv` because the source file contains extra columns that are absent from the pulled model. Create `test/data/sap.common-Currencies.csv` with these matching columns and values:
 
 ::: code-group
 
-```csv [test/data/sap.capire.travels-Travels.csv]
-ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,Customer_ID
-1,"Business Trip for Christine, Pierre",2026-08-04,2026-08-04,20,USD,O,070007,000608
-2,Vacation,2026-08-04,2027-06-02,80,USD,O,070046,000093
+```csv [test/data/sap.common-Currencies.csv]
+code;symbol;name;descr
+EUR;€;Euro;European Euro
+USD;$;US Dollar;United States Dollar
 ```
 
 :::
 
-A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells. To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
+XTravels builds on **`@capire/common`**, which adds currency fields (`numcode`, `minor`, and `exponent`) and related code lists to `@sap/cds/common` but these aren't used and are dropped when minified. In general, the pulled model may omit columns so always match the CSV's columns to the pulled model and remove any copied data that isn't used.
 
-Two groups still need care, both covered in the next section: `Currencies` has extra columns to trim, and the external **flights** and **customers** data has filenames to derive.
+::: note
+You don't need to change the other code lists (`sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts`).
+:::
 
-#### External & Federated Test Data {#external-test-data}
+##### 3.4.3 Add External & Federated Test Data {#external-test-data}
 
-Not everything XTravels shows comes from its own tables. `Customers` and the `Flights`/`Supplements` behind each booking are **projections over external services**: SAP S/4HANA business partners (served by `@capire/s4`) and the flights microservice (`@capire/xflights`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it, and a standalone `cds watch` starts with those tables **empty**, so the Fiori list shows blank _Customer_ and _Flight_ cells.
 
-To show some demo data in the template, provide that data locally. Two things need to line up: the **target CSV file name** and the **columns**.
-
-##### 1. The target CSV file's name
-
-The declarations for the external services exist in the base app's model, use them to derive the right CSV file name. A federated entity is declared as a projection on an external service's entity. 
-
-For example, the base app's customers model:
-
-```cds
-@federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
-```
-
-Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, found under the `samples` workspace next to your extension project. From the `xtravels-ext` folder:
+Provide demo federated data for `customers` and `Flights`/`Supplements` locally. From the `xtravels-ext` folder:
 
 ```sh
 # Customers: SAP S/4HANA business partners (@capire/s4)
@@ -476,35 +509,36 @@ cp ../samples/xflights/apis/data-service/data/sap.capire.flights.FlightsService.
 
 `Airlines` and `Airports` are needed so the flattened `airline`, `origin`, and `destination` names resolve, and `A_BusinessPartnerAddress` carries the customer address the UI shows.
 
-::: tip Why flights data comes from `@capire/xflights-data`, not `@capire/xflights`
-`@capire/xflights` is the flights **microservice**: in the deployed app XTravels calls it remotely and replicates its data, so the service owns that data, XTravels doesn't. There's nothing to copy from it. `@capire/xflights-data` is a separate pre-built **integration package** that bundles the same `FlightsService` definition together with sample master data (Airlines, Airports, Flights, Supplements). XTravels depends on `@capire/xflights-data` (not the live microservice), so a standalone `cds watch` runs against a **mock** of the service, and that package is where the data CSVs live. The same split shows up on disk: the FlightsService master data is under `xflights/apis/data-service/data/` (the `@capire/xflights-data` package), **not** under the microservice's own `xflights/db/data/` (whose `sap.capire.flights-*` tables are the service's internal storage, a different namespace). Copy from `apis/data-service/data/`. The same split applies to any federated service: the running service is one thing, the sample-data package you copy from is another.
+::: details Why flights data comes from `@capire/xflights-data`, not `@capire/xflights`
+`@capire/xflights` is the flights **microservice**: in the deployed app,
+XTravels calls it remotely and replicates its data, so XTravels doesn't
+own that data.
+
+`cds watch` returns mock data through the `@capire/xflights-data` dependency which is an **integration package** that bundles the `FlightsService` definition and sample master data CSVs. 
+
+So we copy from `xflights/apis/data-service/data/` (the integration package) and **not**
+from `xflights/db/data/` (the microservice's internal storage).
+
+The same split applies to any federated service: the running service is one
+thing, the sample-data package you copy from is another.
 :::
 
-##### 2. Match the columns to the pulled model.
+::: tip How to derive the CSV's file name
 
-The base model you pull is **minified** (`@cds.minify`), external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …`; if it targets an entity that was dropped entirely, you get `no such table`.
+The declarations for the external services exist in the base app's model, use them to find the CSV file name. A federated entity is declared as a projection on an external service's entity. 
 
-XTravels builds on **`@capire/common`**, which adds currency fields and further code lists to `@sap/cds/common`. The pulled model may omit those additions. Copy only the data you need, and match its columns to the pulled model:
+For example, the base app's customers model:
 
-- **Create the currency test data separately.** The earlier copy command leaves out `sap.common-Currencies.csv` because the source file contains extra columns (`numcode`, `minor`, and `exponent`) that are absent from the pulled model. Create `test/data/sap.common-Currencies.csv` with these matching columns and values:
+```cds
+@federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
+```
 
-  ```csv [test/data/sap.common-Currencies.csv]
-  code;symbol;name;descr
-  EUR;€;Euro;European Euro
-  USD;$;US Dollar;United States Dollar
-  ```
+Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, found under the `samples` workspace next to your extension project.
 
-- **Copy only the code lists you need.** The commands above include the code lists needed for this walkthrough. For other data, first check that its target entity is present in the pulled model.
-
-The earlier commands already copy `sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts` unchanged.
-
-::: tip Find the target quickly
-This lookup uses the pulled base model, so run [`cds pull`](#pull-base) first (or ship a pre-filled [`.base/`](#template-base)) if you haven't yet: that's what creates `.base/index.csn`. `cds pull` only writes the `.base/` folder and a few `package.json` entries; it never touches your `app/`, `test/data/`, or `db/data/`, so it won't overwrite the template you've built so far.
-
-Open the pulled `.base/index.csn` to check an entity. Its `projection` or `query` shows the source it reads from. Check its `elements` and any aspects listed in `includes` for the fields your CSV may contain. If the definition is absent, there is no entity to load data into.
 :::
 
-#### Ship a Pre-Filled Base Model {#template-base}
+
+#### 3.5 Ship a Pre-Filled Base Model {#template-base}
 
 Normally an extension developer has to run [`cds pull`](#pull-base) against a live tenant subscription before the project compiles, because `using … from '@capire/xtravels'` needs the base model. You can remove that first hurdle by shipping a **pre-filled `.base/`** with the template, a compiled snapshot of the base model, so `cds watch` works right after `npm install`.
 
@@ -516,7 +550,7 @@ Normally an extension developer has to run [`cds pull`](#pull-base) against a li
 If you don't ship `.base/`, that's fine, developers just run [`cds pull`](#pull-base) once as the first step, as described in the SaaS-customer walkthrough below.
 :::
 
-#### Make It Browsable {#template-ui}
+#### 3.6 Make It Browseable {#template-ui}
 
 For model-only extensions, the [generic Fiori preview](#test-locally) is enough to check your new fields. To use the application's own UI locally, copy its Fiori Elements shell from the `xtravels-ext` folder:
 
@@ -527,12 +561,12 @@ cp -R ../samples/xtravels/app/travels/webapp app/travels/
 
 `cds watch` serves it at `http://localhost:4006/travels/webapp/index.html`. The UI annotations are already included in the base model.
 
-#### Add a Readme
+#### 3.7 Add a Readme
 
-Include additional documentation for the extension developer in a _README.md_ file inside the template project.
+Include additional documentation for the extension developer in a _README.md_ file inside the template project:
 ::: code-group
 
-```md [README.md]
+```md [xtravels-ext/README.md]
 # Getting Started
 
 Welcome to your extension project for `@capire/xtravels`.
