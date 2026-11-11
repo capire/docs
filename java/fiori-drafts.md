@@ -333,48 +333,7 @@ public void createDraft(CreateDraftContext context) {
 
 ## Showing a Custom User Description { #draft-user-description}
 
-By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
-
-**1. Enable the compiler option** in your `.cdsrc.json`:
-
-```json
-{
-  "cdsc": {
-    "draftUserDescription": true
-  }
-}
-```
-
-The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
-
-**2. Register a `@Before` handler** on `DRAFT_CREATE` across all draft services to populate the field:
-
-```java
-@Component
-@ServiceName(value = "*", type = DraftService.class)
-public class UserDescriptionHandler implements EventHandler {
-
-    @Autowired private UserInfo userInfo;
-
-    @Before
-    protected void addDraftFields(DraftCreateEventContext context, List<CdsData> entries) {
-        CdsDataProcessor.Filter filter =
-            (path, element, type) -> "InProcessByUserDescription".equals(element.getName());
-        CdsDataProcessor.Generator generator = (path, element, isNull) -> description();
-        CdsDataProcessor.create().addGenerator(filter, generator).process(entries, context.getTarget());
-    }
-
-    private String description() {
-        return userInfo.getAdditionalAttribute("given_name")
-            + " "
-            + userInfo.getAdditionalAttribute("family_name");
-    }
-}
-```
-
-::: tip
-The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
-:::
+[Learn how to show a custom user description in drafts.](../guides/uis/fiori#draft-user-description){.learn-more}
 
 ## Consuming Draft Services { #draftservices}
 
