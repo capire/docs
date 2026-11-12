@@ -150,20 +150,21 @@ CAP Java SDK has useful built-in loggers that help to track runtime behavior:
 
 | Logger                                | Use case                                                                                             |
 | :------------------------------------ | :--------------------------------------------------------------------------------------------------- |
-| `com.sap.cds.security.authentication` | Logs authentication and user information                                                             |
-| `com.sap.cds.security.authorization`  | Logs authorization decisions                                                                         |
+| `com.sap.cds.auditlog`                | Logs audit log events                                                                                |
+| `com.sap.cds.handlers`                | Logs sequence of executed handlers as well as the lifecycle of RequestContexts and ChangeSetContexts |
+| `com.sap.cds.messaging`               | Logs messaging configuration and messaging events                                                    |
+| `com.sap.cds.multitenancy`            | Logs tenant-related events and sidecar communication                                                 |
 | `com.sap.cds.odata.v2`                | Logs OData V2 request handling in the adapter                                                        |
 | `com.sap.cds.odata.v4`                | Logs OData V4 request handling in the adapter                                                        |
-| `com.sap.cds.handlers`                | Logs sequence of executed handlers as well as the lifecycle of RequestContexts and ChangeSetContexts |
+| `com.sap.cds.outbox`                  | Logs activity of the transactional outbox                                                            |
 | `com.sap.cds.persistence.sql`         | Logs executed queries such as CQN and SQL statements (w/o parameters)                                |
 | `com.sap.cds.persistence.sql-tx`      | Logs transactions, ChangeSetContexts, and connection pool                                            |
-| `com.sap.cds.multitenancy`            | Logs tenant-related events and sidecar communication                                                 |
-| `com.sap.cds.messaging`               | Logs messaging configuration and messaging events                                                    |
+| `com.sap.cds.properties`              | Logs CDS properties with a non-default value on application startup                                  |
 | `com.sap.cds.remote.odata`            | Logs request handling for remote OData calls                                                         |
 | `com.sap.cds.remote.wire`             | Logs communication of remote OData calls                                                             |
-| `com.sap.cds.auditlog`                | Logs audit log events                                                                                |
-| `com.sap.cds.outbox`                  | Logs activity of the transactional outbox                                                                                |
-| `com.sap.cds.properties`              | Logs CDS properties with a non-default value on application startup                                  |
+| `com.sap.cds.search`                  | Logs processing of search                                                                            |
+| `com.sap.cds.security.authentication` | Logs authentication and user information                                                             |
+| `com.sap.cds.security.authorization`  | Logs authorization decisions                                                                         |
 
 Most of the loggers are used on DEBUG level by default as they produce quite some log output. It's convenient to control loggers on package level, for example, `com.sap.cds.security` covers all loggers that belong to this package (namely `com.sap.cds.security.authentication` and `com.sap.cds.security.authorization`).
 
