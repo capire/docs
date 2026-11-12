@@ -33,7 +33,7 @@
 
       Force Cloud Foundry mode.
 
-    <em>--k8s</em>
+    <em>--k8s</em> | <em>--kyma</em>
 
       Force Kubernetes mode. Use env vars KUBE_NAMESPACE or NAMESPACE to select a namespace.
 
