@@ -120,7 +120,7 @@ To switch back to OData search syntax, set <Config java>cds.sql.search.syntax: O
 
 #### Fuzzy Search
 
-[Fuzzy search](./@external/guides/services/served-ootb#fuzzy-search) is now enabled by default on SAP HANA, with improved support for UUIDs and large strings. Fuzzy search is now also available in hierarchy queries.
+[Fuzzy search](../guides/services/served-ootb#fuzzy-search) is now enabled by default on SAP HANA, with improved support for UUIDs and large strings. Fuzzy search is now also available in hierarchy queries.
 
 To switch back to exact (containment) search, set <Config java>cds.sql.hana.search.fuzzy: false</Config>.
 
