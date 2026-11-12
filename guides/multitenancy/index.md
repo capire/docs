@@ -984,14 +984,14 @@ To group the tenant containers of many applications or microservices in a common
 
 When a tenant is unsubscribed, the tenant container is deleted but the corresponding SAP HANA tenant isn't deleted automatically by default.
 
-To enable automatic SAP HANA tenant deletion on unsubscription, set <Config keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/cleanup_hana_tenants = true</Config>.
+To enable automatic SAP HANA tenant deletion on unsubscription, set <Config label="cleanup_hana_tenants" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/cleanup_hana_tenants = true</Config>.
 The deletion can fail if the HANA Tenant still has containers assigned to it, e. g. containers of other applications. The failure will only be
 logged as warning.
 
 :::tip Default deletion retention
-When SAP HANA tenant deletion is requested, SAP HANA retains the tenant for recovery by default, as described in the [SAP HANA tenant deletion documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/delete-tenant-cli).
-To delete SAP HANA tenants immediately on unsubscription, enable `cleanup_hana_tenants` as described above and also set <Config keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/immediate_deletion = true</Config>.
-HANA Tenant can also be deleted manually via [HANA Cloud Central](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/open-sap-hana-cloud-central).
+When SAP HANA tenant deletion is requested, SAP HANA retains the tenant for recovery by default, as described in the [SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/delete-tenant-cli).
+To delete SAP HANA tenants immediately on unsubscription, enable `cleanup_hana_tenants` as described above and also set <Config label="immediate_deletion" keyDelim="/" keyOnly>cds/requires/cds.xt.DeploymentService/hdi/create/immediate_deletion = true</Config>.
+SAP HANA Tenants can also be deleted manually via [HANA Cloud Central](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/open-sap-hana-cloud-central).
 :::
 
 #### Migration of existing Service Manager-based applications
