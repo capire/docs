@@ -172,23 +172,14 @@ In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Custo
 
 ### 3. Provide Template Projects {#templates}
 
-**Table of Contents**
-
-* [Preferred Project Layout](#template-layout)
+**In this section you:**
 * [Create an Extension Project (Template)](#31-create-an-extension-project-template)
 * [Set Up the Extension Project Locally](#local-setup)
   * [Assign an Extension Developer](#321-assign-an-extension-developer)
   * [Start the Host and Sidecar](#322-start-the-host-and-sidecar)
   * [Subscribe the Tenants](#prepare-an-extension-tenant)
   * [Pull the Base Model](#pull-base)
-* [Add Sample Content](#33-add-sample-content)
-* [Adding Test Data](#34-adding-test-data)
-  * [Copy Test Data](#341--copy-test-data)
-  * [Match the columns to the pulled model.](#342-match-the-columns-to-the-pulled-model)
-  * [Add External & Federated Test Data](#external-test-data)
-* [Ship a Pre-Filled Base Model](#template-base)
-* [Make It Browsable](#template-ui)
-* [Add a Readme](#37-add-a-readme)
+* [Provide Extension Examples](#33-provide-extension-examples)
 
 To jumpstart your customers with extension projects, it's beneficial to provide a template project. Including this template with your application and making it available as a downloadable archive not only simplifies their work but also enhances their experience.
 
@@ -401,7 +392,7 @@ With the base model pulled, day-to-day development happens in the extension proj
 If you run `cds watch` before adding any extension, you'll see `No models found … Waiting for some to arrive`. That message is expected, not an error: add an extension model first (next section), then `cds watch` serves it on :4006.
 :::
 
-#### 3.3 Add Sample Content
+#### 3.3 Provide Extension Examples
 
   1. Create a new file _app/extensions.cds_ and fill in this content:
 
@@ -439,7 +430,16 @@ annotate TravelService.Travels with @UI.LineItem: [
 
 The name of the _.cds_ file can be freely chosen. Yet, for the build system to work out of the box, it must be in either the `app`, `srv`, or `db` folder.
 
-#### 3.4 Adding Test Data
+### 4. Add Content to the Template
+
+**In this section you:**
+
+* [Copy Test Data](#41--copy-test-data)
+* [Match the columns to the pulled model.](#42-match-the-columns-to-the-pulled-model)
+* [Add External & Federated Test Data](#external-test-data)
+* [Ship a Pre-Filled Base Model](#template-base)
+* [Make It Browsable](#template-ui)
+* [Add a Readme](#46-add-a-readme)
 
 A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells.
 
@@ -458,19 +458,19 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 
 You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across. They'll need some care after copying due to two factors:
 
-1. Models included in the base app
+**Models included in the base app**
 
 When you use `cds pull` the model is **minified** (`@cds.minify`), external and reuse entities keep only the elements, and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …` and if it targets an entity that was dropped entirely, you'll get errors like `no such table`.
 
 In our example, you'll copy xtravels' own data and code lists. Then, you'll trim the extra columns from `Currencies`.
 
-2. Models for federated entities from remote services
+**Models for federated entities from remote services**
 
 Not all the data your app uses comes from its own tables. XTravels shows `Customers` and the `Flights`/`Supplements` data behind each booking which are **projections over external services**: SAP S/4HANA business partners (served by `@capire/s4`) and the flights microservice (`@capire/xflights`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it, and a standalone `cds watch` starts with those tables **empty**, so the Fiori list shows blank _Customer_ and _Flight_ cells.
 
 In our example, you'll derive the filenames to add the external **flights** and **customers** data.
 
-##### 3.4.1  Copy Test Data
+#### 4.1  Copy Test Data
 
 To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
@@ -498,7 +498,7 @@ Data under `test/data/` is loaded **only** during local `cds watch`, it stays sc
   Open the [pulled base model's](#pull-base) `.base/index.csn` (created by `cds pull`) to check an entity. Its `projection` or `query` shows the source that it reads from. Check for any listed aspects for the fields your CSV may contain in its `elements` and `includes`. If the definition is absent, there's no entity to load data into.
   :::
 
-##### 3.4.2 Match the columns to the pulled model.
+#### 4.2 Match the columns to the pulled model.
 
 The earlier copy command leaves out `sap.common-Currencies.csv` because the source file contains extra columns that are absent from the pulled model. Create `test/data/sap.common-Currencies.csv` with these matching columns and values:
 
@@ -518,7 +518,7 @@ XTravels builds on **`@capire/common`**, which adds currency fields (`numcode`, 
 You don't need to change the other code lists (`sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts`).
 :::
 
-##### 3.4.3 Add External & Federated Test Data {#external-test-data}
+#### 4.3 Add External & Federated Test Data {#external-test-data}
 
 
 Provide demo federated data for `customers` and `Flights`/`Supplements` locally. From the `xtravels-ext` folder:
@@ -559,7 +559,7 @@ Locally there's no remote and no replication, so the projection reads straight f
 :::
 
 
-#### 3.5 Ship a Pre-Filled Base Model {#template-base}
+#### 4.4 Ship a Pre-Filled Base Model {#template-base}
 
 Normally an extension developer has to run [`cds pull`](#pull-base) against a live tenant subscription before the project compiles, because `using … from '@capire/xtravels'` needs the base model. You can remove that first hurdle by shipping a **pre-filled `.base/`** with the template, a compiled snapshot of the base model, so `cds watch` works right after `npm install`.
 
@@ -571,7 +571,7 @@ Normally an extension developer has to run [`cds pull`](#pull-base) against a li
 If you don't ship `.base/`, that's fine, developers just run [`cds pull`](#pull-base) once as the first step, as described in the following SaaS-customer walkthrough.
 :::
 
-#### 3.6 Make It Browsable {#template-ui}
+#### 4.5 Make It Browsable {#template-ui}
 
 For model-only extensions, the [generic Fiori preview](#test-locally) is enough to check your new fields. To use the application's own UI locally, copy its Fiori Elements shell from the `xtravels-ext` folder:
 
@@ -582,7 +582,7 @@ cp -R ../samples/xtravels/app/travels/webapp app/travels/
 
 `cds watch` serves it at `http://localhost:4006/travels/webapp/index.html`. The UI annotations are already included in the base model.
 
-#### 3.7 Add a Readme
+#### 4.6 Add a Readme
 
 Include additional documentation for the extension developer in a _README.md_ file inside the template project:
 ::: code-group
@@ -628,7 +628,7 @@ Learn more at https://cap.cloud.sap/docs/guides/extensibility/customization.
 
 :::
 
-### 4. Provide Reference Logic for Local Runs {#reference-wiring}
+### 5. Provide Reference Logic for Local Runs {#reference-wiring}
 
 `cds pull` delivers the SaaS app's **model** (the compiled CSN with all services, entities, and annotations) but _not_ its **server-side handler code**. That code stays on the provider's side. For a model-only extension that's exactly right: you extend the model, you don't ship logic. But it has one consequence for _local_ test-drives.
 
@@ -641,7 +641,7 @@ When you run the extension standalone with `cds watch`, the app boots against th
 On a real tenant your extension runs _inside_ the deployed SaaS app, so all of this wiring is already there. You only need it to make **standalone `cds watch`** behave like the deployed app.
 :::
 
-#### 4.1 Use a Read-Only Server.js
+#### 5.1 Use a Read-Only Server.js
 Bridge the gap with a Read-only `srv/server.js`:
 
 ::: code-group
@@ -688,7 +688,7 @@ The `server.js` reproduces just enough of the base app's behavior. Placing it **
 
 That's all a model-only template needs: keys get generated, the list report's actions no longer break, and the app is fully browsable locally. When the base app changes its behavior, refresh this file by hand, it's a convenience copy, not something `cds pull` keeps in sync.
 
-### 5. Provide Extension Guides {#guide}
+### 6. Provide Extension Guides {#guide}
 
 Give your customers a short guide on extending *your* app. Keep it focused on what is **specific to your application**, and point to this CAP extensibility guide for the generic mechanics rather than repeating them. For example, starting a project from your template, `cds pull`, writing and pushing an extension and so on.
 
@@ -698,7 +698,7 @@ The app-specific parts worth documenting:
 - **Where to connect**: the URLs of your deployed test and production tenants, and how customers obtain them.
 - **In-model documentation**: add [doc comments](../../cds/cdl#doc-comments) on the extensible services and entities, so they're self-describing in the extension developer's editor.
 
-### 6. Deploy Application
+### 7. Deploy Application
 
 Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
 Prepare by going back to your app with `cd xtravels`.
