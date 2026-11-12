@@ -778,7 +778,7 @@ using { TravelService, sap.capire.travels.Travels } from '@capire/xtravels';
 using from './extensions';
 
 annotate Travels:x_priority with @title: 'Priority';
-annotate x_CostCenters:name with @title: 'Cost Center';
+annotate x_travels.ext.x_CostCenters:name with @title: 'Cost Center';
 
 annotate TravelService.Travels with @UI.LineItem: [
   ... up to { Value: Description },
