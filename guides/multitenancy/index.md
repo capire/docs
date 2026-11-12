@@ -984,14 +984,13 @@ To group the tenant containers of many applications or microservices in a common
 
 When a tenant is unsubscribed, the tenant container is deleted but the corresponding SAP HANA tenant isn't deleted automatically by default.
 
-The deletion can be enforced by setting <Config>cds.env.requires['cds.xt.DeploymentService'].hdi.create.cleanup_hana_tenants = true</Config>.
+To enable automatic SAP HANA tenant deletion on unsubscription, set <Config keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/cleanup_hana_tenants = true</Config>.
 The deletion can fail if the HANA Tenant still has containers assigned to it, e. g. containers of other applications. The failure will only be
 logged as warning.
 
 :::tip Default deletion retention
-As described in the [SAP HANA documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/delete-tenant-cli), HANA tenants are not fully deleted by
-default but kept for recovery for some time. To immediately delete HANA tenants, add the configuration
-<Config>cds.env.requires['cds.xt.DeploymentService'].hdi.create.immediate_deletion = true</Config>.
+When SAP HANA tenant deletion is requested, SAP HANA retains the tenant for recovery by default, as described in the [SAP HANA tenant deletion documentation](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-multitenancy/delete-tenant-cli).
+To delete SAP HANA tenants immediately on unsubscription, enable `cleanup_hana_tenants` as described above and also set <Config keyDelim="/">cds/requires/cds.xt.DeploymentService/hdi/create/immediate_deletion = true</Config>.
 HANA Tenant can also be deleted manually via [HANA Cloud Central](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/open-sap-hana-cloud-central).
 :::
 
