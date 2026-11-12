@@ -1,0 +1,562 @@
+{
+  "versions": [
+    "4.0",
+    "5.0",
+    "6.0",
+    "7.0",
+    "8.0",
+    "9.0"
+  ],
+  "migrations": [
+    {
+      "id": "cds9-transactional-event-queues",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Transactional Event Queues Enabled by Default",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "Event queues are enabled by default. A database deployment is required when migrating to cds9/CAP Java 4 if the persistent outbox was not yet used.",
+      "actionRequired": true,
+      "steps": [
+        "If this is an issue for your project, you can opt out by adding `cds.requires.queue = false` (for Node.js and Java projects)",
+        "Note that the table name remains `cds.outbox.Messages` for compatibility",
+        "`cds.outboxed(srv)` is kept as a synonym for the new `cds.queued(srv)`"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#enabled-by-default",
+        "https://cap.cloud.sap/docs/guides/messaging/task-queues"
+      ]
+    },
+    {
+      "id": "cds9-association-to-many",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Association to Many Without ON Conditions",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "A to-many association with missing ON condition is now treated as an unspecified association and cannot be generically served.",
+      "actionRequired": true,
+      "steps": [
+        "If you meant to declare an association to many, correct it: `books: Association to many Books on books.author = $self;`",
+        "If you meant to declare a managed association to one, correct it: `books: Association to Books;`",
+        "If it was correctly modelled as unspecified, ensure you don't deploy such entities to the database and handle them with custom handlers"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#unspecified-assoc"
+      ]
+    },
+    {
+      "id": "cds9-now-transaction-time",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "$now is Transaction Time",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "$now is now translated to `session_context($now)` and reflects the transaction time pinned by the CAP runtimes.",
+      "actionRequired": true,
+      "steps": [
+        "If you need the old behavior, replace `$now` by `current_timestamp` in your models",
+        "Exception: In `default` clause, `$now` is still mapped to `current_timestamp`"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#now-is-transaction-time"
+      ]
+    },
+    {
+      "id": "cds9-skipped-native-hana-associations",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Skipped Native Associations for SAP HANA",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "CDS associations are no longer reflected in database tables and views by native HANA associations to reduce deployment times.",
+      "actionRequired": true,
+      "steps": [
+        "First deployment after upgrading may take longer as each entity with associations is touched",
+        "If you need native HANA associations, switch them back on through `cds.sql.native_hana_associations:true`",
+        "Ensure your project uses faster table changes on SAP HANA (ALTER TABLE ADD COLUMN)"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#skipped-native-associations-for-sap-hana",
+        "https://cap.cloud.sap/docs/guides/databases-hana#native-associations"
+      ]
+    },
+    {
+      "id": "cds9-removed-hdbcds-format",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Removed hdbcds Format",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "The deploy format `hdbcds` for SAP HANA has been removed. Switch to default deploy format `hdbtable`.",
+      "actionRequired": true,
+      "steps": [
+        "Switch to the default deploy format `hdbtable` instead",
+        "This is not relevant for SAP HANA Cloud where `hdbcds` was never available"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#removed-hdbcds-format",
+        "https://cap.cloud.sap/docs/cds/compiler/hdbcds-to-hdbtable"
+      ]
+    },
+    {
+      "id": "cds9-improved-error-handling",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Improved Error Handling",
+      "category": "Enhancement",
+      "severity": "low",
+      "description": "Error handling has been overhauled with reasonable `code` properties and improved sanitation.",
+      "actionRequired": false,
+      "steps": [
+        "Error responses now include reasonable `code` properties (e.g., `ASSERT_FORMAT`)",
+        "Error sanitation now only done in production, not in development profiles",
+        "Input validation errors are now logged as warnings only, not as errors",
+        "Tests may need adjustment if they checked error responses by deep object equality"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#improved-error-handling",
+        "https://cap.cloud.sap/docs/node.js/events#req-reject"
+      ]
+    },
+    {
+      "id": "cds9-nodejs-version",
+      "sourceVersion": "8.0",
+      "targetVersion": "9.0",
+      "title": "Node.js Version Update",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "CAP Node.js v9 requires minimum Node.js 20, with Node.js 22 (LTS) recommended.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade your Node.js installation to at least version 20",
+        "Recommended: Use Node.js 22 (LTS)"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#cap-node-js-v9",
+        "https://nodejs.org"
+      ]
+    },
+    {
+      "id": "cds9-java-version",
+      "sourceVersion": "3.0",
+      "targetVersion": "4.0",
+      "title": "Java Version Update",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "CAP Java v4 requires minimum Java 17 and Maven 3.6.3.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade to Java 17 or higher",
+        "Ensure Maven is at least version 3.6.3",
+        "Update minimum cds-dk to ^8"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2025/may25#cap-java-v4",
+        "https://cap.cloud.sap/docs/java/versions#dependencies-version-4"
+      ]
+    },
+    {
+      "id": "cds8-new-database-services",
+      "sourceVersion": "7.0",
+      "targetVersion": "8.0",
+      "title": "New Database Services (GA)",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "New database services for SQLite, PostgreSQL, and SAP HANA are now GA and the default.",
+      "actionRequired": true,
+      "steps": [
+        "Install new database service packages: `@cap-js/sqlite`, `@cap-js/postgres`, `@cap-js/hana`",
+        "Remove direct dependencies to database driver packages like `sqlite3`, `hdb`, or `@sap/hana-client`",
+        "The new services auto-wire themselves when installed",
+        "Read migration guides for database-specific changes"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#new-database-services-ga",
+        "https://github.com/cap-js/cds-dbs",
+        "https://cap.cloud.sap/docs/guides/databases-sqlite#migration"
+      ]
+    },
+    {
+      "id": "cds8-new-protocol-adapters",
+      "sourceVersion": "7.0",
+      "targetVersion": "8.0",
+      "title": "New Protocol Adapters (GA)",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "Completely re-implemented OData and REST adapters with reduced code base and improved performance.",
+      "actionRequired": true,
+      "steps": [
+        "Review changes to `@odata.context` in responses (optimized to minimal required information)",
+        "$batch requests are now processed sequentially",
+        "$search arguments are captured as plain `val` in CQN objects",
+        "HTTP 401 responses for basic authentication don't contain JSON `{error}` body anymore",
+        "If needed, re-enable old adapters with `cds.features.odata_new_adapter = false` (deprecated)"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#new-protocol-adapters-ga"
+      ]
+    },
+    {
+      "id": "cds8-changed-service-path",
+      "sourceVersion": "7.0",
+      "targetVersion": "8.0",
+      "title": "Changed Default Service Path",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "Services are now served at endpoints including a protocol prefix (e.g., `/odata/v4/admin` instead of `/admin`).",
+      "actionRequired": true,
+      "steps": [
+        "Update consumers of endpoints (e.g., SAP Fiori Elements applications)",
+        "Option 1: Turn on compat flag `cds.features.serve_on_root = true`",
+        "Option 2: Specify absolute paths with `@path` annotation (e.g., `@path:'/admin'`)",
+        "Recommended: Switch to the new endpoint scheme as the old one is deprecated"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#changed-default-service-path",
+        "https://cap.cloud.sap/docs/node.js/cds-serve#cds-protocols"
+      ]
+    },
+    {
+      "id": "cds8-lean-draft",
+      "sourceVersion": "7.0",
+      "targetVersion": "8.0",
+      "title": "Lean Draft is the Sole Implementation",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "Lean draft is now the only draft implementation. Old draft implementation has been removed.",
+      "actionRequired": true,
+      "steps": [
+        "Migrate to lean draft implementation",
+        "Compatibility flag `cds.fiori.draft_compat` is still available in cds8 but will be removed",
+        "All draft sibling entities are now fully compliant CSN entities",
+        "Update handlers to differentiate between active and draft instances"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#lean-draft",
+        "https://cap.cloud.sap/docs/node.js/fiori#draft-support"
+      ]
+    },
+    {
+      "id": "cds8-nodejs-18",
+      "sourceVersion": "7.0",
+      "targetVersion": "8.0",
+      "title": "Node.js 18 Required",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "cds 8 requires Node.js 16 minimum, with Node.js 18 recommended as LTS.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade to Node.js 18 (LTS recommended)",
+        "Node.js 16 is not recommended as it reaches end of life in September 2023"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#upgrade-to-node-js-18",
+        "https://nodejs.org"
+      ]
+    },
+    {
+      "id": "cds8-java-spring-boot-3",
+      "sourceVersion": "2.0",
+      "targetVersion": "3.0",
+      "title": "Spring Boot 3",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "CAP Java now runs with Spring Boot 3, leveraging JDK 17 baseline and Jakarta EE 9.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade to Spring Boot 3",
+        "Update to Jakarta EE 9 (namespace change from javax.* to jakarta.*)",
+        "Review Spring Boot 3 migration guide",
+        "Note: Spring Boot 2.7 runs out of OSS support in November 2023"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2024/jun24#spring-boot-3"
+      ]
+    },
+    {
+      "id": "cds7-upgrade-nodejs-18",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "Upgrade to Node.js 18",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "Node.js 14 is out of maintenance and cds 7 requires Node.js 16 minimum. Node.js 18 LTS is recommended.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade your Node.js installation to at least version 16",
+        "Recommended: Use Node.js 18 (LTS)",
+        "Note: Node.js 16 reaches end of life in September 2023"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#upgrade-to-node-js-18",
+        "https://nodejs.org"
+      ]
+    },
+    {
+      "id": "cds7-upgrade-java-17",
+      "sourceVersion": "1.x",
+      "targetVersion": "2.0",
+      "title": "Upgrade to Java 17",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "For Java projects using the new CAP Java SDK 2, an update to Java 17 is mandatory.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade to Java 17 or higher",
+        "In SAP Business Application Studio, trigger explicitly using command 'Java: Set Default JDK' (F1)"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#upgrade-to-java-17"
+      ]
+    },
+    {
+      "id": "cds7-cds-serve-script",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "Use cds-serve as Start Script",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "The executable from @sap/cds has been renamed from 'cds' to 'cds-serve' to avoid conflicts with @sap/cds-dk.",
+      "actionRequired": true,
+      "steps": [
+        "Change your npm start script from `cds run` to `cds-serve`",
+        "Example: `\"start\": \"cds-serve\"`"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#use-cds-serve-as-start-script"
+      ]
+    },
+    {
+      "id": "cds7-migrate-mtxs",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "Migrate to @sap/cds-mtxs",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "The old MTX package @sap/cds-mtx is no longer supported with cds 7. Must use @sap/cds-mtxs.",
+      "actionRequired": true,
+      "steps": [
+        "Install @sap/cds-mtxs package",
+        "Remove @sap/cds-mtx package",
+        "Follow migration guide for configuration changes",
+        "Update deployment configuration"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#migrate-to-sap-cds-mtxs",
+        "https://cap.cloud.sap/docs/guides/multitenancy/old-mtx-migration"
+      ]
+    },
+    {
+      "id": "cds7-default-string-length",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "Default String Length Changed",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "Default length for cds.String changed from 5000 to 255 for all database dialects except HANA.",
+      "actionRequired": true,
+      "steps": [
+        "Review all String types without explicit length",
+        "For production, always specify the length explicitly",
+        "If needed, configure default: `cds.cdsc.defaultStringLength: 5000`"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#default-string-length"
+      ]
+    },
+    {
+      "id": "cds7-simplified-handlers",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "Simplified After Handlers",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "The result argument of after handlers is always an array now.",
+      "actionRequired": true,
+      "steps": [
+        "Update after handlers to expect result as array",
+        "Remove code that handled no result, single object, and array cases separately",
+        "Use `req.query.SELECT.one` if you need to differentiate single entry vs collection"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#simplified-handlers"
+      ]
+    },
+    {
+      "id": "cds7-protocol-endpoints",
+      "sourceVersion": "6.0",
+      "targetVersion": "7.0",
+      "title": "New Protocol-Specific Service Endpoints",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "Services served via multiple protocols require separate endpoints with protocol prefixes.",
+      "actionRequired": true,
+      "steps": [
+        "Update service paths to include protocol prefix (e.g., `/odata/v4/admin`)",
+        "Update OData v2 proxy to version >= 1.11",
+        "For compatibility, use `cds.features.serve_on_root = true` or specify absolute paths with `@path`",
+        "Prefer switching to the new endpoint scheme (old one is deprecated)"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2023/jun23#new-protocol-specific-service-endpoints"
+      ]
+    },
+    {
+      "id": "cds6-auth-enforced-production",
+      "sourceVersion": "5.0",
+      "targetVersion": "6.0",
+      "title": "Authentication Enforced in Production",
+      "category": "Breaking Change",
+      "severity": "high",
+      "description": "All CAP service endpoints are now authenticated by default in production scenarios regardless of the authorization model.",
+      "actionRequired": true,
+      "steps": [
+        "Ensure authentication strategy is properly configured (e.g., XSUAA)",
+        "In Node.js, disable with feature flag `cds.env.requires.auth.restrict_all_services: false` if needed",
+        "For Java, set `cds.security.openUnrestrictedEndpoints = true` to open only explicitly exposed endpoints",
+        "Model open endpoints explicitly with `@restrict` or `@requires` annotations"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2022/jun22#auth-by-default"
+      ]
+    },
+    {
+      "id": "cds6-db-constraints",
+      "sourceVersion": "5.0",
+      "targetVersion": "6.0",
+      "title": "Database-Level Constraints (Beta)",
+      "category": "Enhancement",
+      "severity": "medium",
+      "description": "Database-level integrity constraints for managed associations are now available as beta feature.",
+      "actionRequired": false,
+      "steps": [
+        "Enable DB-level constraints explicitly with `cds.env.features.assert_integrity = 'db'`",
+        "Service-level integrity checks are deprecated and planned for removal",
+        "Use `@assert.target` annotation for user-friendly input validation on associations",
+        "DB constraints are available for SQLite and SAP HANA dialects"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2022/jun22#db-constraints",
+        "https://cap.cloud.sap/docs/guides/databases#database-constraints"
+      ]
+    },
+    {
+      "id": "cds6-improved-read-after-write",
+      "sourceVersion": "5.0",
+      "targetVersion": "6.0",
+      "title": "Improved Read After Write",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "OData CREATE, UPDATE, EDIT, and SAVE operations now followed by additional READ request to application service.",
+      "actionRequired": true,
+      "steps": [
+        "Only need to register READ handlers to adjust responses (including virtual properties)",
+        "Remove duplicate handler logic for CREATE/UPDATE events that mimicked READ behavior",
+        "Be aware: users only see full response if authorized for READ",
+        "Note: If subsequent READ fails, response status is 204 without payload"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2022/jun22#read-after-write"
+      ]
+    },
+    {
+      "id": "cds6-sap-cloud-sdk-v2",
+      "sourceVersion": "5.0",
+      "targetVersion": "6.0",
+      "title": "SAP Cloud SDK v2 (Node.js)",
+      "category": "Breaking Change",
+      "severity": "medium",
+      "description": "SAP Cloud SDK is now an optional dependency that must be installed explicitly when needed.",
+      "actionRequired": true,
+      "steps": [
+        "Install required SAP Cloud SDK v2 packages if consuming remote OData services",
+        "Similar to SAP HANA driver, it's no longer bundled by default",
+        "Update package.json dependencies accordingly"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2022/jun22#sap-cloud-sdk-v2-node-js"
+      ]
+    },
+    {
+      "id": "cds6-nodejs-12-dropped",
+      "sourceVersion": "5.0",
+      "targetVersion": "6.0",
+      "title": "Dropped Support for Node.js v12",
+      "category": "Requirement",
+      "severity": "high",
+      "description": "Node.js v12 is no longer supported. Minimum required version is Node.js v14.15, with v16 recommended.",
+      "actionRequired": true,
+      "steps": [
+        "Upgrade Node.js installation to at least version 14.15",
+        "Recommended: Use Node.js v16 (Active LTS version at the time)",
+        "Update CI/CD pipelines to use supported Node.js versions",
+        "Note: CAP cds 5 goes into Maintenance Status, cds 4 reaches End of Life"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2022/jun22#dropped-support-for-node-js-v12"
+      ]
+    },
+    {
+      "id": "cds5-exists-predicates",
+      "sourceVersion": "4.0",
+      "targetVersion": "5.0",
+      "title": "Exists Predicates in CQL",
+      "category": "Enhancement",
+      "severity": "low",
+      "description": "Support for exists predicates with path expressions in CQL for expressing complex relationships.",
+      "actionRequired": false,
+      "steps": [
+        "Use exists predicates to simplify complex queries: `SELECT FROM Authors WHERE exists books.pages[wordcount > 1000]`",
+        "Leverage exists predicates for instance-based authorization in @restrict annotations",
+        "Supported in CDS compiler, Node.js runtime, and Java runtime (anyMatch predicate)",
+        "Note: Paths inside infix filters are not yet supported"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2021/dec21#exists-predicates-in-cql",
+        "https://cap.cloud.sap/docs/cds/cql#exists-predicate"
+      ]
+    },
+    {
+      "id": "cds5-persistent-outbox",
+      "sourceVersion": "4.0",
+      "targetVersion": "5.0",
+      "title": "Persistent Outbox (Beta)",
+      "category": "Enhancement",
+      "severity": "low",
+      "description": "Persistent outbox combines asynchronism with resilience for message emit and audit logging.",
+      "actionRequired": false,
+      "steps": [
+        "Enable persistent outbox for messaging and audit logging services",
+        "Messages are stored in persistence and emitted after transaction success",
+        "Automatic retry with exponential backoff for failed emits",
+        "Ensures no lost logs or ghost logs in case of crashes or rollbacks"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2021/dec21#persistent-outbox-beta",
+        "https://cap.cloud.sap/docs/java/outbox#persistent",
+        "https://cap.cloud.sap/docs/node.js/queue#persistent-queue"
+      ]
+    },
+    {
+      "id": "cds5-sql-window-functions",
+      "sourceVersion": "4.0",
+      "targetVersion": "5.0",
+      "title": "SQL Window Functions Support",
+      "category": "Enhancement",
+      "severity": "low",
+      "description": "CQL now supports syntax for SQL window functions.",
+      "actionRequired": false,
+      "steps": [
+        "Use window functions in CQL: `sum(x) over (partition by a order by b rows between unbounded preceding and current row) as s`",
+        "No semantic checks performed - translated directly to SQL",
+        "Consult your database documentation for supported window functions",
+        "Useful for advanced analytics and reporting queries"
+      ],
+      "references": [
+        "https://cap.cloud.sap/docs/releases/archive/2021/dec21#sql-window-functions",
+        "https://cap.cloud.sap/docs/cds/cxn#function-calls"
+      ]
+    }
+  ]
+}
