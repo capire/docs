@@ -390,7 +390,7 @@ let ref = cds.parse.ref (`foo.bar`)
 
 ## cds. minify() {.method}
 
-Minifies a given CSN model by removing all unused<sup>1</sup> types and aspects, as well all entities tagged with `@cds.persistence.skip:'if-unused'`. Use it like that:
+Minifies a given CSN model by removing all unused<sup>1</sup> types and aspects, as well as all entities tagged with `@cds.persistence.skip:'if-unused'`. Use it like that:
 
 ```js
 let csn = await cds.load('*').then(cds.minify)
