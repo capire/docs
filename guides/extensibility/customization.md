@@ -1,6 +1,6 @@
 ---
 description: >
-  This guide explains how subscribers of SaaS applications can extend these on tenant level, thereby customizing them for their specific needs.
+  This guide explains how subscribers of SaaS applications can extend it on the tenant level to customize it for their specific needs.
 ---
 
 # Extending SaaS Applications
@@ -13,9 +13,9 @@ CAP-based applications have built-in support for **SaaS extensions** out of the 
 
 The overall process is depicted in the following figure:
 
-![The graphic shows the three parts that are also discussed in this guide. Each part has it's steps. The first part is the one of the SaaS provider. As SaaS provider you need to deploy an extensible application and provide a guide that explains how to extend your application. In addition the SaaS provider should provide a project template for extension projects. The next part is for the SaaS customer. In this role you need to setup a tenant landscape for your extension, subscribe to the application you want to extend and authorize the extension developers. The last part is for the extension developer. As such, you start an extension project, develop and test your extension and then activate it.](assets/process_SAP_BTP.drawio.svg)
+![The graphic shows the three parts that are also discussed in this guide. Each part has its steps. The first part is one of the SaaS providers. As a SaaS provider, you need to deploy an extensible application and provide a guide that explains how to extend your application. In addition, the SaaS provider should provide a project template for extension projects. The next part is for the SaaS customer. In this role you need to setup a tenant landscape for your extension, subscribe to the application you want to extend and authorize the extension developers. The last part is for the extension developer. As such, you start an extension project, develop, and test your extension and then activate it.](assets/process_SAP_BTP.drawio.svg)
 
-In this guide, you will learn the following:
+In this guide, you'll learn the following:
 
 - How to enable extensibility as a **SaaS provider**.
 - How to develop SaaS extensions as a **SaaS customer**.
@@ -23,9 +23,9 @@ In this guide, you will learn the following:
 
 ## Prerequisites {#prerequisites}
 
-Before we start, you'll need a **CAP-based [multitenant SaaS application](../multitenancy/)** that you can modify and deploy.
+Before we start, you need a **CAP-based [multitenant SaaS application](../multitenancy/)** that you can modify and deploy.
 
-This guide uses the **XTravels** sample (`github.com/capire/xtravels`). You don't need to read that repository's own readme to follow along: just run the setup steps below. Unlike a single-package app such as _bookshop_, XTravels is a **modular application** composed from several reuse packages: `@capire/xflights` (flights master data), `@capire/s4` (business partners), and `@capire/common` (shared currencies and regions). It is therefore set up as a local **npm workspace** so those cross-package dependencies resolve via symlinks.
+This guide uses the **XTravels** sample (`github.com/capire/xtravels`). You don't need to read that repository's own readme to follow along: just run the following setup steps. Unlike a single-package app such as _bookshop_, XTravels is a **modular application** composed from several reuse packages: `@capire/xflights` (flights master data), `@capire/s4` (business partners), and `@capire/common` (shared currencies and regions). It's therefore set up as a local **npm workspace** so those cross-package dependencies resolve via symlinks.
 
 ::: tip Jumpstart with XTravels
 Clone the sample and its reuse packages into a workspace, then install:
@@ -76,7 +76,7 @@ Extensibility is enabled by running this command in your project root:
 cds add extensibility
 ```
 
-::: details Essentially, this automates the following steps…
+::: details What `cds add extensibility` automates...
 
 1. It adds an `@sap/cds-mtxs` package dependency:
 
@@ -109,7 +109,7 @@ npm add @sap/cds-mtxs
 
 :::
 
-If `@sap/cds-mtxs` is newly added to your project install the dependencies:
+If `@sap/cds-mtxs` is newly added to your project, install the dependencies:
 
 ```sh
 npm i
@@ -117,7 +117,7 @@ npm i
 
 ### 2. Restrict Extension Points { #restrictions }
 
-Control which services or entities your SaaS customers are allowed to extend and to what degree they may do so. Add a dedicated namespace for subscriber-owned entities to the `allowlist` (`x_travels.ext`, for example) to let extension developers create entities and ship their initial data without requiring the provider to list each entity name.
+Control which services or entities your SaaS customers are allowed to extend and to what degree they can do so. Add a dedicated namespace for subscriber-owned entities to the `allowlist` (`x_travels.ext`, for example) to let extension developers create entities and ship their initial data without requiring the provider to list each entity name.
 
 Add the requires block to the `cds` section of the `package.json`:
 
@@ -162,15 +162,33 @@ Looking at the configuration, it enforces the following restrictions:
 
 Namespace entries match all entity names beneath that namespace. Use `x_travels.ext` as the prefix, without appending `.*`. For the matching rules, see [Restrict Entities and Fields](../multitenancy/mtxs#restrict-entities-and-fields).
 
-::: details Explicitly restrict extensibility to the app's own model
+::: details Explicitly restrict extensibility to the app's own model...
 The provider could add any entity, and subscribers could then extend it. The rules for extending existing entities and services focus on XTravels' own `sap.capire.travels` entities and `TravelService`.
 
-In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems. As there are no XTravels-owned fields in the reuse modules for a subscriber to add to, they are left out on purpose.
+In our example, `Flights` and `Supplements` (from `@capire/xflights`) and `Customers` (from `@capire/s4`) are read-only [federated](#external-test-data) projections on external services. XTravels doesn't store that data, it replicates it from the remote systems. As there are no XTravels-owned fields in the reuse modules for a subscriber to add to, they're left out on purpose.
 :::
 
 [Learn more about extension restrictions.](../multitenancy/mtxs#extension-restrictions){.learn-more}
 
 ### 3. Provide Template Projects {#templates}
+
+**Table of Contents**
+
+* [Preferred Project Layout](#template-layout)
+* [Create an Extension Project (Template)](#31-create-an-extension-project-template)
+* [Set Up the Extension Project Locally](#local-setup)
+  * [Assign an Extension Developer](#321-assign-an-extension-developer)
+  * [Start the Host and Sidecar](#322-start-the-host-and-sidecar)
+  * [Subscribe the Tenants](#prepare-an-extension-tenant)
+  * [Pull the Base Model](#pull-base)
+* [Add Sample Content](#33-add-sample-content)
+* [Adding Test Data](#34-adding-test-data)
+  * [Copy Test Data](#341--copy-test-data)
+  * [Match the columns to the pulled model.](#342-match-the-columns-to-the-pulled-model)
+  * [Add External & Federated Test Data](#external-test-data)
+* [Ship a Pre-Filled Base Model](#template-base)
+* [Make It Browsable](#template-ui)
+* [Add a Readme](#37-add-a-readme)
 
 To jumpstart your customers with extension projects, it's beneficial to provide a template project. Including this template with your application and making it available as a downloadable archive not only simplifies their work but also enhances their experience.
 
@@ -209,7 +227,7 @@ Declare new entities in the dedicated extension namespace agreed with the provid
 #### 3.1 Create an Extension Project (Template)
 
 ::: warning Create the extension project outside the base app's workspace
-Create `xtravels-ext` next to `samples/`, not inside it. An extension project is its own workspace root and the extension project will map `@capire/xtravels` to the base model in `.base`. If it sat inside the `samples` workspace, `@capire/xtravels` would instead resolve to the base-app **sources**, and the extension would not compile.
+Create `xtravels-ext` next to `samples/`, not inside it. An extension project is its own workspace root and the extension project maps `@capire/xtravels` to the base model in `.base`. If it sat inside the `samples` workspace, `@capire/xtravels` would instead resolve to the base-app **sources**, and the extension wouldn't compile.
 :::
 
 Extension projects are standard CAP projects extending the SaaS application. Create one for your SaaS app following these steps:
@@ -224,7 +242,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
    code . # open in VS Code
    ```
 
-   `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder that will hold the pulled base model.
+   `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder to hold the pulled base model.
 
 2. `cds add extension` writes `@capire/bookshop` as a placeholder in `xtravels-ext/package.json`, change the `extends` to `@capire/xtravels`:
 
@@ -250,13 +268,13 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
     The generated `.base/package.json` has `{ "name": "@capire/bookshop" }`. Leave it unchanged. The later section, [Pull the Base Model](#pull-base) replaces it with `@capire/xtravels`.
     :::
 
-::: details Generated project settings
+::: details Generated project settings...
 
-`cds add extension` sets up `workspaces`, SQLite, and port `4006`. The example above shows the resulting settings. For a project created with an earlier toolkit, check that these settings match.
+`cds add extension` sets up `workspaces`, SQLite, and port `4006`. The preceding example shows the resulting settings. For a project created with an earlier toolkit, check that these settings match.
 
 - `name` identifies the extension within a SaaS subscription. Extension developers can choose the value freely.
-- `extends` is the name by which the extension model will refer to the base model. `cds add extension` writes a placeholder here, change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it will be used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it will only be used locally.
-- `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. `cds pull` will keep this property in sync if needed.
+- `extends` is the name by which the extension model refers to the base model. `cds add extension` writes a placeholder here, change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it's used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it's only used locally.
+- `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. Use `cds pull` to sync this property when needed.
 - `@cap-js/sqlite` provides the in-memory database for local `cds watch`. `cds add extension` puts it in `optionalDependencies`, so `npm install` installs it while the extension build keeps local `test/data` out of the pushed archive (see [Add Test Data](#add-test-data)). If an older project lists it under `dependencies` or `devDependencies`, move it to `optionalDependencies`.
 - `cds.server.port` is set to `4006`, so you can run `cds watch` without passing `--port`.
 
@@ -272,7 +290,9 @@ You use the `extends` property as the name of the base model in your extension p
 
 You need the host and sidecar to pull/refresh the model and to push an extension. Extensions need the base model, otherwise `using … from '@capire/xtravels'` statements won't resolve. To run the extension **standalone**, start the SaaS app and its sidecar, prepare the tenants, and then [pull the base model](#pull-base).
 
-Assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`. The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar:
+##### 3.2.1 Assign an Extension Developer
+
+Assign an **extension developer** for the test tenant. With mocked auth, add user `bob` for `t1-ext` in the SaaS app's `samples/xtravels/package.json`:
 ::: code-group
 
 ```json{3-12} [samples/xtravels/package.json]
@@ -296,29 +316,33 @@ Assign an **extension developer** for the test tenant. With mocked auth, add use
 
 The `cds.ExtensionDeveloper` role is what authorizes `cds pull` and `cds push`. Learn more about it, and the other MTX roles, in [Technical Roles](../multitenancy/mtxs#roles).{.learn-more}
 
+The MTX sidecar reads mock users from this base app configuration, so this setting authorizes `bob` to pull and push against the sidecar.
+
+##### 3.2.2 Start the Host and Sidecar
+
 Use three terminals for this setup: one for the sidecar, one for the host, and one for commands in the extension project.
 
-**1. Start the MTX sidecar.** In your first terminal, from `xtravels-ext`:
+  1. Start the MTX sidecar. In your first terminal, from `xtravels-ext`:
 
-```sh
-cd ../samples/xtravels/mtx/sidecar
-cds watch
-```
+  ```sh
+  cd ../samples/xtravels/mtx/sidecar
+  cds watch
+  ```
 
-The sidecar serves the subscription, deployment, and extensibility endpoints on **:4005**. Leave it running.
+  The sidecar serves the subscription, deployment, and extensibility endpoints on **:4005**. Leave it running.
 
-**2. Start the XTravels host.** Open a second terminal in `xtravels-ext`:
+  2. After the sidecar is up, start the XTravels host. Open a second terminal in `xtravels-ext`:
 
-```sh
-cd ../samples/xtravels
-cds watch --with-mtx
-```
+  ```sh
+  cd ../samples/xtravels
+  cds watch --with-mtx
+  ```
 
-The host serves the SaaS app on **:4114**. The sidecar must already be up, because subscribe, pull, and push are all handled by the sidecar on :4005, not by the host.
+  The host serves the SaaS app on **:4114**.
 
-**3. Prepare and run the extension.** Open a third terminal in `xtravels-ext`. Use it for the subscription, pull, and install commands below, and later for standalone `cds watch`.
+  3. Prepare and run the extension. Open a third terminal in `xtravels-ext`. Use it for the subscription, pull, and install commands below, and later for standalone `cds watch`.
 
-##### Subscribe the Tenants {#prepare-an-extension-tenant}
+##### 3.2.3 Subscribe the Tenants {#prepare-an-extension-tenant}
 
 You work with two tenants: a **production tenant** `t1` and a dedicated **test tenant** `t1-ext`, where you validate an extension before activating it to production. In your local setup, simulate both subscriptions through the sidecar using the [mock user](../../node.js/authentication#mock-users) `yves`:
 
@@ -331,7 +355,7 @@ cds subscribe t1-ext --to http://localhost:4005 -u yves:
 `yves` is a predefined mock user that simulates a technical caller. Its `internal-user` pseudo-role authorizes tenant provisioning. You specify the target tenant in the command, so `yves` needs no tenant assignment. In production, provisioning uses authenticated platform callbacks and technical communication, as described in [Technical Roles](../multitenancy/mtxs#roles).
 :::
 
-##### Pull the Base Model {#pull-base}
+##### 3.2.4 Pull the Base Model {#pull-base}
 
 In your third terminal, from `xtravels-ext`, pull the latest base model as [user `bob`](#local-setup):
 
@@ -349,7 +373,7 @@ npm install
 
 ::: tip
 
-`cds pull` only writes the `.base/` folder and a few `package.json` entries, it never touches your `app/`, `test/data/`, or `db/data/`, so it won't overwrite the template you've built so far.
+`cds pull` only writes the `.base/` folder and a few `package.json` entries, it never touches your `app/`, `test/data/`, or `db/data/`, so that it doesn't overwrite the template you've built so far.
 
 :::
 
@@ -357,7 +381,7 @@ npm install
 
 1. Gets the base-model name from the extension _package.json_, property `extends`.
 
-   If the previous value is not a valid npm package name, it gets changed to `"base-model"`. In this case, existing source files may have to be manually adapted. `cds pull` will notify you in such cases.
+   If the previous value isn't a valid npm package name, it gets changed to `"base-model"`. In this case, `cds pull` will notify you if any existing source files need to be manually adapted.
 
 2. It fetches the base model from the SaaS app.
 3. It saves the base model in a subdirectory `.base` of the extension project.
@@ -371,10 +395,10 @@ npm install
 
 :::
 
-With the base model pulled, day-to-day development happens in the extension project alone: `cds watch` serves it on **:4006** (pinned via the project's own _package.json_, `cds.server.port: 4006`), with neither the host nor the sidecar running. You'll do that once you've added an extension in the next steps.
+With the base model pulled, day-to-day development happens in the extension project alone: `cds watch` serves it on **:4006** (pinned via the project's own _package.json_, `cds.server.port: 4006`), without the host or the sidecar running. You'll do that once you've added an extension in the next steps.
 
 ::: tip An empty extension project waits for a model
-If you run `cds watch` before adding any extension, you'll see `No models found … Waiting for some to arrive`. That's expected, not an error: add an extension model first (next section), then `cds watch` serves it on :4006.
+If you run `cds watch` before adding any extension, you'll see `No models found … Waiting for some to arrive`. That message is expected, not an error: add an extension model first (next section), then `cds watch` serves it on :4006.
 :::
 
 #### 3.3 Add Sample Content
@@ -417,7 +441,7 @@ The name of the _.cds_ file can be freely chosen. Yet, for the build system to w
 
 #### 3.4 Adding Test Data
 
-A bare `Travels` table isn't browseable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells.
+A bare `Travels` table isn't browsable on its own: its associations point at agencies, currencies, customers, and flights that aren't loaded, so the Fiori list shows blank cells.
 
 ::: tip Provide a complete set of test data
 To support [quick-turnaround tests of extensions](#test-locally) using `cds watch`, provide some test data. For our example, `test/data/sap.capire.travels-Travels.csv` will look like this:
@@ -432,23 +456,23 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 
 :::
 
-You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across. They will need some care after copying due to two factors:
+You assemble this template from the base app and its reuse modules. They live in the `samples` workspace next to your extension project, so you can copy the files straight across. They'll need some care after copying due to two factors:
 
-##### 1. Models included in the base app
+1. Models included in the base app
 
-When you use `cds pull` the model is **minified** (`@cds.minify`), external and reuse entities keep only the elements and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …` and if it targets an entity that was dropped entirely, you will get errors like `no such table`.
+When you use `cds pull` the model is **minified** (`@cds.minify`), external and reuse entities keep only the elements, and code lists the exposed services actually reference. Anything unused is stripped, so the pulled model can be markedly leaner than the packages the base app builds on. If a source CSV carries columns the minified model dropped, deployment fails with `table … has no column named …` and if it targets an entity that was dropped entirely, you'll get errors like `no such table`.
 
-In our example, you will copy xtravels' own data and code lists. Then, you will trim the extra columns from `Currencies`.
+In our example, you'll copy xtravels' own data and code lists. Then, you'll trim the extra columns from `Currencies`.
 
-##### 2. Models for federated entities from remote services
+2. Models for federated entities from remote services
 
 Not all the data your app uses comes from its own tables. XTravels shows `Customers` and the `Flights`/`Supplements` data behind each booking which are **projections over external services**: SAP S/4HANA business partners (served by `@capire/s4`) and the flights microservice (`@capire/xflights`). In the deployed app, that data is **replicated** from those remote systems by the base app's server-side code. That code isn't part of the model, so `cds pull` doesn't deliver it, and a standalone `cds watch` starts with those tables **empty**, so the Fiori list shows blank _Customer_ and _Flight_ cells.
 
-In our example, you will derive the filenames to add the the external **flights** and **customers** data.
+In our example, you'll derive the filenames to add the external **flights** and **customers** data.
 
 ##### 3.4.1  Copy Test Data
 
-To make the template **browseable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
+To make the template **browsable out of the box**, copy the base app's `.csv` files into your extension's `test/data/` folder.
 
   1. From the `xtravels-ext` folder:
   ```sh
@@ -459,19 +483,19 @@ To make the template **browseable out of the box**, copy the base app's `.csv` f
   cp ../samples/xtravels/db/data/sap.capire.travels-{Travels,Bookings,Bookings.Supplements,TravelAgencies,TravelStatus,TravelStatus.texts,TravelPurposes,PaymentMethods,BookingStatus,BookingStatus.texts}.csv test/data/
   ```
 
-  3. Copy the reuse code lists from `@capire/common`: (Currencies is handled separately below)
+  3. Copy the reuse code lists from `@capire/common`: (Currencies is handled separately later)
   ```sh
   cp ../samples/common/db/data/sap.common-{Countries,Countries_texts,Currencies_texts}.csv test/data/
   ```
 
-::: details Why `test/data/` and not `db/data/`?
+::: details Why `test/data/` and not `db/data/`...
 Data under `test/data/` is loaded **only** during local `cds watch`, it stays scoped to development and is _not_ deployed when the extension is activated to a tenant. Put initial data that must ship to production under `db/data/` instead (see [Add Data](#add-data)).
 :::
 
-**Copy only the code lists you need.** The commands above include the code lists needed for this walkthrough. Before copying other data, make sure that its target entity is present in the pulled model to avoid deployment errors.
+**Copy only the code lists you need.** The preceding commands include the code lists needed for this walkthrough. Before copying other data, make sure that its target entity is present in the pulled model to avoid deployment errors.
 
   ::: tip Quickly find the target entity
-  Open the [pulled base model's](#pull-base) `.base/index.csn` (created by `cds pull`) to check an entity. Its `projection` or `query` shows the source it reads from. Check for any listed aspects for the fields your CSV may contain in its `elements` and `includes`. If the definition is absent, there is no entity to load data into.
+  Open the [pulled base model's](#pull-base) `.base/index.csn` (created by `cds pull`) to check an entity. Its `projection` or `query` shows the source that it reads from. Check for any listed aspects for the fields your CSV may contain in its `elements` and `includes`. If the definition is absent, there's no entity to load data into.
   :::
 
 ##### 3.4.2 Match the columns to the pulled model.
@@ -488,7 +512,7 @@ USD;$;US Dollar;United States Dollar
 
 :::
 
-XTravels builds on **`@capire/common`**, which adds currency fields (`numcode`, `minor`, and `exponent`) and related code lists to `@sap/cds/common` but these aren't used and are dropped when minified. In general, the pulled model may omit columns so always match the CSV's columns to the pulled model and remove any copied data that isn't used.
+XTravels builds on **`@capire/common`**, which adds currency fields (`numcode`, `minor`, and `exponent`) and related code lists to `@sap/cds/common` but these fields aren't used and are dropped when minified. In general, the pulled model may omit columns so always match the CSV's columns to the pulled model and remove any copied data that isn't used.
 
 ::: note
 You don't need to change the other code lists (`sap.common-Currencies_texts`, `sap.common-Countries`, and `sap.common-Countries_texts`).
@@ -509,15 +533,12 @@ cp ../samples/xflights/apis/data-service/data/sap.capire.flights.FlightsService.
 
 `Airlines` and `Airports` are needed so the flattened `airline`, `origin`, and `destination` names resolve, and `A_BusinessPartnerAddress` carries the customer address the UI shows.
 
-::: details Why flights data comes from `@capire/xflights-data`, not `@capire/xflights`
+::: details Why copy from `@capire/xflights-data`, and not `@capire/xflights`...
 `@capire/xflights` is the flights **microservice**: in the deployed app,
 XTravels calls it remotely and replicates its data, so XTravels doesn't
 own that data.
 
-`cds watch` returns mock data through the `@capire/xflights-data` dependency which is an **integration package** that bundles the `FlightsService` definition and sample master data CSVs. 
-
-So we copy from `xflights/apis/data-service/data/` (the integration package) and **not**
-from `xflights/db/data/` (the microservice's internal storage).
+`cds watch` returns mock data through the `@capire/xflights-data` dependency which is an **integration package** that bundles the `FlightsService` definition and sample master data CSVs. So, we copy from `xflights/apis/data-service/data/` (the integration package) and **not** from `xflights/db/data/` (the microservice's internal storage).
 
 The same split applies to any federated service: the running service is one
 thing, the sample-data package you copy from is another.
@@ -533,7 +554,7 @@ For example, the base app's customers model:
 @federated entity Customers as projection on API_BUSINESS_PARTNER.A_BusinessPartner { … }
 ```
 
-Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot or a dash. Each reuse module ships this data with its package, found under the `samples` workspace next to your extension project.
+Locally there's no remote and no replication, so the projection reads straight from the **source entity's own table**: `API_BUSINESS_PARTNER.A_BusinessPartner`. That fully-qualified name _is_ your CSV file name. CAP accepts either separator between namespace and entity, a dot, or a dash. Each reuse module ships this data with its package, found under the `samples` workspace next to your extension project.
 
 :::
 
@@ -543,14 +564,14 @@ Locally there's no remote and no replication, so the projection reads straight f
 Normally an extension developer has to run [`cds pull`](#pull-base) against a live tenant subscription before the project compiles, because `using … from '@capire/xtravels'` needs the base model. You can remove that first hurdle by shipping a **pre-filled `.base/`** with the template, a compiled snapshot of the base model, so `cds watch` works right after `npm install`.
 
 - The base CSN must be structurally valid, and every service and entity your extensions reference must be present.
-- You may trim it, dropping internal entities and unexposed projections keeps the template small.
+- You can trim it, dropping internal entities and unexposed projections keeps the template small.
 - It's a snapshot: when the base model changes, developers re-run `cds pull` to refresh it.
 
 ::: tip
-If you don't ship `.base/`, that's fine, developers just run [`cds pull`](#pull-base) once as the first step, as described in the SaaS-customer walkthrough below.
+If you don't ship `.base/`, that's fine, developers just run [`cds pull`](#pull-base) once as the first step, as described in the following SaaS-customer walkthrough.
 :::
 
-#### 3.6 Make It Browseable {#template-ui}
+#### 3.6 Make It Browsable {#template-ui}
 
 For model-only extensions, the [generic Fiori preview](#test-locally) is enough to check your new fields. To use the application's own UI locally, copy its Fiori Elements shell from the `xtravels-ext` folder:
 
@@ -611,7 +632,7 @@ Learn more at https://cap.cloud.sap/docs/guides/extensibility/customization.
 
 `cds pull` delivers the SaaS app's **model** (the compiled CSN with all services, entities, and annotations) but _not_ its **server-side handler code**. That code stays on the provider's side. For a model-only extension that's exactly right: you extend the model, you don't ship logic. But it has one consequence for _local_ test-drives.
 
-When you run the extension standalone with `cds watch`, the app boots against the pulled model with **generic** CRUD handlers only. Anything the base app implemented in JavaScript is simply absent:
+When you run the extension standalone with `cds watch`, the app boots against the pulled model with **generic** CRUD handlers only. Anything the base app implemented in JavaScript is absent:
 
 - **Primary keys aren't generated.** The base app assigns a new `Travel`'s `ID` in a `before CREATE` handler. Standalone, creating a record leaves the key empty and the insert fails.
 - **Bound actions error.** The Travels list report shows actions like _Accept_, _Reject_, _Reopen_, and _Deduct Discount_ (`acceptTravel`, `rejectTravel`, `reopenTravel`, `deductDiscount` on `TravelService.Travels`). With no handler behind them, triggering one from the UI raises a runtime error.
@@ -620,7 +641,8 @@ When you run the extension standalone with `cds watch`, the app boots against th
 On a real tenant your extension runs _inside_ the deployed SaaS app, so all of this wiring is already there. You only need it to make **standalone `cds watch`** behave like the deployed app.
 :::
 
-Bridge the gap with a read-only `srv/server.js` that reproduces just enough of the base app's behavior. Place it **directly** under `srv/`, where it runs as a regular Node.js bootstrap module during `cds watch`. A model-only extension carries no code, so even though `cds push` packages this file into the extension archive, the tenant activates only the model, the file is never executed there. The generated project uses ES modules. Mark this file clearly as reference code:
+#### 4.1 Use a Read-Only Server.js
+Bridge the gap with a Read-only `srv/server.js`:
 
 ::: code-group
 
@@ -662,30 +684,32 @@ export default cds.server
 
 :::
 
+The `server.js` reproduces just enough of the base app's behavior. Placing it **directly** under `srv/` makes it run as a regular Node.js bootstrap module during `cds watch`. A model-only extension carries no code, so even though `cds push` packages this file into the extension archive, the tenant activates only the model, the file is never executed there. The generated project uses ES modules. Always mark this file clearly as reference code.
+
 That's all a model-only template needs: keys get generated, the list report's actions no longer break, and the app is fully browsable locally. When the base app changes its behavior, refresh this file by hand, it's a convenience copy, not something `cds pull` keeps in sync.
 
 ### 5. Provide Extension Guides {#guide}
 
-Give your customers a short guide to extending *your* app. Keep it focused on what is **specific to your application**, and point to this CAP extensibility guide for the generic mechanics (starting a project from your template, `cds pull`, writing and pushing an extension) rather than repeating them.
+Give your customers a short guide on extending *your* app. Keep it focused on what is **specific to your application**, and point to this CAP extensibility guide for the generic mechanics rather than repeating them. For example, starting a project from your template, `cds pull`, writing and pushing an extension and so on.
 
 The app-specific parts worth documenting:
 
 - **What can be extended**: which services and entities, to what degree, and which namespace to use for new entities. See [extension restrictions](#restrictions) and [About Extension Models](#about-extension-models).
 - **Where to connect**: the URLs of your deployed test and production tenants, and how customers obtain them.
-- **In-model documentation**: add [doc comments](../../cds/cdl#doc-comments) on the extensible services and entities, so they are self-describing in the extension developer's editor.
+- **In-model documentation**: add [doc comments](../../cds/cdl#doc-comments) on the extensible services and entities, so they're self-describing in the extension developer's editor.
 
 ### 6. Deploy Application
 
 Before deploying your SaaS application to the cloud, you can [test-drive it locally](../multitenancy/index#test-drive-locally).
-Prepare this by going back to your app with `cd xtravels`.
+Prepare by going back to your app with `cd xtravels`.
 
-With your application enabled and prepared for extensibility, you are ready to deploy the application as described in the  [Deployment Guide](../deploy/).
+With your application enabled and prepared for extensibility, you're ready to deploy the application as described in the  [Deployment Guide](../deploy/).
 
 ## As a SaaS Customer {#prep-as-operator}
 
 As a subscriber, you tailor the SaaS app to your needs by adding extensions. You develop them in a standard CAP project that **extends** the subscribed application.
 
-Ideally you start from an **application-specific template** the provider ships (see [Provide Template Projects](#templates)). A good template already carries a pre-filled `.base/` base model, so the project compiles right after `npm install`, with **no pull needed**. The steps below assume that common case and point out where a pull comes in.
+Ideally you start from an **application-specific template** the provider ships (see [Provide Template Projects](#templates)). A good template already carries a pre-filled `.base/` base model, so the project compiles right after `npm install`, with **no pull needed**. The following steps assume that common case and point out where a pull comes in.
 
 ::: details On BTP…
 
@@ -693,7 +717,7 @@ To extend a SaaS app deployed to BTP, you first subscribe to it [through the BTP
 
 For the test-to-production workflow, prepare separate test and production subscriptions using the same subscription steps.
 
-In the `cds` commands below, replace the local sidecar URL with the URL of the deployed App Router, and authenticate with a passcode. See [`cds login`](#cds-login) for a simplified workflow that saves you from repeating options and passcodes.
+In the following `cds` commands, replace the local sidecar URL with the URL of the deployed App Router, and authenticate with a passcode. See [`cds login`](#cds-login) for a simplified workflow that saves you from repeating options and passcodes.
 
 :::
 
@@ -714,7 +738,7 @@ code ../../xtravels-ext
 
 Your extension references the base model through `using … from '@capire/xtravels'`, so the model has to be present before the project compiles. There are three cases:
 
-- **The template ships a pre-filled `.base/`** (recommended): check for `.base/index.csn` containing the base model and `.base/package.json` with `"name": "@capire/xtravels"`. A folder containing only the scaffolded bookshop placeholder is not a pre-filled model. With both files in place, run `npm install`.
+- **The template ships a pre-filled `.base/`** (recommended): check for `.base/index.csn` containing the base model and `.base/package.json` with `"name": "@capire/xtravels"`. A folder containing only the scaffolded bookshop placeholder isn't a pre-filled model. With both files in place, run `npm install`.
 - **Extending a deployed SaaS app on BTP**: pull the base model from the subscribed app, giving its App Router URL and your tenant subdomain. You'll be prompted for a passcode:
 
   ```sh
@@ -731,8 +755,6 @@ Pulling downloads the base model as a package into the npm workspace folder `.ba
 ### 3. Write the Extension {#write-extension }
 
 Edit the files _app/extensions.cds_ and _app/fiori.cds_ and replace their content with the following:
-
-Put new entities in `x_travels.ext`, the dedicated namespace allowed by the provider. You choose the entity names within this namespace.
 
 ::: code-group
 
@@ -770,6 +792,8 @@ annotate TravelService.Travels with @UI.LineItem: [
 
 [Learn more about what you can do in CDS extension models](#about-extension-models){.learn-more}
 
+New entities are added in `x_travels.ext`, the dedicated namespace allowed by the provider. You can use any entity name within this namespace.
+
 ::: tip Both fields carry a default
 `x_priority` defaults to `medium`, and `x_CostCenter` defaults to the `TRAVEL` code list entry. A `default` on an association sets its foreign key (`x_CostCenter_code`), so it behaves just like the scalar default on `x_priority`. When the extension is activated, these defaults are applied as `ADD COLUMN … DEFAULT …`, which also fills the column for every existing travel, so the tenant starts with sensible values instead of empty cells, and users only need to change the exceptions.
 :::
@@ -788,8 +812,8 @@ To conduct an initial test of your extension, run it locally with `cds watch`:
 cds watch
 ```
 
-> This starts a local Node.js application server serving your extension along with the base model and supplied test data stored in an in-memory database.<br>
-> It does not include any custom application logic though.
+> This command starts a local Node.js application server serving your extension along with the base model and supplied test data stored in an in-memory database.<br>
+> It doesn't include any custom application logic though.
 
 ::: tip Serving on port 4006
 The template's _package.json_ fixes the port via `cds.server.port: 4006` (see [Create an Extension Project](#templates)), so `cds watch` serves at `http://localhost:4006` without a `--port` flag. If your template omits that setting, pass `cds watch --port 4006` instead.
@@ -799,8 +823,7 @@ The template's _package.json_ fixes the port via `cds.server.port: 4006` (see [C
 
 To improve local test drives, you can add _local_ test data for extensions.
 
-Edit the template-provided file `test/data/sap.capire.travels-Travels.csv` and add data for the new fields as follows:
-
+1. Edit the template-provided file `test/data/sap.capire.travels-Travels.csv` and add data for the new fields as follows:
 ::: code-group
 
 ```csv [test/data/sap.capire.travels-Travels.csv]
@@ -811,7 +834,12 @@ ID,Description,BeginDate,EndDate,BookingFee,Currency_code,Status_code,Agency_ID,
 
 :::
 
-Create a new file `db/data/x_travels.ext-x_CostCenters.csv` with this content:
+2. From the `xtravels-ext` folder:
+```sh
+mkdir -p db/data
+```
+
+3. Create a new file `db/data/x_travels.ext-x_CostCenters.csv` with this content:
 
 ::: code-group
 
@@ -825,20 +853,20 @@ OPS,"Operations","Operations cost center"
 :::
 
 ::: tip `test/data/` vs `db/data/`
-The `x_CostCenters` code list is your extension's own [_(real) initial data_](../databases/initial-data#initial-vs-test-data): the **value help** that labels the `TRAVEL`/`SALES`/`OPS` codes. It's configuration data users don't change through the app, so it belongs under `db/data/`, from where it both loads locally _and_ ships to the tenant with `cds push`. The Travels rows above go under `test/data/`, which loads **only** during local `cds watch` and never reaches the tenant. See [Add Data](#add-data) for why writeable data like `Travels` must stay local.
+The `x_CostCenters` code list is your extension's own [_(real) initial data_](../databases/initial-data#initial-vs-test-data): the **value help** that labels the `TRAVEL`/`SALES`/`OPS` codes. Its configuration data users don't change through the app, so it belongs under `db/data/`, from where it both loads locally _and_ ships to the tenant with `cds push`. The preceding Travels rows go under `test/data/`, which loads **only** during local `cds watch` and never reaches the tenant. See [Add Data](#add-data) for why writeable data like `Travels` must stay local.
 :::
 
 #### Verify the Extension
 
-Open the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window** and log in as `bob`. Confirm that _Priority_ and _Cost Center_ contain values. The template's test data also fills _Customer_, _Agency_, and _TravelStatus_, as shown below:
+Open the [Travels Fiori Preview](http://localhost:4006/$fiori-preview/TravelService/Travels#preview-app) in a **new private browser window** and log in as `bob`. Confirm that the _Priority_ and _Cost Center_ fields contain values. The template's test data also fills _Customer_, _Agency_, and _TravelStatus_, as shown here:
 
 ![Travels Fiori preview with high and low Priority, Cost Centers Travel & Expenses and Sales, customer and agency names, and Open travel status.](assets/xtravels-fiori-preview-ext.png){.mute-dark}
 
-> The table adapts to the available width. If _Cost Center_ is hidden, widen the browser window to display it.
+> The table adapts to the available width. If the _Cost Center_ is hidden, widen the browser window to display it.
 
 > Note: the two rows shown come from your local `test/data/Travels`, and their _Cost Center_ labels resolve against the `x_CostCenters` code list.
 
-The Travels rows stay in the local sandbox and are not processed during activation to the tenant; the `x_CostCenters` code list under `db/data/`, however, ships with the extension, see [Add Data](#add-data).
+The Travels rows stay in the local sandbox and aren't processed during activation to the tenant; the `x_CostCenters` code list under `db/data/`, however, ships with the extension, see [Add Data](#add-data).
 
 ### 5. Push to Test Tenant {#push-extension }
 
@@ -852,26 +880,26 @@ cds push --to http://localhost:4005 -u bob:
 `cds push` runs a `cds build` on your extension project automatically.
 :::
 
-::: details Prepacked extensions
+::: details Prepacked extensions...
 To push a ready-to-use extension archive (.tar.gz or .tgz), run `cds push <archive or URL>`. The argument can be a local path to the archive or a URL to download it from.
 Run `cds help push` to see all available options.
 :::
 
-> You pushed the extension with user `bob`, which in your local setup ensures they are sent to your test tenant `t1-ext`, not the production tenant `t1`.
+> You pushed the extension with user `bob`, which in your local setup ensures they're sent to your test tenant `t1-ext`, not the production tenant `t1`.
 
-::: details Building extensions
+::: details Building extensions...
 
 `cds build` compiles the extension model and validates the constraints defined by the SaaS application, for example, it checks if the entities are extendable.
-It will fail in case of compilation or validation errors, which will in turn abort `cds push`.
+It fails if there are compilation or validation errors, which also aborts `cds push`.
 
-_Warning_ messages related to the SaaS application base model are reclassified as _info_ messages. As a consequence they will not be shown by default.
-Execute `cds build --log-level info` to display all messages, although they should not be of interest for the extension developer.
+_Warning_ messages related to the SaaS application base model are reclassified as _info_ messages. As a consequence they aren't shown by default.
+Execute `cds build --log-level info` to display all messages, although they're not of interest for the extension developer.
 
 :::
 
 #### Verify the Extension {#test-extension }
 
-Verify your extensions are applied correctly by opening the [XTravels UI](http://localhost:4114/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push, see the [next step](#add-data) for what that means.
+Verify that your extensions are applied correctly by opening the [XTravels UI](http://localhost:4114/travels/webapp/index.html) in a **new private browser window**, log in as `bob`, and check that the new columns _Priority_ and _Cost Center_ are displayed as in the following screenshot. Your local Travels test data stayed on your machine, so every travel shows the model defaults: _Priority_ is `medium` and _Cost Center_ is _Travel & Expenses_. The labels come from the `x_CostCenters` code list you placed under `db/data/`, which shipped to the tenant with the push, see the [next step](#add-data) for what that means.
 
 ![Deployed XTravels Fiori UI with extension columns Priority, set to the default value medium, and Cost Center, set to the default value Travel & Expenses for every travel.](assets/xtravels-deployed-ext.png){.mute-dark}
 
@@ -886,7 +914,7 @@ Files under `db/data/` are your extension's [_(real) initial data_](../databases
 The [provider's namespace allowance](#restrictions) permits these uploads for entities in `x_travels.ext`. Name each CSV after its fully qualified entity name, for example, `x_travels.ext-x_CostCenters.csv` for `x_travels.ext.x_CostCenters`.
 
 ::: warning Ship only configuration data, never writeable data
-It's tempting to also pre-fill the _Cost Center_ of individual travels by shipping a `db/data/sap.capire.travels-Travels.csv`. Don't do that for production. `Travels` is writeable transactional data, and on SAP HANA shipped CSVs [are deployed as `.hdbtabledata`, exclusively owned by the deployment and **overwritten on every redeployment**](../databases/hana#csv-data-gets-overridden), which would reset whatever users entered. Only ship data that can't be changed through the app, such as code lists. To pre-populate a writeable column, use a model `default` (as `x_CostCenter` does), it's applied once when the column is added and never overwrites later edits. Let users take it from there through the value help.
+It's tempting to also pre-fill the _Cost Center_ of individual travels by shipping a `db/data/sap.capire.travels-Travels.csv`. Don't do that for production. `Travels` is writeable transactional data, and on SAP HANA shipped CSVs [are deployed as `.hdbtabledata`, exclusively owned by the deployment and **overwritten on every redeployment**](../databases/hana#csv-data-gets-overridden), which resets whatever users entered. Only ship data that can't be changed through the app, such as code lists. To pre-populate a writeable column, use a model `default` (as `x_CostCenter` does), it's applied once when the column is added and never overwrites later edits. Let users take it from there through the value help.
 :::
 
 [Learn more about adding data to extensions](#add-data-to-extensions) {.learn-more}
@@ -899,7 +927,7 @@ Finally, after all tests, verifications and approvals are in place, you can push
 cds push --to http://localhost:4005 -u carol:
 ```
 
-> You pushed the extension with [mock user](../../node.js/authentication#mock-users) `carol`, which in your local setup ensures they are sent to your **production** tenant `t1`.
+> You pushed the extension with [mock user](../../node.js/authentication#mock-users) `carol`, which in your local setup ensures they're sent to your **production** tenant `t1`.
 
 ::: tip Simplify your workflow with `cds pull` and `cds push`
 
@@ -936,13 +964,13 @@ This ensures that the App Router doesn't try to authenticate requests to MTX Sid
 
 ## About Extension Models
 
-This section explains in detail about the possibilities that the _CDS_ languages provides for extension models.
+This section explains in detail about the possibilities that the _CDS_ language provides for extension models.
 
 All names are subject to [extension restrictions defined by the SaaS app](../multitenancy/mtxs#extensibility-config).
 
 ### Extending the Data Model
 
-Following [the extend directive](../../cds/cdl#extend) it is pretty straightforward to extend the application with the following new artifacts:
+Following [the extend directive](../../cds/cdl#extend) it's straightforward to extend the application with the following new artifacts:
 
 - Extend existing entities with new (simple) fields.
 - Create new entities.
@@ -1014,9 +1042,9 @@ Learn more about the [basic syntax of the `annotate` directive](../../cds/cdl#an
 
 ### Extending the Service Model
 
-In `TravelService`, the new entities `x_ApproverPostalAddresses` and `x_Notes` are automatically included since they are targets of the corresponding _compositions_.
+In `TravelService`, the new entities `x_ApproverPostalAddresses` and `x_Notes` are automatically included since they're targets of the corresponding _compositions_.
 
-The new entities `x_Approvers` and `x_CostCenters` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way. Only `x_CostCenters` is a [CodeList](../../cds/common#aspect-codelist). If you want to change how they are exposed, expose them explicitly:
+The new entities `x_Approvers` and `x_CostCenters` are [autoexposed](../services/providing-services#auto-exposed-entities) in a read-only way. Only `x_CostCenters` is a [CodeList](../../cds/common#aspect-codelist). If you want to change how they're exposed, expose them explicitly:
 
 ```cds
 using { TravelService } from '@capire/xtravels';
@@ -1031,7 +1059,7 @@ extend service TravelService with {
 
 The following snippet demonstrates which UI annotations you need to expose your extensions to the SAP Fiori elements UI.
 
-Add UI annotations for the completely new entities `x_Approvers, x_ApproverPostalAddresses, x_CostCenters, x_Notes`:
+Add UI annotations for the new entities `x_Approvers, x_ApproverPostalAddresses, x_CostCenters, x_Notes`:
 
 ```cds
 using { TravelService } from '@capire/xtravels';
@@ -1204,7 +1232,7 @@ annotate TravelService.Travels with @(
 
 ```
 
-The advantage of this syntax is that you do not have to replicate the complete array content of the existing UI annotation, you only have to add the delta.
+The advantage of this syntax is that you don't have to replicate the complete array content of the existing UI annotation, you only have to add the delta.
 
 #### Semantic IDs
 
@@ -1276,8 +1304,8 @@ Properties files must be placed in the `i18n` folder.  If an entry with the same
 
 ## Simplify Your Workflow With `cds login` {#cds-login}
 
-As a SaaS extension developer, you have the option to log in to the SaaS app and thus authenticate only once.
-This allows you to re-run `cds pull` and `cds push` against the app without repeating the same options over and over again – and you can avoid generating a passcode every time.
+As a SaaS extension developer, you have the option to log in to the SaaS app, and thus authenticate only once.
+Logging in allows you to re-run `cds pull` and `cds push` against the app without repeating the same options over and over again – and you can avoid generating a passcode every time.
 
 Run `cds login --save-refresh-token` once to save both the access token and refresh token for later use. The command fetches tokens using OAuth2 from XSUAA. It also stores settings for the current project, such as the app URL and tenant subdomain.
 
@@ -1310,9 +1338,9 @@ Local storage of authentication data incurs a security risk: a potential malicio
 
 ### How to Login
 
-If you work with Cloud Foundry (CF) and you have got the `cf` client installed, you can call `cds login` with just a passcode. The command runs the `cf` client to determine suitable apps from the org and space that you're logged in to. This allows you to interactively choose the login target from a list of apps and their respective URLs.
+If you work with Cloud Foundry (CF) and you've got the `cf` client installed, you can call `cds login` with just a passcode. The command runs the `cf` client to determine suitable apps from the org and space that you're logged in to. The client allows you to interactively choose the login target from a list of apps and their respective URLs.
 
-To log in to the SaaS app in this way, first change to the folder you want to use for your extension project. Then run the following command (the one-time passcode will be prompted interactively if omitted):
+To log in to the SaaS app in this way, first change to the folder you want to use for your extension project. Then run the following command (the one-time passcode is prompted interactively if omitted):
 
 ```sh
 cds login --save-refresh-token [-p <passcode>]
@@ -1320,7 +1348,7 @@ cds login --save-refresh-token [-p <passcode>]
 
 :::details Advanced options
 
-If you need to call `cds login` automatically without user interaction, you may use the [Client Credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) grant, which does not require a passcode.
+If you need to call `cds login` automatically without user interaction, use the [Client Credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) grant, which doesn't require a passcode.
 
 Provide the client ID with either a client secret or a certificate and private key.
 
@@ -1338,7 +1366,7 @@ Obtain the credentials from the `VCAP_SERVICES` environment variable in your dep
   cds login <app-url> -s <subdomain> --client <clientid>
   ```
 
-**Note:** The `key` and `clientsecret` properties are secrets that should not be stored in an unsafe location in productive scenarios!
+**Note:** The `key` and `clientsecret` properties are secrets that shouldn't be stored in an unsafe location in productive scenarios!
 
 [Learn more about environment variables / `VCAP_SERVICES`.](../../node.js/cds-connect#bindings-in-cloud-platforms){.learn-more}
 
@@ -1348,7 +1376,7 @@ For a synopsis of all options, run `cds help login`.
 
 :::details Login without CF CLI
 
-If you don't work with CF CLI, additionally provide the application URL and the subdomain as these can't be determined automatically:
+If you don't work with CF CLI, additionally provide the application URL and the subdomain as they can't be determined automatically:
 
 ```sh
 cds login <app-url> -s <subdomain> --save-refresh-token
@@ -1361,8 +1389,8 @@ The `<app-url>` is the URL that you get in your subscriber account when you subs
 :::
 
 ::: tip Multiple targets
-Should you later want to extend other SaaS applications, you can log in to them as well, and it won't affect your other logins.
-Logins are independent of each other, and `cds pull` etc. will be authenticated based on the requested target.
+Should you later want to extend other SaaS applications, you can log in to them as well, and it doesn't affect your other logins.
+Logins are independent of each other, and commands like `cds pull` are authenticated based on the requested target.
 
 For a test-to-production workflow, log in to production first and test last to keep test as the project's saved target:
 
@@ -1441,7 +1469,7 @@ Be aware that initial data behaves differently per database, which is why writea
 - **SAP HANA (production):** CSV files are deployed as [`.hdbtabledata`](https://help.sap.com/docs/hana-cloud-database/sap-hana-cloud-sap-hana-database-deployment-infrastructure-hdi-reference/table-data-hdbtabledata). The deployment takes [exclusive ownership of that data and overwrites it on every redeployment](../databases/hana#csv-data-gets-overridden), and you must provide the **full** set of columns and rows, partial-column updates like the SQLite case don't apply.
 
 ::: danger Don't ship data for writeable entities to production
-Because SAP HANA overwrites owned CSV data on each redeployment, shipping initial data for a writeable entity like `Travels` would wipe out whatever users entered. Ship code lists and other non-editable configuration only; let users maintain everything else through the app.
+Because SAP HANA overwrites owned CSV data on each redeployment, shipping initial data for a writeable entity like `Travels` wipes out whatever users entered. Ship code lists and other non-editable configuration only; let users maintain everything else through the app.
 :::
 
 <span id="afterAddingData" />
