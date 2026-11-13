@@ -51,7 +51,7 @@ In addition, you need to prepare the following:
 #### 1. SAP BTP with SAP HANA Cloud Database Up and Running {#btp-and-hana}
 
 - Access to [SAP BTP, for example a trial](https://developers.sap.com/tutorials/hcp-create-trial-account.html)
-- An [SAP HANA Cloud database running](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) in your subaccount <!--, mapped to your space -->
+- An [SAP HANA Cloud database running](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/create-sap-hana-database-instance-using-sap-hana-cloud-central) in your subaccount and [mapped to the target Cloud Foundry organization and space](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-administration-guide/map-sap-hana-database-to-another-environment-context)
 - Entitlement for [`hdi-shared` service plan](https://help.sap.com/docs/hana-cloud/sap-hana-cloud-getting-started-guide/set-up-schema-or-hdi-container-cloud-foundry) for your subaccount
 - A [Cloud Foundry space](https://help.sap.com/docs/btp/sap-business-technology-platform/create-spaces?version=Cloud)
 <!-- - A Cloud Foundry quota plan assigned to your space -->
