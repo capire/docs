@@ -52,7 +52,7 @@ If your database deployment currently uses `hdbcds`, it's recommended to switch 
 
 By following these steps, the internal handover mechanism of HDI automatically transfers ownership of the tables to the `hdbtable` plugin. There are some caveats, however:
 
-* If you used annotations `@sql.append` or `sql.prepend`, your model very likely needs to be adapted manually
+* If you used annotations `@sql.append` or `@sql.prepend`, your model very likely needs to be adapted manually
   before the migration can be done. See the corresponding section below for more details.
 * In some scenarios, the generated _.hdbcds_ and _.hdbtable_ files do not allow a seamless switchover,
   and a full migration is done for the respective tables.
@@ -83,7 +83,7 @@ Associations cause issues in the _.hdbcds_ to _.hdbtable_ handover. For each ent
 When deploying via `hdbcds`, the compiler writes associations in a CAP CDS entity with corresponding associations to the _.hdbcds_ file. Upon deployment, the `hdbcds` plugin of HDI generates a `CREATE TABLE` statement, where the associations are represented in a `WITH ASSOCIATIONS` clause.
 When deploying via `hdbtable`, the compiler writes the `CREATE TABLE` statements with the `WITH ASSOCIATIONS` clause directly into the generated _.hdbtable_ and _.hdbview_ files. These clauses slightly differ, which causes a full table migration when switching from `hdbcds` to `hdbtable`.
 
-The CAP Java runtime and the CAP Nodejs runtime with the new SAP HANA service (`@cap-js/hana`, default in cds8)
+The CAP Java runtime and the CAP Node.js runtime with the new SAP HANA service (`@cap-js/hana`, default in cds8)
 don't need the `WITH ASSOCIATIONS` clause anymore. This can be used to avoid a full table migration by removing the associations from the `hdbcds` sources __before__ the actual `hdbcds` to `hdbtable` migration.
 
 First switch off the generation of the associations (that option accounts for associations in the `hdbcds` sources as well as the `WITH ASSOCIATIONS` found in the `hdbtable` sources):

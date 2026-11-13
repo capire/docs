@@ -254,7 +254,7 @@ let q = {INSERT:{ into: { ref: ['Authors'] }, entries: [
 
 {#scalar}
 
-Allows input data to be specified as an single array of values, as in SQL.
+Allows input data to be specified as a single array of values, as in SQL.
 
 ```js
 let q = {INSERT:{ into: { ref: ['Books'] },

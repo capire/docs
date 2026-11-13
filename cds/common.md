@@ -50,7 +50,7 @@ entity Addresses {
 
 ### Outcome = Optimized Best Practice
 
-The final outcomes in terms of modeling patterns, persistence structures, and implementations is essentially the same as with native means, if you would have collected design experiences from prior solutions, such as we did.
+The final outcomes in terms of modeling patterns, persistence structures, and implementations are essentially the same as with native means, if you would have collected design experiences from prior solutions, such as we did.
 ::: tip
 All the common reuse features of _@sap/cds/common_ are provided only through this ~100 line .cds model. Additional runtime support isn't required. _@sap/cds/common_ merely uses basic CDS modeling features as well as generic features like [localized data] and [temporal data] (which only need minimal runtime support with minimal overhead).
 :::
@@ -86,7 +86,7 @@ entity Foo {
 
 ### Aspect `managed`
 
-Use `managed`, to add four elements to capture _created by/at_ and latest _modified by/at_ management information for records. The following examples are equivalent-
+Use `managed`, to add four elements to capture _created by/at_ and latest _modified by/at_ management information for records. The following examples are equivalent:
 
 ```cds
 entity Foo : managed {...}
@@ -113,7 +113,7 @@ The annotations `@cds.on.insert/update` are handled in generic service providers
 
 ### Aspect `temporal`
 
-This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/domain/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you've to do is, add the temporal aspect to respective entities as follows:
+This aspect basically adds two canonical elements, `validFrom` and `validTo` to an entity. It also adds a tag annotation that connects the CDS compiler's and runtime's built-in support for _[Temporal Data](../guides/domain/temporal-data)_. This built-in support covers handling date-effective records and time slices, including time travel. All you have to do is add the temporal aspect to respective entities as follows:
 
 ```cds
 entity Contract : temporal {...}
@@ -291,7 +291,7 @@ The models for code lists are intentionally minimalistic to keep the entry barri
 3. Guarantee minimal entry barriers (bringing about 1 above)
 4. Guarantee best support (for example, by readable foreign keys)
 
-Assumption is that ~80% of all apps don't need more than what is already covered in this minimalistic model. Yet, in case you need more, you can easily leverage CDS standard features to adapt and extend these base models to your needs as demonstrated in the section [Adapting to your needs](#adapting-to-your-needs).
+The assumption is that ~80% of all apps don't need more than what is already covered in this minimalistic model. Yet, in case you need more, you can easily leverage CDS standard features to adapt and extend these base models to your needs as demonstrated in the section [Adapting to your needs](#adapting-to-your-needs).
 
 ## Aspects for Localized Data
 
@@ -367,7 +367,7 @@ The reuse type `sap.common.Locale` is used when generating `.texts` entities for
 
 ### SQL Persistence
 
-In addition, the base entity these additional tables and views are generated behind the scenes to efficiently deal with translations:
+In addition to the base entity, these additional tables and views are generated behind the scenes to efficiently deal with translations:
 
 ```sql
 -- _texts table for translations
@@ -513,7 +513,7 @@ entity PaymentMethods : sap.common.CodeList {
 }
 ```
 
-Let's further assume the entires with code `Main` and `Travel` are required by implementations and hence must not be changed or removed. Have a look at a couple of solutions.
+Let's further assume the entries with code `Main` and `Travel` are required by implementations and hence must not be changed or removed. Have a look at a couple of solutions.
 
 <div id="beforeprogrammatic" />
 
@@ -606,7 +606,7 @@ extend sap.common.Countries {
 ```
 :::
 
-`Regions` is a new, custom-defined code list entity defined in the same way as the predefined ones in _@sap/cds/common_. In particular, it inherits all elements and annotations from the base definition [`sap.common.CodeList`](#code-lists). For example, the `@cds.autoexpose` annotation, which provides that `Regions` is auto-exposed in any OData service that has exposed entities with associations to it. The localization of the predefined elements `name` and `descr` is also inherited.
+`Regions` is a new, custom-defined code list entity defined in the same way as the predefined ones in _@sap/cds/common_. In particular, it inherits all elements and annotations from the base definition [`sap.common.CodeList`](#code-lists). For example, the `@cds.autoexpose` annotation, which ensures that `Regions` is auto-exposed in any OData service that has exposed entities with associations to it. The localization of the predefined elements `name` and `descr` is also inherited.
 
 [Learn in our sample how an own code list can be used to localize `enum` values.](https://github.com/SAP-samples/cap-sflight/blob/236de55b58fd0620dcd1d4f043779a7c632391b1/db/schema.cds#L60){.learn-more}
 

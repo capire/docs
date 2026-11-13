@@ -285,7 +285,7 @@ Arrayed types are signified by the presence of a property `items`. The value of 
 
 [enum]: #enumeration-types
 
-The `enum` property is a dictionary of enum member elements with the name being the enum symbol and the value being a [CQN literal value expression](cxn#literal-values). The literal expression optionally specifies a constant `val` as a [literal](#literals) plus optional annotations. An enumeration type can specify an explicit `type` (for example, _Decimal_) but can also omit it and refer from given enumeration values, or _String_ as default.
+The `enum` property is a dictionary of enum member elements with the name being the enum symbol and the value being a [CQN literal value expression](cxn#literal-values). The literal expression optionally specifies a constant `val` as a [literal](#literals) plus optional annotations. An enumeration type can specify an explicit `type` (for example, _Decimal_) but can also omit it and infer it from the given enumeration values, or _String_ as default.
 
 ```js
 ({definitions:{
