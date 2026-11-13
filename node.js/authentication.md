@@ -69,7 +69,9 @@ These correspond to `$user.<x>` in [`@restrict` annotations](../guides/security/
 Optional generic container for authentication-related information.
 For `@sap/xssec`-based authentication strategies (`ias`, `jwt`, and `xsuaa`), `cds.context.user.authInfo` is an instance of `@sap/xssec`'s [`SecurityContext`](https://www.npmjs.com/package/@sap/xssec#securitycontext).
 
-> **Note:** The availability of this API depends on the implementation of the respective authentication middleware.
+::: info
+The availability of this API depends on the implementation of the respective authentication middleware.
+:::
 
 ::: warning
 The `cds.User.authInfo` property depends on the authentication library that you use. CAP does not guarantee the content of this property. Use it with caution. Always pin your dependencies as described in the [best practices](./best-practices#deploy).
@@ -355,7 +357,7 @@ The default behavior can be overwritten using additional configuration as follow
 }
 ```
 
-Please see [`@sap/xssec` documentation](https://www.npmjs.com/package/@sap/xssec) for more details.
+See [`@sap/xssec` documentation](https://www.npmjs.com/package/@sap/xssec) for more details.
 
 #### XSUAA Fallback
 
@@ -550,7 +552,7 @@ The following steps assume you've set up the [**Cloud Foundry Command Line Inter
     }
     ```
 
-    >If your running in BAS, you can alternatively [create a new run configuration](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9c36fdb911ae4cadab467a314d9e331f/cdbc00244452483e9582a4f486b42d64.html), connecting the `auth` to your XSUAA service instance.
+    > If you're running in BAS, you can alternatively [create a new run configuration](https://help.sap.com/products/SAP%20Business%20Application%20Studio/9c36fdb911ae4cadab467a314d9e331f/cdbc00244452483e9582a4f486b42d64.html), connecting the `auth` to your XSUAA service instance.
 
     >In that case you need to add the environment variable `cds_requires_auth_kind=xsuaa` to the run configuration.
 

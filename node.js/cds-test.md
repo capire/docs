@@ -70,7 +70,7 @@ describe ('browse books', ()=>{
 [This is an excerpt from *capire/bookstore/test/odata.test.js*](https://github.com/capire/bookstore/blob/main/test/odata.test.js){.learn-more}
 
 
-Let's analyze the highlighted the code above line by line:
+Let's analyze the highlighted code above line by line:
 
 
 ```js :line-numbers=2
@@ -656,9 +656,9 @@ Note that by default, Axios throws errors for status codes `< 200` and `>= 300`.
 
 ### Runner-Agnostic Tests
 
-To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by by `cds.test`.
+To keep your tests portable across different test runners, it's recommended to avoid using runner-specific features and stick to the common APIs provided by `cds.test`.
 
-Whenever you the `@cap-js/cds-test` module is loaded through `cds.test` the following common test functions and hooks are made available in test scope, and guaranteed to work in the same way, regardless of the test runner you're using:
+Whenever the `@cap-js/cds-test` module is loaded through `cds.test` the following common test functions and hooks are made available in test scope, and guaranteed to work in the same way, regardless of the test runner you're using:
 
 - The [`describe`](https://vitest.dev/api/describe) function for grouping tests
 - The [`test`/`it`](https://vitest.dev/api/test) function for defining test cases
