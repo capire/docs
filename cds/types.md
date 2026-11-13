@@ -34,7 +34,7 @@ ANSI SQL types, when deployed to a relational database (concrete mappings to spe
 | `Map`                  | Mapped to *NCLOB* for HANA.                                            | *JSON* type    |
 
 > [!info] Default String Lengths
-> Lengths can be omitted, in which case default lengths are used. While this is usual in initial phases of a project, productive apps should always use explicitly defined length. The respective default lengths are configurable through the config options
+> Lengths can be omitted, in which case default lengths are used. While this is usual in initial phases of a project, productive apps should always use explicitly defined lengths. The respective default lengths are configurable through the config options
 > <Config> cds.cdsc.defaultStringLength = 255 </Config> and <br/>
 > <Config> cds.cdsc.defaultBinaryLength = 255 </Config>.
 

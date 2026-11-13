@@ -12,7 +12,7 @@ description: >
 ## Metaphysics of Languages
 
 A *model* is a *thing* that describes *something*.
-For example, a *data model describes the type structure (commonly also called *'schema*') of *data*.
+For example, a *data model* describes the type structure (commonly also called *'schema'*) of *data*.
 
 ### Languages
 
@@ -34,8 +34,8 @@ Examples are:
 
 - SQL DDL covers the persistence model interface only → only flat tables and views
 - OData EDMX covers the service interfaces only → queryable entities still exist, with implicit features
-- GraphQL also covers service interfaces → queryable entities still exist, but without less features
-- OpenAPI also covers the service interfaces, with → queryable entities got 'flattened' to paths with input and output types
+- GraphQL also covers service interfaces → queryable entities still exist, but with fewer features
+- OpenAPI also covers the service interfaces → queryable entities are 'flattened' to paths with input and output types
 
 ---
 

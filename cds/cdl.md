@@ -10,7 +10,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 
 
 
-The *Conceptual Definition Language (CDL)* is a human-readable language for defining CDS models. Sources are commonly provided in files with`.cds` extensions and get compiled into [CSN representations](csn). Following sections provide a reference of all language constructs in CDL, which also serves as a reference of all corresponding CDS concepts and features.
+The *Conceptual Definition Language (CDL)* is a human-readable language for defining CDS models. Sources are commonly provided in files with `.cds` extensions and get compiled into [CSN representations](csn). Following sections provide a reference of all language constructs in CDL, which also serves as a reference of all corresponding CDS concepts and features.
 
 
 
@@ -145,7 +145,7 @@ Within those strings, escape sequences from JavaScript, such as `\t` or `\u0020`
 
 #### The `using` Directive {#using}
 
-Using directives allow to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
+Using directives allow you to import definitions from other CDS models. As shown in line 3 below, you optionally can specify local aliases to be used subsequently. You can import single definitions as well as several ones with a common namespace prefix.
 
 ```cds
 using foo.bar.scoped.Bar from './contexts';
@@ -373,7 +373,7 @@ define entity Employees {
 {#types}
 
 You can declare custom types to reuse later on, for example, for elements in entity definitions.
-Custom-defined types can be simple, that is derived from one of the predefined types, structured types or [Associations](#associations).
+Custom-defined types can be simple, that is, derived from one of the predefined types, structured types or [Associations](#associations).
 
 ```cds
 define type User : String(111);
@@ -479,7 +479,7 @@ entity Bar {
 
 An element definition can be prefixed with modifier keyword `virtual`. This keyword indicates that this element isn't added to persistent artifacts, that is, tables or views in SQL databases. Virtual elements are part of OData metadata.
 
-By default, virtual elements are annotated with `@Core.Computed: true`, not writable for the client and will be [silently ignored](../guides/services/constraints#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable. Further, during read requests, you need to provide values for all virtual elements. You can do this by using post-processing in an `after` handler.
+By default, virtual elements are annotated with `@Core.Computed: true`, are not writable for the client and will be [silently ignored](../guides/services/constraints#readonly). This means also, that they are not accessible in custom event handlers. If you want to make virtual elements writable for the client, you explicitly need to annotate these elements with `@Core.Computed: false`. Still those elements are not persisted and therefore, for example, not sortable or filterable. Further, during read requests, you need to provide values for all virtual elements. You can do this by using post-processing in an `after` handler.
 
 ```cds
 entity Employees {
@@ -978,7 +978,7 @@ entity Addresses {
 
 ### Many-to-many Associations
 
-For many-to-many association, follow the common practice of resolving logical many-to-many relationships into two one-to-many associations using a link entity to connect both.
+For many-to-many associations, follow the common practice of resolving logical many-to-many relationships into two one-to-many associations using a link entity to connect both.
 For example:
 
 ```cds
@@ -1049,7 +1049,7 @@ entity Orders {
 };
 ```
 
-Managed Compositions are mostly syntactical sugar: Behind the scenes, they are unfolded to the [unmanaged equivalent as shown above](#compositions)
+Managed Compositions are mostly syntactic sugar: Behind the scenes, they are unfolded to the [unmanaged equivalent as shown above](#compositions)
 by automatically adding a new entity, the name of which being constructed as a [scoped name](#scoped-names) from the name of parent entity, followed by the name of the composition element,
 that is `Orders.Items` in the previous example.
 You can safely use this name at other places, for example to define an association to the generated child entity:
@@ -1225,7 +1225,7 @@ Annotations in CDL are prefixed with an `@` character and can be placed before a
 }
 ```
 
-Multiple annotations can be placed in each spot separated by whitespaces or enclosed in `@(...)` and separated by comma - like the following are equivalent:
+Multiple annotations can be placed in each spot separated by whitespaces or enclosed in `@(...)` and separated by commas - like the following are equivalent:
 
 ```cds
 entity Foo @(
@@ -1691,7 +1691,7 @@ annotate TravelService.Travel with @UI.LineItem: [
 ```
 
 ::: tip
-Only direct annotations can be extended using `...`. It's not supported to extend propagated annotations, for example, from aspects or types.
+Only direct annotations can be extended using `...`. Extending propagated annotations is not supported, for example, from aspects or types.
 :::
 
 <br>
@@ -1899,7 +1899,7 @@ service SomeService {
 }
 ```
 
-The endpoint of the exposed service is constructed by its name, following some conventions (the string `service` is dropped and kebab-case is enforced). If you want to overwrite the path, you can add the `@path` annotation as follows:
+The endpoint of the exposed service is constructed by its name, following some conventions (the string `service` is dropped and kebab-case is enforced). If you want to override the path, you can add the `@path` annotation as follows:
 
 ```cds
 @path: 'myCustomServicePath'
