@@ -202,7 +202,7 @@ public void afterUnsubscribe(MtUnsubscribeEventContext context) {
 
 ### Deleting Tenant Containers During Tenant Unsubscription
 
-By default, tenant-specific database containers aren't deleted during removal. However, you can register a customer handler change this behavior. For example:
+By default, tenant-specific database containers aren't deleted during removal. However, you can register a custom handler to change this behavior. For example:
 
 ```java
 @Before(event = MtSubscriptionService.EVENT_UNSUBSCRIBE)

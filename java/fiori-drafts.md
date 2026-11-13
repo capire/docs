@@ -34,7 +34,7 @@ As part of this orchestration additional events `ACTIVE_READ` and `DRAFT_READ` a
 
 ::: tip
 `@Before` or `@After` handlers which modify queries or read data are best registered on the `READ` event.
-Events `ACTIVE_READ` or `DRAFT_READ` are preferrable for custom `@On` handlers of draft-enabled entities.
+Events `ACTIVE_READ` or `DRAFT_READ` are preferable for custom `@On` handlers of draft-enabled entities.
 :::
 
 By default queries executed internally by the `READ` event are optimized for performance. In certain scenarios queries will rely on the possibility of joining between tables of the active entity and drafts on the database.
@@ -388,7 +388,7 @@ However, there's one exception from this behavior, which is the `READ` event: Wh
 Persistence Services aren't draft-aware. Use the respective Draft Service or Application Service, when running draft-aware queries.
 :::
 
-The following example, shows the usage of the Draft-Service-specific APIs:
+The following example shows the usage of the Draft-Service-specific APIs:
 
 ```java
 import static bookshop.Bookshop_.ORDERS;

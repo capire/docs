@@ -76,7 +76,7 @@ Alternatively, you can use the CDS tools to bootstrap a Java project:
 ```sh
 cds init <PROJECT-ROOT> --java
 ```
-Afterwards, switch to the new project by calling `cd <PROJECT-ROOT>`. All following steps need to executed from this directory!
+Afterwards, switch to the new project by calling `cd <PROJECT-ROOT>`. All following steps need to be executed from this directory!
 
 ::: tip
 You can call `cds help init` for more information on the available options.
