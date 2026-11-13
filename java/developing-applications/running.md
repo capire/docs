@@ -39,7 +39,7 @@ This uses the [Maven plugin prefix resolution](https://maven.apache.org/guides/i
 
 ## Run Java application in your IDE
 
-The fastest way to run the CAP Java application is with the IDE that can run and debug Java applications. CAP applications, however, require own build tools to compile CDS models.
+The fastest way to run the CAP Java application is with the IDE that can run and debug Java applications. CAP applications, however, require their own build tools to compile CDS models.
 
 The `auto-build` goal of the CDS Maven Plugin reacts on any CDS file change and performs a rebuild of your application CDS model. When you restart the application in the IDE or re-run tests, the updated model is picked up your application.
 
@@ -67,7 +67,7 @@ If the Spring Boot Devtools configuration of your CAP Java application defines a
 
 ## Run Java application with CDS Watch { #cds-watch }
 
-CDS Maven plugin also provide the goal `watch` that does CDS build and can start your application.
+CDS Maven plugin also provides the goal `watch` that does CDS build and can start your application.
 
 Run this in your terminal:
 

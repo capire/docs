@@ -46,7 +46,7 @@ _Remote Services_ need to be configured explicitly in your application configura
 1. The CDS service definition of the remote API from the CDS model.
 1. The (BTP or programmatic) destination or service binding of the remote API and its protocol type.
 
-The following example, shows how you can configure _Remote Services_ in Spring Boot's _application.yaml_ based on a destination:
+The following example shows how you can configure _Remote Services_ in Spring Boot's _application.yaml_ based on a destination:
 
 ::: code-group
 ```yaml [srv/src/main/resources/application.yaml]

@@ -394,7 +394,7 @@ Changes are correctly referenced to the root if the following conditions are tru
 - All segments of the path, except the last one, include keys.
 
 :::warning Limitation
-Avoid Direct modifications of composition items, they aren't supported by change tracking.
+Avoid direct modifications of composition items, they aren't supported by change tracking.
 :::
 
 In the following example, the item's updated changelog entry _won't_ be associated with an order:
