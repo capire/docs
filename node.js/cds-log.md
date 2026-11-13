@@ -400,7 +400,7 @@ The following screenshot shows the log output for the rejection in the previous 
 ![The screenshot is explained in the accompanying text.](assets/json-formatter-output.png)
 
 ::: warning
-The SAP Application Logging Service offers [different plans with different quotas](https://help.sap.com/docs/application-logging-service/sap-application-logging-service/service-plans-and-quotas). Please make sure the plan you use is sufficient, that is, no logs are being dropped so that the information is available in Kibana. As soon as logs are dropped, you cannot reliably assess what is going on in your app.
+The SAP Application Logging Service offers [different plans with different quotas](https://help.sap.com/docs/application-logging-service/sap-application-logging-service/service-plans-and-quotas). Make sure the plan you use is sufficient, that is, no logs are being dropped so that the information is available in Kibana. As soon as logs are dropped, you cannot reliably assess what is going on in your app.
 :::
 
 

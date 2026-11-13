@@ -93,7 +93,7 @@ As depicted in the figure below `cds.env` provides one-stop convenient and trans
 Private files are for you only and should not be checked into your source code management.
 :::
 
-The settings are merged into `cds.env` starting from lower to higher order. Meaning that propertiers specified in a source of higher order will overwrite the value from a lower order.
+The settings are merged into `cds.env` starting from lower to higher order. Meaning that properties specified in a source of higher order will overwrite the value from a lower order.
 
 For example, given the following sources:
 
@@ -236,7 +236,7 @@ CDS_REQUIRES_DB_KIND=sql cds run
 
 ### In _./default-env.json_
 
-The use of _default-env.json_ is deprecated. Please use [`cds bind`](../tools/cds-bind#run-with-service-bindings).
+The use of _default-env.json_ is deprecated. Use [`cds bind`](../tools/cds-bind#run-with-service-bindings).
 
 
 ### In `./.env`

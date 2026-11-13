@@ -407,7 +407,7 @@ The kind of query, that is one of these strings:
 - `'UPDATE'`
 - `'DELETE'`
 
-This is usefull for generic query processors, such as outbound protocol adapters or database services, which need to translate given queries into target representations.
+This is useful for generic query processors, such as outbound protocol adapters or database services, which need to translate given queries into target representations.
 
 
 

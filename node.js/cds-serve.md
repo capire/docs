@@ -96,7 +96,7 @@ This uses these defaults for all options:
 | <i>&#8627;</i> .at   | endpoint path to serve at       | [`@path`](#path) or `.name` |
 | <i>&#8627;</i> .with | implementation function         | `@impl` or `._source`.js    |
 
-Alternatively you can construct services individually, also from other models, and also mount them yourself, as document in the subsequent sections on individual fluent API options.
+Alternatively you can construct services individually, also from other models, and also mount them yourself, as documented in the subsequent sections on individual fluent API options.
 
 If you just want to add some additional middleware, it's recommended to bootstrap from a [custom `server.js`](cds-server#custom-serverjs).
 
@@ -191,7 +191,7 @@ cds.serve('CatalogService') .with (srv=>{...})
 cds.serve('all') .with (srv=>{...})  //> error
 ```
 
-**If omitted**, an implementation is resolved from annotation `@impl`, if present, or from a `.js` file with the same basename than the CDS model, for example:
+**If omitted**, an implementation is resolved from annotation `@impl`, if present, or from a `.js` file with the same basename as the CDS model, for example:
 
 ```cds
 service MyService @(impl:'cat-service.js'){...}
