@@ -266,7 +266,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 - `name` identifies the extension within a SaaS subscription. Extension developers can choose the value freely.
 - `extends` is the name by which the extension model refers to the base model. `cds add extension` writes a placeholder here, change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it's used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it's only used locally.
 - `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. Use `cds pull` to sync this property when needed.
-- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. `cds add extension` puts it in `optionalDependencies`, so `npm install` installs it while the extension build keeps local `test/data` out of the pushed archive (see [Add Test Data](#add-test-data)). If an older project lists it under `dependencies` or `devDependencies`, move it to `optionalDependencies`.
+- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. `cds add extension` puts it in `optionalDependencies`, so `npm install` installs it while the extension build keeps local `test/data` out of the pushed archive (see [Add Test Data](#41--copy-test-data)). If an older project lists it under `dependencies` or `devDependencies`, move it to `optionalDependencies`.
 - `cds.server.port` is set to `4006`, so you can run `cds watch` without passing `--port`.
 
 :::
