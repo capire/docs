@@ -437,6 +437,7 @@ The kind of query, that is one of these strings:
 - `'UPSERT'`
 - `'UPDATE'`
 - `'DELETE'`
+- `'CALL'`
 
 This is useful for generic query processors, such as outbound protocol adapters or database services, which need to translate given queries into target representations.
 
@@ -1215,6 +1216,40 @@ function DELETE.from (
 
 [As in SELECT.where](#select-where) {.learn-more}
 
+
+
+
+## CALL {.class}
+
+Constructs an unbound action or function request. Import the facade explicitly
+from `cds.ql`; CALL is not a global shortcut.
+
+```js
+const { CALL } = cds.ql
+await CALL('greet').with({ name: 'Ada' }).for(srv)
+await srv.run(cds.cql`CALL greet with {name:'Ada'}`)
+```
+
+`CALL.action(name)` is equivalent to `CALL(name)`. `.with(record)` replaces the
+argument record; omitted arguments produce an empty request data object. CALL
+queries map `CALL.action` to `req.event` and `CALL.with` to `req.data`, and use
+normal service handlers, parameter validation, authorization, and transactions.
+They have no entity target; entity-bound operations are not supported by this
+CALL notation.
+
+For HCQL services, POST a CALL query to the service root using the core parser:
+
+```http
+POST /hcql/operations
+Content-Type: application/json
+
+{ "cql": "CALL greet with {name:'Ada'}" }
+```
+
+The CQN equivalent is `{ "CALL": { "action": "greet", "with": { "name": "Ada" } } }`.
+Use a service-local operation name and literal argument data. Normal HCQL format
+controls apply. Setting `protocols.hcql.allows.CALL` to `false` in CDS
+configuration disables root CALL queries without disabling existing operation routes.
 
 
 
