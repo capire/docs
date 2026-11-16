@@ -526,9 +526,51 @@ srv.on('PATCH', Order, req => {
 
 :::
 
-::: tip
-The attribute names `given_name` and `family_name` correspond to JWT token claims provided by your IdP. Adjust them to match the claims configured in your environment.
+::: warning
+The handlers access user attributes (`UserInfo.getAdditionalAttribute` in Java, `req.user.attr` in Node.js) that are not stable APIs guaranteed by CAP. The attribute names (`given_name`/`family_name` in Java, `givenName`/`familyName` in Node.js) are JWT token claims provided by your identity provider — adjust them to match the claims configured in your environment, and handle missing values, for example by falling back to the user ID.
 :::
+
+**3. Configure mock users for local development:**
+
+To test the handlers locally, add the required attributes to your mock user configuration:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml (Java)]
+---
+spring:
+  config.activate.on-profile: default
+cds:
+  security:
+    mock:
+      users:
+        - name: alice
+          password: alice
+          additional:
+            given_name: Alice
+            family_name: Müller
+```
+
+```json [package.json (Node.js)]
+"cds": {
+  "requires": {
+    "auth": {
+      "kind": "mocked",
+      "users": {
+        "alice": {
+          "attr": {
+            "givenName": "Alice",
+            "familyName": "Müller"
+          }
+        }
+      }
+    }
+  }
+}
+```
+:::
+
+[Learn more about mock users in CAP Java.](../java/security#custom-mock-users){.learn-more}
+[Learn more about mock users in CAP Node.js.](../node.js/authentication#mocked){.learn-more}
 
 
 ### Draft for Localized Data
