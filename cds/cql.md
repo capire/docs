@@ -326,7 +326,7 @@ SELECT * from Towns WHERE EXISTS (
 
 ### Path Expressions in All Other Clauses
 
-Path expressions in all other clauses are very much like standard SQL's column expressions with table aliases as single prefixes. CQL essentially extends the standard behavior to paths with multiple prefixes, each resolving to a table alias from a corresponding `LEFT OUTER JOIN`. For example, the path expressions in the previous mentioned queries would unfold to the following plain SQL queries:
+Path expressions in all other clauses are very much like standard SQL's column expressions with table aliases as single prefixes. CQL essentially extends the standard behavior to paths with multiple prefixes, each resolving to a table alias from a corresponding `LEFT OUTER JOIN`. For example, the path expressions in the previously mentioned queries would unfold to the following plain SQL queries:
 
 ```sql
 -- plain SQL

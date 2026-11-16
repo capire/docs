@@ -82,6 +82,10 @@
 
       Pull a package from your configured npm registry.
 
+    <em>--workspace</em> &lt;folder&gt;
+
+      Add features to the project in the given workspace folder.
+
 
 <strong>FEATURE OPTIONS</strong>
     <em>cds add ai</em>
@@ -239,6 +243,14 @@
 
         Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
 
+      --ts
+
+        Override the inferred project type and generate a TypeScript app.
+
+      --js
+
+        Override the inferred project type and generate a JavaScript app.
+
 
     <em>cds add test</em>
 
@@ -259,6 +271,14 @@
 
         Name of the app folder in 'app/'. Example: 'catalog' → 'app/catalog'. Omit for a single-UI scenario where the Vite app sits directly in 'app/'.
 
+      --ts
+
+        Override the inferred project type and generate a TypeScript app.
+
+      --js
+
+        Override the inferred project type and generate a JavaScript app.
+
 
     <em>cds add xsuaa</em>
 
@@ -272,6 +292,7 @@
   <em>cds add</em> multitenancy hana xsuaa
   <em>cds add</em> multitenancy,hana,xsuaa
   <em>cds add</em> data --filter my.namespace.MyEntity
+  <em>cds add</em> hana --workspace bookshop
   <em>cds add</em> mta
   <em>cds add</em> kyma
 

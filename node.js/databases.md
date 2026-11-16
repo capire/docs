@@ -53,7 +53,7 @@ Instead of opening and closing a database connection for every request, we use a
 
 The following parameters are provided in the pool configuration:
 
-- _acquireTimeoutMillis_: The parameter specifies how much time it is allowed to wait an existing connection is fetched from the pool or a new connection is established.
+- _acquireTimeoutMillis_: Specifies how long to wait for an existing connection to be fetched from the pool or for a new connection to be established.
 - _evictionRunIntervalMillis_: The parameter specifies how often to run eviction checks. In case of 0 the check is not run.
 - _min_: Minimum number of database connections to keep in pool at any given time.
   ::: warning

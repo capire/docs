@@ -424,7 +424,7 @@ Provides a graceful shutdown for running servers, by first emitting `cds.emit('s
 ```js
 cds.on('shutdown', async()=> fs.promises.rm('some-file.json'))
 cds.on('shutdown', ()=> console.log('shutdown'))
-cds.exit() //> will rune above handlers before stopping the server
+cds.exit() //> will run the above handlers before stopping the server
 ```
 
 

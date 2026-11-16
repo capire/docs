@@ -1,6 +1,6 @@
 ---
 description: >
-  Discusses the differences of the mixin-based approach of Aspects to inheritance as known from languages like Java.
+  Discusses the differences between the mixin-based approach of Aspects and inheritance as known from languages like Java.
 ---
 
 # Aspect-Oriented Modeling
@@ -144,7 +144,7 @@ annotate CatalogService.Books with @UI:{
 ## Common Reuse Aspects
 
 
-Quite frequently, you want some common aspects to be factored out and shared by and applied to multiple entities. For example, lets assume we'd want to factor out the common aspects of a standardized primary key, managed data, change tracking, extensibility, and temporal data...
+Quite frequently, you want some common aspects to be factored out and shared by and applied to multiple entities. For example, let's assume we'd want to factor out the common aspects of a standardized primary key, managed data, change tracking, extensibility, and temporal data...
 
 
 ### _Max Base Class_ Approach {.avoid}
@@ -289,7 +289,7 @@ Yet, it is not based on inheritance but on mixins, which are more powerful and a
 
 ## Adaptation of Reused Definitions
 
-Assumed there's a reuse package offering some common types and entities which would nicely fit your needs. For example:
+Assume there's a reuse package offering some common types and entities which would nicely fit your needs. For example:
 
 ::: code-group
 
@@ -306,7 +306,7 @@ type CodeList : {
 
 ### Adding / Adapting Fields
 
-Now also assumed, you'd want all code lists to have an additional field for long descriptions, and you also want currency symbols, and the `locale` field for languages needs to support values with up to 15 characters. With aspects, you could simply adapt the reuse types and entities accordingly as follows:
+Now also assume you'd want all code lists to have an additional field for long descriptions, and you also want currency symbols, and the `locale` field for languages needs to support values with up to 15 characters. With aspects, you could simply adapt the reuse types and entities accordingly as follows:
 
 ::: code-group
 
@@ -340,7 +340,7 @@ extend managed with {
 
 ### Adding Reuse Aspects
 
-And as the `:` notation to *inherit* an aspect is essentially just [syntactical sugar](cdl#includes) for extending a given definition with a [*named* aspect](cdl#named-aspects), you can also adapt a reused definition to *inherit* from a common reuse aspect from 'the outside' like so:
+And as the `:` notation to *inherit* an aspect is essentially just [syntactic sugar](cdl#includes) for extending a given definition with a [*named* aspect](cdl#named-aspects), you can also adapt a reused definition to *inherit* from a common reuse aspect from 'the outside' like so:
 
 ```cds
 using { SomeEntity } from 'some-reuse-package';

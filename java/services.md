@@ -27,7 +27,7 @@ However, also technical components are implemented as services, for example the 
 
 ### Using Services
 
-Often times your Java code needs to interact with other services. The [ServiceCatalog](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceCatalog.html) provides programmatic access to all available services.
+Often your Java code needs to interact with other services. The [ServiceCatalog](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/ServiceCatalog.html) provides programmatic access to all available services.
 The Service Catalog can be accessed from the [Event Context](event-handlers/#eventcontext) or from the [CdsRuntime](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/CdsRuntime.html).
 
 ```java

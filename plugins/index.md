@@ -39,7 +39,7 @@ The `@cap-js`-scoped plugins are created and maintained in close collaboration a
 
 ## As _cds-plugins_ for Node.js
 
-For Node.js all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/security/dpp-audit-logging.md) plugin:
+For Node.js, all these plugins are implemented using the [`cds-plugin`](../node.js/cds-plugins) technique, which features minimalistic setup and **plug & play** experience. Usually usage is as simple as that, like for the [Audit Logging](../guides/security/dpp-audit-logging.md) plugin:
 
 1. Add the plugin:
 
@@ -64,7 +64,7 @@ For Node.js all these plugins are implemented using the [`cds-plugin`](../node.j
 
    > → audit logs are written to Audit Log service in production.
 
-## As Plugin for CAP Java
+## As a Plugin for CAP Java
 
 The [CAP Java plugin technique](../java/building-plugins) makes use of _jar_-files which are distributed as Maven packages.
 By adding an additional Maven dependency to the project, the plugin automatically adds functionality or extensions to the CDS model.
@@ -115,12 +115,12 @@ Prefer public repositories and issues over private/internal ones, as they help e
 <br>
 
 :::info Complete list of plugins
-As CAP is blessed with an active community, there are many useful plugins available created by the community. Have a look at the [CAP JS community](https://github.com/cap-js-community) to browse all available plugins. A broader collection of plugins can be found at [bestofcapjs.org](https://bestofcapjs.org/)
+As CAP is blessed with an active community, there are many useful plugins created by the community. Have a look at the [CAP JS community](https://github.com/cap-js-community) to browse all available plugins. A broader collection of plugins can be found at [bestofcapjs.org](https://bestofcapjs.org/).
 :::
 
 ## OData V2 Adapter {#odata-v2-proxy}
 
-OData V2 has been deprecated. Use the plugin only if you need to support existing UIs or if you need to use specific controls that don't work with V4 **yet** like, tree tables (sap.ui.table.TreeTable). The CDS OData V2 Adapter is a protocol adapter that allows you to expose your services as OData V2 services. For Node.js, this is provided through the [@cap-js-community/odata-v2-adapter](https://www.npmjs.com/package/@cap-js-community/odata-v2-adapter) plugin, which converts incoming OData V2 requests to CDS OData V4 service calls and responses back. For Java, this is built in.
+OData V2 has been deprecated. Use the plugin only if you need to support existing UIs or if you need to use specific controls that don't work with V4 **yet** like tree tables (sap.ui.table.TreeTable). The CDS OData V2 Adapter is a protocol adapter that allows you to expose your services as OData V2 services. For Node.js, this is provided through the [@cap-js-community/odata-v2-adapter](https://www.npmjs.com/package/@cap-js-community/odata-v2-adapter) plugin, which converts incoming OData V2 requests to CDS OData V4 service calls and responses back. For Java, this is built in.
 
 Available for:
 
@@ -150,7 +150,7 @@ Available for:
 ## UI5 Dev Server
 
 
-The UI5 Dev Server is a CDS server plugin that enables the integration of UI5 (UI5 freestyle or Fiori elements) tooling-based projects into the CDS server via the UI5 tooling express middlewares. It allows to serve dynamic UI5 resources, including TypeScript implementations for UI5 controls, which get transpiled to JavaScript by the plugin automatically.
+The UI5 Dev Server is a CDS server plugin that enables the integration of UI5 (UI5 freestyle or Fiori elements) tooling-based projects into the CDS server via the UI5 tooling express middlewares. It allows you to serve dynamic UI5 resources, including TypeScript implementations for UI5 controls, which get transpiled to JavaScript by the plugin automatically.
 
 Available for:
 
@@ -188,7 +188,7 @@ entity Incidents { ...
 }
 ```
 
-That's all we need to automatically add an interactive list of attachments to your Fiori UIs as shown below.
+That's all you need to automatically add an interactive list of attachments to your Fiori UIs as shown below.
 
 ![Screenshot showing the Attachments Table in a fiori app](assets/index/attachments-table.png)
 
@@ -212,7 +212,7 @@ Available for:
 
 ## SAP Document Management Service {#@cap-js/sdm}
 
-The SAP Document Management Service  plugin lets you easily store attachments (documents) in an [SAP Document Management service Repository](https://help.sap.com/docs/document-management-service).
+The SAP Document Management Service plugin lets you easily store attachments (documents) in an [SAP Document Management service Repository](https://help.sap.com/docs/document-management-service).
 
 To use this CAP-level integration, extend a domain model by using the predefined aspect called Attachments:
 
@@ -248,7 +248,7 @@ Available for:
 ## Audit Logging
 
 
-The new Audit Log plugin provides out-of-the box support for logging personal data-related operations with the [SAP Audit Log Service](https://discovery-center.cloud.sap/serviceCatalog/audit-log-service). All we need is annotations of respective entities and fields like that:
+The new Audit Log plugin provides out-of-the-box support for logging personal data-related operations with the [SAP Audit Log Service](https://discovery-center.cloud.sap/serviceCatalog/audit-log-service). All you need is annotations of respective entities and fields like that:
 
 ```cds
 annotate my.Customers with @PersonalData : {
@@ -295,7 +295,7 @@ Available for:
 ## Change Tracking
 
 
-The Change Tracking plugin provides out-of-the box support for automated capturing, storing, and viewing of the change records of modeled entities. All we need is to add @changelog annotations to your models to indicate which entities and elements should be change-tracked.
+The Change Tracking plugin provides out-of-the-box support for automated capturing, storing, and viewing of the change records of modeled entities. All we need is to add @changelog annotations to your models to indicate which entities and elements should be change-tracked.
 
 ```cds
 annotate my.Incidents {
@@ -470,7 +470,7 @@ S4bupa.on ('BusinessPartner.Changed', msg => {...})
 
 <div id="eh-plugin-mt" />
 
-For more details, please see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/events/event-hub).
+For more details, see [Events and Messaging &rarr; Using SAP Cloud Application Event Hub](../guides/events/event-hub).
 
 Available for:
 
@@ -490,7 +490,7 @@ Available for:
 
 ## ABAP RFC
 
-The  `@sap/cds-rfc` plugin allows to import the API of RFC-enabled function modules from
+The `@sap/cds-rfc` plugin allows you to import the API of RFC-enabled function modules from
 ABAP systems and to call these functions in your custom code.
 
 Available for:

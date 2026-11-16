@@ -26,7 +26,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 { #security}
 
 ::: info
-This chapter appends CAP Java sepcifc information only.
+This chapter appends CAP Java specific information only.
 Consult the comprehensive [Security Guide](../guides/security/) first to learn about CAP Security features in general.
 :::
 
@@ -75,7 +75,7 @@ By default, the [auto-configuration](#xsuaa-ias) covers
 * Protocol adapter endpoints (managed by CAP such as OData V4/V2 or custom protocol adapters)
 * Remaining custom endpoints (not managed by CAP such as custom REST controllers or Spring Actuators)
 
-There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration wit hregards to the affected endpoints:
+There are several application parameters in section `cds.security.authentication` that influence the behaviour of the auto-configuration with regards to the affected endpoints:
 
 | Configuration Property                               | Description                                             | Default
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------
@@ -195,7 +195,7 @@ For convenience, the runtime creates default mock users reflecting the [pseudo r
 For example, requests sent during a Spring MVC unit test with annotation `@WithMockUser("authenticated")` will pass authorization checks that require `authenticated-user`.
 The privileged user will pass any authorization checks.
 
-There are several properties to control behavioud of mock users:
+There are several properties to control behaviour of mock users:
 
 | Configuration Property                               | Description                                             | Default
 | :---------------------------------------------------- | :----------------------------------------------------- | ------------

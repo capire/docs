@@ -906,7 +906,7 @@ All *cds.Services* are intrinsically events & messaging-enabled. The core implem
 
 :::
 
-::: danger **PLEASE NOTE**
+::: danger **Note**
 
 Although emitters do not handle any return values from consumers, it is necessary to always call them with `await`. Keep in mind that `srv.emit()` is an *`async`* method, it is **very important** to properly handle the returned *Promises* by using `await`. Not handling them will likely lead to invalid transaction states and deadlocks.
 

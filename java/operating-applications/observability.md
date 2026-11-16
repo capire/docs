@@ -270,7 +270,7 @@ cds:
 ```
 
 ::: tip
- Add an underscore at the end of the trace file's name. It helps redability by separating the string of numbers that the JDBC tracing process appends for the epoch timestamp.
+ Add an underscore at the end of the trace file's name. It helps readability by separating the string of numbers that the JDBC tracing process appends for the epoch timestamp.
 
 ```sh
 ~/jdbctraces/ $ ls
