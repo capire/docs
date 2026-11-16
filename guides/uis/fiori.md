@@ -569,8 +569,8 @@ cds:
 ```
 :::
 
-[Learn more about mock users in CAP Java.](../java/security#custom-mock-users){.learn-more}
-[Learn more about mock users in CAP Node.js.](../node.js/authentication#mocked){.learn-more}
+[Learn more about mock users in CAP Java.](../../java/security#custom-mock-users){.learn-more}
+[Learn more about mock users in CAP Node.js.](../../node.js/authentication#mocked){.learn-more}
 
 
 ### Draft for Localized Data
