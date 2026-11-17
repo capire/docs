@@ -254,7 +254,7 @@ Extension code lives in a standard extension project. If you completed the [prov
 
 Prepare the extension project with the provider's updated model:
 
-1. Restart the sidecar and host after the provider changes, using the [local setup](customization#prepare-an-extension-tenant). Then, from `samples/xtravels`, return to the extension project, add the sandbox plugin, and refresh the base model:
+1. Follow [Refresh After Provider Changes](customization#refresh-provider-model) to restart the sidecar, upgrade both existing local tenants, and restart the host. This applies to all provider-model changes, including the schema added by `@sap/cds-oyster`. Then, from `samples/xtravels`, return to the extension project, add the sandbox plugin, and refresh the base model:
 
     ```sh
     cd ../../xtravels-ext
@@ -273,18 +273,17 @@ Prepare the extension project with the provider's updated model:
     :::
 
 
-3. In the previous section, `@sap/cds-oyster` extends the tenant database schema. Any tenant you subscribed **before** adding it (for example `t1` and `t1-ext` from the local setup) is still on the old schema. Re-provision each one so it redeploys with the plugin's schema. Locally, drop and re-subscribe the tenant:
+3. The handler and local reference file below use **CommonJS**. Remove `"type": "module"` from `xtravels-ext/package.json`, and replace the ES-module `srv/server.js` from the model-extensibility template with the CommonJS example in [Test-Drive Locally](#test-locally).
+
+4. Set up model-based code completion in `xtravels-ext`:
 
     ```sh
-    cds unsubscribe t1-ext --from http://localhost:4005 -u yves:
-    cds subscribe t1-ext --to http://localhost:4005 -u yves:
+    cds add typer
+    npm install
+    npx cds-typer "*" --outputDirectory @cds-models
     ```
-    
-    On a deployed tenant you can't drop it, so run a tenant upgrade to apply the change instead. Otherwise the tenant stays on the old schema and a schema migration would be needed before code extensions work.
-    
-::: tip Module format for these examples
-The handler and local reference file below use **CommonJS**. Remove `"type": "module"` from `xtravels-ext/package.json`, and replace the ES-module `srv/server.js` from the model-extensibility template with the CommonJS example in [Test-Drive Locally](#test-locally).
-:::
+
+    `cds add typer` adds `@cap-js/cds-typer`, the `#cds-models/*` import mapping, and the editor configuration. The last command generates the types under `@cds-models/`. Run that command again after each `cds pull` or change to your extension's CDS model. Providers can include this setup in their code-extension templates.
 
 ### 2. Generate the Handler Stub
 
@@ -313,7 +312,7 @@ module.exports = async function (req) {
 
 :::
 
-That header drives editor code completion for exactly what the sandbox exposes, and nothing more: `req` is narrowed to the sandbox request surface, with `req.data` typed from the action's own parameters; `this.entities` and the CRUD methods (`this.read`, `this.update`, …) are scoped to the extension service's entities; and the leading triple-slash reference pulls in the sandbox globals (`SELECT`, `cql`, `utils`). Completion relies on the generated `#cds-models` types (produced by `@cap-js/cds-typer`), which the extension template from [step 1](customization#start-ext-project) already sets up, so IntelliSense works as soon as you open the file.
+The header connects the handler to the types generated during [project preparation](#developer). It narrows `req` to the sandbox request surface and types `req.data` from the action parameters. Completion for `this.entities` and the CRUD methods is scoped to the extension service. The triple-slash reference adds the sandbox globals (`SELECT`, `cql`, `utils`). Open the stub in your editor and check completion for `req.data.travelID`, `this.entities.Travels`, and `SELECT`.
 
 ::: tip Scope the generation
 Without `--filter`, `cds add ext-handler` generates stubs for *every* entity and action in the whole base model, including services that aren't `@extensible.code`. Those won't push. Filter to the extension point you're implementing, or delete the extras.
@@ -321,11 +320,16 @@ Without `--filter`, `cds add ext-handler` generates stubs for *every* entity and
 
 ### 3. Write the Handler
 
-The file name encodes the binding: `srv/<Service>/on-<action>.js` for an unbound action. Implement your policy by reading the travel through the fenced projection and rejecting over the limit:
+The file name encodes the binding: `srv/<Service>/on-<action>.js` for an unbound action. Keep the stub's reference and JSDoc header, replace its function body, and remove the leading `#` from the filename. The complete handler reads the travel through the fenced projection and rejects it when its price exceeds the limit:
 
 ::: code-group
 
 ```js [srv/TravelExtensionService/on-validateReview.js]
+/// <reference types="@sap/cds-oyster/sandbox-globals" />
+/**
+ * @param {import('@sap/cds-oyster').OysterReq<import('#cds-models/TravelExtensionService')['validateReview']['__parameters']>} req
+ * @this {import('@sap/cds-oyster').OysterThis<import('#cds-models/TravelExtensionService')>}
+ */
 module.exports = async function validateReview(req) {
   const { travelID } = req.data
   const { Travels } = this.entities
@@ -469,7 +473,7 @@ If `cds push` fails to process the handler, confirm `@sap/cds-oyster` is install
 :::
 
 ::: warning Upgrade tenants subscribed before code extensibility was enabled
-Adding `@sap/cds-oyster` extends the MTX `Extensions` table with new columns. Tenants that were **already subscribed** before you enabled code extensibility keep the old schema, and the push fails with `table cds_xt_Extensions has no column named cdsOysterVersion`. Upgrade (or unsubscribe + re-subscribe) those tenants once after enabling it; a restart only re-deploys the technical `t0` tenant, not existing subscribers.
+Adding `@sap/cds-oyster` extends the MTX `Extensions` table with new columns. Tenants subscribed before you enabled code extensibility keep the old schema, and the push fails with `table cds_xt_Extensions has no column named cdsOysterVersion`. Follow [Refresh After Provider Changes](customization#refresh-provider-model) to restart the sidecar before upgrading those tenants. A restart alone does not upgrade existing subscribers.
 :::
 
 Verify the activated handler against the **multitenant host** as `alice`, the reviewer you assigned to `t1-ext`. The host uses the provider's own wiring, so this also checks that the handler works without the local reference file:
@@ -493,7 +497,7 @@ Expect **409** for travel `159`, **204** for travel `723`, and `Status_code: "P"
 
 Extension handlers never run as ordinary Node.js modules on the tenant; they run **sandboxed**. Two engines exist: **mocked** in-process for local `cds watch` (permissive, fast to iterate), and **wasm** in production and under `cds watch --profile wasm` (isolated, enforces the runtime restrictions). Every multitenant setup uses `wasm`, so a quick [`--profile wasm` run](#verify-wasm) before pushing surfaces isolation issues early. Push then adds a **static** check on top, which rejects constructs like `console` that still run under `wasm`.
 
-CAP Java supports always executes extension handlers in the sandbox.
+CAP Java always executes extension handlers in the sandbox.
 
 The [Code Extension Reference](code-extension) documents the sandbox in full: [engines](code-extension#sandbox), [configuration](code-extension#config), the [handler-file layout](code-extension#files) and [sandbox API](code-extension#api), [query rules](code-extension#queries), [forbidden constructs](code-extension#forbidden), [quarantine](code-extension#quarantine), and [troubleshooting](code-extension#troubleshooting).
 
@@ -517,7 +521,7 @@ A code extension runs tenant-supplied JavaScript on the live application, so the
 - **Be sparse with `@extensible.code`.** A **service-level** annotation opens the *entire* service (every entity, action, and event) to tenant handlers. Prefer the narrowest scope: annotate individual entities or actions, and set `@extensible.code: false` on anything you don't want reachable (helper entities, internal actions, sensitive projections). A dedicated extension service with a single action, the [pre-defined extension point](#extension-point) shown above, is the tightest option.
 - **Pass identity and context explicitly.** The sandbox does not expose `req.user`. If a handler needs the acting user, tenant, or locale, pass it as an **action parameter** (as `validateReview` does with `user` and `timestamp`); never assume ambient request state.
 - **Expose the minimum data surface.** Everything reachable from the annotated service is in scope for handlers. Expose only the projections a handler genuinely needs, mark them `@readonly` unless writes are required, and keep the fence as small as the use-case allows.
-- **Set sandbox limits for your risk profile.** The defaults (`maxTime`, `maxMemory`, `maxCallbacks`, `maxDepth`) are conservative but generic: tighten them for less-trusted code, and decide deliberately whether `continueOnError` should keep the app running when a handler faults. See [Configuration](code-extension#config).
+- **Set sandbox limits for your workload.** Tune `maxTime`, `maxMemory`, `maxCallbacks`, `maxDepth`, and `maxResultSize` for the work handlers need to do. See [Configuration](code-extension#config) for the effective defaults and units.
 
 ## Learn More
 

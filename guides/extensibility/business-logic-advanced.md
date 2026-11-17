@@ -188,8 +188,8 @@ The examples below implement one handler of each kind.
 A common use-case is adding computed information to read responses without changing the persisted model, for example a **customer-status tier** derived from a customer's travel history. Before writing a handler, reach for the cheapest mechanism that does the job:
 
 1. **Prefer calculated elements and associations.** If the value can be derived from data the model already relates (a field on an associated entity, or an expression over existing columns), express it declaratively as a [calculated element](../../cds/cdl#calculated-elements) or expose it along an association. The framework resolves it in the *same* query, as a JOIN: no handler code, and no extra round-trips. For "show a field from a related record", this is almost always the right answer.
-2. **Use an after-READ handler only for what the model can't express**: a value that needs a service call, an aggregate over a *different* set of rows, or a source the projection can't reach. Even then, favor enriching **single-record** reads, where the cost is one extra lookup.
-3. **Never look up per row on a multi-record read.** A handler that issues one query per row turns a page of N rows into N database round-trips, the classic N+1. Either enrich single-record reads only, as below, or, when a page genuinely needs enriching, collect the keys and fetch them in **one** query.
+2. **Use an after-READ handler only for what the model can't express**: a value that needs a service call, an aggregate over a *different* set of rows, or a source the projection can't reach. In Node.js, the runtime invokes after-READ only when the result contains exactly one top-level row.
+3. **Use model projections or explicit extension actions for collection enrichment.** Node.js skips after-READ when the result contains zero or multiple rows. If an action needs additional data for a page, fetch it in one query rather than issuing one lookup per row.
 
 The example enriches `Travels` with a `x_customerStatus` tier (Gold, Silver, or Bronze) computed from the customer's **lifetime spend across all their travels**. This can't be a calculated element or an association path: it isn't an expression over the row's own columns, and the `Customer` association yields the customer record, not an aggregate over that customer's *other* travels. It needs a handler, and because computing it means a full aggregate scan per customer, a **single-record** one.
 
@@ -205,16 +205,12 @@ extend Travels with {
 
 :::
 
-Then compute it for single-record reads only: guard on the result size, aggregate the customer's spend in one query, and apply the tiering rule:
+The following example uses Node.js, which invokes the handler only for one returned row. Aggregate the customer's spend in one query and apply the tiering rule:
 
 ::: code-group
 
 ```js [srv/TravelService/Travels/after-READ.js]
 module.exports = async function enrichCustomerStatus(results, req) {
-  // Only enrich a single addressed record (e.g. GET /Travels(42)).
-  // On a collection read this would be one aggregate query per row.
-  if (results.length !== 1) return
-
   const [travel] = results
   if (!travel.Customer_ID) return
 
@@ -232,7 +228,7 @@ module.exports = async function enrichCustomerStatus(results, req) {
 
 :::
 
-- **Guard on result size.** `results.length !== 1` restricts the work to single-record reads: the aggregate scan runs once, for the one addressed row, never once per row of a page. A filtered collection read that returns a single row is enriched too; the guard keys on the result, not on the URL shape.
+- **The runtime checks the row count.** The handler receives a one-element array. Keyed reads, filters, `where` clauses and `SELECT.one` follow the same rule; a filtered collection or `$top=1` result containing one row is enriched too. Empty and multi-row results skip the handler. This rule counts top-level rows, so one row may still contain expanded collections.
 - **Aggregate in the database.** `` .columns`sum(TotalPrice) as total` `` computes the total in one query instead of fetching the customer's travels and summing in JavaScript. Push work down to the database.
 - **The handler depends on the fields it reads.** It reads `travel.Customer_ID`, so a client projecting a subset that omits it (`$select=ID,x_customerStatus`) leaves `x_customerStatus` empty, because the handler returns early. Read the fields your enrichment needs, or don't narrow them away.
 - **Object `where` does equality only.** `` .where({ Customer_ID: … }) `` is fine for an equality match, but operators must use the tagged-template form: `` .where`ID in ${ids}` ``, `` .where`TotalPrice > ${limit}` ``. The object form `{ in: [ … ] }` is **not** honored inside the sandbox and silently matches nothing.
@@ -242,7 +238,7 @@ Nested reads inside the sandbox do **not** re-fire after-READ handlers. If your 
 :::
 
 ::: tip Restrict after-READ to virtual fields
-Set `limitedAfterRead: true` in the [sandbox config](code-extension#config) to restrict what after-READ handlers may change to virtual fields only; this prevents extension code from rewriting persisted data through the read path.
+Set `limitedAfterRead: true` in the [sandbox config](code-extension#config) to restrict changes to returned virtual fields. This controls response edits independently of the Node.js one-row execution rule.
 :::
 
 ## before Handlers {#before}
@@ -411,7 +407,7 @@ The same rules apply to the other `after` events, so they need no separate examp
 
 ## Paginated Reads {#pagination}
 
-The sandbox adds no result-size cap of its own, but reads inside a handler still inherit CAP's [implicit pagination](../services/served-ootb#implicit-pagination): a `SELECT` returns at most the service's default page size (**1,000 records** unless the provider changed it) even without an explicit `.limit` (see [query rules](code-extension#queries)). The cap is applied **silently**: a handler that scans a large set without paging simply never sees the rows past the limit, with nothing to signal they were dropped. Page deliberately with `.limit(rows, offset)`, where the second argument is the row offset:
+The Node.js sandbox checks each query result against `maxResultSize`, **1,000 rows by default**. If the service returns more rows, the query fails. CAP's [implicit pagination](../services/served-ootb#implicit-pagination) can truncate the result earlier without a sandbox error or a completeness marker. Keep each page within both the service and [sandbox limits](code-extension#config), and page deliberately with `.limit(rows, offset)`, where the second argument is the row offset:
 
 ::: code-group
 
@@ -423,7 +419,7 @@ module.exports = async function listTravelsByCustomer(req) {
   const results = await SELECT.from(Travels)
     .columns('ID', 'Description', 'BeginDate', 'EndDate', 'Status_code', 'BookingFee')
     .where({ Customer_ID: customerID })
-    .orderBy({ BeginDate: 'desc' })
+    .orderBy({ BeginDate: 'desc', ID: 'desc' })
     .limit(limit, offset)
   return JSON.stringify(results)
 }
@@ -432,7 +428,7 @@ module.exports = async function listTravelsByCustomer(req) {
 :::
 
 - Returning `many <Entity>` from an action is not currently validated by the sandbox return-type check. Use `returns String` and serialize with `JSON.stringify`.
-- The `.orderBy()` is essential: without a stable sort, the same row can appear on multiple pages.
+- Sort by `BeginDate` and then the unique `ID`, so travels with the same date have a stable order across pages. Offset pagination assumes the data does not change between page requests.
 - Defaults make the action safe to call with only `customerID`.
 
 Callers step through pages by incrementing `offset` by `limit`:
@@ -444,7 +440,7 @@ Callers step through pages by incrementing `offset` by `limit`:
 | Third page  | 20      | 40       | rows 41–60    |
 
 ::: tip Internal reads have no `nextLink`
-The `@odata.nextLink` that CAP adds to a truncated OData **response** is a serialization artifact for HTTP clients (see [Implicit Pagination](../services/served-ootb#implicit-pagination)). A `SELECT` inside a handler returns a plain array with no such marker (nothing tells you rows were dropped), so track your own `offset` to walk the whole set. The default page size itself is the application provider's setting, via the [`@cds.query.limit`](../services/served-ootb#annotation-cds-query-limit) annotation or `cds.query.limit` config; as an extension developer, page explicitly with `.limit` rather than relying on it.
+The `@odata.nextLink` in an OData **response** is added for HTTP clients (see [Implicit Pagination](../services/served-ootb#implicit-pagination)). A `SELECT` inside a handler returns a plain array without that marker. Track your own `offset` to walk the set. The provider controls CAP's service pagination through [`@cds.query.limit`](../services/served-ootb#annotation-cds-query-limit) or `cds.query.limit`, and the Node.js sandbox's fetched-row limit separately through `maxResultSize`. Set an explicit `.limit` that fits both.
 :::
 
 ## Best Practices {#best-practices}

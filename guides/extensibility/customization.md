@@ -235,7 +235,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
 
    `cds add extension` scaffolds the extension project structure: it adds `extends` and `workspaces: [ ".base" ]` to your _package.json_ and prepares the `.base/` folder to hold the pulled base model.
 
-2. `cds add extension` writes `@capire/bookshop` as a placeholder in `xtravels-ext/package.json`, change the `extends` to `@capire/xtravels`:
+2. `cds add extension` writes `@capire/bookshop` as a placeholder in `xtravels-ext/package.json`. Change `extends` to `@capire/xtravels` and check the settings below. This is a partial configuration: merge it into the generated file, keeping the other dependencies and settings:
 
     ::: code-group
 
@@ -243,6 +243,7 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
     {
       "name": "xtravels-ext",
       "extends": "@capire/xtravels",
+      "type": "module",
       "workspaces": [ ".base" ],
       "optionalDependencies": {
         "@cap-js/sqlite": "^3"
@@ -259,15 +260,16 @@ Extension projects are standard CAP projects extending the SaaS application. Cre
     The generated `.base/package.json` has `{ "name": "@capire/bookshop" }`. Leave it unchanged. The later section, [Pull the Base Model](#pull-base) replaces it with `@capire/xtravels`.
     :::
 
-::: details Generated project settings...
+::: details Extension project settings
 
-`cds add extension` sets up `workspaces`, SQLite, and port `4006`. The preceding example shows the resulting settings. For a project created with an earlier toolkit, check that these settings match.
+The scaffold may already contain these settings. Check them before continuing so the walkthrough works with your generated project.
 
 - `name` identifies the extension within a SaaS subscription. Extension developers can choose the value freely.
 - `extends` is the name by which the extension model refers to the base model. `cds add extension` writes a placeholder here, change it to your SaaS app (`@capire/xtravels`). It must be a valid npm package name as it's used by `cds pull` as a package name for the base model. It doesn't have to be a unique name, nor does it have to exist in a package registry like npmjs, as it's only used locally.
 - `workspaces` (added by `cds add extension`) is a list of folders including the one where the base model is stored. Use `cds pull` to sync this property when needed.
-- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. `cds add extension` puts it in `optionalDependencies`, so `npm install` installs it while the extension build keeps local `test/data` out of the pushed archive (see [Add Test Data](#41--copy-test-data)). If an older project lists it under `dependencies` or `devDependencies`, move it to `optionalDependencies`.
-- `cds.server.port` is set to `4006`, so you can run `cds watch` without passing `--port`.
+- `type: module` matches the ES-module reference wiring used in this guide.
+- `@cap-js/sqlite` provides the in-memory database for local `cds watch`. Keep it in `optionalDependencies` for extension packaging compatibility. If it appears under `dependencies` or `devDependencies`, move it to `optionalDependencies`, preserving its version. Local `test/data` is excluded from tenant activation independently of this dependency setting.
+- Set `cds.server.port` to `4006` so `cds watch` uses the URLs shown in this guide without a `--port` option.
 
 :::
 
@@ -345,6 +347,23 @@ cds subscribe t1-ext --to http://localhost:4005 -u yves:
 ::: info The Mock User `yves`
 `yves` is a predefined mock user that simulates a technical caller. Its `internal-user` pseudo-role authorizes tenant provisioning. You specify the target tenant in the command, so `yves` needs no tenant assignment. In production, provisioning uses authenticated platform callbacks and technical communication, as described in [Technical Roles](../multitenancy/mtxs#roles).
 :::
+
+##### Refresh After Provider Changes {#refresh-provider-model}
+
+If you change the provider's CDS model or add a plugin that contributes to it, refresh both the running model and the existing tenant schemas. The sidecar's `cds watch` does not reload model changes outside `mtx/sidecar`, such as `db/schema.cds`. Re-subscribing against a sidecar that still holds the old model deploys the old schema again.
+
+Stop the host and sidecar. Restart the sidecar with the command from [Local Setup](#local-setup), then upgrade both existing local tenants from `xtravels-ext`:
+
+```sh
+cds upgrade-tenant t1 --at http://localhost:4005 -u yves:
+cds upgrade-tenant t1-ext --at http://localhost:4005 -u yves:
+```
+
+Restart the host, then [pull the updated base model](#pull-base). A restart alone does not upgrade existing subscriptions. Use the [DeploymentService upgrade operation](../multitenancy/mtxs#upgrade-tenant) for deployed tenants. Unsubscribe and re-subscribe only when you intend to discard a disposable local tenant and its data.
+
+Local SQLite upgrades reload initial data and can overwrite changes to those rows. Use disposable local tenants for this walkthrough.
+
+For first-time setup, continue with the pull below.
 
 ##### 3.2.4 Pull the Base Model {#pull-base}
 
@@ -635,14 +654,15 @@ Learn more at https://cap.cloud.sap/docs/guides/extensibility/customization.
 When you run the extension standalone with `cds watch`, the app boots against the pulled model with **generic** CRUD handlers only. Anything the base app implemented in JavaScript is absent:
 
 - **Primary keys aren't generated.** The base app assigns a new `Travel`'s `ID` in a `before CREATE` handler. Standalone, creating a record leaves the key empty and the insert fails.
-- **Bound actions error.** The Travels list report shows actions like _Accept_, _Reject_, _Reopen_, and _Deduct Discount_ (`acceptTravel`, `rejectTravel`, `reopenTravel`, `deductDiscount` on `TravelService.Travels`). With no handler behind them, triggering one from the UI raises a runtime error.
+- **Custom action logic is absent.** CAP still implements the status transitions declared in the pulled model for _Accept_, _Reject_, and _Reopen_. The provider's custom `deductDiscount` implementation is not included.
 
 ::: tip This is a local-only concern
 On a real tenant your extension runs _inside_ the deployed SaaS app, so all of this wiring is already there. You only need it to make **standalone `cds watch`** behave like the deployed app.
 :::
 
-#### 5.1 Use a Read-Only Server.js
-Bridge the gap with a Read-only `srv/server.js`:
+#### 5.1 Use Reference Wiring in Server.js
+
+Bridge the gap with reference wiring in `srv/server.js`. Place it **directly** under `srv/`, where it runs as a regular Node.js bootstrap module during `cds watch`. Although `cds push` packages this file into the archive, the tenant activates only the model and does not run this local reference file. The generated project uses ES modules. Mark this file clearly as reference code:
 
 ::: code-group
 
@@ -672,19 +692,14 @@ cds.once('served', () => {
   TravelService.before('CREATE', Travels, async req => { req.data.ID ??= await nextTravelId() })
   TravelService.before('NEW', Travels.drafts, async req => { req.data.ID ??= await nextTravelId() })
 
-  // Bound UI actions have no handler in a model-only extension,
-  // triggering one from the list report would error. Stub them so
-  // the UI stays clickable during local test-drives.
-  for (const action of ['deductDiscount', 'acceptTravel', 'rejectTravel', 'reopenTravel'])
-    TravelService.on(action, Travels, req => req.data ?? {})
+  // Keep the discount button clickable without implementing its calculation.
+  TravelService.on('deductDiscount', Travels, req => req.data ?? {})
 })
 
 export default cds.server
 ```
 
 :::
-
-The `server.js` reproduces just enough of the base app's behavior. Placing it **directly** under `srv/` makes it run as a regular Node.js bootstrap module during `cds watch`. A model-only extension carries no code, so even though `cds push` packages this file into the extension archive, the tenant activates only the model, the file is never executed there. The generated project uses ES modules. Always mark this file clearly as reference code.
 
 That's all a model-only template needs: keys get generated, the list report's actions no longer break, and the app is fully browsable locally. When the base app changes its behavior, refresh this file by hand, it's a convenience copy, not something `cds pull` keeps in sync.
 

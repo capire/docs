@@ -9,7 +9,7 @@ description: >
 
 ## Introduction
 
-Code extensions run tenant-supplied JavaScript handlers **sandboxed** on the application, via the `@sap/cds-oyster` plugin. The plugin is active only in **multitenant** setups; it registers a `code-extensibility` service that validates handlers at `cds push` and executes them at runtime inside a constrained sandbox.
+Code extensions run tenant-supplied JavaScript handlers **sandboxed** on the application, via the `@sap/cds-oyster` plugin. It registers a `code-extensibility` service for runtime execution. In multitenant applications, the sidecar validates and activates handlers at `cds push`. Extension developers can also test handlers in a standalone local project.
 
 This page is the shared reference for both extensibility guides:
 
@@ -55,22 +55,36 @@ Attach your editor's Node debugger (VS Code's JavaScript debugger, Chrome DevToo
 
 ## Configuration {#config}
 
-The plugin auto-registers `cds.requires.code-extensibility` with profile-aware defaults, so most projects need no configuration. To tune limits or force `wasm` locally, add a `code-extensibility` block — all keys are optional:
+The plugin auto-registers `cds.requires.code-extensibility` with profile-aware defaults, so most projects need no configuration. The following options apply to Node.js:
+
+| Option | Effective default | Meaning |
+|--------|-------------------|---------|
+| `sandbox` | `mocked` in standalone development, `wasm` in multitenant execution | Execution engine. |
+| `maxTime` | `3000` | Execution time per call, in milliseconds. |
+| `maxMemory` | `4` | Sandbox memory, in MiB (1,048,576 bytes per MiB). |
+| `maxCallbacks` | `100` | Maximum callback invocations per sandbox call. |
+| `maxDepth` | `10` | Maximum depth of nested sandbox calls. |
+| `maxResultSize` | `1000` | Maximum rows fetched by one query. See [Queries](#queries). |
+| `continueOnError` | `false` | System-error handling. A failed handler still rejects its request. |
+| `limitedAfterRead` | `false` | When `true`, after-READ handlers may change only returned virtual fields. |
+
+To customize execution, merge the relevant configuration into your project's existing file. The Node.js example forces `wasm` and shows the limit defaults. Java uses its own configuration properties:
 
 ::: code-group
 
-```jsonc [package.json]
+```json [package.json]
 {
   "cds": {
     "requires": {
       "code-extensibility": {
-        "sandbox": "wasm",        // force the production engine locally
-        "maxTime": 3000,          // per-call time budget in ms (default 3000)
-        "maxMemory": 4,           // memory budget in MB (default 4)
-        "maxCallbacks": 100,      // max callback invocations (default 100)
-        "maxDepth": 10,           // max nested sandbox calls (default 10)
-        "continueOnError": false, // keep running on system errors (default false)
-        "limitedAfterRead": false // restrict after-READ writes to virtual fields (default false)
+        "sandbox": "wasm",
+        "maxTime": 3000,
+        "maxMemory": 4,
+        "maxCallbacks": 100,
+        "maxDepth": 10,
+        "maxResultSize": 1000,
+        "continueOnError": false,
+        "limitedAfterRead": false
       }
     }
   }
@@ -84,7 +98,7 @@ cds:
     limits:
       max-callback-calls: 100       # max callback invocations (default 100)
       max-execution-time: PT3S      # per-call time budget as duration (default 3000 ms)
-      max-allocated-memory: 2153000 # memory budget in bytes (default 4MB)
+      max-allocated-memory: 4194304 # memory budget in bytes (default 4 MiB)
       max-call-stack-depth: 10      # max nested sandbox calls (default 10)
 ```
 :::
@@ -93,8 +107,10 @@ cds:
 This block only *customizes* an already-registered service. Adding it for the default case (e.g. `"code-extensibility": true`) overrides the plugin's profile-aware defaults.
 :::
 
-- Set `limitedAfterRead: true` to restrict what after-READ handlers may change to **virtual fields only**, preventing extension code from rewriting persisted data through the read path.
-- The defaults are conservative but generic. Tighten `maxTime` / `maxMemory` / `maxCallbacks` / `maxDepth` for less-trusted code, and decide deliberately whether `continueOnError` should keep the app running when a handler faults.
+Inspect the Node.js configuration with `cds env get requires.code-extensibility`, adding the same `--profile` as your server. This shows the resolved configuration, not every effective runtime default. `maxCallbacks`, `continueOnError`, `limitedAfterRead`, and `maxResultSize` are defaulted internally when absent, so they may not appear in the output.
+
+- Set `limitedAfterRead: true` to restrict changes to returned **virtual fields only**. This controls response edits independently of the Node.js one-row execution rule.
+- Adjust the resource limits for your workload. Keep query pages small enough to fit both `maxResultSize` and `maxMemory`.
 
 ## Handler Files {#files}
 
@@ -141,6 +157,7 @@ A handler binds to an **action or event** (bound or unbound) or, on an opened en
 | `before` | Delete                                | Validate or prevent deletion. `req.data` is always `{}` — use `req.subject` to identify the record. |
 | `after`  | Read, Create, Update, Delete, Upsert  | Manipulate `req.results` after the `on` handler has completed successfully. Signature is `(result, req)`, where `result` equals `req.results`. |
 
+- **Node.js: after-READ runs only for exactly one returned top-level row.** Empty results and results with multiple rows skip the extension in both `mocked` and `wasm` modes. Keys, filters, `where` clauses and `SELECT.one` do not decide eligibility; the actual row count does. A collection query with `$top=1` is eligible when it returns one row. The handler receives a one-element array as `result` and `req.results`. A root row can still contain expanded collections, which remain subject to deep result validation.
 - Handlers fire **after** the draft workflow; draft-specific events are not currently supported.
 - Sandboxed code runs within the CAP event loop alongside other handlers; execution order relative to other handlers is **not guaranteed**.
 - **after-READ does not recurse.** Nested reads inside the sandbox do not re-fire after-READ handlers, so virtual fields populated there are not filled on nested results. This prevents runaway recursion.
@@ -152,7 +169,7 @@ Handlers use the standard CAP query language, with a few sandbox rules:
 - Queries are scoped to the **current service's** entities only; reaching for database tables or other services is rejected. This is the data-access fence.
 - `INSERT` / `UPSERT` accept only the `.entries({…})` form.
 - A handful of fluent clauses aren't exposed (`.groupBy`, `.having`, `.forUpdate`, `.stream`, …); use a ``cql`…` `` tagged template for those.
-- The sandbox adds **no** result-size cap of its own; reads inherit CAP's [implicit pagination](../services/served-ootb#implicit-pagination), a default maximum of 1,000 records. Add an explicit `.limit(n)` when a handler scans a large set: a query that overrides that limit and materializes an oversized result can exhaust `maxMemory`, which aborts the query and **quarantines** the extension tenant-wide until the next successful push.
+- The Node.js sandbox checks each query result against `maxResultSize`, **1,000 rows by default**, in both engines. If the service returns more rows, the query fails with `The maximum allowed number of fetched rows (1000) has been exceeded`. CAP's [implicit pagination](../services/served-ootb#implicit-pagination) can truncate the result earlier without a sandbox error, so a successful query does not mean you fetched the complete set. Page explicitly with `.limit(rows, offset)` within both limits, as shown in [Paginated Reads](business-logic-advanced#pagination). Large rows can still exceed `maxMemory` even when the row count fits.
 
 ## Security Model {#security}
 
@@ -191,6 +208,8 @@ Providers should make it an operations task to watch `cds.xt.Extensions` for blo
 | Symptom | Cause / Fix |
 |---------|-------------|
 | `cds add ext-handler` generates nothing | No local _srv/*.cds_ imports the base model. Add one (see [Business Logic Extensibility](business-logic#developer)). |
+| No completion for `req.data` or `this.entities` | In the extension project, run `cds add typer`, `npm install`, and `npx cds-typer "*" --outputDirectory @cds-models` after pulling the base model. Keep the handler's sandbox-globals reference and JSDoc header. |
+| Missing table or column after a provider-model change | Stop the host and sidecar, restart the sidecar, upgrade existing tenants, and restart the host. Then pull the updated base model. See [Refresh After Provider Changes](customization#refresh-provider-model). |
 | Stubs generated for unrelated services | `ext-handler` covers the whole model; use `--filter <action>` or delete the extras — non-`@extensible.code` services won't push. |
 | `422` validation error on push | A [forbidden construct](#forbidden) in a handler (`console`, `require`, `throw`, `Object`, stray `await`, …). The message names the file and offending name; remove it. |
 | Push not processed | `@sap/cds-oyster` missing in the provider's `mtx/sidecar`. |
