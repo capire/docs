@@ -13,7 +13,7 @@ CDS is the backbone of the SAP Cloud Application Programming Model (CAP). It pro
 
 At runtime, CDS models are plain JavaScript objects complying to the _[Core Schema Notation (CSN)](./csn)_, an open specification derived from [JSON Schema](https://json-schema.org/). You can easily create or interpret these models, which foster extensions by 3rd-party contributions. Models are processed dynamically at runtime and can also be created dynamically.
 
-> We use the terms _CDS_ or _CDS models_ as synonym to your models written in CDL.
+> The terms _CDS_ and _CDS models_ are used as synonyms for models written in CDL.
 
 [See the Nature of Models for more details](models){.learn-more}
 

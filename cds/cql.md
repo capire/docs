@@ -5,7 +5,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 ---
 
 
-# Query Language (CQL)
+# CDS Query Language (CQL)
 
 CDS Query Language (CQL) is based on standard SQL, which it enhances by...
 

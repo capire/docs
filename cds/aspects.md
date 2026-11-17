@@ -222,7 +222,7 @@ So we decided to deprecate it to encourage the use of [_Separate Reuse Aspects_]
 
 ### Separate Reuse Aspects {.prefer}
 
-While, as shown above, the central single-inheritance-style base class approach is also possible with CDS, we can do better using CDS Aspects, leveraging the equivalent of multiple inheritance, and hence distributed ownership instead of central one:
+While, as shown above, the central single-inheritance-style base class approach is also possible with CDS, you can do better using CDS Aspects, leveraging the equivalent of multiple inheritance, and hence distributed ownership instead of central one:
 
 ```cds
 aspect cuid { key ID : UUID; }

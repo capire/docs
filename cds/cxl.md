@@ -60,7 +60,7 @@ To try the samples by yourself, create a simple CAP app:
 cds init bookshop --nodejs --add sample && cd bookshop
 ```
 
-We encourage you to play around with the snippets.
+Play around with the snippets.
 Just create the sample app as described above and start a repl session within the newly created app by running:
 
 ```sh
@@ -575,11 +575,13 @@ Following table gives an overview of the guaranteed supported operators in CXL:
 | `exists`, `not exists` | Existence checking (prefix). | `name like 'A%'` |
 | `and`, `or` | Logical operators. | `x>1 or y<2` |
 
-> [!tip] Bivalent `==` and `!=` Operators
-> In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent--and--operators) section of the databases documentation.
+::: tip Bivalent `==` and `!=` Operators
+In addition to standard SQL's `=` and `<>` operators, CXL also supports `==` and `!=` as bivalent variants as opposed to the trivalent semantics of `=` and `<>` when it comes to null handling. Learn more about this in the [_Bivalent `==` and `!=` Operators_](../guides/databases/cap-level-dbs#bivalent--and--operators) section of the databases documentation.
+:::
 
-> [!tip] Ternary `?:` Operator
-> In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary--operator) section of the databases documentation.
+::: tip Ternary `?:` Operator
+In addition to the standard SQL `case when then` expression, CXL also supports the ternary `?:` operator as a more concise syntax for simple case expressions. Learn more about this in the [_Ternary `?:` Operator_](../guides/databases/cap-level-dbs#ternary--operator) section of the databases documentation.
+:::
 
 
 
