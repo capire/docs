@@ -538,6 +538,15 @@ Available for:
 [![Node.js](/logos/nodejs.svg){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/ai)
 [![Java](/logos/java.svg){style="height:3em; display:inline; margin:0 0.2em;"}](https://github.com/cap-java/cds-ai)
 
+## SAP Data Privacy Integration <Beta />
+
+The `@cap-js/data-privacy` plugin automatically provides the endpoints needed for SAP Data Privacy Integration to inspect personal data and trigger blocking and destruction requests based on retention rules configured in SAP DPI based on your annotated domain-model.
+
+For handling personal data learn more about the plugin in the [Information Reporting guide](../guides/security/dpp-pdm.md).
+For blocking and destructing personal data follow the [Retention Management guide](../guides/security/dpp-drm.md).
+
+[![Node.js](/logos/nodejs.svg 'Link to the plugin page.'){style="height:2.5em; display:inline; margin:0 0.2em;"}](https://github.com/cap-js/data-privacy)
+
 ## n8n
 
 The n8n plugin lets you trigger and automate [n8n](https://n8n.io) workflows from CAP applications. You can trigger workflows declaratively through annotations or programmatically through the n8n service.
