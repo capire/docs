@@ -4,7 +4,7 @@ description: >
 uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/855e00bd559742a3b8276fbed4af1008.html
 ---
 
-# Expression Notation (CXN) { #expressions}
+# Core Expression Notation (CXN) { #expressions}
 
 
 Expressions in CDS definitions and queries can be one of:

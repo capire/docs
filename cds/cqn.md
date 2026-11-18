@@ -3,7 +3,7 @@ description: >
   Specification of the Core Query Notation (CQN) format that is used to capture queries as plain JavaScript objects.
 ---
 
-# Query Notation (CQN)
+# Core Query Notation (CQN)
 
 
 [[toc]]
