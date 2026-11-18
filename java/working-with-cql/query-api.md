@@ -11,11 +11,13 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
   }
 </style>
 
-API to fluently build [CQL](../../cds/cql) statements in Java.
+API to fluently build CQL statements in Java.
+
+[Before you continue reading, make sure to know about CQL in CAP.](../../cds/cql){.learn-more}
 
 ## Introduction
 
-The [CDS Query Language (CQL)](../../cds/cql) statement builders allow to fluently construct [CQL](../../cds/cql) statements, which can be [executed](query-execution) by [CDS Services](../cqn-services/#cdsservices).
+The [CDS Query Language (CQL)](../../cds/cql) statement builders allow to fluently construct CQL statements, which can be [executed](query-execution) by [CDS Services](../cqn-services/#cdsservices).
 
 ## Concepts
 
