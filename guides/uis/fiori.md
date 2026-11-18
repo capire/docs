@@ -482,6 +482,97 @@ You can override generated side-effect annotations per entity, for example:
 Can be disabled with <Config>cds.fiori.draft_messages: false</Config>.
 :::
 
+### Showing a Custom User Description { #draft-user-description}
+
+By default, the SAP Fiori draft UI displays the unique user name in fields such as *Locked by*. To show a human-readable name instead, enable the `draftUserDescription` CDS compiler option and populate the generated `InProcessByUserDescription` field via a custom handler.
+
+**1. Enable the compiler option** in your `.cdsrc.json`:
+
+```json
+{
+  "cdsc": {
+    "draftUserDescription": true
+  }
+}
+```
+
+The compiler now adds `InProcessByUserDescription`, `CreatedByUserDescription`, and `LastChangedByUserDescription` to the `DraftAdministrativeData` entity.
+
+**2. Register a handler** on draft events across all draft services to populate the field:
+
+For example, a handler that fills in the user description for the draft-enabled entity `Orders`:
+::: code-group
+
+```java [Java]
+@Component
+@ServiceName(value = "*", type = DraftService.class)
+public class UserDescriptionHandler implements EventHandler {
+
+    @Autowired private UserInfo userInfo;
+
+    @Before
+    protected void addDraftFields(DraftPatchEventContext context, Order order) {
+        order.setInProcessByUserDescription(userInfo.getAdditionalAttribute("given_name") + " "
+            + userInfo.getAdditionalAttribute("family_name"));
+    }
+}
+```
+
+```javascript [Node.js]
+srv.on('PATCH', Order, req => {
+  req.data.InProcessByUserDescription = req.user.attr.givenName + ' ' + req.user.attr.familyName
+})
+```
+
+:::
+
+::: warning
+The handlers access user attributes (`UserInfo.getAdditionalAttribute` in Java, `req.user.attr` in Node.js) that are not stable APIs guaranteed by CAP. The attribute names (`given_name`/`family_name` in Java, `givenName`/`familyName` in Node.js) are JWT token claims provided by your identity provider — adjust them to match the claims configured in your environment, and handle missing values, for example by falling back to the user ID.
+:::
+
+**3. Configure mock users for local development:**
+
+To test the handlers locally, add the required attributes to your mock user configuration:
+
+::: code-group
+```yaml [srv/src/main/resources/application.yaml (Java)]
+---
+spring:
+  config.activate.on-profile: default
+cds:
+  security:
+    mock:
+      users:
+        - name: alice
+          password: alice
+          additional:
+            given_name: Alice
+            family_name: Müller
+```
+
+```json [package.json (Node.js)]
+"cds": {
+  "requires": {
+    "auth": {
+      "kind": "mocked",
+      "users": {
+        "alice": {
+          "attr": {
+            "givenName": "Alice",
+            "familyName": "Müller"
+          }
+        }
+      }
+    }
+  }
+}
+```
+:::
+
+[Learn more about mock users in CAP Java.](../../java/security#custom-mock-users){.learn-more}
+[Learn more about mock users in CAP Node.js.](../../node.js/authentication#mocked){.learn-more}
+
+
 ### Draft for Localized Data
 
 Annotate the underlying base entity in the base model with `@fiori.draft.enabled` to also support drafts for [localized data](./localized-data):
