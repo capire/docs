@@ -677,6 +677,31 @@ Common usage of the MTX services is through REST APIs. Here's an example:
    }
    ```
 
+## Technical Roles {#roles}
+
+The MTX services are **technical endpoints**, not business APIs. Access to them is governed by a small set of **technical roles**. These roles gate tenant lifecycle and extensibility operations; they are not business authorizations, and they must **never be bundled into business roles** (see the warning below).
+
+| Role | Unlocks | Used for |
+| ---- | ------- | -------- |
+| `cds.ExtensionDeveloper` | [ExtensibilityService](#extensibilityservice) (`/-/cds/extensibility/**`) | Reading the base model and pushing, activating, and deleting a tenant's own extensions (both model and code extensions). This is the role that `cds pull` and `cds push` require. It is **tenant-scoped**: a holder may only manage extensions for the tenant they belong to. |
+| `cds.Subscriber` | [DeploymentService](#deploymentservice) (`/-/cds/deployment/**`), [SaasProvisioningService](#saasprovisioningservice) (`/-/cds/saas-provisioning/**`) | Authorizing direct calls to the subscribe / upgrade / unsubscribe endpoints. In practice this is mostly a **local-testing affordance** (for example `cds subscribe` against a sidecar). In a deployed app these endpoints are reached as `internal-user` from inside the [application zone](../security/overview#application-zone), and SaaS onboarding and offboarding arrive via `mtcallback`, so `cds.Subscriber` is rarely assigned productively. |
+
+### Technical and Pseudo Roles
+
+Two further roles are presented by platform infrastructure, not assigned to people:
+
+- `mtcallback`: the role the SAP BTP SaaS Provisioning service presents when it calls the [SaasProvisioningService](#saasprovisioningservice) callback during tenant onboarding and offboarding.
+- `internal-user`: a pseudo-role for internal, technical communication inside the [application zone](../security/overview#application-zone), for example the main application calling its own MTX sidecar. It is established by platform trust (a shared XSUAA instance), not granted to users.
+
+::: warning Keep technical roles out of business roles
+Never include technical roles such as `cds.Subscriber` (or callback roles like `mtcallback`) in a business role collection. Doing so would hand tenant lifecycle control to ordinary users. See [Data Protection](../security/data-protection#auth-callback-endpoints-more).
+:::
+
+### When You Need Which Role {#when-roles}
+
+- **Extensions (the common case).** Anyone who runs `cds pull` / `cds push` to develop and activate extensions needs `cds.ExtensionDeveloper` on their tenant. For **code extensions** especially, treat activation as a governed step: keep the role (and the push) with a designated deployer rather than the handler's author, so a second person reviews the code before it reaches a tenant. See [Best Practices for Subscribers](../extensibility/business-logic#subscriber-best-practices).
+- **Tenant provisioning.** In a deployed app, tenant subscribe / upgrade / unsubscribe run from inside the [application zone](../security/overview#application-zone) as `internal-user`, with SaaS onboarding and offboarding arriving via the `mtcallback` role. `cds.Subscriber` exists to authorize those same endpoints when you call them directly, mainly in local testing; it is rarely assigned to anyone in production.
+
 ## ModelProviderService
 
 The _ModelProviderService_ serves model variants, which may include tenant-specific extensions and/or feature-toggled aspects.
@@ -1199,6 +1224,72 @@ As a special case, you can also block any unbound entities:
     }
   ]
 ```
+
+## Extension Lifecycle and Schema Changes {#extension-lifecycle}
+
+Activating a model extension changes the tenant's database schema. How activations, changes, and removals reach the tables is governed by the CDS model merge and the schema evolution of the [DeploymentService](#deploymentservice). Outcomes differ between SQLite (local) and SAP HANA (production).
+
+### Model Extensions Are Additive {#additive}
+
+Extensions are applied with `cds.extend(baseCsn).with(extensions)`, which only *adds*:
+
+- Redefining an existing element (same name, even with a new type) fails to compile with `duplicate-definition`. You cannot override a provider element.
+- There is no remove operation. Extensions add fields, entities, and annotations only.
+
+Each extension is stored under a `tag` in `cds.xt.Extensions` with its full CSN. Pushing the same tag replaces that CSN; the tenant model is recompiled from the base plus all active extensions.
+
+### Activation {#activation}
+
+Every push, update, or delete recompiles the whole tenant model and deploys it. There is no per-element step: the database gets whatever the recompiled model yields. Restriction violations and incompatible schema changes fail with `422` and roll back.
+
+### Removing or Shrinking an Extension {#removing}
+
+Remove a field or entity by deleting the extension ([`DELETE Extensions/<ID>`](#delete-extensions)) or pushing a smaller version of its tag. The object leaves the model and OData surface. The table reacts differently per database and per removed object:
+
+- **SQLite (local, `schema_evolution: 'auto'`):** dropping a column or table is lossy and not performed. The deployment fails (`def-unsupported-element-drop`, `def-unsupported-table-drop`) and rolls back. You cannot remove activated schema locally.
+- **SAP HANA, removed field:** the modified table is redeployed and the column is dropped together with its data. There is no local safeguard that catches this.
+- **SAP HANA, removed entity:** HDI does not undeploy artifacts missing from the deploy set, so the table stays behind as an orphan. It is only dropped if it matches a pattern in [`undeploy.json`](../databases/hana#undeploying-artifacts) or if `auto_undeploy` is enabled.
+
+To reclaim an orphan table without `auto_undeploy`, either list it in `undeploy.json` or `unsubscribe` and `resubscribe` the tenant to provision a fresh container.
+
+### Changing a Field's Type {#type-changes}
+
+Giving an existing field a new type recompiles cleanly, but schema evolution then checks the change:
+
+| Change | Result |
+| ------ | ------ |
+| Widening the same type (`String(10)` → `String(20)`, integer widening) | lossless `ALTER` |
+| Anything else (different type, or reduced length, scale, precision) | `422`, lossy change not supported |
+
+On SAP HANA every type change is rejected: there is no safe-widening allow-list. Add a new field instead of retyping.
+
+### Reusing a Dropped Entity Name {#orphan-entities}
+
+Because HDI leaves the table behind when an entity is removed (see [above](#removing)), re-adding an extension entity with the same name on the same tenant hits the surviving table. If the new shape is compatible, deployment reuses the table and any residual rows; otherwise it fails with `422`. Drop the orphan via [`undeploy.json`](../databases/hana#undeploying-artifacts) before re-pushing when the data must not be reused.
+
+### Configuration {#lifecycle-config}
+
+The defaults above are deliberately safe. You can change them for narrow use cases, such as freely resetting a **test tenant**, but be aware of the consequences of allowing this on production tenants, where it causes data loss.
+
+::: danger auto_undeploy drops tables
+`auto_undeploy` undeploys every artifact missing from the deploy set, tables included, deleting their data. Use it only when you understand the consequences for tenant data.
+:::
+
+- `cds.requires.'cds.xt.DeploymentService'.hdi.deploy` — [HDI deployer options](#deployment-config) such as `auto_undeploy` (off by default); also per tenant via `.for.<tenant>.hdi.deploy`, or per request via `options._.hdi.deploy`.
+- [`undeploy.json`](../databases/hana#undeploying-artifacts) — allowlist of artifacts to undeploy when they leave the deploy set. Listing `.hdbtable` entries drops the table and its data; use it when a removed entity's orphan has to go.
+- `cds.requires.'cds.xt.DeploymentService'.upgrade.skipExtensionCheck: true` — skips the guard blocking a base-model upgrade when extensions exist but extensibility is off. A data-loss escape hatch.
+- `cds.requires.db.schema_evolution: 'auto'` — additive-only evolution locally; without it, `cds deploy` drop-creates (development only).
+
+### Summary {#lifecycle-summary}
+
+| Scenario | Local (SQLite `auto`) | Production (SAP HANA) |
+| -------- | --------------------- | --------------------- |
+| Delete or shrink an activated extension, field removed | `422`, rolled back | Column and its data dropped |
+| Delete or shrink an activated extension, entity removed | `422`, rolled back | Table remains unless matched by `undeploy.json` or `auto_undeploy` is set |
+| Field type change, incompatible | `422` | `422` (HANA rejects all type changes) |
+| Field type change, safe widening | Applied | Applied |
+| Re-add an entity whose table still exists | not reachable | Succeeds if the new shape is compatible, `422` otherwise |
+| Truly reclaim activated storage | reprovision the database | `undeploy.json` and redeploy, or `unsubscribe` then `resubscribe` |
 
 ## DeploymentService
 
