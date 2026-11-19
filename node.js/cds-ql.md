@@ -340,6 +340,37 @@ let q2 = cds.ql (q1)
 q1 === q2 //> true
 ```
 
+Supported queries from `@cap.core/ql`, including compatible copies carrying its
+shared query brand, are upgraded **in place** to CDS query instances. Their
+identity, CQN body, parameter metadata, and service binding are preserved:
+
+```js
+const original = cds.cql`SELECT from Books where ID=${201}`
+const query = cds.ql(original)
+query === original //> true
+query instanceof cds.ql.Query //> true
+```
+
+The upgrade changes the original object's fluent and execution behavior to CDS
+semantics. Plain CQN inputs still get a new wrapper; unsupported branded query
+kinds are returned unchanged.
+
+## cds.cql() {.method}
+
+`cds.cql` exposes the lightweight runtime parser from `@cap.core/ql`. It supports
+SELECT, INSERT, UPSERT, UPDATE, DELETE, STREAM, and unbound CALL statements, without
+changing the configured compiler parser behind `cds.parse.cql`.
+
+```js
+const query = cds.cql`SELECT from Books where ID=${201}`
+await cds.ql(query).for(service)
+```
+
+Core queries themselves execute only against a service supplied through `.for()`.
+Upgrade through `cds.ql()` to obtain CDS's primary-database fallback, async-context
+handling, and fluent APIs. Keep runtime query caching disabled with CDS services;
+safe cache integration is not yet supported.
+
 
 ## cds.ql.clone() {.method}
 ###### cds-ql-clone
@@ -406,8 +437,23 @@ The kind of query, that is one of these strings:
 - `'UPSERT'`
 - `'UPDATE'`
 - `'DELETE'`
+- `'CALL'`
 
 This is useful for generic query processors, such as outbound protocol adapters or database services, which need to translate given queries into target representations.
+
+### .subject {.property}
+
+The main entity reference of a CRUD query. Unbound CALL queries have no entity
+subject and return `undefined`.
+
+### Query.is (query) {.method}
+
+Recognizes queries carrying the shared Core QL brand across compatible
+installations. This is an identity check, not model or authorization validation.
+
+```js
+cds.ql.Query.is(cds.cql`SELECT from Books`) //> true
+```
 
 
 
@@ -422,17 +468,41 @@ await cds.db.run( SELECT.from(Books) )
 
 
 
+### for (srv) {.method}
+
+Binds a query for execution with the given service and returns the same query.
+
+```js
+await SELECT.from(Books).for(srv) // is equivalent to:
+await srv.run(SELECT.from(Books))
+```
+
+### bind (...args) {.method #bind-args}
+
+Binds positional, indexed, or named arguments to runtime-parser parameter nodes:
+
+```js
+const query = cds.ql(cds.cql('SELECT from Books where ID=:ID'))
+query.bind({ ID: 201 })
+await query.for(srv)
+```
+
+Arrays and spread arguments provide positional values. Calling `.bind()` with
+no arguments is a no-op. For literal strings and user input, prefer parameters
+or tagged-template interpolation rather than string concatenation.
+
 ### bind (srv) {.method}
 
-Binds a query for execution with the given `srv` .
+The legacy service-binding overload remains supported when the only argument is
+an actual `cds.Service` instance (including subclasses and transactions).
+It delegates to `.for(srv)`; prefer that spelling for new code. Plain argument
+objects, including objects with a `run` field, continue to bind parameters.
 
 ```js
 let srv = new cds.Service
 await SELECT.from(Books).bind(srv) // is equivalent to:
 await srv.run( SELECT.from(Books) )
 ```
-
-
 
 
 
@@ -1145,6 +1215,41 @@ function DELETE.from (
 ### where() {.method}
 
 [As in SELECT.where](#select-where) {.learn-more}
+
+
+
+
+## CALL {.class}
+
+Constructs an unbound action or function request. Import the facade explicitly
+from `cds.ql`; CALL is not a global shortcut.
+
+```js
+const { CALL } = cds.ql
+await CALL('greet').with({ name: 'Ada' }).for(srv)
+await srv.run(cds.cql`CALL greet with {name:'Ada'}`)
+```
+
+`CALL.action(name)` is equivalent to `CALL(name)`. `.with(record)` replaces the
+argument record; omitted arguments produce an empty request data object. CALL
+queries map `CALL.action` to `req.event` and `CALL.with` to `req.data`, and use
+normal service handlers, parameter validation, authorization, and transactions.
+They have no entity target; entity-bound operations are not supported by this
+CALL notation.
+
+For HCQL services, POST a CALL query to the service root using the core parser:
+
+```http
+POST /hcql/operations
+Content-Type: application/json
+
+{ "cql": "CALL greet with {name:'Ada'}" }
+```
+
+The CQN equivalent is `{ "CALL": { "action": "greet", "with": { "name": "Ada" } } }`.
+Use a service-local operation name and literal argument data. Normal HCQL format
+controls apply. Setting `protocols.hcql.allows.CALL` to `false` in CDS
+configuration disables root CALL queries without disabling existing operation routes.
 
 
 
