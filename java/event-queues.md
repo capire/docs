@@ -283,6 +283,21 @@ void handleAuditLogProcessingErrors(OutboxMessageEventContext context) {
 
 [Learn more about `EventContext.proceed()`.](./event-handlers/#proceed-on){.learn-more}
 
+::: warning Always re-throw or complete
+Inside a catch block, you must either re-throw the exception or call `context.setCompleted()`. If you do neither — for example, only log the error and return — the message is silently removed from the outbox without being retried. This is effectively the same as calling `setCompleted()`, but makes the intent unclear and can lead to unnoticed message loss. Always be explicit: call `context.setCompleted()` to signal that the message should not be retried, or re-throw the exception to trigger a retry.
+
+```java
+// ⚠️  Anti-pattern — don't do this
+} catch (Exception e) {
+  LOG.warn("Ignoring error", e);
+  // BUG: neither setCompleted() nor throw
+  // → message is silently removed without retry
+}
+```
+:::
+
+Note that `context.setCompleted()` is only needed when you want to suppress retries for a caught error. In the normal case — when no exception occurs — the outbox marks the message as completed automatically.
+
 > [!note] Callbacks not yet available
 > The `#succeeded` / `#failed` callback events documented for Node.js have no Java equivalent yet, see [Callbacks](../guides/events/event-queues#callbacks) in the common guide.
 
