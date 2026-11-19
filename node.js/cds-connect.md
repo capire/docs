@@ -503,6 +503,57 @@ cds env get requires.<servicename>
 ```
 :::
 
+#### User-Provided Service Instances { #vcap-upsi }
+
+[User-Provided Service Instances](https://docs.cloudfoundry.org/devguide/services/user-provided.html) always appear in `VCAP_SERVICES` under the `"user-provided"` key, regardless of which service their credentials are for. To select a specific instance by name, set `vcap.name` to the instance's `name`. A typical use case is cross-account service instance sharing.
+
+The following example configures `my-service` to use credentials from a user-provided instance:
+
+<style scoped>
+  .no-stripes tr:nth-child(2n) {
+    background-color:unset;
+  }
+</style>
+
+<table class="no-stripes">
+<thead>
+<tr>
+<th>CAP config</th>
+<th>VCAP_SERVICES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+
+```json
+{
+  "cds": {
+    "requires": {
+      "my-service": {
+        "vcap": { "name": "my-upsi" }
+      }
+    }
+  }
+}
+```
+</td>
+<td>
+
+```json
+{
+  "VCAP_SERVICES": {
+    "user-provided": [{
+      "name": "my-upsi"
+    }]
+  }
+}
+```
+</td>
+</tr>
+</tbody>
+</table>
+
 ### In Kubernetes / Kyma { #in-kubernetes-kyma}
 
 CAP supports [servicebinding.io](https://servicebinding.io/) service bindings and SAP BTP service bindings created by the [SAP BTP Service Operator](https://github.com/SAP/sap-btp-service-operator).
