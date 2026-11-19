@@ -117,16 +117,24 @@ cds add hana
 
 ### 2. Authorization/Authentication
 
-Configure your app for XSUAA-based authentication:
+Choose IAS with AMS authorization, or XSUAA:
 
-```sh
+::: code-group
+```sh [IAS]
+cds add ias
+cds add ams
+```
+```sh [XSUAA]
 cds add xsuaa
 ```
-
-::: tip This will also generate an `xs-security.json` file
-The roles/scopes are derived from authorization-related annotations in your CDS models. Ensure to rerun `cds compile --to xsuaa`, as documented in the [_Security_ guide](../security/cap-users#xsuaa-roles) whenever there are changes to these annotations.
 :::
 
+::: tip XSUAA roles
+`cds add xsuaa` generates an `xs-security.json` file from authorization annotations in your CDS models. Rerun `cds compile --to xsuaa` when these annotations change.
+:::
+
+[Learn more about IAS authentication.](../security/authentication#ias-auth){.learn-more}
+[Learn more about AMS authorization.](../security/cap-users#roles-assignment-ams){.learn-more}
 [Learn more about SAP Authorization and Trust Management/XSUAA.](https://discovery-center.cloud.sap/serviceCatalog/authorization-and-trust-management-service?region=all){.learn-more}
 
 ### 3. Remote Service Consumption {#remote-services}
@@ -160,18 +168,22 @@ cds add mta
 
 ### 5. User Interfaces {#add-ui}
 
-#### Option A: SAP Cloud Portal
+#### Option A: App Router
 
-If you intend to deploy **multitenant** applications with a UI, set up the [HTML5 Application Repository](https://discovery-center.cloud.sap/serviceCatalog/html5-application-repository-service) in combination with the [SAP Cloud Portal service](https://discovery-center.cloud.sap/serviceCatalog/cloud-portal-service):
+Add an App Router to your project:
 
 ```sh
-cds add portal
+cds add approuter
 ```
 
-::: tip `cds add portal` adds an _App Router_ configuration to your project
+::: tip `cds add approuter` adds an _App Router_ configuration to your project
 The App Router acts as a single point-of-entry gateway to route requests to.
 In particular, it ensures user login and authentication in combination with XSUAA or IAS.
 :::
+
+For the UI from `cds add sample`, the build includes its static files and uses `/fiori-apps.html` as the welcome page.
+
+[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
 
 #### Option B: SAP BTP Application Frontend <Beta />
 
@@ -192,19 +204,6 @@ cds add workzone
 
 This approach uses the **managed App Router** provided by SAP Fiori Launchpad — you don't need to deploy your own. Instead, destinations are configured.
 
-<br>
-
-You might also use a custom App Router setup without SAP BTP Cloud Portal service:
-
-```sh
-cds add approuter
-```
-[Learn more about the SAP BTP Application Router.](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/01c5f9ba7d6847aaaf069d153b981b51.html?locale=en-US){.learn-more}
-<br>
-However, in this case, you need to create symlinks from your _app_ folders to make them visible to the deployed App Router.
-The [samples _modulith_](https://github.com/capire/samples) project uses this setup for serving a static _index.html_ consuming Vue.js via CDN.
-
-[Find the symlink directory in the App Router's _resources_ folder](https://github.com/capire/samples/tree/main/.deploy/app-router/resources){.learn-more}
 :::
 
 ### 6. Optional: Multitenancy { #add-multitenancy }
@@ -229,7 +228,7 @@ The previous steps are required _only once_ in a project's lifetime. With that d
 Make sure you are logged in to Cloud Foundry and target the space you want to deploy to:
 ```sh
 cf login --sso  # to log on with SAP Universal ID
-cf target
+cf target -o <org> -s <space>
 ```
 [Learn more about `cf login`](https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/7a37d66c2e7d401db4980db0cd74aa6b.html){.learn-more}
 
@@ -311,7 +310,9 @@ Visit the "Applications" section in your [SAP BTP cockpit](https://help.sap.com/
 ![The screenshot shows the SAP BTP cockpit, when a user navigates to their dev space in the trial account and views all deployed applications.](./assets/apps-cockpit.png)
 
 ::: tip Next up: Assign the _admin_ role
-To access the admin APIs, assign the _admin_ role required by the `AdminService`. By default, CAP creates a **role collection** named _admin‑\<org\>‑\<space\>_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to get access.
+With IAS and AMS, assign the `cap.admin` policy to your user in the [IAS Administration Console](../security/cap-users#ams-deployment).
+
+With XSUAA, CAP creates a **role collection** named _admin (\<app\> \<org\>-\<space\>)_. [Assign it to your user](https://help.sap.com/docs/btp/sap-business-technology-platform/assign-user-groups-to-role-collections) to access the admin APIs.
 :::
 
 ### Use MTA Extensions with `cds up`
