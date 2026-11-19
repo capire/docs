@@ -252,7 +252,7 @@ This takes the logon information and the service name from the `someEnvFile.json
 This is equivalent to `cds deploy --to hana:myservice` and ignores information coming from `--vcap-file`. A warning is printed after deploying.
 
 
-### Using `cf deploy` or `cf push`
+### Using `cds up`
 
 See the [Deploying to Cloud](../deploy/index.md) guide for information about how to deploy the complete application to SAP Business Technology Platform, including a dedicated deployer application for the SAP HANA database.
 

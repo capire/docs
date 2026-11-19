@@ -1392,7 +1392,7 @@ The MTA-based deployment is described in [the deployment guide](../deploy/index)
 
 
 ```sh
-cds add xsuaa,destination,connectivity
+cds add xsuaa destination connectivity
 ```
 
 ::: details Learn what this does in the background...
@@ -1435,15 +1435,9 @@ cds add xsuaa,destination,connectivity
     :::
     :::
 
-Build your application:
-
+Now you can build your application and deploy it to Cloud Foundry:
 ```sh
-mbt build -t gen --mtar mta.tar
-```
-
-Now you can deploy it to Cloud Foundry:
-```sh
-cf deploy gen/mta.tar
+cds up
 ```
 
 #### Connectivity Service Credentials on Kyma
