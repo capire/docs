@@ -1,6 +1,6 @@
 # Native AI
 
-CAP provides intrinsic support for integrating native AI capabilities, including the use of MCP services, CAP-level Agents, and Vector Embeddings.
+CAP provides intrinsic support for integrating native AI capabilities, including the use of Vector Embeddings, MCP services, and CAP-level Agents.
 {.abstract}
 
 [[toc]]
