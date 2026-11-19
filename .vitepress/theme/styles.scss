@@ -392,6 +392,14 @@ img, video.bright {
 
 // Menu Sidebar
 .VPSidebar {
+  // Hide the scrollbar that appears when the menu content is longer than the
+  // viewport, while keeping the sidebar scrollable.
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/legacy Edge
+  &::-webkit-scrollbar { // Chrome/Safari
+    display: none;
+  }
+
   .group {
     padding-top: 5px !important;
     .VPSidebarItem {
