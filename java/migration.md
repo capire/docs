@@ -360,7 +360,7 @@ If you are using the root path `/` for a readiness or liveness probe in Kyma you
 Support for classic MTX (@sap/cds-mtx) has been removed. Using streamlined MTX (@sap/cds-mtxs) is mandatory for multitenancy.
 If you're still using MTX Classic refer to the [multitenancy migration guide](../guides/multitenancy/old-mtx-migration).
 
-In addition, the deprecated `MtSubscriptionService` API, has been removed. It has now been superseeded by the `DeploymentService` API.
+In addition, the deprecated `MtSubscriptionService` API, has been removed. It has now been superseded by the `DeploymentService` API.
 As part of this change the compatibility mode for the `MtSubscriptionService` API has been removed. Besides the removal of the Java APIs this includes the following behavioural changes:
 
 - During unsubscribe, the tenant's content (like HDI container) is now deleted by default when using the new `DeploymentService` API.
@@ -831,7 +831,7 @@ The interface <CdsSrv link="services/runtime/Request.html">`Request`</CdsSrv> an
 
 #### Overview of Removed CDS Properties
 
-Some CdsProperties were already marked as deprected in CAP Java 1.x and are now removed in 2.x.
+Some CdsProperties were already marked as deprecated in CAP Java 1.x and are now removed in 2.x.
 
 | removed | replacement |
 | --- | --- |

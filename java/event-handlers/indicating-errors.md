@@ -16,7 +16,7 @@ uacp: Used as link target from Help Portal at https://help.sap.com/products/BTP/
 ## Overview
 
 The CAP Java SDK provides two different ways to indicate errors:
-- By throwing an exception: This completely aborts the event processing and rollbacks the transaction.
+- By throwing an exception: This completely aborts the event processing and rolls back the transaction.
 - By using the [Messages](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/messages/Messages.html) API: This adds errors, warnings, info, or success messages to the currently processed request, but doesn't affect the event processing or the transaction.
 
 The message texts for both exceptions and the Messages API can use formatting and localization.

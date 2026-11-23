@@ -141,13 +141,13 @@ if (dir) {
 }
 ```
 
-Returns `undefined` or a fully resolved absolute filename of the existing directory, including recursively resolving symbolic links. Relative fileames are resolved in relation to [`cds.root`](cds-facade#cds-root),
+Returns `undefined` or a fully resolved absolute filename of the existing directory, including recursively resolving symbolic links. Relative filenames are resolved in relation to [`cds.root`](cds-facade#cds-root),
 
 
 
 ### isfile (*file*) {.method}
 
-Checks if the given filename pints to an existing file, and returns the fully resolved absolute filename, if so.
+Checks if the given filename points to an existing file, and returns the fully resolved absolute filename, if so.
 
 ```js
 const { isfile, fs } = cds.utils
@@ -155,7 +155,7 @@ let file = isdir ('package.json')
 let json = fs.readFileSync (file,'utf8')
 ```
 
-Returns `undefined` or a fully resolved absolute filename of the existing directory, including recursively resolving symbolic links. Relative fileames are resolved in relation to [`cds.root`](cds-facade#cds-root),
+Returns `undefined` or a fully resolved absolute filename of the existing directory, including recursively resolving symbolic links. Relative filenames are resolved in relation to [`cds.root`](cds-facade#cds-root),
 
 
 
@@ -168,7 +168,7 @@ const { read } = cds.utils
 let pkg = await read ('package.json')
 ```
 
-Relative fileames are resolved in relation to [`cds.root`](cds-facade#cds-root). The implementation uses `utf8` encoding by default. If the file is a `.json` file, the read content is automatically `JSON.parse`d.
+Relative filenames are resolved in relation to [`cds.root`](cds-facade#cds-root). The implementation uses `utf8` encoding by default. If the file is a `.json` file, the read content is automatically `JSON.parse`d.
 
 
 
@@ -183,7 +183,7 @@ await write ({foo:'bar'}) .to ('some/file.json')
 await write ('some/file.json', {foo:'bar'})
 ```
 
-Relative fileames are resolved in relation to [`cds.root`](cds-facade#cds-root). If provided data is an object, it is automatically `JSON.stringify`ed.
+Relative filenames are resolved in relation to [`cds.root`](cds-facade#cds-root). If provided data is an object, it is automatically `JSON.stringify`ed.
 
 
 

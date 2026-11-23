@@ -31,7 +31,7 @@ let srv = new cds.ApplicationService (name, cds.model, options)
 await srv.init()
 ```
 
-If you add a custom implementation, this would comonly be derived from `cds.ApplicationService`:
+If you add a custom implementation, this would commonly be derived from `cds.ApplicationService`:
 
 ```js
 // srv/admin-service.js
@@ -48,7 +48,7 @@ module.exports = class AdminService extends cds.ApplicationService {
 
 ### Generic Handlers in `srv.init()`
 
-Generic handlers are registered by via respective class methods documented below in `cds.ApplicationService.prototype.init()` like so:
+Generic handlers are registered via respective class methods documented below in `cds.ApplicationService.prototype.init()` like so:
 
 ```tsx
 class cds.ApplicationService extends cds.Service {

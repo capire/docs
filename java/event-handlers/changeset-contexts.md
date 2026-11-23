@@ -31,7 +31,7 @@ When [events](../../get-started/concepts#events) are processed on [services](../
 If no ChangeSet Context is active the processing of an event ensures to open a new ChangeSet Context. This has the effect, that by default a ChangeSet Context is opened around the outermost event that was triggered on any service.
 This ensures that every top-level event is executed with its own transactional boundaries.
 
-For example, if a `CREATE` event is triggered on an Application Service, which is split into multiple `CREATE` events to different entities on the Persistence Service, the processing of the `CREATE` event on the Application Service ensures to open a new ChangeSet Context around all of these events. All interactions with the Persistence Service and therefore all interactions with the database, happen in a single transaction, which is committed, when the processing of the `CREATE` event on the Application Service finishes. In general, this frees event handler implementations to worry about transactions.
+For example, if a `CREATE` event is triggered on an Application Service, which is split into multiple `CREATE` events to different entities on the Persistence Service, the processing of the `CREATE` event on the Application Service ensures to open a new ChangeSet Context around all of these events. All interactions with the Persistence Service and therefore all interactions with the database, happen in a single transaction, which is committed, when the processing of the `CREATE` event on the Application Service finishes. In general, this frees event handler implementations from worrying about transactions.
 
 Nevertheless you can explicitly define ChangeSet Contexts. It is also possible to nest these ChangeSet Contexts, allowing for suspending previous transactions.
 The [CdsRuntime](https://www.javadoc.io/doc/com.sap.cds/cds-services-api/latest/com/sap/cds/services/runtime/CdsRuntime.html) provides an API to define a new ChangeSet Context:
@@ -68,7 +68,7 @@ changeSet.register(new ChangeSetListener() {
 
 ## Cancelling ChangeSets
 
-The ChangeSet Context can  be used to cancel a ChangeSet without throwing an exception.
+The ChangeSet Context can be used to cancel a ChangeSet without throwing an exception.
 All events in the changeset are processed in that case, but the transaction is rolled back at the end.
 A changeset can still be canceled from within the `beforeClose()` listener method.
 

@@ -140,8 +140,8 @@ The current user, an instance of `cds.User` as identified and verified by the au
 [See reference docs for `cds.User`.](authentication#cds-user){.learn-more .indent}
 
 ::: tip
-Please note the difference between `req` in a service handler (instance of `cds.EventContext`) and `req` in an express middleware (instance of `http.IncomingMessage`).
-Case in point, `req.user` in a service handler is an official API and, if not explicitely set, points to `cds.context.user`.
+Note the difference between `req` in a service handler (instance of `cds.EventContext`) and `req` in an express middleware (instance of `http.IncomingMessage`).
+Case in point, `req.user` in a service handler is an official API and, if not explicitly set, points to `cds.context.user`.
 On the other hand, setting `req.user` in a custom authentication middleware is deprecated.
 :::
 

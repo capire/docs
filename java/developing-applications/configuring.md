@@ -65,5 +65,5 @@ properties:
 :::
 
 :::warning SAP Business Application Studio
-If you develop your application in SAP Business Application Studio and Java 21 is not available there, use the Java 17, instead.
+If you develop your application in SAP Business Application Studio and Java 21 is not available there, use Java 17 instead.
 :::

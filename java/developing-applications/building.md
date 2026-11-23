@@ -19,14 +19,14 @@ The [modular architecture](#modular-architecture) reflects this requirement, all
 
 ### Overview
 
-One of the basic design principle of the CAP Java is to keep orthogonal functionality separated in independent components.
+One of the basic design principles of CAP Java is to keep orthogonal functionality separated in independent components.
 The obvious advantage of this decoupling is that it makes concrete components exchangeable independently.
-Hence, it reduces the risk of expensive adaptions in custom code, which can be necessary due to new requirements with regards to the platform environment or used version of platform services.
+Hence, it reduces the risk of expensive adaptations in custom code, which can be necessary due to new requirements with regards to the platform environment or used version of platform services.
 Hence, the application is [platform **and** service agnostic](../../get-started/concepts#agnostic-by-design).
 
 For instance, custom code doesn't need to be written against the chosen type of persistence service, but can use the generic persistence service based on [CQL](../working-with-cqn/../working-with-cql/query-api).
 Likewise, the application isn't aware of the concrete (cloud) platform environment in which it gets embedded.
-Consequently, preparing an application to be deployable in different platform contexts is rather a matter of configuration than of code adaption.
+Consequently, preparing an application to be deployable in different platform contexts is rather a matter of configuration than of code adaptation.
 
 Consequently, CAP Java doesn't determine the technology the application is built on.
 But it comes with a chosen set of industry-proven frameworks that can be consumed easily.
@@ -247,7 +247,7 @@ CAP Java comes with a rich set of prepared modules for all different layers of t
 * `cds-adapter-odata-v2`:  Auto-exposes Application Services as OData V2 endpoints.
 
 **Core runtime**:
-* `cds-adapter-api`:  Generic protocol adapter interface to be implemented by customer adapters.
+* `cds-adapter-api`:  Generic protocol adapter interface to be implemented by custom adapters.
 * `cds-services-api`:  Interface of the CAP Java SDK. Custom handler or adapter code needs to compile against.
 * `cds-services-impl`:  Implementation of the core CAP Java runtime (**mandatory**).
 

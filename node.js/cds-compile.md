@@ -179,7 +179,7 @@ Option `indents` is the indent as passed to `JSON.stringify`.
 
 ### .yaml() {.method}
 
-Renders the given model to a formatted JSON  or YAML string.
+Renders the given model to a formatted JSON or YAML string.
 
 
 

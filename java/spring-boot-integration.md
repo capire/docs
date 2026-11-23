@@ -17,7 +17,7 @@ description: >
 <!-- [Learn more about CDS properties to configure the CAP Java SDK.](properties){.learn-more} -->
 
 This section describes the [Spring Boot](https://spring.io/projects/spring-boot) integration of the CAP Java SDK. Classic Spring isn't supported.
-Running your application with Spring Boot framework offers a number of helpful benefits that simplify the development and maintenance of the application to a high extend.
+Running your application with Spring Boot framework offers a number of helpful benefits that simplify the development and maintenance of the application to a great extent.
 Spring not only provides a rich set of libraries and tools for most common challenges in development, you also profit from a huge community, which constantly contributes optimizations, bug fixes and new features.
 
 As Spring Boot is not only widely accepted but also the most popular application framework, CAP Java SDK comes with seamless integration of Spring Boot as described in the following sections.

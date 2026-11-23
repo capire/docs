@@ -71,7 +71,7 @@ The following table shows which CRUD events are triggered by which kind of OData
 
 ### Deeply Structured Documents
 
-Events on deeply structured documents, are only triggered on the target entity of the CRUD event's CQN statement.
+Events on deeply structured documents are only triggered on the target entity of the CRUD event's CQN statement.
 This means, that if a document is created or updated, events aren't automatically triggered on composition entities.
 Also when reading a deep document, leveraging `expand` capabilities, `READ` events aren't triggered on the expanded entities.
 The same applies to a deletion of a document, which doesn't automatically trigger `DELETE` events on composition entities to which the delete is cascaded.

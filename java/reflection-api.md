@@ -177,7 +177,7 @@ Stream<CdsElement> elements = order.elements()
 
 ### Feature Toggles and Active Feature Set
 
-[Feature toggles](../guides/extensibility/feature-toggles) allow to dynamically enable or disable parts of an application at runtime or to alter the behaviour depending on features.
+[Feature toggles](../guides/extensibility/feature-toggles) allow you to dynamically enable or disable parts of an application at runtime or to alter the behaviour depending on features.
 
 Feature toggles can be used for different purposes. They can be used as release toggles to selectively enable some features for some customers only based on a deployment vector. Or they can be used as runtime toggles to dynamically enable or disable selected features for selected users.
 
