@@ -579,6 +579,8 @@ In a deployed multitenant SaaS application, you need to set up the App Router co
 
 This ensures that the App Router doesn't try to authenticate requests to MTX Sidecar, which would fail. Instead, the Sidecar authenticates requests itself.
 
+<div id="configureiaslogin" />
+
 ## About Extension Models
 
 This section explains in detail about the possibilities that the _CDS_ languages provides for extension models.
@@ -990,6 +992,8 @@ The `<app-url>` is the URL that you get in your subscriber account when you subs
 Should you later want to extend other SaaS applications, you can log in to them as well, and it won't affect your other logins.
 Logins are independent of each other, and `cds pull` etc. will be authenticated based on the requested target.
 :::
+
+<div id="iaslogin" />
 
 ### Simplified Workflow
 
