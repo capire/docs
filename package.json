@@ -10,9 +10,10 @@
     "docs:build": "npm run types:generate && vitepress build .",
     "docs:preview": "vitepress preview .",
     "lint": "eslint .",
-    "test": "node .github/etc/blc --public",
-    "types:generate": "node types/update-types.js",
-    "types:generate:local": "node types/update-types.js --local"
+    "test": "npm run test:types && node .github/etc/blc --public",
+    "test:types": "node --test types/*.test.js",
+    "types:generate": "npm run test:types && node types/update-types.js",
+    "types:generate:local": "npm run test:types && node types/update-types.js --local"
   },
   "author": "SAP SE (https://www.sap.com)",
   "license": "SEE LICENSE IN LICENSE",
@@ -38,6 +39,8 @@
     "monaco-editor": "^0",
     "patch-package": "^8.0.1",
     "sass": "^1.62.1",
+    "sanitize-html": "2.18.2",
+    "tar": "7.5.23",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.12.0",
     "vite-plugin-cds": "^0.3.1",

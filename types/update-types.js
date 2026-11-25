@@ -4,11 +4,14 @@ import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+import { readTarball, verifyIntegrity, extractPackage, verifyPackage, packageEntryPoint } from './package-security.js'
 
 const exec = promisify(execFile)
 const TYPES = fileURLToPath(new URL('.', import.meta.url))
 const SOURCES = path.join(TYPES, 'sources')
 const local = process.argv.includes('--local')
+const packages = JSON.parse(await fs.readFile(new URL('packages.json', import.meta.url), 'utf8'))
+if (local && process.env.CI) throw new Error('Local package sources are not permitted in CI')
 
 async function fetchPackage(name, directory) {
     const destination = path.join(SOURCES, directory, 'package')
@@ -25,18 +28,19 @@ async function fetchPackage(name, directory) {
         return destination
     }
 
-    const response = await fetch(`https://registry.npmjs.org/${name}/latest`)
-    if (!response.ok) throw new Error(`Failed to fetch ${name}: ${response.status}`)
-    const metadata = await response.json()
+    const metadata = packages[name]
     process.stdout.write(`Downloading ${name}@${metadata.version}\n`)
-    const tarball = await fetch(metadata.dist.tarball)
+    const tarball = await fetch(metadata.tarball)
     if (!tarball.ok) throw new Error(`Failed to download ${name}: ${tarball.status}`)
+    const bytes = await readTarball(tarball)
+    verifyIntegrity(bytes, metadata.integrity)
 
     const temporary = await fs.mkdtemp(path.join(SOURCES, `${directory}-`))
     try {
         const archive = path.join(temporary, 'package.tgz')
-        await fs.writeFile(archive, Buffer.from(await tarball.arrayBuffer()))
-        await exec('tar', ['-xzf', archive, '-C', temporary])
+        await fs.writeFile(archive, bytes)
+        await extractPackage(archive, temporary)
+        await verifyPackage(path.join(temporary, 'package'), name, metadata.version)
         await fs.rm(destination, { recursive: true, force: true })
         await fs.rename(path.join(temporary, 'package'), destination)
     } finally {
@@ -53,7 +57,7 @@ const metadata = JSON.parse(await fs.readFile(path.join(cdsTypes, 'package.json'
 const configPath = path.join(TYPES, 'typedoc.json')
 const config = JSON.parse(await fs.readFile(configPath, 'utf8'))
 const entryPoints = [
-    path.join(cdsTypes, metadata.types ?? metadata.typings ?? 'index.d.ts'),
+    packageEntryPoint(cdsTypes, metadata),
     ...config.entryPoints.map(entry => path.resolve(TYPES, entry)),
 ]
 
