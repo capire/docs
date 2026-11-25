@@ -38,6 +38,7 @@ const config = defineConfig({
     '**/-*.md',
     '**/internal.md',
     '**/FIXME.md',
+    '**/types/sources/**',
   ],
 
   markdown: {
@@ -216,6 +217,7 @@ import * as MdLiveCode from './lib/cds-playground/md-live-code.ts'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate.ts'
 import * as MdDiagramSvg from './lib/md-diagram-svg.ts'
 import * as MdTypedModels from './lib/md-typed-models.ts'
+import * as MdApiReference from './lib/md-api-reference.js'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
@@ -223,6 +225,7 @@ config.markdown.config = md => {
   MdLiveCode.install(md)
   MdDiagramSvg.install(md)
   md.use(dl)
+  MdApiReference.install(md)
 }
 
 // Add twoslash transformer to the markdown config (if requested as it slows down builds)

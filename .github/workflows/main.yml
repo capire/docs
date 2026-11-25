@@ -8,11 +8,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Build jobs cannot deploy or request an OIDC token.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Allow one concurrent deployment
 concurrency:
@@ -22,10 +20,15 @@ concurrency:
 jobs:
   # Build job
   build:
+    permissions:
+      contents: read
+      pages: read
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Use Node.js
@@ -50,6 +53,11 @@ jobs:
 
   # Deployment job
   deploy:
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "./sources/cds-dk/package/lib/build/index.js",
+        "./sources/cds-dk/package/lib/build/plugins/plugin.js",
+        "./sources/cds-dk/package/lib/import/importapi.js"
+    ],
+    "name": "CAP Node.js API",
+    "out": "../nodejs/types",
+    "plugin": ["typedoc-plugin-markdown", "./typedoc-security.js"],
+    "tsconfig": "./tsconfig.json",
+    "basePath": "./sources",
+    "entryFileName": "index.md",
+    "useHTMLAnchors": true,
+    "anchorPrefix": "api-",
+    "flattenOutputFiles": true,
+    "disableSources": true,
+    "skipErrorChecking": true,
+    "sanitizeComments": true,
+    "excludeInternal": true,
+    "excludeReferences": true,
+    "readme": "none"
+}

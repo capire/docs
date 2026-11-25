@@ -1,0 +1,12 @@
+{
+  "@cap-js/cds-types": {
+    "version": "0.20.0",
+    "tarball": "https://registry.npmjs.org/@cap-js/cds-types/-/cds-types-0.20.0.tgz",
+    "integrity": "sha512-3AFQVJ0GM5EKQAeltNMPPq9MW6R56m9Tbk9YwQxstNjbvRGZBoFv42Hs69utjrzpyzhnG7aTniXm6U7Xx43WTw=="
+  },
+  "@sap/cds-dk": {
+    "version": "10.2.1",
+    "tarball": "https://registry.npmjs.org/@sap/cds-dk/-/cds-dk-10.2.1.tgz",
+    "integrity": "sha512-YFmgbc4N7WqdBJdrO5QPvSEQO3b7pXQI2aqqNhf0VNsynbEXYsniykyozvTo2bAy1+7NbgJmOFlAmzY9vI8H8Q=="
+  }
+}
