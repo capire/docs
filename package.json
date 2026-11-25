@@ -7,10 +7,12 @@
     "start": "npm run docs:dev",
     "setup": "npm ci",
     "docs:dev": "vitepress dev .",
-    "docs:build": "vitepress build .",
+    "docs:build": "npm run types:generate && vitepress build .",
     "docs:preview": "vitepress preview .",
     "lint": "eslint .",
-    "test": "node .github/etc/blc --public"
+    "test": "node .github/etc/blc --public",
+    "types:generate": "node types/update-types.js",
+    "types:generate:local": "node types/update-types.js --local"
   },
   "author": "SAP SE (https://www.sap.com)",
   "license": "SEE LICENSE IN LICENSE",
@@ -36,6 +38,8 @@
     "monaco-editor": "^0",
     "patch-package": "^8.0.1",
     "sass": "^1.62.1",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.12.0",
     "vite-plugin-cds": "^0.3.1",
     "vitepress": "2.0.0-alpha.21"
   }

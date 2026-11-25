@@ -6,7 +6,8 @@ export default [
     ignores: [
       '**/.vitepress/dist/**',
       '**/.vitepress/cache/**',
-      '**/.github/**'
+      '**/.github/**',
+      '**/types/sources/**'
     ],
   },
   ...cds.recommended,

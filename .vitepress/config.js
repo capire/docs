@@ -38,6 +38,7 @@ const config = defineConfig({
     '**/-*.md',
     '**/internal.md',
     '**/FIXME.md',
+    '**/types/sources/**',
   ],
 
   markdown: {

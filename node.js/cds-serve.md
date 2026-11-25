@@ -19,18 +19,10 @@ description: >
 
 Use `cds.serve()` to construct service providers from the service definitions in corresponding CDS models.
 
-Declaration:
-
-```ts:no-line-numbers
-async function cds.serve (
-  service        : 'all' | string | cds.Service | typeof cds.Service,
-  options        : { service = 'all', ... }
-) .from ( model  : string | CSN )         // default: cds.model
-  .to ( protocol : string | 'rest' | 'odata' | 'odata-v2' | 'odata-v4' | ... )
-  .at ( path     : string )
-  .in ( app      : express.Application )  // default: cds.app
-.with ( impl     : string | function | cds.Service | typeof cds.Service )
-```
+See the [TypeScript declaration of `cds.serve()`](/nodejs/types/cds-types.package.dist.cds-types.@sap.cds.Variable.serve)
+and its [fluent API](/nodejs/types/cds-types.package.dist.cds-types.@sap.cds.Interface.cds_serve_fluent).
+The fluent `.from()` method accepts a model filename or a
+[`CSN` model](/nodejs/types/cds-types.package.dist.cds-types.@sap.cds.csn.Interface.CSN).
 
 
 ##### Common Usages:
