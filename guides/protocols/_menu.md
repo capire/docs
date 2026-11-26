@@ -1,7 +1,8 @@
 
 # [Protocol Adapters](protocol-adapters.md) <!-- UNRELEASED -->
 # [Core HCQL](hcql.md)
-# [ • Core QL](hcql/core-ql.md)
+## [Core QL](hcql/core-ql.md)
+## [Benchmarks](hcql/performance.md)
 # [OData ](odata.md)
 # [OpenAPI](openapi.md)
 # [AsyncAPI](asyncapi.md)
