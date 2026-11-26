@@ -6,6 +6,8 @@ description: Core QL syntax for HCQL clients and application agents.
 > [!IMPORTANT]
 > This guide covers ***Core QL*** syntax for [HCQL](../hcql.md) and MCP data queries, as used by **application agents**. For Node.js service implementations, and hence **coding agents**, see the separate [Core QL in CAP Node.js Services](../../../node.js/core-ql.md) guide.
 
+The language dialect described here is **Core QL**, distinct from **CDS QL** (aka **Classic CQL**).
+
 > [!note]
 > - This guide assumes **elementary knowledge of SQL**.
 > - Examples assume matching model fields, relationships and key types.
@@ -140,7 +142,7 @@ UPDATE Books:texts[201,'de'] with { title: 'Sturmhöhe' }
 
 - Supply the key values on the **final target**, in discovered order.
 - Additional conditions can be added in the top-level `where` clause.
-- Core QL also supports classic `where` predicates for reads and writes:
+- Core QL also supports explicit `where` predicates for reads and writes:
 
 ```sql :cql
 SELECT locale, title from Books:texts where ID=201

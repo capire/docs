@@ -1,6 +1,6 @@
 ---
 description: >
-  Concise CAP instructions for coding agents: current HTTP references, client-facing HCQL/Core QL APIs, Classic QL for service implementations, database plug-and-play defaults and behavioral verification.
+  Concise CAP instructions for coding agents: current HTTP references, client-facing HCQL/Core QL APIs, CDS QL for service implementations, database plug-and-play defaults and behavioral verification.
 ---
 
 # CAP Development Instructions
@@ -19,7 +19,7 @@ If an index is stale or unavailable, use an explicitly supplied current Markdown
 ## Prefer HCQL/Core QL for Client Requests
 
 - For agent-authored client requests to a supporting **CAP Node.js** service, prefer [`@hcql`](../protocols/hcql.md). Use REST-style requests for simple CRUD and [Core QL runtime queries](../protocols/hcql/core-ql.md) for navigation, filtering, nested results, aggregation and bound input values.
-- This Core QL guidance is for protocol clients. For Node.js service implementations, see [Core QL in CAP Node.js Services](../../node.js/core-ql.md) for the Classic QL comparison and current runtime limits; use Classic [`cds.ql`](../../node.js/cds-ql.md) for database-backed queries that need bound values until support is verified.
+- This Core QL guidance is for protocol clients. For Node.js service implementations, see [Core QL in CAP Node.js Services](../../node.js/core-ql.md) for the CDS QL (aka Classic CQL) dialect comparison and current runtime limits; use CDS QL ([`cds.ql`](../../node.js/cds-ql.md)) for database-backed queries that need bound values until support is verified.
 - Choose [`@odata`](../protocols/odata.md) **only for explicitly required OData-affine clients**, including Fiori UIs. Use both `@hcql` and `@odata` on the service when both interfaces are needed.
 - Annotate the intended exposure explicitly. This is project guidance, not a change to CAP's default protocol; check HCQL applicability rather than inferring Java support or a minimum released version. Internal query capabilities do not bypass public HCQL restrictions.
 - Use modeled actions for business changes. Do not substitute client read → compute → write for an atomic operation or relax authorization/query guards to make a request succeed.

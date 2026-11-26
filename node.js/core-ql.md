@@ -5,7 +5,7 @@ description: >
 
 # New Core QL tuned for runtime
 
-[Core QL](../guides/protocols/hcql/core-ql.md) is the new target implementation of [`cds.ql`](cds-ql.md), centered on a runtime-oriented parser supporting the full range of query statements, including reads and writes. Planned to become the default in upcoming major releases, it can already be used alongside classic `cds.ql`.
+[Core QL](../guides/protocols/hcql/core-ql.md) is the new target implementation of [`cds.ql`](cds-ql.md), centered on a runtime-oriented parser supporting the full range of query statements, including reads and writes. Planned to become the default in upcoming major releases, it can already be used alongside CDS QL (aka Classic CQL).
 {.abstract}
 
 [[toc]]
@@ -13,7 +13,9 @@ description: >
 
 ## Import from `@sap/cds/core.js`
 
-On a supporting CAP Node.js runtime, use Core QL alongside classic `cds.ql` by importing the `cql` function from the `@sap/cds/core.js` facade:
+The language dialects are **Core QL** and **CDS QL** (aka **Classic CQL**). In this Node.js service-integration guide, `cql` refers to the Core QL API and `cds.ql` to the CDS QL API.
+
+On a supporting CAP Node.js runtime, use Core QL alongside CDS QL by importing the `cql` function from the `@sap/cds/core.js` facade:
 
 ```js
 import cds from '@sap/cds'
@@ -21,7 +23,7 @@ import { cql } from '@sap/cds/core.js'
 ```
 
 > [!IMPORTANT]
-> The examples below describe the checked local CAP integration, not a qualified released CAP version. Core QL [2.5.6](https://github.com/cap-js/ql/releases/tag/2.5.6) is released, but its standalone binding fix does not supply the CAP facade integration. Check the installed CAP runtime before using these examples; use Classic [`cds.ql`](cds-ql.md) for database-backed bound queries until that runtime is qualified.
+> The examples below describe the checked local CAP integration, not a qualified released CAP version. Core QL [2.5.6](https://github.com/cap-js/ql/releases/tag/2.5.6) is released, but its standalone binding fix does not supply the CAP facade integration. Check the installed CAP runtime before using these examples; use CDS QL ([`cds.ql`](cds-ql.md)) for database-backed bound queries until that runtime is qualified.
 
 Use `cql` to construct queries. Awaiting a query executes it against the primary database; pass it to `srv.run()` to select another service:
 
@@ -69,7 +71,7 @@ On a supporting runtime, Core QL also constructs unbound operation requests:
 await CatalogService.run (cql`CALL greet with {name:'Ada'}`)
 ```
 
-The operation name is local to the selected service; arguments are literal record data. These queries use normal service handlers, parameter validation, authorization and transactions. They have no entity subject and do not address entity-bound operations. See the [Classic QL CALL facade](cds-ql.md#call) and [HCQL operation requests](cds-ql.md#hcql-operation-requests) for equivalent entry points. The released-runtime qualification warning above applies to CALL integration too.
+The operation name is local to the selected service; arguments are literal record data. These queries use normal service handlers, parameter validation, authorization and transactions. They have no entity subject and do not address entity-bound operations. See the [CDS QL CALL facade](cds-ql.md#call) and [HCQL operation requests](cds-ql.md#hcql-operation-requests) for equivalent entry points. The released-runtime qualification warning above applies to CALL integration too.
 
 ## Positional Key Predicates
 
@@ -141,14 +143,14 @@ The condition and change belong to one database statement, avoiding a separate r
 
 ## High-level Comparison
 
-The following tables compare **CQL syntax only**, not fluent APIs, JavaScript interpolation, binding APIs or execution. Classic `cds.ql` refers to its compiler-backed parser; choosing a different parser changes the supported dialect.
+The following tables compare **language dialects only**, not fluent APIs, JavaScript interpolation, binding APIs or execution. CDS QL uses the compiler-backed CQL parser; Core QL uses the runtime-oriented parser.
 
-**In short:** both share association-oriented SELECT syntax. Classic CQL has a broader SQL-oriented SELECT grammar, mainly needed for persistence models.
+**In short:** both share association-oriented SELECT syntax. CDS QL has a broader SQL-oriented SELECT grammar, mainly needed for persistence models.
 Core QL puts primary focus on runtime queries, and adds support for write statements and compact addressing.
 
 ### New features in Core QL
 
-| CQL feature                                                   | Classic `cds.ql` | Core QL |
+| CQL feature                                                   | CDS QL          | Core QL |
 | ------------------------------------------------------------- | :--------------: | :-----: |
 | *INSERT, UPSERT, UPDATE, DELETE*                              |        No        |   Yes   |
 | Positional key predicates, i.e.: <br>*Books:texts [201,'de']* |        No        |   Yes   |
@@ -159,7 +161,7 @@ Core QL also supports named `:name` parameters; see [Binding Parameters](#bindin
 
 ### Not supported in Core QL
 
-| CQL feature                        | Classic `cds.ql` |       Core QL       |
+| CQL feature                        | CDS QL          |       Core QL       |
 | ---------------------------------- | :--------------: | :-----------------: |
 | _SELECT from Foo **as foo**_       |       Yes        |         No          |
 | *JOIN, UNION*                      |       Yes        |         No          |
@@ -171,7 +173,7 @@ Core QL also supports named `:name` parameters; see [Binding Parameters](#bindin
 
 ### Common Features
 
-| CQL feature                                                      | Classic `cds.ql` | Core QL |
+| CQL feature                                                      | CDS QL          | Core QL |
 | ---------------------------------------------------------------- | :--------------: | :-----: |
 | Key predicates, i.e.: <br>*Books:texts [ID=201 and locale='de']* |       Yes        |   Yes   |
 | *SELECT one, distinct, aliases, `*`*                             |       Yes        |   Yes   |
@@ -184,14 +186,14 @@ Core QL also supports named `:name` parameters; see [Binding Parameters](#bindin
 | Subqueries                                                       |       Yes        |   Yes   |
 | Positional parameters: `?`                                      |       Yes        |   Yes   |
 
-Classic CQL also parses `Books[201]`; yet, this does not give it Core QL's primary-key addressing convention, with comma-separated lists of multiple key values.
+CDS QL also parses `Books[201]`; yet, this does not give it Core QL's primary-key addressing convention, with comma-separated lists of multiple key values.
 
 
 ### Performance
 
 Recorded query-construction timings show Core QL parsing about **4× faster** than compiler-backed CQL parsing on a shared SELECT corpus:
 
-| Uncached workload           | Classic CQL | Core QL |
+| Uncached workload           | CDS QL      | Core QL |
 | --------------------------- | ----------: | ------: |
 | Parse SELECT → CQN          |       38 µs |    9 µs |
 | Static tagged templates     |       50 µs |   16 µs |
@@ -205,7 +207,7 @@ On a separate OData-compatible query corpus, Core QL used about **15% less time*
 | ----: | ------: |
 | 13 µs |   11 µs |
 
-These are uncached mixed-corpus medians from separate experiments, not current-release benchmarks. The Classic comparison used an optimized Core QL 2.5.1 working tree and compiler 7.2.1 on Node.js 26.13.1 / Apple M4. They exclude HTTP, model resolution and database execution — not application latency measurements.
+These are uncached mixed-corpus medians from separate experiments, not current-release benchmarks. The CDS QL comparison used an optimized Core QL 2.5.1 working tree and compiler 7.2.1 on Node.js 26.13.1 / Apple M4. They exclude HTTP, model resolution and database execution — not application latency measurements.
 
 **Key message:** Core QL is competitive with OData parsing on this corpus.
 
@@ -215,6 +217,6 @@ Human background: [cached query-construction outlook](../guides/protocols/hcql/p
 
 
 
-## Fluent API Variants
+## Fluent API Differences
 
-Core QL also provides fluent API variants very close to the ones in classic `cds.ql`. Yet, because of subtle, intentional differences, using them in parallel would cause confusion. In addition, constructing queries through tagged template literals is anyways the best variant, also for `cds.ql` as it allows more options to cache and reuse queries with different bindings.
+Core QL also provides a fluent API very close to CDS QL's `cds.ql`. Yet, because of subtle, intentional differences, using both APIs in parallel would cause confusion. Prefer tagged template literals for query construction with either dialect; leave Core query caching disabled with CDS services today.

@@ -47,10 +47,12 @@ HCQL CQL showed **0–8% lower median latency** and **2–12% higher throughput*
 
 Caching repeated query templates can avoid reparsing. These measurements offer human-oriented background on future potential, not agent/client guidance.
 
+The language dialects compared here are **CDS QL** (aka **Classic CQL**) and **Core QL**.
+
 > [!WARNING]
 > **Not usable with CDS services today: leave caching disabled.** Shared mutable bindings can interfere across asynchronous requests. Safe integration is future work; no release date is promised.
 
-| Query workload              | Classic CQL |  Core QL | w/ cache |
+| Query workload              |      CDS QL |  Core QL | w/ cache |
 | --------------------------- | ----------: | -------: | -------: |
 | Static tagged templates     |       50 µs |    16 µs |  0.16 µs |
 | Changing values + rebinding |       55 µs |    19 µs |  0.26 µs |
@@ -64,7 +66,7 @@ Caching repeated query templates can avoid reparsing. These measurements offer h
 
 Figures are rounded; each row is a separate experiment. On the OData-compatible corpus, raw OData parsing took **12 µs** and its public API **13 µs**; no OData query cache was compared.
 
-These are retained November 2026 mixed-corpus medians from the optimized Core QL 2.5.1 working tree, CAP 10.3.0 and compiler 7.2.1 on Node.js 26.13.1 / Apple M4, not new or current-release measurements. Classic's compiler-backed tagged-template path reparses; no equivalent Classic cache was measured. Hot-hit timings exclude cache misses and initial parsing, HTTP, model resolution, database execution and asynchronous service integration. Cached bindings were consumed synchronously before rebinding the shared body; safe request isolation was not established.
+These are retained November 2026 mixed-corpus medians from the optimized Core QL 2.5.1 working tree, CAP 10.3.0 and compiler 7.2.1 on Node.js 26.13.1 / Apple M4, not new or current-release measurements. CDS QL's compiler-backed tagged-template path reparses; no equivalent CDS QL cache was measured. Hot-hit timings exclude cache misses and initial parsing, HTTP, model resolution, database execution and asynchronous service integration. Cached bindings were consumed synchronously before rebinding the shared body; safe request isolation was not established.
 
 </details>
 
