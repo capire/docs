@@ -43,25 +43,26 @@ HTTP → CAP → SQLite → serialized response → client JSON parsing. Same se
 
 HCQL CQL showed **0–8% lower median latency** and **2–12% higher throughput**. Key-read latency was effectively tied; database-heavy aggregation left little room for protocol savings. Parser-only speedups do not translate directly into equal application speedups.
 
-## Outlook: cached query construction
+## Cached queries
 
-For human readers, these separate Core QL template-cache measurements offer a glimpse of the potential ahead—not instructions for agents or clients. Repeated templates can skip parsing, bringing query construction below **0.3 µs**, even with changing values and rebinding.
+Caching repeated query templates can avoid reparsing. These measurements offer human-oriented background on future potential, not agent/client guidance.
 
 > [!WARNING]
-> **Leave Core query caching disabled with CDS services today.** Safe service integration is still a follow-up: cached query bodies and parameter nodes are shared, risking stale bindings and interference across asynchronous requests. These construction-only results are an outlook—not measured HCQL request speedups, result caching or a currently usable CDS-service optimization.
+> **Not usable with CDS services today: leave caching disabled.** Shared mutable bindings can interfere across asynchronous requests. Safe integration is future work; no release date is promised.
 
-| Query-construction workload | Classic CQL, uncached | Core QL, uncached | Core QL, hot cache |
-| --------------------------- | --------------------: | ----------------: | -----------------: |
-| Static tagged templates | 50.02 µs | 16.22 µs | 0.163 µs |
-| Changing values + rebinding | 54.51 µs | 18.58 µs | 0.258 µs |
-| OData-compatible corpus | — | 10.85 µs | 0.130 µs |
+| Query workload              | Classic CQL |  Core QL | w/ cache |
+| --------------------------- | ----------: | -------: | -------: |
+| Static tagged templates     |       50 µs |    16 µs |  0.16 µs |
+| Changing values + rebinding |       55 µs |    19 µs |  0.26 µs |
+| OData-compatible corpus     |           — |    11 µs |  0.13 µs |
 
-On the OData-compatible corpus, raw OData parsing took **12.08 µs** and its public API **12.92 µs**; no OData query cache was compared. Each row is a separate experiment, not a directly interchangeable workload.
-
-For the template corpora, hot Core cache hits were approximately **100× faster** than uncached Core for static queries and **72× faster** with rebinding. That is a promising reduction in repeated query-construction work—not a measured HCQL HTTP or application-throughput gain. Safe CDS-service integration remains future work, without a promised release date.
+> [!TIP]
+> **~100× faster query construction without rebinding, ~70× with rebinding.** Not available for HCQL requests today; safe integration could reduce HTTP request overhead in future. End-to-end gains remain to be measured.
 
 <details>
 <summary>Query-construction measurement scope</summary>
+
+Figures are rounded; each row is a separate experiment. On the OData-compatible corpus, raw OData parsing took **12 µs** and its public API **13 µs**; no OData query cache was compared.
 
 These are retained November 2026 mixed-corpus medians from the optimized Core QL 2.5.1 working tree, CAP 10.3.0 and compiler 7.2.1 on Node.js 26.13.1 / Apple M4, not new or current-release measurements. Classic's compiler-backed tagged-template path reparses; no equivalent Classic cache was measured. Hot-hit timings exclude cache misses and initial parsing, HTTP, model resolution, database execution and asynchronous service integration. Cached bindings were consumed synchronously before rebinding the shared body; safe request isolation was not established.
 
