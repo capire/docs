@@ -31,7 +31,7 @@ In this example, the `cds.serve()` method is used to expose the `my-service` ser
 
 ## Further Reading
 - [Protocols Overview](./index.md)
-- [Core Data APIs](./core-data-apis.md)
+- [HCQL](./hcql.md)
 - [OData](./odata.md)
 - [OpenAPI](./openapi.md)
 - [AsyncAPI](./asyncapi.md)

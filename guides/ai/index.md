@@ -5,6 +5,10 @@ CAP provides intrinsic support for integrating native AI capabilities, including
 
 [[toc]]
 
+### [Using Capire with Coding Agents](./coding-agents.md)
+
+Configure your client with a small bootstrap pointing to the [CAP Development Instructions](./cap-agent-instructions.md): a pure-Markdown agent entry for current references, client-facing HCQL/Core QL APIs, Node.js service-query guidance and database plug-and-play defaults. The setup guide includes that same instruction body for human review. Verify actual retrieval/use; it is not tied to OpenCode or one model. This is documentation access for coding agents, distinct from serving application agents via A2A.
+
 ### [CAP-native Embeddings](./embeddings.md)
 
 Learn how to leverage vector embeddings, as supported by SAP HANA, to enable advanced AI-driven search and recommendations.

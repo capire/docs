@@ -13,7 +13,7 @@ As an application developer you'd primarily use the Node.js APIs documented here
 1. Define services in CDS &rarr; see [Cookbook > Providing & Consuming Services](../guides/services/)
 2. Add service implementations &rarr; [`cds.Service` > Implementations](core-services#implementing-services)
 3. Register custom event handlers in which &rarr; [`srv.on`/`before`/`after`](core-services#srv-on-before-after)
-4. Read/write data from other services in which &rarr; [`srv.run`](core-services#srv-run-query) + [`cds.ql`](cds-ql)
+4. Read/write data from other services in which &rarr; [`srv.run`](core-services#srv-run-query) + [`cds.ql`](cds-ql); see also [Core QL in Node.js services](core-ql)
 5. ..., that is from your primary database &rarr; [`cds.DatabaseService`](databases)
 5. ..., that is from other connected services &rarr; [`cds.RemoteService`](remote-services)
 6. Emit and handle asynchronous events &rarr; [`cds.MessagingService`](messaging)

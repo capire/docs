@@ -97,6 +97,9 @@ While both [CQL](../cds/cql) / [CQN](../cds/cqn) as well as the fluent API of `c
 
 Queries are executed by passing them to a service's [`srv.run()`](core-services#srv-run-query) method, for example, to the primary database:
 
+> [!NOTE]
+> Core QL is a separate language dialect and query API; see [Core QL in CAP Node.js Services](core-ql) for its service-side usage and current limits. This page documents CDS QL (aka Classic CQL) through the `cds.ql` API.
+
 ```js live
 let query = SELECT `ID,title` .from `Books`
 let books = await cds.db.run (query)
@@ -432,6 +435,13 @@ await SELECT.from(Books).bind(srv) // is equivalent to:
 await srv.run( SELECT.from(Books) )
 ```
 
+On a runtime supporting [Core QL integration](core-ql.md#query-interoperability-and-service-selection), prefer `.for(srv)` for service selection. The legacy `.bind(srv)` spelling remains supported for an actual `cds.Service` instance; `.bind(...)` otherwise supplies Core QL parameter values, not a service:
+
+```js
+await SELECT.from(Books).for(srv)
+```
+
+See [Core QL binding parameters](core-ql.md#binding-parameters) for runtime qualification and query-reuse limits.
 
 
 
@@ -1147,6 +1157,39 @@ function DELETE.from (
 [As in SELECT.where](#select-where) {.learn-more}
 
 
+
+## CALL {.class}
+
+Constructs an unbound action or function request. Import the facade explicitly from `cds.ql`; CALL is not a global shortcut:
+
+```js
+const { CALL } = cds.ql
+await CALL('greet').with({ name: 'Ada' }).for(srv)
+```
+
+> [!IMPORTANT]
+> CALL describes the checked local CAP integration, not a qualified released CAP version. Confirm support in the installed runtime before using it; see [Core QL in CAP Node.js Services](core-ql.md).
+
+`CALL.action(name)` is equivalent to `CALL(name)`. `.with(record)` replaces the argument record; omitted arguments produce empty request data. The operation name becomes `req.event`, and the arguments become `req.data`. Normal service handlers, parameter validation, authorization and transactions apply. CALL queries have no entity subject and do not address entity-bound operations.
+
+### HCQL Operation Requests
+
+On an HCQL service with CALL support, POST a query to the service root:
+
+```http
+POST /hcql/operations
+Content-Type: application/json
+
+{ "cql": "CALL greet with {name:'Ada'}" }
+```
+
+The CQN equivalent is:
+
+```json
+{ "CALL": { "action": "greet", "with": { "name": "Ada" } } }
+```
+
+Use a service-local operation name and literal argument data. Normal HCQL format controls apply. Setting `protocols.hcql.allows.CALL` to `false` disables root CALL queries without disabling existing operation routes. This is a query-policy control, not a replacement for service authorization.
 
 ## Expressions
 

@@ -10,6 +10,7 @@ CAP supports multiple service protocols to expose your application data and func
 ## Available Protocols
 CAP supports the following service protocols:
 - **Core Data APIs**: CAP provides core data APIs that allow you to interact with your data models programmatically, regardless of the underlying protocol.
+- **HCQL**: CAP Node.js exposes service queries through CQL over HTTP and REST-style CRUD requests, with default public query restrictions.
 - **OData**: A widely used protocol for building and consuming RESTful APIs. CAP provides built-in support for OData v2 and v4, allowing you to easily expose your data models as OData services.
 - **OpenAPI**: A specification for building APIs that allows you to define your API endpoints, request/response formats, and authentication methods. CAP can generate OpenAPI specifications for your services, enabling easy integration with other systems.
 - **AsyncAPI**: A specification for defining asynchronous APIs, such as those using messaging protocols. CAP supports AsyncAPI for building event-driven applications and integrating with messaging systems.
@@ -26,7 +27,7 @@ To use a specific protocol in your CAP application, you typically need to config
 ## Further Reading
 For more detailed information on each protocol and how to implement them in CAP, refer to the following guides:
 
-- [Core Data APIs](core-data-apis.md) <!-- UNRELEASED -->
+- [Core HCQL](hcql.md)
 - [OData APIs](odata.md)
 - [OpenAPI](openapi.md)
 - [AsyncAPI](asyncapi.md)

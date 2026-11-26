@@ -47,7 +47,9 @@
   ## [UPSERT](cds-ql#upsert)
   ## [UPDATE](cds-ql#update)
   ## [DELETE](cds-ql#delete)
+  ## [CALL](cds-ql#call)
   ## [Expressions](cds-ql#expressions)
+  ## [New Core QL](core-ql)
 
 # [cds. log()](cds-log)
 # [cds. i18n](cds-i18n)

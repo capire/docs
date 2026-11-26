@@ -145,6 +145,8 @@ spring:
 
 You can also use persistent SQLite databases. In this case, the database is deployed and initialized by `cds deploy` and not by the CAP runtimes.
 
+This also applies when the file database is used with `cds.test()`: initialize it before running tests. The test helper's [`data.reset()`](../../node.js/cds-test#test-data-reset) reloads data into an existing schema; it does not create missing tables.
+
 Follow these steps to use a file-based SQLite database:
 
 1. Specify a database filename in your `db` configuration as follows:
