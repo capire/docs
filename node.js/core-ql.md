@@ -1,0 +1,191 @@
+---
+description: >
+  Core QL in CAP Node.js service implementations: syntax comparison, writes, positional keys, binding parameters and compound assignments.
+---
+
+# New Core QL tuned for runtime
+
+[Core QL](../guides/protocols/hcql/core-ql.md) is the new target implementation of [`cds.ql`](cds-ql.md), centered on a runtime-oriented parser supporting the full range of query statements, including reads and writes. Planned to become the default in upcoming major releases, it can already be used alongside classic `cds.ql`.
+{.abstract}
+
+[[toc]]
+
+
+## Import from `@sap/cds/core.js`
+
+On a supporting CAP Node.js runtime, use Core QL alongside classic `cds.ql` by importing the `cql` function from the `@sap/cds/core.js` facade:
+
+```js
+import cds from '@sap/cds'
+import { cql } from '@sap/cds/core.js'
+```
+
+> [!IMPORTANT]
+> The examples below describe the checked local CAP integration, not a qualified released CAP version. Core QL [2.5.6](https://github.com/cap-js/ql/releases/tag/2.5.6) is released, but its standalone binding fix does not supply the CAP facade integration. Check the installed CAP runtime before using these examples; use Classic [`cds.ql`](cds-ql.md) for database-backed bound queries until that runtime is qualified.
+
+Use `cql` to construct queries. Awaiting a query executes it against the primary database; pass it to `srv.run()` to select another service:
+
+```js
+await cql`SELECT ID, title from Books where stock > ${111}`
+await CatalogService.run (cql`SELECT ID, title from Books`)
+```
+
+
+## Insert, Upsert, Update, Delete
+
+Core QL adds textual write statements. Interpolate JavaScript records for `INSERT`, `UPSERT` and `UPDATE`; supply complete keys for `UPSERT` and keyed writes:
+
+```js
+await cql`INSERT into Books ${{ title:'inserted' }}`
+await cql`UPSERT into Books ${{ ID:11, title:'upserted' }}`
+await cql`UPDATE Books[${11}] with ${{ title:'updated' }}`
+await cql`DELETE Books[${11}]`
+```
+
+Record literals also work directly in CQL. Nested records describe deep writes through compositions; omitted collections in a deep update remain unchanged, while supplied collections are reconciled. See [Core QL write syntax](../guides/protocols/hcql/core-ql.md#deep-inserts--upserts).
+
+## Positional Key Predicates
+
+Use scalar values in `[...]` to address an entity by its primary key. For composite keys, supply every value in the model's declared key order, separated by commas:
+
+```sql :cql
+SELECT from Books:texts[201,'de'] { locale, title }
+SELECT from Books[201] { title, author }
+DELETE from Books[201]
+UPDATE Books[201] with { stock: 23 }
+```
+
+These forms assume `Books` has key `ID`, and `Books:texts` has keys `ID, locale`. They differ from explicit field predicates, which both dialects support:
+
+```sql :cql
+SELECT from Books:texts[ID=201 and locale='de'] { title }
+```
+
+Positional addressing needs model-aware consumer support. Single-key queries work in the current local runtime, but positional composite keys are not yet supported on the checked SQL database path; use explicit field predicates there. The syntax does not by itself establish the result shape or uniqueness.
+
+## Binding Parameters
+
+Bind values rather than concatenating query text. Core QL supports three parameter forms:
+
+| Form | Binding |
+| --- | --- |
+| `?` | Positional values, in placeholder order |
+| `?n` | Indexed values, starting at 1; repeated indexes reuse a value |
+| `:name` | Named values from an object; repeated names reuse a value |
+
+Supply the arguments with `q.bind(...)` immediately before execution:
+
+```js
+await cql`UPDATE Books[201] set stock -= ? where stock >= ?`.bind(1,1)
+await cql`UPDATE Books[201] set stock -= ?1 where stock >= ?1`.bind(1)
+await cql`UPDATE Books[201] set stock -= :n where stock >= :n`.bind({n:1})
+```
+
+The checked local facade supports initial bindings and rebinding **within an active transaction**. Select that transaction explicitly and await each execution before changing the values:
+
+```js
+await cds.db.tx (async tx => {
+  const q = cql`SELECT ID, title from Books where ID=:ID`.for(tx)
+  const first = await q.bind ({ID:201})
+  const second = await q.bind ({ID:202})
+})
+```
+
+Reuse after an implicitly selected transaction commits remains a separate lifecycle limitation. Construct fresh queries per request; do not retain a transaction-bound query across requests or share one mutable query between overlapping executions. Interleaved-request isolation and positional composite-key database support remain unqualified. The [database-services feature request](https://github.com/cap-js/cds-dbs/issues/1796) remains relevant to live-binding integration; local facade behavior is not proof of released-runtime support.
+
+## Assignment Shortcuts
+
+Use `+=` and `-=` in `UPDATE ... SET` as convenience shortcuts to change a field relative to its current value:
+
+```sql :cql
+UPDATE Books[201] set stock += 10
+UPDATE Books[201] set stock -= 1 where stock >= 1
+```
+
+`stock -= expr` means `stock = stock - (expr)`; the complete right-hand expression is grouped. For example, `stock -= 1 + 2` subtracts 3, not 1 followed by adding 2.
+
+Bound increments combine this syntax with the parameter forms above:
+
+```js
+await cql`UPDATE Books[201] set stock -= :n where stock >= :n`.bind({n:2})
+```
+
+The condition and change belong to one database statement, avoiding a separate read–compute–write cycle. Whether a write is allowed still depends on the target service's authorization and validation.
+
+## High-level Comparison
+
+The following tables compare **CQL syntax only**, not fluent APIs, JavaScript interpolation, binding APIs or execution. Classic `cds.ql` refers to its compiler-backed parser; choosing a different parser changes the supported dialect.
+
+**In short:** both share association-oriented SELECT syntax. Classic CQL has a broader SQL-oriented SELECT grammar, mainly needed for persistence models.
+Core QL puts primary focus on runtime queries, and adds support for write statements and compact addressing.
+
+### New features in Core QL
+
+| CQL feature                                                   | Classic `cds.ql` | Core QL |
+| ------------------------------------------------------------- | :--------------: | :-----: |
+| *INSERT, UPSERT, UPDATE, DELETE*                              |        No        |   Yes   |
+| Positional key predicates, i.e.: <br>*Books:texts [201,'de']* |        No        |   Yes   |
+| Indexed parameters: `?n`                                      |        No        |   Yes   |
+| Compound assignments: `+=`, `-=`                              |        No        |   Yes   |
+
+Core QL also supports named `:name` parameters; see [Binding Parameters](#binding-parameters).
+
+### Not supported in Core QL
+
+| CQL feature                        | Classic `cds.ql` |       Core QL       |
+| ---------------------------------- | :--------------: | :-----------------: |
+| _SELECT from Foo **as foo**_       |       Yes        |         No          |
+| *JOIN, UNION*                      |       Yes        |         No          |
+| *EXCLUDING*                        |       Yes        |         No          |
+| SQL casts / CDL type annotations   |       Yes        |         No          |
+| Query-local associations (`mixin`) |       Yes        |         No          |
+| Comments: `//`, `/* ... */`        |       Yes        |         No          |
+| Delimited names: `![...]`          |       Yes        | column aliases only |
+
+### Common Features
+
+| CQL feature                                                      | Classic `cds.ql` | Core QL |
+| ---------------------------------------------------------------- | :--------------: | :-----: |
+| Key predicates, i.e.: <br>*Books:texts [ID=201 and locale='de']* |       Yes        |   Yes   |
+| *SELECT one, distinct, aliases, `*`*                             |       Yes        |   Yes   |
+| Prefix and postfix projections                                   |       Yes        |   Yes   |
+| Paths, expands, inlines                                          |       Yes        |   Yes   |
+| Infix filters, incl. group by, order by, limit                   |       Yes        |   Yes   |
+| Association `EXISTS` / semi-joins                                |       Yes        |   Yes   |
+| Filtering, aggregation, pagination                               |       Yes        |   Yes   |
+| `CASE`, functions, predicates, operators                         |       Yes        |   Yes   |
+| Subqueries                                                       |       Yes        |   Yes   |
+| Positional parameters: `?`                                      |       Yes        |   Yes   |
+
+Classic CQL also parses `Books[201]`; yet, this does not give it Core QL's primary-key addressing convention, with comma-separated lists of multiple key values.
+
+
+### Performance
+
+Recorded query-construction timings show Core QL parsing about **4× faster** than compiler-backed CQL parsing on a shared SELECT corpus:
+
+| Uncached workload           | Classic CQL | Core QL |
+| --------------------------- | ----------: | ------: |
+| Parse SELECT → CQN          |       38 µs |    9 µs |
+| Static tagged templates     |       50 µs |   16 µs |
+| Changing values + rebinding |       55 µs |   19 µs |
+
+**Key message:** Core QL prioritizes runtime parsing over compiler-language breadth, editor assistance and diagnostic detail.
+
+On a separate OData-compatible query corpus, Core QL used about **15% less time** than the public API on that corpus:
+
+| OData | Core QL |
+| ----: | ------: |
+| 13 µs |   11 µs |
+
+These are uncached mixed-corpus medians from separate experiments, not current-release benchmarks. The Classic comparison used an optimized Core QL 2.5.1 working tree and compiler 7.2.1 on Node.js 26.13.1 / Apple M4. They exclude HTTP, model resolution and database execution — not application latency measurements.
+
+**Key message:** Core QL is competitive with OData parsing on this corpus.
+
+For uncached request-level measurements and their separate version snapshot, see [HCQL Performance Considerations](../guides/protocols/hcql/performance.md). Parser speedups do not imply equal application speedups or safe shared-query reuse; see [binding limitations](#binding-parameters).
+
+
+
+## Fluent API Variants
+
+Core QL also provides fluent API variants very close to the ones in classic `cds.ql`. Yet, because of subtle, intentional differences, using them in parallel would cause confusion. In addition, constructing queries through tagged template literals is anyways the best variant, also for `cds.ql` as it allows more options to cache and reuse queries with different bindings.

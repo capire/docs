@@ -55,12 +55,24 @@ module.exports = function Sue(){
   this.on('sum', ({data:{x,y}}) => x+y)
   this.on('add', ({data:{x,to}}) => stocks[to] += x)
   this.on('stock', ({data:{id}}) => stocks[id])
-  this.on('getStock','Foo', ({params:[id]}) => stocks[id])
-  this.on('order','Foo', ({params:[id],data:{x}}) => stocks[id] -= x)
+  this.on('getStock','Foo', ({params:[{ID}]}) => stocks[ID])
+  this.on('order','Foo', ({params:[{ID}],data:{x}}) => stocks[ID] -= x)
 }
 ```
 
 Event handlers for actions or functions are very similar to those for CRUD events, with the name of the action/function replacing the name of the CRUD operations. No entity is specific for unbound actions/functions.
+
+For instance-bound handlers, `req.params[0]` is a **key record**, for example `{ ID: 2 }`, not a scalar ID. Operation arguments are in `req.data`; they do not replace the bound instance key.
+
+HTTP key representation depends on the protocol. In HCQL, the route key can reach the handler as text even when discovery declares an Integer key. Normalize according to the modeled type before type-sensitive JavaScript logic; do not convert String or UUID keys to numbers. For the Integer `Foo.ID` above, a handler can use:
+
+```js
+const { ID: routeKey } = req.params[0]
+const ID = Number(routeKey)
+if (!Number.isInteger(ID)) req.reject(400, 'Invalid Foo key')
+```
+
+See [HCQL operation routes](../protocols/hcql#call-actions-and-functions) for discovery and HTTP binding constraints. The HTTP examples below use OData syntax, not HCQL paths.
 
 **Method-style Implementations** in Node.js, you can alternatively implement actions and functions using conventional JavaScript methods with subclasses of `cds.Service`:
 

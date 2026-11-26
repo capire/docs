@@ -164,6 +164,8 @@ cds test
 
 The last one, `cds test` is a thin wrapper around [Node's built-in test runner](https://nodejs.org/api/test.html), which makes it easier to fetch tests and provides a cleaner output.
 
+For diagnostic output, set the runner's silent option only once. If an npm test script already sets `--silent=true`, invoke the runner directly with `--silent=false` rather than appending a conflicting second option to that script.
+
 #### Testing with Cloud Services
 
 To run integration tests against cloud services (for example, SAP HANA), wrap the test execution with `cds bind --exec`:
@@ -340,10 +342,10 @@ await test.post('/browse/submitOrder',
 
 ### test .data .reset() {.method}
 
-This is a bound method, which can be used in a `beforeEach` handler to automatically reset and redeploy the database for each test like so:
+This is a bound method that deletes existing data and reloads the project's initial data. It resets **data**, not the database schema; tables must already exist. For a test file at the project root, use it in a `beforeEach` handler like so (otherwise pass the project root instead of `__dirname`):
 
 ```js
-const { data } = cds.test()
+const { data } = cds.test(__dirname)
 beforeEach (data.reset)
 ```
 
@@ -356,11 +358,19 @@ beforeEach (async()=>{
 })
 ```
 
+For a [file-based SQLite test database](../guides/databases/sqlite#using-persistent-databases), initialize schema and CSV data with `cds deploy` from the project root **before running the tests**. Redeploy after model changes. A missing-table error is not repaired by calling `data.reset()` again. Use a disposable test database: reset/deployment changes its contents and must not target production data.
+
+Check the effective database configuration or startup output rather than assuming in-memory storage. Passing a project folder to `cds.test()` uses the optional `--in-memory?` mode; an explicit database configuration can still select a file such as `db.sqlite`. An in-memory database initialized at server startup does not need separate file-database deployment.
+
 
 
 ### test. log() {.method}
 
-Allows to capture console output in the current test scope. The method returns an object to control the captured logs:
+Allows to capture console output in the current test scope.
+
+This is not a replay of startup logs already emitted. For HTTP endpoint discovery, use the running server's public index or its actual startup output rather than expecting a later log capture to recover it.
+
+The method returns an object to control the captured logs:
 
 ```tsx
 function cds.test.log() => {

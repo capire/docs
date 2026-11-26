@@ -216,12 +216,14 @@ import * as MdLiveCode from './lib/cds-playground/md-live-code.ts'
 import * as MdAttrsPropagate from './lib/md-attrs-propagate.ts'
 import * as MdDiagramSvg from './lib/md-diagram-svg.ts'
 import * as MdTypedModels from './lib/md-typed-models.ts'
+import * as MdHcqlLinks from './lib/md-hcql-links.ts'
 
 config.markdown.config = md => {
   MdAttrsPropagate.install(md)
   MdTypedModels.install(md)
   MdLiveCode.install(md)
   MdDiagramSvg.install(md)
+  MdHcqlLinks.install(md)
   md.use(dl)
 }
 

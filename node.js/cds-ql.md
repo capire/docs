@@ -97,6 +97,9 @@ While both [CQL](../cds/cql) / [CQN](../cds/cqn) as well as the fluent API of `c
 
 Queries are executed by passing them to a service's [`srv.run()`](core-services#srv-run-query) method, for example, to the primary database:
 
+> [!NOTE]
+> Core QL is a separate query API; see [Core QL in CAP Node.js Services](core-ql) for its service-side usage and current limits. This page documents the Classic `cds.ql` API.
+
 ```js live
 let query = SELECT `ID,title` .from `Books`
 let books = await cds.db.run (query)
