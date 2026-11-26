@@ -211,6 +211,8 @@ These are uncached mixed-corpus medians from separate experiments, not current-r
 
 For uncached request-level measurements and their separate version snapshot, see [HCQL Performance Considerations](../guides/protocols/hcql/performance.md). Parser speedups do not imply equal application speedups or safe shared-query reuse; see [binding limitations](#binding-parameters).
 
+For human-oriented background on future potential, see the [cached query-construction outlook](../guides/protocols/hcql/performance.md#outlook-cached-query-construction). Core query caching must remain disabled with CDS services today; the outlook is not implementation guidance.
+
 
 
 ## Fluent API Variants
