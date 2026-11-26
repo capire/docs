@@ -68,6 +68,7 @@ The following settings also belong under <Config>`cds.protocols.hcql.allows`</Co
 | `UPDATE.set`  | `false`               | With `true`, permit SET assignments <br>(beware: expressions are not input-validated) |
 | `UPDATE.many` | `false`               | With `true`, permit non-keyed/bulk updates                                            |
 | `DELETE.many` | `false`               | With `true`, permit non-keyed/bulk deletes                                            |
+| `CALL`        | `true`                | With `false`, disable root CALL queries on a runtime supporting [CALL](../../../node.js/cds-ql.md#hcql-operation-requests); existing operation routes remain available |
 | `functions`   | →&nbsp;see&nbsp;below | Configure allowed expression functions                                                |
 | `pseudos`     | →&nbsp;see&nbsp;below | Configure allowed pseudo-variable roots                                               |
 | `cqn.any`     | `false`               | With `true`, bypass **all** query validation                                          |

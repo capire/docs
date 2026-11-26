@@ -30,6 +30,23 @@ await cql`SELECT ID, title from Books where stock > ${111}`
 await CatalogService.run (cql`SELECT ID, title from Books`)
 ```
 
+### Query Interoperability and Service Selection
+
+The facade's `cql` function already returns CDS queries. For a query constructed directly through the underlying Core QL API, use `cds.ql()` to obtain CDS execution semantics:
+
+```js
+import { ql } from '@sap/cds/core.js'
+
+const original = ql.cql`SELECT from Books where ID=${201}`
+const query = cds.ql(original)
+query === original //> true
+await query.for(CatalogService)
+```
+
+Supported Core QL queries are upgraded in place, preserving their CQN body, parameter metadata and selected service. Plain CQN inputs receive a new CDS wrapper. The underlying Core QL API requires an explicitly selected service; CDS queries also support the primary-database fallback and CAP's async context. Parser choice does not bypass service authorization, input validation or transactions.
+
+Use `.for(service)` to select the executing service and `.bind(...)` to supply parameter values. The legacy `.bind(service)` overload remains supported for an actual `cds.Service` instance, including a transaction. See [Binding Parameters](#binding-parameters) for the qualified scope and lifecycle limits; do not share mutable queries across overlapping executions.
+
 
 ## Insert, Upsert, Update, Delete
 
@@ -43,6 +60,16 @@ await cql`DELETE Books[${11}]`
 ```
 
 Record literals also work directly in CQL. Nested records describe deep writes through compositions; omitted collections in a deep update remain unchanged, while supplied collections are reconciled. See [Core QL write syntax](../guides/protocols/hcql/core-ql.md#deep-inserts--upserts).
+
+## Calling Unbound Actions and Functions
+
+On a supporting runtime, Core QL also constructs unbound operation requests:
+
+```js
+await CatalogService.run (cql`CALL greet with {name:'Ada'}`)
+```
+
+The operation name is local to the selected service; arguments are literal record data. These queries use normal service handlers, parameter validation, authorization and transactions. They have no entity subject and do not address entity-bound operations. See the [Classic QL CALL facade](cds-ql.md#call) and [HCQL operation requests](cds-ql.md#hcql-operation-requests) for equivalent entry points. The released-runtime qualification warning above applies to CALL integration too.
 
 ## Positional Key Predicates
 
